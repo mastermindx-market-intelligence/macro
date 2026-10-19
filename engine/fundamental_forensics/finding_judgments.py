@@ -6,9 +6,11 @@ changes or drops a finding may not silently replace the earlier view, so this
 module owns three things:
 
 * an append-only ledger of judgment records over a strict-conditional object
-  store. One batch object is written per recording run; a record is never
-  edited or deleted. A correction is a NEW record that names the record it
-  supersedes, and a withdrawal is a correction whose content is null;
+  store. The ledger is a hash-chained sequence of numbered batch objects —
+  one batch per recording run — plus a HEAD pointer that is the ledger's
+  only commit point. A record is never edited or deleted. A correction is a
+  NEW record that names the record it supersedes, and a withdrawal is a
+  correction whose content is null;
 * a then-known replay reader that reconstructs, for a caller-supplied cutoff,
   the last belief recorded at or before that cutoff (a visible withdrawal is
   returned as withdrawn);
@@ -16,34 +18,49 @@ module owns three things:
   ``Finding.to_dict()``.
 
 Clock law: every timestamp is supplied by the caller. The recording clock is
-the workbench state's ``generated_at`` or an explicit kernel-run argument,
-and a replay cutoff is mandatory — a missing cutoff is never treated as the
-present moment. No function in this module consults the operating-system
-clock.
+an explicit run argument (a workbench state's ``generated_at`` is recorded as
+the run's source clock, never as the recording clock), and a replay cutoff is
+mandatory — a missing cutoff is never treated as the present moment. No
+function in this module consults the operating-system clock. The ledger-wide
+clock is strict: a run's ``recorded_at`` may never precede the latest batch's
+``recorded_at``; an equal clock is legal only for a run that appends nothing;
+and batch clocks must strictly increase along the sequence.
 
-Write law: batches are created only through
-``put_bytes_strict_conditional(key, payload, expected_version=None)`` followed
-by a bounded read-back. Exact bytes already present prove idempotent
-completion; different bytes at the same key are a collision; an outcome that
-read-back cannot settle is EFFECT_UNKNOWN and is never retried or rerouted
-here.
+Write law: batches live at deterministic keys
+``{prefix}/batches/{sequence:08d}.json`` and are created only through
+``put_bytes_strict_conditional(key, payload, expected_version=None)``. Each
+batch names the exact-byte sha256 of its predecessor and is never rewritten.
+HEAD is advanced by compare-and-swap on the version the writer loaded; an
+absent HEAD is an empty ledger. A writer proves its batch bytes by a bounded
+read-back before advancing HEAD: exact bytes already present prove idempotent
+completion, different bytes at the next sequence are a conflict, and an
+outcome read-back cannot settle is EFFECT_UNKNOWN — never retried or rerouted
+here; a later run's roll-forward completes it on the same store. The reader
+never lists a prefix: it reads HEAD, then batches ``1..HEAD.sequence`` by
+their deterministic keys, verifying canonical bytes, the hash chain and
+strictly increasing batch clocks. No unconditional put is ever issued.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from .models import parse_utc, stable_id, utc_text
 
-JUDGMENT_SCHEMA = "fundamental_forensics.finding_judgment/v1"
-JUDGMENT_BATCH_SCHEMA = "fundamental_forensics.finding_judgment_batch/v1"
+JUDGMENT_SCHEMA = "fundamental_forensics.finding_judgment/v2"
+JUDGMENT_BATCH_SCHEMA = "fundamental_forensics.finding_judgment_batch/v2"
+JUDGMENT_HEAD_SCHEMA = "fundamental_forensics.finding_judgment_head/v1"
 JUDGMENT_REPLAY_SCHEMA = "fundamental_forensics.finding_judgment_replay/v1"
 JUDGMENT_PREFIX = "fundamental_forensics/finding-judgments/v1"
+JUDGMENT_HEAD_KEY = f"{JUDGMENT_PREFIX}/HEAD.json"
 HARD_MAX_BATCH_BYTES = 8 * 1024 * 1024
 HARD_MAX_BATCHES = 5000
+_HEAD_READ_BOUND = 64 * 1024
+_HEX64 = re.compile(r"[0-9a-f]{64}")
 
 _KINDS = ("workbench", "kernel")
 _STATUSES = ("present", "withdrawn")
@@ -73,7 +90,17 @@ _RECORD_FIELDS = (
     "supersedes",
     "recorded_at",
     "source_ready_at",
+    "source_generated_at",
     "change_reasons",
+)
+
+_BATCH_FIELDS = (
+    "schema",
+    "sequence",
+    "predecessor_sha256",
+    "recorded_at",
+    "source_generated_at",
+    "records",
 )
 
 
@@ -95,7 +122,7 @@ class FindingJudgmentChainError(FindingJudgmentError):
 
 
 class FindingJudgmentEffectUnknownError(FindingJudgmentError):
-    """A judgment batch write whose outcome could not be reconciled."""
+    """A judgment write whose outcome could not be reconciled."""
 
 
 # ---------------------------------------------------------------------------
@@ -134,19 +161,21 @@ def _require_aware_utc(value: Any, *, code: str, label: str) -> datetime:
     raise FindingJudgmentError(f"{label} must be an aware UTC datetime", code=code)
 
 
-def _compact_stamp(clock: datetime) -> str:
-    return clock.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-
-
 def _judgment_id(subject_key: str, content_sha256: str | None, supersedes: str | None) -> str:
     return stable_id("fjudgment", subject_key, content_sha256 or "withdrawn", supersedes or "")
 
 
-def _detector_version_of(record: Mapping[str, Any]) -> Any:
+def _detector_version_of(record: Mapping[str, Any] | None) -> Any:
+    if not isinstance(record, Mapping):
+        return None
     content = record.get("content")
     if not isinstance(content, Mapping):
         return None
     return content.get("detector_version")
+
+
+def _batch_key(sequence: int) -> str:
+    return f"{JUDGMENT_PREFIX}/batches/{sequence:08d}.json"
 
 
 # ---------------------------------------------------------------------------
@@ -213,13 +242,41 @@ def _normalize_row(kind: str, row: Any) -> dict[str, Any]:
     }
 
 
-def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, Any]], set[str], datetime]:
-    """Derive workbench rows, the run's entity scope, and its clock from a build state.
+def _cik_identity(value: Any) -> str | None:
+    """Normalize a company CIK to its zero-padded 10-digit text."""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        raise FindingJudgmentError("workbench company cik must be an int or a digit string", code="state_shape")
+    if isinstance(value, int):
+        if value < 0 or value >= 10**10:
+            raise FindingJudgmentError(f"workbench company cik is out of range: {value!r}", code="state_shape")
+        return str(value).zfill(10)
+    if isinstance(value, str):
+        if len(value) < 1 or len(value) > 10 or any(char not in "0123456789" for char in value):
+            raise FindingJudgmentError(f"workbench company cik is not a digit string: {value!r}", code="state_shape")
+        return value.zfill(10)
+    raise FindingJudgmentError(f"workbench company cik must be an int or a digit string: {value!r}", code="state_shape")
 
-    The clock is ``state["generated_at"]`` (missing or naive values are
-    refused). The subject identity is the company CIK as text, or the symbol
-    when the CIK is null; ``entity_ref`` uses the same basis so the withdrawal
-    scope stays joinable. Every company present in the state is in scope.
+
+def _symbol_identity(symbol: Any) -> str:
+    text = str(symbol).strip().upper()
+    if not text:
+        raise FindingJudgmentError("workbench company symbol must be non-empty", code="state_shape")
+    return f"symbol:{text}"
+
+
+def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, Any]], set[str], datetime]:
+    """Derive workbench rows, the run's entity scope, and the state's clock.
+
+    The returned clock is ``state["generated_at"]`` (missing or naive values
+    are refused); the caller records it as the run's ``source_generated_at``,
+    never as the recording clock. The subject identity is the normalized
+    10-digit company CIK, or the stripped upper-cased symbol when the CIK is
+    null. ``entity_ref`` uses the same basis, and the scope holds BOTH the
+    CIK identity and the symbol identity for every company, so a subject
+    recorded under the symbol one night and under the CIK the next is
+    withdrawn instead of staying present forever.
     """
     if not isinstance(state, Mapping):
         raise FindingJudgmentError("workbench state must be an object", code="state_shape")
@@ -232,9 +289,11 @@ def workbench_rows_from_state(state: Mapping[str, Any]) -> tuple[list[dict[str, 
     for symbol, company in companies.items():
         if not isinstance(company, Mapping):
             raise FindingJudgmentError(f"workbench company {symbol!r} must be an object", code="state_shape")
-        cik = company.get("cik")
-        identity = str(cik) if cik is not None else str(symbol)
+        symbol_ref = _symbol_identity(symbol)
+        cik_ref = _cik_identity(company.get("cik"))
+        identity = cik_ref if cik_ref is not None else symbol_ref
         scope_entities.add(identity)
+        scope_entities.add(symbol_ref)
         findings = company.get("findings")
         if findings is None:
             findings = []
@@ -268,6 +327,10 @@ class LedgerView:
 
     chains: dict[str, tuple[dict[str, Any], ...]]
     batch_keys: tuple[str, ...] = ()
+    head_sequence: int = 0
+    tip_sha256: str = ""
+    head_version: str | None = None
+    latest_recorded_at: str | None = None
 
     def tip(self, subject_key: str) -> dict[str, Any] | None:
         chain = self.chains.get(subject_key)
@@ -280,7 +343,13 @@ def _chain_error(message: str, *, code: str) -> FindingJudgmentChainError:
     return FindingJudgmentChainError(message, code=code)
 
 
-def _validate_record(record: Any, *, batch_recorded_at: str, batch_key: str) -> None:
+def _validate_record(
+    record: Any,
+    *,
+    batch_recorded_at: str,
+    batch_source_generated_at: str | None,
+    batch_key: str,
+) -> None:
     if not isinstance(record, dict):
         raise _chain_error(f"judgment batch {batch_key} holds a non-object record", code="record_shape")
     for name in _RECORD_FIELDS:
@@ -318,10 +387,15 @@ def _validate_record(record: Any, *, batch_recorded_at: str, batch_key: str) -> 
     try:
         parse_utc(record["recorded_at"], field="recorded_at")
     except ValueError as exc:
-        raise _chain_error(f"judgment recorded_at is not an aware timestamp: {exc}") from exc
+        raise _chain_error(f"judgment recorded_at is not an aware timestamp: {exc}", code="record_clock") from exc
     if record["recorded_at"] != batch_recorded_at:
         raise _chain_error(
             "judgment recorded_at disagrees with its batch recorded_at", code="record_clock_mismatch"
+        )
+    if record["source_generated_at"] != batch_source_generated_at:
+        raise _chain_error(
+            "judgment source_generated_at disagrees with its batch source_generated_at",
+            code="record_source_mismatch",
         )
 
 
@@ -351,53 +425,165 @@ def _assemble_chain(subject_key: str, records: list[dict[str, Any]]) -> tuple[di
     return tuple(chain)
 
 
+def _load_head(store: Any) -> tuple[int | None, str | None, str | None]:
+    """Read HEAD strictly; ``None`` sequence means an authoritatively empty ledger."""
+    try:
+        observed = store.get_bytes_strict_bounded_versioned(JUDGMENT_HEAD_KEY, _HEAD_READ_BOUND)
+    except Exception as exc:  # noqa: BLE001 - a failed HEAD read is a ledger failure
+        raise _chain_error(f"judgment HEAD read failed: {exc}", code="head_read_failed") from exc
+    if observed.data is None:
+        return None, None, None
+    payload = observed.data
+    try:
+        body = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise _chain_error("judgment HEAD is not decodable JSON", code="head_schema") from exc
+    if not isinstance(body, dict) or body.get("schema") != JUDGMENT_HEAD_SCHEMA:
+        raise _chain_error("judgment HEAD carries an unexpected schema", code="head_schema")
+    if set(body) != {"schema", "sequence", "tip_sha256"}:
+        raise _chain_error("judgment HEAD body is malformed", code="head_schema")
+    sequence = body["sequence"]
+    if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 1:
+        raise _chain_error(f"judgment HEAD sequence is out of range: {sequence!r}", code="head_schema")
+    if sequence > HARD_MAX_BATCHES:
+        raise _chain_error(
+            f"judgment ledger exceeds the hard batch limit ({sequence} > {HARD_MAX_BATCHES})", code="batch_limit"
+        )
+    tip_sha256 = body["tip_sha256"]
+    if not isinstance(tip_sha256, str) or not _HEX64.fullmatch(tip_sha256):
+        raise _chain_error("judgment HEAD tip_sha256 is not a sha256 hex digest", code="head_schema")
+    if _canonical_json_bytes(body) != payload:
+        raise _chain_error("judgment HEAD bytes are not canonical", code="head_schema")
+    return sequence, tip_sha256, observed.version
+
+
+def _read_batch_bytes(store: Any, sequence: int) -> bytes | None:
+    key = _batch_key(sequence)
+    try:
+        return store.get_bytes_strict_bounded(key, HARD_MAX_BATCH_BYTES)
+    except Exception as exc:  # noqa: BLE001 - a failed batch read is a ledger failure
+        raise _chain_error(f"judgment batch {key} read failed: {exc}", code="batch_read_failed") from exc
+
+
+def _verify_batch(
+    payload: bytes,
+    *,
+    sequence: int,
+    predecessor_sha256: str,
+) -> tuple[str, datetime, Any, list[dict[str, Any]]]:
+    """Verify one batch's bytes against its key, shape and predecessor."""
+    key = _batch_key(sequence)
+    try:
+        body = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise _chain_error(f"judgment batch {key} is not decodable JSON", code="batch_undecodable") from exc
+    if not isinstance(body, dict) or body.get("schema") != JUDGMENT_BATCH_SCHEMA:
+        raise _chain_error(f"judgment batch {key} carries an unexpected schema", code="batch_schema")
+    if set(body) != set(_BATCH_FIELDS):
+        raise _chain_error(f"judgment batch {key} body is malformed", code="batch_schema")
+    body_sequence = body["sequence"]
+    if isinstance(body_sequence, bool) or not isinstance(body_sequence, int) or body_sequence < 1:
+        raise _chain_error(f"judgment batch {key} sequence is malformed", code="batch_schema")
+    predecessor = body["predecessor_sha256"]
+    if not isinstance(predecessor, str) or not (predecessor == "" or _HEX64.fullmatch(predecessor)):
+        raise _chain_error(f"judgment batch {key} predecessor_sha256 is malformed", code="batch_schema")
+    recorded_at = body["recorded_at"]
+    if not isinstance(recorded_at, str) or not recorded_at:
+        raise _chain_error(f"judgment batch {key} recorded_at is malformed", code="batch_schema")
+    try:
+        recorded_dt = parse_utc(recorded_at, field="recorded_at")
+    except ValueError as exc:
+        raise _chain_error(f"judgment batch {key} recorded_at is not an aware timestamp", code="batch_schema") from exc
+    if not isinstance(body["records"], list):
+        raise _chain_error(f"judgment batch {key} records are malformed", code="batch_schema")
+    if _canonical_json_bytes(body) != payload:
+        raise _chain_error(f"judgment batch {key} bytes are not canonical", code="batch_noncanonical")
+    if body_sequence != sequence:
+        raise _chain_error(
+            f"judgment batch {key} disagrees with its body sequence {body_sequence}", code="batch_key_mismatch"
+        )
+    if predecessor != predecessor_sha256:
+        raise _chain_error(f"judgment batch {key} breaks the hash chain", code="chain_hash_mismatch")
+    return recorded_at, recorded_dt, body["source_generated_at"], body["records"]
+
+
+def _verify_batch_source_generated_at(
+    source_generated_at: Any,
+    *,
+    recorded_dt: datetime,
+    sequence: int,
+) -> None:
+    key = _batch_key(sequence)
+    if source_generated_at is None:
+        return
+    if not isinstance(source_generated_at, str):
+        raise _chain_error(f"judgment batch {key} source_generated_at is malformed", code="batch_schema")
+    try:
+        source_dt = parse_utc(source_generated_at, field="source_generated_at")
+    except ValueError as exc:
+        raise _chain_error(
+            f"judgment batch {key} source_generated_at is not an aware timestamp", code="batch_schema"
+        ) from exc
+    if source_dt > recorded_dt:
+        raise _chain_error(f"judgment batch {key} source_generated_at follows its recorded_at", code="batch_schema")
+
+
 def load_ledger(store: Any) -> LedgerView:
-    """Read and verify every judgment batch, then assemble the subject chains."""
+    """Read HEAD, then verify every referenced batch and assemble the chains.
+
+    Batches are fetched strictly by their deterministic keys — never through
+    a prefix listing — so a batch beyond HEAD.sequence stays invisible until
+    a roll-forward advances HEAD to name it.
+    """
     if store is None:
         raise FindingJudgmentError("a judgment store is required", code="store_required")
-    prefix = JUDGMENT_PREFIX + "/batches/"
-    try:
-        keys = sorted(store.list_prefix(prefix))
-    except FindingJudgmentError:
-        raise
-    except Exception as exc:  # noqa: BLE001 - listing failures are ledger failures
-        raise _chain_error(f"judgment batch listing failed: {exc}") from exc
-    if len(keys) > HARD_MAX_BATCHES:
-        raise _chain_error(
-            f"judgment ledger exceeds the hard batch limit ({len(keys)} > {HARD_MAX_BATCHES})", code="batch_limit"
-        )
-    batches: list[tuple[str, str, list[dict[str, Any]]]] = []
-    for key in keys:
-        try:
-            payload = store.get_bytes_strict_bounded(key, HARD_MAX_BATCH_BYTES)
-        except FindingJudgmentError:
-            raise
-        except Exception as exc:  # noqa: BLE001 - oversize/failed reads are ledger failures
-            raise _chain_error(f"judgment batch {key} exceeded its read bound: {exc}", code="batch_oversize") from exc
+    sequence, tip_sha256, head_version = _load_head(store)
+    empty = LedgerView(chains={}, batch_keys=(), head_sequence=0, tip_sha256="", head_version=None)
+    if sequence is None:
+        return empty
+    batches: list[tuple[str, str, str | None, list[dict[str, Any]]]] = []
+    predecessor = ""
+    previous_recorded_dt: datetime | None = None
+    for index in range(1, sequence + 1):
+        key = _batch_key(index)
+        payload = _read_batch_bytes(store, index)
         if payload is None:
             raise _chain_error(f"judgment batch {key} is absent on read-back", code="batch_missing")
-        try:
-            body = json.loads(payload.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise _chain_error(f"judgment batch {key} is not decodable JSON", code="batch_undecodable") from exc
-        if not isinstance(body, dict) or body.get("schema") != JUDGMENT_BATCH_SCHEMA:
-            raise _chain_error(f"judgment batch {key} carries an unexpected schema", code="batch_schema")
-        records = body.get("records")
-        recorded_at = body.get("recorded_at")
-        if not isinstance(records, list) or not isinstance(recorded_at, str) or not recorded_at:
-            raise _chain_error(f"judgment batch {key} body is malformed", code="batch_schema")
-        batches.append((recorded_at, key, records))
-    batches.sort(key=lambda item: (item[0], item[1]))
+        recorded_at, recorded_dt, source_generated_at, records = _verify_batch(
+            payload, sequence=index, predecessor_sha256=predecessor
+        )
+        if previous_recorded_dt is not None and recorded_dt <= previous_recorded_dt:
+            raise _chain_error(
+                f"judgment batch {key} does not advance the ledger clock", code="batch_clock_regression"
+            )
+        previous_recorded_dt = recorded_dt
+        _verify_batch_source_generated_at(source_generated_at, recorded_dt=recorded_dt, sequence=index)
+        predecessor = hashlib.sha256(payload).hexdigest()
+        batches.append((key, recorded_at, source_generated_at, records))
+    if predecessor != tip_sha256:
+        raise _chain_error("judgment HEAD tip does not match the final batch bytes", code="chain_hash_mismatch")
     grouped: dict[str, list[dict[str, Any]]] = {}
-    for recorded_at, key, records in batches:
+    for key, recorded_at, source_generated_at, records in batches:
         for record in records:
-            _validate_record(record, batch_recorded_at=recorded_at, batch_key=key)
+            _validate_record(
+                record,
+                batch_recorded_at=recorded_at,
+                batch_source_generated_at=source_generated_at,
+                batch_key=key,
+            )
             grouped.setdefault(record["subject_key"], []).append(record)
     chains = {
         subject_key: _assemble_chain(subject_key, records)
         for subject_key, records in grouped.items()
     }
-    return LedgerView(chains=chains, batch_keys=tuple(key for _, key, _ in batches))
+    return LedgerView(
+        chains=chains,
+        batch_keys=tuple(key for key, _, _, _ in batches),
+        head_sequence=sequence,
+        tip_sha256=tip_sha256,
+        head_version=head_version,
+        latest_recorded_at=batches[-1][1],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -417,14 +603,15 @@ def _read_back(store: Any, key: str, payload: bytes) -> bool | None:
 
 
 def _write_batch(store: Any, key: str, payload: bytes) -> None:
-    """Create one immutable batch, then prove its bytes (A18 write law).
+    """Create one immutable batch create-only, then prove its bytes.
 
-    An exceptional or False outcome receives bounded read-back reconciliation
-    only; this never falls back to an unconditional put. Exact bytes already
-    present prove idempotent completion; different bytes are a collision;
-    anything else preserves EFFECT_UNKNOWN as a hard error on the original
-    target. Nothing else is written in this call.
+    Exact bytes already present prove idempotent completion (our own
+    committed write or a byte-identical concurrent run); different bytes at
+    the sequence mean a concurrent writer won it; an outcome read-back
+    cannot settle is EFFECT_UNKNOWN. This never falls back to an
+    unconditional put, another key, or a retry loop.
     """
+    written: bool | None
     try:
         written = store.put_bytes_strict_conditional(
             key,
@@ -432,40 +619,137 @@ def _write_batch(store: Any, key: str, payload: bytes) -> None:
             expected_version=None,
             content_type="application/json",
         )
+        raised: Exception | None = None
     except Exception as exc:  # noqa: BLE001 - the write may have committed
-        reconcile = _read_back(store, key, payload)
-        if reconcile is None:
-            raise FindingJudgmentEffectUnknownError(
-                "judgment batch write outcome could not be reconciled", code="effect_unknown"
-            ) from exc
-        if reconcile is False:
-            raise FindingJudgmentError(
-                f"judgment batch collision at existing key {key}", code="batch_collision"
-            ) from exc
+        written = None
+        raised = exc
+    reconcile = _read_back(store, key, payload)
+    if reconcile is True:
         return
-    if written is True:
-        if _read_back(store, key, payload) is not True:
-            raise FindingJudgmentError(
-                f"judgment batch read-back mismatch at {key}", code="batch_collision"
-            )
-        return
-    if written is False:
-        reconcile = _read_back(store, key, payload)
-        if reconcile is True:
-            return
-        if reconcile is False:
-            raise FindingJudgmentError(
-                f"judgment batch collision at existing key {key}", code="batch_collision"
-            )
+    if reconcile is None:
         raise FindingJudgmentEffectUnknownError(
             "judgment batch write outcome could not be reconciled", code="effect_unknown"
         )
-    raise FindingJudgmentError("judgment batch write was refused by the store", code="write_refused")
+    if written is True:
+        raise FindingJudgmentError(
+            f"judgment batch read-back mismatch at {key}", code="readback_mismatch"
+        )
+    if raised is not None:
+        raise FindingJudgmentError(
+            f"judgment batch bytes at {key} are not this run's bytes", code="head_conflict"
+        ) from raised
+    raise FindingJudgmentError(
+        f"a concurrent writer won judgment batch sequence at {key}", code="head_conflict"
+    )
 
 
-def _batch_key(clock: datetime, records: list[dict[str, Any]]) -> str:
-    digest = hashlib.sha256(_canonical_json_bytes(records)).hexdigest()[:16]
-    return f"{JUDGMENT_PREFIX}/batches/{_compact_stamp(clock)}-{digest}.json"
+def _write_head(store: Any, view: LedgerView, new_head_bytes: bytes) -> None:
+    """Advance HEAD by one compare-and-swap on the version the writer loaded.
+
+    A ``False`` or a raise is settled by one strict re-read: HEAD already
+    holding the new bytes proves completion (a concurrent roll-forward or
+    our own committed write); HEAD unchanged after a ``False`` is a conflict;
+    HEAD unchanged after a raise, or an unreadable HEAD, is EFFECT_UNKNOWN —
+    the batch exists and the next run's roll-forward completes it on the
+    same store. Nothing is retried here.
+    """
+    raised: Exception | None = None
+    try:
+        written = store.put_bytes_strict_conditional(
+            JUDGMENT_HEAD_KEY,
+            new_head_bytes,
+            expected_version=view.head_version,
+            content_type="application/json",
+        )
+    except Exception as exc:  # noqa: BLE001 - the write may have committed
+        written = None
+        raised = exc
+    if written is True:
+        return
+    try:
+        observed = store.get_bytes_strict_bounded_versioned(JUDGMENT_HEAD_KEY, _HEAD_READ_BOUND)
+    except Exception as exc:  # noqa: BLE001 - an unreadable HEAD cannot settle anything
+        raise FindingJudgmentEffectUnknownError(
+            "judgment HEAD write outcome could not be reconciled", code="effect_unknown"
+        ) from exc
+    if observed.data == new_head_bytes:
+        return
+    if view.head_version is None:
+        unchanged = observed.data is None
+    else:
+        unchanged = observed.version == view.head_version
+    if unchanged:
+        if raised is not None:
+            raise FindingJudgmentEffectUnknownError(
+                f"judgment HEAD write failed without a settled outcome: {raised}", code="effect_unknown"
+            ) from raised
+        raise FindingJudgmentError(
+            "a concurrent writer advanced the judgment HEAD", code="head_conflict"
+        )
+    raise FindingJudgmentError(
+        "judgment HEAD holds unexpected bytes after a failed compare-and-swap", code="head_conflict"
+    )
+
+
+def _roll_forward(store: Any, view: LedgerView) -> LedgerView:
+    """Complete an earlier run's committed batch by advancing HEAD to it.
+
+    A batch at the next sequence with a matching predecessor is the residue
+    of an interrupted HEAD write. At most one roll-forward happens per call;
+    a further orphan beyond it is a refused orphan chain.
+    """
+    next_sequence = view.head_sequence + 1
+    key = _batch_key(next_sequence)
+    payload = _read_batch_bytes(store, next_sequence)
+    if payload is None:
+        return view
+    try:
+        recorded_at, recorded_dt, source_generated_at, records = _verify_batch(
+            payload, sequence=next_sequence, predecessor_sha256=view.tip_sha256
+        )
+        if view.latest_recorded_at is not None:
+            latest_dt = parse_utc(view.latest_recorded_at, field="recorded_at")
+            if recorded_dt <= latest_dt:
+                raise _chain_error(
+                    f"orphan judgment batch {key} does not advance the ledger clock", code="orphan_batch_invalid"
+                )
+        _verify_batch_source_generated_at(
+            source_generated_at, recorded_dt=recorded_dt, sequence=next_sequence
+        )
+        grouped: dict[str, list[dict[str, Any]]] = {
+            subject_key: list(chain) for subject_key, chain in view.chains.items()
+        }
+        for record in records:
+            _validate_record(
+                record,
+                batch_recorded_at=recorded_at,
+                batch_source_generated_at=source_generated_at,
+                batch_key=key,
+            )
+            grouped.setdefault(record["subject_key"], []).append(record)
+        for subject_key, subject_records in grouped.items():
+            _assemble_chain(subject_key, subject_records)
+    except FindingJudgmentError as exc:
+        raise _chain_error(f"orphan judgment batch {key} is invalid: {exc}", code="orphan_batch_invalid") from exc
+    new_head = _canonical_json_bytes({
+        "schema": JUDGMENT_HEAD_SCHEMA,
+        "sequence": next_sequence,
+        "tip_sha256": hashlib.sha256(payload).hexdigest(),
+    })
+    _write_head(store, view, new_head)
+    reloaded = load_ledger(store)
+    if _read_batch_bytes(store, reloaded.head_sequence + 1) is not None:
+        raise _chain_error(
+            f"judgment ledger holds an orphan chain beyond sequence {reloaded.head_sequence}", code="orphan_chain"
+        )
+    return reloaded
+
+
+def _last_present_record(chain: tuple[dict[str, Any], ...]) -> dict[str, Any] | None:
+    for record in reversed(chain):
+        if record["status"] == "present":
+            return record
+    return None
 
 
 def record_judgments(
@@ -474,6 +758,7 @@ def record_judgments(
     kind: str,
     rows: Any,
     recorded_at: Any,
+    source_generated_at: Any = None,
     scope_entities: Any = None,
 ) -> dict[str, Any]:
     """Append one batch of judgments for a recording run.
@@ -482,11 +767,24 @@ def record_judgments(
     same content digest appends nothing; anything else appends a correction
     superseding the tip. Subjects of in-scope entities with no row this run
     and a present tip are withdrawn. When nothing is appended, no batch is
-    written. The clock is caller-supplied and may never precede a tip.
+    written. The clock is caller-supplied and ledger-wide: it may never
+    precede the latest batch's clock, and an equal clock is legal only for
+    a run that appends nothing.
     """
     if kind not in _KINDS:
         raise FindingJudgmentError(f"unknown judgment kind: {kind!r}", code="kind")
     clock = _require_aware_utc(recorded_at, code="recorded_at_required", label="recorded_at")
+    source_text: str | None = None
+    if source_generated_at is not None:
+        source_clock = _require_aware_utc(
+            source_generated_at, code="source_generated_at_required", label="source_generated_at"
+        )
+        if source_clock > clock:
+            raise FindingJudgmentError(
+                f"recorded_at {utc_text(clock)} precedes source_generated_at {utc_text(source_clock)}",
+                code="recorded_before_source",
+            )
+        source_text = utc_text(source_clock)
     if rows is None:
         rows = []
     if not isinstance(rows, (list, tuple)):
@@ -499,13 +797,19 @@ def record_judgments(
                 f"subject {row['subject_key']} appears twice in one recording run", code="duplicate_subject"
             )
         seen.add(row["subject_key"])
-    view = load_ledger(store)
+    view = _roll_forward(store, load_ledger(store))
+    latest = view.latest_recorded_at
+    if latest is not None and clock < parse_utc(latest, field="recorded_at"):
+        raise FindingJudgmentError(
+            f"recorded_at {utc_text(clock)} precedes the ledger tip at {latest}", code="clock_regression"
+        )
     recorded_text = utc_text(clock)
     appended: list[dict[str, Any]] = []
     unchanged = 0
     for row in normalized:
         subject_key = row["subject_key"]
-        tip = view.tip(subject_key)
+        chain = view.chains.get(subject_key)
+        tip = chain[-1] if chain else None
         sha = row["content_sha256"]
         if tip is None:
             appended.append({
@@ -522,24 +826,22 @@ def record_judgments(
                 "supersedes": None,
                 "recorded_at": recorded_text,
                 "source_ready_at": row["source_ready_at"],
+                "source_generated_at": source_text,
                 "change_reasons": [],
             })
             continue
         if tip["status"] == "present" and tip["content_sha256"] == sha:
             unchanged += 1
             continue
-        tip_clock = parse_utc(tip["recorded_at"], field="recorded_at")
-        if clock < tip_clock:
-            raise FindingJudgmentError(
-                f"recorded_at {recorded_text} precedes the subject tip at {tip['recorded_at']}",
-                code="clock_regression",
-            )
-        reasons = set()
-        if tip["content_sha256"] != sha:
+        if tip["status"] == "present":
+            reference = tip
+            reasons: set[str] = set()
+        else:
+            reference = _last_present_record(chain)
+            reasons = {"status"}
+        if reference is None or reference["content_sha256"] != sha:
             reasons.add("content")
-        if tip["status"] != "present":
-            reasons.add("status")
-        if _detector_version_of(tip) != row["content"].get("detector_version"):
+        if _detector_version_of(reference) != row["content"].get("detector_version"):
             reasons.add("detector_version")
         appended.append({
             "schema": JUDGMENT_SCHEMA,
@@ -555,6 +857,7 @@ def record_judgments(
             "supersedes": tip["judgment_id"],
             "recorded_at": recorded_text,
             "source_ready_at": row["source_ready_at"],
+            "source_generated_at": source_text,
             "change_reasons": sorted(reasons),
         })
     if scope_entities is not None:
@@ -581,6 +884,7 @@ def record_judgments(
                 "supersedes": tip["judgment_id"],
                 "recorded_at": recorded_text,
                 "source_ready_at": None,
+                "source_generated_at": source_text,
                 "change_reasons": ["status"],
             })
     originals = sum(1 for record in appended if record["relation"] == "original")
@@ -589,6 +893,8 @@ def record_judgments(
     report: dict[str, Any] = {
         "schema": JUDGMENT_BATCH_SCHEMA,
         "recorded_at": recorded_text,
+        "source_generated_at": source_text,
+        "sequence": None,
         "batch_key": None,
         "originals": originals,
         "corrections": corrections,
@@ -597,12 +903,25 @@ def record_judgments(
     }
     if not appended:
         return report
-    records = sorted(appended, key=lambda record: record["subject_key"])
-    key = _batch_key(clock, records)
+    if latest is not None and clock == parse_utc(latest, field="recorded_at"):
+        raise FindingJudgmentError(
+            f"recorded_at {recorded_text} ties the ledger tip at {latest} and would append records",
+            code="clock_regression",
+        )
+    if view.head_sequence >= HARD_MAX_BATCHES:
+        raise FindingJudgmentError(
+            f"judgment ledger is at the hard batch limit ({view.head_sequence} >= {HARD_MAX_BATCHES})",
+            code="batch_limit",
+        )
+    sequence = view.head_sequence + 1
+    key = _batch_key(sequence)
     body = {
         "schema": JUDGMENT_BATCH_SCHEMA,
+        "sequence": sequence,
+        "predecessor_sha256": view.tip_sha256,
         "recorded_at": recorded_text,
-        "records": records,
+        "source_generated_at": source_text,
+        "records": sorted(appended, key=lambda record: record["subject_key"]),
     }
     payload = _canonical_json_bytes(body)
     if len(payload) > HARD_MAX_BATCH_BYTES:
@@ -611,6 +930,13 @@ def record_judgments(
             code="batch_oversize",
         )
     _write_batch(store, key, payload)
+    new_head = _canonical_json_bytes({
+        "schema": JUDGMENT_HEAD_SCHEMA,
+        "sequence": sequence,
+        "tip_sha256": hashlib.sha256(payload).hexdigest(),
+    })
+    _write_head(store, view, new_head)
+    report["sequence"] = sequence
     report["batch_key"] = key
     return report
 
@@ -687,6 +1013,8 @@ __all__ = [
     "HARD_MAX_BATCHES",
     "HARD_MAX_BATCH_BYTES",
     "JUDGMENT_BATCH_SCHEMA",
+    "JUDGMENT_HEAD_KEY",
+    "JUDGMENT_HEAD_SCHEMA",
     "JUDGMENT_PREFIX",
     "JUDGMENT_REPLAY_SCHEMA",
     "JUDGMENT_SCHEMA",

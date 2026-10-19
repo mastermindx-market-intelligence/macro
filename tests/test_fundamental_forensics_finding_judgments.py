@@ -1,14 +1,16 @@
-"""FIF Q2 tests: append-only judgment ledger and then-known replay (A48).
+"""FIF Q2 tests: sequenced hash-chained judgment ledger and then-known replay (A48).
 
 Every test runs against the in-memory strict conditional store double (whose
 ``raw_put``/``drop`` helpers seed hostile state) or a temporary local-dir
 store for the CLI path. Delayed evidence must never rewrite a past belief:
-the original record's bytes stay byte-identical after later corrections.
+the original batch bytes stay byte-identical after later corrections, and
+the ledger is a numbered batch sequence committed by a compare-and-swap HEAD.
 """
 from __future__ import annotations
 
 import ast
 import hashlib
+import importlib.util
 import json
 import subprocess
 import sys
@@ -20,15 +22,19 @@ import pytest
 from engine.fundamental_forensics import finding_judgments as FJ
 from engine.fundamental_forensics.models import stable_id, utc_text
 from engine.fundamental_forensics.production_datasets import InMemoryStrictConditionalStore
+from engine.research_vault.r2_store import VersionedBytes
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "engine" / "fundamental_forensics" / "finding_judgments.py"
+CLI_PATH = ROOT / "scripts" / "fif_finding_judgments.py"
 
 NIGHT1 = datetime(2026, 10, 10, 6, 0, tzinfo=timezone.utc)
 NIGHT2 = datetime(2026, 10, 12, 6, 0, tzinfo=timezone.utc)
 NIGHT3 = datetime(2026, 10, 14, 6, 0, tzinfo=timezone.utc)
+NIGHT4 = datetime(2026, 10, 16, 6, 0, tzinfo=timezone.utc)
 
 BATCH_PREFIX = FJ.JUDGMENT_PREFIX + "/batches/"
+HEAD_KEY = FJ.JUDGMENT_HEAD_KEY
 
 
 # ---------------------------------------------------------------------------
@@ -64,8 +70,8 @@ def _kernel_row(**overrides):
     return row
 
 
-def _record_kernel(store, rows, clock):
-    return FJ.record_judgments(store, kind="kernel", rows=rows, recorded_at=clock)
+def _record_kernel(store, rows, clock, **kwargs):
+    return FJ.record_judgments(store, kind="kernel", rows=rows, recorded_at=clock, **kwargs)
 
 
 def _wfinding(fid, detector, **overrides):
@@ -139,14 +145,51 @@ def _all_records(store):
     return [record for chain in view.chains.values() for record in chain]
 
 
-def _hostile_batch(store, records, clock):
-    """Seed a hand-built batch bypassing the conditional protocol."""
-    recorded_at = utc_text(clock)
-    body = {"schema": FJ.JUDGMENT_BATCH_SCHEMA, "recorded_at": recorded_at, "records": records}
-    digest = hashlib.sha256(_canonical(records)).hexdigest()[:16]
-    key = f"{BATCH_PREFIX}{clock.strftime('%Y%m%dT%H%M%SZ')}-{digest}-hostile.json"
-    store.raw_put(key, _canonical(body))
-    return key
+def _batch_key(sequence):
+    return f"{BATCH_PREFIX}{sequence:08d}.json"
+
+
+def _read_batch(store, sequence):
+    return store.get_bytes_strict_bounded(_batch_key(sequence), FJ.HARD_MAX_BATCH_BYTES)
+
+
+def _seed_head(store, sequence, tip_sha256):
+    store.raw_put(HEAD_KEY, _canonical({
+        "schema": FJ.JUDGMENT_HEAD_SCHEMA,
+        "sequence": sequence,
+        "tip_sha256": tip_sha256,
+    }))
+
+
+def _seed_batch(store, sequence, records, clock, predecessor_sha, source_generated_at=None):
+    """Seed a hand-built sequenced batch (plus HEAD) bypassing the protocol."""
+    body = {
+        "schema": FJ.JUDGMENT_BATCH_SCHEMA,
+        "sequence": sequence,
+        "predecessor_sha256": predecessor_sha,
+        "recorded_at": utc_text(clock),
+        "source_generated_at": source_generated_at,
+        "records": records,
+    }
+    payload = _canonical(body)
+    store.raw_put(_batch_key(sequence), payload)
+    _seed_head(store, sequence, hashlib.sha256(payload).hexdigest())
+    return payload
+
+
+def _seed_orphan(store, sequence, records, clock, predecessor_sha):
+    """Seed a batch beyond HEAD: the residue of an interrupted HEAD write."""
+    body = {
+        "schema": FJ.JUDGMENT_BATCH_SCHEMA,
+        "sequence": sequence,
+        "predecessor_sha256": predecessor_sha,
+        "recorded_at": utc_text(clock),
+        "source_generated_at": None,
+        "records": records,
+    }
+    payload = _canonical(body)
+    store.raw_put(_batch_key(sequence), payload)
+    return payload
 
 
 def _correction_record(subject, content, supersedes, clock):
@@ -165,34 +208,138 @@ def _correction_record(subject, content, supersedes, clock):
         "supersedes": supersedes,
         "recorded_at": utc_text(clock),
         "source_ready_at": subject["source_ready_at"],
+        "source_generated_at": None,
         "change_reasons": ["content"],
     }
 
 
-class _UnlistedStore(InMemoryStrictConditionalStore):
-    """A listing-inconsistent double: hides keys that still exist on read."""
+def _expect_code(excinfo):
+    """Every FindingJudgmentError carries a non-empty machine code."""
+    error = excinfo.value
+    assert isinstance(error, FJ.FindingJudgmentError)
+    assert isinstance(error.code, str) and error.code
+    return error.code
 
-    def __init__(self):
+
+class _NoListingStore(InMemoryStrictConditionalStore):
+    """A listing-free double: the ledger must never depend on a listing."""
+
+    def __init__(self, raising):
         super().__init__()
-        self.hidden: set[str] = set()
+        self.raising = raising
+        self.list_calls = 0
 
     def list_prefix(self, prefix):
-        return [key for key in super().list_prefix(prefix) if key not in self.hidden]
+        self.list_calls += 1
+        if self.raising:
+            raise AssertionError("the judgment ledger must never list the store")
+        return []
 
 
-class _ExplodingStore(InMemoryStrictConditionalStore):
-    """A store whose conditional put and read-back both fail."""
+class _HeadReadExplodingStore(InMemoryStrictConditionalStore):
+    """A double whose versioned HEAD read raises."""
 
     def __init__(self):
         super().__init__()
+        self.explode = False
+
+    def get_bytes_strict_bounded_versioned(self, key, maximum_bytes):
+        if self.explode and key == HEAD_KEY:
+            raise RuntimeError("head channel down")
+        return super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
+
+
+class _BatchReadExplodingStore(InMemoryStrictConditionalStore):
+    """A double whose strict batch reads raise."""
+
+    def __init__(self):
+        super().__init__()
+        self.explode = False
+
+    def get_bytes_strict_bounded(self, key, maximum_bytes):
+        if self.explode and key.startswith(BATCH_PREFIX):
+            raise RuntimeError("batch channel down")
+        return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+
+class _ExplodingBatchStore(InMemoryStrictConditionalStore):
+    """A batch transport that explodes pre-commit and takes the read channel with it."""
+
+    def __init__(self):
+        super().__init__()
+        self.explode_put = False
+        self.explode_read = False
         self.conditional_calls = 0
 
     def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type="application/octet-stream"):
         self.conditional_calls += 1
-        raise RuntimeError("transport exploded before any commit proof")
+        if self.explode_put and key != HEAD_KEY:
+            self.explode_put = False
+            self.explode_read = True
+            raise RuntimeError("batch transport exploded before any commit proof")
+        return super().put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
 
     def get_bytes_strict_bounded(self, key, maximum_bytes):
-        raise RuntimeError("read-back channel is down")
+        if self.explode_read and key != HEAD_KEY:
+            raise RuntimeError("read-back channel is down")
+        return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+
+class _HeadCasExplodingStore(InMemoryStrictConditionalStore):
+    """A double whose HEAD compare-and-swap fails before or after committing."""
+
+    def __init__(self):
+        super().__init__()
+        self.explode_before_commit = False
+        self.explode_after_commit = False
+
+    def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type="application/octet-stream"):
+        if key == HEAD_KEY:
+            if self.explode_after_commit:
+                self.explode_after_commit = False
+                self.raw_put(key, data)
+                raise RuntimeError("head transport failed after commit")
+            if self.explode_before_commit:
+                raise RuntimeError("head cas exploded before commit")
+        return super().put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
+
+
+class _LateWriterStore:
+    """Writer B's carrier: everything read before its first write is the pre-A snapshot."""
+
+    def __init__(self, backend):
+        self._backend = backend
+        self._frozen = True
+
+    def validate_strict_conditional_write_capability(self):
+        return self._backend.validate_strict_conditional_write_capability()
+
+    def get_bytes_strict_bounded(self, key, maximum_bytes):
+        if self._frozen and key.startswith(BATCH_PREFIX):
+            return None
+        return self._backend.get_bytes_strict_bounded(key, maximum_bytes)
+
+    def get_bytes_strict_bounded_versioned(self, key, maximum_bytes):
+        if self._frozen and key == HEAD_KEY:
+            return VersionedBytes(data=None, version=None)
+        return self._backend.get_bytes_strict_bounded_versioned(key, maximum_bytes)
+
+    def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type="application/octet-stream"):
+        self._frozen = False
+        return self._backend.put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
+
+
+def _load_cli():
+    spec = importlib.util.spec_from_file_location("fif_finding_judgments_cli_under_test", CLI_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 # ---------------------------------------------------------------------------
@@ -206,7 +353,7 @@ def test_then_known_replay_returns_prior_value_before_the_correction() -> None:
     v1 = _kernel_row(derived_values={"growth": "-0.42"})
     v2 = _kernel_row(derived_values={"growth": "-0.55"}, source_ready_at="2026-10-13T00:00:00Z")
     report1 = _record_kernel(store, [v1], NIGHT1)
-    original_payload = store.get_bytes_strict_bounded(report1["batch_key"], FJ.HARD_MAX_BATCH_BYTES)
+    original_payload = _read_batch(store, 1)
     _record_kernel(store, [v2], NIGHT3)
 
     replay_early = FJ.replay_then_known(store, recorded_cutoff=NIGHT2)
@@ -227,9 +374,10 @@ def test_then_known_replay_returns_prior_value_before_the_correction() -> None:
     assert late["versions_visible"] == 2
 
     # The original batch bytes are untouched after the correction landed.
-    assert store.get_bytes_strict_bounded(report1["batch_key"], FJ.HARD_MAX_BATCH_BYTES) == original_payload
+    assert _read_batch(store, 1) == original_payload
     chain = FJ.history(store, subject["subject_key"])
     assert [record["relation"] for record in chain] == ["original", "correction"]
+    assert FJ.load_ledger(store).head_sequence == 2
 
 
 # ---------------------------------------------------------------------------
@@ -241,48 +389,18 @@ def test_identical_content_records_nothing_and_writes_no_batch() -> None:
     store = InMemoryStrictConditionalStore()
     rows = [_kernel_row()]
     first = _record_kernel(store, rows, NIGHT1)
-    assert first["originals"] == 1 and first["batch_key"]
+    assert first["originals"] == 1 and first["batch_key"] == _batch_key(1)
+    assert first["sequence"] == 1
     second = _record_kernel(store, rows, NIGHT2)
-    assert second["batch_key"] is None
+    assert second["batch_key"] is None and second["sequence"] is None
     assert second["unchanged"] == 1
     assert second["originals"] == second["corrections"] == second["withdrawals"] == 0
-    assert store.list_prefix(BATCH_PREFIX) == [first["batch_key"]]
+    assert FJ.load_ledger(store).batch_keys == (_batch_key(1),)
     assert len(FJ.history(store, FJ.kernel_row(rows[0])["subject_key"])) == 1
 
 
 # ---------------------------------------------------------------------------
-# 3. Batch idempotency and collision
-# ---------------------------------------------------------------------------
-
-
-def test_identical_batch_already_present_is_idempotent() -> None:
-    store = _UnlistedStore()
-    rows = [_kernel_row()]
-    first = _record_kernel(store, rows, NIGHT1)
-    key = first["batch_key"]
-    store.hidden = {key}
-    # The listing misses the batch (an eventually-consistent read), so the run
-    # recomputes the identical batch and must reconcile to idempotent success.
-    again = _record_kernel(store, rows, NIGHT1)
-    assert again["batch_key"] == key
-    assert again["originals"] == 1
-    assert store.conditional_writes
-
-
-def test_different_bytes_at_the_same_key_raise_batch_collision() -> None:
-    store = _UnlistedStore()
-    rows = [_kernel_row()]
-    first = _record_kernel(store, rows, NIGHT1)
-    key = first["batch_key"]
-    store.raw_put(key, b'{"schema":"fundamental_forensics.finding_judgment_batch/v1"}')
-    store.hidden = {key}
-    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
-        _record_kernel(store, rows, NIGHT1)
-    assert excinfo.value.code == "batch_collision"
-
-
-# ---------------------------------------------------------------------------
-# 4. Withdrawal respects the run's entity scope
+# 3. Withdrawal respects the run's entity scope
 # ---------------------------------------------------------------------------
 
 
@@ -296,8 +414,11 @@ def test_withdrawal_only_touches_in_scope_subjects_missing_from_the_run() -> Non
         },
         utc_text(NIGHT1),
     )
-    rows1, scope1, clock1 = FJ.workbench_rows_from_state(state_night1)
-    FJ.record_judgments(store, kind="workbench", rows=rows1, recorded_at=clock1, scope_entities=scope1)
+    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
+        source_generated_at=generated1, scope_entities=scope1,
+    )
 
     # Night 3 fully covers only FXA (which now reports no findings) and FXB
     # (same finding). FXC is absent, so it is out of scope and untouched.
@@ -308,15 +429,18 @@ def test_withdrawal_only_touches_in_scope_subjects_missing_from_the_run() -> Non
         },
         utc_text(NIGHT3),
     )
-    rows3, scope3, clock3 = FJ.workbench_rows_from_state(state_night3)
-    report = FJ.record_judgments(store, kind="workbench", rows=rows3, recorded_at=clock3, scope_entities=scope3)
+    rows3, scope3, generated3 = FJ.workbench_rows_from_state(state_night3)
+    report = FJ.record_judgments(
+        store, kind="workbench", rows=rows3, recorded_at=NIGHT3,
+        source_generated_at=generated3, scope_entities=scope3,
+    )
     assert report["withdrawals"] == 1
     assert report["unchanged"] == 1
     assert report["corrections"] == 0 and report["originals"] == 0
 
-    subject_a = stable_id("fjsubject", "workbench", "1111111", "rev-collapse:q2-2026")
-    subject_b = stable_id("fjsubject", "workbench", "2222222", "gm-compress:q2-2026")
-    subject_c = stable_id("fjsubject", "workbench", "3333333", "accrual-spike:q2-2026")
+    subject_a = stable_id("fjsubject", "workbench", "0001111111", "rev-collapse:q2-2026")
+    subject_b = stable_id("fjsubject", "workbench", "0002222222", "gm-compress:q2-2026")
+    subject_c = stable_id("fjsubject", "workbench", "0003333333", "accrual-spike:q2-2026")
 
     replay_before = FJ.replay_then_known(store, recorded_cutoff=NIGHT2)
     visible = {row["subject_key"]: row["visible"] for row in replay_before["subjects"]}
@@ -341,16 +465,21 @@ def test_withdrawal_only_touches_in_scope_subjects_missing_from_the_run() -> Non
 
 def test_scope_none_never_withdraws() -> None:
     store = InMemoryStrictConditionalStore()
-    state = _workbench_state({"FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])}, utc_text(NIGHT1))
-    rows, scope, clock = FJ.workbench_rows_from_state(state)
-    FJ.record_judgments(store, kind="workbench", rows=rows, recorded_at=clock, scope_entities=scope)
-    report = FJ.record_judgments(store, kind="workbench", rows=[], recorded_at=NIGHT3, scope_entities=None)
+    state = _workbench_state(
+        {"FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    rows, scope, generated = FJ.workbench_rows_from_state(state)
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows, recorded_at=NIGHT1,
+        source_generated_at=generated, scope_entities=scope,
+    )
+    report = _record_kernel(store, [], NIGHT3)
     assert report["withdrawals"] == 0
-    assert report["batch_key"] is None
+    assert report["batch_key"] is None and report["sequence"] is None
 
 
 # ---------------------------------------------------------------------------
-# 5. A -> B -> A records three judgments with distinct ids
+# 4. A -> B -> A records three judgments with distinct ids
 # ---------------------------------------------------------------------------
 
 
@@ -383,7 +512,7 @@ def test_content_round_trip_records_three_distinct_judgments() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 6. Chain corruption refuses with the matching code
+# 5. Chain corruption refuses with the matching code
 # ---------------------------------------------------------------------------
 
 
@@ -403,40 +532,32 @@ def test_forged_judgment_id_is_refused() -> None:
     original, _ = _two_step_chain(store)
     forged = dict(original)
     forged["judgment_id"] = "fjudgment_forged0000000000000000000000000000000000000000000000000000"
-    _hostile_batch(store, [forged], NIGHT2)
+    _seed_batch(store, 3, [forged], NIGHT3, hashlib.sha256(_read_batch(store, 2)).hexdigest())
     with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
         FJ.load_ledger(store)
-    assert excinfo.value.code == "judgment_id_mismatch"
+    assert _expect_code(excinfo) == "judgment_id_mismatch"
 
 
 def test_forked_chain_is_refused() -> None:
     store = InMemoryStrictConditionalStore()
     original, correction = _two_step_chain(store)
     rival = _correction_record(original, correction["content"], original["judgment_id"], NIGHT3)
-    _hostile_batch(store, [rival], NIGHT3)
+    _seed_batch(store, 3, [rival], NIGHT3, hashlib.sha256(_read_batch(store, 2)).hexdigest())
     with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
         FJ.load_ledger(store)
-    assert excinfo.value.code == "fork"
+    assert _expect_code(excinfo) == "fork"
 
 
 def test_dangling_supersedes_is_refused() -> None:
     store = InMemoryStrictConditionalStore()
     original, _ = _two_step_chain(store)
-    dangling = _correction_record(original, original["content"], "fjudgment_missing0000000000000000000000000", NIGHT3)
-    _hostile_batch(store, [dangling], NIGHT3)
+    dangling = _correction_record(
+        original, original["content"], "fjudgment_missing0000000000000000000000000", NIGHT3
+    )
+    _seed_batch(store, 3, [dangling], NIGHT3, hashlib.sha256(_read_batch(store, 2)).hexdigest())
     with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
         FJ.load_ledger(store)
-    assert excinfo.value.code == "dangling_supersedes"
-
-
-def test_chain_clock_regression_is_refused() -> None:
-    store = InMemoryStrictConditionalStore()
-    _, correction = _two_step_chain(store)
-    regressive = _correction_record(correction, correction["content"], correction["judgment_id"], NIGHT1)
-    _hostile_batch(store, [regressive], NIGHT1)
-    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
-        FJ.load_ledger(store)
-    assert excinfo.value.code == "clock_regression"
+    assert _expect_code(excinfo) == "dangling_supersedes"
 
 
 def test_missing_and_duplicate_originals_are_refused() -> None:
@@ -445,22 +566,25 @@ def test_missing_and_duplicate_originals_are_refused() -> None:
     twin = dict(original)
     twin["judgment_id"] = _judgment_id(original["subject_key"], original["content_sha256"], None)
     twin["recorded_at"] = utc_text(NIGHT3)
-    _hostile_batch(store, [twin], NIGHT3)
+    _seed_batch(store, 3, [twin], NIGHT3, hashlib.sha256(_read_batch(store, 2)).hexdigest())
     with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
         FJ.load_ledger(store)
-    assert excinfo.value.code == "duplicate_original"
+    assert _expect_code(excinfo) == "duplicate_original"
 
     # A chain whose original never existed: only a correction is seeded.
-    only_correction = InMemoryStrictConditionalStore()
-    _, correction = _two_step_chain(only_correction)
-    original_batch_keys = list(only_correction.list_prefix(BATCH_PREFIX))
-    for key in original_batch_keys:
-        only_correction.drop(key)
     orphaned = InMemoryStrictConditionalStore()
-    _hostile_batch(orphaned, [correction], NIGHT2)
+    subject = {
+        "subject_key": stable_id("fjsubject", "kernel", "revenue_collapse", "0001234567", "2026-06-30"),
+        "kind": "kernel",
+        "entity_ref": "0001234567",
+        "finding_ref": "find-rev-collapse-fixture-2026q2",
+        "source_ready_at": None,
+    }
+    lonely = _correction_record(subject, _kernel_row(), "fjudgment_missing0000000000000000000000000", NIGHT2)
+    _seed_batch(orphaned, 1, [lonely], NIGHT2, "")
     with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
         FJ.load_ledger(orphaned)
-    assert excinfo.value.code == "missing_original"
+    assert _expect_code(excinfo) == "missing_original"
 
 
 def test_duplicate_subject_within_one_call_is_refused() -> None:
@@ -468,12 +592,12 @@ def test_duplicate_subject_within_one_call_is_refused() -> None:
     rows = [_kernel_row(), _kernel_row(derived_values={"growth": "-0.55"})]
     with pytest.raises(FJ.FindingJudgmentError) as excinfo:
         _record_kernel(store, rows, NIGHT1)
-    assert excinfo.value.code == "duplicate_subject"
-    assert store.list_prefix(BATCH_PREFIX) == []
+    assert _expect_code(excinfo) == "duplicate_subject"
+    assert FJ.load_ledger(store).batch_keys == ()
 
 
 # ---------------------------------------------------------------------------
-# 7. Clock discipline: caller-supplied clocks only
+# 6. Clock discipline: caller-supplied clocks only
 # ---------------------------------------------------------------------------
 
 
@@ -483,55 +607,404 @@ def test_missing_or_naive_clocks_are_refused() -> None:
     for bad in (None, "2026-10-10T06:00:00", datetime(2026, 10, 10, 6, 0), 42):
         with pytest.raises(FJ.FindingJudgmentError) as excinfo:
             FJ.record_judgments(store, kind="kernel", rows=rows, recorded_at=bad)
-        assert excinfo.value.code == "recorded_at_required"
+        assert _expect_code(excinfo) == "recorded_at_required"
     for bad in (None, "2026-10-12 06:00:00", datetime(2026, 10, 12, 6, 0)):
         with pytest.raises(FJ.FindingJudgmentError) as excinfo:
             FJ.replay_then_known(store, recorded_cutoff=bad)
-        assert excinfo.value.code == "cutoff_required"
+        assert _expect_code(excinfo) == "cutoff_required"
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        FJ.record_judgments(
+            store, kind="kernel", rows=rows, recorded_at=NIGHT1,
+            source_generated_at=datetime(2026, 10, 9, 6, 0),
+        )
+    assert _expect_code(excinfo) == "source_generated_at_required"
     naive_state = _workbench_state(
         {"FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
         "2026-10-10T06:00:00",
     )
     with pytest.raises(FJ.FindingJudgmentError) as excinfo:
         FJ.workbench_rows_from_state(naive_state)
-    assert excinfo.value.code == "recorded_at_required"
+    assert _expect_code(excinfo) == "recorded_at_required"
     with pytest.raises(FJ.FindingJudgmentError) as excinfo:
         FJ.workbench_rows_from_state({})
-    assert excinfo.value.code == "recorded_at_required"
+    assert _expect_code(excinfo) == "recorded_at_required"
 
 
-def test_recording_behind_a_tip_is_refused() -> None:
+def test_stale_rerun_clock_is_refused_and_the_ledger_still_loads() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {
+            "FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")]),
+            "FXB": _company(2222222, [_wfinding("gm-compress:q2-2026", "margin_compression")]),
+        },
+        utc_text(NIGHT1),
+    )
+    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
+        source_generated_at=generated1, scope_entities=scope1,
+    )
+    # Night 2 corrects FXA's finding and withdraws FXB's.
+    state_night2 = _workbench_state(
+        {
+            "FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse", priority="critical")]),
+            "FXB": _company(2222222, []),
+        },
+        utc_text(NIGHT2),
+    )
+    rows2, scope2, generated2 = FJ.workbench_rows_from_state(state_night2)
+    night2 = FJ.record_judgments(
+        store, kind="workbench", rows=rows2, recorded_at=NIGHT2,
+        source_generated_at=generated2, scope_entities=scope2,
+    )
+    assert night2["withdrawals"] == 1 and night2["corrections"] == 1
+    writes = len(store.conditional_writes)
+
+    # A stale night-1-clock rerun with a different (FXA-only, rowless) scope
+    # must be refused by the ledger-wide clock and never wedge the ledger
+    # behind a backdated withdrawal.
+    state_stale = _workbench_state({"FXA": _company(1111111, [])}, utc_text(NIGHT1))
+    rows_stale, scope_stale, _ = FJ.workbench_rows_from_state(state_stale)
+    assert rows_stale == []
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        FJ.record_judgments(
+            store, kind="workbench", rows=rows_stale, recorded_at=NIGHT1,
+            source_generated_at=utc_text(NIGHT1), scope_entities=scope_stale,
+        )
+    assert _expect_code(excinfo) == "clock_regression"
+    assert len(store.conditional_writes) == writes
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 2
+    assert len(view.batch_keys) == 2
+
+
+def test_backdated_run_for_a_brand_new_subject_is_refused() -> None:
     store = InMemoryStrictConditionalStore()
     _record_kernel(store, [_kernel_row()], NIGHT2)
+    writes = len(store.conditional_writes)
+    fresh = _kernel_row(entity_cik="0000999999")
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_kernel(store, [fresh], NIGHT1)
+    assert _expect_code(excinfo) == "clock_regression"
+    assert len(store.conditional_writes) == writes
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 1
+    assert FJ.history(store, FJ.kernel_row(fresh)["subject_key"]) == ()
+
+
+def test_equal_clock_with_changed_content_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    writes = len(store.conditional_writes)
     with pytest.raises(FJ.FindingJudgmentError) as excinfo:
         _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT1)
-    assert excinfo.value.code == "clock_regression"
-    assert store.list_prefix(BATCH_PREFIX)  # the earlier run's batch is the only one
+    assert _expect_code(excinfo) == "clock_regression"
+    assert len(store.conditional_writes) == writes
 
 
-def test_module_source_contains_no_wall_clock_call() -> None:
-    source = MODULE_PATH.read_text(encoding="utf-8")
-    for forbidden in ("datetime.now", "datetime.utcnow", "time.time", "date.today"):
-        assert forbidden not in source
+def test_equal_clock_with_identical_inputs_is_a_noop() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    writes = len(store.conditional_writes)
+    again = _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert again["batch_key"] is None and again["sequence"] is None
+    assert again["unchanged"] == 1
+    assert again["originals"] == again["corrections"] == again["withdrawals"] == 0
+    assert len(store.conditional_writes) == writes
+    assert FJ.load_ledger(store).head_sequence == 1
 
 
 # ---------------------------------------------------------------------------
-# 8. Effect-unknown: one write attempt, no retry
+# 7. Listing independence and strict reads
 # ---------------------------------------------------------------------------
 
 
-def test_unreconcilable_write_is_effect_unknown_and_never_retried() -> None:
-    store = _ExplodingStore()
+def test_recording_and_loading_never_call_list_prefix() -> None:
+    for store in (_NoListingStore(raising=True), _NoListingStore(raising=False)):
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+        view = FJ.load_ledger(store)
+        assert view.head_sequence == 2
+        assert view.batch_keys == (_batch_key(1), _batch_key(2))
+        assert store.list_calls == 0
+
+
+def test_head_read_failure_refuses_with_head_read_failed() -> None:
+    store = _HeadReadExplodingStore()
+    store.explode = True
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert _expect_code(excinfo) == "head_read_failed"
+    assert store.conditional_writes == []
+
+
+def test_batch_read_failure_refuses_with_batch_read_failed() -> None:
+    store = _BatchReadExplodingStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    writes = len(store.conditional_writes)
+    store.explode = True
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    assert _expect_code(excinfo) == "batch_read_failed"
+    assert len(store.conditional_writes) == writes
+
+
+# ---------------------------------------------------------------------------
+# 8. Key/body binding: the hash chain and canonical bytes
+# ---------------------------------------------------------------------------
+
+
+def test_body_sequence_disagreeing_with_its_key_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    body = json.loads(_read_batch(store, 1).decode("utf-8"))
+    body["sequence"] = 7
+    store.raw_put(_batch_key(1), _canonical(body))
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        FJ.load_ledger(store)
+    assert _expect_code(excinfo) == "batch_key_mismatch"
+
+
+def test_noncanonical_batch_bytes_are_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    body = json.loads(_read_batch(store, 1).decode("utf-8"))
+    assert json.loads(json.dumps(body)) == body  # equal JSON, different bytes
+    store.raw_put(_batch_key(1), json.dumps(body, indent=1).encode("utf-8"))
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        FJ.load_ledger(store)
+    assert _expect_code(excinfo) == "batch_noncanonical"
+
+
+def test_edited_batch_records_break_the_hash_chain() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    body = json.loads(_read_batch(store, 1).decode("utf-8"))
+    body["records"] = []
+    store.raw_put(_batch_key(1), _canonical(body))
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        FJ.load_ledger(store)
+    assert _expect_code(excinfo) == "chain_hash_mismatch"
+
+
+def test_head_tip_pointing_at_different_bytes_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    _seed_head(store, 2, "0" * 64)
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        FJ.load_ledger(store)
+    assert _expect_code(excinfo) == "chain_hash_mismatch"
+
+
+def test_equal_or_decreasing_batch_clocks_are_refused() -> None:
+    for clock in (NIGHT1, datetime(2026, 10, 9, 6, 0, tzinfo=timezone.utc)):
+        store = InMemoryStrictConditionalStore()
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+        body = json.loads(_read_batch(store, 2).decode("utf-8"))
+        body["recorded_at"] = utc_text(clock)
+        for record in body["records"]:
+            record["recorded_at"] = utc_text(clock)
+        payload = _canonical(body)
+        store.raw_put(_batch_key(2), payload)
+        _seed_head(store, 2, hashlib.sha256(payload).hexdigest())
+        with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+            FJ.load_ledger(store)
+        assert _expect_code(excinfo) == "batch_clock_regression"
+
+
+def test_naive_record_clock_raises_record_clock_not_typeerror() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    body = json.loads(_read_batch(store, 1).decode("utf-8"))
+    body["records"][0]["recorded_at"] = "2026-10-10T06:00:00"  # naive text
+    payload = _canonical(body)
+    store.raw_put(_batch_key(1), payload)
+    _seed_head(store, 1, hashlib.sha256(payload).hexdigest())
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        FJ.load_ledger(store)
+    assert _expect_code(excinfo) == "record_clock"
+
+
+# ---------------------------------------------------------------------------
+# 9. Concurrency: create-only batches and CAS HEAD
+# ---------------------------------------------------------------------------
+
+
+def test_concurrent_writer_with_different_content_loses_the_sequence() -> None:
+    backend = InMemoryStrictConditionalStore()
+    rows_a = [_kernel_row()]
+    rows_b = [_kernel_row(entity_cik="0000999999")]
+    writer_a = _LateWriterStore(backend)
+    report_a = _record_kernel(writer_a, rows_a, NIGHT1)
+    assert report_a["sequence"] == 1
+    writes = len(backend.conditional_writes)
+
+    writer_b = _LateWriterStore(backend)  # loads the same (empty) HEAD as A did
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_kernel(writer_b, rows_b, NIGHT1)
+    assert _expect_code(excinfo) == "head_conflict"
+    # B attempted only its batch create and wrote nothing else.
+    assert len(backend.conditional_writes) == writes + 1
+    assert backend.conditional_writes[-1] == (_batch_key(1), None)
+    view = FJ.load_ledger(backend)
+    assert view.head_sequence == 1
+    assert FJ.history(backend, FJ.kernel_row(rows_b[0])["subject_key"]) == ()
+
+
+def test_concurrent_identical_writer_completes_idempotently() -> None:
+    backend = InMemoryStrictConditionalStore()
+    rows = [_kernel_row()]
+    report_a = _record_kernel(_LateWriterStore(backend), rows, NIGHT1)
+    assert report_a["sequence"] == 1
+
+    writer_b = _LateWriterStore(backend)
+    report_b = _record_kernel(writer_b, rows, NIGHT1)
+    assert report_b["sequence"] == 1
+    assert report_b["batch_key"] == report_a["batch_key"]
+    view = FJ.load_ledger(backend)
+    assert view.head_sequence == 1
+    assert len(FJ.history(backend, FJ.kernel_row(rows[0])["subject_key"])) == 1
+
+
+# ---------------------------------------------------------------------------
+# 10. Effect-unknown: one write attempt, no retry
+# ---------------------------------------------------------------------------
+
+
+def test_batch_write_with_unreadable_readback_is_effect_unknown_and_never_retried() -> None:
+    store = _ExplodingBatchStore()
+    store.explode_put = True
     with pytest.raises(FJ.FindingJudgmentEffectUnknownError) as excinfo:
         _record_kernel(store, [_kernel_row()], NIGHT1)
-    assert excinfo.value.code == "effect_unknown"
+    assert _expect_code(excinfo) == "effect_unknown"
     assert store.conditional_calls == 1
     assert store.unconditional_writes == []
-    assert store.list_prefix(BATCH_PREFIX) == []
+    assert FJ.load_ledger(store).head_sequence == 0
+
+
+def test_batch_raise_after_commit_completes_via_read_back() -> None:
+    store = InMemoryStrictConditionalStore()
+    store.raise_on_conditional_after_commit = True
+    report = _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert report["sequence"] == 1
+    assert FJ.load_ledger(store).head_sequence == 1
+
+
+def test_batch_raise_after_commit_with_drop_is_effect_unknown() -> None:
+    store = InMemoryStrictConditionalStore()
+    store.raise_on_conditional_after_commit = True
+    store.drop_after_commit = True
+    with pytest.raises(FJ.FindingJudgmentEffectUnknownError) as excinfo:
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert _expect_code(excinfo) == "effect_unknown"
+    assert len(store.conditional_writes) == 1  # nothing else was written
+    assert FJ.load_ledger(store).head_sequence == 0
+
+    # The next run (later clock) writes a correct batch at the same sequence.
+    report = _record_kernel(store, [_kernel_row()], NIGHT2)
+    assert report["sequence"] == 1 and report["batch_key"] == _batch_key(1)
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 1
+    assert len(FJ.history(store, FJ.kernel_row(_kernel_row())["subject_key"])) == 1
+
+
+def test_head_cas_raise_after_commit_reconciles_to_success() -> None:
+    store = _HeadCasExplodingStore()
+    store.explode_after_commit = True
+    report = _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert report["sequence"] == 1
+    assert FJ.load_ledger(store).head_sequence == 1
+
+
+def test_head_cas_raise_before_commit_is_effect_unknown_then_rolls_forward() -> None:
+    store = _HeadCasExplodingStore()
+    store.explode_before_commit = True
+    with pytest.raises(FJ.FindingJudgmentEffectUnknownError) as excinfo:
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert _expect_code(excinfo) == "effect_unknown"
+    batch1_bytes = _read_batch(store, 1)
+    assert batch1_bytes is not None  # the batch exists; HEAD never advanced
+    assert FJ.load_ledger(store).head_sequence == 0
+    writes = list(store.conditional_writes)
+
+    store.explode_before_commit = False
+    report = _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    assert report["sequence"] == 2
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 2
+    # Batch 1 was rolled forward, never rewritten, then batch 2 was appended.
+    assert _read_batch(store, 1) == batch1_bytes
+    run2_writes = [key for key, _ in store.conditional_writes[len(writes):]]
+    assert run2_writes == [HEAD_KEY, _batch_key(2), HEAD_KEY]
 
 
 # ---------------------------------------------------------------------------
-# 9. Kernel adapter contracts
+# 11. Roll-forward refusals
+# ---------------------------------------------------------------------------
+
+
+def test_orphan_with_wrong_predecessor_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    writes = list(store.conditional_writes)
+    _seed_orphan(store, 2, [], NIGHT2, "0" * 64)  # wrong predecessor, HEAD stays at 1
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT3)
+    assert _expect_code(excinfo) == "orphan_batch_invalid"
+    assert store.conditional_writes == writes  # nothing was written
+    assert FJ.load_ledger(store).head_sequence == 1  # the orphan stays invisible
+
+
+def test_orphan_chain_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    sha1 = hashlib.sha256(_read_batch(store, 1)).hexdigest()
+    _seed_orphan(store, 2, [], NIGHT2, sha1)
+    sha2 = hashlib.sha256(_read_batch(store, 2)).hexdigest()
+    _seed_orphan(store, 3, [], NIGHT3, sha2)
+    writes = list(store.conditional_writes)
+
+    with pytest.raises(FJ.FindingJudgmentChainError) as excinfo:
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT4)
+    assert _expect_code(excinfo) == "orphan_chain"
+    # Only the single permitted roll-forward HEAD advance happened.
+    assert [key for key, _ in store.conditional_writes[len(writes):]] == [HEAD_KEY]
+    view = FJ.load_ledger(store)
+    assert view.head_sequence == 2
+    assert view.batch_keys == (_batch_key(1), _batch_key(2))
+
+
+# ---------------------------------------------------------------------------
+# 12. Write-side limits
+# ---------------------------------------------------------------------------
+
+
+def test_write_side_batch_limit_is_refused(monkeypatch) -> None:
+    store = InMemoryStrictConditionalStore()
+    _record_kernel(store, [_kernel_row()], NIGHT1)
+    monkeypatch.setattr(FJ, "HARD_MAX_BATCHES", 1)
+    writes = len(store.conditional_writes)
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_kernel(store, [_kernel_row(derived_values={"growth": "-0.55"})], NIGHT2)
+    assert _expect_code(excinfo) == "batch_limit"
+    assert len(store.conditional_writes) == writes
+
+
+def test_oversize_payload_is_refused_before_any_write(monkeypatch) -> None:
+    store = InMemoryStrictConditionalStore()
+    monkeypatch.setattr(FJ, "HARD_MAX_BATCH_BYTES", 64)
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_kernel(store, [_kernel_row()], NIGHT1)
+    assert _expect_code(excinfo) == "batch_oversize"
+    assert store.conditional_writes == []
+
+
+# ---------------------------------------------------------------------------
+# 13. Kernel adapter contracts
 # ---------------------------------------------------------------------------
 
 
@@ -541,10 +1014,10 @@ def test_kernel_row_missing_required_key_is_refused() -> None:
         del row[key]
         with pytest.raises(FJ.FindingJudgmentError) as excinfo:
             FJ.kernel_row(row)
-        assert excinfo.value.code == "kernel_row_required"
+        assert _expect_code(excinfo) == "kernel_row_required"
         with pytest.raises(FJ.FindingJudgmentError) as excinfo:
             _record_kernel(InMemoryStrictConditionalStore(), [row], NIGHT1)
-        assert excinfo.value.code == "kernel_row_required"
+        assert _expect_code(excinfo) == "kernel_row_required"
 
 
 def test_computed_at_alone_does_not_create_a_correction() -> None:
@@ -566,7 +1039,7 @@ def test_detector_version_change_records_detector_version_reason() -> None:
 
 
 # ---------------------------------------------------------------------------
-# 10. Workbench adapter on a synthetic state
+# 14. Workbench adapter identity
 # ---------------------------------------------------------------------------
 
 
@@ -581,42 +1054,168 @@ def test_workbench_rows_from_state_two_companies_three_findings() -> None:
         },
         "2026-10-10T06:00:00+00:00",
     )
-    rows, scope_entities, recorded_at = FJ.workbench_rows_from_state(state)
+    rows, scope_entities, generated_at = FJ.workbench_rows_from_state(state)
     assert len(rows) == 3
-    assert scope_entities == {"1111111", "FXNO"}
-    assert recorded_at == NIGHT1
+    assert scope_entities == {"0001111111", "symbol:FXA", "symbol:FXNO"}
+    assert generated_at == NIGHT1
     by_ref = {row["finding_ref"]: row for row in rows}
     assert set(by_ref) == {"rev-collapse:q2-2026", "gm-compress:q2-2026", "accrual-spike:q1-2026"}
     assert by_ref["rev-collapse:q2-2026"]["subject_key"] == stable_id(
-        "fjsubject", "workbench", "1111111", "rev-collapse:q2-2026"
+        "fjsubject", "workbench", "0001111111", "rev-collapse:q2-2026"
     )
-    # A null CIK falls back to the symbol identity.
+    # A null CIK falls back to the normalized symbol identity.
     assert by_ref["accrual-spike:q1-2026"]["subject_key"] == stable_id(
-        "fjsubject", "workbench", "FXNO", "accrual-spike:q1-2026"
+        "fjsubject", "workbench", "symbol:FXNO", "accrual-spike:q1-2026"
     )
-    assert by_ref["accrual-spike:q1-2026"]["entity_ref"] == "FXNO"
+    assert by_ref["accrual-spike:q1-2026"]["entity_ref"] == "symbol:FXNO"
     assert by_ref["rev-collapse:q2-2026"]["content"] == finding_a1
     assert by_ref["rev-collapse:q2-2026"]["source_ready_at"] is None
     for row in rows:
         assert row["content_sha256"] == hashlib.sha256(_canonical(row["content"])).hexdigest()
 
 
+def test_cik_normalization_pads_int_and_digit_string() -> None:
+    state = _workbench_state(
+        {
+            "fxa": _company(320193, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")]),
+            " FXB ": _company("320193", [_wfinding("gm-compress:q2-2026", "margin_compression")]),
+        },
+        utc_text(NIGHT1),
+    )
+    rows, scope_entities, _ = FJ.workbench_rows_from_state(state)
+    by_ref = {row["finding_ref"]: row for row in rows}
+    assert by_ref["rev-collapse:q2-2026"]["entity_ref"] == "0000320193"
+    assert by_ref["rev-collapse:q2-2026"]["subject_key"] == stable_id(
+        "fjsubject", "workbench", "0000320193", "rev-collapse:q2-2026"
+    )
+    assert by_ref["gm-compress:q2-2026"]["entity_ref"] == "0000320193"
+    assert scope_entities == {"0000320193", "symbol:FXA", "symbol:FXB"}
+
+
+def test_symbol_subjects_are_withdrawn_when_the_cik_appears() -> None:
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"FXA": _company(None, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
+        utc_text(NIGHT1),
+    )
+    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
+    report1 = FJ.record_judgments(
+        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
+        source_generated_at=generated1, scope_entities=scope1,
+    )
+    assert report1["originals"] == 1
+
+    state_night2 = _workbench_state(
+        {"FXA": _company(320193, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
+        utc_text(NIGHT2),
+    )
+    rows2, scope2, generated2 = FJ.workbench_rows_from_state(state_night2)
+    report2 = FJ.record_judgments(
+        store, kind="workbench", rows=rows2, recorded_at=NIGHT2,
+        source_generated_at=generated2, scope_entities=scope2,
+    )
+    assert report2["withdrawals"] == 1
+    assert report2["originals"] == 1
+
+    symbol_subject = stable_id("fjsubject", "workbench", "symbol:FXA", "rev-collapse:q2-2026")
+    chain = FJ.history(store, symbol_subject)
+    assert [record["status"] for record in chain] == ["present", "withdrawn"]
+    cik_subject = stable_id("fjsubject", "workbench", "0000320193", "rev-collapse:q2-2026")
+    cik_chain = FJ.history(store, cik_subject)
+    assert [record["status"] for record in cik_chain] == ["present"]
+
+
+def test_malformed_cik_or_symbol_is_refused() -> None:
+    for bad_cik in ("12-34", "abc", "", 10**10, -5, 1.5, True):
+        state = _workbench_state({"FXA": _company(bad_cik, [])}, utc_text(NIGHT1))
+        with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+            FJ.workbench_rows_from_state(state)
+        assert _expect_code(excinfo) == "state_shape"
+    blank_symbol_state = _workbench_state({"  ": _company(1111111, [])}, utc_text(NIGHT1))
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        FJ.workbench_rows_from_state(blank_symbol_state)
+    assert _expect_code(excinfo) == "state_shape"
+
+
 # ---------------------------------------------------------------------------
-# 11. No consumer writes: the import guard
+# 15. Reappearance and source clocks
 # ---------------------------------------------------------------------------
+
+
+def test_reappearance_after_withdrawal_records_status_only() -> None:
+    store = InMemoryStrictConditionalStore()
+    content = _kernel_row()
+    subject = FJ.kernel_row(content)
+    _record_kernel(store, [content], NIGHT1)
+    withdrawn = FJ.record_judgments(
+        store, kind="kernel", rows=[], recorded_at=NIGHT2, scope_entities={subject["entity_ref"]}
+    )
+    assert withdrawn["withdrawals"] == 1
+    reapplied = _record_kernel(store, [content], NIGHT3)
+    assert reapplied["corrections"] == 1
+    chain = FJ.history(store, subject["subject_key"])
+    assert [record["status"] for record in chain] == ["present", "withdrawn", "present"]
+    assert chain[2]["change_reasons"] == ["status"]
+
+
+def test_source_after_recorded_is_refused() -> None:
+    store = InMemoryStrictConditionalStore()
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        FJ.record_judgments(
+            store, kind="kernel", rows=[_kernel_row()], recorded_at=NIGHT1, source_generated_at=NIGHT2
+        )
+    assert _expect_code(excinfo) == "recorded_before_source"
+    assert store.conditional_writes == []
+
+
+def test_records_carry_source_generated_at() -> None:
+    store = InMemoryStrictConditionalStore()
+    source = datetime(2026, 10, 9, 18, 0, tzinfo=timezone.utc)
+    report = FJ.record_judgments(
+        store, kind="kernel", rows=[_kernel_row()], recorded_at=NIGHT1, source_generated_at=source
+    )
+    assert report["source_generated_at"] == utc_text(source)
+    assert _all_records(store)[0]["source_generated_at"] == utc_text(source)
+    replayed = FJ.replay_then_known(store, recorded_cutoff=NIGHT2)
+    assert replayed["subjects"][0]["visible"]["source_generated_at"] == utc_text(source)
+
+
+# ---------------------------------------------------------------------------
+# 16. Static guards: no wall clock, no listing, no unconditional put, no consumers
+# ---------------------------------------------------------------------------
+
+
+_WALL_CLOCK_ATTRS = {"now", "utcnow", "today", "time", "time_ns", "monotonic"}
+
+
+def test_module_and_cli_avoid_wall_clocks_listings_and_unconditional_puts() -> None:
+    hits = []
+    for path in (MODULE_PATH, CLI_PATH):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Attribute) and node.attr == "list_prefix":
+                hits.append((path.name, node.lineno, "list_prefix"))
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                if node.func.attr in _WALL_CLOCK_ATTRS:
+                    hits.append((path.name, node.lineno, node.func.attr))
+                if node.func.attr == "put_bytes":
+                    hits.append((path.name, node.lineno, "put_bytes"))
+    assert not hits, f"forbidden store/clock operations: {hits}"
+
+
+_IMPORT_TARGET = "engine.fundamental_forensics.finding_judgments"
 
 
 def _import_offenders(tree):
-    target = "engine.fundamental_forensics.finding_judgments"
     hits = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name == target or alias.name.startswith(target + "."):
+                if alias.name == _IMPORT_TARGET or alias.name.startswith(_IMPORT_TARGET + "."):
                     hits.append(node.lineno)
         elif isinstance(node, ast.ImportFrom):
             if node.level == 0 and node.module:
-                if node.module == target or node.module.startswith(target + "."):
+                if node.module == _IMPORT_TARGET or node.module.startswith(_IMPORT_TARGET + "."):
                     hits.append(node.lineno)
                 elif node.module == "engine.fundamental_forensics":
                     if any(alias.name == "finding_judgments" for alias in node.names):
@@ -627,38 +1226,41 @@ def _import_offenders(tree):
                     and any(alias.name == "finding_judgments" for alias in node.names)
                 ):
                     hits.append(node.lineno)
+        elif (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "import_module"
+        ):
+            for argument in node.args:
+                if (
+                    isinstance(argument, ast.Constant)
+                    and isinstance(argument.value, str)
+                    and "finding_judgments" in argument.value
+                ):
+                    hits.append(node.lineno)
     return hits
 
 
 def test_no_consumer_module_imports_finding_judgments() -> None:
-    allowed_prefix = "engine/fundamental_forensics/"
-    allowed_exact = {"scripts/fif_finding_judgments.py"}
     offenders: list[tuple[str, list[int]]] = []
     scanned = 0
-    for base in ("engine", "app", "lib", "scripts"):
+    for base in ("engine", "app"):
         for path in sorted((ROOT / base).rglob("*.py")):
             scanned += 1
             rel = path.relative_to(ROOT).as_posix()
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             hits = _import_offenders(tree)
-            if hits and not rel.startswith(allowed_prefix) and rel not in allowed_exact:
+            if hits:
                 offenders.append((rel, hits))
     assert scanned > 500, "the source walk unexpectedly missed the repository trees"
     assert not offenders, (
-        "modules outside engine/fundamental_forensics and scripts/fif_finding_judgments.py "
-        f"import the judgment ledger (prophet/risk/sni consumers included): {offenders}"
+        "modules under engine/ and app/ import the judgment ledger; the only "
+        f"allowed importers are the CLI and the test file: {offenders}"
     )
-    for family in ("engine/prophet*", "engine/risk*", "engine/sni*"):
-        for path in sorted(ROOT.glob(family)):
-            if not path.is_file():
-                continue
-            rel = path.relative_to(ROOT).as_posix()
-            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-            assert not _import_offenders(tree), f"{rel} imports the judgment ledger"
 
 
 # ---------------------------------------------------------------------------
-# 12. CLI against a temporary local store
+# 17. CLI against a temporary local store
 # ---------------------------------------------------------------------------
 
 
@@ -679,7 +1281,6 @@ def _local_conditional_store_available(tmp_path):
 def test_cli_record_state_then_replay(tmp_path) -> None:
     if not _local_conditional_store_available(tmp_path):
         pytest.skip("local-dir store lacks strict conditional writes")
-    script = ROOT / "scripts" / "fif_finding_judgments.py"
     state_path = tmp_path / "state.json"
     state_path.write_text(
         json.dumps(
@@ -693,7 +1294,17 @@ def test_cli_record_state_then_replay(tmp_path) -> None:
     store_dir = tmp_path / "store"
 
     recorded = subprocess.run(
-        [sys.executable, str(script), "record-state", "--state", str(state_path), "--local-store", str(store_dir)],
+        [
+            sys.executable,
+            str(CLI_PATH),
+            "record-state",
+            "--state",
+            str(state_path),
+            "--recorded-at",
+            utc_text(NIGHT1),
+            "--local-store",
+            str(store_dir),
+        ],
         capture_output=True,
         text=True,
         cwd=str(ROOT),
@@ -702,12 +1313,14 @@ def test_cli_record_state_then_replay(tmp_path) -> None:
     report = json.loads(recorded.stdout)
     assert report["schema"] == FJ.JUDGMENT_BATCH_SCHEMA
     assert report["originals"] == 1
-    assert report["batch_key"] and report["batch_key"].startswith(BATCH_PREFIX)
+    assert report["sequence"] == 1
+    assert report["batch_key"] == _batch_key(1)
+    assert report["source_generated_at"] == utc_text(NIGHT1)
 
     replayed = subprocess.run(
         [
             sys.executable,
-            str(script),
+            str(CLI_PATH),
             "replay",
             "--recorded-cutoff",
             "2026-10-11T00:00:00Z",
@@ -729,7 +1342,7 @@ def test_cli_record_state_then_replay(tmp_path) -> None:
     history = subprocess.run(
         [
             sys.executable,
-            str(script),
+            str(CLI_PATH),
             "history",
             "--subject",
             subject["subject_key"],
@@ -747,7 +1360,7 @@ def test_cli_record_state_then_replay(tmp_path) -> None:
     refused = subprocess.run(
         [
             sys.executable,
-            str(script),
+            str(CLI_PATH),
             "replay",
             "--recorded-cutoff",
             "2026-10-11T00:00:00",
@@ -760,3 +1373,104 @@ def test_cli_record_state_then_replay(tmp_path) -> None:
     )
     assert refused.returncode == 2
     assert json.loads(refused.stdout)["error"]["code"] == "cutoff_required"
+
+
+def test_cli_effect_unknown_exits_three(monkeypatch, capsys, tmp_path) -> None:
+    cli = _load_cli()
+    store = InMemoryStrictConditionalStore()
+    store.raise_on_conditional_after_commit = True
+    store.drop_after_commit = True
+    monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: store)
+    state_path = tmp_path / "state.json"
+    state_path.write_text(
+        json.dumps(
+            _workbench_state(
+                {"FXA": _company(1111111, [_wfinding("rev-collapse:q2-2026", "revenue_collapse")])},
+                utc_text(NIGHT1),
+            )
+        ),
+        encoding="utf-8",
+    )
+    code = cli.main(
+        [
+            "record-state",
+            "--state",
+            str(state_path),
+            "--recorded-at",
+            utc_text(NIGHT1),
+            "--local-store",
+            str(tmp_path / "store"),
+        ]
+    )
+    assert code == 3
+    document = json.loads(capsys.readouterr().out)
+    assert document["ok"] is False
+    assert document["error"]["code"] == "effect_unknown"
+    assert document["error"]["type"] == "FindingJudgmentEffectUnknownError"
+
+
+def test_cli_state_file_failures_exit_two(monkeypatch, capsys, tmp_path) -> None:
+    cli = _load_cli()
+    monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: InMemoryStrictConditionalStore())
+    cases = []
+    missing = tmp_path / "missing.json"
+    cases.append((missing, None))
+    malformed = tmp_path / "malformed.json"
+    malformed.write_text("not-json{", encoding="utf-8")
+    cases.append((malformed, None))
+    corrupt = tmp_path / "corrupt-state.json"
+    corrupt.write_bytes(b"\x1f\x8b\x00garbage-not-really-gzip")
+    cases.append((corrupt, None))
+    for path, _ in cases:
+        code = cli.main(
+            [
+                "record-state",
+                "--state",
+                str(path),
+                "--recorded-at",
+                utc_text(NIGHT1),
+                "--local-store",
+                str(tmp_path / "store"),
+            ]
+        )
+        assert code == 2
+        document = json.loads(capsys.readouterr().out)
+        assert document["ok"] is False
+        assert document["error"]["code"] == "unexpected_error"
+
+
+def test_cli_record_state_requires_recorded_at(capsys, tmp_path) -> None:
+    cli = _load_cli()
+    state_path = tmp_path / "state.json"
+    state_path.write_text("{}", encoding="utf-8")
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["record-state", "--state", str(state_path), "--local-store", str(tmp_path / "store")])
+    assert excinfo.value.code == 2  # argparse's own usage error
+    assert "usage" in capsys.readouterr().err.lower()
+
+
+def test_cli_record_kernel_accepts_source_generated_at(monkeypatch, capsys, tmp_path) -> None:
+    cli = _load_cli()
+    store = InMemoryStrictConditionalStore()
+    monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: store)
+    findings_path = tmp_path / "findings.json"
+    findings_path.write_text(json.dumps([_kernel_row()]), encoding="utf-8")
+    source_text = utc_text(datetime(2026, 10, 9, 18, 0, tzinfo=timezone.utc))
+    code = cli.main(
+        [
+            "record-kernel",
+            "--findings",
+            str(findings_path),
+            "--recorded-at",
+            utc_text(NIGHT1),
+            "--source-generated-at",
+            "2026-10-09T18:00:00Z",
+            "--local-store",
+            str(tmp_path / "store"),
+        ]
+    )
+    assert code == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["sequence"] == 1
+    assert report["source_generated_at"] == source_text
+    assert _all_records(store)[0]["source_generated_at"] == source_text

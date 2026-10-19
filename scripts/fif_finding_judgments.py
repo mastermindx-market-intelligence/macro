@@ -3,19 +3,21 @@
 
 Thin command surface over ``engine.fundamental_forensics.finding_judgments``:
 
-* ``record-state`` adapts a nightly workbench build state (the state's
-  ``generated_at`` is the recording clock; every company in the state is in
-  the withdrawal scope);
+* ``record-state`` adapts a nightly workbench build state at an explicit
+  ``--recorded-at`` run clock (the state's ``generated_at`` is recorded as
+  the run's source clock; every company in the state is in the withdrawal
+  scope);
 * ``record-kernel`` records kernel finding rows at an explicit clock with no
   withdrawal scope;
 * ``replay`` reconstructs the then-known beliefs at a mandatory cutoff;
 * ``history`` prints one subject's full chain.
 
 One JSON document is printed to stdout. Exit 0 on success, 2 on a typed
-refusal, 3 on an effect-unknown write. The store is a local directory via
-``--local-store`` or the configured production dataset store; recording
-requires the strict conditional write protocol and refuses otherwise.
-Lanes run this only against temporary local stores.
+refusal, 3 on an effect-unknown write; no traceback is ever printed. The
+store is a local directory via ``--local-store`` or the configured production
+dataset store; recording requires the strict conditional write protocol and
+refuses otherwise. Lanes run this only against temporary local stores. No
+wall clock is read: every timestamp comes from the arguments.
 """
 from __future__ import annotations
 
@@ -49,12 +51,12 @@ def _emit(document: Any) -> int:
     return 0
 
 
-def _emit_error(exc: FJ.FindingJudgmentError, exit_code: int) -> int:
+def _emit_error(exc: BaseException, exit_code: int) -> int:
     _emit({
         "ok": False,
         "error": {
             "type": type(exc).__name__,
-            "code": getattr(exc, "code", "unknown"),
+            "code": getattr(exc, "code", None) or "unexpected_error",
             "message": str(exc),
         },
     })
@@ -90,13 +92,14 @@ def _build_write_store(args: argparse.Namespace):
 def _cmd_record_state(args: argparse.Namespace) -> int:
     store = _build_write_store(args)
     state = _load_json_document(Path(args.state))
-    rows, scope_entities, recorded_at = FJ.workbench_rows_from_state(state)
+    rows, scope_entities, source_generated_at = FJ.workbench_rows_from_state(state)
     return _emit(
         FJ.record_judgments(
             store,
             kind="workbench",
             rows=rows,
-            recorded_at=recorded_at,
+            recorded_at=args.recorded_at,
+            source_generated_at=source_generated_at,
             scope_entities=scope_entities,
         )
     )
@@ -113,6 +116,7 @@ def _cmd_record_kernel(args: argparse.Namespace) -> int:
             kind="kernel",
             rows=rows,
             recorded_at=args.recorded_at,
+            source_generated_at=args.source_generated_at,
         )
     )
 
@@ -141,12 +145,16 @@ def _build_parser() -> argparse.ArgumentParser:
 
     record_state = subparsers.add_parser("record-state", help="record judgments from a workbench build state")
     record_state.add_argument("--state", required=True, help="path to the workbench state JSON (plain or gzipped)")
+    record_state.add_argument("--recorded-at", required=True, help="aware UTC ISO timestamp of this run")
     record_state.add_argument("--local-store", default=None, help="local directory store root")
     record_state.set_defaults(handler=_cmd_record_state)
 
     record_kernel = subparsers.add_parser("record-kernel", help="record kernel finding rows at an explicit clock")
     record_kernel.add_argument("--findings", required=True, help="path to a JSON list of kernel finding rows")
     record_kernel.add_argument("--recorded-at", required=True, help="aware UTC ISO timestamp of this run")
+    record_kernel.add_argument(
+        "--source-generated-at", default=None, help="aware UTC ISO timestamp of the source build"
+    )
     record_kernel.add_argument("--local-store", default=None, help="local directory store root")
     record_kernel.set_defaults(handler=_cmd_record_kernel)
 
@@ -173,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
     except FJ.FindingJudgmentEffectUnknownError as exc:
         return _emit_error(exc, 3)
     except FJ.FindingJudgmentError as exc:
+        return _emit_error(exc, 2)
+    except Exception as exc:  # noqa: BLE001 - the CLI never prints a traceback
         return _emit_error(exc, 2)
 
 
