@@ -17,6 +17,11 @@ IssuerSicResolver = Callable[[str], "str | None"]
 
 _COVERAGE_RELATIVE_PATH = ("config", "fundamental_forensics", "coverage")
 _DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[2]
+# Shipped documents that live beside the member contracts but carry no member
+# records: the frozen C2 tier thresholds (``coverage_proof.THRESHOLDS_SCHEMA``).
+# Only an exact declared schema is skipped; every other file in the directory
+# is still held to the member-contract shape and fails closed.
+_NON_MEMBER_SCHEMAS = frozenset({"fundamental_forensics.coverage_thresholds/v1"})
 
 
 def _normalize_cik(value: Any) -> str | None:
@@ -80,6 +85,9 @@ def _shipped_sic_index(repo_root_text: str) -> dict[str, str]:
             raise ValueError(
                 f"shipped coverage contract is not a JSON object: {path.name}"
             )
+        schema = parsed.get("schema")
+        if isinstance(schema, str) and schema in _NON_MEMBER_SCHEMAS:
+            continue
         issuers = parsed.get("issuers")
         if not isinstance(issuers, list):
             raise ValueError(

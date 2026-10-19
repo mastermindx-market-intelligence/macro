@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_651),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_655),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5092,6 +5092,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Fresh protected-main 55362545 integration (2026-10-19): retain the
+    protected FIF and seasonality additions plus all F11 consumer coverage.
+    ONE canonical merged-manifest measurement records 135/5780, 134/5655
+    and 128/5529 jobs/weight, all ten packs. Fund only the sole actual
+    excess, build_free_content 5651 -> 5655. Every job-count, other weight
+    and pack ceiling stays fixed; the full three rows are retained in the
+    existing Vault integration evidence. No selector or test is removed.
 
     Fresh protected-main d1d95cea integration (2026-10-19): preserve the
     retained SEC13D job's added suites as well as the Vault qualification
@@ -5156,6 +5164,14 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     exactly134 jobs /5634 weight /10 packs. Fund only the four-unit excess
     over5630, to5634. Every suite, selector, job/pack bound and both other
     probe weight ceilings remain unchanged; no coverage is dropped.
+
+    Seasonality style-card suite (2026-10-19, PR9793) adds
+    tests/test_seasonality_now_call_strip.py to unrun-builders-render.
+    The local probe on main 8df5aee4 measures build_free_content 134 jobs
+    / 5,634; on the PR merged into that main, the same 134 job ids / 5,638
+    (index.html and plan_book also +4, both under their ceilings). No new
+    entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
+    selector, job/pack bound and both other probe ceilings stay unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
