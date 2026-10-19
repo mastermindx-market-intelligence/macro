@@ -26,6 +26,7 @@ export const PRIVATE_COMPANY_CONTEXT_SCHEMA = 'company_intelligence.private_comp
 export const PRIVATE_IDENTITY_RECEIPT_SCHEMA = 'company_intelligence.current_issuer_identity/v1';
 export const PRIVATE_PRODUCT_INTEGRATION_SCHEMA = 'company_intelligence.private_product_integration/v2';
 export const PRIVATE_SUPPLIER_SCHEMA = 'company_intelligence.private_disclosed_supplier/v1';
+export const PRIVATE_SUPPLIER_RESEARCH_SCHEMA = 'company_intelligence.private_supplier_research/v1';
 export const PRIVATE_SUPPLIER_FACT_SCHEMA = 'company_intelligence.disclosed_supplier_fact/v1';
 export const PRIVATE_SEC_EDITION_SCHEMA = 'company_intelligence.sec_disclosure_edition/v1';
 export const PRIVATE_ERROR_SCHEMA = 'company_intelligence.private_error/v1';
@@ -766,4 +767,102 @@ export function assertPrivateComposition(
   if (entry.kind !== fact.fact.kind || entry.lifecycle !== fact.fact.lifecycle) {
     throw new PrivateDecodeError('COMPOSITION');
   }
+}
+
+/** Closed, current research projection. Shape checks do not grant source rights. */
+export async function decodePrivateSupplierResearch(value, expectedFactId) {
+  const root = closedObject(value, ['schema','status','reason','disclosure','candidate']);
+  if (root.schema !== PRIVATE_SUPPLIER_RESEARCH_SCHEMA) throw new PrivateDecodeError('SCHEMA');
+  const disclosure = await decodePrivateDisclosure(root.disclosure, expectedFactId);
+  if (root.status === 'context_only') {
+    if (root.reason !== 'NO_QUALIFIED_SUPPLIER_ROLE' || root.candidate !== null
+        || disclosure.schema === PRIVATE_SUPPLIER_SCHEMA) throw new PrivateDecodeError('VALUE');
+    return Object.freeze({schema: root.schema, status: root.status, reason: root.reason, disclosure, candidate: null});
+  }
+  if (root.status !== 'available' || root.reason !== null || disclosure.schema !== PRIVATE_SUPPLIER_SCHEMA) {
+    throw new PrivateDecodeError('VALUE');
+  }
+  const c = closedObject(root.candidate, ['record_id','content_sha256','compiled_at','review_by','target',
+    'observed','mechanism','alternatives','falsifiers','applicability_conditions','evaluation_requirements',
+    'contextual_refusal','lineage','empirical_evaluation','authority']);
+  function text(v) {
+    if (typeof v !== 'string' || !v.length || v.length > 2048 || /[\x00-\x1f]/.test(v)) throw new PrivateDecodeError('VALUE');
+    return v;
+  }
+  function instant(v) {
+    const n = typeof v === 'string' ? timingInstantToEpochMicroseconds(v) : null;
+    if (n === null || n > BigInt(Date.now())*1000n) throw new PrivateDecodeError('TIMING');
+    return n;
+  }
+  function rows(v, keys, maximum) {
+    if (!Array.isArray(v) || v.length < 1 || v.length > maximum) throw new PrivateDecodeError('VALUE');
+    return Object.freeze(v.map(row => Object.freeze(Object.fromEntries(
+      keys.map(k => [k,text(closedObject(row, keys)[k])])))));
+  }
+  nativeIdentifier(c.record_id); nativeDigest(c.content_sha256);
+  const compiled = instant(c.compiled_at);
+  if (typeof c.review_by !== 'string' || timingDateParts(c.review_by) === null) throw new PrivateDecodeError('TIMING');
+  const currentDay = new Date().toISOString().slice(0,10);
+  if (c.compiled_at.slice(0,10) !== currentDay || c.review_by < currentDay) throw new PrivateDecodeError('TIMING');
+  const target = closedObject(c.target, ['issuer_id','security_id','symbol']);
+  currentIssuerIdentifier(target.issuer_id); currentSecurityIdentifier(target.security_id);
+  if (!isPrivateCompanySymbol(target.symbol) || target.symbol !== 'TSM'
+      || target.issuer_id !== disclosure.fact.object_id || disclosure.fact.subject_id !== 'ISS:US-XNAS-NVDA') {
+    throw new PrivateDecodeError('BINDING');
+  }
+  const o = closedObject(c.observed, ['event_fact_id','kind','source_report_period','occurrence_period','occurrence_at',
+    'reporting_at','retrieved_at','adopted_at','verified_at','document_id','raw_sha256','span_sha256',
+    'span_start_byte','span_end_byte','accession','archive_url','policy_sha256','decision_sha256']);
+  nativeIdentifier(o.event_fact_id);
+  const period = closedObject(o.occurrence_period, ['year','quarter']);
+  if (o.kind !== 'reported_h20_demand_loss' || o.source_report_period !== 'FY2026'
+      || period.year !== 2026 || period.quarter !== 1 || o.occurrence_at !== null) throw new PrivateDecodeError('VALUE');
+  const source = disclosure.source_timing.sec_source;
+  for (const k of ['document_id','accession','archive_url']) {
+    if (o[k] !== source[k]) throw new PrivateDecodeError('BINDING');
+  }
+  for (const k of ['raw_sha256','span_sha256','policy_sha256','decision_sha256']) nativeDigest(o[k]);
+  const start = boundedInteger(o.span_start_byte, 0, 4*1024*1024);
+  boundedInteger(o.span_end_byte, start+1, 4*1024*1024);
+  const clocks = ['reporting_at','retrieved_at','adopted_at','verified_at'].map(k => instant(o[k]));
+  if (o.reporting_at !== source.accepted_at || o.retrieved_at !== source.retrieved_at
+      || clocks.some((n,i) => i && n < clocks[i-1]) || clocks.at(-1) > compiled) throw new PrivateDecodeError('TIMING');
+  const m = closedObject(c.mechanism, ['state','mechanism_class','mechanism_polarity',
+    'predicted_operating_direction','operating_metric_class','hypothesis_text']);
+  if (m.state !== 'hypothesized' || m.mechanism_class !== 'demand_transfer' || m.mechanism_polarity !== 'away_from_target'
+      || m.predicted_operating_direction !== 'deteriorates' || m.operating_metric_class !== 'volume') throw new PrivateDecodeError('VALUE');
+  text(m.hypothesis_text);
+  const alternatives = rows(c.alternatives, ['explanation_class','text'], 6);
+  if (alternatives.length !== 2 || !alternatives.some(r=>r.explanation_class==='sector_factor')
+      || !alternatives.some(r=>r.explanation_class==='coincident_timing')) throw new PrivateDecodeError('VALUE');
+  const falsifiers = rows(c.falsifiers, ['condition','observable'], 4);
+  const applicability = rows(c.applicability_conditions, ['reason','condition','consequence'], 6);
+  const reasons = ['antecedent_not_observed','relationship_inapplicable','outcome_unavailable','evaluation_not_registered','review_expired_untested'];
+  if (applicability.length !== reasons.length || reasons.some(r=>!applicability.some(a=>a.reason===r))) throw new PrivateDecodeError('VALUE');
+  const requirements = ['native_owner_confirmed_antecedent_occurrence','applicable_role_specific_relationship',
+    'preregistered_metric_scope_and_comparable_baseline','preregistered_event_window_outcome_lag_and_window',
+    'preregistered_rejection_rule_and_uncertainty_handling','sufficient_purpose_eligible_comparable_outcome_observations'];
+  if (!Array.isArray(c.evaluation_requirements) || c.evaluation_requirements.length !== requirements.length
+      || requirements.some((v,i)=>c.evaluation_requirements[i]!==v)) throw new PrivateDecodeError('VALUE');
+  const refusal = closedObject(c.contextual_refusal, ['reason','hypothesis','relationship_input_used']);
+  const lineage = closedObject(c.lineage, ['same_document','independent_corroboration']);
+  const authority = closedObject(c.authority, ['rank','gate','size','trade','prediction']);
+  if (refusal.reason !== 'CO_DOCUMENT_CONTEXT_IS_NOT_GRAPH1' || refusal.hypothesis !== null || refusal.relationship_input_used !== false
+      || lineage.same_document !== true || lineage.independent_corroboration !== false
+      || c.empirical_evaluation !== 'not_performed' || Object.values(authority).some(v=>v!==false)) throw new PrivateDecodeError('VALUE');
+  return Object.freeze({schema: root.schema, status: root.status, reason: null, disclosure,
+    candidate: Object.freeze({...c, target: Object.freeze({...target}), observed: Object.freeze({...o, occurrence_period:Object.freeze({...period})}),
+      mechanism:Object.freeze({...m}), alternatives, falsifiers, applicability_conditions:applicability,
+      evaluation_requirements:Object.freeze([...requirements]), contextual_refusal:Object.freeze({...refusal}),
+      lineage:Object.freeze({...lineage}), authority:Object.freeze({...authority})})});
+}
+
+export function assertPrivateResearchComposition(fact, research) {
+  // Both operands already passed closed decoders; normalize only JSON ordering.
+  function stable(v) {
+    if (v === null || typeof v !== 'object') return JSON.stringify(v);
+    if (Array.isArray(v)) return '[' + v.map(stable).join(',') + ']';
+    return '{' + Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',') + '}';
+  }
+  if (stable(fact) !== stable(research.disclosure)) throw new PrivateDecodeError('COMPOSITION');
 }

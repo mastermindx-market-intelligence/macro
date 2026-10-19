@@ -4886,6 +4886,7 @@ CURATED_EXCLUSIVE = {
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    "k3d-economic-propagation-contracts",  # K3-D must execute in the PR code gate.
 }
 
 
@@ -7476,3 +7477,41 @@ def test_ancestor_init_census_does_not_grow() -> None:
             substantive_rows,
         )
     )
+
+
+@pytest.mark.parametrize("changed_path", [
+    "tests/test_economic_propagation_hypothesis_contract.py",
+    "tests/test_economic_propagation_source_grain.py",
+    "tests/test_economic_propagation_v2.py",
+    "tests/test_economic_propagation_v2_semantics.py",
+    "lib/economic_propagation.py",
+    "lib/economic_propagation_v2.py",
+    "contracts/economic_propagation/propagation_hypothesis.v2.schema.json",
+    "tests/fixtures/economic_propagation/golden_supported_hypothesis.json",
+    "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json",
+])
+def test_k3d_all_native_suites_execute_in_pr_code_gate(changed_path, real_manifest_scopes):
+    """A suite in the data gate is not a PR check; keep one actual execution home."""
+    manifest = _yaml(MANIFEST)
+    owner_id = "k3d-economic-propagation-contracts"
+    owner = manifest["jobs"][owner_id]
+    suites = (
+        "tests/test_economic_propagation_hypothesis_contract.py",
+        "tests/test_economic_propagation_source_grain.py",
+        "tests/test_economic_propagation_v2.py",
+        "tests/test_economic_propagation_v2_semantics.py",
+    )
+    assert owner["gate"] == "code" and owner["scope"] == "exclusive"
+    assert {"pytest", "jsonschema"} <= _job_pip_packages(owner)
+    for suite in suites:
+        actual_owners = [
+            job_id for job_id, job in manifest["jobs"].items()
+            if any(suite in str(step.get("run") or "").split() for step in job["steps"])
+        ]
+        assert actual_owners == [owner_id], (suite, actual_owners)
+        assert suite in owner["paths"]
+    assert manifest["jobs"]["signal-contract"]["gate"] == "data"
+    jobs, _ = real_manifest_scopes
+    selected, reason = PACK.select_jobs([job for job in jobs if job.gate == "code"], [changed_path])
+    assert owner_id in {job.job_id for job in selected}, (changed_path, reason)
+    assert "unowned path" not in reason, (changed_path, reason)

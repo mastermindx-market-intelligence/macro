@@ -55,7 +55,7 @@ def fixtures(symbol="TEST"):
     return context, selection, fact
 
 
-SHELL = '''<!doctype html><html><head><link rel="stylesheet" href="/ontology.css">
+SHELL = '''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="/ontology.css">
 <link rel="stylesheet" href="/ontology-company.css"><link rel="stylesheet" href="/theme.css">
 <style>body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}</style></head>
 <body><main class="ox-wrap"><section id="ox-company" class="ox-company">

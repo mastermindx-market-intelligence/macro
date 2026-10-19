@@ -98,8 +98,14 @@ def _project_selected(admission: native.Admission, request: native.Request, sele
         q = selected.get("supplier_binding")
         if (selected["schema"] != "company_intelligence.private_disclosed_supplier/v1"
                 or type(q) is not dict or q.get("direction") != "object_supplies_subject"
-                or q.get("identity_mode") != "current"):
+                or q.get("identity_mode") != "current"
+                or any(type(q.get(k)) is not str or re.fullmatch(r"[0-9a-f]{64}", q[k]) is None
+                       for k in ("current_subject_identity", "current_object_identity"))):
             return _unavailable("NATIVE_PROJECTION_CONTRACT_MISMATCH")
+        # These are the current receipt digests used by this native qualification,
+        # separate from immutable fact decision hashes. A K3 join must match both.
+        context["provenance"]["current_identity_sha256s"] = {
+            "subject": q["current_subject_identity"], "object": q["current_object_identity"]}
         s = timing["sec_source"]
         context["timing"].update(sec_accepted_at=s["accepted_at"], retained_retrieved_at=s["retrieved_at"],
             retained_recorded_at=s["recorded_at"], pinned_snapshot_at=s["snapshot_at"],

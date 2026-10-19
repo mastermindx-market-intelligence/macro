@@ -164,8 +164,31 @@ export function createCompanyController({ fetchImpl, getSession, onState, decode
       decoder.assertPrivateComposition(retained.selection, entry, fact);
       await owner(op, retained.identity);
       check(op);
+      qualified = { ...retained, fact, selectedFactId: factId };
       publish({ status: 'ready', context: retained.context, selection: retained.selection,
         fact, selectedFactId: factId });
+    }, retained);
+  }
+  function selectResearch(factId) {
+    if (disposed) return Promise.resolve();
+    const retained = qualified;
+    const entry = retained && retained.selection.selections.find(item => item.fact_id === factId);
+    // Research is an explicit continuation of this exact displayed fact. A
+    // selection row alone cannot authorize a speculative or automatic read.
+    if (!entry || !retained.fact || retained.selectedFactId !== factId) {
+      stop(); qualified = null; publish({ status: 'unavailable' });
+      return Promise.resolve();
+    }
+    return run(async op => {
+      const raw = await read(op, 'supplier-research/' + encodeURIComponent(factId), retained.identity);
+      const research = await checked(op, decoder.decodePrivateSupplierResearch(raw, factId));
+      decoder.assertPrivateComposition(retained.selection, entry, research.disclosure);
+      decoder.assertPrivateResearchComposition(retained.fact, research);
+      await owner(op, retained.identity);
+      check(op);
+      qualified = { ...retained, fact: research.disclosure };
+      publish({ status: 'ready', context: retained.context, selection: retained.selection,
+        fact: research.disclosure, selectedFactId: factId, research });
     }, retained);
   }
   function clear() {
@@ -176,5 +199,5 @@ export function createCompanyController({ fetchImpl, getSession, onState, decode
     if (disposed) return;
     clear(); disposed = true;
   }
-  return { lookup, selectFact, clear, dispose };
+  return { lookup, selectFact, selectResearch, clear, dispose };
 }

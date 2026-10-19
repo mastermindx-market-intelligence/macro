@@ -18,6 +18,8 @@ const decoder = {
   decodePrivateDisclosure: (v,id)=>{assert.equal(v.id,id);return v;},
   assertPrivateComposition: (s,e,f)=>{assert.equal(s,selection);assert.equal(e.fact_id,f.id);assert.equal(f.generation,s.generation);},
   decodePrivateError: ()=>{throw new Error('closed');},
+  decodePrivateSupplierResearch: async (v,id)=>{assert.equal(v.disclosure.id,id);return v;},
+  assertPrivateResearchComposition: (f,r)=>assert.deepEqual(f,r.disclosure),
 };
 const response = value => new Response(JSON.stringify(value),{headers});
 const deferred = () => {let resolve;const promise = new Promise(r=>{resolve=r;});return {resolve,promise};};
@@ -37,6 +39,53 @@ test('a superseded unresolved session cannot start a request',async()=>{
   await controller.lookup('NEW');
   pending.resolve(session());await old;
   assert.equal(calls,0);assert.equal(states.at(-1).status,'signed_out');controller.dispose();
+});
+
+test('research requires an explicitly read fact and makes one closed request',async()=>{
+  const urls=[];const fact={id:'fact-one',generation:'one'};
+  const {controller,states}=setup(async url=>{
+    urls.push(url);
+    return response(url.includes('company-context')?{type:'context'}:url.includes('/issuers/')?{type:'selection'}:
+      url.includes('/supplier-research/')?{status:'available',disclosure:fact,candidate:{record_id:'fixture'}}:fact);
+  });
+  await controller.lookup('ONE');await controller.selectResearch('fact-one');
+  assert.equal(urls.length,2);assert.equal(states.at(-1).status,'unavailable');
+  await controller.lookup('ONE');await controller.selectFact('fact-one');
+  assert.ok(!states.at(-1).research);
+  await controller.selectResearch('fact-one');
+  assert.equal(urls.length,6);assert.ok(urls.at(-1).endsWith('/supplier-research/fact-one'));
+  assert.equal(states.at(-1).research.status,'available');
+  controller.clear();assert.ok(!states.at(-1).research);controller.dispose();
+});
+
+test('late research result cannot replace a later fact or cleared query',async()=>{
+  const held=deferred();let calls=0;
+  const fact={id:'fact-one',generation:'one'};
+  const {controller,states}=setup(async url=>{
+    calls++;if(url.includes('supplier-research'))return held.promise;
+    return response(calls===1?{type:'context'}:calls===2?{type:'selection'}:{id:calls===3?'fact-one':'fact-two',generation:'one'});
+  });
+  await controller.lookup('ONE');await controller.selectFact('fact-one');
+  const old=controller.selectResearch('fact-one');await turn();await controller.selectFact('fact-two');
+  const count=states.length;held.resolve(response({status:'available',disclosure:fact,candidate:{record_id:'fixture'}}));await old;
+  assert.equal(states.length,count);assert.equal(states.at(-1).fact.id,'fact-two');assert.ok(!states.at(-1).research);controller.dispose();
+});
+
+test('changed disclosure or account during research is withheld without retry',async()=>{
+  for(const mutation of ['generation','principal']){
+    let calls=0;let who=session();const fact={id:'fact-one',generation:'one'};
+    const {controller,states}=setup(async url=>{
+      calls++;
+      if(url.includes('supplier-research')){
+        if(mutation==='principal')who={user:{id:'other'},access_token:'other'};
+        return response({disclosure:{...fact,generation:mutation==='generation'?'two':'one'}});
+      }
+      return response(calls===1?{type:'context'}:calls===2?{type:'selection'}:fact);
+    },async()=>who);
+    await controller.lookup('ONE');await controller.selectFact('fact-one');await controller.selectResearch('fact-one');
+    assert.equal(calls,4);assert.equal(states.at(-1).status,mutation==='principal'?'signed_out':'unavailable');
+    assert.ok(!states.at(-1).research);assert.ok(!states.at(-1).fact);controller.dispose();
+  }
 });
 
 test('uncooperative old fetch cannot publish after query replacement',async()=>{

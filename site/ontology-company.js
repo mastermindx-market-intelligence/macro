@@ -1,7 +1,7 @@
 /* Macro's private company inspector. Nothing is loaded until the reader asks.
  * Owner responses live only in this view; never in URLs, telemetry or storage. */
-import * as decoder from './ontology-company-contract.js?v=e28cac59';
-import { createCompanyController } from './ontology-company-controller.js?v=9206df0e';
+import * as decoder from './ontology-company-contract.js?v=9a32b97f';
+import { createCompanyController } from './ontology-company-controller.js?v=e8469cc9';
 
 function words(en, zh) {
   const fragment = document.createDocumentFragment();
@@ -202,11 +202,80 @@ export function mountCompanyResearch(root) {
           'Source dates retain their original precision. The observation timestamp is separate from the announcement date and does not establish that the plan is still current.',
           '来源日期保留原始精度。观测时间与公告日期分列，也不证明该计划至今仍然有效。'));
       }
+      const researchButton = element('button', 'ox-action', 'Explore second-order research', '探索二阶研究');
+      researchButton.type = 'button';
+      researchButton.addEventListener('click', () => { void controller.selectResearch(value.fact.fact_id); });
+      card.append(researchButton);
       output.append(card);
     } else if (state.status === 'ready') {
       output.append(element('p', 'ox-note',
         'Select a disclosure to read its source-qualified fact. Selection metadata alone does not establish the fact.',
         '选择一项披露以读取经来源核验的事实。仅凭列表元数据无法确立事实。'));
+    }
+    if (state.research) {
+      const result = state.research;
+      const research = element('article', 'ox-card ox-company-research');
+      research.setAttribute('data-research-status', result.status);
+      if (result.status === 'context_only') {
+        research.append(element('h3', '', 'Context without a transmission claim', '仅有背景，尚无传导论断'),
+          element('p', 'ox-note',
+            'This planned integration supplies context only. It does not establish a supplier role or an operating transmission, so no second-order hypothesis is constructed from it.',
+            '这项计划中的整合仅提供背景，并未确立供应商角色或经营传导，因此不会据此构建二阶假设。'));
+      } else {
+        const c = result.candidate, o = c.observed;
+        research.append(element('h3', '', 'A conditional supplier hypothesis', '一项有条件的供应商假设'),
+          element('p', 'ox-note', 'Research candidate · untested · no trade authority', '研究候选 · 未经检验 · 无交易授权'));
+        research.append(element('h4', '', 'Reported event', '已报告的事件'),
+          element('p', '',
+            'NVIDIA reported diminished demand for H20 products in its first fiscal quarter of 2026. The FY2026 filing also identifies TSMC as a wafer foundry supplier.',
+            '英伟达报告其 2026 财年第一季度 H20 产品需求减弱。同一份 2026 财年申报也将台积电列为晶圆代工供应商。'),
+          element('h4', '', 'Proposed transmission', '拟议的传导路径'),
+          element('p', '',
+            'If that demand loss reduces applicable wafer procurement from TSMC, TSMC operating volume could decline relative to a comparable baseline. Whether H20 affected TSMC procurement or volume is not established by these disclosures.',
+            '若该需求下降减少了适用于台积电的晶圆采购，其经营量可能低于可比基准。这些披露尚未确立 H20 对台积电采购或经营量的实际影响。'),
+          element('p', 'ox-note',
+            'Both observations come from one filing, so they are not independent confirmations. No allocation, effect size, confidence or impact lag has been estimated.',
+            '两项观察均来自同一份申报，不能算作独立确认。尚未估计分配量、影响大小、置信度或影响时滞。'));
+        research.append(element('h4', '', 'What would test it', '如何检验'));
+        const tests = element('ul');
+        tests.append(element('li', '',
+          'First establish that the demand change reached this supplier through an applicable relationship.',
+          '先核实需求变化确实通过适用关系传至该供应商。'),
+          element('li', '',
+            'Before testing, fix the metric, comparable baseline, event and outcome windows, lag, rejection rule and uncertainty treatment.',
+            '检验前固定指标、可比基准、事件与结果窗口、时滞、拒绝规则及不确定性处理。'),
+          element('li', '',
+            'If the antecedent occurred but eligible volume observations fail the preregistered decline test, reject that scoped claim. Missing evidence leaves it untested.',
+            '若前提发生但合格经营量观察未通过预注册的下降检验，则拒绝该范围内的论断。缺少证据意味着仍未检验。'));
+        research.append(tests, element('h4', '', 'Alternative explanations', '替代解释'),
+          element('p', '',
+            'A shared industry driver or coincident timing could explain the association without transmission between these businesses.',
+            '共同的行业驱动因素或时间上的巧合，也可能解释该关联，而无需两家公司之间存在传导。'),
+          element('p', 'ox-note',
+            'Context-only path refused: appearing in the same document is insufficient to construct a supplier transmission. The qualified role is required.',
+            '已拒绝仅凭背景的路径：出现在同一文件中不足以构建供应商传导，必须具备合格角色证据。'));
+        const evidence = element('details', 'ox-detail');
+        evidence.append(element('summary', '', 'Research evidence and test contract', '研究证据与检验约定'));
+        const fields = element('dl', 'ox-company-fields ox-company-references');
+        field(fields, 'Target security', '目标证券', c.target.security_id);
+        field(fields, 'Reported occurrence period', '报告中的发生期间', 'FY' + o.occurrence_period.year + ' Q' + o.occurrence_period.quarter);
+        field(fields, 'SEC reporting acceptance', 'SEC 报告接收时刻', o.reporting_at);
+        field(fields, 'Source retrieved', '来源读取时刻', o.retrieved_at);
+        field(fields, 'Reported event adopted', '报告事件采纳时刻', o.adopted_at);
+        field(fields, 'Source reverified', '来源复核时刻', o.verified_at);
+        field(fields, 'Hypothesis compiled', '假设构建时刻', c.compiled_at);
+        field(fields, 'Review by (not impact lag)', '复核日期（并非影响时滞）', c.review_by);
+        field(fields, 'Native research record', '原生研究记录', c.record_id);
+        field(fields, 'Native record digest', '原生记录摘要', c.content_sha256);
+        field(fields, 'Reported event reference', '报告事件引用', o.event_fact_id);
+        field(fields, 'Source span digest', '来源片段摘要', o.span_sha256);
+        evidence.append(fields, element('p', 'ox-note',
+          'Current identity is used. Filing acceptance is a reporting clock; it does not date the economic occurrence or historical availability in this system. No empirical test has been registered or run for this record.',
+          '使用的是当前身份。申报接收时刻是报告时钟，不是经济事件的发生时刻，也不代表本系统的历史可用时刻。本记录尚未注册或执行实证检验。'));
+        const nativeText = element('p'); nativeText.textContent = c.mechanism.hypothesis_text;
+        evidence.append(element('h4', '', 'Original hypothesis wording (English)', '假设原文（英文）'), nativeText); research.append(evidence);
+      }
+      output.append(research);
     }
     const detail = element('details', 'ox-detail');
     detail.append(element('summary', '', 'Identity and source references', '身份与来源引用'));

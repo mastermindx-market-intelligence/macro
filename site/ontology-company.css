@@ -18,7 +18,8 @@ html[data-theme="light"] .ox-company input[type="date"]{color-scheme:light}
 .ox-company-identity,.ox-company-choices{display:flex;flex-wrap:wrap;gap:var(--space-3,12px);align-items:center;margin:var(--space-4,16px) 0}
 .ox-company-current{color:var(--muted);font-size:var(--fs-sm)}
 .ox-company-choices [aria-pressed="true"]{border-color:var(--ink-info,var(--info));color:var(--ink-info,var(--info))}
-.ox-company-fact h3{font-size:var(--fs-h3);margin:0 0 var(--space-3,12px)}
+.ox-company-fact h3,.ox-company-research h3{font-size:var(--fs-h3);margin:0 0 var(--space-3,12px)}
+.ox-company-research{margin-top:var(--space-4,16px)}
 .ox-company-fields{display:grid;gap:var(--space-3,12px);margin:var(--space-4,16px) 0}
 .ox-company-field{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(0,1.3fr);gap:var(--space-4,16px)}
 .ox-company-field dt{color:var(--muted);font-size:var(--fs-sm)}

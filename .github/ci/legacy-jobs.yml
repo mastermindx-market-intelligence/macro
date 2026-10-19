@@ -37,6 +37,15 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
@@ -1822,6 +1831,15 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
@@ -2671,6 +2689,15 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
@@ -6378,6 +6405,10 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -8664,6 +8695,15 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -11018,6 +11058,11 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -11934,6 +11979,24 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "tests/test_company_disclosures_api.py"
+      - "tests/test_company_issuer_disclosures.py"
+      - "tests/test_company_supplier_research_api.py"
+      - "tests/test_h20_supplier_conditional.py"
+      - "tests/test_gmi_native_disclosure_propagation.py"
+      - "tests/test_ontology_supplier_research_browser.py"
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "contracts/economic_propagation/generator_registry.v1.json"
+      - "contracts/economic_propagation/propagation_hypothesis.v1.schema.json"
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/cycle_pattern/__init__.py"
+      - "engine/entry_radar/replay/__init__.py"
       - engine/company_intelligence/pinned_relationship_candidates.py
       - engine/company_intelligence/relationship_candidates.py
       - engine/fundamental_forensics/pipeline.py
@@ -13047,15 +13110,15 @@ jobs:
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
-        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py tests/test_ontology_radar_research_transport.py -q
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py tests/test_ontology_radar_research_transport.py tests/test_company_supplier_research_api.py -q
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
         run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py -q
       - name: captured native DRL event and evidence composition
-        run: python -m pytest tests/test_price_pressure_research.py -q
+        run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py tests/test_ontology_supplier_research_browser.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -19235,6 +19298,10 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -20019,6 +20086,10 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -22037,6 +22108,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/__init__.py
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
@@ -23649,6 +23729,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/price_pressure/research.py"
@@ -24433,6 +24516,10 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -29847,6 +29934,10 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
       - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
       - "engine/entry_radar/research_read.py"
@@ -30357,6 +30448,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
       - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
@@ -33273,6 +33372,15 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/company_supplier_research.py"
+      - "engine/company_intelligence/h20_reported_event.py"
+      - "engine/theme_graph/native_disclosure_propagation.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
+      - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
+      - "engine/entry_radar/replay/__init__.py"
+      - "engine/price_pressure/__init__.py"
       - engine/fundamental_forensics/__init__.py
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
@@ -35804,6 +35912,38 @@ jobs:
       - name: File, pinned-source, observation and native disclosure contracts
         run: python -m pytest tests/test_sec_supplier_adoption.py tests/test_sec_supplier_publisher_composition.py tests/test_company_disclosure_additive_current.py tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
 
+  k3d-economic-propagation-contracts:
+    if: ${{ false }}
+    gate: code
+    # Sole K3-D execution home. The historical signal-contract job is data-gated
+    # and is not executed by the PR workflow's --gate code selection.
+    scope: exclusive
+    paths:
+      - "lib/__init__.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "contracts/economic_propagation/**"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_economic_propagation_hypothesis_contract.py"
+      - "tests/test_economic_propagation_source_grain.py"
+      - "tests/test_economic_propagation_v2.py"
+      - "tests/test_economic_propagation_v2_semantics.py"
+      - "tests/test_economic_propagation_native_carrier.py"
+      - "tests/fixtures/economic_propagation/**"
+      - "research/economic_propagation/k3d_real_proof_records/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install native contract dependencies
+        run: pip install pytest jsonschema
+      - name: K3-D Economic Propagation hypothesis contract and laundering kills
+        run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py tests/test_economic_propagation_native_carrier.py -q
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
     # Exact kernel/policy inputs plus shared pytest imports; no source acquisition.
