@@ -145,5 +145,32 @@
     "finished_at": "2026-10-19T01:28:43.863552+00:00",
     "exit_code": 0,
     "log": "outlook_browser_release.txt"
+  },
+  {
+    "name": "render_ci",
+    "command": [
+      "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+      "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "--source-dir",
+      ".",
+      "--output-dir",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018/research/paper_international_wave1_wave2/country_cockpit_preview",
+      "--reuse-inputs"
+    ],
+    "started_at": "2026-10-19T04:58:11.471558+00:00",
+    "finished_at": "2026-10-19T04:58:17.440112+00:00",
+    "exit_code": 0,
+    "log": "outlook_render_ci.txt"
+  },
+  {
+    "name": "browser_ci",
+    "command": [
+      "node",
+      "research/paper_international_wave1_wave2/verify_country_cockpit.cjs"
+    ],
+    "started_at": "2026-10-19T04:58:17.443301+00:00",
+    "finished_at": "2026-10-19T04:59:02.548896+00:00",
+    "exit_code": 0,
+    "log": "outlook_browser_ci.txt"
   }
 ]

@@ -182,3 +182,29 @@ def test_universe_ticker_conversion():
     assert _clean_local("BT.A") == "BT-A"                # class share -> dash
     assert _clean_local("CASH") is None                  # cash row skipped
     assert _EU_SUFFIX["Germany"] == ".DE" and _EU_SUFFIX["France"] == ".PA"
+
+
+def test_country_controller_survives_the_normal_html_publisher(tmp_path, monkeypatch):
+    """Country navigation is delivered inside the public HTML document."""
+    import re
+    from datetime import date
+    from lib.intl_country_assessment import build_country_assessments
+    from lib import pages
+
+    vm = _vm()
+    vm["intl_analysis"] = build_country_assessments(vm["latest"], today=date(2026, 10, 19))
+    html = _env().get_template("intl.html.j2").render(**vm, mode="macro")
+    controller = (ROOT / "templates" / "intl_country_cockpit.js").read_text().strip()
+    monkeypatch.setattr(pages, "_site_root", lambda: tmp_path)
+    monkeypatch.setattr(pages, "_shim_checked", False)
+    output = pages.write_page(tmp_path / "intl.html", html).read_text()
+    # The production post-render sweep externalizes opt-in scripts only.
+    output = pages.externalize_js_text(output, lambda _body, _index: "assets/js/opted-in.js")
+    inline = re.findall(r'<script\b([^>]*)>(.*?)</script>', output, re.S)
+    delivered = [(attrs, body) for attrs, body in inline if body.strip() == controller]
+    assert len(delivered) == 1
+    assert "src=" not in delivered[0][0] and "data-externalize" not in delivered[0][0]
+    assert not re.search(r'<script\b[^>]*\bsrc="[^\"]*intl_country_cockpit\.js', output)
+    assert 'id="imc-country-JP"' in output
+    stocks = _env().get_template("intl.html.j2").render(**vm, mode="stocks")
+    assert controller not in stocks

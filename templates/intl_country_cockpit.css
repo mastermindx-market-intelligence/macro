@@ -34,7 +34,7 @@
 .imc-country{padding:0;scroll-margin-top:100px}
 .imc-country>summary{display:grid;grid-template-columns:220px minmax(170px,1fr) 130px 136px 18px;gap:20px;align-items:center;padding:18px 24px;cursor:pointer;list-style:none;min-height:88px}
 .imc-country>summary::-webkit-details-marker,.imc-evidence>summary::-webkit-details-marker{display:none}
-.imc-country>summary:hover{background:color-mix(in srgb,var(--panel2) 65%,transparent)}
+.imc-country>summary:hover{background:var(--imc-summary-hover)}
 .imc-identity{display:flex;align-items:center;gap:12px;min-width:0}
 .imc-identity>span:last-child{display:grid;gap:3px}
 .imc-identity strong{font-size:var(--fs-md);font-weight:700;line-height:1.3}
@@ -48,7 +48,7 @@
 .imc-disclosure{font-size:var(--fs-num-lg);color:var(--muted);font-weight:300;text-align:center}
 .imc-country[open]>summary{border-bottom:1px solid var(--line)}
 .imc-country[open]>summary .imc-disclosure{transform:rotate(45deg)}
-.imc-country[open]{border-color:color-mix(in srgb,var(--line) 58%,var(--link))}
+.imc-country[open]{border-color:var(--imc-country-line)}
 .imc-country-body{padding:0 24px 8px}
 .imc-assessment-heading{display:flex;justify-content:space-between;align-items:baseline;gap:30px;padding:20px 0}
 .imc-assessment-heading>p{font-size:var(--fs-md);font-weight:500;max-width:780px}
@@ -89,7 +89,7 @@
 .imc-driver h3{font-size:var(--fs-h2);margin:8px 0}
 .imc-driver>p:not(.imc-kicker){font-size:var(--fs-sm);line-height:1.65}
 .imc-driver-mechanism{color:var(--muted);margin-top:7px!important}
-.imc-paths{padding:22px;background:color-mix(in srgb,var(--panel2) 65%,var(--panel));border-left:2px solid var(--line);align-self:stretch;display:flex;flex-direction:column}
+.imc-paths{padding:22px;background:var(--imc-context-surface);border-left:2px solid var(--line);align-self:stretch;display:flex;flex-direction:column}
 .imc-paths>h3{font-size:var(--fs-h2);margin:7px 0 3px;letter-spacing:-.015em}
 .imc-path-type{font-size:var(--fs-label);color:var(--muted)}
 .imc-paths>section{display:flex;gap:13px;margin-top:24px}
@@ -120,9 +120,9 @@
 #intl-analysis-tools>summary{min-height:64px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:var(--fs-body);font-weight:600;color:var(--muted)}
 #intl-analysis-tools[open]>summary{margin-bottom:20px}
 html[data-theme="light"] .imc .panel{background:var(--panel);box-shadow:var(--card-shadow)}
-html[data-theme="light"] .imc-country[open]{border-color:color-mix(in srgb,var(--link) 35%,var(--line));box-shadow:var(--popover-shadow,var(--card-shadow))}
-html[data-theme="light"] .imc-paths{background:var(--panel2);border-left:2px solid color-mix(in srgb,var(--link) 35%,var(--line))}
-html[data-theme="light"] .imc-outlook-panel{background:color-mix(in srgb,var(--panel2) 65%,var(--panel))}
+html[data-theme="light"] .imc-country[open]{border-color:var(--imc-country-line);box-shadow:var(--popover-shadow,var(--card-shadow))}
+html[data-theme="light"] .imc-paths{background:var(--panel2);border-left:2px solid var(--imc-country-line)}
+html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface)}
 @media(min-width:1600px){.imc{padding-inline:40px}}
 @media(max-width:1150px){
  .imc-country>summary{grid-template-columns:190px minmax(150px,1fr) 110px 112px 16px;gap:14px;padding-inline:20px}

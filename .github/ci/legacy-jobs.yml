@@ -5582,6 +5582,26 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "config/intl_country_baseline.json"
+      - "config/intl_country_commentary.json"
+      - "config/intl_country_releases.json"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
+      - "tests/test_intl_country_cockpit.py"
+      - "tests/test_intl_forecast_vintages.py"
+      - "tests/test_intl_outlook_interpretation.py"
+      - "tests/test_intl_policy_evidence.py"
+      - "tests/fixtures/intl_weo_october_2026_tables.json"
+      - "templates/intl_country_cockpit.css"
+      - "templates/intl_country_cockpit.html.j2"
+      - "templates/intl_country_cockpit.js"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/intl_history_mount.py"
@@ -5893,12 +5913,29 @@ jobs:
         run: pip install pytest pandas numpy pyyaml pyarrow jinja2
       - name: International return identity, windows and observation provenance
         run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py -q
+      - name: International country evidence, outlook and publication custody
+        run: python -m pytest tests/test_intl_country_cockpit.py tests/test_intl_forecast_vintages.py tests/test_intl_outlook_interpretation.py tests/test_intl_policy_evidence.py -q
 
   international-workspace-browser:
     if: ${{ false }}
     gate: code
     scope: exclusive
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "config/intl_country_baseline.json"
+      - "config/intl_country_commentary.json"
+      - "config/intl_country_releases.json"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
+      - "templates/intl_country_cockpit.css"
+      - "templates/intl_country_cockpit.html.j2"
+      - "templates/intl_country_cockpit.js"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -8496,6 +8533,15 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
@@ -13242,6 +13288,18 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "config/intl_country_baseline.json"
+      - "config/intl_country_commentary.json"
+      - "config/intl_country_releases.json"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -13560,6 +13618,18 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "config/intl_country_baseline.json"
+      - "config/intl_country_commentary.json"
+      - "config/intl_country_releases.json"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -22205,6 +22275,18 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # International R12: measured country-source import closure and verification.
+      - "collectors/intl_country_sources.py"
+      - "collectors/intl_policy_sources.py"
+      - "collectors/intl_weo.py"
+      - "config/intl_country_baseline.json"
+      - "config/intl_country_commentary.json"
+      - "config/intl_country_releases.json"
+      - "lib/intl_country_assessment.py"
+      - "lib/intl_country_inputs.py"
+      - "lib/intl_country_outlook.py"
+      - "lib/intl_forecast_vintages.py"
+      - "lib/intl_policy_evidence.py"
       - "scripts/build_turn_watch.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py

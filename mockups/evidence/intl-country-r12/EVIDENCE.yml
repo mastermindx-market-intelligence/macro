@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/intl.html.j2
+  - templates/intl_country_cockpit.css
+  - templates/theme.css
+manifest: mockups/evidence/intl-country-r12/manifest.json

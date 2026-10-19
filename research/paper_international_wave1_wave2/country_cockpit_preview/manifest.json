@@ -32,11 +32,11 @@
     }
   },
   "html_sha256": {
-    "intl_country_preview.html": "e4b11651c67ae530c43ff55d32a51527e622d75e5ba31353729e7e64ccd64d9d",
-    "intl_integrated_preview.html": "feaa6017726f1d3e1d95db8df2fac9d0ae03d46da4b0fb71bc37212dc3645f35",
-    "intl_stocks_integrated_preview.html": "0b9544f87af836315bc9f76102197ac3bd54732c44f9f47eab1975606691e9c7"
+    "intl_country_preview.html": "0218e3837e4e8169cad219b5f91a7b73bd195d033a69b0f910905dd5767ff3fc",
+    "intl_integrated_preview.html": "b9b77bdeb442c9d0ee7df6f013318145be0536a8a8b138236e0e5349ca0a2dfa",
+    "intl_stocks_integrated_preview.html": "510b7025401a2f683f5e981ba8ecb77fe16d4c42fad1ac28093721e21adb2410"
   },
-  "rendered_at": "2026-10-19T01:28:19.745317+00:00",
+  "rendered_at": "2026-10-19T04:58:11.983592+00:00",
   "countries": 7,
   "forecasts": 7,
   "forecast_archive_count": 37,
@@ -150,5 +150,5 @@
     }
   ],
   "errors_observed_at": "2026-10-18T03:33:39.379940+00:00",
-  "sha256": "e4b11651c67ae530c43ff55d32a51527e622d75e5ba31353729e7e64ccd64d9d"
+  "sha256": "0218e3837e4e8169cad219b5f91a7b73bd195d033a69b0f910905dd5767ff3fc"
 }

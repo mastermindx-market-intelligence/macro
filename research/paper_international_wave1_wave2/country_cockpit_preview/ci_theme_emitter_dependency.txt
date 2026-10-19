@@ -1,0 +1,16 @@
+Collecting rjsmin==1.2.5
+  Downloading rjsmin-1.2.5.tar.gz (427 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: rjsmin
+  Building wheel for rjsmin (pyproject.toml): started
+  Building wheel for rjsmin (pyproject.toml): finished with status 'done'
+  Created wheel for rjsmin: filename=rjsmin-1.2.5-cp314-cp314-macosx_26_0_arm64.whl size=17354 sha256=900099b315ced82985ad7ada59dfb1d32bcbfb886d8c9f7eeb461f4334c9ee0a
+  Stored in directory: /Users/chriswong/Library/Caches/pip/wheels/05/a6/29/47395bad24401da3a4efae88100d61f9f4a011bff90313fbf9
+Successfully built rjsmin
+Installing collected packages: rjsmin
+Successfully installed rjsmin-1.2.5

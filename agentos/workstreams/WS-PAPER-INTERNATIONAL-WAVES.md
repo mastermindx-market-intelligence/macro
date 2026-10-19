@@ -151,11 +151,14 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Publish the verified R12 country-outlook increment through the original typed operation into
-  existing draft PR9596. The repository-aware publisher is repaired; local and remote parent are 9eb4082.
-  Resolve hosted CI, independent release review and served production acceptance. Retain the earlier PR8754
-  carrier and its separate release, rights, browser and Saved migration obligations.
+next_action: Conclude exact-current-head hosted CI and independent release review on the original PR9596
+  carrier. Consume the genuine Sector Central reference-review repair on existing owner PR9592 and resolve
+  the unavailable Session Bridge through its owner. Then complete normal main-branch render, deployment
+  and served acceptance. Retain PR8754 and its separate rights, browser, Saved and release obligations.
 artifacts:
+- research/paper_international_wave1_wave2/CI_INTEGRATION_R12_20261019.json
+- research/paper_international_wave1_wave2/RELEASE_PATH_R12_20261019.md
+- mockups/evidence/intl-country-r12/EVIDENCE.yml
 - research/paper_international_wave1_wave2/COUNTRY_OUTLOOK_R12_20261019.md
 - research/paper_international_wave1_wave2/paper_r12_receipt.json
 - research/paper_international_wave1_wave2/country_outlook_verification_20261019.json
@@ -227,3 +230,18 @@ Paper R12 is complete at file `01M3P1TW5Y3XWQC37ADDS8K5AG`, page `p-G-0`: four e
 The affected Python suite passes 160 cases in nine files. The final principal re-review closed the alternate-URL/bank-alias conflict and unmeasured policy-stance findings. Integrated Chrome passes 12 viewport/theme/language states and 10 journeys, including all country paths, source and period distinctions, national decisions, mobile chart legibility, keyboard/history, denied legacy assets, no-JavaScript disclosures and the incumbent assistant. Generated evidence HTML is normalized to remove whitespace-only lines before final fingerprints. These are isolated local served fixtures, not authenticated production acceptance.
 
 Fiscal/debt coverage remains unverified for KR/TW/IN/AU. A newer RBI decision was not admitted without sufficient primary evidence. The old separate carrier PR8754 and its source/access, Saved and release obligations remain independent. Current gates are exact-content publication to PR9596, hosted CI, required independent release review and real served-page acceptance. The accompanying R12 research contract and final verification receipt contain the precise source and proof limits.
+
+## 2026-10-19 — published R12 and owned CI integration repair
+
+Typed publication committed and pushed `88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4` to PR #9596 with clean local/remote readback. The final R12 snapshot carries 160 passing Python tests, 12 browser states, 10 journeys and 67 observed Paper effects.
+
+The original International integration writer now owns the CI follow-up on this same operation: add the 63 reported International dependency paths across the six affected jobs and wire the four country suites into `international-workspace-foundation` in `.github/ci/legacy-jobs.yml`; register the cockpit's existing color blends in `templates/theme.css` and consume those canonical tokens in its CSS. Current `docs/ACTIVE_BUILD_MAP.md` and open-PR searches were inspected for the affected files. The additions are scoped to this country's dependency closure and theme tokens. Existing job predicates, scopes, gate rules and other routes retain their ownership. The exact-head CI run 39185847530 also reports inherited Sector Central reference-integrity failures; their source owner and current-main repair are being resolved separately. PR9596 remains Draft pending the actual integration/release gates.
+
+
+## 2026-10-19 — canonical CI evidence and actual publication path
+
+The same-carrier follow-up is prepared against published R12 parent `88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4`. Canonical import-closure and suite-enrollment checks on the final sources report zero findings and zero unwired suites. The CI manifest's split/join check passes. The complete-diff design ratchet reports zero blockers; canonical visual evidence passes with 24/24 actual captures, including desktop/phone, EN/ZH, both themes and hover/focus. All 127 template/site pairs pass after the declared `rjsmin==1.2.5` emitter dependency was installed in the temporary test environment. No emitter or guard was changed.
+
+The original controller is inlined by the real template; the separate-asset hypothesis was disproved. The real HTML writer and opt-in script externalizer preserve it, and the fresh build/public-HTML selection passes ten cases. No access-policy or Caddy change is made. The existing collector and builder call chain was traced through actual country-input publication and incumbent market records. The paired shared-theme output is byte-identical to its source. Real Chrome computed-style comparisons match all 3,168 country-cockpit elements across both themes at rest, hover and focus. Canonical capture gaps and fixture-only failures remain disclosed in its receipt.
+
+The release dependency is now precise: original Sector Central owner PR9592/comment6248814344, updated 04:40:45Z, requires genuine Full RIG approval for all three October migration packets. Its inherited-base classification does not release dependent CI. Session discovery separately returns backend_unavailable because the installed Session Bridge owner is unavailable; no formal reviewer was dispatched. These are not waived by native principal advice or by local proof. Current source, proof identities, ordinary render path and remaining real deployment edge are bound in the CI integration receipt and release-path document. Production remains unproven, and the original carrier remains unarmed pending concluded binding gates.
