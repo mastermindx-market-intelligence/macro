@@ -37,6 +37,25 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -1798,6 +1817,25 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -2623,6 +2661,25 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -6306,6 +6363,22 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
       - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
@@ -8574,6 +8647,25 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -11822,6 +11914,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "tests/test_entry_radar_earnings_context_producer.py"
+      - "scripts/entry_radar_live.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/company_intelligence/research_generation.py"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/fundamental_forensics/issuer_sic.py"
@@ -12866,6 +12962,46 @@ jobs:
       - "tests/test_price_pressure_research.py"
       - "tests/test_ontology_research_transport.py"
       - "tests/test_ontology_research_browser.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/research_read.py"
+      - "templates/ontology-radar-research.js"
+      - "site/ontology-radar-research.js"
+      - "tests/test_earnings_opportunity_qualification.py"
+      - "tests/test_earnings_opportunity_context.py"
+      - "tests/test_entry_radar_quote_context.py"
+      - "tests/test_entry_radar_research_read.py"
+      - "tests/test_ontology_radar_research_transport.py"
+      - "tests/test_ontology_radar_research_browser.py"
+      - "engine/company_intelligence/industrial_sources.py"
+      - "engine/company_intelligence/noc_adverse_profile.py"
+      - "engine/company_intelligence/resolution.py"
+      - "engine/cycle_pattern/imce_prospective.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/live_verify.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "research/imce/IMCE_A4P_ORDER_SOFTNESS_STATE_CONSTRUCTION_V1.md"
+      - "research/imce/IMCE_HB0_SOURCE_DEFINITION_CENSUS_V1.md"
+      - "scripts/build_cycle_pattern_imce_prospective.py"
+      - "scripts/build_live_quotes.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "tests/test_company_intelligence_event_workspace.py"
+      - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_dataos_identity.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -12880,13 +13016,15 @@ jobs:
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
-        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py -q
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py tests/test_ontology_radar_research_transport.py -q
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
+      - name: native earnings context, retained identity and published Radar read
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py -q
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py tests/test_ontology_research_browser.py tests/test_ontology_radar_research_browser.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -19059,6 +19197,22 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
       - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
@@ -19825,6 +19979,22 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
       - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
@@ -21825,6 +21995,25 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -24194,6 +24383,22 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
       - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
@@ -29590,6 +29795,22 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
       - "engine/price_pressure/research.py"
       - "engine/ontology_theme.py"
       - "engine/transmission_chains.py"
@@ -30082,6 +30303,25 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"
@@ -32974,6 +33214,25 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/entry_radar/research_read.py"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/entry_radar/quote_context.py"
+      - "engine/entry_radar/pack_spool.py"
+      - "engine/entry_radar/live_pack.py"
+      - "engine/entry_radar/live_ledger.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/earnings_context.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/company_intelligence/research_generation.py"
+      - "engine/company_intelligence/opportunity_qualification.py"
+      - "engine/company_intelligence/opportunity_context.py"
       - "engine/price_pressure/research.py"
       - "lib/opportunity_case.py"
       - "lib/opportunity_evidence.py"

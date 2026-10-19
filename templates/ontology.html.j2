@@ -133,6 +133,16 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     <div data-research-result aria-live="polite" aria-busy="false"></div>
   </details>
 
+  <details id="ox-radar-research" class="ox-company ox-detail ox-detail--flush">
+    <summary>{{ t('Read research from Entry Radar candidates', '读取入场雷达候选的研究证据') }}</summary>
+    <p class="ox-note">{{ t('Inspect published cases and earnings context for existing Radar candidates. This view creates no candidates and changes no priority or lifecycle.', '查看现有雷达候选已发布的案例与财报背景。此视图不创建候选，也不改变优先级或生命周期。') }}</p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-radar-read>{{ t('Read published candidates', '读取已发布候选') }}</button>
+      <button class="ox-cta secondary" type="button" data-radar-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-radar-result aria-live="polite" aria-busy="false"></div>
+  </details>
+
   <noscript>
     <section class="ox-gate">
       <h2>{{ t('This page needs JavaScript', '本页面需要 JavaScript') }}</h2>
@@ -170,5 +180,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-theme.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-research.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-radar-research.js"></script>
 </body>
 </html>

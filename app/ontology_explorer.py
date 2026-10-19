@@ -67,7 +67,8 @@ _PRIVATE_HEADERS = {
 _PRIVATE_POST_PATHS = frozenset({'/api/ontology/explorer/scenario/v1',
                                  '/api/ontology/explorer/portfolio/v1',
                                  '/api/ontology/explorer/theme/v1',
-                                 '/api/ontology/explorer/research/v1'})
+                                 '/api/ontology/explorer/research/v1',
+                                 '/api/ontology/explorer/radar-research/v1'})
 _POST_HEADERS = {**_PRIVATE_HEADERS, 'Vary': 'Authorization, Cookie'}
 
 _CHAIN_PARAM_RE = re.compile(r"[a-z0-9][a-z0-9_]{0,80}")
@@ -431,6 +432,43 @@ async def read_private_drl_research(request: Request,
 
 @router.api_route('/research/v1', methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'], include_in_schema=False)
 def _research_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
+    error = _post_error(405, 'method_not_allowed')
+    error.headers['Allow'] = 'POST'
+    raise error
+
+
+def read_radar_research(episode_id: str | None) -> dict:
+    from engine.entry_radar.research_read import read_published_research
+    # The same provisioned live root used by app.main and the native publisher.
+    # Never fall back to a checkout artifact when the live source is absent.
+    from app.main import LIVE
+    return read_published_research(LIVE, episode_id=episode_id)
+
+
+@router.post('/radar-research/v1')
+async def read_private_radar_research(request: Request,
+                                     _user: dict = Depends(require_site_full_user)) -> Response:
+    payload = await _private_post_body(request)
+    if (set(payload) != {'schema', 'episode_id'}
+            or payload['schema'] != 'ontology_radar_research_request.v1'
+            or payload['episode_id'] is not None and (
+                type(payload['episode_id']) is not str
+                or re.fullmatch(r'[A-Za-z0-9_.:-]{1,160}', payload['episode_id']) is None)):
+        raise _post_error(400, 'invalid_episode_selection')
+    from engine.entry_radar.research_read import ResearchReadUnavailable
+    try:
+        result = await run_in_threadpool(read_radar_research, payload['episode_id'])
+    except ResearchReadUnavailable as exc:
+        raise _post_error(404 if str(exc) == 'candidate_not_found' else 503,
+                          'candidate_not_found' if str(exc) == 'candidate_not_found' else 'research_unavailable') from None
+    except Exception:
+        log.error('ontology Radar research failed unexpectedly')
+        raise _post_error(503, 'research_unavailable') from None
+    return _bounded_post_response(result)
+
+
+@router.api_route('/radar-research/v1', methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'], include_in_schema=False)
+def _radar_research_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
     error = _post_error(405, 'method_not_allowed')
     error.headers['Allow'] = 'POST'
     raise error

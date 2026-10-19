@@ -327,6 +327,31 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    # F04 captured/native research and published Radar validation: request-time
+    # imports also stay cached. The three JSON resources have lru-cached readers.
+    'engine/entry_radar/c5_adapter.py',
+    'engine/entry_radar/challengers.py',
+    'engine/entry_radar/detectors.py',
+    'engine/entry_radar/earnings_context.py',
+    'engine/entry_radar/entry_events.py',
+    'engine/entry_radar/four_hour.py',
+    'engine/entry_radar/g0_adapter.py',
+    'engine/entry_radar/indicator_core.py',
+    'engine/entry_radar/indicator_ingest.py',
+    'engine/entry_radar/live_ledger.py',
+    'engine/entry_radar/live_pack.py',
+    'engine/entry_radar/quote_context.py',
+    'engine/entry_radar/readings.py',
+    'engine/entry_radar/replay/identity_observation_snapshot.py',
+    'engine/entry_radar/research_read.py',
+    'engine/price_pressure/__init__.py',
+    'engine/price_pressure/research.py',
+    'lib/evidence_foundation.py',
+    'lib/opportunity_case.py',
+    'lib/opportunity_evidence.py',
+    'contracts/opportunity_evidence/vector.v1.schema.json',
+    'contracts/opportunity_evidence/slot_registry.v1.json',
+    'contracts/evidence_foundation/reference.v1.schema.json',
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
@@ -500,6 +525,17 @@ MUST_RESTART = [
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.
 MUST_NOT_RESTART = [
+    # Research readers do not import nightly/writer siblings; exact lookalikes
+    # and uncached vocabulary changes must not widen the serving-plane trigger.
+    'engine/price_pressure/pipeline.py',
+    'engine/price_pressure/artifact.py',
+    'engine/entry_radar/live_eval.py',
+    'engine/entry_radar/earnings_contexts.py',
+    'engine/entry_radar/replay/identity_observation_snapshot.py.bak',
+    'scripts/entry_radar_live.py',
+    'contracts/opportunity_evidence/vector.v1.schema.json.bak',
+    'contracts/opportunity_evidence/slot_registry.v1.json.bak',
+    'contracts/evidence_foundation/vocabulary.v1.json',
     # doctrine prose hot-reloads on mtime; only doctrine.py is cached
     "engine/neuralweb/doctrine/00_identity.md",
     # rendered site + data artifacts are read from disk per request
@@ -920,6 +956,24 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
         "Add them (or, if a path is genuinely content read per request, document "
         "the exemption in the comment above the regex)."
     )
+
+
+def test_radar_research_request_import_closure_is_covered_by_restart_regex():
+    """The reader's function imports execute in-process on actual requests."""
+    queue = deque(_all_imports(ROOT / "engine/entry_radar/research_read.py"))
+    seen, uncovered = set(), set()
+    while queue:
+        dotted = queue.popleft()
+        if dotted in seen:
+            continue
+        seen.add(dotted)
+        queue.extend(_ancestor_packages(dotted))
+        for path in _module_files(dotted):
+            rel = str(path.relative_to(ROOT))
+            if not _triggers_restart(rel) and not _is_inert_package_init(path):
+                uncovered.add(rel)
+            queue.extend(_module_level_imports(path))
+    assert not uncovered, sorted(uncovered)
 
 
 def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():

@@ -1430,11 +1430,12 @@ def test_a2_registry_restricts_generic_and_captured_sources_and_keeps_supported_
     assert sources["owner_pit_reference"]["lawful_t0_modes"] == ["retrospective_research"]
     assert sources["drl_event_date"]["lawful_t0_modes"] == []
     assert sources["drl_captured_read"]["lawful_t0_modes"] == ["retrospective_research"]
+    assert sources["earnings_workspace_context"]["lawful_t0_modes"] == ["retrospective_research"]
     # ...and its lag budget is null by construction, since 'live' is the only
     # mode that ever consults it. That null is the second, independent fence.
     assert sources["owner_pit_reference"]["max_recording_lag_days"] is None
     for name, pin in sources.items():
-        if name in {"owner_pit_reference", "drl_event_date", "drl_captured_read"}:
+        if name in {"owner_pit_reference", "drl_event_date", "drl_captured_read", "earnings_workspace_context"}:
             continue
         assert "live" in pin["lawful_t0_modes"], f"{name} lost its live capability"
         # A source that may claim live must be checkable AND budgeted.

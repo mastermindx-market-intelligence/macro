@@ -1,6 +1,6 @@
 /* Macro's private company inspector. Nothing is loaded until the reader asks.
  * Owner responses live only in this view; never in URLs, telemetry or storage. */
-import * as decoder from './ontology-company-contract.js?v=9abd91d3';
+import * as decoder from './ontology-company-contract.js?v=cd777fff';
 import { createCompanyController } from './ontology-company-controller.js?v=49f6e9a9';
 
 function words(en, zh) {

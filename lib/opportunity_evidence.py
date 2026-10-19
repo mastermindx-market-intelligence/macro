@@ -1268,6 +1268,47 @@ def _check_content_hash(vector: dict) -> list[Finding]:
     return []
 
 
+def _check_earnings_context(vector: dict, slots: list[dict]) -> list[Finding]:
+    """Keep this native context isolated from ticker identity and live authority."""
+    selected = [s for s in slots if s.get("construct") == "earnings_reported_revenue" or "earnings_context" in s]
+    active = vector.get("asof", {}).get("t0_source") == "earnings_workspace_context"
+    native_subject = vector.get("subject", {}).get("subject_type") == "earnings_cik"
+    if not selected and not active and not native_subject:
+        return []
+    findings = []
+    def require(ok):
+        if not ok:
+            findings.append(_f("K3E_R023", "$", "native earnings context tuple/value/clocks/subject must match; research only"))
+    try:
+        require(len(slots) == len(selected) == 1 and active and native_subject)
+        slot = selected[0]; link = slot["earnings_context"]; asof = vector["asof"]
+        origin = asof["t0_evidence_ref"]
+        require(slot["construct"] == "earnings_reported_revenue"
+                and vector["subject"] == {"subject_type":"earnings_cik", "value":link["cik"], "identity_state":"single_owner_native", "identity_bridge":None}
+                and link["event_id"].startswith("evt_cik" + link["cik"] + "_")
+                and asof["t0_mode"] == "retrospective_research"
+                and origin["native_identity"] == {"event_id":link["event_id"], "generation_id":link["generation_id"]}
+                and origin["native_digest"] == {"state":"known", "sha256":link["workspace_sha256"]})
+        clock = lambda value, field, kind: {"value":value,"grain":"datetime","clock_class":kind,"native_field":field,"state":"known"}
+        require(slot["asof"] == clock(link["source_available_at"],"lifecycle.source_available_at","knowable")
+                and slot["known_at"] == clock(link["observed_at"],"lifecycle.observed_at","observed")
+                and origin["recorded_clock"] == clock(link["generated_at"],"generated_at","belief_or_build")
+                and _parse_instant(link["source_available_at"]) <= _parse_instant(link["observed_at"]) <= _parse_instant(link["generated_at"]) <= _parse_instant(asof["value"]))
+        fiscal = link["fiscal_period"]
+        token = str(fiscal["year"]) + ("q" + str(fiscal["quarter"]) if fiscal["quarter"] else "fy")
+        label = str(fiscal["year"]) + ("Q" + str(fiscal["quarter"]) if fiscal["quarter"] else "FY")
+        require(link["event_id"].startswith("evt_cik" + link["cik"] + "_" + token + "_")
+                and (link["observation"]["period"] == label or fiscal["calendar_end"] is not None
+                     and link["observation"]["period"] == fiscal["calendar_end"]))
+        require(slot["value_or_null"] == {k:link["observation"][k] for k in ("value","unit","basis","period")}
+                and slot["state"] == "observed" and slot["included_in_composition"] is True
+                and slot["owner_ref"]["evidence_ref_id"] is not None
+                and vector["permitted_consumers"] == ["opportunity_case_k5"])
+    except (KeyError, TypeError, ValueError, IndexError, AttributeError):
+        require(False)
+    return findings
+
+
 def validate_vector(vector: dict) -> list[Finding]:
     """Structural (JSON-Schema-subset) + semantic (K3E_R0xx) validation.
     Fail-closed: an unrecognized shape anywhere always yields a Finding
@@ -1291,6 +1332,7 @@ def validate_vector(vector: dict) -> list[Finding]:
     findings.extend(_check_clocks(slots, registry))
     findings.extend(_check_lookahead(vector, slots))
     findings.extend(_check_captured_drl(vector, slots))
+    findings.extend(_check_earnings_context(vector, slots))
     findings.extend(_check_cause_hypothesis(vector, slots))
     findings.extend(_check_identity_launder(vector, slots, registry))
     findings.extend(_check_authority_leak(vector, slots, registry))
@@ -1401,11 +1443,12 @@ def _compose_one_slot(raw: dict, subject: dict, constructs: dict, decomp: dict, 
     variation_receipt = raw.get("variation_receipt")
 
     included_in_composition, exclusion_reason = _derive_inclusion(
-        state, {**decision_asof, "state": "known"} if "captured_read" in raw else asof_clock, known_at_clock, cross_owner_join, subject, missingness
+        state, {**decision_asof, "state": "known"} if "captured_read" in raw or "earnings_context" in raw else asof_clock, known_at_clock, cross_owner_join, subject, missingness
     )
 
     return {
         **({"captured_read": raw["captured_read"]} if "captured_read" in raw else {}),
+        **({"earnings_context": raw["earnings_context"]} if "earnings_context" in raw else {}),
         "construct": construct,
         "family_binding": family_binding,
         "object_class": object_class,

@@ -95,6 +95,34 @@ def _captured_drl_identity(recipe: dict, blocks: list[dict], refs: dict, vector:
             'owner_store': 'price_pressure.event', 'native_identity': identity}
 
 
+def _earnings_context_identity(recipe: dict, blocks: list[dict], refs: dict, vector: dict) -> dict | None:
+    if vector['asof']['t0_source'] != 'earnings_workspace_context':
+        return None
+    origin = vector['asof']['t0_evidence_ref']
+    identity = origin['native_identity']
+    subject = {'key_type':'cik', 'key':vector['subject']['value']}
+    if (recipe['recipe_name'] != 'earnings_workspace_k5.v1' or recipe['subject_instance'] != subject
+            or recipe['identity_joins'] or len(blocks) != 1 or len(refs) != 1
+            or len(recipe['block_specs']) != 1
+            or recipe['block_specs'][0]['block_key'] != 'earnings_workspace_context'
+            or recipe['block_specs'][0]['output_fields'] != ['company_context']
+            or recipe['output_mappings'] != [{'output_field':'company_context','block_key':'earnings_workspace_context','when_unavailable':'refuse'}]
+            or blocks[0]['block_key'] != 'earnings_workspace_context'):
+        raise OpportunityCaseError('case_earnings_context_binding_invalid')
+    rid, ref = next(iter(refs.items())); slot = vector['slots'][0]; link = slot['earnings_context']
+    clocks = {c['field']:c['value'] for c in ref['clocks'] if c['value_state'] == 'known'}
+    if (ref['owner_store'] != 'earnings.workspace_generation' or ref['native_identity'] != identity
+            or ref['subject'] != subject or ref['secondary_subjects']
+            or ref['native_digest'] != origin['native_digest']
+            or ref['coverage_class'] != 'immutable_generation'
+            or blocks[0]['reference_ids'] != [rid] or slot['owner_ref']['evidence_ref_id'] != rid
+            or any(clocks.get(field) != link[key] for field,key in [
+                ('lifecycle.source_available_at','source_available_at'),('lifecycle.observed_at','observed_at'),('generated_at','generated_at')])):
+        raise OpportunityCaseError('case_earnings_context_reference_mismatch')
+    return {'identity_contract':'earnings_native_event.v1','owner_store':'earnings.workspace_generation',
+            'native_identity':{'event_id':identity['event_id']}}
+
+
 def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict],
                  vector: dict, evaluation_reference_ids: list[str] | None = None) -> dict:
     """Compose substantive native legs without converting unknowns to scores.
@@ -160,7 +188,9 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
     exact_subject = (subject["subject_type"] == "dataos_security_id"
                      and checked_recipe["subject_instance"] == {
                          "key_type": "security_id", "key": subject["value"]})
-    native_event = _captured_drl_identity(checked_recipe, checked_blocks, refs, vector)
+    native_event = (_captured_drl_identity(checked_recipe, checked_blocks, refs, vector)
+                    or _earnings_context_identity(checked_recipe, checked_blocks, refs, vector))
+    earnings_native = native_event is not None and native_event["identity_contract"] == "earnings_native_event.v1"
     if native_event is not None and receipt['state'] not in {'complete', 'partial', 'corrected'}:
         raise OpportunityCaseError('case_native_event_evidence_unavailable')
     joined = (exact_subject or native_event is not None) and receipt["state"] in {"complete", "partial", "corrected"}
@@ -171,7 +201,7 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
     admitted_ids = set(receipt["block_ids"]) if joined else set()
     context = {}
     for leg in _CONTEXT_LEGS:
-        keys = [] if native_event is not None else [m["block_key"] for m in checked_recipe["output_mappings"]
+        keys = [] if native_event is not None and not earnings_native else [m["block_key"] for m in checked_recipe["output_mappings"]
                 if m["output_field"] == leg]
         selected = [by_key[k] for k in dict.fromkeys(keys) if k in by_key]
         usable = [b for b in selected if b["evidence_block_id"] in admitted_ids
@@ -190,7 +220,7 @@ def compose_case(*, recipe: dict, blocks: list[dict], references: dict[str, dict
     for leg, constructs in {
         "transmission": ("macro_chain_state",),
         "company_context": ("forensics_scalars", "capital_structure_supply", "eightk_recency",
-                            "sue_surprise", "estimate_revisions"),
+                            "sue_surprise", "estimate_revisions", "earnings_reported_revenue"),
     }.items():
         native_slots = [slots[c] for c in constructs if c in slots]
         context[leg]["owner_slots"] = native_slots

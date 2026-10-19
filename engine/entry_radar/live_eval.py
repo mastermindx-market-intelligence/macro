@@ -2689,7 +2689,16 @@ def _project_opportunity_case(case: object, episode: dict, *, now: str) -> dict:
             raise
         raise OpportunityCaseError("case_episode_clock_invalid") from None
     return copy.deepcopy({
+        "schema": "entry_radar.research_case/v1",
         "case_ref": {"schema": SCHEMA, "case_id": data["case_id"], "sha256": data["content_sha256"]},
+        "episode_binding": {"episode_id": row.episode_id, "candidate_at": row.candidate_at,
+                            "canonical_sha256": sha256(row.canonical.encode()).hexdigest()},
+        # Pointer-only drillback in the existing payload. No owner bodies, new
+        # case store, ranking or forward-result fields enter the live lane.
+        "evidence_refs": [{key: ref[key] for key in (
+            "reference_id", "owner_store", "native_digest",
+            "clocks", "rights", "freshness", "provenance")}
+            for _, ref in sorted(data["inputs"]["references"].items())],
         "episode_id": row.episode_id, "research_state": data["research_state"],
         **{k: data[k] for k in ("reality", "inferred", "transmission", "market_incorporation",
                                "company_context", "strongest_unresolved_fact", "failed_gates",
