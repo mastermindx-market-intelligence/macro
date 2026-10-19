@@ -26660,6 +26660,7 @@ jobs:
       - "tests/test_healthcare_observation_split.py"
       - "tests/test_healthcare_fda_details.py"
       - "collectors/base.py"
+      - "collectors/lbnl_queue.py"
       - "collectors/sector_holdings.py"
       - "config/delisted_symbols.yml"
       - "lib/cn_calendar.py"
