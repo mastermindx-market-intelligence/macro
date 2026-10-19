@@ -11703,8 +11703,11 @@ jobs:
     # most of app/, engine/ and lib/ — measured at roughly 500 files. A curated
     # exclusive scope would therefore have to enumerate ~500 paths and would
     # re-select the job on nearly every change in the repository, which is the
-    # opposite of what exclusive scoping is for. `gate: code` keeps these four
+    # opposite of what exclusive scoping is for. `gate: code` keeps these
     # suites ON the merge gate: they are this feature's entire proof.
+    # Python invokes this Node suite; name its non-Python dependency explicitly.
+    paths:
+      - "tests/ontology_company_controller.test.mjs"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -11721,7 +11724,7 @@ jobs:
       - name: ontology explorer — identity, private transport, public shell
         run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py -q
 
   research-factory-authority:
     if: ${{ false }}
