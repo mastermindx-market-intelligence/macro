@@ -116,7 +116,7 @@ def test_inconsistent_grid_is_refused() -> None:
     <tr>
       <td>Anchor</td>
       <td rowspan="2">held</td>
-      <td>right</td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2024" id="syn-ov-2024" unitRef="usd" decimals="-6" scale="6">9</ix:nonFraction></td>
     </tr>
     <tr>
       <td colspan="2">overlap</td>
@@ -292,12 +292,14 @@ def test_fact_bearing_ragged_body_row_is_refused() -> None:
       <td>Revenue</td>
       <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2025" id="syn-r-2025" unitRef="usd" decimals="-6" scale="6">10</ix:nonFraction></td>
       <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2024" id="syn-r-2024" unitRef="usd" decimals="-6" scale="6">9</ix:nonFraction></td>
-      <td>stray extra cell</td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2023" id="syn-r-2023" unitRef="usd" decimals="-6" scale="6">8</ix:nonFraction></td>
     </tr>
     </table>
     </body></html>
     """
-    with pytest.raises(StatementGraphError, match=r"^displayed statement layout unsupported: ragged grid") as raised:
+    # The right-edge pad widens the two-date banner onto the body's grid, so the
+    # third value is caught by the values-beyond-dated-columns guard instead.
+    with pytest.raises(StatementGraphError, match=r"^displayed statement layout unsupported: row 0 carries 3 values for 2 dated columns") as raised:
         parse_displayed_primary_table(html, title=TITLE)
     assert str(raised.value).startswith("displayed statement layout unsupported:")
 

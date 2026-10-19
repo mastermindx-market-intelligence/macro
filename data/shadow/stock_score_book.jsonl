@@ -7530,3 +7530,5 @@
 {"date": "2026-10-14", "ticker": "ZS", "score": 25.0, "percentile": 0.5527950310559007, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "TEAM", "score": 27.0, "percentile": 0.577639751552795, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-10-14", "ticker": "SG", "score": 6.0, "percentile": 0.21428571428571427, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "SHO", "score": 3.0, "percentile": 0.1375, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-10-14", "ticker": "LIVN", "score": 42.0, "percentile": 0.796875, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}

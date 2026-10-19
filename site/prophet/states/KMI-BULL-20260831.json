@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KMI-BULL-20260831",
-  "asof": "2026-10-16",
+  "asof": "2026-10-18",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.4,
@@ -12,7 +12,7 @@
   "components": {
     "validity": 100.0,
     "progress": 25.3,
-    "pace": 28.7,
+    "pace": 26.0,
     "retention": 100.0,
     "overlay": 35.9
   },
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.401,
     "dist_to_t1_r": 1.099,
     "dist_to_t2_r": 2.599,
-    "horizon_pct_used": 102.2,
+    "horizon_pct_used": 106.7,
     "p1": 0.2671,
     "p2": 0.1336,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 48,
+  "tau": 1.0667
 }

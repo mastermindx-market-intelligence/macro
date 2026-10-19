@@ -112,7 +112,7 @@
   },
   "fed_path": {
     "asof": "2026-10-16",
-    "built": "2026-10-17T06:01:43.007251+00:00",
+    "built": "2026-10-18T06:04:48.487677+00:00",
     "policy_rate": 3.88,
     "target_low": 3.75,
     "target_high": 4.0,
@@ -2581,7 +2581,7 @@
       "synchronized": false
     },
     "swap_lines_bn": 0.2,
-    "em_stress_state": "strained",
+    "em_stress_state": "calm",
     "display_only": true
   },
   "corporate_credit": {

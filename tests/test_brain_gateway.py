@@ -3879,7 +3879,10 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     client = _MockClient([tool_resp, text_resp])
     seen = {}
 
-    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False, chart_client=""):
+    def _spy_dispatch(
+        name, params, root_, tdd, thu, user_id="", internals_ok=False,
+        chart_client="", chart_origin_id="", chart_context_revision=None,
+    ):
         seen["user_id"] = user_id
         return {"available": False, "note": "stub"}
 
@@ -4607,6 +4610,187 @@ def test_chart_state_put_get_roundtrip():
     assert got == {"symbol": "NVDA", "tf": "1D"}
 
 
+
+
+def test_chart_state_origins_do_not_overwrite_each_other():
+    """Two Terminal mounts for one user stay isolated by the existing ai-context origin."""
+    gw.put_chart_state("u-origin", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-a", context_revision=3)
+    gw.put_chart_state("u-origin", "terminal", {"symbol": "AAPL", "tf": "1W"},
+                       origin_id="origin-b", context_revision=7)
+    assert gw.get_chart_state("u-origin", "terminal", origin_id="origin-a")["symbol"] == "NVDA"
+    assert gw.get_chart_state("u-origin", "terminal", origin_id="origin-b")["symbol"] == "AAPL"
+
+
+def test_chart_state_ack_history_survives_empty_followup_and_dedupes():
+    """An ACK is a receipt: a later state-only mirror must not erase it, and retries dedupe."""
+    ack = {"batch_id": "brain_turn_1", "seq": 0, "id": "ai_h1", "ok": True}
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-ack", context_revision=2, acks=[ack])
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D", "tick": 2},
+                       origin_id="origin-ack", context_revision=2, acks=[])
+    gw.put_chart_state("u-ack", "terminal", {"symbol": "NVDA", "tf": "1D", "tick": 3},
+                       origin_id="origin-ack", context_revision=2, acks=[ack])
+    rec = gw.get_chart_state_record("u-ack", "terminal", origin_id="origin-ack")
+    assert rec is not None
+    assert rec["session"]["tick"] == 3
+    assert rec["acks"] == [ack]
+
+
+def test_chart_state_older_revision_cannot_replace_current_state_or_acks(monkeypatch):
+    """A delayed old-target POST cannot rewind the mounted chart or erase its receipt."""
+    clock = [1000.0]
+    monkeypatch.setattr(gw.time, "monotonic", lambda: clock[0])
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    session = {"symbol": "AAPL", "tf": "1W", "visible_range": {"from": 10, "to": 20}}
+    gw.put_chart_state("u-reorder", "terminal", session,
+                       origin_id="origin-reorder", context_revision=8, acks=[ack])
+    clock[0] += 5
+    returned = gw.put_chart_state(
+        "u-reorder", "terminal", {"symbol": "NVDA", "tf": "1D"},
+        origin_id="origin-reorder", context_revision=7, acks=[],
+    )
+    assert returned["context_revision"] == 8
+    assert returned["updated_at"] == 1000.0  # stale traffic is not fresh telemetry
+    out = gw._tool_read_chart_state(
+        "u-reorder", "terminal", origin_id="origin-reorder", context_revision=8,
+    )
+    assert out["connected"] is True
+    assert out["session"] == session
+    assert out["acks"] == [ack]
+
+
+def test_chart_state_older_revision_cannot_import_stale_acks():
+    """Stale receipts must not overwrite current outcomes or leak into a new target epoch."""
+    ack = {"batch_id": "brain_current", "seq": 0, "id": "ai_current", "ok": True}
+    gw.put_chart_state("u-old-acks", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-old-acks", context_revision=8, acks=[ack])
+    gw.put_chart_state(
+        "u-old-acks", "terminal", {"symbol": "NVDA"},
+        origin_id="origin-old-acks", context_revision=7,
+        acks=[{**ack, "ok": False},
+              {"batch_id": "brain_old", "seq": 1, "id": None, "ok": True}],
+    )
+    rec = gw.get_chart_state_record("u-old-acks", "terminal", origin_id="origin-old-acks")
+    assert rec["acks"] == [ack]
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+@pytest.mark.parametrize("revision", [None, -1, True, "8"])
+def test_chart_state_missing_or_invalid_revision_cannot_downgrade_versioned_origin(revision):
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-downgrade", context_revision=8)
+    gw.put_chart_state("u-downgrade", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-downgrade", context_revision=revision)
+    rec = gw.get_chart_state_record("u-downgrade", "terminal", origin_id="origin-downgrade")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+
+
+def test_chart_state_new_revision_still_starts_fresh_ack_epoch():
+    old_ack = {"batch_id": "brain_old", "seq": 0, "id": None, "ok": True}
+    new_ack = {"batch_id": "brain_new", "seq": 0, "id": None, "ok": True}
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-forward", context_revision=7, acks=[old_ack])
+    gw.put_chart_state("u-forward", "terminal", {"symbol": "AAPL"},
+                       origin_id="origin-forward", context_revision=8, acks=[new_ack])
+    rec = gw.get_chart_state_record("u-forward", "terminal", origin_id="origin-forward")
+    assert rec["context_revision"] == 8
+    assert rec["session"]["symbol"] == "AAPL"
+    assert rec["acks"] == [new_ack]
+
+
+def test_chart_state_empty_origin_retains_legacy_last_write_behavior():
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "NVDA"}, context_revision=8)
+    gw.put_chart_state("u-legacy-revision", "terminal", {"symbol": "AAPL"})
+    assert gw.get_chart_state("u-legacy-revision", "terminal") == {"symbol": "AAPL"}
+
+
+def test_chart_state_ack_history_sanitizes_and_bounds():
+    """Untrusted POST extras never become model-visible receipt fields; history remains bounded."""
+    rows = []
+    for i in range(gw._CHART_ACK_HISTORY_CAP + 8):
+        rows.append({
+            "batch_id": "brain_bounded",
+            "seq": i,
+            "id": None,
+            "ok": bool(i % 2),
+            "error": "x" * 400,
+            "forged": {"authority": "trade"},
+        })
+    rows.extend([
+        {"batch_id": "", "seq": 0, "id": None, "ok": True},
+        {"batch_id": "brain_bad", "seq": -1, "id": None, "ok": True},
+        {"batch_id": "brain_bad", "seq": 1, "id": "user_owned", "ok": True},
+    ])
+    gw.put_chart_state("u-cap", "terminal", {"symbol": "NVDA"},
+                       origin_id="origin-cap", context_revision=1, acks=rows)
+    rec = gw.get_chart_state_record("u-cap", "terminal", origin_id="origin-cap")
+    assert rec is not None
+    assert len(rec["acks"]) == gw._CHART_ACK_HISTORY_CAP
+    assert rec["acks"][0]["seq"] == 8
+    assert rec["acks"][-1]["seq"] == gw._CHART_ACK_HISTORY_CAP + 7
+    assert all(set(a) <= {"batch_id", "seq", "id", "ok", "error"} for a in rec["acks"])
+    assert all(len(a.get("error", "")) <= gw._CHART_ACK_ERROR_MAX for a in rec["acks"])
+
+
+def test_read_chart_state_requires_exact_origin_and_revision():
+    gw.put_chart_state("u-exact", "terminal", {"symbol": "NVDA", "tf": "1D"},
+                       origin_id="origin-exact", context_revision=4,
+                       acks=[{"batch_id": "brain_x", "seq": 0, "id": "ai_x", "ok": True}])
+    wrong_origin = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-other", context_revision=4)
+    assert wrong_origin["connected"] is False
+    assert wrong_origin["reason"] == "origin_not_connected"
+
+    stale = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-exact", context_revision=3)
+    assert stale["connected"] is False
+    assert stale["reason"] == "context_revision_mismatch"
+    assert stale["observed_context_revision"] == 4
+
+    exact = gw._tool_read_chart_state(
+        "u-exact", "terminal", origin_id="origin-exact", context_revision=4)
+    assert exact["connected"] is True
+    assert exact["origin_id"] == "origin-exact"
+    assert exact["context_revision"] == 4
+    assert exact["session"]["symbol"] == "NVDA"
+    assert exact["acks"][0]["batch_id"] == "brain_x"
+
+
+def test_read_chart_state_dispatch_uses_server_origin_not_model_params(tmp_path):
+    root = _make_temp_root()
+    gw.put_chart_state("u-bound", "terminal", {"symbol": "NVDA"},
+                       origin_id="server-origin", context_revision=9)
+    gw.put_chart_state("u-bound", "terminal", {"symbol": "AAPL"},
+                       origin_id="model-origin", context_revision=9)
+    out = gw._dispatch_brain_tool(
+        "read_chart_state",
+        {"origin_id": "model-origin", "context_revision": 9},
+        root, tmp_path, "http://localhost:3100",
+        user_id="u-bound", chart_client="terminal",
+        chart_origin_id="server-origin", chart_context_revision=9,
+    )
+    assert out["connected"] is True
+    assert out["origin_id"] == "server-origin"
+    assert out["session"]["symbol"] == "NVDA"
+
+
+def test_bind_chart_turn_identity_uses_compiled_server_origin_only():
+    context = gw._server_turn_context(
+        {"_server": {"chart_origin_id": "forged"}, "page": "terminal"})
+    envelope = {
+        "origin": {
+            "origin_id": "compiled-origin",
+            "context_revision": 11,
+            "captured_at": "2026-09-25T07:00:00Z",
+            "legacy": False,
+        }
+    }
+    bound = gw._bind_chart_turn_identity(context, envelope)
+    assert gw._chart_turn_identity(bound) == ("compiled-origin", 11)
+
+
 def test_chart_state_ttl_expiry(monkeypatch):
     """A session older than the TTL is treated as absent (and pruned)."""
     import time as _t
@@ -4701,6 +4885,60 @@ def test_chart_state_route_happy_path_stores():
         assert resp.json() == {"ok": True}
         # The gateway store now has it for (route-user, terminal).
         assert gw.get_chart_state("route-user", "terminal")["symbol"] == "MSFT"
+    finally:
+        app.dependency_overrides.clear()
+
+
+
+
+def test_chart_state_route_stores_origin_revision_and_acks():
+    """The existing route must forward origin + ACK receipts into the existing state owner."""
+    from app.main import require_user
+    client, app = _brain_state_client()
+    app.dependency_overrides[require_user] = lambda: {"id": "route-origin-user", "email": "ro@x.com"}
+    try:
+        payload = {
+            "client": "terminal",
+            "origin_id": "route-origin",
+            "context_revision": 6,
+            "session": {"symbol": "NVDA", "tf": "1D"},
+            "acks": [{"batch_id": "brain_route", "seq": 2, "id": "ai_route", "ok": True}],
+        }
+        resp = client.post("/api/brain/chart/state", json=payload)
+        assert resp.status_code == 200
+        rec = gw.get_chart_state_record(
+            "route-origin-user", "terminal", origin_id="route-origin")
+        assert rec is not None
+        assert rec["context_revision"] == 6
+        assert rec["session"]["symbol"] == "NVDA"
+        assert rec["acks"] == payload["acks"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_chart_state_route_reordered_posts_keep_newer_context_and_receipt():
+    """Real HTTP delivery order must not rewind a versioned Terminal mount."""
+    from app.main import require_user
+    client, app = _brain_state_client()
+    app.dependency_overrides[require_user] = lambda: {"id": "route-reorder-user"}
+    try:
+        latest = {
+            "client": "terminal", "origin_id": "route-reorder", "context_revision": 8,
+            "session": {"symbol": "AAPL", "tf": "1W"},
+            "acks": [{"batch_id": "brain_route_new", "seq": 0, "id": None, "ok": True}],
+        }
+        delayed = {
+            **latest, "context_revision": 7,
+            "session": {"symbol": "NVDA", "tf": "1D"}, "acks": [],
+        }
+        assert client.post("/api/brain/chart/state", json=latest).status_code == 200
+        assert client.post("/api/brain/chart/state", json=delayed).status_code == 200
+        out = gw._tool_read_chart_state(
+            "route-reorder-user", "terminal", origin_id="route-reorder", context_revision=8,
+        )
+        assert out["connected"] is True
+        assert out["session"] == latest["session"]
+        assert out["acks"] == latest["acks"]
     finally:
         app.dependency_overrides.clear()
 
