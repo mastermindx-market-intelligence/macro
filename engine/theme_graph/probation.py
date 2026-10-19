@@ -906,3 +906,136 @@ def require_daily_relation_event(event: AcceptedRelationEvent, *, belief_time: s
     if known > emitted or effective > emitted or effective.date() > day:
         raise RelationEventRefusal("relation event future relative to graph clocks")
     return row
+
+
+# ---------------------------------------------------------------------------
+# Native activity membership proposals (GMI recovery 2026-10-16, section 9 step 3)
+# ---------------------------------------------------------------------------
+#
+# A SEPARATE, versioned proposal species for one owner-read company activity bound to
+# one micro-theme definition (contracts/theme_graph/activity_membership_proposal.v1).
+# The legacy v1 queue above, its ids, kinds, proposers and ``ratified()`` are unchanged.
+# As above, nothing here ratifies: a row is PROPOSED until a NAMED curator decision is
+# written into it by a curated act, and a prepared coverage profile, a status field or
+# a curation smuggled into the evidence is refused at construction.
+
+ACTIVITY_PROPOSAL_SCHEMA = "gmi.activity_membership_proposal/v1"
+_ACTIVITY_PROPOSAL_CONTRACT = "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+_PROPOSER_CURATION_KEYS = frozenset({
+    "status", "curation", "ratified", "ratified_by", "adjudicated_at", "observation_profile",
+})
+
+
+class ActivityProposalRefusal(ValueError):
+    """A typed refusal; ``code`` is stable and is what callers and tests branch on."""
+
+    def __init__(self, code: str, detail: str = ""):
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+@lru_cache(maxsize=1)
+def _activity_contract_validator():
+    import jsonschema
+    path = Path(__file__).resolve().parents[2] / _ACTIVITY_PROPOSAL_CONTRACT
+    return jsonschema.Draft202012Validator(json.loads(path.read_text(encoding="utf-8")))
+
+
+def _activity_canonical(value) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False)
+
+
+def activity_proposal_id(evidence: dict) -> str:
+    """Deterministic id of the SUBJECT: issuer, micro-theme, fact and definition revision."""
+    subject = {
+        "issuer_id": evidence["issuer"]["issuer_id"],
+        "theme_id": evidence["target_definition"]["theme_id"],
+        "fact_id": evidence["source_evidence"]["fact_id"],
+        "definition_sha256": evidence["target_definition"]["definition_sha256"],
+    }
+    return "actprop:" + hashlib.sha256(_activity_canonical(subject).encode()).hexdigest()[:24]
+
+
+def make_activity_membership_proposal(evidence: dict, *, created: str) -> dict:
+    """Wrap owner-read activity evidence as a PROPOSED row; never a ratified one."""
+    if not isinstance(evidence, dict):
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", "evidence must be an object")
+    smuggled = sorted(_PROPOSER_CURATION_KEYS & set(evidence))
+    if smuggled:
+        raise ActivityProposalRefusal(
+            "PROPOSER_CANNOT_CURATE",
+            f"evidence carries {smuggled}; a proposer never supplies curation or status")
+    try:
+        pid = activity_proposal_id(evidence)
+    except (KeyError, TypeError) as exc:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", f"missing {exc}") from None
+    row = {
+        "schema": ACTIVITY_PROPOSAL_SCHEMA,
+        "proposal_id": pid,
+        "status": "PROPOSED",
+        "evidence": copy.deepcopy(evidence),
+        "curation": None,
+        "created": created,
+        "authority_caps": {"may_ratify": False, "may_materialize": False, "may_publish": False},
+    }
+    errors = validate_activity_membership_proposal(row)
+    if errors:
+        raise ActivityProposalRefusal("PROPOSAL_INVALID", "; ".join(errors[:3]))
+    return row
+
+
+def _activity_zoned(value) -> datetime | None:
+    if not isinstance(value, str) or "T" not in value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.utcoffset() is not None else None
+
+
+def validate_activity_membership_proposal(row: dict) -> list[str]:
+    """Problems with one activity proposal row; an empty list means well-formed."""
+    if not isinstance(row, dict):
+        return ["activity proposal must be an object"]
+    out = [f"{'/'.join(str(p) for p in err.absolute_path) or '<root>'}: {err.message}"
+           for err in _activity_contract_validator().iter_errors(row)]
+    if out:
+        return out
+    evidence = row["evidence"]
+    if row["proposal_id"] != activity_proposal_id(evidence):
+        out.append("proposal_id does not match its subject")
+    endpoints = evidence["endpoints"]
+    if endpoints["source_node_id"] != evidence["issuer"]["node_id"]:
+        out.append("source endpoint is not the resolved issuer node")
+    if endpoints["target_node_id"] != evidence["target_definition"]["theme_id"]:
+        out.append("target endpoint is not the bound micro-theme definition")
+    status, curation = row["status"], row["curation"]
+    if status == "PROPOSED" and curation is not None:
+        out.append("a PROPOSED row carries no curation")
+    if status in {"RATIFIED", "REJECTED"}:
+        expected = "ACCEPT" if status == "RATIFIED" else "REJECT"
+        if curation is None or curation.get("decision") != expected:
+            out.append(f"status {status} requires a named curator decision {expected}")
+        else:
+            decided = _activity_zoned(curation.get("decided_at"))
+            known = _activity_zoned(evidence["clocks"]["knowledge"]["value"])
+            if decided is None:
+                out.append("curation decided_at is not a zoned instant")
+            elif known is not None and decided < known:
+                out.append("curation predates the knowledge of the activity it decides")
+    return out
+
+
+def ratified_activity_memberships(rows: list[dict]) -> list[dict]:
+    """Rows a curator RATIFIED by name. A prepared profile or proposer status is not one.
+
+    Ratification still grants no graph-membership use: v1 evidence can only carry
+    ``graph_membership_use: NOT_GRANTED`` and every authority cap is false.
+    """
+    return [copy.deepcopy(r) for r in rows
+            if isinstance(r, dict) and r.get("status") == "RATIFIED"
+            and isinstance(r.get("curation"), dict)
+            and r["curation"].get("decision") == "ACCEPT"
+            and not validate_activity_membership_proposal(r)]
