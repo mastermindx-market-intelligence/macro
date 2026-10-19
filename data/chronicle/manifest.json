@@ -7,7 +7,7 @@
       "retracted_by_authority": 0
     },
     "earnings_call": {
-      "count": 4690,
+      "count": 4718,
       "dropped_from_source": 0,
       "gap": null,
       "retracted_by_authority": 0
@@ -43,31 +43,31 @@
       "retracted_by_authority": 0
     }
   },
-  "as_of": "2026-10-17",
+  "as_of": "2026-10-19",
   "coverage": {
-    "end": "2026-10-15",
-    "note": "17128 events across 837 distinct date(s)",
+    "end": "2026-10-16",
+    "note": "17156 events across 843 distinct date(s)",
     "start": "2013-03-14"
   },
-  "elapsed_s": 3.235,
+  "elapsed_s": 5.369,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
     "macro_release: 35/35 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:24e258229848de29886bfd7621053ef34744e9c8a1a296f985417bac7656397c",
+  "inputs_hash": "sha256:13f3d5bc1354eafdc78c809601f341ed9a9f1c8d7028a66d020595c6fc18c7bb",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
       "present": true,
-      "rows": 4690,
-      "sha256": "sha256:e28c38c890d7ab25b014b0cd1c07a1b7ad8b1c37bdf829caf978155bfe948cd0"
+      "rows": 4718,
+      "sha256": "sha256:c6a30f0cc3510127b35feda44276c025abf50ef96dafa3e5a65bca9760bb8045"
     },
     "events": {
       "path": "data/chronicle/events.jsonl",
       "present": true,
-      "rows": 17128,
-      "sha256": "sha256:646368bc2a7012c8df62dfac6dfe3320e3526a386a8444071ea19755d15f7e96"
+      "rows": 17156,
+      "sha256": "sha256:8c2e2945a7bfba01b2da5b4c7b278e0fc139d50502bfc826dd238709daed0e67"
     },
     "state_log": {
       "path": "data/chronicle/state_log.jsonl",
@@ -76,14 +76,14 @@
       "sha256": "sha256:e7907e64c43785d1051a7b2900fc8fc14f67ebe9b97540bcb90f9bad3a222c7b"
     }
   },
-  "produced_at": "2026-10-17T07:17:29Z",
+  "produced_at": "2026-10-19T07:04:56Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,
   "source_fingerprints": {
     "data/chronicle/earnings_call_events.jsonl": {
       "present": true,
-      "sha256": "sha256:e28c38c890d7ab25b014b0cd1c07a1b7ad8b1c37bdf829caf978155bfe948cd0"
+      "sha256": "sha256:c6a30f0cc3510127b35feda44276c025abf50ef96dafa3e5a65bca9760bb8045"
     },
     "data/chronicle/state_log.jsonl": {
       "present": true,
@@ -111,7 +111,7 @@
     },
     "data/research_vault/catalog.json": {
       "present": true,
-      "sha256": "sha256:b4e7f85f8e842ff4619ca13a0d28d59e89aec4b3529d964b8f65c30ef39bc521"
+      "sha256": "sha256:8d62fb8e9e91cc5dbd04daf08fe34a7b07e28e208e6092440a50e39cc1bee12b"
     },
     "data/risk_radar/forward_log.jsonl": {
       "present": true,

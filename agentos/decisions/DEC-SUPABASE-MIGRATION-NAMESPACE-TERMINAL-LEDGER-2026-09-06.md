@@ -41,6 +41,17 @@ answer: >
   B-F12-3 app code over the 0014 foundation, not the 0015 SQL carrier. A successor
   applies 0014 then 0015 after #514 merges (ledger-number order; one receipt each,
   comments on #514), then 0016 after #527. Do not wait on #526 to apply 0015.
+
+  Scoped amendment (2026-10-18):
+  DEC:PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18 preserves applied #946/0032,
+  supersedes pending #866/0032 only as the currency application candidate for
+  Terminal #1044, and preserves #778's 0035 claim by carrying the candidate at
+  0036. Only that exact currency proposal may proceed independently of the
+  unrelated pending lower-numbered migrations, subject to independent exact-head
+  source acceptance and all existing runtime/application gates. For that carrier
+  the later solo-migration procedure supplies the apply-before-squash and immediate
+  ledger-follow-up sequence. The general allocation, history and application rules
+  remain unchanged for all other files.
 rationale: >
   There is no migration runner and no supabase_migrations schema (DSC:TERMINAL-HAS-NO-MIGRATION-LEDGER),
   so a file name is the only ledger the estate has; a second "0011" makes "what has been
@@ -86,3 +97,11 @@ decided_at: 2026-09-06
 Recorded by Meta-CEO B in Wave 0. The Terminal README change lands via packet B-PLAT-1;
 #502's renumber lands in its release fix stage; 0013/0014 are minted by packets B-F08-2 and
 B-F12-1. See DEC:CHAIRMAN-OVERRIDE-CLAUDE-META-CEO-REGIME-2026-09-06 for authority.
+
+
+## Partial amendment, 2026-10-18
+
+DEC:PORTFOLIO-CURRENCY-FORWARD-DISPOSITION-2026-10-18 records the bounded Portfolio
+currency disposition and its evidence. It amends only the named carrier's pending
+0032 precedence and lower-number application sequence; it does not retire this
+record or grant a general ordering, ownership or runtime exception.

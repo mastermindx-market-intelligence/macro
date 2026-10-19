@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-10-17T07:24:39+00:00",
+  "as_of": "2026-10-19T07:14:05+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -45,7 +45,7 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-10-17",
+        "as_of": "2026-10-19",
         "n_cohorts": null,
         "status": null
       },
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 1687.4,
+          "age_hours": 1735.2,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 7.4,
+          "age_hours": 7.2,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
           "status": "stale",
-          "age_hours": 535.4,
+          "age_hours": 583.2,
           "sla_hours": 48
         }
       ],
@@ -214,7 +214,7 @@
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
           "status": "stale",
-          "age_hours": 31.4,
+          "age_hours": 79.2,
           "sla_hours": 30.0
         }
       ],
@@ -227,13 +227,13 @@
         {
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
-          "status": "ok",
-          "age_hours": 19.1,
+          "status": "stale",
+          "age_hours": 66.9,
           "sla_hours": 48
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     },
     "ca": {
       "market": "ca",
@@ -242,7 +242,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 12.9,
+          "age_hours": 24.1,
           "sla_hours": 48
         }
       ],
@@ -256,7 +256,7 @@
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
           "status": "stale",
-          "age_hours": 55.4,
+          "age_hours": 103.2,
           "sla_hours": 48
         }
       ],

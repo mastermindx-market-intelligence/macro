@@ -413,3 +413,60 @@ def test_exports_do_not_substitute_change_feed_for_known_unimplemented_page_mode
     ]
     assert [row['count'] for row in out['preserved']] == [1, 1, 0, 0, 0, 1, 1, 1, 1, 1]
     assert all('export_contract' in row['csv'] for row in out['preserved'])
+
+
+@needs_node
+@pytest.mark.parametrize("value", [0, -402073.0, 110000000.0])
+def test_export_retains_primary_amount_basis_clocks_and_source(tmp_path: Path, value: float) -> None:
+    import csv
+    import io
+    event = _event("govws-amount-basis", "award_change")
+    event["primary_amount_id"] = "federal_action_obligation"
+    amount = {"id": "federal_action_obligation", "value": value, "currency": "USD", "semantic": "official", "label_code": "federal_action_obligation", "known_at": "2026-08-02T09:00:00Z", "as_of": "2026-07-13T00:00:00Z", "source_ref": "https://api.usaspending.gov/api/v2/transactions/", "is_lower_bound": False, "private": "must-not-export"}
+    event["amounts"] = [{"id": "ceiling", "value": 999999999, "currency": "USD"}, amount]
+    out = _run_node(tmp_path, "const app=make(); const workspace=" + json.dumps(_workspace(event)) + "; process.stdout.write(JSON.stringify({json:app.buildJsonExport(workspace,{mode:'changes'}),csv:app.buildCsvExport(workspace,{mode:'changes'})}));")
+    row = list(csv.DictReader(io.StringIO(out["csv"]["content"])))[0]
+    assert float(row["primary_amount"]) == value
+    for key in ["id", "currency", "semantic", "label_code", "known_at", "as_of", "source_ref"]:
+        assert row["primary_amount_" + key] == amount[key]
+    assert row["primary_amount_is_lower_bound"] == "false"
+    assert out["json"]["records"][0]["amounts"][1]["as_of"] == amount["as_of"]
+    assert "must-not-export" not in json.dumps(out)
+
+
+@needs_node
+def test_export_never_borrows_unselected_amount_metadata(tmp_path: Path) -> None:
+    import csv
+    import io
+    event = _event("govws-missing-amount", "award_change")
+    event["primary_amount_id"] = "absent"
+    event["amounts"][0].update({"as_of": {"private": "must-not-export"}, "source_ref": "javascript:alert(1)"})
+    out = _run_node(tmp_path, "const app=make(); const workspace=" + json.dumps(_workspace(event)) + "; process.stdout.write(JSON.stringify({json:app.buildJsonExport(workspace,{mode:'changes'}),csv:app.buildCsvExport(workspace,{mode:'changes'})}));")
+    row = list(csv.DictReader(io.StringIO(out["csv"]["content"])))[0]
+    assert row["primary_amount"] == ""
+    assert all(row["primary_amount_"+key] == "" for key in ["id", "currency", "semantic", "label_code", "known_at", "as_of", "source_ref", "is_lower_bound"])
+    assert "must-not-export" not in json.dumps(out)
+    assert "javascript:" not in json.dumps(out)
+
+
+@needs_node
+@pytest.mark.parametrize("value", ["110000000.00", None, True])
+def test_csv_omits_basis_when_primary_value_is_not_numeric(tmp_path: Path, value) -> None:
+    import csv
+    import io
+    event=_event("govws-nonnumeric-amount","award_change")
+    event["amounts"][0].update({"value":value,"as_of":"2026-07-13T00:00:00Z","known_at":"2026-08-02T09:00:00Z","is_lower_bound":True})
+    out=_run_node(tmp_path,"const app=make(); const workspace="+json.dumps(_workspace(event))+"; process.stdout.write(JSON.stringify({json:app.buildJsonExport(workspace,{mode:'changes'}),csv:app.buildCsvExport(workspace,{mode:'changes'})}));")
+    row=list(csv.DictReader(io.StringIO(out["csv"]["content"])))[0]
+    assert row["primary_amount"] == ""
+    assert all(row["primary_amount_"+key] == "" for key in ["id","currency","semantic","label_code","known_at","as_of","source_ref","is_lower_bound"])
+    assert out["json"]["records"][0]["amounts"][0]["value"] == value
+
+
+@needs_node
+@pytest.mark.parametrize("as_of,expected", [("2026-07-13T00:00:00Z","2026-07-13"),(None,"undated"),("unavailable","undated")])
+def test_csv_filename_retains_day_or_undated(tmp_path: Path, as_of: str | None, expected: str) -> None:
+    workspace=_workspace(_event("govws-filename","award_change"))
+    workspace["as_of"]=as_of
+    out=_run_node(tmp_path,"const app=make(); process.stdout.write(JSON.stringify(app.buildCsvExport("+json.dumps(workspace)+",{mode:'changes'}))); ")
+    assert out["filename"].startswith("government-revenue-"+expected+"-")

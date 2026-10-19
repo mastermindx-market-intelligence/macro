@@ -2902,8 +2902,10 @@ def build(
                 # failure the incumbent merge is written unchanged.
                 try:
                     from engine.leader_recovery_observations import merge_recovery_observations
+                    # Descriptors are cut at the additive clock, which lags `today`
+                    # whenever SPY leads the issuer stores; seal at that cut.
                     updated = merge_recovery_observations(
-                        state_df_full, updated, rows, as_of=today,
+                        state_df_full, updated, rows, as_of=additive_clock,
                         observed_at=built_at,
                         enabled=lr_cfg.get("recovery_capture_enabled") is True,
                     )
