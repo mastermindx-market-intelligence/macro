@@ -2559,13 +2559,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2619,13 +2625,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2679,13 +2691,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2739,13 +2757,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2800,13 +2824,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2861,13 +2891,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2922,13 +2958,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -2983,13 +3025,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3044,13 +3092,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3105,13 +3159,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3165,13 +3225,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3225,13 +3291,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3424,13 +3496,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3485,13 +3563,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3546,13 +3630,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3607,13 +3697,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3667,13 +3763,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3727,13 +3829,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3787,13 +3895,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -3847,13 +3961,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4436,13 +4556,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4497,13 +4623,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4558,13 +4690,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4619,13 +4757,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4799,13 +4943,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4859,13 +5009,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4919,13 +5075,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -4980,13 +5142,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5041,13 +5209,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5101,13 +5275,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5219,13 +5399,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5279,13 +5465,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5339,13 +5531,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5399,13 +5597,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5460,13 +5664,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5521,13 +5731,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5582,13 +5798,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5643,13 +5865,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5704,13 +5932,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5765,13 +5999,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -5964,13 +6204,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6025,13 +6271,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6086,13 +6338,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6147,13 +6405,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6207,13 +6471,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6267,13 +6537,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6328,13 +6604,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6389,13 +6671,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6566,13 +6854,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6627,13 +6921,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6687,13 +6987,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6747,13 +7053,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6926,13 +7238,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -6987,13 +7305,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7047,13 +7371,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7107,13 +7437,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7167,13 +7503,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7227,13 +7569,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7287,13 +7635,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7347,13 +7701,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7407,13 +7767,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7467,13 +7833,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7527,13 +7899,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7587,13 +7965,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7787,13 +8171,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached at mint time via derive_confirmation_receipts lineage_evidence.py:674-759 (evaluate_confirmation 726-733; a refused pair mints no receipt); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v1_pair",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
@@ -7847,13 +8237,19 @@
     "kernel_output": {
      "state": "not_evaluable",
      "value_exact": null,
-     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "kernel_code": "unlinked_source_vintages",
      "reason": "unlinked source vintages require an explicit typed revision lineage",
      "provenance_accession": null
     },
     "kernel_observation": {
      "kernel": "unlinked source vintages require an explicit typed revision lineage",
-     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+     "cite": "engine/fundamental_forensics/lineage_evidence.py:355-366 (guard 11, taxonomy-namespace-year equality, Sol-ratified FIF-3A4R §5); reached via classify_filing_chain lineage_evidence.py:841-926 (unproven 918); runtime surface engine/fundamental_forensics/query.py:5952-5982",
+     "typed_cause": {
+      "ledger_code": "cross_taxonomy_version_confirmation_unavailable",
+      "kernel_refusal": "source_taxonomy_namespace_version_mismatch",
+      "mint_path": "v2_chain",
+      "ruling": "R-C1"
+     }
     },
     "repro": {
      "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001652044-latest_known_as_of-union]",
