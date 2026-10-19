@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 import json
+import logging
 import stat
 
 import pandas as pd
@@ -284,7 +285,7 @@ def test_transient_fetch_exception_keeps_valid_last_good_output(tmp_path, monkey
     assert contract.validate_live_payload(second, contract.validate_baseline(baseline_payload()), now=NOW.replace(second=41)) == second
 
 
-def test_low_coverage_primary_falls_through_to_full_fallback(tmp_path, monkeypatch) -> None:
+def test_low_coverage_primary_falls_through_to_full_fallback(tmp_path, monkeypatch, caplog) -> None:
     pin_clock(monkeypatch)
     base = tmp_path / "china_heatmap.json"
     out = tmp_path / "china_heatmap_live.json"
@@ -296,10 +297,15 @@ def test_low_coverage_primary_falls_through_to_full_fallback(tmp_path, monkeypat
         tencent_fetch=lambda baseline: live_quotes(),
         phase_fn=lambda now: "morning",
     )
-    payload = instance.step(NOW)
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        payload = instance.step(NOW, require_usable=True)
     assert payload["source"] == "tencent"
     assert payload["fallback"] is True
     assert payload["coverage"] == 1.0 and payload["usable"] is True
+    assert _one_shot_rejections(caplog) == [{
+        "source": "tushare-rt-k", "reason": "insufficient_qualified_coverage",
+        "requested": 2, "normalized": 1, "qualified": 1,
+    }]
 
 
 def test_publication_clock_is_sampled_after_network(tmp_path, monkeypatch) -> None:
@@ -339,7 +345,7 @@ def test_restart_at_lunch_recovers_same_atomic_artifact(tmp_path, monkeypatch) -
     assert payload["generated_at"] == lunch.isoformat()
 
 
-def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch) -> None:
+def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch, caplog) -> None:
     from datetime import timedelta
     pin_clock(monkeypatch)
     base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
@@ -352,8 +358,16 @@ def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch) -> None:
     instance = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=tmp_path / "live.json",
         tushare_fetch=lambda _: next(queue), tencent_fetch=lambda _: {}, phase_fn=lambda _: "morning")
     accepted = instance.step(NOW)
-    after = instance.step(NOW + timedelta(seconds=2))
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        after = instance.step(NOW + timedelta(seconds=2), require_usable=True)
     assert after["quotes"] == accepted["quotes"]
+    assert after["usable"] is True
+    assert _one_shot_rejections(caplog) == [
+        {"source": "tushare-rt-k", "reason": "source_timestamp_regression",
+         "requested": 2, "normalized": 2, "qualified": 2},
+        {"source": "tencent", "reason": "no_normalized_quotes",
+         "requested": 2, "normalized": 0},
+    ]
 
 
 def _tencent_source_quote(symbol: str, when: datetime = NOW) -> dict:
@@ -479,3 +493,106 @@ def test_pending_settled_close_expires_and_never_polls_on_weekends() -> None:
         datetime(2026, 10, 16, 9, 5, tzinfo=timezone.utc),
     ]:
         assert not producer.should_poll_pending_close(baseline, time_value, "closed")
+
+
+def _one_shot_rejections(caplog) -> list[dict]:
+    prefix = "China heatmap one-shot rejection: "
+    return [
+        json.loads(record.getMessage()[len(prefix):])
+        for record in caplog.records
+        if record.name == producer.log.name and record.getMessage().startswith(prefix)
+    ]
+
+
+@pytest.mark.parametrize("case,reason,normalized,qualified", [
+    ("empty", "no_normalized_quotes", 0, None),
+    ("coverage", "insufficient_qualified_coverage", 1, 1),
+    ("stale", "insufficient_qualified_coverage", 2, 0),
+    ("contract", "contract_rejected", 2, None),
+    ("fetch", "fetch_exception", None, None),
+])
+def test_one_shot_rejection_diagnostics_preserve_output_and_redact_source_data(
+    tmp_path, monkeypatch, caplog, case, reason, normalized, qualified,
+) -> None:
+    from datetime import timedelta
+
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"
+    out = tmp_path / "live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    previous_bytes = b"pre-existing artifact must survive\n"
+    out.write_bytes(previous_bytes)
+    marker = "PRIVATE_DIAGNOSTIC_MARKER"
+    calls = []
+    candidate = live_quotes()
+    if case == "empty":
+        candidate = {}
+    elif case == "coverage":
+        candidate.pop("000001.SZ")
+    elif case == "stale":
+        candidate = live_quotes(NOW - timedelta(minutes=2))
+    elif case == "contract":
+        candidate["600519.SS"]["private_provider_note"] = marker
+
+    def primary(_baseline):
+        calls.append("tushare")
+        if case == "fetch":
+            raise RuntimeError("https://private.example/?token=" + marker)
+        return candidate
+
+    def fallback(_baseline):
+        calls.append("tencent")
+        if case == "fetch":
+            raise RuntimeError("https://private.example/?token=" + marker)
+        return {}
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out, tushare_fetch=primary,
+        tencent_fetch=fallback, phase_fn=lambda _: "morning",
+    )
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        with pytest.raises(RuntimeError, match="snapshot is not usable"):
+            instance.step(NOW, require_usable=True)
+    assert calls == ["tushare", "tencent"]
+    assert out.read_bytes() == previous_bytes
+    expected = {"source": "tushare-rt-k", "reason": reason, "requested": 2}
+    if normalized is not None:
+        expected["normalized"] = normalized
+    if qualified is not None:
+        expected["qualified"] = qualified
+    fallback_event = {"source": "tencent", "reason": "fetch_exception", "requested": 2}
+    if case != "fetch":
+        fallback_event.update(reason="no_normalized_quotes", normalized=0)
+    assert _one_shot_rejections(caplog) == [
+        expected, fallback_event,
+        {"source": "unavailable", "reason": "no_usable_snapshot",
+         "requested": 2, "retained": 0, "qualified": 0},
+    ]
+    for private_value in (marker, "private_provider_note", "https://", "600519.SS", "000001.SZ", "1412.8"):
+        assert private_value not in caplog.text
+
+
+def test_loop_rejections_do_not_emit_one_shot_diagnostics(tmp_path, monkeypatch, caplog) -> None:
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"
+    out = tmp_path / "live.json"
+    base.write_text(json.dumps(baseline_payload()), encoding="utf-8")
+    calls = []
+    sleeps = []
+
+    def sleeper(seconds):
+        sleeps.append(seconds)
+        instance.request_stop()
+
+    instance = producer.ChinaHeatmapLiveProducer(
+        base_path=base, out_path=out,
+        tushare_fetch=lambda _: calls.append("tushare") or {"600519.SS": live_quotes()["600519.SS"]},
+        tencent_fetch=lambda _: calls.append("tencent") or {},
+        phase_fn=lambda _: "morning", clock=lambda: NOW, sleeper=sleeper,
+    )
+    with caplog.at_level(logging.INFO, logger=producer.log.name):
+        instance.run_forever()
+    assert calls == ["tushare", "tencent"]
+    assert sleeps == [2.0]
+    assert json.loads(out.read_text())["usable"] is False
+    assert _one_shot_rejections(caplog) == []

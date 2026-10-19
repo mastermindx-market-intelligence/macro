@@ -12,7 +12,7 @@ import signal
 import sys
 import tempfile
 import time
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 # Runnable directly as a file as well as via python -m. Pin this repository
 # before module-scope imports to avoid loading another checkout.
@@ -35,6 +35,36 @@ DEFAULT_OUT = Path(os.environ.get(
     "CHINA_HEATMAP_LIVE_OUT",
     str(Path(os.environ.get("MACRO_LIVE_DIR", "/var/lib/macro-live/public/live")) / "china_heatmap.json"),
 ))
+
+
+_RejectionReason = Literal[
+    "no_normalized_quotes", "fetch_exception", "contract_rejected",
+    "insufficient_qualified_coverage", "phase_or_source_freshness_rejected",
+    "source_timestamp_regression", "no_usable_snapshot",
+]
+
+
+def _log_one_shot_rejection(
+    *,
+    source: str | None,
+    reason: _RejectionReason,
+    requested: int,
+    normalized: int | None = None,
+    qualified: int | None = None,
+    retained: int | None = None,
+) -> None:
+    """Report fixed labels and aggregate counts, never provider or quote data."""
+    event = {
+        "source": source if source in {"tushare-rt-k", "tencent"} else "unavailable",
+        "reason": reason,
+        "requested": requested,
+    }
+    for name, count in (
+        ("normalized", normalized), ("qualified", qualified), ("retained", retained),
+    ):
+        if count is not None:
+            event[name] = count
+    log.info("China heatmap one-shot rejection: %s", json.dumps(event, sort_keys=True))
 
 
 def fetch_tushare_snapshot(
@@ -232,7 +262,11 @@ class ChinaHeatmapLiveProducer:
         fallback: bool,
         phase: str,
         now: datetime,
+        report_rejection: bool = False,
     ) -> bool:
+        # A nonstandard mapping may reject the contract; diagnostics must not
+        # call its custom __len__ or turn that refusal into a different failure.
+        normalized = len(quotes) if report_rejection and type(quotes) is dict else None
         try:
             candidate = contract.build_live_payload(
                 baseline, quotes, source=source, fallback=fallback,
@@ -240,14 +274,36 @@ class ChinaHeatmapLiveProducer:
             )
             contract.validate_live_payload(candidate, baseline, now=now)
         except (contract.LiveContractError, TypeError, ValueError, OverflowError):
+            if report_rejection:
+                _log_one_shot_rejection(
+                    source=source, reason="contract_rejected",
+                    requested=len(baseline.tickers), normalized=normalized,
+                )
             return False
         if not candidate["usable"]:
+            if report_rejection:
+                reason: _RejectionReason = (
+                    "insufficient_qualified_coverage"
+                    if candidate["coverage"] < contract.MIN_COVERAGE
+                    else "phase_or_source_freshness_rejected"
+                )
+                _log_one_shot_rejection(
+                    source=source, reason=reason, requested=len(baseline.tickers),
+                    normalized=normalized, qualified=candidate["resolved"],
+                )
             return False
         previous = self._last_good_quotes or {}
-        return not any(
+        regressed = any(
             ticker in previous and quote["ts"] < previous[ticker]["ts"]
             for ticker, quote in candidate["quotes"].items()
         )
+        if regressed and report_rejection:
+            _log_one_shot_rejection(
+                source=source, reason="source_timestamp_regression",
+                requested=len(baseline.tickers), normalized=normalized,
+                qualified=candidate["resolved"],
+            )
+        return not regressed
 
     def step(
         self,
@@ -273,6 +329,17 @@ class ChinaHeatmapLiveProducer:
                 fresh_quotes = self.tushare_fetch(baseline)
             except Exception as exc:  # noqa: BLE001 - do not echo request-bearing errors
                 log.warning("Tushare live heatmap fetch failed (%s)", type(exc).__name__)
+                if require_usable:
+                    _log_one_shot_rejection(
+                        source="tushare-rt-k", reason="fetch_exception",
+                        requested=len(baseline.tickers),
+                    )
+            else:
+                if require_usable and not fresh_quotes:
+                    _log_one_shot_rejection(
+                        source="tushare-rt-k", reason="no_normalized_quotes",
+                        requested=len(baseline.tickers), normalized=0,
+                    )
         # Explicit now= is the deterministic test seam. Production calls resample
         # after each network leg, so latency cannot fabricate future/fresh quotes
         # or carry a morning decision across the lunch boundary.
@@ -281,7 +348,7 @@ class ChinaHeatmapLiveProducer:
         if fresh_quotes:
             if self._candidate_usable(
                 baseline, fresh_quotes, source="tushare-rt-k", fallback=False,
-                phase=phase, now=instant,
+                phase=phase, now=instant, report_rejection=require_usable,
             ):
                 fresh_source = "tushare-rt-k"
             else:
@@ -298,11 +365,22 @@ class ChinaHeatmapLiveProducer:
                 except Exception as exc:  # noqa: BLE001 - bounded independent fallback
                     log.warning("Tencent live heatmap fallback failed (%s)", type(exc).__name__)
                     fresh_quotes = None
+                    if require_usable:
+                        _log_one_shot_rejection(
+                            source="tencent", reason="fetch_exception",
+                            requested=len(baseline.tickers),
+                        )
+                else:
+                    if require_usable and not fresh_quotes:
+                        _log_one_shot_rejection(
+                            source="tencent", reason="no_normalized_quotes",
+                            requested=len(baseline.tickers), normalized=0,
+                        )
                 instant = (now or self.clock()).astimezone(timezone.utc)
                 phase = self.phase_fn(instant)
                 if fresh_quotes and self._candidate_usable(
                     baseline, fresh_quotes, source="tencent", fallback=True,
-                    phase=phase, now=instant,
+                    phase=phase, now=instant, report_rejection=require_usable,
                 ):
                     fresh_source = "tencent"
                     fresh_fallback = True
@@ -321,6 +399,11 @@ class ChinaHeatmapLiveProducer:
         )
         payload = contract.validate_live_payload(payload, baseline, now=instant)
         if require_usable and not payload["usable"]:
+            _log_one_shot_rejection(
+                source=source, reason="no_usable_snapshot",
+                requested=len(baseline.tickers), retained=len(quotes),
+                qualified=payload["resolved"],
+            )
             raise RuntimeError("live China heatmap snapshot is not usable")
         atomic_write_payload(self.out_path, payload)
         return payload
