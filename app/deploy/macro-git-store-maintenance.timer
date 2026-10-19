@@ -1,0 +1,19 @@
+# Git store maintenance — 02:40 UTC, every day.
+#
+# 02:40 sits after biocatalyst-history (02:20) and before the 04:00
+# market-memory lanes, outside the 12..23 UTC weekday live-plane window, and
+# clear of the :03 macro-update ticks. Persistent=true so a box that was down
+# at 02:40 still consolidates the day's packs; the script itself defers when
+# memory or the updater lock is busy.
+[Unit]
+Description=Run the bounded /opt/macro Git store maintenance every night
+
+[Timer]
+OnCalendar=*-*-* 02:40:00 UTC
+AccuracySec=1s
+RandomizedDelaySec=300s
+Persistent=true
+Unit=macro-git-store-maintenance.service
+
+[Install]
+WantedBy=timers.target

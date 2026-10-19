@@ -2365,6 +2365,68 @@ if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
 	fi
 fi
 
+# GIT STORE MAINTENANCE — 2026-10-19 root-disk incident: every pull lands a new
+# fetch pack and auto-gc is disabled on the box (gc.auto=0), so nothing ever
+# consolidated them; /opt/macro/.git reached 41G in 263 packs and filled the
+# root disk. Same self-arming contract as the backup timer above: gated on
+# macro-api.service, re-armed when a source changes or an installed copy is
+# absent. The script is installed BEFORE the units are verified because the
+# service's ExecStart names the installed path (and a running maintenance
+# keeps its old inode, as with this updater's own self-update). The .service
+# is a oneshot and is never started from here; only the timer is (re)armed.
+# The journald size cap rides the same block: without it the persistent
+# journal may take 10% of the root filesystem.
+if systemctl is-enabled macro-api.service >/dev/null 2>&1 && \
+   { echo "$CHANGED" | grep -qE '^app/deploy/(macro-git-store-maintenance\.(sh|service|timer)|journald-macro-vps\.conf)$' || \
+     [ ! -f /usr/local/sbin/macro-git-store-maintenance ] || \
+     [ ! -f /etc/systemd/system/macro-git-store-maintenance.timer ] || \
+     [ ! -f /etc/systemd/journald.conf.d/10-macro-vps-cap.conf ]; }; then
+	GIT_MAINT_SOURCE="$APP_DIR/app/deploy/macro-git-store-maintenance.sh"
+	GIT_MAINT_BIN=/usr/local/sbin/macro-git-store-maintenance
+	if ! cmp -s "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"; then
+		if bash -n "$GIT_MAINT_SOURCE"; then
+			install -m 0755 "$GIT_MAINT_SOURCE" "$GIT_MAINT_BIN"
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance script updated"
+		else
+			echo "macro-update: refusing macro-git-store-maintenance script update — bash -n failed" >&2
+		fi
+	fi
+	GIT_MAINT_UNIT_SOURCES=(
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.service"
+		"$APP_DIR/app/deploy/macro-git-store-maintenance.timer"
+	)
+	if [ -x "$GIT_MAINT_BIN" ] && systemd-analyze verify "${GIT_MAINT_UNIT_SOURCES[@]}"; then
+		GIT_MAINT_UNIT_UPDATED=0
+		for UNIT_SOURCE in "${GIT_MAINT_UNIT_SOURCES[@]}"; do
+			UNIT=$(basename "$UNIT_SOURCE")
+			if ! cmp -s "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"; then
+				install -m 0644 "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"
+				GIT_MAINT_UNIT_UPDATED=1
+			fi
+		done
+		if [ "$GIT_MAINT_UNIT_UPDATED" -eq 1 ]; then
+			systemctl daemon-reload
+			systemctl restart macro-git-store-maintenance.timer 2>/dev/null || true
+			RECONCILED=1
+			echo "macro-update: macro-git-store-maintenance units updated"
+		fi
+		systemctl enable --now macro-git-store-maintenance.timer >/dev/null 2>&1 || \
+			echo "macro-update: macro-git-store-maintenance.timer could not be enabled" >&2
+	else
+		echo "macro-update: refusing macro-git-store-maintenance unit update — script not installed or systemd-analyze verify failed" >&2
+	fi
+	JOURNALD_CAP_SOURCE="$APP_DIR/app/deploy/journald-macro-vps.conf"
+	JOURNALD_CAP=/etc/systemd/journald.conf.d/10-macro-vps-cap.conf
+	if ! cmp -s "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"; then
+		install -D -m 0644 "$JOURNALD_CAP_SOURCE" "$JOURNALD_CAP"
+		systemctl restart systemd-journald 2>/dev/null || \
+			echo "macro-update: systemd-journald restart failed; the cap applies from its next start" >&2
+		RECONCILED=1
+		echo "macro-update: journald size cap updated"
+	fi
+fi
+
 # PRESS-FEEDS is a long-running daemon, unlike the oneshot live-plane timers
 # above. Arming remains an explicit operator choice: this block neither installs
 # an absent unit nor enables/starts an inactive one. Once the operator has
