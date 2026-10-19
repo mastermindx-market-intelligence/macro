@@ -13649,6 +13649,7 @@ jobs:
       - "scripts/leadership_rotation_inference.py"
       - "scripts/leadership_rotation_null.py"
       - "scripts/leadership_rotation_p0.py"
+      - "scripts/leadership_rotation_v3_candidate.py"
       - "scripts/leadership_rotation_run.py"
       - "scripts/leadership_rotation_study.py"
       - "tests/test_leadership_rotation_episodes.py"
