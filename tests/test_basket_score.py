@@ -250,3 +250,94 @@ def test_unmeasured_breadth_never_becomes_a_mixed_verdict(monkeypatch, tmp_path)
     assert actual["nl"] == 7
     assert actual.get("verdict") is None
     assert actual["directional"] is False
+
+
+def test_market_concentration_ad_horizons_require_full_nyse_sessions(monkeypatch, tmp_path):
+    from datetime import date
+    from lib import config, nyse_calendar
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+
+    def frame(days):
+        n = len(days)
+        return pd.DataFrame(
+            {"n_members": [500] * n, "adv": [20] * n, "dec": [10] * n,
+             "pct_above_50": [60.0] * n, "pct_above_200": [55.0] * n,
+             "nh": [8] * n, "nl": [3] * n},
+            index=pd.DatetimeIndex(days),
+        )
+
+    # A Thursday/Friday/Tuesday trio spans Labor Day but is three
+    # consecutive NYSE sessions, not four calendar days of missing data.
+    holiday_span = nyse_calendar.sessions_between(date(2026, 9, 3), date(2026, 9, 8))
+    assert len(holiday_span) == 3
+    state = {"frame": frame(holiday_span)}
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: state["frame"])
+    sample = bs.market_concentration("us")
+    assert sample["ad_3d"] == 2.0
+    assert sample["ad_w"] is None
+    assert sample["ad_m"] is None
+
+    # Real 21-session population qualifies all three horizons.
+    days = nyse_calendar.sessions_between(date(2026, 9, 1), date(2026, 10, 16))[-21:]
+    assert len(days) == 21
+    state["frame"] = frame(days)
+    observed = bs.market_concentration("us")
+    assert observed["ad_3d"] == 2.0
+    assert observed["ad_w"] == 2.0
+    assert observed["ad_m"] == 2.0
+
+    # An unavailable penultimate NYSE session invalidates every named
+    # trailing horizon despite an unchanged latest source-as-of date.
+    state["frame"] = frame(days[:-2] + days[-1:])
+    sparse = bs.market_concentration("us")
+    assert sparse["source_as_of"] == observed["source_as_of"]
+    assert sparse["ad_3d"] is None
+    assert sparse["ad_w"] is None
+    assert sparse["ad_m"] is None
+
+    # A one-row tape cannot be reinterpreted as a weekly/monthly ratio.
+    state["frame"] = frame(days[-1:])
+    single = bs.market_concentration("us")
+    assert all(single[k] is None for k in ("ad_3d", "ad_w", "ad_m"))
+
+
+def test_market_concentration_ad_lookbacks_never_zero_fill_nan_or_duplicate_rows(
+    monkeypatch, tmp_path,
+):
+    from datetime import date
+    from lib import config, nyse_calendar
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    days = nyse_calendar.sessions_between(date(2026, 10, 1), date(2026, 10, 16))
+    assert len(days) >= 5
+    frame = pd.DataFrame(
+        {"adv": [80.0] * len(days), "dec": [40.0] * len(days),
+         "pct_above_50": [62.0] * len(days), "pct_above_200": [53.0] * len(days),
+         "nh": [12.0] * len(days), "nl": [4.0] * len(days)},
+        index=pd.DatetimeIndex(days),
+    )
+    state = {"frame": frame}
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: state["frame"])
+    assert bs.market_concentration("us")["ad_w"] == 2.0
+
+    missing = frame.copy()
+    missing.loc[days[-4], "adv"] = np.nan
+    state["frame"] = missing
+    outcome = bs.market_concentration("us")
+    assert outcome["ad_3d"] == 2.0
+    assert outcome["ad_w"] is None
+
+    nonfinite = frame.copy()
+    nonfinite.loc[days[-1], "dec"] = float("inf")
+    state["frame"] = nonfinite
+    assert bs.market_concentration("us")["ad_3d"] is None
+
+    negative = frame.copy()
+    negative.loc[days[-1], "adv"] = -1
+    state["frame"] = negative
+    assert bs.market_concentration("us")["ad_3d"] is None
+
+    duplicate = pd.concat([frame.iloc[:-1], frame.iloc[-2:-1]])
+    state["frame"] = duplicate
+    assert bs.market_concentration("us")["ad_3d"] is None
