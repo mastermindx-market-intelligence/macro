@@ -76,6 +76,9 @@ def write_action_board(
         "baskets_sha256": hashlib.sha256(basket_raw).hexdigest(),
         "action_board": action_board,
     }
+    # Return what is actually written, not a divergent in-memory NaN object.
+    # A fresh copy protects canonical upstream eligibility and measured rows.
+    payload = sanitize_non_finite(payload)
     _atomic_json_write(output, payload)
     return payload
 
