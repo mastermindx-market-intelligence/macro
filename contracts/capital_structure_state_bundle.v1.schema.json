@@ -256,7 +256,7 @@
       ],
       "properties": {
         "input_family": {
-          "enum": ["events", "event_edges", "event_projection"]
+          "enum": ["events", "event_edges", "event_projection", "document_terms"]
         },
         "schema": {"type": "string", "minLength": 1},
         "support": {"enum": ["partial", "unavailable", "not_built"]},

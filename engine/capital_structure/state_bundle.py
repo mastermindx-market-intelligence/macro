@@ -8,6 +8,13 @@ health horizon and the served ``projection.json`` into a single published
 ``state_bundle.json`` holding one state per covered issuer -- every state bound
 to the SAME three input generations -- or nothing at all.
 
+When a document-term ledger sits beside the compiled generation it is sealed as
+a FOURTH input generation: the binding names the parquet's byte digest, each
+issuer's registration family carries the current version of its fee-table rows,
+the reader re-reads and re-verifies them byte for byte on every then-known
+replay, and share counts stay an explicitly unavailable family with no capacity
+authority (DEC:CS-V2-U1C-BUNDLE-AS-OF-COVERS-SEALED-INPUTS).
+
 The law this module enforces:
 
 * **One generation or nothing.**  The served projection must bind the verified
@@ -40,8 +47,10 @@ accession-specific.
 """
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
+from copy import deepcopy
 from datetime import date, datetime
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -69,6 +78,7 @@ from engine.capital_structure.projection import PROJECTION_BUNDLE_SCHEMA
 from engine.capital_structure.projection import _stable_id as _projection_stable_id
 from engine.capital_structure.registration_integration import (
     REGISTRATION_FAMILY,
+    REGISTRATION_PATH_SCHEMA,
     RegistrationIntegration,
     _iso_z,
     integrate_registration_paths,
@@ -99,6 +109,23 @@ STATE_BUNDLE_IMPLEMENTATION_DIGEST = sha256_of(
 EVENTS_FAMILY = "events"
 EVENT_EDGES_FAMILY = "event_edges"
 PROJECTION_FAMILY = "event_projection"
+DOCUMENT_TERMS_FAMILY = "document_terms"
+
+#: The nightly's fee-table ledger, read from the state's own data root.  The
+#: same filename the capacity inputs writer uses; it is re-declared here because
+#: ``engine/`` never imports from ``scripts/``.
+DOCUMENT_LEDGER_FILENAME = "document_term_observations.parquet"
+
+#: The one offering-amount term this module seals into the registration family.
+#: Kept identical to ``capacity.FEE_TABLE_TERM_NAME`` (which cannot be imported
+#: here without coupling the producer to the whole capacity adapter); the
+#: document-terms test pins the two constants together.
+FEE_TABLE_TERM_NAME = "proposed_maximum_aggregate_offering_price"
+
+#: Why a family answers nothing, named rather than implied.
+_DOCUMENT_TERMS_LEDGER_ABSENT = "document_terms_ledger_absent"
+_DOCUMENT_TERMS_ARTIFACT_MISMATCH = "document_terms_artifact_mismatch"
+_DOCUMENT_TERMS_DIGEST_MISMATCH = "document_terms_digest_mismatch"
 
 #: The shelf form families whose eligibility routes a coverage denominator may
 #: declare (SPEC §6).  A non-shelf family observes no route at all, which is its
@@ -198,6 +225,135 @@ def _family_records(family_state: Any) -> tuple[Mapping[str, Any], ...]:
     raise ContractViolation("family state must be a FamilyState or its record")
 
 
+def _path_records(
+    records: Sequence[Mapping[str, Any]],
+) -> tuple[Mapping[str, Any], ...]:
+    """The ``registration_path`` records of a registration family.
+
+    The family also carries document-term fee rows (U1C), so every consumer that
+    assumes the path shape filters here first instead of trusting its caller.
+    """
+    return tuple(
+        row
+        for row in records
+        if isinstance(row, Mapping) and row.get("schema") == REGISTRATION_PATH_SCHEMA
+    )
+
+
+# ---------------------------------------------------------------------------
+# The document-term ledger (U1C): loading, selection and version currency
+# ---------------------------------------------------------------------------
+
+
+def read_document_terms_ledger(path: Path) -> tuple[str, tuple[dict[str, Any], ...]]:
+    """The sealed ledger artifact: its byte digest plus every row, in ledger order.
+
+    The digest is taken over the EXACT file bytes, so the ``document_terms``
+    binding names an artifact, not a reading of one.  Rows are the json-decoded
+    ``observation_json`` payloads, mirroring the capacity inputs reader; pandas
+    is imported here rather than at module import so the state bundle stays
+    importable without it.  Per-issuer selection happens once, in
+    :func:`_select_document_terms`, over the rows this returns.
+    """
+    import pandas as pd
+
+    location = Path(path)
+    raw = location.read_bytes()
+    frame = pd.read_parquet(location)
+    for column in ("observation_json",):
+        if column not in frame.columns:
+            raise ValueError(f"document-term ledger {location} carries no {column} column")
+    rows: list[dict[str, Any]] = []
+    for index, value in enumerate(frame["observation_json"].tolist()):
+        if not isinstance(value, str) or not value:
+            raise ValueError(
+                f"document-term ledger {location} row {index} lacks an observation_json payload"
+            )
+        try:
+            decoded = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                f"document-term ledger {location} row {index} has malformed observation_json"
+            ) from exc
+        if not isinstance(decoded, Mapping):
+            raise ValueError(
+                f"document-term ledger {location} row {index} observation_json must be an object"
+            )
+        rows.append(dict(decoded))
+    return hashlib.sha256(raw).hexdigest(), tuple(rows)
+
+
+def _ledger_as_of(rows: Sequence[Mapping[str, Any]]) -> str:
+    """The latest ``point_in_time.available_at`` over the WHOLE ledger.
+
+    This is the document-terms binding's own clock: the newest instant at which
+    any fee row in the artifact became visible to the house.  A present-but-
+    empty ledger has no such instant and is refused rather than sealed as an
+    unnamed generation.
+    """
+    if not rows:
+        raise ValueError("a present document-term ledger carries no rows to seal")
+    moments = []
+    for index, row in enumerate(rows):
+        available_at = _available_at(row, "document_terms.point_in_time.available_at")
+        if not available_at:
+            raise ValueError(
+                f"document-term ledger row {index} carries no point_in_time.available_at"
+            )
+        moments.append(available_at)
+    return _iso_z(max(moments, key=_parse_instant), "document_terms.as_of")
+
+
+def _select_document_terms(
+    rows: Sequence[Mapping[str, Any]], issuer_id: str
+) -> tuple[dict[str, Any], ...]:
+    """The ONE fee-row selection, shared by the builder and the reader.
+
+    For one issuer: every row whose ``term.name`` is the offering-amount term,
+    every correction version and every disposition (observed, ambiguous,
+    unavailable), in ledger row order.  Selection never picks a version -- the
+    current-version rule is applied later, over whatever rows a view can see.
+    """
+    selected: list[dict[str, Any]] = []
+    for row in rows:
+        term = row.get("term")
+        name = term.get("name") if isinstance(term, Mapping) else None
+        if str(name or "") != FEE_TABLE_TERM_NAME:
+            continue
+        if str(row.get("issuer_id") or "") != issuer_id:
+            continue
+        selected.append(dict(row))
+    return tuple(selected)
+
+
+def _correction_version(row: Mapping[str, Any]) -> int:
+    version = row.get("version")
+    return int((version or {}).get("correction_version") or 0) if isinstance(version, Mapping) else 0
+
+
+def _current_document_term_versions(
+    rows: Sequence[Mapping[str, Any]],
+) -> tuple[dict[str, Any], ...]:
+    """The current version of each logical observation, in first-seen order.
+
+    Highest ``correction_version`` per ``logical_observation_id`` wins; a later
+    row carries a later compiler clock, so it also wins a version tie.  Applied
+    over WHATEVER rows a view can see, which is what makes a correction that
+    arrived after a then-known cutoff leave the version it replaced visible.
+    """
+    current: dict[str, Mapping[str, Any]] = {}
+    order: list[str] = []
+    for row in rows:
+        logical = str(row["logical_observation_id"])
+        kept = current.get(logical)
+        if kept is None:
+            order.append(logical)
+        elif _correction_version(row) < _correction_version(kept):
+            continue
+        current[logical] = row
+    return tuple(dict(current[logical]) for logical in order)
+
+
 # ---------------------------------------------------------------------------
 # Bindings (R3/R4): the served projection must bind the verified generation
 # ---------------------------------------------------------------------------
@@ -231,13 +387,19 @@ def _require_bound_projection(
 
 
 def _input_bindings(
-    *, telemetry: Mapping[str, Any], projection: Mapping[str, Any], projection_sha256: str
+    *,
+    telemetry: Mapping[str, Any],
+    projection: Mapping[str, Any],
+    projection_sha256: str,
+    document_terms: tuple[str, tuple[dict[str, Any], ...]] | None = None,
 ) -> tuple[GenerationBinding, ...]:
-    """The three bindings every state in one bundle shares, in family order.
+    """The bindings every state in one bundle shares, in family order.
 
-    ``support`` is ``partial`` for all three: the projection is an event-state
+    ``support`` is ``partial`` for every family: the projection is an event-state
     reader and the ledgers are correction-complete but term-poor.  Nothing here
-    may ever claim ``supported`` (SPEC §10, A06).
+    may ever claim ``supported`` (SPEC §10, A06).  A present document-term ledger
+    seals a fourth binding whose ``generation_id`` digests only its own artifact
+    digest and whose ``as_of`` is the ledger's newest availability instant.
     """
     generation_id = str(telemetry["generation_id"])
     source_as_of = _iso_z(telemetry.get("as_of"), "telemetry.as_of")
@@ -268,7 +430,18 @@ def _input_bindings(
         artifact_sha256=projection_sha256,
         as_of=_iso_z(projection.get("as_of"), "projection.as_of"),
     )
-    return (events, event_edges, event_projection)
+    if document_terms is None:
+        return (events, event_edges, event_projection)
+    artifact_sha256, rows = document_terms
+    document_terms_binding = GenerationBinding(
+        DOCUMENT_TERMS_FAMILY,
+        COMPATIBLE_INPUT_SCHEMAS[DOCUMENT_TERMS_FAMILY][0],
+        "partial",
+        generation_id=stable_id("document_terms", {"artifact_sha256": artifact_sha256}),
+        artifact_sha256=artifact_sha256,
+        as_of=_ledger_as_of(rows),
+    )
+    return (events, event_edges, event_projection, document_terms_binding)
 
 
 def _select_records(
@@ -299,16 +472,25 @@ def _select_records(
 
 
 def _inputs_from_generation(
-    bindings: Sequence[GenerationBinding], generation: VerifiedProjectionGeneration
+    bindings: Sequence[GenerationBinding],
+    generation: VerifiedProjectionGeneration,
+    document_terms: Sequence[Mapping[str, Any]] = (),
 ) -> CapitalInputs:
     """The ONE code path from a verified generation to accepted inputs.
 
     Both :func:`build_capital_inputs` (the producer) and :func:`issuer_inputs`
     (the reader's re-derivation) go through here, so a published ``input_digest``
-    can only ever be reproduced by the same selection rule.
+    can only ever be reproduced by the same selection rule.  The fee rows are
+    passed in WHOLE-LEDGER order; per-issuer selection happens in
+    :func:`inputs_for_issuer` through the one shared selection function.
     """
     events, edges = _select_records(generation.events, generation.edges)
-    return CapitalInputs(bindings=tuple(bindings), events=events, edges=edges)
+    return CapitalInputs(
+        bindings=tuple(bindings),
+        events=events,
+        edges=edges,
+        document_terms=tuple(dict(row) for row in document_terms),
+    )
 
 
 def build_capital_inputs(
@@ -316,14 +498,19 @@ def build_capital_inputs(
     projection: Mapping[str, Any],
     *,
     projection_sha256: str,
+    document_terms: tuple[str, tuple[dict[str, Any], ...]] | None = None,
 ) -> CapitalInputs:
     """Accepted inputs over the WHOLE verified generation, bound to the projection."""
     telemetry = _require_generation(generation.telemetry)
     _require_bound_projection(telemetry, projection)
     bindings = _input_bindings(
-        telemetry=telemetry, projection=projection, projection_sha256=projection_sha256
+        telemetry=telemetry,
+        projection=projection,
+        projection_sha256=projection_sha256,
+        document_terms=document_terms,
     )
-    return _inputs_from_generation(bindings, generation)
+    rows: tuple[dict[str, Any], ...] = document_terms[1] if document_terms is not None else ()
+    return _inputs_from_generation(bindings, generation, document_terms=rows)
 
 
 def inputs_for_issuer(inputs: CapitalInputs, issuer_id: str) -> CapitalInputs:
@@ -331,6 +518,8 @@ def inputs_for_issuer(inputs: CapitalInputs, issuer_id: str) -> CapitalInputs:
 
     Records are never sorted: ``input_digest`` is order-sensitive and the reader
     re-derives it the same way, so a reorder here would break the binding proof.
+    The fee rows narrow through the one shared selection function, so the
+    producer and the reader cannot disagree about which rows belong to whom.
     """
     if not isinstance(inputs, CapitalInputs):
         raise ContractViolation("inputs must be a CapitalInputs")
@@ -342,12 +531,44 @@ def inputs_for_issuer(inputs: CapitalInputs, issuer_id: str) -> CapitalInputs:
         if str(edge.get("from_event_id") or "") in bound
         and str(edge.get("to_event_id") or "") in bound
     )
-    return CapitalInputs(bindings=inputs.bindings, events=events, edges=edges)
+    return CapitalInputs(
+        bindings=inputs.bindings,
+        events=events,
+        edges=edges,
+        document_terms=_select_document_terms(inputs.document_terms, issuer_id),
+    )
 
 
 # ---------------------------------------------------------------------------
 # One issuer state (R5)
 # ---------------------------------------------------------------------------
+
+
+def _registration_family(reg: RegistrationIntegration, inputs: CapitalInputs) -> FamilyState:
+    """The registration family: its paths, then the current fee rows.
+
+    The fee rows of the ``document_terms`` generation ride in the registration
+    family after the paths (U1C): each issuer's offering-amount rows, current
+    version only, in first-seen ledger order.  When no ledger was sealed the
+    family names that absence instead of implying the rows cannot exist.  The
+    provenance stays the registration integrator's own; the fee rows' artifact
+    is proven by the bundle's ``document_terms`` binding.
+    """
+    family = reg.family_state()
+    unavailable = set(family.unavailable)
+    records: tuple[Mapping[str, Any], ...] = tuple(family.records)
+    if inputs.binding(DOCUMENT_TERMS_FAMILY) is None:
+        unavailable.add(_DOCUMENT_TERMS_LEDGER_ABSENT)
+    else:
+        records = records + tuple(
+            deepcopy(row) for row in _current_document_term_versions(inputs.document_terms)
+        )
+    return FamilyState(
+        family.family,
+        family.provenance,
+        records=records,
+        unavailable=tuple(sorted(unavailable)),
+    )
 
 
 def issuer_state(
@@ -365,7 +586,9 @@ def issuer_state(
     The receipt carries THIS issuer's ``input_digest`` (the integrator's own
     receipt digests only the bindings, so it is identical across issuers and
     cannot prove which issuer's rows were read); its ``rule_digest`` is the
-    integrator's, and its ``implementation_digest`` is this producer's.
+    integrator's, and its ``implementation_digest`` is this producer's.  The
+    registration family carries the paths plus the current fee rows of the
+    sealed document-terms generation.
     """
     if not isinstance(inputs, CapitalInputs):
         raise ContractViolation("inputs must be a CapitalInputs")
@@ -396,7 +619,7 @@ def issuer_state(
     state = CapitalState(
         request,
         generated_at,
-        families=(reg.family_state(),),
+        families=(_registration_family(reg, inputs),),
         receipt=receipt,
         projection_generation_id=projection_generation_id,
     )
@@ -476,7 +699,7 @@ def coverage_for(
     and is emitted only when every declared route was examined and every verdict
     was ``ineligible``; otherwise the page shows partial/unknown copy.
     """
-    records = _family_records(family_state)
+    records = _path_records(_family_records(family_state))
     observed = set()
     for path in records:
         registration = path.get("registration") if isinstance(path, Mapping) else None
@@ -598,7 +821,7 @@ def _path_evidence(
 ) -> dict[str, list[str]]:
     """``path_id -> sorted evidence keys`` for one issuer's registration paths."""
     out: dict[str, list[str]] = {}
-    for path in records:
+    for path in _path_records(records):
         keys: set[str] = set()
         for event_id in _cited_event_ids(path):
             event = by_event.get(event_id)
@@ -750,7 +973,7 @@ def _collect_citations(
     """Aggregate every predicate citation into one row per retained-byte span."""
     grouped: dict[str, dict[str, Any]] = {}
     for issuer_id, records in per_issuer:
-        for path in records:
+        for path in _path_records(records):
             path_id = str(path["path_id"])
             for event_id in _cited_event_ids(path):
                 event = by_event.get(event_id)
@@ -815,15 +1038,18 @@ def build_state_bundle(
     generated_at: str,
     projection_sha256: str,
     source_manifests: Sequence[Mapping[str, Any]] = (),
+    document_terms: tuple[str, tuple[dict[str, Any], ...]] | None = None,
 ) -> dict[str, Any]:
     """One published state generation: every issuer bound to the same inputs.
 
     Nothing is written by this function; it returns the bundle dict or raises.
-    A refusal anywhere withholds the WHOLE bundle (SPEC §2).
+    A refusal anywhere withholds the WHOLE bundle (SPEC §2).  ``document_terms``
+    is the ``(byte digest, rows)`` pair :func:`read_document_terms_ledger`
+    returns; ``None`` seals no fee rows and names that absence per issuer.
     """
     telemetry = _require_generation(generation.telemetry)
     whole = build_capital_inputs(
-        generation, projection, projection_sha256=projection_sha256
+        generation, projection, projection_sha256=projection_sha256, document_terms=document_terms
     )
     cutoff = _iso_z(as_of, "as_of")
     produced = _iso_z(generated_at, "generated_at")
@@ -845,7 +1071,9 @@ def build_state_bundle(
             rule_pack=rule_pack,
             projection_generation_id=projection_generation_id,
         )
-        family = reg.family_state()
+        family = state.family(REGISTRATION_FAMILY)
+        if family is None:  # pragma: no cover - issuer_state always seals it
+            raise ContractViolation("issuer state carries no registration family")
         coverage = coverage_for(family, rule_pack=rule_pack, deferred=reg.deferred)
         issuer_records.append(state.as_record())
         per_coverage.append(coverage)
@@ -1051,6 +1279,9 @@ def issuer_inputs(
     bundle: Mapping[str, Any],
     generation: VerifiedProjectionGeneration,
     issuer_id: str,
+    *,
+    document_terms_ledger: Path | str | None = None,
+    read_ledger: Callable[[Path], tuple[str, tuple[dict[str, Any], ...]]] = read_document_terms_ledger,
 ) -> CapitalInputs:
     """The reader's re-derivation: the published inputs for one issuer, proved.
 
@@ -1059,6 +1290,14 @@ def issuer_inputs(
     used, then requires the result to digest to the published ``input_digest``.
     A generation that moved under the bundle therefore fails closed instead of
     being served as if it were the published one.
+
+    When the bundle seals a ``document_terms`` generation, the reader re-reads
+    the ledger artifact itself and requires its byte digest to equal the
+    binding's ``artifact_sha256`` before anything is selected (U1C): a ledger
+    that moved after publication is ``document_terms_artifact_mismatch``, and a
+    re-derivation that still fails to reproduce the published digest is
+    ``document_terms_digest_mismatch``.  A bundle without the binding neither
+    reads nor requires the ledger.
     """
     if not isinstance(bundle, Mapping):
         raise ContractViolation("state bundle must be an object")
@@ -1075,6 +1314,30 @@ def issuer_inputs(
         raise ContractViolation(
             "state generation does not bind the verified capital-structure generation"
         )
+    terms_binding = next(
+        (binding for binding in bindings if binding.input_family == DOCUMENT_TERMS_FAMILY), None
+    )
+    ledger_rows: tuple[dict[str, Any], ...] = ()
+    if terms_binding is not None:
+        if document_terms_ledger is None:
+            raise ContractViolation(
+                "state bundle binds document_terms but the reader was given no ledger artifact"
+            )
+        try:
+            artifact_sha256, ledger_rows = read_ledger(Path(document_terms_ledger))
+        except ContractViolation:
+            raise
+        except Exception as exc:  # noqa: BLE001 — an unreadable bound artifact fails closed
+            raise ContractViolation(
+                f"{_DOCUMENT_TERMS_ARTIFACT_MISMATCH}: the bound document-term ledger "
+                f"is unreadable: {exc}"
+            ) from exc
+        if artifact_sha256 != terms_binding.artifact_sha256:
+            raise ContractViolation(
+                f"{_DOCUMENT_TERMS_ARTIFACT_MISMATCH}: re-read ledger sha256 "
+                f"{artifact_sha256} differs from the binding's "
+                f"{terms_binding.artifact_sha256}"
+            )
     record = next(
         (
             row
@@ -1085,10 +1348,15 @@ def issuer_inputs(
     )
     if record is None:
         raise ContractViolation("issuer not covered")
-    whole = _inputs_from_generation(bindings, generation)
+    whole = _inputs_from_generation(bindings, generation, document_terms=ledger_rows)
     inputs = inputs_for_issuer(whole, issuer_id)
     published = (record.get("receipt") or {}).get("input_digest")
     if inputs.input_digest != published:
+        if terms_binding is not None:
+            raise ContractViolation(
+                f"{_DOCUMENT_TERMS_DIGEST_MISMATCH}: re-selected document-term rows do not "
+                "reproduce the published inputs"
+            )
         raise ContractViolation("state generation does not bind the published inputs")
     return inputs
 
@@ -1134,7 +1402,22 @@ def then_known_state(
         if str(edge.get("from_event_id") or "") in bound
         and str(edge.get("to_event_id") or "") in bound
     )
-    filtered = CapitalInputs(bindings=inputs.bindings, events=events, edges=edges)
+    # A fee row is then-known when its SYSTEM availability instant had already
+    # arrived (U1C) -- never its source clock, which can precede the house's own.
+    # The current-version rule then runs over only the kept rows, so a correction
+    # made after the cutoff leaves the version it replaced visible.
+    document_terms = tuple(
+        row
+        for row in inputs.document_terms
+        if _available_at(row, "document_terms.point_in_time.available_at")
+        and _parse_instant(
+            _available_at(row, "document_terms.point_in_time.available_at")
+        )
+        <= moment
+    )
+    filtered = CapitalInputs(
+        bindings=inputs.bindings, events=events, edges=edges, document_terms=document_terms
+    )
     produced = generated_at or str(current_record["generated_at"])
     state, _ = issuer_state(
         filtered,
@@ -1189,12 +1472,12 @@ def not_yet_observed(
         raise ContractViolation("derived state must be a CapitalState or its record")
     observed = {
         str(path["lifecycle_id"])
-        for path in derived_records
+        for path in _path_records(derived_records)
         if isinstance(path, Mapping) and path.get("lifecycle_id")
     }
     by_event = {str(event["event_id"]): event for event in inputs.events}
     rows: list[dict[str, Any]] = []
-    for path in (current or {}).get("records") or ():
+    for path in _path_records((current or {}).get("records") or ()):
         if not isinstance(path, Mapping):
             continue
         lifecycle_id = str(path.get("lifecycle_id") or "")
@@ -1221,6 +1504,9 @@ def not_yet_observed(
 
 
 __all__ = [
+    "DOCUMENT_LEDGER_FILENAME",
+    "DOCUMENT_TERMS_FAMILY",
+    "FEE_TABLE_TERM_NAME",
     "STATE_BUNDLE_IMPLEMENTATION_DIGEST",
     "STATE_BUNDLE_SCHEMA",
     "STATE_BUNDLE_SCHEMA_FILE",
@@ -1233,6 +1519,7 @@ __all__ = [
     "issuer_inputs",
     "issuer_state",
     "not_yet_observed",
+    "read_document_terms_ledger",
     "state_from_record",
     "then_known_state",
     "validate_state_bundle",

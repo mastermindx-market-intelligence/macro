@@ -296,7 +296,12 @@ def test_u1_registration_family_is_integrated_from_the_verified_generation(pack)
             inputs, as_of=AS_OF, generated_at=GENERATED_AT, rule_pack=pack
         )
         record = _state_record(bundle, issuer_id)
-        assert record["families"][0] == reg.family_state().as_record()
+        # U1C: with no ledger sealed, the family also names that absence.
+        expected_family = reg.family_state().as_record()
+        expected_family["unavailable"] = sorted(
+            set(expected_family["unavailable"]) | {"document_terms_ledger_absent"}
+        )
+        assert record["families"][0] == expected_family
         assert record["receipt"]["input_digest"] == inputs.input_digest
         assert record["receipt"]["rule_digest"] == reg.receipt.rule_digest
         assert record["receipt"]["implementation_digest"] == (
@@ -626,7 +631,12 @@ def test_u1_then_known_view_filters_on_system_available_at_and_keeps_generation_
     expected = integrate_registration_paths(
         expected_inputs, as_of=CUTOFF, generated_at=GENERATED_AT, rule_pack=pack
     )
-    assert derived.family("registration").as_record() == expected.family_state().as_record()
+    # U1C: with no ledger sealed, the derived family also names that absence.
+    expected_family = expected.family_state().as_record()
+    expected_family["unavailable"] = sorted(
+        set(expected_family["unavailable"]) | {"document_terms_ledger_absent"}
+    )
+    assert derived.family("registration").as_record() == expected_family
     assert record["receipt"]["input_digest"] == expected_inputs.input_digest
     assert record["receipt"]["input_digest"] != current["receipt"]["input_digest"]
     assert [row["path_id"] for row in record["families"][0]["records"]] != [
