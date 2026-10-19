@@ -9378,6 +9378,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_refusal_entry_readers.py
           tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
@@ -9385,6 +9386,7 @@ jobs:
           tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_statement_grid_p5b.py
+          tests/test_fundamental_forensics_statement_refusals.py
           tests/test_fundamental_forensics_lane_c_cat_title.py
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_ui.py
@@ -9402,7 +9404,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
