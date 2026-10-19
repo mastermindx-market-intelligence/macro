@@ -11244,6 +11244,11 @@ jobs:
     # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
     paths:
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
       - "lib/exchange_holidays.py"
       - ".github/ci/legacy-jobs.yml"
       - ".github/workflows/**"
@@ -35474,6 +35479,38 @@ jobs:
       - name: File, pinned-source, observation and native disclosure contracts
         run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
 
+  k3d-economic-propagation-contracts:
+    if: ${{ false }}
+    gate: code
+    # Sole K3-D execution home. The historical signal-contract job is data-gated
+    # and is not executed by the PR workflow's --gate code selection.
+    scope: exclusive
+    paths:
+      - "lib/__init__.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "contracts/economic_propagation/**"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_economic_propagation_hypothesis_contract.py"
+      - "tests/test_economic_propagation_source_grain.py"
+      - "tests/test_economic_propagation_v2.py"
+      - "tests/test_economic_propagation_v2_semantics.py"
+      - "tests/test_economic_propagation_native_carrier.py"
+      - "tests/fixtures/economic_propagation/**"
+      - "research/economic_propagation/k3d_real_proof_records/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install native contract dependencies
+        run: pip install pytest jsonschema
+      - name: K3-D Economic Propagation hypothesis contract and laundering kills
+        run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py tests/test_economic_propagation_native_carrier.py -q
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
     # Exact kernel/policy inputs plus shared pytest imports; no source acquisition.
