@@ -9239,6 +9239,8 @@ jobs:
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/fif_a1_journey_ledger.py"
+      - "scripts/fif_a1_lineage_causes.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
       - "scripts/publish_fif_production_datasets.py"
@@ -9265,6 +9267,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
@@ -9344,6 +9347,7 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_fif_a1_journey_ledger.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
