@@ -2273,6 +2273,9 @@ def _additive_layer_clock(ohlcv_map: dict, today: date) -> tuple[date, dict]:
     return clock, meta
 
 
+_LINEAGE_HISTORY_SESSIONS: int | None = None  # None = full calendar; measured 2026-10-17 on the 174-issuer universe
+
+
 def _with_additive_clock(roster: dict, clock: date, meta: dict, *, incumbent_as_of: str) -> dict:
     """Attach the additive-layer clock receipt to a roster (display-only, no authority)."""
     roster["additive_clock"] = {
@@ -2887,6 +2890,41 @@ def build(
                                          "thesis_state": "UNKNOWN"}
         _row.setdefault("display_chips", {})["leader_recovery"] = _recovery
 
+    # ── Leader lineage (display-only, additive; default off) ──────────────────
+    # Mirrors the recovery lens: compute the WHOLE layer (descriptors, chips,
+    # roster) before attaching anything, so a failure leaves the incumbent
+    # payload byte-identical. No rank, gate, size, trade, alert, ordering or
+    # promotion input reads any lineage field.
+    _lineage_roster_payload = None   # set only when the whole layer succeeded
+    if lr_cfg.get("lineage_enabled") is True:
+        try:
+            from engine.leader_lineage import describe_lineage_universe, lineage_chip, lineage_roster
+            _t_lin = time.monotonic()
+            _lin_cal = [d for d in _recovery_calendar if d <= additive_clock]
+            if _LINEAGE_HISTORY_SESSIONS is not None:
+                _lin_cal = _lin_cal[-_LINEAGE_HISTORY_SESSIONS:]
+            _lin_tickers = [r["ticker"] for r in rows]
+            _lin_closes = {t: ohlcv_map[t]["close"] for t in _lin_tickers if ohlcv_map.get(t) is not None}
+            _lin_refs = {t: f"data/baskets/ohlcv/{t}.parquet + data/yahoo/SPY.parquet" for t in _lin_tickers}
+            _lin_descs, _lin_cov = describe_lineage_universe(
+                _lin_closes, spy, as_of=additive_clock, sessions=_lin_cal,
+                tickers=_lin_tickers, source_refs=_lin_refs)
+            _lin_chips = {t: lineage_chip(_lin_descs[t]) for t in _lin_tickers}
+            _lin_roster = _with_additive_clock(
+                lineage_roster(_lin_descs, _lin_cov, as_of=as_of),
+                additive_clock, additive_clock_meta, incumbent_as_of=as_of)
+            for _row in rows:                       # attach only after EVERYTHING above succeeded
+                _row.setdefault("display_chips", {})["leader_lineage"] = _lin_chips[_row["ticker"]]
+            _lineage_roster_payload = _lin_roster
+            log.info("build_leader_radar: leader lineage: %d issuers in %.2fs",
+                     len(_lin_tickers), time.monotonic() - _t_lin)
+        except Exception as _lin_exc:  # noqa: BLE001
+            for _row in rows:                       # no partial attach survives
+                (_row.get("display_chips") or {}).pop("leader_lineage", None)
+            _lineage_roster_payload = None
+            log.warning("build_leader_radar: leader lineage unavailable: %s", _lin_exc)
+            print(f"::warning title=leader_lineage::lineage layer FAILED — incumbent payload unchanged: "
+                  f"{type(_lin_exc).__name__}: {_lin_exc}", flush=True)
 
     # Writes merge onto the UNCAPPED frames (state_df_full / fire_log_df_full):
     # the PIT cap is a read-side view, and _merge_history_frame already drops
@@ -2914,6 +2952,17 @@ def build(
                     print(f"::warning title=leader_radar::recovery observation enrichment "
                           f"FAILED — incumbent state_history written unchanged: "
                           f"{type(_obs_exc).__name__}: {_obs_exc}", flush=True)
+                # Isolated the same way: a lineage-seal failure must never freeze
+                # the incumbent state_history advance.
+                try:
+                    from engine.leader_recovery_observations import merge_lineage_observations
+                    updated = merge_lineage_observations(
+                        state_df_full, updated, rows, as_of=additive_clock, observed_at=built_at,
+                        enabled=(lr_cfg.get("lineage_enabled") is True and _lineage_roster_payload is not None))
+                except Exception as _lin_obs_exc:  # noqa: BLE001
+                    log.warning("build_leader_radar: lineage observations skipped: %s", _lin_obs_exc)
+                    print(f"::warning title=leader_lineage::lineage observation enrichment FAILED — incumbent "
+                          f"state_history written unchanged: {type(_lin_obs_exc).__name__}: {_lin_obs_exc}", flush=True)
                 _write_state_history(updated, data_root)
                 log.info("build_leader_radar: state_history: %d total rows", len(updated))
             except Exception as e:  # noqa: BLE001
@@ -3154,6 +3203,17 @@ def build(
         "near_trigger": near_trigger,
         "fire_history": fire_history,
     }
+
+    # Additive key placement: lineage_roster sits immediately after
+    # recovery_roster; every other key keeps its order. Flag-off and failure
+    # paths leave the payload dict literally untouched.
+    if _lineage_roster_payload is not None:
+        _p: dict[str, Any] = {}
+        for _k, _v in payload.items():
+            _p[_k] = _v
+            if _k == "recovery_roster":
+                _p["lineage_roster"] = _lineage_roster_payload
+        payload = _p
 
     out_path = out_dir / "radar.json"
 
