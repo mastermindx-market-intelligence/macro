@@ -177,17 +177,17 @@ export function mountCompanyResearch(root) {
         field(fields, 'Reporting customer', '披露方客户', context.query.symbol);
         field(fields, 'Supplier issuer', '供应商发行人', value.fact.object_id);
         field(fields, 'Product scope', '产品范围', value.fact.product);
-        field(fields, 'Filing date', '申报日期', value.source_timing.published_date);
+        field(fields, 'Filing date', '披露日期', value.source_timing.published_date);
         field(fields, 'SEC acceptance', 'SEC 接收时刻', source.accepted_at);
         field(fields, 'Retained source retrieval', '留存来源读取时刻', source.retrieved_at);
         field(fields, 'Identity observed for adoption', '采纳所用身份观测', binding.identity_observed_at);
         field(fields, 'Fact adoption', '事实采纳时刻', binding.adopted_at);
         card.append(fields);
-        const citation = element('a', 'ox-action', 'Read the original SEC filing', '阅读 SEC 原始申报');
+        const citation = element('a', 'ox-action', 'Read the original SEC filing', '阅读 SEC 原始披露');
         citation.href = source.archive_url; citation.target = '_blank'; citation.rel = 'noopener noreferrer';
         card.append(citation, element('p', 'ox-note',
           'Source: public issuer filing on SEC.gov. Current identity is used; filing acceptance does not establish historical availability in this system. No supplier amount or economic weight is assigned.',
-          '来源：SEC.gov 上的发行人公开申报。此处使用当前身份；申报接收时刻不代表本系统的历史可用时刻。未赋予供应量或经济权重。'));
+          '来源：SEC.gov 上的发行人公开披露。此处使用当前身份；披露接收时刻不代表本系统的历史可用时刻。未赋予供应量或经济权重。'));
       } else {
         card.append(element('h3', '', 'An announced plan', '一项已披露的计划'));
         card.append(element('p', 'ox-note',
@@ -228,14 +228,14 @@ export function mountCompanyResearch(root) {
         research.append(element('h4', '', 'Reported event', '已报告的事件'),
           element('p', '',
             'NVIDIA reported diminished demand for H20 products in its first fiscal quarter of 2026. The FY2026 filing also identifies TSMC as a wafer foundry supplier.',
-            '英伟达报告其 2026 财年第一季度 H20 产品需求减弱。同一份 2026 财年申报也将台积电列为晶圆代工供应商。'),
+            '英伟达报告其 2026 财年第一季度 H20 产品需求减弱。同一份 2026 财年披露也将台积电列为晶圆代工供应商。'),
           element('h4', '', 'Proposed transmission', '拟议的传导路径'),
           element('p', '',
             'If that demand loss reduces applicable wafer procurement from TSMC, TSMC operating volume could decline relative to a comparable baseline. Whether H20 affected TSMC procurement or volume is not established by these disclosures.',
             '若该需求下降减少了适用于台积电的晶圆采购，其经营量可能低于可比基准。这些披露尚未确立 H20 对台积电采购或经营量的实际影响。'),
           element('p', 'ox-note',
             'Both observations come from one filing, so they are not independent confirmations. No allocation, effect size, confidence or impact lag has been estimated.',
-            '两项观察均来自同一份申报，不能算作独立确认。尚未估计分配量、影响大小、置信度或影响时滞。'));
+            '两项观察均来自同一份披露，不能算作独立确认。尚未估计分配量、影响大小、置信度或影响时滞。'));
         research.append(element('h4', '', 'What would test it', '如何检验'));
         const tests = element('ul');
         tests.append(element('li', '',
@@ -271,7 +271,7 @@ export function mountCompanyResearch(root) {
         field(fields, 'Source span digest', '来源片段摘要', o.span_sha256);
         evidence.append(fields, element('p', 'ox-note',
           'Current identity is used. Filing acceptance is a reporting clock; it does not date the economic occurrence or historical availability in this system. No empirical test has been registered or run for this record.',
-          '使用的是当前身份。申报接收时刻是报告时钟，不是经济事件的发生时刻，也不代表本系统的历史可用时刻。本记录尚未注册或执行实证检验。'));
+          '使用的是当前身份。披露接收时刻是报告时钟，不是经济事件的发生时刻，也不代表本系统的历史可用时刻。本记录尚未注册或执行实证检验。'));
         const nativeText = element('p'); nativeText.textContent = c.mechanism.hypothesis_text;
         evidence.append(element('h4', '', 'Original hypothesis wording (English)', '假设原文（英文）'), nativeText); research.append(evidence);
       }
@@ -289,7 +289,7 @@ export function mountCompanyResearch(root) {
       field(refs, 'Edition reference', '版本引用', state.fact.edition.sha256);
       if (state.fact.schema === decoder.PRIVATE_SUPPLIER_SCHEMA) {
         const source = state.fact.source_timing.sec_source;
-        field(refs, 'Filing accession', '申报编号', source.accession);
+        field(refs, 'Filing accession', '披露编号', source.accession);
         field(refs, 'Source recorded', '来源入库时刻', source.recorded_at);
         field(refs, 'Pinned snapshot', '固定快照时刻', source.snapshot_at);
       }
