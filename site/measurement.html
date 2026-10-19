@@ -1273,6 +1273,14 @@
           <span class="lbl"><span class="l-en">Headline mult</span><span class="l-zh">整体倍数</span></span>
           <span class="val">8.191×</span>
         </div>
+        
+        <div class="mh-recal-stat">
+          <span class="lbl">
+            <span class="l-en">Half-width (days)</span><span class="l-zh">半宽（天）</span>
+          </span>
+          <span class="val">1484.2</span>
+        </div>
+        
         <div class="mh-recal-stat">
           <span class="lbl"><span class="l-en">Forward-only mult</span><span class="l-zh">仅前向倍数</span></span>
           <span class="val">7.657×</span>
@@ -1297,6 +1305,14 @@
           <span class="lbl"><span class="l-en">Headline mult</span><span class="l-zh">整体倍数</span></span>
           <span class="val">3.567×</span>
         </div>
+        
+        <div class="mh-recal-stat">
+          <span class="lbl">
+            <span class="l-en">Half-width (days)</span><span class="l-zh">半宽（天）</span>
+          </span>
+          <span class="val">396.0</span>
+        </div>
+        
         <div class="mh-recal-stat">
           <span class="lbl"><span class="l-en">Forward-only mult</span><span class="l-zh">仅前向倍数</span></span>
           <span class="val">3.291×</span>
@@ -1321,6 +1337,14 @@
           <span class="lbl"><span class="l-en">Headline mult</span><span class="l-zh">整体倍数</span></span>
           <span class="val">3.118×</span>
         </div>
+        
+        <div class="mh-recal-stat">
+          <span class="lbl">
+            <span class="l-en">Half-width (days)</span><span class="l-zh">半宽（天）</span>
+          </span>
+          <span class="val">275.0</span>
+        </div>
+        
         <div class="mh-recal-stat">
           <span class="lbl"><span class="l-en">Forward-only mult</span><span class="l-zh">仅前向倍数</span></span>
           <span class="val">2.949×</span>
@@ -3938,8 +3962,6 @@
       <h2><span class="l-en">Evidence-Gap Panel</span><span class="l-zh">证据缺口面板</span></h2>
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
-
-    
     
     
     
@@ -3975,6 +3997,7 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
+              
             </td>
           </tr>
           
@@ -3987,6 +4010,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
+              <br><span class="l-en">overlay still tracked · heat
+      0.467 → 0.467</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.467 → 0.467</span>
             </td>
           </tr>
           
@@ -3999,6 +4026,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
+              <br><span class="l-en">overlay broken · heat
+      0.287 → 0.287</span>
+    <span class="l-zh">叠加 已失效 · 热度
+      0.287 → 0.287</span>
             </td>
           </tr>
           
@@ -4010,6 +4041,7 @@
               
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
+              
               
             </td>
           </tr>
@@ -4023,6 +4055,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
+              <br><span class="l-en">overlay still tracked · heat
+      0.392 → 0.392</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.392 → 0.392</span>
             </td>
           </tr>
           
@@ -4034,6 +4070,7 @@
               
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
+              
               
             </td>
           </tr>
@@ -4047,6 +4084,7 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
+              
             </td>
           </tr>
           
@@ -4059,6 +4097,7 @@
               llm_inputs — heat 0.196 → 0.137 · 1 surface(s) now · physical now: no
                 
               
+              
             </td>
           </tr>
           
@@ -4067,11 +4106,66 @@
       </div>
       <div class="eg-footnote">
         <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
-        Deterministic kill criteria; an llm_inputs row lists the inputs an AI-judged
-        thesis was broken on, not which one fired. Display only, not a sizing input.</span>
+        Deterministic kill criteria. An AI-judged thesis names each condition the
+        monitor recorded: physical_lost (physical confirmation lost), below_quorum
+        (too few surfaces), heat_drop (heat fell past the break line); a row
+        without that record shows llm_inputs, the inputs it was judged on.
+        Display only, not a sizing input.</span>
         <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
-        确定性失效条件；llm_inputs 行列出 AI 评判论点所依据的输入，不指明具体触发哪一项。
-        仅供展示，不用于仓位决策。</span>
+        确定性失效条件。AI 评判的论点列出监测器记录的每项触发条件：physical_lost（实体确认丢失）、
+        below_quorum（信号面不足）、heat_drop（热度跌破失效线）；未带该记录的行显示 llm_inputs，
+        即其评判所依据的输入。仅供展示，不用于仓位决策。</span>
+      </div>
+    </div>
+    
+
+    
+    
+    <div class="eg-subpanel" id="eg-thesis-intact">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Still tracked</span><span class="l-zh">仍在跟踪</span></h3>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">AI overlay</span><span class="l-zh">AI 叠加</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td class="eg-mono">grid_electrification</td>
+            <td class="eg-mono">2026-07-04</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td>—</td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">nuclear_power</td>
+            <td class="eg-mono">2026-07-04</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td><span class="l-en">overlay broken · heat
+      0.213 → 0.169</span>
+    <span class="l-zh">叠加 已失效 · 热度
+      0.213 → 0.169</span></td>
+          </tr>
+          
+          <tr>
+            <td class="eg-mono">space_satellite</td>
+            <td class="eg-mono">2026-10-06</td>
+            <td class="eg-mono">BROADENING (text)</td>
+            <td><span class="l-en">overlay still tracked · heat
+      0.627 → 0.627</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.627 → 0.627</span></td>
+          </tr>
+          
+        </tbody>
+      </table>
       </div>
     </div>
     
@@ -4097,6 +4191,7 @@
             <th><span class="l-en">Ledger key</span><span class="l-zh">账本键</span></th>
             <th><span class="l-en">n_logged</span><span class="l-zh">已记录</span></th>
             <th><span class="l-en">n_graded</span><span class="l-zh">已评分</span></th>
+            <th><span class="l-en">Last graded</span><span class="l-zh">最近评分</span></th>
             <th><span class="l-en">Verdict</span><span class="l-zh">裁定</span></th>
             <th><span class="l-en">Starvation (TIME vs BUILD)</span><span class="l-zh">缺失类型（时间 vs 构建）</span></th>
           </tr>
@@ -4107,6 +4202,9 @@
             <td class="eg-mono">qledger_claims</td>
             <td class="eg-num">118372</td>
             <td class="eg-num">208167</td>
+            <td class="eg-mono">
+              2026-10-16
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4123,6 +4221,9 @@
             <td class="eg-mono">qledger_grades</td>
             <td class="eg-num">208167</td>
             <td class="eg-num">208167</td>
+            <td class="eg-mono">
+              2026-10-16
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4139,6 +4240,9 @@
             <td class="eg-mono">board_ledger_hk</td>
             <td class="eg-num">1205</td>
             <td class="eg-num">766</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4155,6 +4259,9 @@
             <td class="eg-mono">board_ledger_ca</td>
             <td class="eg-num">870</td>
             <td class="eg-num">610</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4171,6 +4278,9 @@
             <td class="eg-mono">us_board_ledger</td>
             <td class="eg-num">13563</td>
             <td class="eg-num">13563</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4187,6 +4297,9 @@
             <td class="eg-mono">signal_archive_track_record</td>
             <td class="eg-num">60752</td>
             <td class="eg-num">60471</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4203,6 +4316,9 @@
             <td class="eg-mono">china_standout_track</td>
             <td class="eg-num">5528</td>
             <td class="eg-num">3159</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4219,6 +4335,9 @@
             <td class="eg-mono">sector_cycles_forward_log</td>
             <td class="eg-num">4186</td>
             <td class="eg-num">1937</td>
+            <td class="eg-mono">
+              2026-07-02
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4235,6 +4354,9 @@
             <td class="eg-mono">china_sector_cycles_forward_log</td>
             <td class="eg-num">3392</td>
             <td class="eg-num">5081</td>
+            <td class="eg-mono">
+              2026-07-02
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4251,6 +4373,9 @@
             <td class="eg-mono">country_cycles_forward_log</td>
             <td class="eg-num">2325</td>
             <td class="eg-num">5769</td>
+            <td class="eg-mono">
+              2026-07-02
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4267,6 +4392,9 @@
             <td class="eg-mono">breadth_divergence_forward_log</td>
             <td class="eg-num">658</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4283,6 +4411,9 @@
             <td class="eg-mono">risk_radar_forward_log</td>
             <td class="eg-num">68</td>
             <td class="eg-num">50</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4299,6 +4430,9 @@
             <td class="eg-mono">risk_radar_intl_cn</td>
             <td class="eg-num">42</td>
             <td class="eg-num">24</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4315,6 +4449,9 @@
             <td class="eg-mono">risk_radar_intl_hk</td>
             <td class="eg-num">47</td>
             <td class="eg-num">29</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4331,6 +4468,9 @@
             <td class="eg-mono">risk_radar_intl_ca</td>
             <td class="eg-num">51</td>
             <td class="eg-num">37</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4347,6 +4487,9 @@
             <td class="eg-mono">risk_radar_intl_kr</td>
             <td class="eg-num">38</td>
             <td class="eg-num">25</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4363,6 +4506,9 @@
             <td class="eg-mono">risk_radar_intl_jp</td>
             <td class="eg-num">38</td>
             <td class="eg-num">23</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4379,6 +4525,9 @@
             <td class="eg-mono">risk_radar_intl_tw</td>
             <td class="eg-num">39</td>
             <td class="eg-num">24</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4395,6 +4544,9 @@
             <td class="eg-mono">risk_radar_intl_in</td>
             <td class="eg-num">37</td>
             <td class="eg-num">22</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4411,6 +4563,9 @@
             <td class="eg-mono">risk_radar_intl_au</td>
             <td class="eg-num">43</td>
             <td class="eg-num">28</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4427,6 +4582,9 @@
             <td class="eg-mono">risk_radar_intl_gb</td>
             <td class="eg-num">40</td>
             <td class="eg-num">26</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4443,6 +4601,9 @@
             <td class="eg-mono">risk_radar_intl_ez</td>
             <td class="eg-num">40</td>
             <td class="eg-num">26</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4459,6 +4620,9 @@
             <td class="eg-mono">grey_deer_pullback_forward_log</td>
             <td class="eg-num">0</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4475,6 +4639,9 @@
             <td class="eg-mono">market_state_forward_log</td>
             <td class="eg-num">67</td>
             <td class="eg-num">48</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4491,6 +4658,9 @@
             <td class="eg-mono">oracle_forward_ledger</td>
             <td class="eg-num">173</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4507,6 +4677,9 @@
             <td class="eg-mono">oracle_compounds_live_ledger</td>
             <td class="eg-num">53</td>
             <td class="eg-num">53</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4523,6 +4696,9 @@
             <td class="eg-mono">oracle_reversion_forward</td>
             <td class="eg-num">0</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4539,6 +4715,9 @@
             <td class="eg-mono">btc_override_ledger</td>
             <td class="eg-num">71</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              2026-10-14
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4555,6 +4734,9 @@
             <td class="eg-mono">foresight_log</td>
             <td class="eg-num">312</td>
             <td class="eg-num">69</td>
+            <td class="eg-mono">
+              2026-10-15
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4571,6 +4753,9 @@
             <td class="eg-mono">foresight_policy_calendar_ledger</td>
             <td class="eg-num">1222</td>
             <td class="eg-num">1053</td>
+            <td class="eg-mono">
+              2026-10-14
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4587,6 +4772,9 @@
             <td class="eg-mono">froth_fragility_log</td>
             <td class="eg-num">65</td>
             <td class="eg-num">29</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -4603,6 +4791,9 @@
             <td class="eg-mono">species_registry</td>
             <td class="eg-num">27</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4619,6 +4810,9 @@
             <td class="eg-mono">species_antichase_shadow_ledger</td>
             <td class="eg-num">5551</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4635,6 +4829,9 @@
             <td class="eg-mono">species_f1d_shadow_ledger</td>
             <td class="eg-num">5551</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -4651,6 +4848,9 @@
             <td class="eg-mono">bd_avoid1_ledger</td>
             <td class="eg-num">0</td>
             <td class="eg-num">0</td>
+            <td class="eg-mono">
+              —
+            </td>
             <td>
               
               <span class="verdict verdict-accruing"><span class="l-en">GRADER-STARVED</span><span class="l-zh">GRADER-STARVED</span></span>
@@ -6645,6 +6845,16 @@
         <div class="mh-metric-note">
           <span class="l-en">262 of 548 ahead of SPY · outright median -0.0% · 115 windows still open</span>
           <span class="l-zh">262 of 548 跑赢 SPY · 绝对中位数 -0.0% · 仍有 115 个窗口未收官</span>
+          
+          <span class="l-en">
+            · 67 still maturing
+             · 48 cannot be priced
+          </span>
+          <span class="l-zh">
+            · 67 仍在成熟
+             · 48 无法定价
+          </span>
+          
         </div>
         
       </div>
@@ -6662,6 +6872,16 @@
         <div class="mh-metric-note">
           <span class="l-en">173 of 317 ahead of SPY · outright median +2.6% · 346 windows still open</span>
           <span class="l-zh">173 of 317 跑赢 SPY · 绝对中位数 +2.6% · 仍有 346 个窗口未收官</span>
+          
+          <span class="l-en">
+            · 298 still maturing
+             · 48 cannot be priced
+          </span>
+          <span class="l-zh">
+            · 298 仍在成熟
+             · 48 无法定价
+          </span>
+          
         </div>
         
       </div>
@@ -6675,6 +6895,16 @@
         <div class="mh-metric-ci">
           <span class="l-en">collecting — 663 windows still open</span>
           <span class="l-zh">积累中——仍有 663 个窗口未收官</span>
+          
+          <span class="l-en">
+            · 615 still maturing
+             · 48 cannot be priced
+          </span>
+          <span class="l-zh">
+            · 615 仍在成熟
+             · 48 无法定价
+          </span>
+          
         </div>
         <div class="mh-metric-note">
           <span class="l-en">A window closes 63 trading sessions after its board is logged. Nothing to report until one does.</span>
@@ -7793,7 +8023,7 @@
       </dl>
       <dl class="mh-prov-cell">
         <dt><span class="l-en">Generated at (UTC)</span><span class="l-zh">生成时间（UTC）</span></dt>
-        <dd>2026-10-19T10:07:51.214873Z</dd>
+        <dd>2026-10-19T21:07:42.202027Z</dd>
       </dl>
       
       <dl class="mh-prov-cell">
@@ -7824,7 +8054,7 @@
 
 </div>
 
-<script src="measurementdata/measurement_data.js?v=bba59430" defer></script>
+<script src="measurementdata/measurement_data.js?v=a74c8e07" defer></script>
 <script>
 (function(){
   "use strict";

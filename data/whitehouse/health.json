@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-19T07:45:42.200172+00:00",
-  "posts_seen": 7,
-  "seen_total": 297,
-  "evaluated": 0,
+  "as_of": "2026-10-19T21:04:20.809428+00:00",
+  "posts_seen": 8,
+  "seen_total": 301,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-10-19-president-trump-delivers-historic-wins-for-kansas-workers-families-farmers-and-r",
+      "importance": 30,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-10-19-first-lady-melania-trump-champions-new-u-s-womens-health-initiative",
+      "importance": 8,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }

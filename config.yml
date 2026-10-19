@@ -7614,7 +7614,7 @@ intraday_flow:
 leader_radar:
   enabled: true                    # kill-switch: false → noindex stub, skip JSON
   recovery_capture_enabled: true   # 2026-10-11 WP5: capture the first-seen recovery observation per (date, ticker) row of state_history.parquet (engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
-  lineage_enabled: false   # 2026-10-17 lineage admission: attach display_chips.leader_lineage + lineage_roster to radar.json AND capture first-observed lineage seals in state_history.parquet (engine/leader_lineage.py, engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
+  lineage_enabled: true   # 2026-10-17 lineage admission: attach display_chips.leader_lineage + lineage_roster to radar.json AND capture first-observed lineage seals in state_history.parquet (engine/leader_lineage.py, engine/leader_recovery_observations.py); literal true only — false stops new captures and deletes nothing
   basket_keys:                     # LR-R12 basket keys from data/baskets/membership.json
     - mag7
     - ai_infra
