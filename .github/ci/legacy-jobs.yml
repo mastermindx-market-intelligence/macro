@@ -9925,6 +9925,7 @@ jobs:
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
           tests/test_covenant_html.py
+          tests/test_covenant_native_consumer.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
   covenant-headroom:
@@ -9935,6 +9936,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "engine/capital_structure/covenant_html.py"
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
@@ -10613,6 +10615,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - research/signal_engine/confluence.py
@@ -15817,6 +15821,17 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -18763,6 +18778,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # Connected Research Factory import closure (PR9463).
@@ -25029,6 +25047,17 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
@@ -26358,6 +26387,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
@@ -34247,6 +34281,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
