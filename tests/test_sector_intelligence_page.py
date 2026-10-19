@@ -378,8 +378,12 @@ def _write_sector_intelligence_generation(
     action_path.write_bytes(_json_bytes(action))
     action_sha = hashlib.sha256(action_path.read_bytes()).hexdigest()
 
-    (site / "sectordata" / "sector_central.json").write_bytes(
-        _json_bytes({"as_of": sector_asof, "sectors": [{"ticker": "XLK"}]})
+    sector_json = _json_bytes(
+        {"as_of": sector_asof, "sectors": [{"ticker": "XLK"}]}
+    )
+    (site / "sectordata" / "sector_central.json").write_bytes(sector_json)
+    (site / "sector_central_data.js").write_bytes(
+        b"window.SECTOR_CENTRAL=" + sector_json + b";\n"
     )
     premium = {
         "schema": "tier_payload.v1",
@@ -1120,3 +1124,38 @@ def test_publication_rejects_ambiguous_or_duplicate_hero_metadata(tmp_path: Path
     assert not duplicate_attribute["ok"], duplicate_attribute
     assert any("ambiguous data-si-as-of" in x
                for x in duplicate_attribute["errors"])
+
+
+
+def test_semantic_publish_matches_actual_sector_browser_js(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    passed = _evaluate_sector_intelligence(tmp_path)
+    assert passed["ok"] is True, passed
+    facts = passed["facts"]
+    assert facts["sector_json_sha256"]
+    assert facts["sector_js_sha256"]
+
+    script = tmp_path / "site" / "sector_central_data.js"
+    source = script.read_bytes()
+    assert b"2026-09-14" in source
+    script.write_bytes(source.replace(b"2026-09-14", b"2026-09-15"))
+    stale = _evaluate_sector_intelligence(tmp_path)
+    assert stale["ok"] is False, stale
+    assert any("CLIENT-DATA SPLIT" in x for x in stale["errors"])
+    assert stale["facts"]["sector_js_sha256"] != facts["sector_js_sha256"]
+
+
+def test_missing_sector_client_asset_cannot_pass_json_only(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    js = tmp_path / "site" / "sector_central_data.js"
+    js.unlink()
+    missing = _evaluate_sector_intelligence(tmp_path)
+    assert not missing["ok"], missing
+    assert any("RUNTIME ASSET MISSING" in x for x in missing["errors"])
+
+    # A syntactically valid but unrelated JS payload is still a different
+    # source generation and must not be accepted via the JSON-side stamp.
+    js.write_text("window.SECTOR_CENTRAL={};\n", encoding="utf-8")
+    empty = _evaluate_sector_intelligence(tmp_path)
+    assert not empty["ok"], empty
+    assert any("CLIENT-DATA SPLIT" in x for x in empty["errors"])
