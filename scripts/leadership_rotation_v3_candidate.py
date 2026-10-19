@@ -12,12 +12,13 @@ No future-price outcomes, V3 pass/claim decision, release gate or cache here.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from statistics import fmean
 from typing import Sequence
 
 from scripts import leadership_rotation_episodes as ep
 
-__all__ = ["candidate_h1_synthetic_comparison"]
+__all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candidate_h2_prior_control_match"]
 
 MATCH_WINDOW = 40
 MISS_DELAY = MATCH_WINDOW + 1
@@ -106,4 +107,91 @@ def candidate_h1_synthetic_comparison(
         "candidate_delay_margin_met_only": advantage >= MARGIN_EARLIER,
         "a1": a1,
         "b2": b2,
+    }
+
+
+# Research-only structural anti-leakage control for a future H2-V3 P0 harness.
+# It deliberately carries ZERO forward outcomes. The accepted P0 owner, not
+# this helper, owns all price series, honest-N, exposure and inference.
+@dataclass(frozen=True)
+class SyntheticPriorControl:
+    pair_id: str
+    origin: int                  # NYSE synthetic calendar index (close t)
+    volatility_quintile: int     # 0..4 computed using information at own origin
+    feature_asof: int            # receipt: last date input for the quintile
+    a1_active: bool              # frozen A1 hysteresis state at own origin
+    warmup_sessions: int         # past sessions available before origin
+
+
+def candidate_h2_prior_control_match(
+    a1_event: SyntheticPriorControl,
+    candidate_b1_dates: Sequence[SyntheticPriorControl],
+) -> dict:
+    """Select a past, matured B1 comparison origin using no future outcomes.
+
+    Same registered pair, equal *own-date* past-volatility quintile, B1 day
+    with A1 not active, and origin c within [t-63,t-21]. At c+20 < t the
+    reference's future-20 outcome has matured, but it is NEVER passed to this
+    selector and cannot influence tie-breaks. No comparison is powered or
+    preregistered by the selection alone. All inputs are synthetic P0 caller
+    objects, not market-data rows or durable events.
+    """
+    def validate(x: SyntheticPriorControl) -> None:
+        if type(x) is not SyntheticPriorControl:
+            raise TypeError("P0 event must be SyntheticPriorControl")
+        if not isinstance(x.pair_id, str) or not x.pair_id.strip():
+            raise ValueError("nonempty synthetic pair identity required")
+        if any(type(v) is not int for v in (
+            x.origin, x.volatility_quintile, x.feature_asof, x.warmup_sessions
+        )):
+            raise ValueError("synthetic calendar and quintile fields must be integers")
+        if x.origin < 0 or x.warmup_sessions < 0 or x.warmup_sessions > x.origin:
+            raise ValueError("synthetic warmup cannot exceed origin or be negative")
+        if x.feature_asof < 0 or x.feature_asof > x.origin:
+            raise ValueError("LOOKAHEAD_FEATURE_DATE")
+        if x.volatility_quintile not in range(5):
+            raise ValueError("volatility quintile must be 0..4")
+        if type(x.a1_active) is not bool:
+            raise ValueError("A1 active must be boolean")
+
+    validate(a1_event)
+    for candidate in candidate_b1_dates:
+        validate(candidate)
+    if not a1_event.a1_active:
+        raise ValueError("A1 test origin must have A1 active")
+    if a1_event.warmup_sessions < 252:
+        return {
+            "scope": "P0_SYNTHETIC_ONLY", "status": "NOT_EXECUTABLE",
+            "reason": "A1_WARMUP_UNAVAILABLE", "control_t": None,
+            "v3_preregistered": False, "size_or_power_proven": False,
+        }
+
+    # Qualified sources are selected on their own information date.
+    matches = [
+        c for c in candidate_b1_dates
+        if c.pair_id == a1_event.pair_id
+        and c.warmup_sessions >= 252
+        and not c.a1_active
+        and c.volatility_quintile == a1_event.volatility_quintile
+        and 21 <= a1_event.origin - c.origin <= 63
+    ]
+    # Duplicate candidate origins mean source identity is ambiguous. This
+    # check is applied to *eligible matches*, not unrelated date populations.
+    if len({c.origin for c in matches}) != len(matches):
+        raise ValueError("AMBIGUOUS_DUPLICATE_CONTROL")
+    if not matches:
+        return {
+            "scope": "P0_SYNTHETIC_ONLY", "status": "UNMATCHED",
+            "reason": "NO_PRIOR_COMPARABLE_CONTROL", "control_t": None,
+            "v3_preregistered": False, "size_or_power_proven": False,
+        }
+    picked = max(matches, key=lambda c: c.origin)
+    if picked.origin + 20 >= a1_event.origin:
+        raise ValueError("FORWARD_OUTCOME_NOT_MATURED")
+    return {
+        "scope": "P0_SYNTHETIC_ONLY", "status": "MATCHED",
+        "a1_t": a1_event.origin, "control_t": picked.origin,
+        "control_age_sessions": a1_event.origin - picked.origin,
+        "control_forward20_matured_before_a1": True,
+        "v3_preregistered": False, "size_or_power_proven": False,
     }
