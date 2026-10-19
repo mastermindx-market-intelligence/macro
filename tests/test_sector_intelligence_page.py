@@ -658,6 +658,71 @@ def test_focused_action_builder_uses_fresh_baskets_and_canonical_board_logic(
     assert written == payload
 
 
+def test_sector_action_board_writer_outputs_browser_strict_nulls_without_mutating_sources(
+    tmp_path: Path,
+) -> None:
+    import math
+    from scripts.build_sector_action_board import write_action_board
+
+    source = tmp_path / "basketdata" / "baskets.json"
+    source.parent.mkdir(parents=True)
+    source.write_bytes(_json_bytes({
+        "as_of": "2026-10-16",
+        "theme_intel": {"as_of": "2026-10-16"},
+    }))
+    canonical = {
+        "total": 1,
+        "buy_now": [{
+            "ticker": "XLK",
+            "factor_z": float("nan"),
+            "signed_exposure": float("inf"),
+            "risk_skew": -float("inf"),
+            "honest_count": 0,
+        }],
+    }
+    target = tmp_path / "basketdata" / "action_board.json"
+    result = write_action_board(
+        target, baskets_path=source, action_board=canonical,
+        generated_utc="2026-10-17T00:00:00Z",
+    )
+    raw = target.read_text(encoding="utf-8")
+    assert "NaN" not in raw and "Infinity" not in raw
+    # parse_constant is how we emulate browser JSON.parse's strict RFC8259 rules.
+    def forbidden_number(value: str):
+        raise AssertionError(f"browser-invalid JSON number {value}")
+    decoded = json.loads(raw, parse_constant=forbidden_number)
+    assert decoded == result
+    row = decoded["action_board"]["buy_now"][0]
+    assert row["factor_z"] is None and row["signed_exposure"] is None
+    assert row["risk_skew"] is None and row["honest_count"] == 0
+    assert math.isnan(canonical["buy_now"][0]["factor_z"])
+    assert math.isinf(canonical["buy_now"][0]["signed_exposure"])
+    assert result["as_of"] == "2026-10-16"
+
+
+@pytest.mark.parametrize("bad_token", ["NaN", "Infinity", "-Infinity"])
+def test_sector_publish_refuses_non_rfc8259_json_even_when_source_time_agrees(
+    tmp_path: Path, bad_token: str,
+) -> None:
+    """Python's permissive json.loads must not bless a browser-invalid payload."""
+    from scripts.check_sector_intelligence_freshness import evaluate
+    _write_sector_intelligence_generation(
+        tmp_path, baskets_asof="2026-10-16", action_asof="2026-10-16"
+    )
+    path = tmp_path / "site" / "basketdata" / "action_board.json"
+    obj = json.loads(path.read_text())
+    obj["action_board"]["buy_now"][0]["factor_z"] = float(bad_token)
+    path.write_text(json.dumps(obj, allow_nan=True), encoding="utf-8")
+    result = evaluate(
+        tmp_path,
+        now=datetime(2026, 10, 18, 12, tzinfo=timezone.utc),
+        max_sessions_behind=1,
+    )
+    assert result["ok"] is False
+    assert any("action_board.json is not valid JSON" in err for err in result["errors"])
+    assert any("nonstandard JSON number" in err for err in result["errors"])
+
+
 def test_focused_basket_build_fails_closed_when_engine_raises(monkeypatch) -> None:
     from engine import baskets as basket_engine
     from scripts import build_baskets
