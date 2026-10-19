@@ -97,6 +97,7 @@ class VerifiedCatalogAccessionScope:
     manager_relationships: tuple[Mapping[str, Any], ...]
     validated_roles: tuple[str, ...]
     current_generation_id: str | None = None
+    pointer_read: bool = False
     superseded: bool = False
     validation_scope: str = SCOPE_VALIDATION
 
@@ -108,6 +109,8 @@ class VerifiedCatalogAccessionScope:
         # pointer mode may populate this field; absence stays explicit.
         if self.superseded or self.current_generation_id not in {None, self.manifest.generation_id}:
             raise Institutional13FCatalogError("accession scope successor state is invalid")
+        if type(self.pointer_read) is not bool or self.pointer_read != (self.current_generation_id is not None):
+            raise Institutional13FCatalogError("accession scope pointer evidence is invalid")
         if self.validation_scope != SCOPE_VALIDATION:
             raise Institutional13FCatalogError("accession scope validation scope is invalid")
         roles = tuple(self.validated_roles)
@@ -345,5 +348,6 @@ def load_catalog_accession_scope(
         ),
         validated_roles=roles,
         current_generation_id=pointer.generation_id if pointer is not None else None,
+        pointer_read=pointer is not None,
         superseded=False,
     )

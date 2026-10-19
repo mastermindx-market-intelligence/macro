@@ -23,6 +23,7 @@ def test_native_reporting_facts_compose_without_economic_promotion(tmp_path, mon
     assert context["generation"]["generation_id"] == generation.generation_id
     assert context["generation"]["current_generation_id"] is None
     assert context["generation"]["pointer"]["state"] == "not_read"
+    assert context["generation"]["superseded"] is None
     assert context["filing"]["retained_at"] == "2026-05-15T20:32:00Z"
     assert context["holding"]["row_hash"] == "b" * 64
     assert context["holding"]["infotable_sk"] == "7"

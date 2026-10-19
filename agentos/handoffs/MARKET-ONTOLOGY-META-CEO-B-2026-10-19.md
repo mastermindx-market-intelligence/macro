@@ -41,15 +41,18 @@ verified:
       Merge b7511ae67d0792d900c18b257129298cc601b8d9 from7178558305fdd9ca5f8a813147924f2a62eea052,
       six blobs and all twelve CI packs match. Both original August27-cutoff generations retain native IDs and K1 references;
       owner semantics unresolved, pointers not read, recipe/compiled output null, authority false and persistence none.
-  - claim: "F09 has a locally integrated exact-row authenticated research consumer and actual two-period native candidate reads; this is not installation or real-user acceptance."
-    command: "Run pytest tests/test_institutional_catalog_scope.py tests/test_institutional_research_api.py tests/test_institutional_research_context.py tests/test_institutional_census_k3e_projection.py; inspect E/f09-auth-scoped-green.log, f09-auth-candidate-native-qualification.json and f09-auth-consumer-current.json."
+  - claim: "F09 PR9771 has a locally integrated first-party exact-row research reader and actual two-period native candidate reads; this is not installation or real-user acceptance."
+    command: "Run pytest tests/test_institutional_catalog_scope.py tests/test_institutional_research_api.py tests/test_institutional_research_context.py tests/test_institutional_census_k3e_projection.py; run node --test tests/institutional_holding_research.test.mjs and pytest tests/test_fundamental_forensics_page.py tests/test_fundamental_forensics_ui.py; inspect E/f09-auth-scoped-green.log, f09-auth-candidate-native-qualification.json, f09-client-browser-fixture-result.json and f09-auth-consumer-current.json."
     result: >
       102 affected tests passed. Source832cdc369e5c98ae11165b896c7739b03eca8063 composed main5bfa7cfc9f716f75c701d9bf10e620925d0b3dea
       atb18e16655981c with consumer executable/test bytes unchanged. Both frozen Custos periods read8bounded objects,
       preserving original row hashes, accepted/retained/publication clocks and August27 cutoff, with pointer not_read,
       explicit accession-bucket verification and all authority false. No service environment or store changed.
-      Initial auth review passed; new scoped native-loader review b-f09-accession-scope-risk-review-01a128b7-20261019-v1
-      remains active through original foreground28866. Source publication and actual authenticated user execution remain pending.
+      Initial auth and distinct scoped native-loader reviews passed. The recommended pointer proof tightening passed61affected controls;
+      pinned supersession is now unknown. The rendered first-party reader passes41new Node controls,41page/UI tests and7local-DOM fixture
+      checks, with8anonymous final captures inspected. These are not production authentication. The paid client proposal remains unsettled
+      on original26313; direct owned integration was explicitly authorized, with no paid contribution adopted or acceptance claimed.
+      Final protected publication, installation/configuration and real entitled product execution remain pending.
 unverified:
   - claim: "The whole B programme and all F09 ownership/capital/materials families are complete."
     what_would_verify: "Family-local accepted native producer/consumer and real-path proof; quarantine or a source parser alone does not satisfy this."
@@ -109,7 +112,7 @@ current F09 integration; the root owns final consumer adjudication and shared br
 Keep claims proportionate: the deployed provider fallback plus one broad Research response is real
 product progress, while the pending F12 access grant and genuine F09 source semantics remain distinct.
 
-The F09 consumer is a private exact-selection Forensics API, never a public universal holdings asset.
+The F09 consumer is the rendered Read a reported holding disclosure at fundamental_forensics.html#reported-holding, backed by a private exact-selection Forensics API. It publishes no universal holdings asset.
 Reporting identity can be verified from native receipts; canonical security, economic vehicle and strategy
 remain typed unresolved for the frozen Custos facts. The new accession scope never claims the other63
 holdings buckets were verified and does not replace the full-generation owner reader.

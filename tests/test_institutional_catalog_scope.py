@@ -114,6 +114,7 @@ def test_scope_matches_full_generation_and_downloads_only_one_bucket(tmp_path):
     assert scope.generation_id == generation.generation_id == full.generation_id
     assert scope.manifest == full.manifest
     assert scope.current_generation_id == full.current_generation_id
+    assert scope.pointer_read is True
     assert scope.superseded is False
     assert scope.validation_scope == "accession_bucket"
     with pytest.raises(dataclasses.FrozenInstanceError):
@@ -157,6 +158,7 @@ def test_explicit_generation_scope_never_reads_the_pointer(tmp_path):
     assert len(_artifact_reads(store.bounded_read_keys, generation)) == 5
     assert scope.generation_id == generation.generation_id
     assert scope.current_generation_id is None
+    assert scope.pointer_read is False
     assert scope.superseded is False
 
 
@@ -398,6 +400,10 @@ def test_scope_dataclass_rejects_impossible_construction(tmp_path):
         VerifiedCatalogAccessionScope(
             **kwargs, current_generation_id="i13fgen_" + "a" * 64
         )
+    with pytest.raises(Institutional13FCatalogError):
+        VerifiedCatalogAccessionScope(**kwargs, current_generation_id=scope.generation_id)
+    with pytest.raises(Institutional13FCatalogError):
+        VerifiedCatalogAccessionScope(**kwargs, pointer_read=True)
 
     # The 18-digit accession form normalizes into the same scope identity.
     assert _scope(world_store, accession="000000000126000001") == scope

@@ -91,8 +91,9 @@ def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
         "superseded": generation.superseded,
     }
     if getattr(generation, "validation_scope", None) == "accession_bucket":
+        result["superseded"] = generation.superseded if generation.pointer_read else None
         result["pointer"] = {
-            "state": "not_read" if generation.current_generation_id is None else "verified",
+            "state": "verified" if generation.pointer_read else "not_read",
         }
         result["validation_scope"] = {
             "kind": "accession_bucket",

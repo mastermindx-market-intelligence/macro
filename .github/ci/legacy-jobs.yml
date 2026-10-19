@@ -8769,6 +8769,11 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "templates/institutional_holding_research.js"
+      - "templates/institutional_holding_research.css"
+      - "site/institutional_holding_research.js"
+      - "site/institutional_holding_research.css"
+      - "tests/institutional_holding_research.test.mjs"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "lib/institutional_intelligence.py"
       - "tests/test_institutional_catalog_scope.py"
@@ -9781,7 +9786,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/institutional_holding_research.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
