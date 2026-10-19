@@ -351,6 +351,8 @@ def open_registered_fit(*, policy):
 def persist_registered_fit(*, policy):
     """Exactly one original accounted fit; no refit on COMPLETE or PENDING."""
     context = _load_context()
+    _require(cohort.utc_instant(use.control._domain_json(context.window._body)["binding"]["fit_cutoff"])
+        <= cohort.utc_instant(_clock()), "training_cutoff_not_yet_observed")
     policy = _training_policy(context, policy)
     origin = {"window_reference": _window_reference(context.window._body), "selection": context.window._selection}
     operation, intent = _operation(context.window._body)
@@ -408,6 +410,10 @@ def retain_registered_fitted_query(retained, population, query, *, policy, k):
     now = _clock()
     _require(cohort.utc_instant(retained._observed_at) <= cohort.utc_instant(cutoff)
         <= cohort.utc_instant(now), "genuine_query_after_completed_fit_required")
+    source = use.control._domain_json(original["window"])["binding"]
+    _require(cohort.utc_instant(cutoff) > cohort.utc_instant(source["fit_cutoff"])
+        and actual["owner"]["generation_id"] != source["source_owner"]["generation_id"],
+        "later_native_generation_and_query_cutoff_required")
     _require(actual["owner"] == {key: projected["owner"][key] for key in actual["owner"]},
              "query_exact_population_required")
     combined = _comparison_policy(retained, policy)
@@ -473,6 +479,10 @@ def reproduce_registered_fitted_query(reference, *, policy):
         "bounded_original_query_identity_required")
     _require(cohort.utc_instant(original["constructed_at"]) <= cohort.utc_instant(intent["query_cutoff"])
         <= cohort.utc_instant(_clock()), "retained_query_clock_mismatch")
+    source = use.control._domain_json(original["window"])["binding"]
+    _require(cohort.utc_instant(intent["query_cutoff"]) > cohort.utc_instant(source["fit_cutoff"])
+        and intent["generation_id"] != source["source_owner"]["generation_id"],
+        "later_native_generation_and_query_cutoff_required")
     reader = _reader()
     pin = reader.read_pinned_generation(generation_id=intent["generation_id"],
                                        maximum_capture_count=cohort.MAX_CAPTURES)

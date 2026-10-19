@@ -8,6 +8,7 @@ import copy
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -161,6 +162,29 @@ def test_source_revocation_cannot_consume_an_initial_reservation(retained_owner,
     assert persistence._store(retained_owner[3]()).snapshot()["reserved_looks"] == 0
 
 
+def test_future_training_cutoff_refuses_before_any_reservation(retained_owner, monkeypatch):
+    template, context = retained_owner[2:4]
+    template["binding"]["fit_cutoff"] = "2027-01-01T00:00:00.000000Z"
+    monkeypatch.setattr(persistence.ReservationStore, "reserve", lambda *a: pytest.fail("future-window reservation"))
+    with pytest.raises(persistence.PersistedFitError, match="training_cutoff_not_yet_observed"):
+        persistence.persist_registered_fit(policy=Policy())
+    assert persistence._store(context()).snapshot()["reserved_looks"] == 0
+
+
+def test_original_generation_is_not_a_later_query(retained_owner, native_training, tmp_path, monkeypatch):
+    retained = persistence.persist_registered_fit(policy=Policy())
+    reader, pin = native_owner(tmp_path)
+    stored = native_training[5]
+    cutoff, subject = retained_owner[4][0], retained_owner[5]
+    population = load(reader, pin, stored, cutoff=cutoff)
+    query = features.read_episode_feature_capability(reader, pin,
+        query_id=stored.capture_receipt["query_id"], subject_id=subject,
+        query_cutoff=cutoff, policy=Policy())
+    monkeypatch.setattr(persistence.ReservationStore, "reserve", lambda *a: pytest.fail("same-generation reservation"))
+    with pytest.raises(persistence.PersistedFitError, match="later_native_generation_and_query_cutoff_required"):
+        persistence.retain_registered_fitted_query(retained, population, query, policy=Policy(), k=2)
+
+
 def test_revoke_after_fit_prevents_persist_and_leaves_original_pending(retained_owner, monkeypatch):
     policy = Policy()
     original = fitted.fit_registered_normalizer
@@ -295,6 +319,61 @@ def test_whole_retained_bundle_bound_is_not_silently_widened(retained_owner):
     with pytest.raises(ReservationError, match="bounded_result_bytes_required"):
         store.finish(operation, intent, b"x" * (persistence.MAX_RESULT_BYTES + 1))
     assert {p.name: p.read_bytes() for p in store.directory.iterdir()} == before
+
+
+def test_closed_native_output_shapes_fit_custody_at_max_population(native_training, selection):
+    """Conservative serializer envelope, not 256 actual captures or admission.
+
+    Preserve every field from genuine output, expand all population arrays to
+    the native hard cap and selected arrays to MAX_K, and exaggerate numeric
+    coordinates to the downstream 400-integer-digit bound. This discriminates
+    the review's unreachable 700-800-capture example from this owner's limits.
+    Any changed output shape remains visible because templates are real values.
+    """
+    population, query, window = native_training[:3]
+    policy = Policy()
+    normalizer = fitted.fit_registered_normalizer(window, population, policy=policy)
+    parameters = json.loads(normalizer._body)
+    index = fitted.build_fitted_exact_index(normalizer, population, policy=policy)
+    cap = persistence.retrieval.retrieve_fitted_contexts(normalizer, population, query,
+        policy=policy, k=2, eligibility=persistence.retrieval.baseline.RetainedContextMethodSpec(0, 0, "historical_hypothetical"))
+    result = persistence.retrieval.disclose_fitted_retrieval(cap, policy=policy)
+    count = cohort.MAX_CAPTURES
+    assert count == 256 and persistence.retrieval.baseline.MAX_K == 32
+    for value, key in ((parameters, "training_manifest"),
+                       (parameters["qualification_report"], "qualified_native_facts"),
+                       (index, "rows"), (index["baseline_index"], "inventory"),
+                       (result, "accounting"), (result["audit"], "capture_receipt_sha256")):
+        value[key] = [copy.deepcopy(value[key][0]) for _ in range(count)]
+    result["selected"] = [copy.deepcopy(result["selected"][0])
+                          for _ in range(persistence.retrieval.baseline.MAX_K)]
+    longest = "-" + "9" * 400 + "." + "9" * 18
+    def enlarge(value, key=""):
+        if type(value) is dict:
+            return {k: enlarge(v, k) for k, v in value.items()}
+        if type(value) is list:
+            return [enlarge(v, key) for v in value]
+        if type(value) is str:
+            if re.fullmatch(r"-?\d+\.\d{18}", value):
+                return longest
+            if key in {"numerator", "denominator"}:
+                return "9" * 400
+            if key == "task_id":
+                return "t" * 128
+        return value
+    parameters, index, result = [enlarge(v) for v in (parameters, index, result)]
+    bundle = persistence.codec.encode_bundle(canonical(parameters),
+        persistence._window_reference(window._body), canonical(selection[1]), NOW)
+    query_body = canonical({"schema": "market_memory.retained_fitted_query.v1",
+        "fit_receipt": {"binding": {"study_id": "s" * 128, "installation_id": "i" * 128,
+            "installation_epoch": "e" * 128, "registration_sha256": "f" * 64,
+            "publication_sha256": "f" * 64}, "operation_id": "fit_" + "f" * 64,
+            "intent_sha256": "f" * 64, "sha256": "f" * 64, "bytes": len(bundle)},
+        "query_cutoff": NOW, "fit_observed_complete_at": NOW,
+        "index": index, "result": result})
+    assert len(bundle) <= persistence.MAX_RESULT_BYTES
+    assert len(query_body) <= persistence.MAX_RESULT_BYTES
+    print("closed_shape_bound", len(bundle), len(query_body))
 
 
 @pytest.fixture
