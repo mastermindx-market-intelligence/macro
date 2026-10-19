@@ -378,9 +378,9 @@ def _publish_r2(payload_json: str) -> bool:
 BOATS_MAX_AGE_S = 30
 BOATS_PUBLISH_S = 5
 # Hard public coverage ceiling shared by the frame reducer and the public
-# allowlist. Sized for the currently observed 8,395 valid tickers with
+# allowlist. Sized for the 15,380 valid tickers observed across retained REST and firehose captures with
 # headroom; no publisher or validator may invent its own bound.
-MAX_BOATS_SYMBOLS = 10_000
+MAX_BOATS_SYMBOLS = 20_000
 
 
 def boats_session_date(now: datetime) -> str | None:
