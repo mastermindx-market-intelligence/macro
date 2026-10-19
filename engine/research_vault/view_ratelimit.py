@@ -14,12 +14,13 @@ allow BOTH increment. Reported ``remaining`` is the WORSE of the two.
 SECURITY:
   * The raw IP is NEVER written to a filename — it is sha256-hashed first, so the
     ledger dir cannot leak visitor IPs and a crafted IP string cannot inject a
-    path (the hash is hex-only). ``_safe_uid`` further sanitizes both keys.
+    path (the hash is hex-only). User components preserve exact short-safe IDs
+    and hash the complete raw principal otherwise; no lossy user normalization.
   * Fail-OPEN but LOUD on ledger I/O error — a broken state dir must not hard-lock
     a paying subscriber out of the viewer (same rule as the download quota).
 
 State layout (mirrors the download quota, separate subdir):
-    $MACRO_API_STATE_DIR/research_view_rl/vh_{safe_uid}_{YYYY-MM-DDTHH}.json   (user)
+    $MACRO_API_STATE_DIR/research_view_rl/vh_{user_component}_{YYYY-MM-DDTHH}.json (user)
     $MACRO_API_STATE_DIR/research_view_rl/vip_{iphash}_{YYYY-MM-DDTHH}.json    (IP)
 
 Pure + stdlib-only → offline-testable; ``now`` is injectable for period tests.
@@ -36,8 +37,8 @@ canonical owner of the state; no migration to another store is introduced.
   * ``preflight_many`` is advisory: no charge, no lock. Malformed or uncertain
     ledger state fails closed (False).
   * ``commit_many`` RECHECKS capacity UNDER the same per-user/per-IP locks the
-    ordinary allow takes, in the SAME acquisition order (user lock, then IP
-    lock), so a concurrent web allow and Brain commit cannot lose each other's
+    ordinary allow takes, in the SAME acquisition order (sorted user/legacy
+    guard locks, then IP lock), so a web allow and Brain commit cannot lose each other's
     user/IP update. It then charges ``len(dedup(report_ids))`` with ONE atomic
     canonical user-file replacement (tmp write + ``os.replace``).
   * The Brain IP leg is synthetic (``brain:<uid>`` hashed like any IP) and
@@ -85,7 +86,7 @@ _SUBDIR = "research_view_rl"
 _DEFAULT_HOURLY = 60
 
 # --- Brain pair metering bounds / knobs -------------------------------------
-_MAX_UID_LEN = 256           # raw uid bound; _safe_uid still truncates filenames
+_MAX_UID_LEN = 256           # bound on the complete, unnormalized principal
 _MAX_REPORT_ID_LEN = 512
 _MAX_PAIR = 2                # a Brain pair view carries at most 2 report ids
 _BRAIN_IP_PREFIX = "brain:"
@@ -105,6 +106,10 @@ class LedgerStateError(RuntimeError):
     closed on this rather than guessing a count."""
 
 
+class AmbiguousPrincipalState(LedgerStateError):
+    """A lossy legacy bucket is present but has no authenticated owner binding."""
+
+
 def _hourly_limit() -> int:
     """Resolve the hourly cap fresh each call (env override, sane fallback)."""
     raw = os.environ.get("RESEARCH_VIEW_HOURLY", "")
@@ -121,8 +126,27 @@ def _rl_dir() -> Path:
 
 
 def _safe_uid(user_id: str) -> str:
-    """Filesystem-safe fragment (brain_gateway._safe_uid idiom)."""
+    """Legacy lossy fragment: IP hashes and ambiguity checks only, not user keys."""
     return re.sub(r"[^a-zA-Z0-9_-]", "_", user_id or "")[:64]
+
+
+def _user_component(user_id: str) -> str:
+    """Retain exact short-safe keys; otherwise hash the COMPLETE raw identity.
+
+    ``~`` cannot occur in a legacy safe fragment, so a literal short principal
+    cannot alias the digest namespace. Never trim, normalize or truncate a UID.
+    """
+    if type(user_id) is not str or not user_id.strip():
+        raise RateLimitArgError("user_id must be a nonempty string")
+    if len(user_id) > _MAX_UID_LEN:
+        raise RateLimitArgError(f"user_id longer than {_MAX_UID_LEN} chars")
+    try:
+        raw = user_id.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise RateLimitArgError("user_id must be valid UTF-8") from exc
+    if re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", user_id):
+        return user_id
+    return "~" + hashlib.sha256(raw).hexdigest()
 
 
 def _hash_ip(ip: str) -> str:
@@ -144,6 +168,11 @@ def _period_key(now: datetime | None = None) -> str:
 
 
 def _user_file(user_id: str, period: str) -> Path:
+    return _rl_dir() / f"vh_{_user_component(user_id)}_{period}.json"
+
+
+def _legacy_user_file(user_id: str, period: str) -> Path:
+    """Reference the old bucket for refusal only; never migrate or reset it."""
     return _rl_dir() / f"vh_{_safe_uid(user_id)}_{period}.json"
 
 
@@ -182,7 +211,15 @@ def _lock_dir() -> Path:
 
 
 def _user_lock(user_id: str, period: str) -> Path:
-    return _lock_dir() / f"lku_{_safe_uid(user_id)}_{period}.lock"
+    return _lock_dir() / f"lku_{_user_component(user_id)}_{period}.lock"
+
+
+def _user_lock_paths(user_id: str, period: str) -> tuple[Path, ...]:
+    # Also exclude a concurrent exact safe principal creating the old alias
+    # between ambiguity read and commit. All user locks have one total order;
+    # the IP lock is always last. Short-safe identities still take one lock.
+    legacy = _lock_dir() / f"lku_{_safe_uid(user_id)}_{period}.lock"
+    return tuple(sorted({_user_lock(user_id, period), legacy}, key=lambda p: p.name))
 
 
 def _ip_lock(ip_hash: str, period: str) -> Path:
@@ -202,11 +239,12 @@ def _lock_timeout() -> float:
 
 
 def _acquire_pair_locks(user_id: str, ip_hash: str, period: str) -> list[int] | None:
-    """flock BOTH ledger locks in the canonical order: user lock, then IP lock.
+    """flock canonical/legacy-guard user locks in total order, then the IP lock.
 
-    Ordinary ``allow`` and ``commit_many`` take the SAME two locks in the SAME
-    order, so neither can lose the other's user/IP update and no lock-order
-    deadlock is possible (every IP-lock holder already holds its user lock).
+    Ordinary ``allow`` and ``commit_many`` take the SAME user locks in the SAME
+    order, so neither can lose the other's user/IP update. The legacy guard
+    prevents a short-safe alias writer racing the current-hour ambiguity check;
+    every IP-lock holder already holds all its user locks.
     Bounded: LOCK_NB + poll until a hard deadline. Returns the held fds, or
     None when the locks could not be taken in time (caller decides policy:
     allow returns without mutating state, Brain commit fails closed).
@@ -217,7 +255,7 @@ def _acquire_pair_locks(user_id: str, ip_hash: str, period: str) -> list[int] | 
     fds: list[int] = []
     try:
         _lock_dir().mkdir(parents=True, exist_ok=True)
-        for path in (_user_lock(user_id, period), _ip_lock(ip_hash, period)):
+        for path in (*_user_lock_paths(user_id, period), _ip_lock(ip_hash, period)):
             fd = os.open(str(path), os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK, 0o600)
             if not stat.S_ISREG(os.fstat(fd).st_mode):
                 os.close(fd)
@@ -290,6 +328,27 @@ def _read_count_strict(path: Path) -> int:
     return _read_state_strict(path)["count"]
 
 
+def _read_user_state_strict(user_id: str, period: str) -> dict:
+    """No guessed ownership or silent new budget beside a current legacy count.
+
+    Old JSON has no raw-principal binding. If a lossy alias is present (even
+    zero, malformed or a dangling symlink), refuse rather than attribute or
+    copy its count. The hour boundary naturally starts a new period without
+    modifying the old bucket. Exact short-safe canonical counts stay in place.
+    Commit/allow call this under BOTH canonical and alias-guard user locks.
+    """
+    if _user_component(user_id) != _safe_uid(user_id):
+        try:
+            _legacy_user_file(user_id, period).lstat()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise AmbiguousPrincipalState("legacy principal bucket unavailable") from exc
+        else:
+            raise AmbiguousPrincipalState("legacy principal bucket has no proven owner")
+    return _read_state_strict(_user_file(user_id, period))
+
+
 def _write_atomic(path: Path, data: dict) -> None:
     """ONE atomic replacement: tmp write + ``os.replace``. Raises on failure.
 
@@ -326,10 +385,7 @@ def _validate_pair_args(user_id: str, report_ids: object) -> tuple[str, tuple[st
     """Validate Brain pair arguments; return (uid, order-preserving deduped ids).
 
     Raises :class:`RateLimitArgError` on any malformed argument."""
-    if type(user_id) is not str or not user_id.strip():
-        raise RateLimitArgError("user_id must be a nonempty string")
-    if len(user_id) > _MAX_UID_LEN:
-        raise RateLimitArgError(f"user_id longer than {_MAX_UID_LEN} chars")
+    _user_component(user_id)  # same complete-principal contract as allow/peek
     if type(report_ids) not in (tuple, list):
         raise RateLimitArgError("report_ids must be a tuple or list of report id strings")
     if not 1 <= len(report_ids) <= _MAX_PAIR:
@@ -376,8 +432,12 @@ def allow(
         return True, {"remaining": 0, "limit": limit}
     try:
         try:
-            udata = _read_state_strict(uf)
+            udata = _read_user_state_strict(user_id, period)
             idata = _read_state_strict(ipf)
+        except AmbiguousPrincipalState:
+            # Identity ambiguity is not an availability-only I/O failure. Do
+            # not grant fresh usage or rewrite a bucket whose owner is unknown.
+            return False, {"remaining": 0, "limit": limit}
         except LedgerStateError:
             log.error("::error::research_vault: VIEW LEDGER UNKNOWN; allowing legacy view without rewriting counters")
             return True, {"remaining": 0, "limit": limit}
@@ -397,8 +457,11 @@ def peek(user_id: str, ip: str, now: datetime | None = None) -> dict:
     """Read-only remaining views this hour (no increment). For the quota route."""
     limit = _hourly_limit()
     period = _period_key(now)
-    ucount = int(_read(_user_file(user_id, period)).get("count") or 0)
-    icount = int(_read(_ip_file(_hash_ip(ip), period)).get("count") or 0)
+    try:
+        ucount = _read_user_state_strict(user_id, period)["count"]
+        icount = _read_state_strict(_ip_file(_hash_ip(ip), period))["count"]
+    except LedgerStateError:
+        return {"remaining": 0, "limit": limit}
     remaining = min(limit - ucount, limit - icount)
     return {"remaining": max(0, remaining), "limit": limit}
 
@@ -415,7 +478,7 @@ def preflight_many(user_id: str, report_ids: object, now: datetime | None = None
     limit = _hourly_limit()
     period = _period_key(now)
     try:
-        ucount = _read_count_strict(_user_file(user_id, period))
+        ucount = _read_user_state_strict(user_id, period)["count"]
     except LedgerStateError as exc:
         log.error(
             "::error::research_vault: BRAIN PAIR PREFLIGHT REFUSED — uncertain "
@@ -427,7 +490,7 @@ def preflight_many(user_id: str, report_ids: object, now: datetime | None = None
 def commit_many(user_id: str, report_ids: object, now: datetime | None = None) -> bool:
     """Charge one Brain pair view atomically against the canonical USER ledger.
 
-    Rechecks capacity UNDER the shared per-user/per-IP locks (never trusting a
+    Rechecks capacity UNDER shared canonical/legacy-guard user and IP locks (never trusting a
     preflight), then charges ``len(dedup(report_ids))`` with ONE atomic
     canonical user-file replacement — never two sequential allows and never a
     separate counter or budget. The synthetic ``brain:<uid>`` IP mirror is
@@ -455,7 +518,7 @@ def commit_many(user_id: str, report_ids: object, now: datetime | None = None) -
         return False
     try:
         try:
-            udata = _read_state_strict(uf)
+            udata = _read_user_state_strict(user_id, period)
             ucount = udata["count"]
         except LedgerStateError as exc:
             log.error(
@@ -474,7 +537,7 @@ def commit_many(user_id: str, report_ids: object, now: datetime | None = None) -
             # Reconcile only by reading this exact canonical state under the
             # original locks. Never replay the modifying write.
             try:
-                confirmed = _read_state_strict(uf) == udata
+                confirmed = _read_user_state_strict(user_id, period) == udata
             except LedgerStateError:
                 confirmed = False
             if not confirmed:

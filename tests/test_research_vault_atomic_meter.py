@@ -6,6 +6,7 @@ behavior, (b) the Brain pair API (preflight/commit, dedup cost, atomic
 all-or-nothing charging, fail-closed state handling, redundant IP mirror),
 (c) cross-process concurrency with no lost updates, (d) bounded lock behavior.
 """
+import hashlib
 import json
 import logging
 import multiprocessing
@@ -97,11 +98,14 @@ def test_ip_privacy_and_noip_fallback(rl):
     assert icount(rl, "noip") == 2  # empty and 'unknown' share the noip bucket
 
 
-def test_safe_uid_sanitization(rl):
-    mod.allow("../etc/pass:wd", "1.2.3.4", now=NOW)
-    expected = mod._safe_uid("../etc/pass:wd")
-    assert expected == "___etc_pass_wd"         # path chars flattened
+def test_lossy_sanitization_is_not_the_canonical_user_key(rl):
+    uid = "../etc/pass:wd"
+    assert mod.allow(uid, "1.2.3.4", now=NOW)[0] is True
+    assert mod._safe_uid(uid) == "___etc_pass_wd"  # legacy ambiguity locator only
+    expected = "~" + hashlib.sha256(uid.encode("utf-8")).hexdigest()
+    assert mod._user_component(uid) == expected
     assert (rl / f"vh_{expected}_{PERIOD}.json").exists()
+    assert not mod._legacy_user_file(uid, PERIOD).exists()
     assert "/" not in expected and ":" not in expected
 
 
@@ -583,3 +587,123 @@ def test_comparison_and_web_use_the_same_real_user_budget(configured, rl):
     assert prepare(service)["reason"] == "QUOTA_UNAVAILABLE"
     assert len(configured[4]["load"]) == before_reads
     assert mod.allow("member", "another-web-ip", now=now)[0] is False
+
+
+# Complete-principal keys and conservative legacy compatibility (review repair).
+@pytest.mark.parametrize("left,right", [
+    ("a" * 64 + "1", "a" * 64 + "2"),
+    ("a:b", "a/b"),
+    ("a:b", "a_b"),
+])
+def test_distinct_complete_principals_never_share_budget_or_canonical_lock(rl, left, right):
+    assert mod._safe_uid(left) == mod._safe_uid(right)
+    assert mod._user_file(left, PERIOD) != mod._user_file(right, PERIOD)
+    assert mod._user_lock(left, PERIOD) != mod._user_lock(right, PERIOD)
+    # Unsafe principals first: no legacy bucket exists to assign to either.
+    assert mod.commit_many(left, ["r1", "r2"], now=NOW) is True
+    assert mod.peek(right, "web-right", now=NOW)["remaining"] == 5
+    assert mod.allow(left, "web-left", now=NOW)[0] is True
+    assert mod.peek(left, "web-left", now=NOW)["remaining"] == 2
+    assert mod.commit_many(left, ["r3", "r4"], now=NOW) is True
+    assert mod.preflight_many(left, ["r5"], now=NOW) is False
+    assert mod.commit_many(right, ["r1", "r2"], now=NOW) is True
+    assert ucount(rl, left) == 5 and ucount(rl, right) == 2
+
+
+@pytest.mark.parametrize("uid", [
+    "user-x", "0c1394da-506d-4b7d-b2a5-2b8f185e09a8", "a" * 64,
+])
+def test_existing_short_safe_counter_and_lock_are_not_migrated_or_reset(rl, uid):
+    expected = rl / f"vh_{uid}_{PERIOD}.json"
+    assert mod._user_file(uid, PERIOD) == expected
+    assert mod._user_lock(uid, PERIOD) == rl / "locks" / f"lku_{uid}_{PERIOD}.lock"
+    assert mod._user_lock_paths(uid, PERIOD) == (mod._user_lock(uid, PERIOD),)
+    seed(expected, {"count": 3, "retained": "historical metadata"})
+    assert mod.peek(uid, "web", now=NOW)["remaining"] == 2
+    assert mod.preflight_many(uid, ["r1", "r2"], now=NOW) is True
+    assert mod.allow(uid, "web", now=NOW)[0] is True
+    assert mod.preflight_many(uid, ["r1", "r2"], now=NOW) is False
+    assert mod.commit_many(uid, ["r1"], now=NOW) is True
+    assert json.loads(expected.read_text()) == {"count": 5, "retained": "historical metadata"}
+    assert mod.commit_many(uid, ["r2"], now=NOW) is False
+    assert mod.peek(uid, "different-web-ip", now=NOW)["remaining"] == 0
+    assert not list(rl.glob("vh_~*.json"))
+
+
+@pytest.mark.parametrize("uid", ["x" * 64 + "tail", "reader@example.com"])
+def test_ambiguous_old_bucket_refuses_all_paths_without_attribution_or_reset(rl, monkeypatch, uid):
+    old = mod._legacy_user_file(uid, PERIOD)
+    current = mod._user_file(uid, PERIOD)
+    seed(old, {"count": 4, "note": "no owner binding"})
+    seed(current, {"count": 1})  # even an existing digest file cannot erase ambiguity
+    before = {p: p.read_bytes() for p in rl.glob("*.json")}
+    def no_write(*args):
+        raise AssertionError("ambiguous counter must never be modified")
+    with monkeypatch.context() as patcher:
+        patcher.setattr(mod, "_write", no_write)
+        patcher.setattr(mod, "_write_atomic", no_write)
+        assert mod.preflight_many(uid, ["r1"], now=NOW) is False
+        assert mod.commit_many(uid, ["r1"], now=NOW) is False
+        assert mod.allow(uid, "web", now=NOW) == (False, {"remaining": 0, "limit": 5})
+        assert mod.peek(uid, "web", now=NOW) == {"remaining": 0, "limit": 5}
+    assert {p: p.read_bytes() for p in rl.glob("*.json")} == before
+    # Normal new-period accounting is not an old-count reset or migration.
+    assert mod.commit_many(uid, ["r1", "r2"], now=NEXT_HOUR) is True
+    assert all(p.read_bytes() == raw for p, raw in before.items())
+
+
+@pytest.mark.parametrize("raw", ['{"count":0}', '{"count":null}', '{"count":4}', 'not-json'])
+def test_any_present_lossy_legacy_bucket_is_unowned_even_zero(rl, raw):
+    uid = "alias:principal"
+    old = mod._legacy_user_file(uid, PERIOD)
+    old.parent.mkdir(parents=True, exist_ok=True)
+    old.write_text(raw)
+    assert mod.preflight_many(uid, ["r1"], now=NOW) is False
+    assert mod.commit_many(uid, ["r1"], now=NOW) is False
+    assert not mod._user_file(uid, PERIOD).exists()
+    assert old.read_text() == raw
+
+
+def test_dangling_legacy_symlink_is_present_ambiguity_not_a_fresh_budget(rl):
+    uid = "alias:principal"
+    old = mod._legacy_user_file(uid, PERIOD)
+    old.parent.mkdir(parents=True, exist_ok=True)
+    old.symlink_to(rl / "not-present")
+    assert mod.commit_many(uid, ["r1"], now=NOW) is False
+    assert not mod._user_file(uid, PERIOD).exists()
+    assert old.is_symlink()
+
+
+def test_legacy_guard_lock_excludes_safe_alias_during_hashed_principal_commit(rl, monkeypatch):
+    uid = "a:b"
+    safe_alias = "a_b"
+    canonical = mod._user_lock(uid, PERIOD)
+    guard = mod._user_lock(safe_alias, PERIOD)
+    assert canonical != guard
+    assert set(mod._user_lock_paths(uid, PERIOD)) == {canonical, guard}
+    guard.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(guard, os.O_RDWR | os.O_CREAT, 0o600)
+    try:
+        mod.fcntl.flock(fd, mod.fcntl.LOCK_EX | mod.fcntl.LOCK_NB)
+        monkeypatch.setenv("RESEARCH_VIEW_RL_LOCK_TIMEOUT", "0.05")
+        assert mod.preflight_many(uid, ["r1"], now=NOW) is True  # advisory only
+        assert mod.commit_many(uid, ["r1"], now=NOW) is False
+        assert not mod._user_file(uid, PERIOD).exists()
+        assert not mod._user_file(safe_alias, PERIOD).exists()
+    finally:
+        mod.fcntl.flock(fd, mod.fcntl.LOCK_UN)
+        os.close(fd)
+    assert mod.commit_many(uid, ["r1"], now=NOW) is True
+    assert ucount(rl, uid) == 1
+
+
+@pytest.mark.parametrize("uid", [None, "", "  ", "x" * 257, "\ud800"])
+def test_all_entrypoints_validate_the_same_complete_principal_before_io(rl, uid):
+    calls = [lambda: mod.allow(uid, "web", now=NOW),
+             lambda: mod.peek(uid, "web", now=NOW),
+             lambda: mod.preflight_many(uid, ["r1"], now=NOW),
+             lambda: mod.commit_many(uid, ["r1"], now=NOW)]
+    for call in calls:
+        with pytest.raises(mod.RateLimitArgError):
+            call()
+    assert not rl.exists()
