@@ -331,7 +331,8 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
 
     # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue and ni;
     # gross_profit loses the bank-SIC member to the shipped catalog's bank
-    # class closure, leaving two rows under min_n)
+    # class closure, leaving two rows under min_n). The anchor_unavailable
+    # emission is covered in tests/test_fundamental_forensics_peer_comparability.py.
     revenue_emission = next(
         e for t in tables for e in t["emissions"] if e["metric_id"] == "revenue"
     )

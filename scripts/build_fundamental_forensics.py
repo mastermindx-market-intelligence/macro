@@ -931,6 +931,13 @@ def _tree_metric_observations(
                     end = period.get("end")
                     if not isinstance(end, str):
                         continue
+                    start = period.get("start")
+                    start_date: date | None = None
+                    if isinstance(start, str):
+                        try:
+                            start_date = date.fromisoformat(start)
+                        except ValueError:
+                            continue
                     try:
                         end_date = date.fromisoformat(end)
                         value = Decimal(value_text)
@@ -939,11 +946,17 @@ def _tree_metric_observations(
                     if metric_id in latest_end and end <= latest_end[metric_id]:
                         continue
                     latest_end[metric_id] = end
+                    cell_unit = cell.get("unit")
                     latest[metric_id] = MetricObservation(
                         value=value,
                         period_end=end_date,
                         period_basis=str(period.get("kind") or ""),
                         applicable=metric_id not in excluded_metrics,
+                        period_start=start_date,
+                        unit=cell_unit
+                        if isinstance(cell_unit, str) and cell_unit
+                        else None,
+                        metric_version=None,
                     )
     for metric_id, observation in list(latest.items()):
         statement_types = metric_statement_types.get(metric_id, set())

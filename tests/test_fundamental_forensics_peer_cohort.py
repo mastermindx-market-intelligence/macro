@@ -29,6 +29,11 @@ CLOSED_A35_CODES = frozenset({
     "A35-W1",
     "A35-P1",
     "A35-P2",
+    "A35-R1",
+    "A35-K1",
+    "A35-U1",
+    "A35-D1",
+    "A35-V1",
 })
 
 AAPL = "ISS:US-XNAS-AAPL"
