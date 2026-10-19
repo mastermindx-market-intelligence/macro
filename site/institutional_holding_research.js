@@ -102,16 +102,16 @@
     var context = payload.context, filing = context.filing, holding = context.holding, generation = context.generation;
     empty(target);
     var title = doc.createElement('h2');
-    pair(doc, title, 'Reported holding — further qualification required', '申报持仓 — 仍需进一步核实'); target.appendChild(title);
+    pair(doc, title, 'Reported holding — further qualification required', '已披露持仓 — 仍需进一步核实'); target.appendChild(title);
     var note = doc.createElement('p');
     pair(doc, note, 'Delayed disclosure. This does not establish current ownership, flows, intent or conviction.', '这是滞后披露，不能据此确定当前持仓、资金流、交易意图或信念强度。'); target.appendChild(note);
     var facts = doc.createElement('dl');
-    fact(doc, facts, 'Reported issuer', '申报发行人', holding.name_of_issuer);
-    fact(doc, facts, 'Reporting entity', '申报机构', filing.filer_name);
+    fact(doc, facts, 'Reported issuer', '披露发行人', holding.name_of_issuer);
+    fact(doc, facts, 'Reporting entity', '披露机构', filing.filer_name);
     fact(doc, facts, 'Report period', '报告期', filing.report_period);
-    fact(doc, facts, 'Reported CUSIP', '申报 CUSIP', holding.cusip);
-    fact(doc, facts, 'Reported quantity', '申报数量', holding.quantity && holding.quantity.value);
-    fact(doc, facts, 'Reported quantity unit', '申报数量单位', holding.quantity && holding.quantity.type);
+    fact(doc, facts, 'Reported CUSIP', '披露 CUSIP', holding.cusip);
+    fact(doc, facts, 'Reported quantity', '披露数量', holding.quantity && holding.quantity.value);
+    fact(doc, facts, 'Reported quantity unit', '披露数量单位', holding.quantity && holding.quantity.type);
     target.appendChild(facts);
     var limits = doc.createElement('p');
     pair(doc, limits, 'Canonical security, economic vehicle, vehicle class, manager complex and strategy remain unresolved. No normalized quantity or financial decision authority is admitted.', '标准证券标识、经济载体、载体类别、管理机构群及策略均未确定；未准入标准化数量或金融决策权限。'); target.appendChild(limits);
@@ -123,7 +123,7 @@
     fact(doc, receipt, 'Retained at', '留存时间', filing.retained_at);
     fact(doc, receipt, 'Catalog published at', '目录发布时间', generation.published_at);
     fact(doc, receipt, 'Catalog source cutoff', '目录来源截止时间', generation.source_cutoff_at);
-    fact(doc, receipt, 'Accession', '申报编号', filing.accession);
+    fact(doc, receipt, 'Accession', '披露编号', filing.accession);
     fact(doc, receipt, 'Record ID', '记录标识', holding.infotable_sk);
     fact(doc, receipt, 'Row hash', '记录哈希', holding.row_hash);
     fact(doc, receipt, 'Source receipt', '来源凭据', filing.source_receipt_id);
@@ -131,14 +131,14 @@
     fact(doc, receipt, 'Verified artifact roles', '已核实的文件角色', generation.validation_scope.verified_roles.join(', '));
     details.appendChild(receipt);
     var scope = doc.createElement('p');
-    pair(doc, scope, 'Only this accession bucket and its supporting filing, relationship, coverage and receipt artifacts were verified. Whole-generation verification: false.', '仅核实此申报所在持仓分桶及其申报、关系、覆盖范围与凭据文件；未核实整个目录。'); details.appendChild(scope);
+    pair(doc, scope, 'Only this accession bucket and its supporting filing, relationship, coverage and receipt artifacts were verified. Whole-generation verification: false.', '仅核实此披露所在持仓分桶及其披露、关系、覆盖范围与凭据文件；未核实整个目录。'); details.appendChild(scope);
     var pointer = doc.createElement('p');
     if (generation.pointer.state === 'not_read') pair(doc, pointer, 'Current pointer not read. Whether this pinned catalog is superseded is unknown.', '未读取当前指针；此固定目录是否已被替代尚未知。');
     else pair(doc, pointer, 'Current pointer verified for this read.', '本次读取已核实当前指针。');
     details.appendChild(pointer);
     var link = doc.createElement('a');
     link.href = 'https://www.sec.gov/Archives/edgar/data/' + selection.filer_cik.replace(/^0+/, '') + '/' + selection.accession.replace(/-/g, '') + '/' + selection.accession + '-index.html';
-    link.target = '_blank'; link.rel = 'noopener noreferrer'; pair(doc, link, 'Open official SEC filing', '打开 SEC 官方申报'); details.appendChild(link);
+    link.target = '_blank'; link.rel = 'noopener noreferrer'; pair(doc, link, 'Open official SEC filing', '打开 SEC 官方披露'); details.appendChild(link);
     target.appendChild(details); target.hidden = false;
   }
   function createController(options) {
@@ -179,16 +179,16 @@
     return { clear: clear, read: read };
   }
   var COPY = {
-    selected: ['Selection changed. Read the selected filing to see its record.', '选项已更改。读取所选申报以查看记录。'],
-    invalid: ['Check the exact filing identifiers, date and UTC cutoff.', '请检查准确的申报标识、日期和 UTC 截止时间。'],
-    pending: ['Reading the selected retained filing…', '正在读取所选的留存申报…'],
-    signin: ['Sign in with an entitled account, then read the filing.', '请使用有权限的账户登录，再读取申报。'],
+    selected: ['Selection changed. Read the selected filing to see its record.', '选项已更改。读取所选披露以查看记录。'],
+    invalid: ['Check the exact filing identifiers, date and UTC cutoff.', '请检查准确的披露标识、日期和 UTC 截止时间。'],
+    pending: ['Reading the selected retained filing…', '正在读取所选的留存披露…'],
+    signin: ['Sign in with an entitled account, then read the filing.', '请使用有权限的账户登录，再读取披露。'],
     denied: ['This account does not have access to this research read.', '此账户没有该研究读取权限。'],
     unavailable: ['This research read is temporarily unavailable. No ownership conclusion can be drawn.', '此研究读取暂不可用，不能据此得出持仓结论。'],
     absent: ['The selected record is unavailable at this cutoff. This does not mean zero holdings.', '在此截止时间无法取得所选记录，这不表示持仓为零。'],
     refused: ['The source owner refused this selection. No ownership conclusion can be drawn.', '来源系统拒绝了此选项，不能据此得出持仓结论。'],
-    available: ['Retained reported context is shown below; further qualification is required.', '下方为留存的申报背景，仍需进一步核实。'],
-    auth: ['Authentication changed. Read the filing again with the current account.', '登录状态已更改，请使用当前账户重新读取申报。']
+    available: ['Retained reported context is shown below; further qualification is required.', '下方为留存的披露背景，仍需进一步核实。'],
+    auth: ['Authentication changed. Read the filing again with the current account.', '登录状态已更改，请使用当前账户重新读取披露。']
   };
   function mount(win) {
     var doc = win.document, form = doc.getElementById('ff-holding-form');
