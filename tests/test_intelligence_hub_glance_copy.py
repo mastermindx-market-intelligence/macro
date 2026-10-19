@@ -181,7 +181,7 @@ def test_rendered_watch_conditions_have_no_serialized_check() -> None:
     assert "&#39;text&#39;" not in watch and "&#39;check&#39;" not in watch
 
 
-def _render_glance_page(*, entry_gate, qledger_chips=None) -> str:
+def _render_glance_page(*, entry_gate=None, qledger_chips=None, **hub_overrides) -> str:
     """Render conditional copy through the shipped template with synthetic inputs."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=True)
     env.globals["region_for"] = lambda _ticker: "us"
@@ -220,6 +220,7 @@ def _render_glance_page(*, entry_gate, qledger_chips=None) -> str:
         "as_of": "2026-09-27",
         "counts": {},
     }
+    hub.update(hub_overrides)
     return env.get_template("intelligence_hub.html.j2").render(
         hub=hub,
         built="2026-09-27T00:00:00+00:00",
@@ -284,3 +285,333 @@ def test_committed_page_contract_rejects_forbidden_copy(tmp_path, monkeypatch, b
     monkeypatch.setitem(globals(), "SITE", synthetic_site)
     with pytest.raises(AssertionError):
         test_committed_page_matches_plain_language_contract()
+
+
+# ── W18-A: the Hub prints the evidence it already publishes ──
+
+
+def _w18a1_track_record(*, with_coverage=True, n_missing=10) -> dict:
+    """Synthetic track_record shaped like the committed hub.json values."""
+    tr = {
+        "n_snapshots": 120,
+        "any_matured": True,
+        "proven": {},
+        "horizons": {
+            "5": {"n_matured": 187762, "opportunity_ic": -0.0168,
+                  "by_stage": {}},
+        },
+        "accrual_gaps": {
+            "approximate": True,
+            "window_days": 30,
+            "n_expected": 21,
+            "n_present": 11,
+            "n_missing": n_missing,
+            "missing_dates": ["2026-09-21", "2026-09-22", "2026-09-23",
+                              "2026-09-24", "2026-09-25", "2026-10-15"],
+            "first_snapshot": "2026-06-21",
+            "last_snapshot": "2026-10-19",
+            "note": "Expected dates are pandas business days — NYSE market "
+                    "holidays inside the window are counted as gaps, so this "
+                    "over-reports rather than under-reports.",
+        },
+    }
+    if with_coverage:
+        tr["coverage_pct"] = {
+            "5": {"n_eligible": 266959, "n_matured": 187762,
+                  "coverage_pct": 70.33, "below_floor": False},
+        }
+    return tr
+
+
+def _w18a1_trh_block(html: str) -> str:
+    """Slice the rendered track-record card block (the trh grid)."""
+    m = re.search(r'<div class="trh">.*?\n  </div>', html, re.S)
+    assert m, "trh block missing from rendered page"
+    return m.group(0)
+
+
+def _w18a1_gap_note(html: str) -> str:
+    """Slice the accrual-gap card note body, or '' when it is not rendered."""
+    for m in re.finditer(r'<div class="card note">(.*?)</div>', html, re.S):
+        if "snapshot dates" in m.group(1) or "没有快照" in m.group(1):
+            return m.group(1)
+    return ""
+
+
+def test_w18a1_track_record_prints_committed_coverage() -> None:
+    html = _render_glance_page(track_record=_w18a1_track_record())
+    card = _w18a1_trh_block(html)
+    assert "187,762" in card
+    assert "70% of 266,959 eligible" in card
+    assert "占可评分 266,959 条的 70%" in card
+
+
+def test_w18a1_gap_note_quotes_count_and_holiday_caveat() -> None:
+    html = _render_glance_page(track_record=_w18a1_track_record())
+    note = _w18a1_gap_note(html)
+    assert note, "accrual-gap note missing"
+    assert "10 of 21 expected snapshot dates in the last 30 days " \
+        "have no snapshot." in note
+    assert "Approximate: market holidays count as missing, so this " \
+        "over-reports." in note
+    assert "近 30 天预期的 21 个快照日中，有 10 个没有快照。" in note
+    assert "为近似值：市场假日也计为缺失，因此偏高。" in note
+    assert "skipped" not in note.lower()
+    assert "nightly" not in note.lower()
+
+
+def test_w18a1_no_gap_note_or_coverage_when_absent() -> None:
+    html_zero = _render_glance_page(
+        track_record=_w18a1_track_record(n_missing=0))
+    assert _w18a1_gap_note(html_zero) == ""
+    html_nocov = _render_glance_page(
+        track_record=_w18a1_track_record(with_coverage=False))
+    card = _w18a1_trh_block(html_nocov)
+    assert "eligible" not in card
+    assert "占可评分" not in card
+    assert "None" not in card
+    assert "0%" not in card
+
+
+def _w18a2_glance_row(**changes) -> dict:
+    base = {
+        "ticker": "IBM", "opportunity_score": 21.3, "composite_conviction": 21,
+        "directions": {}, "stage": "early", "entry_gate": None, "trajectory": None,
+        "flags": [], "leading_gap": 0, "edge_drivers": [], "falsifier": None,
+        "price": None, "edge_remaining": 0.5, "n_confirm": 0, "lean": 0,
+        "source_mix": [], "sectors": [],
+    }
+    base.update(changes)
+    return base
+
+
+def _w18a2_strip(html: str) -> str:
+    start = html.index("萌芽优势")
+    j = html.index('<div class="empty">', start)
+    return html[j : html.index("</div>", j)]
+
+
+def test_w18a2_empty_strip_names_the_barred_early_name() -> None:
+    ibm = _w18a2_glance_row(entry_gate={"eligible": False, "buyable": False,
+                                        "flat_sell": True},
+                            trajectory={"rolling_over": False})
+    html = _render_glance_page(counts={"early": 1, "emerging": 0}, command=[ibm])
+    strip = _w18a2_strip(html)
+    assert "already moved" not in strip
+    assert "已经发动" not in strip
+    assert "IBM" in strip
+    assert "entry checks did not agree" in strip
+    assert "入场条件不一致" in strip
+    assert "flat_sell" not in html
+
+
+def test_w18a2_zero_counts_has_no_false_cause() -> None:
+    for counts in ({}, {"early": 0, "emerging": 0}):
+        html = _render_glance_page(counts=counts)
+        strip = _w18a2_strip(html)
+        assert "Nothing emerging today." in strip
+        assert "今日无萌芽机会。" in strip
+        assert "already moved" not in html
+        assert "已经发动" not in html
+
+
+def test_w18a2_rolling_over_reason_outranks_gate() -> None:
+    ibm = _w18a2_glance_row(entry_gate={"eligible": False, "buyable": False,
+                                        "flat_sell": True},
+                            trajectory={"rolling_over": True})
+    html = _render_glance_page(counts={"early": 1, "emerging": 0}, command=[ibm])
+    strip = _w18a2_strip(html)
+    assert "price rolling over" in strip
+    assert "价格转弱" in strip
+    assert "entry checks did not agree" not in strip
+    assert '<div class="card ecard' not in html
+
+
+def _w18a3_q2_track_record(quad_ic: float | None = -0.0365, **q2) -> dict:
+    """Synthetic horizon-5 entry shaped like the committed track_record slice."""
+    q2_cell = {"n": 77077, "mean_fwd_rel": 0.0358, "hit_rate": 0.479,
+               "opportunity_ic": quad_ic}
+    q2_cell.update(q2)
+    return {
+        "n_snapshots": 120,
+        "any_matured": True,
+        "proven": {},
+        "horizons": {"5": {
+            "n_matured": 187762,
+            "opportunity_ic": -0.0168,
+            "by_stage": {},
+            "by_regime": {
+                "Q1": {"n": 10310, "mean_fwd_rel": 0.4884, "hit_rate": 0.478,
+                       "opportunity_ic": 0.0274},
+                "Q2": q2_cell,
+                "Q3": {"n": 26297, "mean_fwd_rel": 0.0345, "hit_rate": 0.465,
+                       "opportunity_ic": -0.0178},
+            },
+        }},
+    }
+
+
+def _w18a3_rank_skill_cell(html: str) -> str:
+    """The rank-skill cell region of the single rendered 5d card."""
+    start = html.index("rank skill")
+    return html[start:html.index("scored", start)]
+
+
+def test_w18a3_rank_skill_prints_q2_slice() -> None:
+    html = _render_glance_page(macro_context={"quad": "Q2"},
+                               track_record=_w18a3_q2_track_record())
+    cell = _w18a3_rank_skill_cell(html)
+    assert "%+.3f" % -0.0365 in cell
+    assert "77,077" in cell
+    assert "this regime (Q2)" in cell
+    assert "本格局 Q2" in cell
+    assert "%+.3f" % -0.0168 in cell
+
+
+def test_w18a3_no_slice_when_quad_missing() -> None:
+    for macro_context in ({"quad": "Q4"}, {}):
+        html = _render_glance_page(macro_context=macro_context,
+                                   track_record=_w18a3_q2_track_record())
+        assert "this regime" not in html
+        assert "本格局" not in html
+        assert "+0.000" not in html
+
+
+@pytest.mark.parametrize(
+    "q2",
+    [{"quad_ic": None}, {"n": None}],
+    ids=["null-ic", "null-n"],
+)
+def test_w18a3_incomplete_slice_is_omitted(q2) -> None:
+    html = _render_glance_page(macro_context={"quad": "Q2"},
+                               track_record=_w18a3_q2_track_record(**q2))
+    assert "this regime" not in html
+    assert "本格局" not in html
+    assert "+0.000" not in html
+    assert "%+.3f" % -0.0168 in html
+
+
+def _w18a4_sg(**patch) -> dict:
+    """Synthetic hub.signal_governor shaped like the committed hub.json payload."""
+    sg = {
+        "schema": "signal_governor.v1",
+        "generated_at": "2026-10-18T01:00:00+00:00",
+        "region": "us",
+        "gate": {"hub": 0.05, "radar": 0.05},
+        "trust": {"radar": 1.0, "hub": 1.0},
+        "signals": {
+            "hub": {"n_matured": 160108, "horizon": "21", "demoted": False,
+                    "reason": "IC=+0.012 t_hac=0.84 below gate"},
+            "radar": {"n_matured": 16280, "horizon": "21", "demoted": False,
+                      "reason": "IC=-0.004 t_hac=-0.21"},
+        },
+        "n_demoted": 0,
+        "note": ("No signal has cleared the de-escalation gate yet — "
+                 "all trust 1.0 (shadow/measuring)."),
+        "inputs": ["a.json"],
+        "stale_inputs": [],
+    }
+    sg.update(patch)
+    return sg
+
+
+def _w18a4_strip(html: str) -> str:
+    """The governor card note body, or '' when it is not rendered."""
+    for m in re.finditer(r'<div class="card note">(.*?)</div>', html, re.S):
+        if "Desk-history check" in m.group(1):
+            return m.group(1)
+    return ""
+
+
+def test_w18a4_governor_strip_prints_committed_counts() -> None:
+    html = _render_glance_page(signal_governor=_w18a4_sg())
+    strip = _w18a4_strip(html)
+    assert "信号台历史检查" in strip
+    assert "not currently pulling any names down" in strip
+    assert "目前未下调任何标的" in strip
+    assert "160,108" in strip
+    assert "16,280" in strip
+    assert "this page" in strip and "本页" in strip
+    assert "radar" in strip and "雷达" in strip
+    assert "scored" in strip and "已评分" in strip
+    assert not re.search(r'<span class="chip">\s*hub\b', strip)
+    note = _w18a4_sg()["note"]
+    for leak in ("IC=", "t_hac", "HAC", "DEMOTED", "trust 1.0", note):
+        assert leak not in html
+
+
+def test_w18a4_governor_strip_omitted_when_empty() -> None:
+    for overrides in ({"signal_governor": {}}, {"signal_governor": None}, {}):
+        html = _render_glance_page(**overrides)
+        assert "Desk-history check" not in html
+        assert "信号台历史检查" not in html
+
+
+def test_w18a4_demoted_branch_counts_without_raw_reason() -> None:
+    sg = _w18a4_sg(n_demoted=1)
+    sg["signals"]["hub"]["demoted"] = True
+    html = _render_glance_page(signal_governor=sg)
+    assert "signal(s) currently weighted down" in html
+    assert "个信号因自身评分记录而被降权" in html
+    assert "not currently pulling" not in html
+    assert "目前未下调" not in html
+    assert "IC=" not in html
+
+
+def _w18a5_footer(html: str) -> str:
+    m = re.search(r'<footer class="hf">.*?</footer>', html, re.S)
+    assert m, "footer missing"
+    return m.group(0)
+
+
+def test_w18a5_footer_prints_committed_exclusion_count() -> None:
+    """The US gate prints how many names were counted out, with the roster date."""
+    html = _render_glance_page(
+        n_universe=2247,
+        universe_scope={
+            "applied": True,
+            "n_in": 2235,
+            "n_excluded": 731,
+            "roster_date": "2026-10-15",
+            "excluded_sample": ["ZZQX", "QQZY"],
+        },
+    )
+    footer = _w18a5_footer(html)
+    assert "731" in footer
+    assert "2,247" in footer
+    assert "non-US names excluded" in footer
+    assert "未纳入" in footer
+    assert "(roster 2026-10-15)" in footer
+    assert "（名册 2026-10-15）" in footer
+    assert "ZZQX" not in html
+    assert "QQZY" not in html
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"universe_scope": {"applied": False, "n_excluded": 731,
+                            "roster_date": "2026-10-15"}},
+        {"universe_scope": {}},
+        {},
+    ],
+    ids=["not-applied", "empty-scope", "scope-missing"],
+)
+def test_w18a5_footer_omits_exclusions_when_not_applied(overrides) -> None:
+    footer = _w18a5_footer(_render_glance_page(n_universe=2247, **overrides))
+    assert "731" not in footer
+    assert "excluded" not in footer
+    assert "未纳入" not in footer
+
+
+def test_w18a5_missing_roster_date_keeps_count() -> None:
+    html = _render_glance_page(
+        n_universe=2247,
+        universe_scope={"applied": True, "n_in": 2235, "n_excluded": 731},
+    )
+    footer = _w18a5_footer(html)
+    assert "731" in footer
+    assert "未纳入" in footer
+    assert "(roster" not in footer
+    assert "（名册" not in footer
+    assert "None" not in footer
