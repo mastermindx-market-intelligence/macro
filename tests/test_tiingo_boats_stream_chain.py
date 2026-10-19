@@ -50,7 +50,7 @@ def frame(kind: str, when: str, *, ticker: str = "AMD", size=25) -> str:
     return json.dumps({"service": "boats", "data": data}, separators=(",", ":"))
 
 
-def fake_connection(monkeypatch, frames_per_connection, arrivals):
+def fake_connection(monkeypatch, frames_per_connection, arrivals, *, retain_sockets=None):
     """Simulate only a WebSocket socket: zero endpoint/network/auth code."""
     sockets = []
     sent = []
@@ -76,6 +76,8 @@ def fake_connection(monkeypatch, frames_per_connection, arrivals):
                 self.closed = True
 
         sockets.append(Socket(frames))
+    if retain_sockets is not None:
+        retain_sockets.extend(sockets)
     queue = iter(sockets)
 
     def establish(*args, **kwargs):
@@ -246,3 +248,35 @@ def test_archive_failure_cannot_emit_a_display_batch(lake, monkeypatch):
                          flush_seconds=2, archive=lake, observer=lambda k,p:seen.append(k))
     assert "archived" not in seen
     assert seen[-1] == "ended"
+
+
+def test_publication_denial_still_archives_and_closes_real_stream(lake, monkeypatch, caplog):
+    import scripts.build_ext_quotes as builder
+
+    sockets, writes = [], []
+    raw = frame("T", "2026-10-09T01:00:01Z")
+    fake_connection(monkeypatch, [[raw]], ["2026-10-09T01:00:01.100Z"],
+                    retain_sockets=sockets)
+
+    class Denial(Exception):
+        response = {"Error": {"Code": "AccessDenied"}}
+
+    class Storage:
+        def put_object(self, **kwargs):
+            writes.append(kwargs)
+            raise Denial("SECRET_PROVIDER_BODY")
+
+    monkeypatch.setattr(builder, "_r2_client", lambda: Storage())
+    result = builder.publish_boats_stream(max_seconds=10, max_messages=1,
+                                           publish=True, archive=lake)
+    assert len(writes) == 1
+    assert sockets and all(socket.closed for socket in sockets)
+    assert result["raw_messages"] == 1 and result["segments"] == 1
+    receipt = refs(lake)[0][2]
+    stored = gzip.decompress((lake.root / receipt["raw_path"]).read_bytes())
+    assert json.loads(stored.decode())["raw_message"] == raw
+    assert result["publication_ok"] is False
+    assert result["publication"]["access_denied"] is True
+    assert result["publication"]["final_invalidation_delivered"] is False
+    assert "publication stopped for this invocation" in caplog.text
+    assert "SECRET_PROVIDER_BODY" not in caplog.text
