@@ -71,7 +71,8 @@ _CIK_IDENTITY_TEXT = re.compile(r"[0-9]{10}")
 _KINDS = ("workbench", "kernel")
 _STATUSES = ("present", "withdrawn")
 _RELATIONS = ("original", "correction")
-_CHANGE_REASON_VALUES = ("content", "status", "detector_version")
+_CHANGE_REASON_VALUES = ("content", "status", "detector_version", "symbol")
+_READ_FAILURE_CODES = frozenset({"head_read_failed", "batch_read_failed"})
 
 _KERNEL_REQUIRED_KEYS = (
     "finding_id",
@@ -708,8 +709,9 @@ def _write_head(
     the next run's roll-forward completes it on the same store; a ledger that
     fully reloads without error at a sequence at or beyond ours proves a
     later writer rolled our batch forward and kept appending, so our write is
-    committed once our batch bytes are still exactly our own. Anything else
-    is a conflict.
+    committed once our batch bytes are still exactly our own. A HEAD that
+    moved but whose confirming reload cannot be read is EFFECT_UNKNOWN, never
+    a definite conflict. Anything else is a conflict.
     """
     raised: Exception | None = None
     try:
@@ -747,13 +749,21 @@ def _write_head(
         )
     try:
         settled = load_ledger(store)
-    except FindingJudgmentError:
-        settled = None
+        ours = _read_batch_bytes(store, sequence) if settled.head_sequence >= sequence else None
+    except FindingJudgmentError as exc:
+        if exc.code in _READ_FAILURE_CODES:
+            # HEAD moved past our predecessor but the confirming reload could
+            # not be read: our batch may well have committed, so this is not a
+            # definite conflict.
+            raise FindingJudgmentEffectUnknownError(
+                f"judgment HEAD advanced but the confirming reload failed: {exc}", code="effect_unknown"
+            ) from exc
+        settled, ours = None, None
     if settled is not None and settled.head_sequence >= sequence:
         # A later writer rolled our batch forward and kept appending: a full
         # reload that verifies HEAD's tip against the batch bytes proves our
         # batch committed while its bytes are still exactly our own.
-        if _read_batch_bytes(store, sequence) == batch_payload:
+        if ours == batch_payload:
             return
     raise FindingJudgmentError(
         "judgment HEAD holds unexpected bytes after a failed compare-and-swap", code="head_conflict"
@@ -889,7 +899,8 @@ def record_judgments(
     """Append one batch of judgments for a recording run.
 
     Per subject: no prior tip appends an original; a present tip with the
-    same content digest appends nothing; anything else appends a correction
+    same content digest and symbol appends nothing; anything else (including
+    a same-identity ticker rename) appends a correction
     superseding the tip. Subjects of in-scope entities with no row this run
     and a present tip are withdrawn. ``company_identities`` (threaded from
     ``workbench_rows_and_companies_from_state``) names every state company's
@@ -978,7 +989,7 @@ def record_judgments(
                 "change_reasons": [],
             })
             continue
-        if tip["status"] == "present" and tip["content_sha256"] == sha:
+        if tip["status"] == "present" and tip["content_sha256"] == sha and tip["symbol"] == row["symbol"]:
             unchanged += 1
             continue
         if tip["status"] == "present":
@@ -991,6 +1002,10 @@ def record_judgments(
             reasons.add("content")
         if _detector_version_of(reference) != row["content"].get("detector_version"):
             reasons.add("detector_version")
+        if tip["symbol"] != row["symbol"]:
+            # A same-identity rename: the tip must follow the state's symbol so
+            # dropped-CIK detection keys on the ticker the company holds now.
+            reasons.add("symbol")
         appended.append({
             "schema": JUDGMENT_SCHEMA,
             "judgment_id": _judgment_id(subject_key, sha, tip["judgment_id"]),

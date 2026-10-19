@@ -995,6 +995,45 @@ def test_overtaken_head_cas_with_wrong_tip_is_head_conflict() -> None:
     assert type(excinfo.value) is FJ.FindingJudgmentError  # a retryable refusal, not chain corruption
 
 
+class _OvertakenThenUnreadableStore(_OvertakenHeadStore):
+    """Writer A's carrier: overtaken at its HEAD CAS, then every batch read fails."""
+
+    def __init__(self, backend, intervene):
+        super().__init__(backend, intervene)
+        self._reads_fail = False
+
+    def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type="application/octet-stream"):
+        result = super().put_bytes_strict_conditional(
+            key, data, expected_version=expected_version, content_type=content_type
+        )
+        if key == HEAD_KEY:
+            self._reads_fail = True
+        return result
+
+    def get_bytes_strict_bounded(self, key, maximum_bytes):
+        if self._reads_fail:
+            raise RuntimeError("transient batch read failure")
+        return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+
+def test_overtaken_head_cas_with_unreadable_reload_is_effect_unknown() -> None:
+    backend = InMemoryStrictConditionalStore()
+    rows_night1 = [_kernel_row()]
+    rows_night2 = [_kernel_row(derived_values={"growth": "-0.55"})]
+
+    def writer_b_records_night2():
+        _record_kernel(backend, rows_night2, NIGHT2)
+
+    # HEAD moved past A's predecessor, but the reload that would confirm A's
+    # batch cannot be read: A probably committed, so this is never reported
+    # as a definite (retryable) conflict.
+    writer_a = _OvertakenThenUnreadableStore(backend, writer_b_records_night2)
+    with pytest.raises(FJ.FindingJudgmentEffectUnknownError) as excinfo:
+        _record_kernel(writer_a, rows_night1, NIGHT1)
+    assert _expect_code(excinfo) == "effect_unknown"
+    assert FJ.load_ledger(backend).head_sequence == 2  # A's batch did commit under B's HEAD
+
+
 # ---------------------------------------------------------------------------
 # 10. Effect-unknown: one write attempt, no retry
 # ---------------------------------------------------------------------------
@@ -1376,6 +1415,46 @@ def test_cik_dropped_with_new_finding_ids_is_refused_before_any_write() -> None:
     view = FJ.load_ledger(store)
     assert view.head_sequence == 1  # HEAD unchanged
     assert FJ.history(store, stable_id("fjsubject", "workbench", "symbol:AAPL", "b:q2")) == ()
+
+
+def test_same_cik_rename_appends_a_symbol_correction_so_the_tip_follows_the_ticker() -> None:
+    store = InMemoryStrictConditionalStore()
+    finding = _wfinding("a:q1", "revenue_collapse")
+    _record_workbench(store, _workbench_state({"FB": _company(1326801, [finding])}, utc_text(NIGHT1)), NIGHT1)
+
+    # Same CIK, same finding content, new ticker: the tip must take the new
+    # symbol rather than stay a no-op stuck on the old one.
+    report = _record_workbench(
+        store, _workbench_state({"META": _company(1326801, [finding])}, utc_text(NIGHT2)), NIGHT2
+    )
+    assert report["sequence"] == 2
+    view = FJ.load_ledger(store)
+    (chain,) = view.chains.values()
+    assert [record["symbol"] for record in chain] == ["FB", "META"]
+    assert chain[-1]["relation"] == "correction" and chain[-1]["change_reasons"] == ["symbol"]
+    assert chain[-1]["content_sha256"] == chain[0]["content_sha256"]
+
+    # A steady META night is a no-op again.
+    steady = _record_workbench(
+        store, _workbench_state({"META": _company(1326801, [finding])}, utc_text(NIGHT3)), NIGHT3
+    )
+    assert steady["sequence"] is None
+
+    # The recycled old ticker on a CIK-less company is not a dropped CIK...
+    recycled = _record_workbench(
+        store,
+        _workbench_state(
+            {"META": _company(1326801, [finding]), "FB": _company(None, [])}, utc_text(NIGHT4)
+        ),
+        NIGHT4,
+    )
+    assert recycled["sequence"] is None
+
+    # ...while META itself losing its CIK is.
+    with pytest.raises(FJ.FindingJudgmentError) as excinfo:
+        _record_workbench(store, _workbench_state({"META": _company(None, [])}, utc_text(NIGHT4)), NIGHT4)
+    assert _expect_code(excinfo) == "cik_dropped"
+    assert "META" in str(excinfo.value)
 
 
 def test_cik_dropped_with_zero_findings_is_refused_before_any_write() -> None:
