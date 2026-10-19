@@ -702,8 +702,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -2473,8 +2475,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -3297,8 +3301,10 @@ jobs:
       - "engine/theme_context.py"
       - "engine/theme_crowding.py"
       - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/economic_context.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/identity_resolution.py"
+      - "engine/theme_graph/issuer_economic_context.py"
       - "engine/theme_graph/ontology.py"
       - "engine/theme_graph/probation.py"
       - "engine/theme_graph/rights.py"
@@ -8644,6 +8650,8 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -8678,6 +8686,8 @@ jobs:
       - "tests/test_fundamental_forensics_lane_c2_bac_periods.py"
       - "tests/test_fif_pf_health_entity.py"
       - "tests/test_fif_pf_health_pointer.py"
+      - "tests/test_fif_a0_production_mode_unit.py"
+      - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
       - "research/financial_intelligence_fabric/**"
@@ -9476,6 +9486,7 @@ jobs:
           tests/test_fif_se_receipts.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
+          tests/test_fif_a0_production_mode_unit.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -9531,6 +9542,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_refusal_entry_readers.py
           tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
@@ -9538,6 +9550,7 @@ jobs:
           tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_statement_grid_p5b.py
+          tests/test_fundamental_forensics_statement_refusals.py
           tests/test_fundamental_forensics_lane_c_cat_title.py
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_ui.py
@@ -9555,7 +9568,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -17131,9 +17144,9 @@ jobs:
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
       - name: pinned alert email message type (app/mailer.py alert template)
-        run: python -m pytest tests/test_mailer_alert_template.py -v
+        run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
-        run: python -m pytest tests/test_alert_delivery_drain.py -v
+        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
@@ -17432,10 +17445,15 @@ jobs:
       # suite is wired here in the SAME commit per the W1 contract-delta lesson
       # (a new test file without a path gate is an unwired suite).
       - "engine/global_liquidity_outlook.py"
+      # GLT T10 (W2, 2026-10-19): the measurement-only regional scenario map
+      # imports the accounting and T08 outlook modules above; its suite is wired
+      # here in the SAME commit (a new test file without a path gate is an unwired suite).
+      - "engine/global_liquidity_regional_scenarios.py"
       - "engine/global_liquidity_transmission.py"
       - "tests/test_global_liquidity_accounting.py"
       - "tests/test_global_liquidity_knowledge_time.py"
       - "tests/test_global_liquidity_outlook.py"
+      - "tests/test_global_liquidity_regional_scenarios.py"
       - "tests/test_global_liquidity_sources_v2.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -17446,8 +17464,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 + T08 contracts — source manifest, knowledge time, monetary accounting, component outlook
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py -q
+      - name: global liquidity T03–T05 + T08 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, regional scenario map
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
@@ -20400,7 +20418,7 @@ jobs:
       - name: node must be on PATH — dossier JS contract skips without it (vacuous green)
         run: node --version
       - name: collect beacon throttle + growth-event registry + tape per-IP cap + generic billing/auth errors + dossier quote honesty
-        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
+        run: python -m pytest tests/test_collect_throttle.py tests/test_growth_events_registry.py tests/test_tape_relay.py tests/test_billing_subscribe.py tests/test_company_intelligence_api.py tests/test_company_disclosures_api.py tests/test_gmi_issuer_economic_context_api.py tests/test_api_gmi_economic_context_parity.py tests/test_company_context_runtime.py tests/test_company_intelligence_dossier_js.py tests/test_dossier_quote_api.py tests/test_dossier_live_quote_surface.py -q
       # WS:COMMERCIAL-ACTIVATION CA1A (2026-09-04): the event-spine acceptance
       # battery — registry-as-whitelist derivation (W2-1), envelope-v1 eid/schema/
       # meta validation and replay identity through the mounted /api/collect route,
@@ -20786,6 +20804,8 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -22218,6 +22238,8 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
       - name: market ontology — theme-tier guard (category and micro_theme nodes never compose as themes)
         run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard.py -q
+      - name: market ontology — US/China cohort delivery contract (positive vs degraded vs refused, grant != enrollment)
+        run: TZ=UTC python -m pytest tests/test_cohort_us_china_contract.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
         run: TZ=UTC python -m pytest tests/test_cn_limit_rules.py -q
       # GMI W2 — the exposure-decomposition probe's pure math. The probe script itself is a
@@ -26756,6 +26778,8 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_foresight_cascade.py"
+      - "engine/power_scarcity.py"
+      - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
       - "tests/test_fda_supply_probes.py"
       - "tests/test_fda_supply_probes_t02r.py"
@@ -26822,7 +26846,7 @@ jobs:
       - name: install deps for the FDA supply suites
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
-        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
@@ -27231,7 +27255,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -29030,6 +29054,8 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
@@ -31227,6 +31253,7 @@ jobs:
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
       - tests/test_tiingo_boats_display.py
+      - tests/test_tiingo_boats_coverage_cli.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
@@ -31248,6 +31275,8 @@ jobs:
       - scripts/tiingo_corpus_audit.py
       - tests/test_tiingo_corpus_audit.py
       - tests/test_tiingo_additional_history.py
+      - scripts/tiingo_chart_history.py
+      - tests/test_tiingo_chart_history.py
       - tests/test_tiingo_capture_admission.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -31267,9 +31296,11 @@ jobs:
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_tiingo_boats_coverage_cli.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
+          tests/test_tiingo_chart_history.py
           tests/test_tiingo_capture_admission.py -q
 
 
@@ -31885,6 +31916,8 @@ jobs:
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/economic_context.py
+      - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -32970,6 +33003,11 @@ jobs:
       - "tests/fixtures/macro_workspace_prior_publication/**"
       # Literal site artifact reference in the closure (liquidity composer).
       - "site/liquiditydata/global_liquidity_transmission.json"
+      # GLT T21 (#9657): the liquidity suite imports the Macro Command copy
+      # guard and machine-text counter to pin the Now view's measured copy.
+      - "scripts/__init__.py"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/count_macro_command_machine_text.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -34233,6 +34271,11 @@ jobs:
     paths:
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
+      - engine/theme_graph/issuer_economic_context.py
+      - tests/test_gmi_issuer_economic_context.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/economic_context.py
+      - tests/test_gmi_native_economic_context.py
       - collectors/__init__.py
       - collectors/edgar_forensics.py
       - collectors/fundamental_forensics_acquisition.py
@@ -34340,7 +34383,7 @@ jobs:
       - name: install candidate inspection test dependencies
         run: pip install pytest pyyaml requests
       - name: File, pinned-source, observation and native disclosure contracts
-        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py -q
+        run: python -m pytest tests/test_company_relationship_candidates.py tests/test_company_pinned_relationship_candidates.py tests/test_company_relationship_review_set.py tests/test_company_relationship_observations.py tests/test_company_issuer_disclosures.py tests/test_company_disclosure_owner.py tests/test_company_disclosure_identity_continuity.py tests/test_company_disclosure_preflight.py tests/test_gmi_native_economic_context.py tests/test_gmi_issuer_economic_context.py -q
 
   gmi-source-diagnostic-kernel:
     # WP02 deterministic artificial research model and structural-only refusals.
