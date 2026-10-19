@@ -377,6 +377,10 @@ def _publish_r2(payload_json: str) -> bool:
 # This is a last-trade display, never an NBBO, close, or executable quote.
 BOATS_MAX_AGE_S = 30
 BOATS_PUBLISH_S = 5
+# Hard public coverage ceiling shared by the frame reducer and the public
+# allowlist. Sized for the 15,380 valid tickers observed across retained REST and firehose captures with
+# headroom; no publisher or validator may invent its own bound.
+MAX_BOATS_SYMBOLS = 20_000
 
 
 def boats_session_date(now: datetime) -> str | None:
@@ -434,16 +438,17 @@ def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:
             or payload["session_date"] != boats_session_date(published)):
         raise ValueError("invalid publication clock or session")
     symbols = payload["coverage_symbols"]
-    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= 500
+    if (not isinstance(symbols, list) or not 1 <= len(symbols) <= MAX_BOATS_SYMBOLS
             or any(not isinstance(s, str) or not re.fullmatch(r"[A-Z0-9][A-Z0-9.:-]{0,31}", s) for s in symbols)
             or len(set(symbols)) != len(symbols)):
         raise ValueError("invalid coverage identity")
+    covered = frozenset(symbols)
     rows = payload["quotes"]
     if not isinstance(rows, dict) or (status != "connected" and rows):
         raise ValueError("inactive stream cannot publish trades")
     approved = {}
     for symbol, row in rows.items():
-        if symbol not in symbols or not isinstance(row, dict) or set(row) != set(row_keys):
+        if symbol not in covered or not isinstance(row, dict) or set(row) != set(row_keys):
             raise ValueError("unapproved row fields or symbol")
         if (row["extSource"] != "tiingo_boats" or row["extVenue"] != "BOATS"
                 or row["extPriceKind"] != "LAST_TRADE" or row["extBasis"] != "LIVE"
@@ -474,13 +479,16 @@ class BoatsLastTrade:
 
     def __init__(self, symbols: list[str], capture_id: str):
         from collectors.tiingo_archive import symbol_path
-        if not symbols or len(symbols) > 500 or len(set(symbols)) != len(symbols):
+        if not symbols or len(symbols) > MAX_BOATS_SYMBOLS or len(set(symbols)) != len(symbols):
             raise ValueError("bounded unique symbol coverage required")
         for symbol in symbols:
             symbol_path(symbol)
             if symbol != symbol.upper():
                 raise ValueError("uppercase display coverage keys required")
         self.symbols = tuple(symbols)
+        # Stable coverage ordering stays in self.symbols; the hot consume path
+        # tests membership against this constant-time view instead.
+        self.covered = frozenset(self.symbols)
         self.capture_id = capture_id
         self.connection = 0
         self.status = "disconnected"
@@ -519,7 +527,7 @@ class BoatsLastTrade:
         # Tiingo BOATS emits lowercase ticker strings. Map ASCII case only
         # into the accepted display coverage; the raw/decoded identity stays exact.
         symbol = vendor_symbol.upper()
-        if symbol not in self.symbols:
+        if symbol not in self.covered:
             return
         try:
             event = decode_boats(message, received_at)
@@ -630,10 +638,13 @@ def publish_boats_stream(*, max_seconds: int = 600, max_messages: int = 20000,
                     delivered = False
                     log.warning("ext_quotes: R2 access denied; publication stopped for this invocation")
                 publication["succeeded" if delivered else "failed"] += 1
+                # A failed attempt consumes this publication slot too, so one
+                # transient storage failure cannot promote every later frame
+                # into an immediate retry PUT. Forced terminal invalidation and
+                # the strict denied-PUT latch below are unaffected.
+                last_publish = tick
                 if reducer.status == "ended":
                     publication["final_invalidation_delivered"] = delivered
-                if delivered:
-                    last_publish = tick
             else:
                 last_publish = tick
 
@@ -779,8 +790,11 @@ def main() -> None:
     parser.add_argument("--boats", action="store_true", help="One bounded BOATS archive and display segment.")
     parser.add_argument("--max-seconds", type=int, default=600)
     parser.add_argument("--max-messages", type=int, default=20000)
+    parser.add_argument("--symbols-file", help="Bounded line-oriented BOATS coverage; defaults to the existing watchlist.")
     parser.add_argument("--session", action="store_true", help="Print the current ET session for the existing runner.")
     args = parser.parse_args()
+    if args.symbols_file and not args.boats:
+        parser.error("--symbols-file requires --boats")
     if args.publish and not args.boats and not args.smoke:
         parser.error("public relay publication requires --boats; legacy diagnostics are private")
     if args.session:
@@ -790,6 +804,15 @@ def main() -> None:
     if args.boats:
         if args.smoke:
             parser.error("--boats and --smoke are incompatible; smoke cannot open or publish a live stream")
+        symbols = None
+        if args.symbols_file:
+            from scripts.tiingo_ingest import load_symbols
+            # The display publisher admits its own full public coverage ceiling;
+            # the ordinary 12000-symbol collector default would truncate the file.
+            symbols = load_symbols("", args.symbols_file, limit=MAX_BOATS_SYMBOLS)
+            # Validate before any provider, archive or R2 effect. An empty file
+            # must not silently fall back to the default watchlist.
+            BoatsLastTrade(symbols, "coverage-validation")
         now = datetime.now(timezone.utc)
         if boats_session_date(now) is None:
             log.info("BOATS outside conservative overnight window")
@@ -797,7 +820,8 @@ def main() -> None:
         local = now.astimezone(ET)
         boundary = datetime.combine(local.date() + timedelta(days=1 if local.hour >= 20 else 0), dtime(4), tzinfo=ET)
         seconds = min(args.max_seconds, max(1, int((boundary - local).total_seconds())))
-        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages, publish=args.publish)
+        result = publish_boats_stream(max_seconds=seconds, max_messages=args.max_messages,
+                                      symbols=symbols, publish=args.publish)
         log.info("BOATS bounded segment settled %s", json.dumps(result))
         if args.publish and result["publication_ok"] is not True:
             raise SystemExit(1)

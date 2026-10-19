@@ -1,0 +1,50 @@
+{
+  "state": "BOUND_LOCAL_SOURCE_ONLY_ROOT_ADJUDICATION_REQUIRED",
+  "source_evidence": {
+    "accession": "0000102909-26-000503",
+    "issuer_cik": "0001551152",
+    "issuer_name": "AbbVie Inc",
+    "share_class": "Common Stock",
+    "cusip": "00287Y109",
+    "event_on": "2026-03-13",
+    "accepted_at": "2026-03-26 19:06:03+00:00",
+    "retained_at": "2026-10-19 10:02:44.352427+00:00",
+    "known_at": "2026-10-19 10:02:44.352427+00:00",
+    "raw_sha256": "738610c1494c8b2326981702af9ce2d3d4c3e168605b498110db28dbb38076c1"
+  },
+  "alias": {
+    "vendor": "sec_filing_cusip",
+    "vendor_symbol": "00287Y109",
+    "security_id": "SEC:US-XNYS-ABBV",
+    "valid_from": "2026-03-26",
+    "valid_to": "2026-03-27",
+    "known_at": "2026-10-19 10:04:24.543054+00:00",
+    "evidence_sha256": "a37e2061d1d9bc2382b49eebb1d8b9f324e076aeb5c79fac367642a392b62251",
+    "binding_sha256": "193cfc9e4abbaad1796e5098c58afbf4833facd1739b550e10b6895f9d8d26fa",
+    "attempt_id": null,
+    "alias_family_id": null,
+    "alias_revision_id": null,
+    "alias_kind": null
+  },
+  "positive_owner_read": "SEC:US-XNYS-ABBV",
+  "original_Aug27_cutoff": null,
+  "original_13F_period_end_reads": {
+    "2026-03-31": null,
+    "2026-06-30": null
+  },
+  "proof_generated_at": "2026-10-19T10:36:40.192356+00:00",
+  "filing_url": "https://www.sec.gov/Archives/edgar/data/1551152/000010290926000503/0000102909-26-000503.txt",
+  "registration_url": "https://www.sec.gov/Archives/edgar/data/1551152/000155115226000008/abbv-20251231_htm.xml",
+  "canonical_master_commit": "6fa16827e0280385efabb7b723714ea496a11dde",
+  "raw_source_sha256": {
+    "filing": "738610c1494c8b2326981702af9ce2d3d4c3e168605b498110db28dbb38076c1",
+    "registration": "29a8df00d312ead28c1d8adf34e3dfcf931d2a230ef79e69d88c7a2bb20011e5",
+    "master": "c05bdcf2e5ece8d167a40d5d60eb33e054561f42947d5b9a7ef21eda63867b72"
+  },
+  "limits": [
+    "One filing-assertion day only; ownership event date does not establish identity validity start. No inferred continuous/reused-CUSIP history",
+    "No canonical alias-store publication, manager/vehicle semantics, K2C positive, runtime, DB, account or send effects",
+    "Known-at is max of authentic local acquisition/read clocks, never filing event or generation time"
+  ],
+  "scope": "One retained public filing identity observation, local source qualification only; canonical publication requires root contract adjudication."
+}
