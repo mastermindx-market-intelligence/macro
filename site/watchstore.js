@@ -1705,6 +1705,126 @@
   }
   function portfolioReadState() { return pfReadState; }
 
+
+  /* Explicit read-only consumers do not opt into sync initialization. In particular,
+     mounting Ontology must not create a list, fold a local book, or retry an outbox.
+     This operation uses the SAME shared auth client and portfolio_positions owner;
+     it has no cache and never substitutes anonymous local rows. The caller clears
+     its own private rendering on auth/page lifecycle changes. Abort is best effort,
+     not proof that an already-issued network read stopped. */
+  function portfolioReadOnly(options) {
+    options = options || {};
+    var active = true;
+    var ownerId = null;
+    var deadline = performance.now() + PF_CLOUD_DEADLINE_MS;
+    var controller = new AbortController();
+    var timer, rejectStopped;
+    var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
+    var external = options.signal;
+    var listeners = [];
+    function refusal(reason) { var e = new Error('PRIVATE_PORTFOLIO_UNAVAILABLE'); e.reason = reason; return e; }
+    function stop(reason) {
+      if (!active) return;
+      active = false;
+      controller.abort();
+      rejectStopped(refusal(reason));
+    }
+    function check() {
+      if (!active) throw refusal('cancelled');
+      if (performance.now() >= deadline) throw refusal('read-timeout');
+    }
+    function canonical() {
+      check();
+      var auth = window.MDXAuth;
+      var u = auth && typeof auth.user === 'function' && auth.user();
+      if (!u || typeof u.id !== 'string' || !u.id) throw refusal('signed-out');
+      if (ownerId !== null && u.id !== ownerId) throw refusal('identity-changed');
+      return u.id;
+    }
+    function listen(target, type, fn) {
+      target.addEventListener(type, fn);
+      listeners.push(function () { target.removeEventListener(type, fn); });
+    }
+    function result(state, rows, warning) {
+      return { schema: 'portfolio_read.v1', authority: 'cloud', state: state,
+        rows: rows, owner_id: state === 'ready' ? ownerId : null,
+        last_good_at: state === 'ready' ? nowISO() : null, warning: warning };
+    }
+    async function owner(client, token) {
+      canonical();
+      var answer = await client.auth.getSession();
+      canonical();
+      var session = answer && !answer.error && answer.data && answer.data.session;
+      if (!session || !session.user || session.user.id !== ownerId ||
+          typeof session.access_token !== 'string' || !session.access_token ||
+          (token && session.access_token !== token)) throw refusal('identity-changed');
+      return session.access_token;
+    }
+    async function read() {
+      ownerId = canonical();
+      var getClient = window.MDXAuth && window.MDXAuth.client;
+      if (typeof getClient !== 'function') throw refusal('client-unavailable');
+      var client = await getClient();
+      canonical();
+      if (!client || !client.auth || typeof client.auth.getSession !== 'function')
+        throw refusal('client-unavailable');
+      var token = await owner(client);
+      check();
+      // Request one overflow row and the exact owner count. A server cap or a
+      // partial response must never turn an incomplete book into a false zero.
+      var query = client.from('portfolio_positions')
+        .select('id,user_id,ticker,shares,entry_price,entry_date,status,created_at', { count: 'exact' })
+        .eq('user_id', ownerId).order('created_at').limit(501);
+      if (typeof query.abortSignal === 'function') query = query.abortSignal(controller.signal);
+      var response = await query;
+      canonical();
+      if (!response || response.error || !Array.isArray(response.data)) throw refusal('cloud-unavailable');
+      if (!Number.isSafeInteger(response.count) || response.count < 0 || response.count > 500 ||
+          response.count !== response.data.length) throw refusal('incomplete-book');
+      var ids = new Set();
+      var rows = response.data.map(function (row) {
+        if (!row || row.user_id !== ownerId || typeof row.id !== 'string' || !row.id ||
+            row.id.length > 128 || ids.has(row.id) || typeof row.ticker !== 'string' ||
+            !row.ticker || row.ticker.length > 64 || !['open', 'closed'].includes(row.status))
+          throw refusal('invalid-book');
+        ids.add(row.id);
+        ['shares', 'entry_price'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'number' || !Number.isFinite(row[key])))
+            throw refusal('invalid-book');
+        });
+        ['entry_date', 'created_at'].forEach(function (key) {
+          if (row[key] !== null && (typeof row[key] !== 'string' || row[key].length > 64))
+            throw refusal('invalid-book');
+        });
+        // Copy only the selected position fields. Private notes are not needed
+        // for exposure, and are neither queried nor forwarded by this method.
+        return { id: row.id, ticker: row.ticker, shares: row.shares,
+          entry_price: row.entry_price, entry_date: row.entry_date,
+          status: row.status, created_at: row.created_at };
+      });
+      await owner(client, token);
+      check();
+      return result('ready', rows, null);
+    }
+    listen(window, 'mdx-auth', function () { stop('identity-changed'); });
+    listen(window, 'pagehide', function () { stop('cancelled'); });
+    if (external) {
+      if (external.aborted) stop('cancelled');
+      else listen(external, 'abort', function () { stop('cancelled'); });
+    }
+    timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+    return Promise.race([read(), stopped]).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-book', 'invalid-book'];
+      return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
+    }).finally(function () {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+      listeners.forEach(function (remove) { remove(); });
+    });
+  }
+
   var PF_IMPORT_SELECT = 'id, user_id, ticker, shares, entry_price, entry_date, notes, status';
 
   function pfCloudRows(rows, uid) {
@@ -2074,6 +2194,7 @@
     },
     portfolio: {
       list: portfolioList,
+      readOnly: portfolioReadOnly,
       upsert: portfolioUpsert,
       importBatch: portfolioImportBatch,
       close: portfolioClose,
