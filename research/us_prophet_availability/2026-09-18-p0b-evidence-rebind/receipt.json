@@ -1,0 +1,143 @@
+{
+  "changed_files": {
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "after_sha256": "c1973d74dac1a53db2c336df4a1eaf4007fd51c940ae6bae703510e36725697e",
+      "before_sha256": "9f817b71e113b239fd589acc4555ef73bc2865ff68936f79f0dd5095518a0e70"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "after_sha256": "cfd39334ab6370f8dd55b421244f65cd8b5515ba962a683c5a81615895363403",
+      "before_sha256": "759f9d51e3e412fbaa3c2519c49c6ac2baf4ef9aaa67874203ec51ecaac145f7"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "after_sha256": "983c611348f21968f53a84ac70cdea8a99ed36731bbccd90028671060968f160",
+      "before_sha256": "96b2cc78fc1940a3ebb1dee7eee93bf7cb5e8f50d5c8be1cb688de27974d3e52"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": {
+      "after_sha256": "c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+      "before_sha256": "8069aaf8a31509f91d8cf1cfd15c9568f69e460567e040ea917380a13f4dff5a"
+    }
+  },
+  "effects": {
+    "collectors": false,
+    "production_writes": 0,
+    "provider_calls": 0,
+    "publication": false
+  },
+  "historical_evidence_preserved": [
+    "mockups/evidence/prophet-p0b-zero-fouc/ux-smells.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json:historical_baseline",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json:target"
+  ],
+  "observed_at": "2026-09-18T06:16:08.573315+00:00",
+  "output_bytes_unchanged": {
+    "ca": {
+      "after_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+      "before_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+      "output": "canada_stocks.html",
+      "unchanged": true
+    },
+    "hk": {
+      "after_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+      "before_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+      "output": "hk_stocks.html",
+      "unchanged": true
+    }
+  },
+  "production": "none",
+  "proof_class": "current_integrated_source_receipt_rebind",
+  "schema": "mastermind.prophet_p0b_evidence_rebind.v1",
+  "source_base": "7233b2cd182976c8d1707cc2cba13725c358bf37",
+  "source_input": {
+    "current_sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2",
+    "old_bound_sha256": "528b85cd04f9747a66628e48bdc233344cad765b63fafd2c1d82c5fc017f600a",
+    "path": "engine/i18n.py"
+  },
+  "verification": {
+    "closed_leaf_changes": 7,
+    "green": [
+      {
+        "command": "python -m pytest -q tests/test_stock_dashboard_first_frame.py",
+        "result": "114 passed in 51.32s"
+      },
+      {
+        "command": "python scripts/agentos.py validate",
+        "result": "0 errors; inherited warnings disclosed"
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass"
+      },
+      {
+        "command": "python scripts/check_contract_delta.py --base 7233b2cd182976c8d1707cc2cba13725c358bf37",
+        "result": "0 introduced, 0 inherited in 237.59s"
+      }
+    ],
+    "red": [
+      {
+        "command": "python -m pytest -q tests/test_stock_dashboard_first_frame.py::test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic",
+        "result": "1 failed: committed rendered receipt did not equal deterministic current-source output"
+      },
+      {
+        "phase": "after rendered receipt leaf update",
+        "result": "3 failed: both browser receipts and repair-extension fixture binding retained predecessor receipt hash"
+      },
+      {
+        "phase": "after direct fixture binding closure",
+        "result": "1 failed: repair-extension browser receipt hashes retained predecessor browser-receipt bytes"
+      }
+    ]
+  },
+  "followup_current_main_asset_rebind": {
+    "observed_main": "f13975296a4eacd9a7f83c45ac18b0c6fb0571ff",
+    "invalidator_commit": "715acf5f3ce568c30b2533d44cedd477b653441a",
+    "rendered_fixture_sha256": "c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+    "rendered_output_bytes_unchanged": true,
+    "browser": {
+      "engine": "chromium",
+      "version": "153.0.8010.12",
+      "hk": {
+        "pass": true,
+        "states": 7,
+        "expansion_reachability": true,
+        "fragment_navigation": true,
+        "desktop": true,
+        "owner_projection_matrix": true
+      },
+      "ca": {
+        "pass": true,
+        "states": 7,
+        "expansion_reachability": true,
+        "fragment_navigation": true,
+        "desktop": true,
+        "owner_projection_matrix": true
+      }
+    },
+    "loaded_assets": {
+      "site/account.js": {
+        "before_sha256": "521f0e4bd309a1b19d7dcee243667839d21a2903b20cc69ed14b72784bd276bd",
+        "after_sha256": "003672b7c9e0d16933a04560e30f2a8f8a59b36c2b7d82b46047c2e0d257c46b"
+      },
+      "site/theme.css": {
+        "before_sha256": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
+        "after_sha256": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0"
+      }
+    },
+    "historical_evidence_changed": false,
+    "product_runtime_changed": false,
+    "observed_at": "2026-09-19T03:04:23.322890+00:00",
+    "synthetic_integration": {
+      "tree": "48a6af18b580dbd1d714d621a6f9e405acced8d0",
+      "commit": "56ebe7729e03d2054a0c84c4bf2c2dd9a361c1c3",
+      "parents": [
+        "f13975296a4eacd9a7f83c45ac18b0c6fb0571ff",
+        "db088894ba2b77a028981630f9b1165f23fa79ce"
+      ]
+    },
+    "verification": {
+      "deterministic_fixture": "generated receipt byte-identical; sha256 c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+      "browser_hk": "PASS; exact Chromium 153.0.8010.12; 7 states + expansion + fragment + desktop + owner projection all pass",
+      "browser_ca": "PASS; exact Chromium 153.0.8010.12; 7 states + expansion + fragment + desktop + owner projection all pass",
+      "owner_suite": "114 passed in 55.29s on current-main synthetic integration after narrow receipt repair"
+    }
+  }
+}

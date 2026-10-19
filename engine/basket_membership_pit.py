@@ -85,6 +85,8 @@ import hashlib
 import json
 import logging
 import math
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -128,6 +130,7 @@ CADENCE_FILE = "_cadence.json"
 COLUMNS: tuple[str, ...] = (
     "snapshot_date", "suite", "basket_id", "ticker",
     "added", "removed", "name_zh", "members_sha", "source_shape",
+    "record_kind", "collection_id", "collection_receipt",
 )
 
 #: Which document shape a row was read from — the honest bound on how PIT it is.
@@ -333,19 +336,259 @@ def _read_json(path: Path) -> object | None:
         return None
 
 
-def read_history(suite: str) -> pd.DataFrame:
-    """The PIT history frame for ``suite`` (empty frame when absent/unreadable)."""
+class HistoryIntegrityError(ValueError):
+    """Existing PIT history is unsafe to advance."""
+
+
+class HistoryWriteError(ValueError):
+    """A staged PIT append failed; the prior destination is preserved."""
+
+
+def _validate_history(df: pd.DataFrame, suite: str) -> None:
+    # The owner's legacy schema-union rule remains valid for optional metadata.
+    # A missing membership key or suite cannot be repaired by inventing identity.
+    missing = set((*KEY, "suite")) - set(df.columns)
+    if missing:
+        raise HistoryIntegrityError(f"PIT history missing required columns: {sorted(missing)}")
+    markers = _collection_records(df)
+    members = _member_records(df)
+    for field in KEY:
+        checked = members[field] if field == "ticker" else df[field]
+        if not checked.map(lambda value: isinstance(value, str) and bool(value.strip())).all():
+            raise HistoryIntegrityError(f"PIT history invalid key: {field}")
+    if not markers.empty and not markers["ticker"].isna().all():
+        raise HistoryIntegrityError("collection record cannot carry a ticker")
+    if "record_kind" in df:
+        kinds = df["record_kind"].dropna()
+        if not kinds.isin(["member.v2", "collection.v2"]).all():
+            raise HistoryIntegrityError("unknown PIT record kind")
+    _validate_collection_groups(df, suite)
+    if "record_kind" in members:
+        for row in members[members["record_kind"].eq("member.v2")].to_dict("records"):
+            linked = _text(row.get("collection_id"))
+            if linked is not None:
+                matches = markers[(markers["snapshot_date"] == row["snapshot_date"])
+                                  & (markers["basket_id"] == row["basket_id"])]
+                if matches.empty or not matches["collection_id"].eq(linked).all():
+                    raise HistoryIntegrityError("orphan member collection reference")
+            for field in ("added", "removed"):
+                value = row.get(field)
+                if _text(value) is None:
+                    continue
+                if not isinstance(value, str) or len(value) != 10:
+                    raise HistoryIntegrityError("invalid member.v2 source window")
+                try:
+                    datetime.strptime(value, "%Y-%m-%d")
+                except ValueError as exc:
+                    raise HistoryIntegrityError("invalid member.v2 source date") from exc
+    if not df["suite"].eq(suite).all():
+        raise HistoryIntegrityError(f"PIT history contains rows from another suite: {suite}")
+    if df.duplicated(subset=list(KEY)).any():
+        raise HistoryIntegrityError("PIT history duplicate snapshot/member key")
+
+
+
+def collection_generation_sha(doc: object) -> str:
+    """Exact canonical input-generation scope, separate from member-set digest."""
+    payload = json.dumps(doc, sort_keys=True, ensure_ascii=False,
+                         separators=(",", ":"), allow_nan=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def collection_id(receipt: dict) -> str:
+    """Identity binds scope, source/generation, clocks, completeness and all members."""
+    payload = {key: value for key, value in receipt.items() if key != "collection_id"}
+    return "collection:" + collection_generation_sha(payload)
+
+
+def _collection_clock(value: object) -> datetime:
+    if not isinstance(value, str) or not value.endswith("Z") or "T" not in value:
+        raise HistoryIntegrityError("collection clock must be a precise UTC instant")
+    try:
+        return datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as exc:
+        raise HistoryIntegrityError("invalid collection clock") from exc
+
+
+def validate_collection(receipt: object, *, suite: str, basket_id: str,
+                        snapshot_date: str, members: list[_Member],
+                        doc: object | None = None, now: datetime | None = None) -> dict:
+    """Owner admission, not a collector-completeness inference from present rows."""
+    import jsonschema
+
+    path = Path(__file__).resolve().parent.parent / (
+        "contracts/theme_graph/membership_collection.v2.schema.json")
+    try:
+        jsonschema.Draft202012Validator(json.loads(path.read_text())).validate(receipt)
+    except (jsonschema.ValidationError, TypeError) as exc:
+        raise HistoryIntegrityError("invalid collection receipt schema") from exc
+    if receipt["suite"] != suite or receipt["basket_id"] != basket_id:
+        raise HistoryIntegrityError("collection scope mismatch")
+    if receipt["source_ref"] != f"data/{suite}/membership.json":
+        raise HistoryIntegrityError("collection source mismatch")
+    if receipt["generation_id"] != receipt["generation_sha256"][:16]:
+        raise HistoryIntegrityError("collection generation mismatch")
+    if receipt["collection_id"] != collection_id(receipt):
+        raise HistoryIntegrityError("collection identity mismatch")
+    observed = _collection_clock(receipt["observed_at"])
+    known = _collection_clock(receipt["known_at"])
+    if observed > known or known.date().isoformat() != snapshot_date:
+        raise HistoryIntegrityError("collection chronology/snapshot mismatch")
+    if now is not None and known > now:
+        raise HistoryIntegrityError("future collection clock")
+    scoped = sorted(set(m for m in members if m[0] == basket_id))
+    if receipt["members_sha"] != _sha_of(scoped) or receipt["member_count"] != len(scoped):
+        raise HistoryIntegrityError("collection full member set mismatch")
+    if receipt["collection_state"] == "RETIRED" and scoped:
+        raise HistoryIntegrityError("retired collection must be empty")
+    if doc is not None and receipt["generation_sha256"] != collection_generation_sha(doc):
+        raise HistoryIntegrityError("collection input generation mismatch")
+    return receipt
+
+
+def _collection_records(df: pd.DataFrame) -> pd.DataFrame:
+    if "record_kind" not in df:
+        return df.iloc[:0]
+    return df[df["record_kind"].eq("collection.v2")]
+
+
+def _member_records(df: pd.DataFrame) -> pd.DataFrame:
+    return df.drop(index=_collection_records(df).index)
+
+
+
+def _strict_collection_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise HistoryIntegrityError("duplicate collection JSON key")
+        result[key] = value
+    return result
+
+
+def _validate_new_member_doc(doc: dict) -> None:
+    for basket, source in _baskets(doc).items():
+        if not isinstance(basket, str) or not basket.strip() or not isinstance(source, dict):
+            raise HistoryIntegrityError("invalid member basket identity")
+        members = source.get("members")
+        if not isinstance(members, list):
+            raise HistoryIntegrityError("member collection unavailable/malformed")
+        seen = set()
+        for member in members:
+            if not isinstance(member, dict):
+                raise HistoryIntegrityError("member must be an object")
+            ticker = member.get("ticker") or member.get("code")
+            if not isinstance(ticker, str) or not ticker.strip() or ticker in seen:
+                raise HistoryIntegrityError("invalid/duplicate member identity")
+            seen.add(ticker)
+            for field in ("added", "removed"):
+                value = member.get(field)
+                if value is None or value == "":
+                    continue
+                if not isinstance(value, str) or len(value) != 10:
+                    raise HistoryIntegrityError("member window must be date or null")
+                try:
+                    datetime.strptime(value, "%Y-%m-%d")
+                except ValueError as exc:
+                    raise HistoryIntegrityError("invalid member source window") from exc
+
+
+def _validate_collection_groups(df: pd.DataFrame, suite: str) -> None:
+    for _index, marker in _collection_records(df).iterrows():
+        try:
+            receipt = json.loads(marker["collection_receipt"], object_pairs_hook=_strict_collection_object)
+        except (TypeError, ValueError) as exc:
+            raise HistoryIntegrityError("malformed collection record") from exc
+        peers = df[(df["snapshot_date"] == marker["snapshot_date"])
+                   & (df["basket_id"] == marker["basket_id"])]
+        members = _member_records(peers)
+        slots = [(str(r["basket_id"]), str(r["ticker"]),
+                  _text(r.get("added")) or "", _text(r.get("removed")) or "",
+                  _text(r.get("name_zh")) or "")
+                 for r in members.to_dict("records")]
+        validate_collection(receipt, suite=suite, basket_id=marker["basket_id"],
+                            snapshot_date=marker["snapshot_date"], members=slots)
+        if (marker.get("collection_id") != receipt["collection_id"]
+                or marker.get("members_sha") != receipt["members_sha"]
+                or marker.get("source_shape") != SHAPE_MEMBERSHIP):
+            raise HistoryIntegrityError("collection marker identity/shape/hash mismatch")
+        if not members.empty and not members["collection_id"].eq(receipt["collection_id"]).all():
+            raise HistoryIntegrityError("collection/member linkage mismatch")
+
+
+def _qualified_rows(doc: dict, date: str, suite: str, receipts: list[dict]) -> list[dict]:
+    _validate_new_member_doc(doc)
+    members = _members_from_membership(doc)
+    rows = _rows_from_doc(doc, date, suite)
+    for row in rows:
+        row.update(record_kind="member.v2", collection_id=None, collection_receipt=None)
+    seen = set()
+    for receipt in receipts:
+        if not isinstance(receipt, dict) or not isinstance(receipt.get("basket_id"), str):
+            raise HistoryIntegrityError("invalid collection subject")
+        basket = receipt["basket_id"]
+        if basket in seen:
+            raise HistoryIntegrityError("duplicate collection scope")
+        seen.add(basket)
+        # Empty/retired baskets still need an explicit source slot; a missing key
+        # cannot masquerade as an empty successful fetch.
+        source = _baskets(doc).get(basket)
+        if not isinstance(source, dict) or not isinstance(source.get("members"), list):
+            raise HistoryIntegrityError("collection source slot unavailable")
+        if any(not isinstance(m, dict) or not (_text(m.get("ticker")) or _text(m.get("code")))
+               for m in source["members"]):
+            raise HistoryIntegrityError("malformed collection member")
+        validate_collection(receipt, suite=suite, basket_id=basket,
+                            snapshot_date=date, members=members, doc=doc,
+                            now=datetime.now(timezone.utc))
+        for row in rows:
+            if row["basket_id"] == basket:
+                row["collection_id"] = receipt["collection_id"]
+        marker = {col: None for col in COLUMNS}
+        marker.update(snapshot_date=date, suite=suite, basket_id=basket,
+                      source_shape=SHAPE_MEMBERSHIP, record_kind="collection.v2",
+                      members_sha=receipt["members_sha"], collection_id=receipt["collection_id"],
+                      collection_receipt=json.dumps(receipt, sort_keys=True, allow_nan=False))
+        rows.append(marker)
+    return rows
+
+
+def _failed_result(result: dict, exc: ValueError) -> dict:
+    result.update(status="failed", error=type(exc).__name__, reason=str(exc), rows_added=0)
+    if "written" in result:
+        result["written"] = False
+    if "dates" in result:
+        result["dates"] = []
+    return result
+
+
+def read_history(suite: str, *, strict: bool = False,
+                 include_collection_records: bool = False) -> pd.DataFrame:
+    """The PIT history frame for ``suite``.
+
+    An absent owner store is an honest empty-history boundary.  An existing but
+    unreadable store is different: callers on a publication path may request
+    ``strict=True`` so corruption fails closed instead of masquerading as absence.
+    """
     p = history_path(suite)
     try:
         if not p.exists():
             return pd.DataFrame(columns=list(COLUMNS))
         df = pd.read_parquet(p)
+        if strict:
+            _validate_history(df, suite)
         for col in COLUMNS:                       # schema union with older writes
             if col not in df.columns:
                 df[col] = None
-        return df
+        if not _collection_records(df).empty:
+            _validate_history(df, suite)
+        return df if include_collection_records else _member_records(df)
     except Exception as exc:  # noqa: BLE001
         log.warning("basket_membership_pit: history read failed for %s (%s)", suite, exc)
+        if strict:
+            if isinstance(exc, HistoryIntegrityError):
+                raise
+            raise HistoryIntegrityError(f"unreadable PIT history for {suite}") from exc
         return pd.DataFrame(columns=list(COLUMNS))
 
 
@@ -456,34 +699,44 @@ def _lane_ok(lane: str | None, what: str, *, suite: str) -> bool:
 
 
 def _append_rows(suite: str, rows: list[dict]) -> int:
-    """Append rows keep-FIRST on KEY. Returns rows ADDED (0 on no-op/failure)."""
+    """Append keep-FIRST; zero means a real no-op, failures are typed exceptions."""
+    prior = read_history(suite, strict=True, include_collection_records=True)
     if not rows:
         return 0
-    try:
-        new = pd.DataFrame(rows, columns=list(COLUMNS))
-        p = history_path(suite)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        if p.exists():
-            prior = read_history(suite)
-            before = len(prior)
-            cols = list(dict.fromkeys([*COLUMNS, *prior.columns]))
-            combined = pd.concat(
-                [prior.reindex(columns=cols), new.reindex(columns=cols)],
-                ignore_index=True,
-            ).drop_duplicates(subset=list(KEY), keep="first")
-        else:
-            before = 0
-            combined = new
-        combined = combined.sort_values(list(KEY), kind="stable").reset_index(drop=True)
-        combined.to_parquet(p, index=False)
-        return int(len(combined) - before)
-    except Exception as exc:  # noqa: BLE001 — a PIT store never breaks a build
-        log.warning("basket_membership_pit: append failed for %s (%s)", suite, exc)
+    new = pd.DataFrame(rows, columns=list(COLUMNS))
+    # Incoming repetitions retain the established keep-FIRST append convention;
+    # duplicate keys already stored are refused because their custody is ambiguous.
+    _validate_history(new.drop_duplicates(subset=list(KEY), keep="first"), suite)
+    before = len(prior)
+    cols = list(dict.fromkeys([*COLUMNS, *prior.columns]))
+    combined = pd.concat(
+        [prior.reindex(columns=cols), new.reindex(columns=cols)], ignore_index=True,
+    ).drop_duplicates(subset=list(KEY), keep="first")
+    combined = combined.sort_values(list(KEY), kind="stable").reset_index(drop=True)
+    _validate_history(combined, suite)
+    added = int(len(combined) - before)
+    if not added:
         return 0
+    p = history_path(suite)
+    tmp = None
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(dir=p.parent, prefix=p.name + ".", suffix=".tmp",
+                                         delete=False) as staged:
+            tmp = Path(staged.name)
+        combined.to_parquet(tmp, index=False)
+        os.replace(tmp, p)
+    except Exception as exc:  # noqa: BLE001 — preserve the previous destination
+        raise HistoryWriteError(f"PIT append failed for {suite}: {exc}") from exc
+    finally:
+        if tmp is not None:
+            tmp.unlink(missing_ok=True)
+    return added
 
 
 def append_snapshot(suite: str, *, asof: str | None = None,
-                    lane: str | None = None) -> dict:
+                    lane: str | None = None,
+                    collection_receipts: list[dict] | None = None) -> dict:
     """Stamp today's membership of ``suite`` into the PIT history.
 
     Content-deduped: a snapshot_date is stamped only when the membership set
@@ -496,6 +749,10 @@ def append_snapshot(suite: str, *, asof: str | None = None,
     if not _lane_ok(lane, f"{suite} snapshot", suite=suite):
         result["reason"] = f"lane={lane}"
         return result
+    try:
+        prior = read_history(suite, strict=True, include_collection_records=True)
+    except HistoryIntegrityError as exc:
+        return _failed_result(result, exc)
     doc = _read_json(membership_path(suite))
     if not _baskets(doc):
         result["reason"] = "membership.json missing or empty"
@@ -504,18 +761,29 @@ def append_snapshot(suite: str, *, asof: str | None = None,
 
     date = _text(asof) or pd.Timestamp.utcnow().strftime("%Y-%m-%d")
     result["snapshot_date"] = date
-    prior = read_history(suite)
     if not prior.empty and (prior["snapshot_date"].astype(str) == date).any():
         result["reason"] = "date already stamped"
         return result
+    try:
+        if collection_receipts is not None and not isinstance(collection_receipts, list):
+            raise HistoryIntegrityError("collection receipts must be a list or null")
+        rows = _qualified_rows(doc, date, suite, collection_receipts or [])
+    except (HistoryIntegrityError, TypeError, ValueError) as exc:
+        return _failed_result(result, HistoryIntegrityError(str(exc)))
+    if not rows:
+        result["reason"] = "empty membership has no qualified collection receipt"
+        return result
     last_date, last_sha = _latest_sha(prior)
     sha = members_sha(doc)
-    if last_sha is not None and last_sha == sha:
+    if collection_receipts is None and last_sha is not None and last_sha == sha:
         result["reason"] = f"membership unchanged since {last_date}"
         log.info("basket_membership_pit: %s — %s (dedup skip)", suite, result["reason"])
         return result
 
-    added = _append_rows(suite, _rows_from_doc(doc, date, suite))
+    try:
+        added = _append_rows(suite, rows)
+    except (HistoryIntegrityError, HistoryWriteError) as exc:
+        return _failed_result(result, exc)
     result["written"] = added > 0
     result["rows_added"] = added
     log.info("basket_membership_pit: %s stamped %s (+%d rows)", suite, date, added)
@@ -537,11 +805,15 @@ def backfill_from_json_snapshots(suite: str, *, lane: str | None = None) -> dict
     if not _lane_ok(lane, f"{suite} backfill", suite=suite):
         result["reason"] = f"lane={lane}"
         return result
+    try:
+        prior = read_history(suite, strict=True, include_collection_records=True)
+    except HistoryIntegrityError as exc:
+        return _failed_result(result, exc)
     files = dated_snapshots(suite)
     if not files:
         result["reason"] = "no dated JSON snapshots"
         return result
-    have = set(read_history(suite)["snapshot_date"].astype(str))
+    have = set(prior["snapshot_date"].astype(str))
     concepts = _concept_index(suite)
     rows: list[dict] = []
     for f in files:
@@ -569,7 +841,10 @@ def backfill_from_json_snapshots(suite: str, *, lane: str | None = None) -> dict
     if not rows:
         result["reason"] = "already covered" if not result["unparsed"] else "no readable snapshot"
         return result
-    result["rows_added"] = _append_rows(suite, rows)
+    try:
+        result["rows_added"] = _append_rows(suite, rows)
+    except (HistoryIntegrityError, HistoryWriteError) as exc:
+        return _failed_result(result, exc)
     log.info("basket_membership_pit: %s backfilled %s (+%d rows%s)",
              suite, ",".join(result["dates"]), result["rows_added"],
              f", {len(result['unparsed'])} unparsed" if result["unparsed"] else "")
@@ -594,8 +869,13 @@ def append_all(*, asof: str | None = None, lane: str | None = None,
     for suite in suites:
         try:
             backfill = backfill_from_json_snapshots(suite, lane=lane)
+            if backfill.get("error"):
+                out[suite] = {"error": backfill["error"], "backfill": backfill}
+                continue
             snap = append_snapshot(suite, asof=asof, lane=lane)
             out[suite] = {"backfill": backfill, "snapshot": snap}
+            if snap.get("error"):
+                out[suite]["error"] = snap["error"]
         except Exception as exc:  # noqa: BLE001 — one suite never breaks the other
             log.warning("basket_membership_pit: %s failed (%s)", suite, exc)
             out[suite] = {"error": f"{type(exc).__name__}"}
@@ -618,6 +898,112 @@ def _active_at(row: pd.Series, date: str) -> bool:
     if added and added > date:
         return False
     return not (removed and removed <= date)
+
+
+
+def membership_intervals_from_history(history, *, suite: str = SUITE_THS,
+                                     include_receipt_refs: bool = False) -> list[dict]:
+    """Single PIT-owner interpretation shared by its public and graph readers.
+
+    Legacy rows keep their per-basket observed-snapshot meaning. Versioned positive
+    rows prove presence only; only a qualified collection marker can prove absence.
+    removed/added retain source windows, with opening never earlier than observation.
+    """
+    frame = history.copy() if isinstance(history, pd.DataFrame) else pd.DataFrame(list(history))
+    if "suite" not in frame:
+        frame["suite"] = suite
+    if frame.empty:
+        return []
+    for col in COLUMNS:
+        if col not in frame:
+            frame[col] = None
+    _validate_history(frame, suite)
+    result = []
+    for basket, group in frame.groupby("basket_id", sort=True):
+        active = {}
+        for day, peers in group.groupby("snapshot_date", sort=True):
+            markers = _collection_records(peers)
+            members = _member_records(peers)
+            legacy = members["record_kind"].isna().all() and not members.empty
+            complete = not markers.empty or legacy
+            closure_id = None if markers.empty else markers.iloc[0]["collection_id"]
+            current = {r["ticker"]: r for r in members.to_dict("records")}
+            for ticker, interval in list(active.items()):
+                # A previously known prospective end remains historical truth.
+                # Once elapsed, a later positive opens its own observed interval;
+                # it never cancels the old end or invents presence across the gap.
+                if interval["valid_to"] is not None and interval["valid_to"] <= day:
+                    active.pop(ticker)
+                    continue
+                observed = current.get(ticker)
+                removed = _text(observed.get("removed")) if observed else None
+                if removed and removed <= day:
+                    end = max(interval["valid_from"], removed)
+                elif ticker not in current and complete:
+                    end = day
+                else:
+                    continue
+                interval.update(valid_to=end, closed_by=day)
+                if include_receipt_refs:
+                    interval["closing_collection_id"] = closure_id
+                    interval["closure_basis"] = "removed" if removed else (
+                        "complete_collection" if closure_id else "legacy_snapshot")
+                active.pop(ticker)
+            for ticker, row in current.items():
+                if ticker in active:
+                    continue
+                removed = _text(row.get("removed"))
+                added = _text(row.get("added"))
+                start = max(day, added) if added else day
+                if removed and removed <= start:
+                    continue
+                interval = dict(basket_id=basket, ticker=ticker, valid_from=start,
+                                valid_to=removed, source_shape=row["source_shape"],
+                                closed_by=day if removed else None)
+                if include_receipt_refs:
+                    interval.update(opening_collection_id=_text(row.get("collection_id")),
+                                    closing_collection_id=_text(row.get("collection_id")) if removed else None,
+                                    closure_basis="removed" if removed else None)
+                result.append(interval)
+                # A future removed date is a known source window. It stays in
+                # active state until a later receipt passes or changes that window.
+                active[ticker] = interval
+    return sorted(result, key=lambda iv: (iv["valid_from"], iv["basket_id"], iv["ticker"]))
+
+
+def _members_asof_versioned(out: dict, covered: pd.DataFrame, date: str) -> dict:
+    basket = out["basket_id"]
+    out.update(collection_state="UNAVAILABLE", collection_receipt=None,
+               last_qualified_collection=None, collection_observation_scope="UNAVAILABLE")
+    rows = covered[covered["basket_id"] == basket]
+    if rows.empty:
+        out.update(basis=_BASIS_UNKNOWN, note="no basket-scoped observation")
+        return out
+    intervals = membership_intervals_from_history(covered, suite=out["suite"])
+    out.update(pit=True, basis=_BASIS_PIT,
+               snapshot_date=str(rows["snapshot_date"].max()),
+               source_shape=SHAPE_MEMBERSHIP)
+    out["members"] = sorted({iv["ticker"] for iv in intervals
+                              if iv["basket_id"] == basket
+                              and iv["valid_from"] <= date
+                              and (iv["valid_to"] is None or iv["valid_to"] > date)})
+    markers = _collection_records(rows)
+    latest = str(rows["snapshot_date"].max())
+    current_markers = markers[markers["snapshot_date"].astype(str).eq(latest)]
+    current_receipt = (json.loads(current_markers.iloc[0]["collection_receipt"])
+                       if not current_markers.empty else None)
+    previous_receipt = (json.loads(markers.sort_values("snapshot_date").iloc[-1]["collection_receipt"])
+                        if not markers.empty else None)
+    out["collection_state"] = (current_receipt["collection_state"]
+                               if current_receipt is not None else "UNAVAILABLE")
+    out["collection_receipt"] = current_receipt
+    out["last_qualified_collection"] = previous_receipt
+    out["collection_observation_scope"] = (
+        "LATEST_SOURCE_OBSERVATION" if latest == str(covered["snapshot_date"].max())
+        else "PRIOR_BASKET_OBSERVATION")
+    out["note"] = ("qualified collection for the exact disclosed basket observation; daily effective query"
+                   if current_receipt is not None else "carried positive observations; latest completeness unavailable")
+    return out
 
 
 def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
@@ -648,8 +1034,12 @@ def members_asof(basket_id: str, date: str, *, suite: str = SUITE_THS) -> dict:
            "members": [], "pit": False, "basis": _BASIS_CURRENT,
            "snapshot_date": None, "source_shape": None, "note": ""}
     try:
-        df = read_history(suite)
+        df = read_history(suite, include_collection_records=True)
         covered = df[df["snapshot_date"].astype(str) <= date] if not df.empty else df
+        # Collection records are basket-scoped. A newer collection of A says
+        # nothing about uncollected B; never use a global date as deletion proof.
+        if not covered.empty and covered["record_kind"].notna().any():
+            return _members_asof_versioned(out, covered, date)
         if not covered.empty:
             snap = str(covered["snapshot_date"].astype(str).max())
             rows = covered[

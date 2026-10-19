@@ -188,6 +188,27 @@ def test_alerts_fire_on_enter_only(tmp_path, monkeypatch):
     assert len(fired3) == 1 and "NVDA" in fired3[0]["headline"]
 
 
+def test_convergence_detail_uses_channel_display_names_not_slugs():
+    bt = {"as_of": "2026-06-19", "tickers": {
+        "MSFT": {"convergence_score": 5, "trump_linked": True,
+                 "channels": ["affiliation", "app_demand", "github_momentum",
+                              "patent_cluster", "trump"]},
+    }}
+    evs = altdata_alerts.compute_events(bt, {})
+    assert len(evs) == 1
+    det, det_zh = evs[0]["detail"], evs[0]["detail_zh"]
+    for slug in ("app_demand", "github_momentum", "patent_cluster"):
+        assert slug not in det, f"raw slug {slug} leaked into EN detail"
+        assert slug not in det_zh, f"raw slug {slug} leaked into ZH detail"
+    assert "App-store demand" in det
+    assert "Developer adoption" in det
+    assert "Patent cluster" in det
+    assert "应用商店需求" in det_zh
+    assert "开发者采用" in det_zh
+    # context keeps the machine tokens for downstream scoring
+    assert "app_demand" in evs[0]["context"]["channels"]
+
+
 # --------------------------------------------------------------- falsifiable ledger
 def test_ledger_logs_scorable_and_scores(tmp_path, monkeypatch):
     import json

@@ -1,6 +1,8 @@
 """Security and receipt tests for the private Earnings Wire publication."""
 from __future__ import annotations
 
+from collections import Counter
+from dataclasses import replace
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -8,12 +10,14 @@ import threading
 
 import pytest
 
+from engine.earnings_narrative import private_publication as private_publication_module
 from engine.earnings_narrative.extract import build_evidence_pair
 from engine.earnings_narrative.generation import EvidencePair, write_generation
 from engine.earnings_narrative.context_packets import canonical_json_bytes
 from engine.earnings_narrative.private_publication import (
     IDEMPOTENT_READ_WORKERS,
     POINTER_KEY,
+    PUBLISH_WORKERS,
     EarningsPrivatePublicationError,
     load_private_context_packet,
     load_private_manifest,
@@ -85,6 +89,33 @@ class BlockingStrictStore(CountingLocalStore):
         finally:
             with self._read_lock:
                 self._in_flight -= 1
+        return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+
+class ReadCountingLocalStore(CountingLocalStore):
+    """Strict local store that counts immutable verification reads by key."""
+
+    def __init__(self, root: Path):
+        super().__init__(root)
+        self.read_calls: Counter[str] = Counter()
+        self._read_calls_lock = threading.Lock()
+
+    def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
+        with self._read_calls_lock:
+            self.read_calls[key] += 1
+        return super().get_bytes_strict_bounded(key, maximum_bytes)
+
+
+class FailingArtifactStore(CountingLocalStore):
+    """Strict local store that injects one immutable-artifact read failure."""
+
+    def __init__(self, root: Path, *, failing_key: str):
+        super().__init__(root)
+        self.failing_key = failing_key
+
+    def get_bytes_strict_bounded(self, key: str, maximum_bytes: int) -> bytes | None:
+        if key == self.failing_key:
+            raise RuntimeError("injected immutable artifact read failure")
         return super().get_bytes_strict_bounded(key, maximum_bytes)
 
 
@@ -344,6 +375,170 @@ def test_private_exact_remote_generation_replays_immutables_with_bounded_concurr
     assert result == [expected]
     assert 1 < store.max_in_flight <= IDEMPOTENT_READ_WORKERS
     assert store.put_calls == []
+
+
+def test_private_new_generation_publishes_immutables_concurrently_and_pointer_last(
+    tmp_path: Path,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    store = BlockingStrictStore(tmp_path / "private-r2")
+    store.block_artifacts({artifact.object_key for artifact in prepared.artifacts})
+
+    result: list[dict[str, object]] = []
+    failures: list[BaseException] = []
+
+    def _publish() -> None:
+        try:
+            result.append(publish_private_publication(store, prepared))
+        except BaseException as exc:  # noqa: BLE001 - re-raised after joining the worker
+            failures.append(exc)
+
+    worker = threading.Thread(target=_publish, daemon=True)
+    worker.start()
+    try:
+        assert store.parallel_reads.wait(timeout=2)
+        assert POINTER_KEY not in store.put_calls
+    finally:
+        store.release_reads.set()
+    worker.join(timeout=5)
+
+    assert not worker.is_alive()
+    assert failures == []
+    assert result[0]["generation_id"] == prepared.generation_id
+    assert 1 < store.max_in_flight <= PUBLISH_WORKERS
+    assert store.put_calls[-1] == POINTER_KEY
+    assert store.put_calls.count(POINTER_KEY) == 1
+
+
+def test_private_new_generation_caps_publish_workers(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    artifacts = list(prepared.artifacts)
+    payloads = dict(prepared.payloads)
+    template = prepared.artifacts[0]
+    for index in range(10):
+        body = canonical_json_bytes({"synthetic_artifact": index})
+        digest = sha256(body).hexdigest()
+        artifact = replace(
+            template,
+            identity=f"synthetic-{index}",
+            object_key=(
+                f"earnings_wire_private/v1/objects/sha256/{digest[:2]}/{digest}.json"
+            ),
+            sha256=digest,
+            byte_length=len(body),
+        )
+        artifacts.append(artifact)
+        payloads[artifact.object_key] = body
+    expanded = replace(
+        prepared,
+        artifacts=tuple(artifacts),
+        payloads=payloads,
+    )
+    requested_workers: list[int] = []
+    real_executor = private_publication_module.ThreadPoolExecutor
+
+    def _recording_executor(*args, **kwargs):
+        maximum = kwargs.get("max_workers", args[0] if args else None)
+        assert isinstance(maximum, int)
+        requested_workers.append(maximum)
+        return real_executor(*args, **kwargs)
+
+    monkeypatch.setattr(
+        private_publication_module,
+        "ThreadPoolExecutor",
+        _recording_executor,
+    )
+
+    pointer = publish_private_publication(
+        CountingLocalStore(tmp_path / "private-r2"),
+        expanded,
+    )
+
+    assert pointer["generation_id"] == prepared.generation_id
+    assert len({artifact.object_key for artifact in expanded.artifacts}) > 8
+    assert PUBLISH_WORKERS == 8
+    assert requested_workers == [8]
+
+
+def test_private_new_generation_deduplicates_content_addressed_artifacts(
+    tmp_path: Path,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    duplicate = prepared.artifacts[0]
+    duplicated = replace(prepared, artifacts=prepared.artifacts + (duplicate,))
+    store = ReadCountingLocalStore(tmp_path / "private-r2")
+
+    pointer = publish_private_publication(store, duplicated)
+
+    assert pointer["generation_id"] == prepared.generation_id
+    assert store.read_calls[duplicate.object_key] == 2
+    assert store.put_calls.count(duplicate.object_key) == 1
+    assert store.put_calls[-1] == POINTER_KEY
+
+
+def test_private_new_generation_rejects_duplicate_with_conflicting_size_bound(
+    tmp_path: Path,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    duplicate = replace(prepared.artifacts[0], maximum_bytes=1)
+    conflicting = replace(
+        prepared,
+        artifacts=prepared.artifacts + (duplicate,),
+    )
+    store = CountingLocalStore(tmp_path / "private-r2")
+
+    with pytest.raises(EarningsPrivatePublicationError, match="safe size bound"):
+        publish_private_publication(store, conflicting)
+
+    assert prepared.manifest_key not in store.put_calls
+    assert POINTER_KEY not in store.put_calls
+
+
+def test_private_idempotent_replay_rejects_duplicate_with_conflicting_size_bound(
+    tmp_path: Path,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    store = CountingLocalStore(tmp_path / "private-r2")
+    publish_private_publication(store, prepared)
+    original_pointer = store.get_bytes(POINTER_KEY)
+    store.put_calls.clear()
+    duplicate = replace(prepared.artifacts[0], maximum_bytes=1)
+    conflicting = replace(
+        prepared,
+        artifacts=prepared.artifacts + (duplicate,),
+    )
+
+    with pytest.raises(EarningsPrivatePublicationError, match="safe size bound"):
+        publish_private_publication(store, conflicting)
+
+    assert store.put_calls == []
+    assert store.get_bytes(POINTER_KEY) == original_pointer
+
+
+def test_private_publish_worker_failure_never_advances_manifest_or_pointer(
+    tmp_path: Path,
+) -> None:
+    _public_dir, private_dir, _slug = _staged_publication(tmp_path)
+    prepared = prepare_private_publication(private_dir)
+    store = FailingArtifactStore(
+        tmp_path / "private-r2",
+        failing_key=prepared.artifacts[0].object_key,
+    )
+
+    with pytest.raises(EarningsPrivatePublicationError, match="object read failed"):
+        publish_private_publication(store, prepared)
+
+    assert prepared.manifest_key not in store.put_calls
+    assert POINTER_KEY not in store.put_calls
+    assert store.get_bytes(POINTER_KEY) is None
 
 
 def test_private_missing_remote_artifact_falls_through_to_verified_repair(tmp_path: Path) -> None:

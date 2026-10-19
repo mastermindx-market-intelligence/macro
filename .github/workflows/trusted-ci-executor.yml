@@ -47,6 +47,7 @@ jobs:
       pr_number: ${{ steps.admit.outputs.pr_number }}
       mode: ${{ steps.admit.outputs.mode }}
       semantic_workflow: ${{ steps.admit.outputs.semantic_workflow }}
+      execution_route: ${{ steps.admit.outputs.execution_route }}
     steps:
       - id: admit
         name: admit direct dispatch or exact main-called same-repository PR
@@ -61,6 +62,7 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
           EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
           DISPATCH_PR_NUMBER: ${{ inputs.pr_number }}
+          REQUESTED_ROUTE: ${{ vars.CI_EXECUTION_ROUTE }}
         shell: bash
         run: |
           set -euo pipefail
@@ -95,6 +97,7 @@ jobs:
               pr_number="$DISPATCH_PR_NUMBER"
               mode=dispatch
               semantic_workflow=trusted-ci-executor
+              execution_route=pc
               ;;
             pull_request)
               test "$CALLED_WORKFLOW_REF" = "$called_workflow_ref" || {
@@ -131,6 +134,11 @@ jobs:
               pr_number="$EVENT_PR_NUMBER"
               mode=production
               semantic_workflow=ci
+              if [ "$REQUESTED_ROUTE" = pc ]; then
+                execution_route=pc
+              else
+                execution_route=hosted
+              fi
               ;;
             *)
               echo "::error title=trusted-executor-event::unsupported caller event"
@@ -148,6 +156,7 @@ jobs:
           printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
           printf 'mode=%s\n' "$mode" >> "$GITHUB_OUTPUT"
           printf 'semantic_workflow=%s\n' "$semantic_workflow" >> "$GITHUB_OUTPUT"
+          printf 'execution_route=%s\n' "$execution_route" >> "$GITHUB_OUTPUT"
 
   plan:
     name: trusted-executor-hosted-plan
@@ -162,6 +171,7 @@ jobs:
       head_sha: ${{ steps.ref.outputs.head_sha }}
       head_ref: ${{ steps.ref.outputs.head_ref }}
       control_sha: ${{ steps.control.outputs.sha }}
+      execution_route: ${{ needs.trust-gate.outputs.execution_route }}
     steps:
       - name: checkout main-owned executor control code
         uses: actions/checkout@v4
@@ -307,9 +317,89 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  legacy-hosted-pack:
+    # Compatibility bridge for same-repository PR branches created before the
+    # hosted-first cutover. Those candidate-authored ci.yml files still call this
+    # protected-main executor unconditionally. Repository-owned route state decides
+    # the execution plane here; the candidate supplies no route or identity input.
+    name: trusted-hosted-compat-pack-${{ matrix.pack }}
+    needs: plan
+    if: needs.plan.outputs.execution_route == 'hosted'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - name: download the frozen main-owned control bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: trusted-ci-control
+          path: ${{ runner.temp }}/trusted-ci-control
+      - name: checkout the immutable PR candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.tested_sha }}
+          persist-credentials: false
+          filter: blob:none
+          fetch-depth: 1
+      - name: prove the hosted compatibility runner is on the frozen candidate
+        run: test "$(git rev-parse HEAD)" = "${{ needs.plan.outputs.tested_sha }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install isolated pack runner
+        run: |
+          python -m venv "$RUNNER_TEMP/trusted-ci-pack-runner"
+          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/pip" install pyyaml
+      - uses: actions/download-artifact@v4
+        with:
+          name: trusted-ci-plan
+          path: ${{ runner.temp }}/trusted-ci-plan
+      - name: execute the frozen logical pack and retain its semantic result
+        env:
+          CI_CHANGED_FILES_FILE: ${{ runner.temp }}/trusted-ci-plan/changed-files.json
+          CI_BASE_REF: ${{ github.base_ref || 'main' }}
+          CI_HEAD_REF: ${{ needs.plan.outputs.head_ref }}
+          MASTERMIND_TRUSTED_CI_REPO_ROOT: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/ci-semantic-fragments"
+          set +e
+          "$RUNNER_TEMP/trusted-ci-pack-runner/bin/python" "$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py" \
+            --workflow .github/ci/legacy-jobs.yml \
+            --gate code \
+            --plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json" \
+            --changed-files-file "$CI_CHANGED_FILES_FILE" \
+            --expect-plan-sha "${{ needs.plan.outputs.plan_sha }}" \
+            --expect-tested-tree-sha "${{ needs.plan.outputs.tested_sha }}" \
+            --expect-subject-head-sha "${{ needs.plan.outputs.head_sha }}" \
+            --expect-base-sha "${{ needs.plan.outputs.base_sha }}" \
+            --pack-index ${{ matrix.pack }} \
+            --pack-count 12 \
+            --base-replay-budget-seconds 900 \
+            --emit-semantic-fragment "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json" \
+            --execute
+          pack_rc=$?
+          set -e
+          echo "semantic_pack_rc=$pack_rc" >> "$GITHUB_STEP_SUMMARY"
+          test -s "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json"
+      - name: publish the legacy caller semantic fragment
+        uses: actions/upload-artifact@v4
+        with:
+          name: trusted-ci-fragment-${{ matrix.pack }}
+          path: ${{ runner.temp }}/ci-semantic-fragments/trusted-fragment.json
+          if-no-files-found: error
+          retention-days: 14
+
   trusted-pack:
     name: trusted-executor-pack-${{ matrix.pack }}
     needs: plan
+    if: needs.plan.outputs.execution_route == 'pc'
     runs-on:
       group: macro-home-canary
       labels: ci-linux

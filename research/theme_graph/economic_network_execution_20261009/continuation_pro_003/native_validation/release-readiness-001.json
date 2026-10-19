@@ -1,0 +1,953 @@
+{
+  "anchor_names": [
+    "ci-gate",
+    "ci-pack-0",
+    "ci-pack-1",
+    "ci-pack-10",
+    "ci-pack-11",
+    "ci-pack-2",
+    "ci-pack-3",
+    "ci-pack-4",
+    "ci-pack-5",
+    "ci-pack-6",
+    "ci-pack-7",
+    "ci-pack-8",
+    "ci-pack-9",
+    "fence-pack"
+  ],
+  "anchor_verdict": "clean",
+  "api_base_sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa",
+  "at": "2026-10-09T13:22:44.764193+00:00",
+  "auto_merge": null,
+  "candidate": "42174563149254d2399e23e101baafd8b06f9b1e",
+  "canonical_get_calls": [
+    {
+      "method": "GET",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/commits/42174563149254d2399e23e101baafd8b06f9b1e/check-runs?per_page=100&page=1&filter=latest"
+    },
+    {
+      "method": "GET",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/actions/workflows/integration-baseline.yml/runs?branch=main&per_page=100"
+    },
+    {
+      "method": "GET",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/git/ref/heads/main"
+    },
+    {
+      "method": "GET",
+      "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/compare/64983dd32dcdd4fede694f905f527bbf71ed96a6...3bb1ee47939d9caa1db10a4e764365d3a2ee5b77"
+    }
+  ],
+  "check_runs": [
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113836753055",
+      "id": 113836753055,
+      "name": "ci-gate",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826126041",
+      "id": 113826126041,
+      "name": "trusted-ci",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124943",
+      "id": 113826124943,
+      "name": "ci-pack-7",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124849",
+      "id": 113826124849,
+      "name": "ci-pack-8",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124847",
+      "id": 113826124847,
+      "name": "ci-pack-1",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124819",
+      "id": 113826124819,
+      "name": "ci-pack-11",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124804",
+      "id": 113826124804,
+      "name": "ci-pack-2",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124773",
+      "id": 113826124773,
+      "name": "ci-pack-5",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124768",
+      "id": 113826124768,
+      "name": "ci-pack-3",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124749",
+      "id": 113826124749,
+      "name": "ci-pack-4",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124722",
+      "id": 113826124722,
+      "name": "ci-pack-10",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124689",
+      "id": 113826124689,
+      "name": "ci-pack-6",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124633",
+      "id": 113826124633,
+      "name": "ci-pack-9",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113826124598",
+      "id": 113826124598,
+      "name": "ci-pack-0",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113825297584",
+      "id": 113825297584,
+      "name": "ci-authority/main",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": false,
+      "conclusion": "failure",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113825293880",
+      "id": 113825293880,
+      "name": "ci-authority/codex/merge-queue-pilot",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932151698/job/113825238882",
+      "id": 113825238882,
+      "name": "ci-authority",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113825181830",
+      "id": 113825181830,
+      "name": "grader-manifest",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113825178662",
+      "id": 113825178662,
+      "name": "capability-broker",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/runs/113825171888",
+      "id": 113825171888,
+      "name": "self-mod-fence",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039652/job/113824876181",
+      "id": 113824876181,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'grader-manifest' || 'fork-grader-manifest-unused'",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039652/job/113824876143",
+      "id": 113824876143,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'self-mod-fence' || 'fork-self-mod-fence-unused'",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "skipped",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039652/job/113824876121",
+      "id": 113824876121,
+      "name": "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'capability-broker' || 'fork-capability-broker-unused'",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113824875115",
+      "id": 113824875115,
+      "name": "contract-delta",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039980/job/113824875035",
+      "id": 113824875035,
+      "name": "ci-plan",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932039652/job/113824874301",
+      "id": 113824874301,
+      "name": "fence-pack",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    },
+    {
+      "binding": true,
+      "conclusion": "success",
+      "details_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37932034757/job/113824858395",
+      "id": 113824858395,
+      "name": "ci-authority",
+      "pull_requests": [
+        {
+          "base": {
+            "ref": "main",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "c4cd21d597521603fb75fe7a4602424e088c6bfa"
+          },
+          "head": {
+            "ref": "sol/web-gmi-economic-observations-20261009-pro-003",
+            "repo": {
+              "id": 1266869026,
+              "name": "macro",
+              "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro"
+            },
+            "sha": "42174563149254d2399e23e101baafd8b06f9b1e"
+          },
+          "id": 4799934892,
+          "number": 8711,
+          "url": "https://api.github.com/repos/mastermindx-market-intelligence/macro/pulls/8711"
+        }
+      ],
+      "status": "completed"
+    }
+  ],
+  "checks_verdict": "clean",
+  "comment_ids": [],
+  "draft": false,
+  "final_release_gate": "NOT_YET_APPLIED",
+  "helper_sha256": "8eac1e841a5508605f4dceec014bffb05fa2a012d830607dfd2a240882bc7423",
+  "integration_baseline": "green",
+  "integration_baseline_detail": "64983dd32dcd https://github.com/mastermindx-market-intelligence/macro/actions/runs/37928708540",
+  "labels": [],
+  "mergeable": true,
+  "merged": false,
+  "no_merge_dispatch_or_ref_change": true,
+  "pr": 8711,
+  "pr_state": "open",
+  "protected": true,
+  "protected_master_sha": "8c3bc581e747c8b7c066ff0adec3b54573231baf",
+  "recorded_hold": null,
+  "run_id": 37932039980,
+  "schema": "economic_network.read_only_release_readiness/v1",
+  "verdict_names": []
+}

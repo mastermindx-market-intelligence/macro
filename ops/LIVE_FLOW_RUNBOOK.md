@@ -17,7 +17,7 @@ the Terminal UI with a 30s TTL cache.
 | `live_flow/meta.json` | `live_flow.meta/v2` | Source age, poll floor, observed cycle spacing, fetch/build clocks, root coverage |
 | `live_flow/tide_current.json` | `live_flow.tide/v1` | Market tide (NCP/NPP minutes + sectors) |
 | `live_flow/dte_tide_current.json` | `live_flow.dte_tide/v1` | DTE-bucket tide |
-| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill (top ~40 roots) |
+| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill for every current-cycle root with complete source success, merged engine state, and real accumulated minute/strike data |
 | `live_flow/tide/{DATE}.json` | `live_flow.tide/v1` | Dated archive of tide_current (same bytes) |
 | `live_flow/dte_tide/{DATE}.json` | `live_flow.dte_tide/v1` | Dated archive of dte_tide_current |
 | `live_flow/tide/dates.json` | `live_flow.archive_dates/v1` | Sessions index for the tide archive |
@@ -123,6 +123,15 @@ after the session digest. It is the sole advancer of these committed artifacts:
   session offset from the episode session; the exit is the declared target-session
   close under `nyse_session_window_recurring_schedule/v1` (including modeled
   recurring early closes), not a fabricated bar open;
+  This remains the one canonical logical ledger and the base file is its immutable
+  historical byte prefix. When that base has reached the physical Git blob budget,
+  the same sole writer appends later canonical row bytes to contiguous
+  `data/options_signal_episode/outcomes_session_parts/part-NNNNNN.jsonl` files,
+  each capped at 48 MiB. Readers reconstruct `base + part-000001 + ...` byte-for-byte
+  under the original logical path label, so global row ordinals, prefix SHA-256
+  receipts, semantic `(episode_id,horizon)` identity, and campaign checkpoints do
+  not change. Gaps, unexpected entries, symlinks, torn parts, or an oversized new
+  row fail closed; this is physical rollover, not a second outcome store;
 - `data/options_signal_episode/checkpoint.json` — per-session record count and
   canonical-record append-prefix SHA-256 (not the raw-byte publication digest).
 
@@ -310,6 +319,83 @@ Both plists use `ops/launchd/run_with_env.sh` to source `.env` before launching
 Python.  Secrets (`R2_*`, `THETADATA_STORE`) must be in the `.env` file inside
 the job's working directory.  **Never inline secrets in the plist
 EnvironmentVariables block.**
+
+### Options Alpha B1 reviewed code roots (source map only)
+
+The table above is the installed measurement. This section is the reviewed
+source map for a later install. Nothing in that install has been done here.
+Do not clone a tree, create a symlink, copy an environment file, load a
+launchd job, or publish from this change.
+
+Each code checkout is a full standalone clone beside its fixed path. It is
+not a git worktree and it is not a blobless clone. Before the checkout is
+exposed, the selected commit must be
+`7084e176a8d510f96082d4195ee4117e08002890` or a later protected-main
+descendant, and `engine/gex_engine.py` must still hash to
+`f307223722e9ff10c62865d5c92bb7385970ec1da94c6477d19cd9269d768e5c`. Keep the
+previous tree as the rollback. Do not use `macro_machine_git.py` for this
+acquisition. Do not touch `flow-ops-wt/.git`. Do not copy `.env`, keys, the
+publisher sparse clone, or a broad `data/` tree. The Actions runner is not
+an allowed route while free disk space is under the 200 GiB floor.
+
+| Lane | Code root the job runs | Physical state that stays put | Output binding |
+|---|---|---|---|
+| Index history | `/Users/chriswong/indexgex-ops-wt` | `/Users/chriswong/flow-ops-wt/data/index_gex_history` | no symlink; `INDEXGEX_ARTIFACT_ROOT=/Users/chriswong/flow-ops-wt/data/index_gex_history` |
+| Options matrix | `/Users/chriswong/optionsmatrix-ops-wt` | `/Users/chriswong/flow-ops-wt/data/live_flow_out/options_matrix` | `optionsmatrix-ops-wt/data/live_flow_out/options_matrix` points at that exact directory |
+| Options Hub output | `/Users/chriswong/optionshub-ops-wt` | `/Users/chriswong/hub-ops-wt/data/live_flow_out/options_hub` | `optionshub-ops-wt/data/live_flow_out/options_hub` points at that exact directory |
+
+Index history has no symlink. The five tracked files stay in the code checkout's
+git tree, and the lane writes only the physical directory named by
+`INDEXGEX_ARTIFACT_ROOT`. Create a matrix or Hub output symlink only after
+`lstat` shows the physical target is the directory that already exists. Do not
+replace that target. Do not create an index-history symlink.
+
+Hub inputs are not a broad data symlink and they are not a copy inside the
+new clone. They stay ordinary files and directories under
+`/Users/chriswong/hub-ops-wt`: `data/polygon_gex`, `data/gex/latest.json`,
+`site/basketdata/fear_greed.json`, `data/tape_flow/daily`, and
+`data/live_flow_out` (the archive root, which also holds the Hub output
+directory above). The job reads those five paths only when
+`OPTIONS_HUB_INPUT_ROOT=/Users/chriswong/hub-ops-wt`. That variable does not
+choose the output directory, the ThetaData store, or the R2 prefix. The Hub
+R2 prefix stays `options_hub/`. The matrix object stays
+`options_structure/matrix/<ROOT>.json`. Index history still syncs R2 and
+then publishes the same five git files.
+
+An unset or empty `MACRO_INDEX_GEX_HISTORY_ROOT` keeps
+`/Users/chriswong/flow-ops-wt`. An unset or empty `MACRO_OPTIONS_MATRIX_ROOT`
+keeps the same default. An unset or empty `OPTIONS_HUB_INPUT_ROOT` keeps
+today's path expressions. An empty value is not the current directory. A
+relative path, a missing path, or a path that is not a directory is refused
+before the job writes, calls the network, or computes. A shell root must be
+an absolute directory that already contains that lane's code.
+
+An unset `INDEXGEX_ARTIFACT_ROOT` uses `$REPO/data/index_gex_history`, which
+must already exist. A present empty or blank value does not select that
+default. A present empty, blank, relative, missing, or non-directory artifact
+root is refused before Python, credentials, the builder, or publish. The
+runner does not create that directory.
+
+The index template keeps `.env` at `/Users/chriswong/flow-ops-wt/.env` and
+keeps the key path `/Users/chriswong/.ssh/macro_dashboard_deploy`. The
+publisher helper stays
+`/Users/chriswong/macro-publisher-runtime/scripts/macro_machine_git.py`. The
+template runs the reviewed script from `indexgex-ops-wt`. The copy installed
+under the publisher runtime today is older and calls git directly. Checking
+that the installed helper and the key path still match is a later read-only
+step. This change does not copy that helper or that key.
+
+The matrix template keeps `.env` at `/Users/chriswong/flow-ops-wt/.env` and
+keeps the existing ThetaData store. The Hub template keeps `.env` at
+`/Users/chriswong/Documents/Cluade/Macro Dashboard/.env` and reads inputs
+from `/Users/chriswong/hub-ops-wt`. Labels, calendars, log paths, throttles,
+resource limits, and interpreters are unchanged.
+
+After merge, acceptance is read-only: the commit, the engine hash, a clean
+clone, the matrix and Hub output symlinks via `lstat`, the index artifact
+root with no index symlink, imports from each clone, and launchd showing only
+the intended root changes. A later scheduled run, owned by the runtime
+operator, is the only live proof. A hand launch is not acceptance.
 
 > **Read `*.stderr.log`, not `*.stdout.log`.**  The poller logs through Python's
 > `logging`, which writes to **stderr**.  `/tmp/liveflow.stdout.log` sits at
@@ -907,6 +993,46 @@ after the same reviewed quarantine procedure.
 Automatic retention already prunes old, proven day states. There is no generic
 manual state-wipe command, and neither bare `--once` nor historical `--date` is a
 valid recovery or smoke test.
+
+### Reviewed prior-session WAL quarantine
+
+The only reviewed prior-session incident eligible for this receipt is the
+Chairman Options Alpha parent599 case recorded here. Every protected value is
+hard-coded into the immutable incident descriptor; the operator CLI accepts
+only the session string and the review reference — operator-supplied digests
+of any other hex string are rejected even if syntactically well-formed:
+
+| Protected fact | Required exact value |
+|---|---|
+| Deployed source SHA | `bffd9931b2e37b5011fe50e0633f62c356879dd8` |
+| Day state SHA-256 | `d9a25966a8d50090f8619d878e4133860cc54682b53764126bf7299e1ca00b06` |
+| Session / schema / count | `2026-09-28` / `5` / `170` |
+| Ordered event-ID SHA-256 | `c52ee12c27b31775e2acef188e434134202e3f745ebb2d55c68a0e12749df218` |
+| Observed clock range | `2026-09-28T13:37:09.179619Z..2026-09-28T13:38:55.752263Z` |
+| Decision clock range | `2026-09-30T23:51:45.034847Z..2026-09-30T23:53:18.537416Z` |
+
+On the protected source host, an operator who has independently reviewed this
+table may create the receipt with
+`--recover-reviewed-prior-session-wal 2026-09-28 <review-reference>`. The
+command validates the candidate receipt fully BEFORE publication, then writes
+`data/live_flow_state/quarantine/prior_session_wal_quarantine_2026-09-28.json`
+atomically, fsyncs the directory, and reads the published file back to confirm
+the on-disk bytes match what was written. The validation enforces the exact raw
+state hash, session, schema, count, ordered IDs, clock bounds, per-event
+classification (event ≤ observed ≤ decision; observed ET date equals the
+review session; decision ET date leaves the review session), canonical stage
+absence, and absence of availability/source-clock facts before returning. It
+never changes the state or event stage, never drains the quarantined IDs, and
+never grants learning, candidate, publication, or training authority. If any
+check fails, no receipt is written and the raw state is byte-untouched.
+
+A receipt already present is preserved: a second CLI invocation re-validates it
+without touching the on-disk bytes. Any inconsistency (existing-invalid receipt,
+missing day_state, present canonical stage, wrong bytes, malformed JSON) fails
+closed. The receipt is not an automatic rule for future prior-session WALs;
+each future case requires its own reviewed, source-identity-bound receipt.
+`--date` is read-only in practice and is rejected before any state, stage,
+output, retention, or publication write.
 
 ## Day-state size guard
 

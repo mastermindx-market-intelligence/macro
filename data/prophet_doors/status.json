@@ -1,47 +1,33 @@
 {
-  "appended": 3,
-  "asof": "2026-08-31",
+  "appended": 0,
+  "asof": "2026-10-14",
   "candidates": {
     "R": 3,
-    "T": 1,
-    "W": 12
+    "T": 13,
+    "W": 9
   },
   "deduped": {
-    "R": 0,
-    "T": 1,
-    "W": 12
+    "R": 3,
+    "T": 13,
+    "W": 9
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "asof": "2026-09-01",
-      "consulted": true,
-      "n_keys": 27,
-      "n_themes": 18,
-      "ok": true,
-      "reason": null,
-      "source": "site/basketdata/foresight_cascade.json"
+      "consulted": false
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 15
-      },
+      "consulted": false,
+      "null_reasons": {},
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {
-        "Software": {
-          "theme_thrust_frac": 0.1064,
-          "theme_thrust_reason": null,
-          "theme_thrust_state": "quiet"
-        }
-      },
+      "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 48,
-      "tickers_read": 63
+      "tickers_ok": 0,
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -59,21 +45,10 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": true,
-      "high_lookback": 63,
-      "members_indexed": 132,
-      "n_covered": 80,
-      "reason": null,
-      "window_sessions": 21
+      "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-08-31",
-      "n_tickers": 1544,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
@@ -101,53 +76,49 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "RHI",
-      "DOCU",
-      "PJT"
-    ],
+    "R": [],
     "T": [],
     "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-01 08:15:09",
-  "runtime_s": 111.2,
+  "run_utc": "2026-10-19 08:10:22",
+  "runtime_s": 228.1,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-08-31",
-    "n_members": 132,
+    "asof": "2026-10-14",
+    "n_members": 115,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.744,
+        "emerging_score": 3.343,
         "rank": 1,
-        "theme": "Cybersecurity"
+        "theme": "Social Media"
       },
       {
-        "emerging_score": 1.795,
+        "emerging_score": 2.761,
         "rank": 2,
-        "theme": "Big Data"
+        "theme": "Healthy Food & Nutrition"
       },
       {
-        "emerging_score": 1.569,
+        "emerging_score": 2.358,
         "rank": 3,
-        "theme": "Software"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.527,
+        "emerging_score": 2.18,
         "rank": 4,
-        "theme": "Artificial Intelligence"
+        "theme": "E-commerce"
       },
       {
-        "emerging_score": 1.343,
+        "emerging_score": 2.107,
         "rank": 5,
         "theme": "Biometrics"
       }
@@ -158,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 12,
-    "asof_max": "2026-08-31",
+    "aligned": 9,
+    "asof_max": "2026-10-14",
     "asof_mismatch": 0,
-    "asof_run": "2026-08-31",
+    "asof_run": "2026-10-14",
     "evaluated": 712,
-    "fresh": 12,
+    "fresh": 10,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.4,
+    "runtime_s": 42.3,
     "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 89,
+    "state_turn": 60,
     "universe_n": 717
   }
 }

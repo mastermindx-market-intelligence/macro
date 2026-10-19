@@ -778,58 +778,411 @@ def test_no_job_restores_a_stale_cache_over_data_it_will_commit(job_name):
 
 
 def test_gitignored_russell_cache_uses_the_collect_jobs_exact_same_run_key():
-    """The engine checkout cannot carry the Russell panel; the cache handoff must.
+    """Russell cache is untracked: one producer→consumer run key; no old-cache fallback.
 
-    PR #4798 correctly removed engine's broad ``restore-keys`` because a prefix match
-    could overwrite tonight's tracked panels with a prior run. Russell is the exception
-    to the checkout fallback: ``_closes_cache.parquet`` is gitignored. The producer used
-    ``russell-closes-<run_id>`` while engine requested
-    ``russell-closes-engine-<run_id>``, guaranteeing a miss on cold runners and making
-    the keep-FIRST name-score stamp lose roughly 1,220 names.
+    Oct 16 repeat: market Git GH001 failed AFTER a healthy Russell collector,
+    so the combined cache action's post-save was skipped and engine missed its
+    exact key. Collect now has a separate, qualified save BEFORE that late
+    push; engine still cannot prefix-restore any earlier night's source.
     """
     path = "data/russell_breadth/_closes_cache.parquet"
     assert not _is_git_tracked(path), (
-        "the Russell close cache became git-tracked; reassess whether the cross-job "
-        "cache handoff is still the source of truth"
+        "the Russell cache became git-tracked; reassess the cross-job owner"
     )
-
     doc = yaml.safe_load(DAILY.read_text())
     engine = doc["jobs"]["engine"]
     assert "collect" in engine.get("needs", []), (
-        "engine must wait for collect to finish and save the same-run Russell cache"
+        "engine must wait for the producer of this run's Russell close panel"
     )
 
-    def cache_step(job_name: str) -> dict:
+    def cache_step(job_name: str, owner_action: str) -> dict:
         matches = [
             step for step in doc["jobs"][job_name]["steps"]
-            if str((step.get("with") or {}).get("path") or "").strip() == path
+            if (step.get("with") or {}).get("path") == path
+            and step.get("uses") == owner_action
         ]
         assert len(matches) == 1, (
-            f"expected one {path} cache step in {job_name!r}, found {len(matches)}"
+            f"expected exactly one {owner_action} for {path} in {job_name!r}; "
+            f"found {len(matches)}"
         )
         return matches[0]
 
-    producer_step = cache_step("collect")
-    consumer_step = cache_step("engine")
-    producer = producer_step.get("with") or {}
-    consumer = consumer_step.get("with") or {}
+    producer = cache_step("collect", "actions/cache/restore@v4")["with"]
+    saver = cache_step("collect", "actions/cache/save@v4")["with"]
+    consumer_step = cache_step("engine", "actions/cache/restore@v4")
+    consumer = consumer_step["with"]
     expected = "russell-closes-${{ github.run_id }}"
 
     assert producer.get("key") == expected
-    assert producer_step.get("uses") == "actions/cache@v4", (
-        "collect must use the combined cache action so the same-run Russell key is "
-        "saved after collection; restore-only would leave engine with nothing to consume"
+    assert producer.get("restore-keys") == "russell-closes-"
+    assert saver == {"key": expected, "path": path}, (
+        "the qualified pre-push save must create the exact same run's key"
     )
-    assert consumer_step.get("uses") == "actions/cache/restore@v4", (
-        "engine is a cache consumer only. Using the combined cache action lets a miss "
-        "save an engine-owned key back into the producer's fallback namespace."
+    assert consumer.get("key") == expected, (
+        "the engine must request the exact same-run Russell source"
     )
-    assert consumer.get("key") == producer.get("key"), (
-        "engine must request collect's exact same-run Russell cache key. A distinct key "
-        "cannot hit, and adding a broad restore-key would reintroduce the stale-cache "
-        "overwrite that PR #4798 removed."
+    assert "restore-keys" not in consumer, (
+        "the engine must not prefix-restore an earlier source and silently "
+        "launder a stale cross-section"
     )
-    assert not consumer.get("restore-keys"), (
-        "engine's Russell restore must remain exact-key-only; a prefix fallback may select "
-        "a prior run and silently reintroduce stale source data"
+
+
+# The 2026-09-15 recurrence crossed the old guard: restore-only rendering jobs
+# can publish stale DERIVED boards even when they never commit the raw panel.
+_US_COMMITTED_PRICE_PANELS = {
+    "data/breadth/_closes_cache.parquet": "breadth-closes-",
+    "data/smallcap_breadth/_closes_cache.parquet": "smallcap-closes-",
+    "data/midcap_breadth/_closes_cache.parquet": "midcap-closes-",
+}
+
+
+def _workflow_files() -> list[Path]:
+    workflow_dir = ROOT / ".github/workflows"
+    return sorted({*workflow_dir.glob("*.yml"), *workflow_dir.glob("*.yaml")})
+
+
+def _action_paths(value: object):
+    values = value if isinstance(value, (list, tuple)) else [value]
+    for item in values:
+        for line in str(item or "").splitlines():
+            path = line.strip()
+            if path:
+                yield path
+
+
+def _us_panel_cache_steps():
+    for workflow in _workflow_files():
+        document = yaml.safe_load(workflow.read_text()) or {}
+        for job_name, job in (document.get("jobs") or {}).items():
+            for step in job.get("steps", []):
+                uses = str(step.get("uses") or "")
+                if not uses.startswith(("actions/cache@", "actions/cache/restore@")):
+                    continue
+                with_ = step.get("with") or {}
+                for path in _action_paths(with_.get("path")):
+                    if path in _US_COMMITTED_PRICE_PANELS:
+                        yield workflow.name, job_name, step, path
+
+
+def test_all_readonly_us_panel_consumers_preserve_git_authority():
+    """A rendering job's lack of data/ staging does not make stale input safe."""
+    readers = [(workflow, job, step, path)
+               for workflow, job, step, path in _us_panel_cache_steps()
+               if (workflow, job) != ("daily.yml", "collect")]
+    required_workflows = {
+        "daily.yml", "closing-bell.yml", "earlyclose.yml", "engine-render.yml",
+        "render.yml", "weekly.yml", "special-sits-backfill.yml",
+    }
+    assert required_workflows <= {
+        p.name for p in _workflow_files()
+    }, "a missing workflow is not proof of a repaired reader"
+    offenders = [f"{workflow}:{job}:{path}"
+                 for workflow, job, step, path in readers]
+    assert not offenders, (
+        "Read-only consumers overwrite committed US price panels with cached "
+        f"copies and publish stale derived boards: {offenders}. Read the Git "
+        "checkout directly. Even an exact cache key can restore an earlier "
+        "attempt's input on a same-run retry. Never restamp stale inputs or "
+        "remove the distinct gitignored Russell handoff."
     )
+
+
+def test_daily_collector_keeps_us_panel_seed_cache_authority():
+    """The producer seed remains useful; consumers cannot impersonate it."""
+    seeds: dict[str, list[object]] = {}
+    for workflow, job, step, path in _us_panel_cache_steps():
+        if (workflow, job) != ("daily.yml", "collect"):
+            continue
+        seeds.setdefault(path, []).append((step.get("with") or {}).get("restore-keys"))
+
+    assert set(seeds) == set(_US_COMMITTED_PRICE_PANELS)
+    for path, expected_restore_key in _US_COMMITTED_PRICE_PANELS.items():
+        assert len(seeds[path]) == 1, (
+            f"{path} must have exactly one producer seed in daily.collect; found "
+            f"{len(seeds[path])} cache steps"
+        )
+        assert seeds[path][0] == expected_restore_key
+        assert _is_git_tracked(path), (
+            f"{path} changed data ownership; do not silently replace the reviewed "
+            "Git-authoritative reader policy with a cache fallback"
+        )
+
+
+
+def test_stock_briefs_restores_r2_stock_context_before_precompute():
+    """The clean brief job must materialize its canonical R2-only stock context."""
+    document = yaml.safe_load(DAILY.read_text()) or {}
+    steps = document["jobs"]["stock_briefs"]["steps"]
+    build_indexes = [
+        index for index, step in enumerate(steps)
+        if "python -m scripts.build_stock_briefs" in str(step.get("run") or "")
+    ]
+    assert len(build_indexes) == 1
+    build_index = build_indexes[0]
+    assert str(steps[build_index].get("run") or "").strip() == (
+        "python -m scripts.build_stock_briefs"
+    ), (
+        "stock_briefs is an additive job that does not gate publish; do not turn a "
+        "deterministic context failure into a green workflow with shell fail-open."
+    )
+
+    restores = [
+        (index, step) for index, step in enumerate(steps[:build_index])
+        if str(step.get("run") or "").strip()
+        == "python -m scripts.fetch_r2 --dirs stockdata"
+    ]
+    assert len(restores) == 1, (
+        "stock_briefs starts from a clean checkout while site/stockdata is R2-only. "
+        "Restore the existing stockdata store before catalyst_stock asks for its "
+        "deterministic ladder context; a green no_context batch is not usable output."
+    )
+    restore_index, restore = restores[0]
+    assert restore_index < build_index
+    gha = lambda name: "$" + "{{ secrets." + name + " }}"
+    assert restore.get("env") == {
+        "R2_ENDPOINT": gha("R2_ENDPOINT"),
+        "R2_ACCESS_KEY_ID": gha("R2_ACCESS_KEY_ID"),
+        "R2_SECRET_ACCESS_KEY": gha("R2_SECRET_ACCESS_KEY"),
+        "R2_BUCKET": gha("R2_BUCKET"),
+    }, "scope the existing R2 credentials to the stockdata restore step only"
+
+
+def _write_panel_workflow(root: Path, filename: str, body: str) -> Path:
+    workflow = root / ".github/workflows" / filename
+    workflow.parent.mkdir(parents=True, exist_ok=True)
+    workflow.write_text(body)
+    return workflow
+
+
+def test_us_panel_cache_scan_splits_multiline_action_paths(tmp_path, monkeypatch):
+    _write_panel_workflow(tmp_path, "multiline.yml", """
+jobs:
+  engine:
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/breadth/_closes_cache.parquet
+            data/unrelated.parquet
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+
+    paths = [path for _, _, _, path in _us_panel_cache_steps()]
+
+    assert paths == ["data/breadth/_closes_cache.parquet"]
+
+
+def test_us_panel_cache_scan_includes_yaml_workflows(tmp_path, monkeypatch):
+    _write_panel_workflow(tmp_path, "reader.yaml", """
+jobs:
+  engine:
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: data/midcap_breadth/_closes_cache.parquet
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+
+    paths = [path for _, _, _, path in _us_panel_cache_steps()]
+
+    assert paths == ["data/midcap_breadth/_closes_cache.parquet"]
+
+
+def test_duplicate_daily_panel_seed_steps_are_rejected(tmp_path, monkeypatch):
+    daily = _write_panel_workflow(tmp_path, "daily.yml", """
+jobs:
+  collect:
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: data/breadth/_closes_cache.parquet
+          restore-keys: breadth-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/breadth/_closes_cache.parquet
+          restore-keys: breadth-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/smallcap_breadth/_closes_cache.parquet
+          restore-keys: smallcap-closes-
+      - uses: actions/cache@v4
+        with:
+          path: data/midcap_breadth/_closes_cache.parquet
+          restore-keys: midcap-closes-
+""")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+    monkeypatch.setattr(sys.modules[__name__], "DAILY", daily)
+    monkeypatch.setattr(sys.modules[__name__], "_is_git_tracked", lambda _: True)
+
+    with pytest.raises(AssertionError, match="exactly one producer seed"):
+        test_daily_collector_keeps_us_panel_seed_cache_authority()
+
+
+def test_russell_same_run_cache_is_saved_before_unrelated_git_push_failure():
+    """Oct 16: GH001 after a healthy Russell collect must not erase engine's source."""
+    doc = yaml.safe_load(DAILY.read_text())
+    path = "data/russell_breadth/_closes_cache.parquet"
+    key = "russell-closes-${{ github.run_id }}"
+    collect = doc["jobs"]["collect"]["steps"]
+    engine = doc["jobs"]["engine"]["steps"]
+
+    def one(step_list, name):
+        matches = [i for i, st in enumerate(step_list) if st.get("name") == name]
+        assert len(matches) == 1, (name, matches)
+        return matches[0], step_list[matches[0]]
+
+    c, _ = one(collect, "run collectors (graceful degradation — never fails the build on one source)")
+    readiness, gate = one(collect, "qualify Russell same-run cache handoff")
+    save, saver = one(collect, "save qualified Russell close cache before market git push")
+    push, _ = one(collect, "push market data (survives a job-cap cancel; alarm-bounded git ops)")
+    assert c < readiness < save < push
+    assert "started_at=$(date -u" in collect[c].get("run", "")
+    assert '>> "$GITHUB_OUTPUT"' in collect[c].get("run", "")
+    assert gate.get("env", {}).get("RUSSELL_COLLECT_STARTED_AT") == (
+        "${{ steps.collectors.outputs.started_at }}"
+    )
+    assert 'receipt.get("last_run")' in str(gate.get("run", ""))
+    assert gate.get("id") == "russell_cache_ready"
+    assert "data/run_status.json" in str(gate.get("run", ""))
+    assert "russell_breadth" in str(gate.get("run", ""))
+    assert "expected_last_session" in str(gate.get("run", ""))
+    assert "checked_at" in str(gate.get("run", ""))
+    assert saver["uses"] == "actions/cache/save@v4"
+    assert saver["with"] == {"path": path, "key": key}
+    assert "steps.russell_cache_ready.outputs.qualified == 'true'" in saver["if"]
+
+    restore = [st for st in collect
+               if st.get("uses") == "actions/cache/restore@v4"
+               and (st.get("with") or {}).get("path") == path]
+    assert len(restore) == 1
+    assert restore[0]["with"]["key"] == key
+    assert restore[0]["with"]["restore-keys"] == "russell-closes-"
+
+    consumer = [st for st in engine
+                if (st.get("with") or {}).get("path") == path]
+    assert len(consumer) == 1
+    assert consumer[0]["uses"] == "actions/cache/restore@v4"
+    assert consumer[0]["with"]["key"] == key
+    assert "restore-keys" not in consumer[0]["with"]
+
+
+@pytest.mark.parametrize(
+    "case,expected_ready",
+    [
+        ("healthy", True),
+        ("source_failed", False),
+        ("source_stale", False),
+        ("clock_before_close", False),
+        ("clock_in_future", False),
+        ("malformed_clock", False),
+        ("cache_missing", False),
+        ("receipt_missing", False),
+        ("old_source_same_session", False),
+        ("old_status_same_session", False),
+        ("missing_run_marker", False),
+        ("malformed_run_marker", False),
+        ("malformed_last_run", False),
+    ],
+)
+def test_russell_same_run_handoff_executes_original_gate_hermetically(
+    tmp_path, case, expected_ready
+):
+    """The actual workflow's short gate, not a reimplementation in this test."""
+    import json
+    import os
+    import subprocess
+    from datetime import datetime, time, timezone, timedelta
+    from zoneinfo import ZoneInfo
+    from lib.nyse_calendar import expected_last_session
+
+    doc = yaml.safe_load(DAILY.read_text())
+    gate = next(st for st in doc["jobs"]["collect"]["steps"]
+                if st.get("name") == "qualify Russell same-run cache handoff")
+    raw = gate["run"]
+    assert "<<'PY_RUSSELL_HANDOFF'\n" in raw
+    script = raw.split("<<'PY_RUSSELL_HANDOFF'\n", 1)[1].rsplit(
+        "\nPY_RUSSELL_HANDOFF", 1
+    )[0]
+    now = datetime.now(timezone.utc)
+    session = expected_last_session()
+    last_close = datetime.combine(
+        session, time(16), tzinfo=ZoneInfo("America/New_York")
+    ).astimezone(timezone.utc)
+    checked = now
+    if case == "clock_before_close":
+        checked = last_close - timedelta(seconds=1)
+    if case == "clock_in_future":
+        checked = now + timedelta(days=1)
+    if case in ("old_source_same_session", "old_status_same_session"):
+        checked = now - timedelta(minutes=4)
+    raw_stamp = checked.isoformat() if case != "malformed_clock" else "???"
+    run_started = now - timedelta(minutes=3)
+    if case == "old_status_same_session":
+        run_started = now - timedelta(minutes=1)
+    last_run = now - timedelta(minutes=1)
+    if case == "old_status_same_session":
+        last_run = now - timedelta(minutes=5)
+    if case == "malformed_last_run":
+        last_run = "?"
+    status = {
+        "last_run": last_run.isoformat() if isinstance(last_run, datetime) else last_run,
+        "sources": {
+            "russell_breadth": {
+                "status": "failed" if case == "source_failed" else "ok",
+                "last_date": (
+                    (session - timedelta(days=1)).isoformat()
+                    if case == "source_stale" else session.isoformat()
+                ),
+                "checked_at": raw_stamp,
+            }
+        }
+    }
+    data = tmp_path / "data"
+    cache = data / "russell_breadth" / "_closes_cache.parquet"
+    cache.parent.mkdir(parents=True)
+    if case != "cache_missing":
+        cache.write_bytes(b"PAR1a guarded producer already checkedPAR1")
+    if case != "receipt_missing":
+        (data / "run_status.json").write_text(json.dumps(status))
+    output = tmp_path / "gate-output"
+    env = {**os.environ, "GITHUB_OUTPUT": str(output),
+           "PYTHONPATH": str(ROOT),
+           "RUSSELL_COLLECT_STARTED_AT": run_started.isoformat()}
+    if case == "missing_run_marker":
+        del env["RUSSELL_COLLECT_STARTED_AT"]
+    elif case == "malformed_run_marker":
+        env["RUSSELL_COLLECT_STARTED_AT"] = "?"
+    proc = subprocess.run(
+        [sys.executable, "-c", script], cwd=tmp_path,
+        env=env, capture_output=True, text=True, timeout=15,
+    )
+    assert proc.returncode == 0, proc.stderr[-500:]
+    observed = output.read_text().strip()
+    assert observed == f"qualified={'true' if expected_ready else 'false'}"
+    assert "Russell cache handoff" in proc.stdout
+
+
+def test_collect_job_has_publication_headroom_after_oct14_timeout_loss():
+    """A real four-hour collect ended mid-push with just 6m08s left at entry.
+
+    GH job 115629246223: 2026-10-14 01:20:35Z -> push at 05:14:27Z,
+    cancelled at 05:25:36Z before GitHub received the original commit.
+    An alarm-bounded push is 420s, plus fetch/rebase and retry overhead.
+    Require at least one hour of reserved room from that observed entry
+    point before raising another producer budget or claiming acceptance.
+    """
+    spec = yaml.safe_load(DAILY.read_text(encoding="utf-8"))["jobs"]["collect"]
+    cap = spec["timeout-minutes"]
+    assert type(cap) is int and cap <= 360
+    observed_push_start = 3 * 3600 + 53 * 60 + 52
+    required_reserve = 60 * 60
+    assert cap * 60 - observed_push_start >= required_reserve, (
+        "collect's clock leaves less than one hour for its existing "
+        "market publisher after the observed October 14 producer duration"
+    )
+    market_push = [
+        step for step in spec["steps"]
+        if step.get("name", "").startswith("push market data")
+    ]
+    assert len(market_push) == 1
+    assert "PUSH_ALARM=420" in market_push[0].get("run", "")

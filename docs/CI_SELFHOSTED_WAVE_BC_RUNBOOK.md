@@ -105,6 +105,44 @@ The Wave B candidate is 44 GiB / 16 CPUs / 8 GiB swap: 44 rather than 48 GiB lea
 resident services. Apply only after all Actions jobs drain, then prove mounts,
 Tailscale, storage, render, and runner recovery.
 
+## Windows reboot recovery law
+
+The PC/WSL runner lifecycle has two layers and they must not be collapsed. Windows is
+responsible only for starting the existing WSL distribution after a host boot; inside
+that guest, the already-installed systemd services remain the sole lifecycle authority
+for `pc-ci-1..3` and render. GitHub Actions remains the sole job scheduler. Windows boot
+recovery must never register a runner, add `ci-linux`, create `pc-ci-4`, or implement a
+second listener supervisor.
+
+WSL distributions are installed per Windows user, so the startup task must run under the
+exact Windows identity that owns the production distribution. The checked-in installer
+uses Task Scheduler `AtStartup` plus an `AtLogOn` fallback under one S4U principal so no
+password is stored; `IgnoreNew` prevents the two triggers from creating duplicate
+keepalives. Before installing, an elevated operator must pass the exact distribution name
+and the installer refuses if that distribution is not visible to the current identity.
+
+Do **not** use a one-shot `wsl.exe ... /bin/true` wake as recovery. Microsoft documents
+that systemd services do not keep a WSL instance alive, and the 2026-09-15 Windows Update
+incident reproduced that exact false-green: a manual no-op wake brought `pc-ci-1..3`
+plus `pc-render-1` online long enough to accept work, then all four went offline again
+when the WSL instance stopped. The recovery task therefore remains running and owns only
+VM residency through one inert foreground shell loop. If WSL exits unexpectedly, the
+wrapper retries boundedly. Linux systemd still owns runner listener restart; Windows does
+not register, relabel, start, stop, or dispatch a GitHub runner. The Task Scheduler
+execution limit is disabled because terminating the keepalive would itself recreate the
+outage.
+
+Source:
+
+- `ops/runner-host/pc/windows/Start-MastermindWslBootRecovery.ps1`
+- `ops/runner-host/pc/windows/Install-MastermindWslBootRecovery.ps1`
+
+Host acceptance is stronger than source acceptance: after installation, perform one
+controlled Windows reboot and prove, without interactive login, that the named WSL distro
+becomes running, the exact pre-reboot `pc-ci-1..3` service identities return, GitHub reports
+those three runners online, and render identity/labels are unchanged. If any effect is
+ambiguous, stop and reconcile before retrying. `pc-ci-4` remains separately gated by C3R-B.
+
 ## M1 service and disk law
 
 Each owner LaunchAgent has `RunAtLoad=true`, `KeepAlive.SuccessfulExit=false`, and a
@@ -173,10 +211,11 @@ and publishes nothing.
 
 ## Fourth slot and the aggregate CI resource envelope
 
-Capability state: **`FOURTH_SLOT_CODE_SUBSTRATE = BUILT_NOT_HOST_PROVEN`.**
+Capability state: **`FOURTH_SLOT_CODE_SUBSTRATE = BUILT_NOT_PROVEN / RELEASE_BLOCKED`.**
 
-Read that literally. The repository now contains everything needed to run four PC
-CI candidates inside one enforced envelope, and **none** of it is installed. There
+Read that literally. The repaired source closes the known false-proof families,
+but current-head CI, independent exact-head approval, and the later privileged
+C3R-B real-host proof remain release gates. **None** of it is installed. There
 is no `pc-ci-4` registration, no `/opt/mastermind-ci/runner-4` on disk, no
 `mastermind-ci.slice` unit on the host, and no fourth listener. Live capacity is
 still exactly three slots, production trusted execution is still `max-parallel: 3`,
@@ -233,16 +272,23 @@ independently routable.
 ### Evidence, and what refuses
 
 `scripts/monitor_ci_host_resources.py` derives each candidate's own cgroup from
-`/proc/self/cgroup` and binds it to `/mastermind-ci.slice/<unit>.service` by exact
-path component. A candidate in `system.slice`, in a look-alike slice, or with
+`/proc/self/cgroup` and binds it to the exact direct-service hierarchy
+`/mastermind.slice/mastermind-ci.slice/<unit>.service`. The candidate node proves
+membership; aggregate counters and limits come only from the parent
+`/mastermind.slice/mastermind-ci.slice` node. Both nodes' device/inode identities
+are recorded and frozen across the window. A candidate in `system.slice`, in a
+look-alike or nested descendant, or with
 unreadable files yields `refused`/`degraded` **with no metric values at all**. It
 never substitutes host-global numbers for slice numbers, because a green produced
 from the wrong cgroup reads downstream as proof. `slice_metrics()` in
 `scripts/capture_ci_canary_receipt.py` reports aggregate numbers only when every
 sample in the window carried status exactly `bound` **and** every sample named the
-same cgroup — a candidate that moved mid-run has no honest aggregate, because
-first/last deltas would straddle two cgroups. Any other status, including an
-unrecognised one, is treated as non-bound.
+same direct candidate and parent identities plus the exact frozen limit tuple. A
+candidate or parent that moved or was recreated mid-run has no honest aggregate.
+Reversed/equal timestamps, missing endpoints, or any decrease in CPU,
+memory-event, pids-event, or PSI cumulative counters poison the window and clear
+every numeric acceptance field. Any other status, including an unrecognised one,
+is treated as non-bound.
 
 A field absent at the START of the window yields a `null` delta, never
 `last - 0`: presenting a cgroup lifetime total as a window delta would corrupt
@@ -258,16 +304,35 @@ Guard thresholds are versioned separately from the slice ceilings
 (`mastermind.ci_resource_guard_thresholds.v1`) so retuning a refusal threshold never
 reads as a change to the measured envelope. `--preflight-profile four-slot-canary`
 adds the stricter pre-diagnostic gate: `MemAvailable >= 20 GiB`, swap `<= 512 MiB`,
-memory/IO PSI `full avg10 < 0.10`. Steady state for `pc-ci-1..3` is unchanged.
+memory/IO PSI `full avg10 < 0.10`. Missing, malformed, non-finite, negative, or
+threshold-equal PSI refuses; unavailable is never observed zero. Steady state for
+`pc-ci-1..3` is unchanged because their current invocation does not pass
+`--require-slice`.
 
 Binding is not enforcement, and the guard says so. systemd **auto-creates an
 undefined slice**, so a unit carrying `Slice=mastermind-ci.slice` binds cleanly even
 when no slice file was ever installed — it simply inherits no limits, and `cpu.max`
 reads `max 100000`. A capacity diagnostic run against an unenforced envelope measures
-nothing while looking bound and green. `--preflight-profile four-slot-canary`
-therefore refuses an unlimited `cpu.max`. Steady state deliberately does **not** gate
-on it: `pc-ci-1..3` run today with no slice installed at all, and refusing them would
-strand every live slot.
+nothing while looking bound and green. `--require-slice` therefore refuses unless
+the parent exposes the complete exact tuple: `cpu.max = 800000 100000`,
+`memory.high = 10737418240`, `memory.max = 12884901888`, and
+`memory.swap.max = 2147483648`. Missing, malformed, unlimited, or drifted values
+refuse in every profile once that flag is set. This does not alter today's three
+live services because they do not opt into the flag.
+
+The `slots=4` workflow path now has one blocking, no-checkout
+`four-slot-preflight` job on `[self-hosted, ci-linux-canary]` before matrix
+fanout. It executes only the installed root-owned guard with
+`--require-slice --preflight-profile four-slot-canary`. The selected primary
+pack then runs on that same diagnostic-only label while the other three selected
+packs retain `[self-hosted, ci-linux]`. The primary identity must be the canonical
+numeric form of the selector's first `selected_packs` entry; missing, malformed,
+or inconsistent output fails expression evaluation rather than silently routing
+zero candidate jobs. Slots 1 and 3 retain their prior journeys, the hosted
+control and comparison matrices still cover every selected pack, and the
+slots-1-only cache/contamination jobs cannot race a slots-4 candidate. This is a
+source gate, not host proof: it cannot pass lawfully until C3R-B installs and
+proves the envelope.
 
 The memory floor stays a **guest-wide** `MemAvailable` read on purpose: the renderer
 lives outside the slice, so a slice-local read would show a nearly idle cgroup while
@@ -335,10 +400,16 @@ The later host carrier installs `/etc/systemd/system/mastermind-ci.slice`, repla
 the `pc-ci-1..3` units from their exact pre-change snapshot at a natural drain,
 creates the sealed `/opt/mastermind-ci/runner-4` root, and registers `pc-ci-4` with
 platform/architecture labels **only** — no `ci-linux` — so roster, service, PID, root
-and cgroup can be proved online but unroutable. Adding `ci-linux` and moving the live
-inventory to four is one separately audited activation act gated on GitHub reporting
-the exact runner online/idle. Only after that is accepted may a further carrier
-change trusted-executor `max-parallel` from 3 to 4.
+and cgroup can be proved online but unroutable. After the relevant runners are
+drained and every identity is re-proved, C3R-B temporarily transfers the existing
+`ci-linux-canary` label from exact `pc-ci-1` to exact `pc-ci-4`, verifies again that
+`pc-ci-4` lacks `ci-linux`, runs one `slots=4` diagnostic, and restores the label to
+`pc-ci-1` on every exit. A lost or ambiguous label response is `EFFECT_UNKNOWN` and
+blocks dispatch, retry, and promotion; it is never treated as a reason to repeat the
+mutation. Adding `ci-linux` and moving the live inventory to four is one separately
+audited activation act gated on GitHub reporting the exact runner online/idle. Only
+after that is accepted may a further carrier change trusted-executor
+`max-parallel` from 3 to 4.
 
 ### Rollback for this code carrier
 
@@ -362,6 +433,24 @@ review rather than a diagnostic-only one.
 
 `ops/runner-host/**` is the genuinely inert part: templates and helpers that no
 running host loads until a later carrier installs them.
+
+### Merged-substrate containment and repair provenance
+
+PR #6718 was merged as `b260d28a6efbfb4593dfcc453731f71703252ac0`
+while exact-head review `5084468618` remained `CHANGES_REQUESTED`. A staged
+real-host attempt then exposed the systemd hierarchy and parent-node defects. Only
+`pc-ci-1` entered the attempted migration; it refused for about 96 seconds and was
+rolled back to its exact prior bytes. `pc-ci-2` and `pc-ci-3` were never touched and
+continued serving. The host retained only a backward-compatible helper and an inert
+slice unit referenced by no service; that is not production acceptance.
+
+PR #6728 preserves the valid hierarchy and aggregate-parent corrections, then
+closes exact-direct membership, complete-envelope, strict-PSI, connected-preflight,
+invalid-window, canonical-root, and malformed-R14 false-proof families on the same
+branch. It remains DRAFT / HOLD-FOR-SOL with review `5085372259` untouched. No
+runner registration, label/group mutation, service restart, cgroup change,
+four-slot dispatch, render mutation, credential handling, or production-concurrency
+change is part of this repair.
 
 ## Rollback
 

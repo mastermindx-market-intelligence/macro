@@ -379,6 +379,17 @@ def build(reeval: bool = False, page_only: bool = False) -> int:
 
     items = wf.collect()
     log.info("whitehouse feed: %d recent items", len(items))
+    # Preserve source text before the brain, including already-seen items. The
+    # alert's raw_text is the model response, not the government document.
+    # The existing sentinel retains it outside Git with restricted permissions.
+    # Page-only returned above, and synthetic Treasury items arrive below.
+    for item in items:
+        try:
+            wf.retain_source_document(root, item)
+        except (OSError, TypeError, ValueError) as exc:
+            log.warning("whitehouse source capture failed for %s (%s) — "
+                        "not retained as Press evidence", item.get("id"), exc)
+
     # —— Treasury Watch lane: refresh TGA in-process, then inject the current TGA episode as
     # a feed-item so it flows through the IDENTICAL dedupe→brain→ledger→banner pipeline. The
     # episode id is anchored to the trailing-window extremum (quarter-end preferred), so the
@@ -597,7 +608,16 @@ def main() -> int:
     reeval = "--reeval" in sys.argv
     page_only = "--page-only" in sys.argv
     try:
-        return build(reeval=reeval, page_only=page_only)
+        result = build(reeval=reeval, page_only=page_only)
+        # UK policy desk (engine.uk_policy_brain) -- a separate LEAF desk sharing this
+        # sentinel's schedule. Gated + degrade-never-raise: off without a key, and it
+        # can never fail this build.
+        try:
+            from engine import uk_policy_brain as _ukd
+            _ukd.run()
+        except Exception as e:  # noqa: BLE001
+            log.warning("uk policy desk skipped: %s", e)
+        return result
     except Exception as e:  # noqa: BLE001 — the desk must never break the build
         log.error("build_whitehouse failed: %s", e)
         return 0

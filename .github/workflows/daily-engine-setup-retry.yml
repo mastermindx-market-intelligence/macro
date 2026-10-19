@@ -1,16 +1,16 @@
 name: daily-engine-setup-retry
 
-# GitHub can rarely double-dispatch a busy self-hosted runner.  The second job
-# cancels the first worker during GitHub's own Set up job step, before checkout
-# or any repository code runs.  daily.yml's long downstream graph then keeps
-# moving, so a green tail can otherwise hide that the sole authoritative engine
-# (and therefore Prophet) never ran.
+# A self-hosted Mac runner can disappear before repository code starts. Two
+# production signatures are known: the older Set up job cancellation race, and
+# a runner shutdown while actions/checkout owns the process.  daily.yml's long
+# downstream graph can keep moving after either loss, leaving the sole
+# authoritative engine (and therefore Prophet/seasonality) dark.
 #
-# This is not a generic retry lane.  After a daily attempt is fully terminal it
-# asks a fail-closed controller to re-run exactly one job only when engine is the
-# attempt's sole cancelled job and Set up job is its sole executed step.  GitHub
-# re-runs that job plus its dependents.  Timeouts, build failures, mass/operator
-# cancellations, untrusted refs, and attempt 2+ are all hard no-ops.
+# This is not a generic retry lane. After a daily attempt is fully terminal it
+# asks a fail-closed controller to re-run exactly one engine job only when one of
+# those bounded pre-code signatures matches. GitHub re-runs that job plus its
+# dependents. Timeouts after repository code starts, ordinary checkout failures,
+# mass/operator cancellations, untrusted refs, and attempt 2+ are hard no-ops.
 on:
   workflow_run:
     workflows: [daily]
@@ -44,7 +44,7 @@ jobs:
           sparse-checkout-cone-mode: false
           persist-credentials: false
 
-      - name: evaluate setup-only engine cancellation and retry once
+      - name: evaluate bounded pre-code engine loss and retry once
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 scripts/ci/retry_daily_engine_setup_cancel.py

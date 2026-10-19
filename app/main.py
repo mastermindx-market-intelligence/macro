@@ -91,6 +91,11 @@ if str(_REPO_ROOT_FOR_IMPORT) not in sys.path:
 # above — `lib` lives at the repo root, not under app/. Pure stdlib, no app import cycle.
 from lib import user_prefs  # noqa: E402
 
+# The growth-event registry as collector authority (W2-1, WS:COMMERCIAL-ACTIVATION
+# CA1A). Same placement constraint as user_prefs: `lib` lives at the repo root.
+# yaml + stdlib only, no app import cycle.
+from lib import growth_registry  # noqa: E402
+
 # Error/trace reporting. MUST run before `app = FastAPI(...)` below: the SDK's
 # FastAPI/Starlette integrations instrument the framework at init time, so an
 # app object built first is never wrapped. Hard no-op when SENTRY_DSN is absent
@@ -202,8 +207,39 @@ def health() -> dict:
     working tree at request time. They differ whenever the pull loop has
     advanced /opt/macro past the last macro-api restart — visible drift, so an
     operator confirming an API deploy reads the truthful field.
+
+    ``fif_financial_dataset_mode`` is the names-only FIF D3 readout (golden /
+    production / invalid), resolved by the SAME helper the forensics routes
+    use so health can never disagree with them. Names-only by construction:
+    an unsupported configured value still answers 200 with ``invalid`` and the
+    value itself is never echoed; no generation id, admitted_at, store path or
+    other production identity is exposed here.
     """
-    return {"status": "ok", "commit": _PROCESS_COMMIT, "checkout": _commit()}
+    try:
+        dataset_mode = _financial_dataset_mode()
+    except Exception as exc:  # noqa: BLE001 — narrowed to ONE typed error below
+        # Only the resolver's own ProductionDatasetModeError becomes
+        # "invalid". The resolver imports that error's home module lazily AT
+        # raise time, so when the typed error reaches here sys.modules
+        # already holds it — resolving through sys.modules performs no import
+        # (≈1 µs measured) and the health path never pays production_datasets'
+        # cold import (~67 ms measured in a loaded app.main process). Any
+        # other exception re-raises untouched: health must not mask a resolver
+        # bug as "invalid".
+        _production_datasets = sys.modules.get(
+            "engine.fundamental_forensics.production_datasets"
+        )
+        if _production_datasets is None or not isinstance(
+            exc, _production_datasets.ProductionDatasetModeError
+        ):
+            raise
+        dataset_mode = "invalid"
+    return {
+        "status": "ok",
+        "commit": _PROCESS_COMMIT,
+        "checkout": _commit(),
+        "fif_financial_dataset_mode": dataset_mode,
+    }
 
 
 # ── First-party analytics collector — POST /api/collect ─────────────────────────
@@ -222,16 +258,34 @@ SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 MM_COOKIE_DOMAIN = os.environ.get("MM_COOKIE_DOMAIN", ".mastermind-x.com")
 _MM_ANON_COOKIE = "mm_aid"
 _MM_MAX_BATCH = 40
-_MM_EVENT_TYPES = {
-    "pageview", "route", "ticker_view", "search", "terminal_jump",
-    "click", "scroll", "session_start", "heartbeat", "exit",
-    # Ad Central Plane O (research/AD_CENTRAL_MASTERPLAN.md §2): which split-test
-    # variant a visitor was shown. The arm rides in `meta` as {arena, creative};
-    # the unit identity is the mm_aid `visitor_id` this endpoint stamps, NOT
-    # anything the client sends — which is what keeps the denominator honest when
-    # the client is the thing choosing the arm. Read by engine/marketing/ad_ingest.py.
-    "ad_exposure",
-}
+# W2-1 (WS:COMMERCIAL-ACTIVATION CA1A): the registry IS the whitelist. Accepted wires
+# are derived from config/growth_events.yml `status: live` entries via
+# lib/growth_registry — an event can no longer ship "accepted but undeclared" or
+# "declared live but silently dropped". Per-wire documentation (ad_exposure's split-test
+# meta, flowobs's nine ev values and its ticker-in-`id` privacy note from the PR #6815
+# review) lives on the registry entries themselves. tests/test_growth_events_registry.py
+# pins the derivation: reintroducing a hardcoded set literal here turns its
+# registry-authority guard red.
+_MM_EVENT_TYPES = growth_registry.accepted_wires()
+# Envelope-v1 wires (CA1A): these additionally require a stable UUID `eid` (seated in
+# the analytics_events.eid unique column, so an exact replay is ONE row), the frozen
+# `schema` tag, and a closed, typed `meta` validated against the registry — invalid
+# events are dropped with a bounded diagnostic, never coerced. The handoff decision
+# DEC:ANALYTICS-EID-USES-EXISTING-EVENT-PRIMARY-KEY assumed a UUID id primary key; the
+# live table's id is a bigint identity, so the §16 canary moved eid to its own column.
+_MM_V1_WIRES = growth_registry.envelope_v1_wires()
+
+_MM_V1_DROP_COUNTS: dict[str, int] = {}
+
+
+def _mm_v1_drop(wire: str, reason: str) -> None:
+    """Bounded drop-diagnostic for rejected envelope-v1 events. Reasons are the closed
+    tokens from lib/growth_registry.validate_v1_event; a drop is never itself a growth
+    event (CA1A handoff §13). The dict is keyed on wire:reason over two closed
+    vocabularies, so the cap is belt-and-braces, not a real ceiling."""
+    if len(_MM_V1_DROP_COUNTS) < 256:
+        key = f"{wire}:{reason}"
+        _MM_V1_DROP_COUNTS[key] = _MM_V1_DROP_COUNTS.get(key, 0) + 1
 
 
 def _mm_is_loggable_ip(ip: str) -> bool:
@@ -408,14 +462,19 @@ def _mm_analytics_insert(rows: list, access_token: str | None = None) -> None:
                 r["user_id"] = uid
     try:
         req = urllib.request.Request(
-            f"{SUPABASE_URL}/rest/v1/analytics_events",
+            # on_conflict=eid + ignore-duplicates: an exact replay of an envelope-v1
+            # event (same eid, unique-indexed) is ONE row — the duplicate insert is
+            # ignored rather than failing the batch, and a same-eid-different-payload
+            # replay can never mutate the original row (append-only facts, CA1A
+            # handoff §11). Legacy rows carry eid NULL, which never conflicts.
+            f"{SUPABASE_URL}/rest/v1/analytics_events?on_conflict=eid",
             data=json.dumps(rows).encode(),
             method="POST",
             headers={
                 "apikey": SUPABASE_SERVICE_ROLE_KEY,
                 "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
                 "Content-Type": "application/json",
-                "Prefer": "return=minimal",
+                "Prefer": "resolution=ignore-duplicates,return=minimal",
             },
         )
         urllib.request.urlopen(req, timeout=5).read()
@@ -496,15 +555,28 @@ async def collect(request: Request, background: BackgroundTasks) -> Response:
         etype = _mm_clamp(e.get("type"), 32)
         if not etype or etype not in _MM_EVENT_TYPES:
             continue
-        meta = e.get("meta")
-        if not isinstance(meta, dict):
-            meta = None
+        row_id = None
+        if etype in _MM_V1_WIRES:
+            # Envelope v1: eid + schema + closed typed meta, validated against the
+            # registry. Rejection is a drop with a bounded diagnostic — never a
+            # coerced row, and never an error to the caller (the product act that
+            # produced the event has already succeeded client-side).
+            row_id, _v1_reason = growth_registry.validate_v1_event(
+                etype, e.get("eid"), e.get("schema"), e.get("meta"))
+            if _v1_reason:
+                _mm_v1_drop(etype, _v1_reason)
+                continue
+            meta = e.get("meta")
         else:
-            try:
-                if len(json.dumps(meta, default=str)) > 2000:
-                    meta = None
-            except Exception:
+            meta = e.get("meta")
+            if not isinstance(meta, dict):
                 meta = None
+            else:
+                try:
+                    if len(json.dumps(meta, default=str)) > 2000:
+                        meta = None
+                except Exception:
+                    meta = None
         client_ts = None
         try:
             ms = float(e.get("t") or 0)
@@ -514,6 +586,14 @@ async def collect(request: Request, background: BackgroundTasks) -> Response:
             pass
         tk = e.get("ticker")
         rows.append({
+            # Envelope-v1 identity rides its own `eid uuid UNIQUE` column — the §16
+            # canary's correction to DEC:ANALYTICS-EID-USES-EXISTING-EVENT-PRIMARY-KEY.
+            # The live analytics_events.id is a bigint identity the DB mints; seating a
+            # UUID there made PostgREST reject the WHOLE batch (22P02), which the
+            # best-effort insert swallowed — every envelope-v1 event was dropped and
+            # took its co-batched legacy rows with it. Legacy events carry eid NULL
+            # (UNIQUE ignores NULLs); the bigint id stays DB-minted for every row.
+            "eid": row_id,
             "type": etype,
             "site": _mm_clamp(e.get("site"), 16) or "macro",
             "path": _mm_clamp(e.get("path"), 512),
@@ -900,20 +980,31 @@ def status() -> dict:
 
 
 # ---- auth: secretless — verify the access token against Supabase ------------
-def require_user(authorization: str | None = Header(default=None)) -> dict:
+def require_user(authorization: str | None = Header(default=None),
+                 request: Request = None) -> dict:
     """Verify a Supabase access token without any server-side secret.
 
-    Identity is the existing paywall token cache (``app.paywall._fresh_identity``
-    / ``_AUTH_CACHE``): ``sha256(token)`` key, TTL clamped 1–60s. A cached valid
-    record is served through a vendor blip for that TTL only. Invalid or expired
-    tokens are cached as rejected and never become a bypass. Concurrent upstream
-    calls are semaphore-bounded so a slow vendor sheds instead of pinning the
-    thread pool (and ``/api/health`` with it). No second auth cache is minted
-    here — two divergent identity paths was the MMX-004 finding.
+    Accepts EITHER a ``Bearer <token>`` header OR the shared Supabase session cookie
+    (``sb-<ref>-auth-token``) via ``_mm_supabase_access_token`` — the same reader
+    ``paywall`` and ``regwall`` and ``collect`` already use for the beacon. No second
+    auth cache is minted here — two divergent identity paths was the MMX-004 finding.
     """
-    if not authorization or not authorization.startswith("Bearer "):
+    # Try Bearer header first.
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1]
+    elif request is not None:
+        # No Bearer: try the session cookie (same reader paywall/regwall/collect use).
+        token = _mm_supabase_access_token(request)
+        if token:
+            authorization = f"Bearer {token}"
+        else:
+            token = None
+    else:
+        token = None
+
+    if not token:
         raise HTTPException(401, "missing bearer token")
-    token = authorization.split(" ", 1)[1]
+
     from app.paywall import _resolve_identity  # noqa: PLC0415 — shared cache, not a second one
 
     ident = _resolve_identity(token)
@@ -927,7 +1018,10 @@ def require_user(authorization: str | None = Header(default=None)) -> dict:
         raise HTTPException(502, "auth check failed, please try again") from None
     if not ident.uid or not isinstance(ident.record, dict):
         raise HTTPException(401, "invalid token")
-    return dict(ident.record)
+    record = dict(ident.record)
+    # Inject the raw token so callers (account_actions) know what was used.
+    record["_access_token"] = token
+    return record
 
 
 def require_site_full_user(user: dict = Depends(require_user)) -> dict:
@@ -950,6 +1044,148 @@ def _user_display_name(user: dict) -> str | None:
     parts = [value.strip() for value in (first, last)
              if isinstance(value, str) and value.strip()]
     return " ".join(parts) or None
+
+
+@app.get("/api/gmi/bea/industry/{industry_code}")
+def gmi_bea_industry_current(
+    industry_code: str,
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Authenticated BEA GVC read *availability*, never unadmitted industry data.
+
+    The current Data OS owner alone qualifies original L0/L1 native bytes and
+    correction clocks. That source is not installed, so this route deliberately
+    exposes only an uncacheable typed UNAVAILABLE packet. A subsequent owner's
+    accepted native-reader binding is needed before any data-serving expansion.
+    """
+    from engine.market_ontology.bea_gvc_current import (
+        candidate_packet_bytes, current_industry_candidate,
+        is_exact_source_industry_code,
+    )
+    from lib.dataos.registry import load_registry
+    from app.paywall import enforce_site_full
+
+    # This is a paid descriptive-data desk, not a switch-optional registered
+    # route. Reuse the incumbent paywall's always-on premium entitlement check.
+    # Refuse free users BEFORE revealing source registry availability.
+    enforce_site_full(user, always=True)
+
+    # Distinguish an invalid CLIENT query (422) from malformed SERVER-side
+    # native/source evidence (503). Both checks happen before any source read.
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(
+            422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    # The route is CURRENT-only: never ignore a historical/as-of query while
+    # returning the retrospective May-2026 edition.
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    try:
+        # The canonical Data OS registry path is owned by lib/dataos/registry.py.
+        registry = load_registry()
+        packet = current_industry_candidate(
+            registry, industry_code_exact=industry_code,
+        )
+        if packet["status"] != "UNAVAILABLE":
+            # This endpoint has no owner-bound original-byte read capability.
+            # Never return a caller-forged "positive" candidate in a live API.
+            raise HTTPException(
+                503, detail={"error": "BEA_NATIVE_OWNER_READ_NOT_ADMITTED"})
+        payload = candidate_packet_bytes(packet)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        # Coarsen the SERVER failure to its class, never log the original path
+        # or user/source contents. The client gets a stable typed 503.
+        log.warning("gmi BEA native source refusal (%s)", type(exc).__name__)
+        raise HTTPException(
+            503, detail={"error": "BEA_SOURCE_REGISTRY_UNAVAILABLE"}) from None
+    return Response(
+        content=payload, media_type="application/json", status_code=503,
+        headers={"Cache-Control": "private, no-store"},
+    )
+
+
+def _gmi_bea_static_response(file_name: str, media_type: str) -> Response:
+    """Serve only a fixed, reviewed UI source file; not a data workspace file."""
+    allowed_assets = {
+        "gmi_bea_view.html": "text/html",
+        "gmi_bea_view.js": "application/javascript",
+        "gmi_bea_view.css": "text/css",
+    }
+    try:
+        # Fixed source-asset allowlist; no browser-supplied filesystem path.
+        if allowed_assets.get(file_name) != media_type:
+            raise ValueError("unexpected static asset")
+        content = Path(__file__).with_name(file_name).read_bytes()
+        if not content or len(content) > 131072:
+            raise ValueError("unexpected static view byte size")
+    except Exception as exc:
+        log.warning("gmi BEA UI unavailable (%s)", type(exc).__name__)
+        raise HTTPException(
+            503, detail={"error": "BEA_HUMAN_VIEW_UNAVAILABLE"}) from None
+    headers = {
+        "Cache-Control": "private, no-store",
+        "X-Content-Type-Options": "nosniff",
+    }
+    if media_type == "text/html":
+        headers["Content-Security-Policy"] = (
+            "default-src 'none'; script-src 'self'; style-src 'self'; "
+            "connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; "
+            "form-action 'self'"
+        )
+        headers["Referrer-Policy"] = "no-referrer"
+    return Response(content=content, media_type=media_type, headers=headers)
+
+
+@app.get("/api/gmi/bea/industry/{industry_code}/view")
+def gmi_bea_industry_human_view(
+    industry_code: str,
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Paid human shell; source values come ONLY from the incumbent BEA API."""
+    from app.paywall import enforce_site_full
+    from engine.market_ontology.bea_gvc_current import is_exact_source_industry_code
+
+    enforce_site_full(user, always=True)
+    if not is_exact_source_industry_code(industry_code):
+        raise HTTPException(422, detail={"error": "UNSAFE_EXACT_INDUSTRY_CODE"})
+    if request.query_params:
+        raise HTTPException(
+            422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    # The HTML is source-free. Browser calls the existing paid availability API,
+    # which is still typed UNAVAILABLE until native owner admission.
+    return _gmi_bea_static_response("gmi_bea_view.html", "text/html")
+
+
+@app.get("/api/gmi/bea/assets/view.js")
+def gmi_bea_industry_human_script(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin UI logic. Never serves provider/source files."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.js", "application/javascript")
+
+
+@app.get("/api/gmi/bea/assets/view.css")
+def gmi_bea_industry_human_styles(
+    request: Request,
+    user: dict = Depends(require_user),
+) -> Response:
+    """Fixed same-origin styles; the existing paid authority remains controlling."""
+    from app.paywall import enforce_site_full
+
+    enforce_site_full(user, always=True)
+    if request.query_params:
+        raise HTTPException(422, detail={"error": "BEA_CURRENT_ONLY_NO_QUERY_PARAMETERS"})
+    return _gmi_bea_static_response("gmi_bea_view.css", "text/css")
 
 
 @app.get("/api/me")
@@ -993,7 +1229,8 @@ _PLAN_LABELS = {"free": "Free", "essential": "Essential", "insider": "Essential"
 
 
 @app.get("/api/account")
-def account(user: dict = Depends(require_user)) -> dict:
+def account(user: dict = Depends(require_user),
+            authorization: str | None = Header(default=None)) -> dict:
     """Plan-display payload for the shared account.js card — macro-hosted, so the macro site
     no longer depends on the Terminal repo for plan display (masterplan §3.2 / MNZ-OD4)."""
     user_id = user.get("id") or user.get("email") or ""
@@ -1003,9 +1240,34 @@ def account(user: dict = Depends(require_user)) -> dict:
         ent = billing.read_entitlement(user_id)
     except Exception:  # noqa: BLE001
         pass
+    try:
+        # The two lazy imports live INSIDE this guard, not above it. app/main.py already
+        # models `app.account_prefs` failing to import — its router mount below is wrapped
+        # in try/except and only warns — and in that degraded state an unguarded import here
+        # would turn the whole account payload into a 500 over one optional field. Same
+        # convention as `from app import billing` four lines up.
+        from lib import team_membership  # noqa: PLC0415
+        from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+        # Use the resolved token from require_user (which handles both Bearer and cookie).
+        # authorization Header may be absent when only the session cookie was present.
+        # Fall back to extracting from the header when callers bypass require_user (direct
+        # route-level tests; production path always passes through require_user).
+        caller_token = user.get("_access_token") or team_membership.extract_bearer(authorization)
+        teams = team_membership.fetch_caller_teams(
+            caller_token,
+            str(user.get("id") or ""),
+            _supabase(),
+        )
+    except Exception:  # noqa: BLE001 — import, network or raise: a team-read fault never 500s
+        teams = {"status": "unavailable", "items": [], "truncated": False}
+    if not isinstance(teams, dict) or teams.get("status") not in {"ok", "unavailable"}:
+        teams = {"status": "unavailable", "items": [], "truncated": False}
     tier = ent["tier"]
     return {
         "authenticated": True,
+        # Stable Supabase auth user id. account.js keys its pending-preference fence on
+        # it (site-20 S1), falling back to the email only when the id is absent.
+        "id": user.get("id"),
         "name": _user_display_name(user),
         "email": user.get("email"),
         "email_confirmed": bool(user.get("email_confirmed_at") or user.get("confirmed_at")),
@@ -1025,6 +1287,9 @@ def account(user: dict = Depends(require_user)) -> dict:
             "theme": (user.get("user_metadata") or {}).get("theme"),
         },
         "plans_url": "/plans.html",
+        # Caller-scoped team membership (B-F12-B5-3a). RLS-scoped PostgREST read;
+        # fail-closed to status=unavailable rather than an empty list that reads as "no teams".
+        "teams": teams,
     }
 
 
@@ -1380,6 +1645,9 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # already returned — ZERO extra network calls. Server-derived like user_email, so
         # the body can never set it; a guest record carries none and reads as {}.
         account_prefs=user_prefs.read_user_prefs(user),
+        # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
+        # by require_user as `_access_token`; a guest has none. Never re-extracted here.
+        user_jwt="" if is_guest else (user.get("_access_token") or ""),
     )
 
     if result.get("quota_exhausted"):
@@ -1449,6 +1717,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             guest_aid=guest_aid,
             guest_ip=guest_ip,
             account_prefs=account_prefs,
+            # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
+            user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.
@@ -1575,6 +1845,8 @@ _CHART_STATE_BODY_MAX = 64 * 1024   # ~64KB serialized body cap (reject bigger s
 
 class ChartStateRequest(BaseModel):
     client: str = Field(..., max_length=32, description="Chart client id, e.g. 'terminal'")
+    origin_id: str = Field("", max_length=64, description="Opaque ai-context mount id; empty for legacy clients")
+    context_revision: int | None = Field(None, ge=0, description="ai-context revision for the mirrored chart state")
     session: dict = Field(..., description="Current chart session (symbol/tf/indicators/range/capabilities/drawings)")
     acks: list[dict] | None = Field(None, description="Optional command acks with fit metrics")
 
@@ -1582,7 +1854,12 @@ class ChartStateRequest(BaseModel):
     def _bound_body(self) -> "ChartStateRequest":
         """Reject an oversized payload — the session/acks JSON must fit the body cap."""
         try:
-            size = len(json.dumps({"session": self.session, "acks": self.acks or []}, default=str))
+            size = len(json.dumps({
+                "origin_id": self.origin_id,
+                "context_revision": self.context_revision,
+                "session": self.session,
+                "acks": self.acks or [],
+            }, default=str))
         except Exception:  # noqa: BLE001 — unserializable → treat as too large/bad
             raise ValueError("chart state not serializable")
         if size > _CHART_STATE_BODY_MAX:
@@ -1595,14 +1872,22 @@ def brain_chart_state(body: ChartStateRequest,
                       user: dict = Depends(require_user)):
     """Store the latest chart state for this user + client (CMX W2, masterplan §2.2).
 
-    POST body: {client, session, acks?}. Auth: verified user (401 without a valid session).
+    POST body: {client, origin_id?, context_revision?, session, acks?}.
+    Auth: verified user (401 without a valid session).
     No quota is debited — this is telemetry the Brain reads via read_chart_state.
     Response: {ok: true}.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
     client = (body.client or "").strip().lower()[:32] or "terminal"
-    gw.put_chart_state(user_id, client, body.session)
+    gw.put_chart_state(
+        user_id,
+        client,
+        body.session,
+        origin_id=body.origin_id,
+        context_revision=body.context_revision,
+        acks=body.acks,
+    )
     return {"ok": True}
 
 
@@ -1611,11 +1896,15 @@ def brain_threads(user: dict = Depends(require_user)):
     """Return thread list for the authenticated user.
 
     Response: {threads: [{id, title, lane, updated_at}]}
-    Empty list when thread store is absent or user has no threads.
+    Empty list only after a successful empty read; store failure is HTTP 503.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    threads = gw.list_threads(user_id)
+    try:
+        threads = gw.list_threads(user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     return {"threads": threads}
 
 
@@ -1624,11 +1913,15 @@ def brain_thread_detail(thread_id: str, user: dict = Depends(require_user)):
     """Return thread + messages for thread_id owned by the authenticated user.
 
     Response: {thread: {...}, messages: [{role, content, created_at}]}
-    HTTP 404 if not found or not owner.
+    HTTP 404 if not found or not owner; HTTP 503 if history cannot be read.
     """
     gw = _brain_module()
     user_id = user.get("id") or user.get("email") or "unknown"
-    result = gw.get_thread(thread_id, user_id)
+    try:
+        result = gw.get_thread(thread_id, user_id)
+    except gw.ThreadStoreUnavailable:
+        raise HTTPException(503, "research history temporarily unavailable",
+                            headers={"Cache-Control": "no-store"}) from None
     if result is None:
         raise HTTPException(404, "thread not found or not authorized")
     return result
@@ -1740,7 +2033,8 @@ def _portfolio_load_holdings(uid: str) -> tuple[list[dict], str]:
     Positions mode first: open portfolio_positions (status=open) → shares + entry_price
     (exactly like brain_gateway._tool_get_watchlist). When there are no open positions,
     fall back to the watchlist symbols (equal-weight; shares/entry_price None). Reads via
-    the gateway's service-role _sb_get; any error → empty list (→ empty-book brief).
+    the gateway's service-role `_sb_get`; a failed read returns `unspecified`, and
+    the consuming endpoint fails closed before composing or caching a brief.
 
     W6 / packet amendment A8: this function is the ONLY place that knows which of the two
     queries answered, so it is the only place that can name the population. It is
@@ -1805,7 +2099,8 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     """Pro-only personalized daily portfolio brief (portfolio_brief.v2).
 
     401 (require_user) → not signed in. 403 {error:pro_required,tier} → not Pro.
-    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt.
+    503 {error:ctx_unavailable} → the nightly ctx artifact is missing/corrupt;
+    503 {error:portfolio_store_unavailable} → private holdings did not answer.
     Cache: in-process per (uid, ctx-file-mtime, holdings fingerprint), TTL 300s;
     Cache-Control private,no-store.
     """
@@ -1832,6 +2127,15 @@ def portfolio_brief(response: Response, user: dict = Depends(require_user)):
     # Holdings first: the population they carry is part of the cache key (see
     # _holdings_fingerprint), so the lookup cannot happen before the load.
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # The private store did not answer. An unknown book is NOT an empty book: a
+        # 200 here would be composed (and cached for 5 min) as "add names to your
+        # watchlist" — the exact seam Terminal#169 / macro#6819 (C2, 2026-10-04)
+        # named. Fail closed before composing or caching; the Terminal maps 503 to
+        # its existing "unavailable" state and never shows an empty-book CTA.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
 
     now = time.monotonic()
     ckey = (uid, mtime, _holdings_fingerprint(holdings, population))
@@ -1892,7 +2196,8 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
     Body: {"previous": <state_digest from an earlier brief>}. A missing/blank previous
     is a FIRST visit and returns an empty change list — never a fabricated "everything
     is new". 401 → not signed in. 403 {error:pro_required,tier} → not Pro (same gate as
-    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx unavailable.
+    the brief; this endpoint reads the same Pro-tier ctx). 503 → ctx or private holdings
+    unavailable; no change digest is emitted from unknown state.
     """
     response.headers["Cache-Control"] = "private, no-store"
     uid = user.get("id") or user.get("email") or ""
@@ -1918,6 +2223,12 @@ def portfolio_changes(response: Response, payload: dict = Body(default=None),  #
         raise HTTPException(503, "portfolio changes unavailable") from exc
 
     holdings, population = _portfolio_load_holdings(uid)
+    if population == "unspecified":
+        # Same boundary as the brief: a failed read must not diff as "every name
+        # left your book" against the client's stored digest.
+        raise HTTPException(
+            503, detail={"error": "portfolio_store_unavailable"}
+        )
     tickers = [r.get("ticker") for r in holdings if isinstance(r, dict)]
     current = snapshot_state(ctx, tickers)
 
@@ -2174,6 +2485,32 @@ app.include_router(earnings_router)
 from app.company_intelligence import router as company_intelligence_router  # noqa: E402
 app.include_router(company_intelligence_router)
 
+# Authenticated private facts retain their independent entitlement and source-owner gate.
+from app.company_disclosures import router as company_disclosures_router  # noqa: E402
+app.include_router(company_disclosures_router)
+# Current identity consumes the incumbent committed Data OS generation. This
+# independent capability creates no disclosure authority or private Store.
+from engine.company_intelligence.current_context_runtime import CommittedCompanyContextOwner  # noqa: E402
+app.state.company_context_owner = CommittedCompanyContextOwner(REPO)
+from app.company_disclosures import PrivateDisclosureReader  # noqa: E402
+from engine.company_intelligence.issuer_disclosure_owner import (  # noqa: E402
+    CommittedDisclosureSource, CurrentDisclosureOwner, ReadOnlyLocalObjects,
+)
+_company_private_root = Path('/var/lib/macro-company-intelligence')
+_company_disclosure_owner = CurrentDisclosureOwner(
+    CommittedDisclosureSource(REPO, app.state.company_context_owner),
+    ReadOnlyLocalObjects(_company_private_root / 'state'))
+app.state.company_disclosure_reader = PrivateDisclosureReader(
+    _company_disclosure_owner,
+    lambda: ReadOnlyLocalObjects(_company_private_root / 'artifacts'),
+    _company_disclosure_owner)
+
+# Private low-latency ticker-news reads. The router authenticates + enforces
+# site_full, then independently fails closed on feed-specific display rights
+# before opening the qbus store read-only.
+from app.ticker_news import router as ticker_news_router  # noqa: E402
+app.include_router(ticker_news_router)
+
 # Bounded localhost projection of ONE regular-session quote for the static
 # stock dossiers.  Market-data authority stays with the Terminal Quote Plane —
 # this owns no store, socket, scheduler, or vendor credential, and it may only
@@ -2195,6 +2532,14 @@ app.include_router(intel_hub_market_pulse_router)
 from app.market_memory import router as market_memory_router  # noqa: E402
 app.include_router(market_memory_router)
 
+# F04-X1 WTI Live Trace. /ontology.html is a public shell holding no current
+# value; this is the only route that serves one, behind the same
+# require_user -> enforce_site_full(always=True) authority as the desks above.
+# It composes read-only over the existing transmission artifacts and owns no
+# store, cache, scheduler or second evaluation.
+from app.ontology_explorer import router as ontology_explorer_router  # noqa: E402
+app.include_router(ontology_explorer_router)
+
 # Filing Forensics private state transport. The public page is only a shell;
 # this route enforces the same authenticated site_full entitlement as the paid
 # site before reading the private Research Vault bucket. These are paid product
@@ -2205,7 +2550,7 @@ app.include_router(market_memory_router)
 # paid endpoint: no startup
 # error, no log line, nothing anybody would attribute to a renamed dependency
 # or a missing optional package on the VPS.
-from app.forensics import router as forensics_router  # noqa: E402
+from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
 
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
@@ -2227,6 +2572,14 @@ app.include_router(biocatalyst_router)
 from app.prophet_lab import router as prophet_lab_router  # noqa: E402
 app.include_router(prophet_lab_router)
 
+# B03 reads the existing uncapped observation input only after site_full auth.
+from app.prophet_observations import router as prophet_observations_router  # noqa: E402
+app.include_router(prophet_observations_router)
+
+# Read-only DailyBrief uses the original producer after site_full authentication.
+from app.prophet_daily_brief import router as prophet_daily_brief_router  # noqa: E402
+app.include_router(prophet_daily_brief_router)
+
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
 # calculate financing terms, capacity, runway, or probability in the API tier.
@@ -2235,6 +2588,12 @@ try:
     app.include_router(capital_structure_router)
 except Exception as _capital_structure_exc:  # noqa: BLE001
     log.warning("capital structure router not mounted: %r", _capital_structure_exc)
+
+try:
+    from app.integrated_answer import router as integrated_answer_router  # noqa: E402
+    app.include_router(integrated_answer_router)
+except Exception as _integrated_answer_exc:  # noqa: BLE001
+    log.warning("integrated answer router not mounted: %r", _integrated_answer_exc)
 
 # Warm the SHARED corpus cache off the request path (Analyst OS W4). The chat
 # tool's mode="report" and the vault routes now read one process-wide copy
@@ -2338,6 +2697,25 @@ try:
 except Exception as _prefs_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("account prefs router not mounted: %r", _prefs_exc)
+
+# ---------------------------------------------------------------------------
+# Account actions (MO-B F12-13 — app/account_actions.py): POST
+# /api/account/{password,email,signout-everywhere,delete}. The other four calls
+# templates/account.js has been making since the account card shipped, none of
+# which had a handler here — so every control on the panel was dead. Bearer-authed
+# through require_user and mounted right after account_prefs, for the same reason:
+# both must sit AFTER that definition so the router can lazily reuse the canonical
+# Supabase bearer verifier without an import cycle.
+# ---------------------------------------------------------------------------
+try:
+    from app.account_actions import router as account_actions_router  # noqa: E402
+    app.include_router(account_actions_router)
+except Exception as _account_actions_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "account actions router not mounted (account panel controls unavailable): %r",
+        _account_actions_exc,
+    )
 
 # ---------------------------------------------------------------------------
 # Private Options Issue Desk (R6.2-A): bearer-authenticated operator review only.

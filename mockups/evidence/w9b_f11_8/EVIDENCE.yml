@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/mm_brain.js
+  - site/mm_brain.js
+  - site/theme.js
+manifest: mockups/evidence/w9b_f11_8/manifest.json

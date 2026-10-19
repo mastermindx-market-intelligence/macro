@@ -100,6 +100,14 @@ _DRUMBEAT_MIN_HITS = 2    # tier-1 stability hits in 7d to fire
 _FACILITY_MIN_HITS = 1    # tier-1 facility hits in 30d to fire
 _CASCADE_ACCEL_FIRE = 0.20  # board-proposal w/w acceleration to fire (+20%)
 
+# Quiet-branch display lexicon for policy_impulse slugs. EN avoids the firing
+# verb "easing"; ZH is a real word, never the interpolated English slug.
+_IMPULSE_QUIET = {
+    "easing": ("accommodative", "宽松"),
+    "tightening": ("restrictive", "收紧"),
+    "neutral": ("neutral", "中性"),
+}
+
 
 def _ledger_write_ok() -> bool:
     """Forward ledgers advance ONLY on the nightly asia lane (CN_LANE=asia) — house law: nightly
@@ -203,15 +211,20 @@ def _fmt_pct(x: float) -> str:
 
 
 def _tell(key: str, state: str, strength: float = 0.0, value_fmt: str | None = None,
-          receipt_en: str = "", receipt_zh: str = "", have_data: bool = True) -> dict:
+          receipt_en: str = "", receipt_zh: str = "", have_data: bool = True,
+          value_fmt_en: str | None = None, value_fmt_zh: str | None = None) -> dict:
     """Assemble one tell dict from the registry meta + evaluated firing state."""
     tier, weight, label_en, label_zh = _TELL_META[key]
+    v_en = value_fmt_en if value_fmt_en is not None else value_fmt
+    v_zh = value_fmt_zh if value_fmt_zh is not None else v_en
     return {
         "key": key, "tier": tier,
         "label_en": label_en, "label_zh": label_zh,
         "state": state,                       # firing | quiet | null
         "strength": round(_clamp01(strength), 4) if have_data else 0.0,
-        "value_fmt": value_fmt,
+        "value_fmt": v_en,
+        "value_fmt_en": v_en,
+        "value_fmt_zh": v_zh,
         "receipt_en": receipt_en, "receipt_zh": receipt_zh,
         "have_data": bool(have_data), "weight": weight,
     }
@@ -335,10 +348,13 @@ def _eval_market_rescue() -> tuple[dict, str | None]:
     elif impulse == "targeted_support":
         strength, lab_en, lab_zh = 0.6, "targeted support", "定向支持"
     else:
-        return _tell("market_rescue", "quiet", strength=0.0, value_fmt=impulse,
-                     receipt_en=f"Policy impulse: {impulse}", receipt_zh=f"政策脉冲：{impulse}",
+        lab_en, lab_zh = _IMPULSE_QUIET.get(impulse, (str(impulse).replace("_", " "), "中性"))
+        return _tell("market_rescue", "quiet", strength=0.0,
+                     value_fmt=lab_en, value_fmt_en=lab_en, value_fmt_zh=lab_zh,
+                     receipt_en=f"Policy impulse: {lab_en}", receipt_zh=f"政策脉冲：{lab_zh}",
                      have_data=True), None
-    return _tell("market_rescue", "firing", strength=strength, value_fmt=lab_en,
+    return _tell("market_rescue", "firing", strength=strength,
+                 value_fmt=lab_en, value_fmt_en=lab_en, value_fmt_zh=lab_zh,
                  receipt_en=f"Policy impulse: {lab_en}", receipt_zh=f"政策脉冲：{lab_zh}",
                  have_data=True), None
 
@@ -469,8 +485,14 @@ def _eval_pboc_posture() -> tuple[dict, str | None]:
         return _tell("pboc_posture", "null", have_data=False), \
             "pboc_posture: PBoC stance or FR007 z unavailable"
     fires = stance in ("easing", "neutral") and z <= _FR007_STRESS_Z
-    rec_en = f"PBoC easing into tight liquidity (FR007 z {z:+.2f})"
-    rec_zh = f"央行逆势宽松，资金面偏紧（FR007 z {z:+.2f}）"
+    fired_en = f"PBoC easing into tight liquidity (FR007 z {z:+.2f})"
+    fired_zh = f"央行逆势宽松，资金面偏紧（FR007 z {z:+.2f}）"
+    # Packet item 14: FR007 "easing into stress" sign is UNSETTLED — quiet copy
+    # is observable-only (the z, and that this tell is not firing). No causal
+    # or directional reading until the engine lane rules.
+    quiet_en = f"FR007 z {z:+.2f} — posture tell not firing"
+    quiet_zh = f"FR007 z {z:+.2f} — 姿态信号未触发"
+    rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("pboc_posture", "firing" if fires else "quiet",
                  strength=_clamp01(-z / 3.0) if fires else 0.0, value_fmt=f"{z:+.2f}z",
                  receipt_en=rec_en, receipt_zh=rec_zh, have_data=True), None
@@ -501,10 +523,14 @@ def _eval_buyback_cascade(ledger: pd.DataFrame | None) -> tuple[dict, str | None
     cur, prev = float(this_wk.mean()), float(last_wk.mean())
     accel = (cur - prev) / max(prev, 1.0)
     fires = accel >= _CASCADE_ACCEL_FIRE
-    rec_en = f"SOE buyback proposals accelerating (+{accel * 100:.0f}% w/w)"
-    rec_zh = f"国企回购预案加速（环比+{accel * 100:.0f}%）"
+    pct = accel * 100
+    fired_en = f"SOE buyback proposals accelerating ({pct:+.0f}% w/w)"
+    fired_zh = f"国企回购预案加速（环比{pct:+.0f}%）"
+    quiet_en = f"SOE buyback proposals {pct:+.0f}% w/w"
+    quiet_zh = f"国企回购预案环比{pct:+.0f}%"
+    rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("buyback_cascade", "firing" if fires else "quiet",
-                 strength=_clamp01(accel) if fires else 0.0, value_fmt=f"+{accel * 100:.0f}%",
+                 strength=_clamp01(accel) if fires else 0.0, value_fmt=f"{pct:+.0f}%",
                  receipt_en=rec_en, receipt_zh=rec_zh, have_data=True), None
 
 
@@ -527,10 +553,27 @@ def _eval_margin_recovery() -> tuple[dict, str | None]:
     fires = prior_slope < 0 and last_tick > 0
     # Strength: size of the up-tick relative to balance, scaled to be meaningful at ~0.1%/session.
     strength = _clamp01((last_tick / base) * 1000.0) if fires else 0.0
-    rec_en = "Margin balance turning up (leverage returning)"
-    rec_zh = "两融余额企稳回升（杠杆资金回流）"
+    fired_en = "Margin balance turning up (leverage returning)"
+    fired_zh = "两融余额企稳回升（杠杆资金回流）"
+    mag = abs(last_tick)
+    # fin_balance is 亿元. EN glance converts 亿→¥bn via /10 (same arithmetic
+    # as FX 亿美元→USD bn); ZH keeps 亿.
+    mag_bn = mag / 10.0
+    if last_tick < 0:
+        quiet_en = f"Margin balance fell ¥{mag_bn:.1f}bn last session"
+        quiet_zh = f"两融余额上一交易日减少{mag:.0f}亿"
+    elif last_tick > 0:
+        quiet_en = f"Margin balance rose ¥{mag_bn:.1f}bn last session"
+        quiet_zh = f"两融余额上一交易日增加{mag:.0f}亿"
+    else:
+        quiet_en = "Margin balance unchanged last session"
+        quiet_zh = "两融余额上一交易日持平"
+    rec_en, rec_zh = (fired_en, fired_zh) if fires else (quiet_en, quiet_zh)
     return _tell("margin_recovery", "firing" if fires else "quiet",
-                 strength=strength, value_fmt=f"{last_tick:+.0f}亿",
+                 strength=strength,
+                 value_fmt=f"¥{last_tick/10:+.1f}bn",
+                 value_fmt_en=f"¥{last_tick/10:+.1f}bn",
+                 value_fmt_zh=f"{last_tick:+.0f}亿",
                  receipt_en=rec_en, receipt_zh=rec_zh, have_data=True), None
 
 

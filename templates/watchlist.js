@@ -186,11 +186,39 @@
     try {
       localStorage.setItem(storageKey(), JSON.stringify(blob));
       if (!storageOK) { storageOK = true; hideBanner(); }
+      growthSavedCheck();   // CA1A: the write above IS the acknowledgement
     } catch (e) {
       // quota / private mode: keep working in-memory but tell the user once
       storageOK = false; showBanner(L('noStore'));
     }
   }, 200);
+
+  /* ---- CA1A growth producers (WS:COMMERCIAL-ACTIVATION, config/growth_events.yml) --
+     Emission law (research/commercial_activation/CLAUDE_ORCHESTRATOR_HANDOFF_V1_CA1A_
+     EVENT_SPINE_20260903.md §9): near misses NEVER emit — a duplicate symbol is not an
+     add, a storage-blocked add is not saved, a pre-write optimistic state is not an
+     acknowledgement, and a throwing beacon can never touch Watchlist state (every emit
+     is inside its own try via mmTrackGrowth). mmTrackGrowth (theme.js) exists only on
+     the canonical origin, carries the stable eid + schema envelope, and is
+     fire-and-forget. */
+  function growthEmit(wire, meta) {
+    try { if (window.mmTrackGrowth) window.mmTrackGrowth(wire, meta); } catch (e) {}
+  }
+  // First threshold crossing per list state: armed while the persisted list is below
+  // three distinct symbols, fires once on the acknowledged crossing, re-arms only
+  // after the list drops below three again. Initialized from the BOOT read below so a
+  // returning visitor whose saved list already holds >=3 symbols never re-emits on
+  // load — their crossing was counted when it happened.
+  var growthSavedArmed = null;
+  function growthSavedRebase() { growthSavedArmed = blob.items.length < 3; }
+  function growthSavedCheck() {
+    var n = blob.items.length;
+    if (growthSavedArmed === null) growthSavedArmed = true;  // never re-read before boot rebase
+    if (n >= 3 && growthSavedArmed) {
+      growthSavedArmed = false;
+      growthEmit('watchlist.saved', { symbol_count: n, list_count: 1, storage: 'local' });
+    } else if (n < 3) { growthSavedArmed = true; }
+  }
 
   function touch() { blob.updated = nowISO(); persist(); }
   // canonical signature of the user-meaningful state — everything EXCEPT `updated`.
@@ -208,10 +236,24 @@
   }
   function has(t) { return blob.items.some(function (it) { return it.t === t; }); }
   function add(t) {
-    if (!t || has(t)) return false;
+    if (!t || has(t)) return false;   // duplicate symbol: no row, no event (CA1A near-miss law)
     blob.items.push({ t: t, added: nowISO(), note: '' });
     blob.order.push(t);
-    touch(); return true;
+    touch();
+    // CA1A: the in-memory store accepted a NEW distinct symbol. symbol_added fires
+    // here (persistence path still eligible = storageOK); the threshold `saved`
+    // event does NOT — it waits for the localStorage acknowledgement in persist().
+    if (storageOK) {
+      growthEmit('watchlist.symbol_added',
+                 { symbol: String(t).slice(0, 64), count_after: blob.items.length, storage: 'local' });
+      try {
+        if (!sessionStorage.getItem('mm.pact.watchlist_add')) {
+          sessionStorage.setItem('mm.pact.watchlist_add', '1');
+          growthEmit('personal.act', { act: 'watchlist_add', surface: 'watchlist' });
+        }
+      } catch (e) { /* no sessionStorage -> no once-per-session latch -> skip, never spam */ }
+    }
+    return true;
   }
   function remove(t) {
     blob.items = blob.items.filter(function (it) { return it.t !== t; });
@@ -1766,14 +1808,7 @@
 
     // mode-switch counts are what the user ACTUALLY has — an anonymous visitor has no
     // saved lists, so the count is ABSENT rather than borrowed
-    var pfN = el('ws_modes') && el('ws_modes').querySelector('[data-count="pf"]');
-    var wlN = el('ws_modes') && el('ws_modes').querySelector('[data-count="wl"]');
-    if (pfN) {
-      var pfC = pfCount();
-      // `null` = genuinely unknown (A1A §10) — an em dash, never a borrowed/fake number
-      pfN.textContent = (pfC == null) ? '—' : String(pfC);
-    }
-    if (wlN) wlN.textContent = (state.indexOf('anon') === 0) ? '' : String(listsCount());
+    refreshModeCounts();
 
     if (mode === 'watchlists') {
       // Watchlist names feed FX ONLY in this mode. Doing it on every render —
@@ -1842,6 +1877,20 @@
      file's OWN Watchlist blob — used to be the answer whenever window.PF was
      unavailable). Returns `null`, never a borrowed or fabricated number, when the
      canonical count is genuinely unknown; the caller shows that as unavailable. */
+  /* A1B same-page badge refresh: repaints the `#ws_modes` pf/wl counts in place
+     without a full render() pass, so a post-save Portfolio count updates on the
+     page the user is already on. Reuses the exact null/em-dash and anon rules
+     render() applies inline (A1A §10) — this just makes them callable standalone. */
+  function refreshModeCounts() {
+    var pfN = el('ws_modes') && el('ws_modes').querySelector('[data-count="pf"]');
+    var wlN = el('ws_modes') && el('ws_modes').querySelector('[data-count="wl"]');
+    if (pfN) {
+      var pfC = pfCount();
+      // `null` = genuinely unknown (A1A §10) — an em dash, never a borrowed/fake number
+      pfN.textContent = (pfC == null) ? '—' : String(pfC);
+    }
+    if (wlN) wlN.textContent = (wsState().indexOf('anon') === 0) ? '' : String(listsCount());
+  }
   function pfCount() {
     if (window.PF && window.PF.count) return window.PF.count();
     return null;
@@ -1867,9 +1916,15 @@
 
   // ---- search-to-add ------------------------------------------------------
   var sugg, q, sel = -1, sItems = [];
+  // Module-level so a recovered index read (S3-01) can hand search a fresh list by
+  // calling wireSearch() again — that swaps the list and re-opens the widen; the
+  // listeners below are bound once.
+  var searchList = [], widened = false, searchWired = false;
   function wireSearch(list) {
     if (!q || !sugg) return;
-    var searchList = list, widened = false;
+    searchList = list; widened = false;
+    if (searchWired) return;
+    searchWired = true;
 
     function paint() {
       var v = q.value.trim().toLowerCase(); sel = -1;
@@ -1891,6 +1946,9 @@
         widened = true;
         window.SD.loadIndexes(['us', 'cn', 'hk', 'ca', 'intl']).then(function (r) {
           searchList = r.list; idxBy = r.byTicker; paint();
+          // a market that failed to load is asked for again on a later keystroke
+          // (the loader itself holds the re-read back until its failure window closes)
+          if (window.SD.indexRetryAt && window.SD.indexRetryAt(['us', 'cn', 'hk', 'ca', 'intl']) != null) widened = false;
         });
       }
       sugg.innerHTML = sItems.map(function (x, i) {
@@ -2104,6 +2162,7 @@
          SAME id — an early-return here kept the previous blob (the 53-name
          default) on the first click (W4 2026-08-15). */
       blob = readStorage();
+      growthSavedRebase();   // CA1A: a rebind is a new list state — re-arm from it
       render();
       return listId;
     },
@@ -2131,6 +2190,7 @@
     // A1A test seam (§10, §13): the canonical Portfolio count — never Watchlist-
     // derived, never the temporary basket. tests/test_portfolio_truth_a1a_js.py pins it.
     pfCount: pfCount,
+    refreshModeCounts: refreshModeCounts,
     toast: toast,
     render: render,
     hydrate: hydrate,
@@ -2149,6 +2209,7 @@
     countEl = el('wl_count');
 
     blob = readStorage();
+    growthSavedRebase();   // CA1A: a returning >=3 list was counted when it crossed — never on load
     if (!storageProbe()) showBanner(L('noStore'));
 
     // PRE-W2 markup: wire and render exactly what shipped before this wave, then stop.
@@ -2355,14 +2416,13 @@
        same path as an index failure and paint the workspace bare, which is exactly
        the anonymous funnel state. */
     if (!window.SD || !window.SD.loadIndexes) { render(); return; }
-    var markets = { us: 1 };
-    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
-    window.SD.loadIndexes(Object.keys(markets)).then(function (r) {
+    window.SD.loadIndexes(blobMarkets()).then(function (r) {
       idxBy = r.byTicker;
       wireSearch(r.list);
       consumeShareHash();   // a #wl= link merges before first visible paint
-      publishSeenDiff();
+      publishSeenDiffOnce();
       render();
+      recoverIndex(render);
     }).catch(function () { render(); });
   }
 
@@ -2391,15 +2451,14 @@
     document.addEventListener('bk-change', lgRender);
 
     if (!window.SD || !window.SD.loadIndexes) { lgRender(); return; }
-    var markets = { us: 1 };
-    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
-    window.SD.loadIndexes(Object.keys(markets)).then(function (r) {
+    window.SD.loadIndexes(blobMarkets()).then(function (r) {
       idxBy = r.byTicker;
       wireSearch(r.list);
       if (q) q.placeholder = L('lgPh');
       consumeShareHash();
       lgRender();
-      publishSeenDiff();
+      publishSeenDiffOnce();
+      recoverIndex(lgRender);
     }).catch(function () { lgRender(); });
   }
 
@@ -2419,6 +2478,47 @@
       else { ta.value = url; ta.select(); document.execCommand && document.execCommand('copy'); refresh(); done(); }
     });
     impBtn.addEventListener('click', function () { importCode(imp.value.trim()); imp.value = ''; });
+  }
+
+  /* ---- index recovery (S3-01) ---------------------------------------------
+     loadIndexes() is fail-OPEN: a market whose index read failed comes back empty,
+     and both init paths above used to ask exactly once — so one transient failure
+     at page load left the cards nameless and stateless until a reload. The loader's
+     recovery controller re-asks once that market's failure window closes, and again
+     when the tab is shown or the network returns (no polling, and the loader's one
+     shared in-flight read is reused). A recovered read refills the index, the search
+     list, and the page. The share-link merge is NOT re-run: it belongs to the first
+     paint only. */
+  function blobMarkets() {
+    var markets = { us: 1 };
+    if (window.MB) blob.items.forEach(function (it) { markets[window.MB.marketOf(it.t)] = 1; });
+    return Object.keys(markets);
+  }
+  var idxRx = null;
+  function recoverIndex(repaint) {
+    if (!window.SD || !window.SD.indexRecovery) return;
+    if (!idxRx) {
+      idxRx = window.SD.indexRecovery(blobMarkets, function (r) {
+        idxBy = r.byTicker;
+        wireSearch(r.list);
+        publishSeenDiffOnce();
+        repaint();
+      });
+    }
+    idxRx.check();
+  }
+  /* The seen-diff writes the visit snapshot as it diffs, and may run once per load.
+     Run it on a degraded read and the names whose market failed are dropped from the
+     snapshot — the "since your last visit" memory for them is gone, and a later
+     recovered read could not tell what changed. So it waits for the first read in
+     which no market on the list is waiting out a failure; if that never comes this
+     visit, the snapshot is left as it was. */
+  var seenPublished = false;
+  function publishSeenDiffOnce() {
+    if (seenPublished) return;
+    if (window.SD && window.SD.indexRetryAt && window.SD.indexRetryAt(blobMarkets()) != null) return;
+    seenPublished = true;
+    publishSeenDiff();
   }
 
   /* "N changed since your last visit" — computed over the FULL set, never the

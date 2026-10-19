@@ -1,0 +1,111 @@
+{
+  "sources": [
+    {
+      "id": "R1",
+      "kind": "prior_dossier",
+      "locator": "inputs/PROPHET_US_RESEARCH_R1.md",
+      "sha256": "96d0ab34f5db94537fe60b493af166b0c50ca8eac2b89641703d9bb290166465",
+      "depth": "Exact local input hash verified; synthesis uses recorded source evidence and its original access limits."
+    },
+    {
+      "id": "R2",
+      "kind": "prior_dossier",
+      "locator": "inputs/PROPHET_US_MEASUREMENT_R2.md",
+      "sha256": "32bf1ddba37aa269469d7fb641dcf862ff4ea0aad3a567acdffa857cb26de19e",
+      "depth": "Exact local input hash verified; synthesis uses recorded source evidence and its original access limits."
+    },
+    {
+      "id": "R3",
+      "kind": "prior_dossier",
+      "locator": "inputs/PROPHET_US_EARLY_LEADERSHIP_R3.md",
+      "sha256": "4ad7b39e8b4916029755f863d3b56ba0dc30d75ff46d95b031ceb24cb8946ff5",
+      "depth": "Exact local input hash verified; synthesis uses recorded source evidence and its original access limits."
+    },
+    {
+      "id": "R4",
+      "kind": "prior_dossier",
+      "locator": "inputs/PROPHET_US_EARNINGS_CYCLE_R4.md",
+      "sha256": "e9464a12b8faba1e61b2d8ed6cb3d508f7c99efd41a6e3b4ee715a849fd593d2",
+      "depth": "Exact local input hash verified; synthesis uses recorded source evidence and its original access limits."
+    },
+    {
+      "id": "I01",
+      "kind": "canonical_internal",
+      "locator": "https://github.com/mastermindx-market-intelligence/macro/issues/6805#issuecomment-5790671385",
+      "depth": "Final cumulative R4 checkpoint read fresh; navigation/evidence, not live action authority."
+    },
+    {
+      "id": "I02",
+      "kind": "canonical_internal",
+      "locator": "Mastermind@89582a372aa2a57ec500868ce6d79cd156219445/docs/sol_skills/",
+      "depth": "Protected branch and same-pin INDEX/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/CLOSEOUT read."
+    },
+    {
+      "id": "I03",
+      "kind": "canonical_internal",
+      "locator": "macro@c9978765aa0085eba0213430284cb4b41065d4e2/AGENTS.md",
+      "depth": "Lines1–180 read; source reported blobba426238eb93faf478d05e66c5b4168fcc1a74d3. Not full local write boot."
+    },
+    {
+      "id": "I04",
+      "kind": "canonical_internal",
+      "locator": "Mastermind@89582a372aa2a57ec500868ce6d79cd156219445/docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md",
+      "depth": "Lines1–310 read. Planning roles and economic boundaries, no live activation."
+    },
+    {
+      "id": "X01",
+      "kind": "public_primary",
+      "locator": "https://xgboost.readthedocs.io/en/stable/tutorials/learning_to_rank.html",
+      "depth": "Official docs; ranking grouping/relevance semantics, no model fitted."
+    },
+    {
+      "id": "X02",
+      "kind": "public_primary",
+      "locator": "https://proceedings.mlr.press/v70/guo17a.html",
+      "depth": "Primary publisher abstract, calibration motivation, no financial replication."
+    },
+    {
+      "id": "X03",
+      "kind": "public_primary",
+      "locator": "https://www.nber.org/papers/w20592",
+      "depth": "Primary abstract, multiplicity rationale, no new universal numerical promotion bar."
+    },
+    {
+      "id": "X04",
+      "kind": "public_primary",
+      "locator": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "depth": "Official API documentation, not a licensed consensus dataset."
+    },
+    {
+      "id": "X05",
+      "kind": "public_primary",
+      "locator": "https://fred.stlouisfed.org/docs/api/fred/realtime_period.html",
+      "depth": "Official vintage semantics, no data collection."
+    },
+    {
+      "id": "X06",
+      "kind": "public_primary",
+      "locator": "https://www.w3.org/WAI/WCAG21/Understanding/status-messages",
+      "depth": "Official explanation; no conformance test performed."
+    },
+    {
+      "id": "X07",
+      "kind": "public_primary",
+      "locator": "https://web.dev/articles/vitals",
+      "depth": "Official field/lab thresholds, not current Prophet measurements."
+    },
+    {
+      "id": "X08",
+      "kind": "public_primary",
+      "locator": "https://proceedings.mlr.press/v97/geifman19a.html",
+      "depth": "Primary publisher abstract risk/coverage; not financial validation."
+    },
+    {
+      "id": "X09",
+      "kind": "public_primary",
+      "locator": "https://www.census.gov/manufacturing/m3/historical/timeseries.html",
+      "depth": "Official source scope and revision notes; no granular corporate mapping assumed."
+    }
+  ],
+  "reading_limit": "R5 refreshed official references and prior source-bound dossiers. No market empirical study was replicated and no data subscription/entitlement is inferred."
+}

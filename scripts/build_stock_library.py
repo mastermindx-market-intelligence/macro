@@ -13,6 +13,207 @@ Usage: python -m scripts.build_stock_library
 """
 from __future__ import annotations
 
+try:
+    # Round-2 review MINOR-1: this was a bare, unguarded module-level import
+    # while every actual *use* below is wrapped in `except Exception` -- so an
+    # import-time failure in the debt-maturity module (or one of ITS imports)
+    # killed the entire stockdata build before a single ticker was processed,
+    # the exact opposite of the "additive; must not break the stockdata
+    # build" contract this file's own comments state. `_dm_load` is checked
+    # for None at the one call site below.
+    from scripts.build_debt_maturity import load_debt_maturity_facts as _dm_load
+except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
+    _dm_load = None
+
+try:
+    # Pure derived adapter; an import fault must remain additive to the
+    # stock-library build and degrade at its call site below.
+    from engine.capital_need import assemble_capital_need as _cn_assemble
+except Exception:  # noqa: BLE001 -- additive panel
+    _cn_assemble = None
+
+
+def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
+    """Resolve the ``debt_maturity.v1`` block for one ticker (packet
+    B-F09-3). Extracted to a standalone, directly-callable function (round-3
+    review MAJOR-2) so its taxonomy decisions — the ETF/crypto structural
+    short-circuit, and the producer-fault degrade path — can be pinned by a
+    test that calls the REAL production code, not a hand-copied mirror of it
+    that silently stops tracking the source.
+
+    FOUR distinct statuses, never conflated (META-CEO ruling round 2,
+    MAJOR-1) -- an identity GAP is not fetch LAG:
+      * "not_applicable" -- this listing has no SEC filer identity by
+        CONSTRUCTION (crypto, or an ETF/commodity/FX/factor/credit macro
+        proxy carried under the "ETF / macro" sector sentinel `universe()`
+        itself stamps for every non-named curated_extras ticker -- see
+        `universe()`'s "an ETF / macro proxy" branch). No chip, no section:
+        a promise this listing could NEVER keep must never be made, so it
+        is decided here, before any CIK lookup at all.
+      * "unresolved" -- a CIK lookup was attempted (this IS a candidate
+        common-stock/ADR identity) and found nothing. An identity gap in
+        OUR ledger, not evidence the filer doesn't exist -- but also not a
+        "come back soon" promise, since there is no fetch pending to
+        resolve it. Its own terminal branch in the template.
+      * "not_loaded" -- a CIK exists but this producer has never completed
+        a fetch cycle for it (cache file absent), OR the lookup/extract
+        path faulted transiently (round-3 review MAJOR-3: a real filer's
+        transient producer fault must degrade here, never to
+        `not_applicable`, which would silently swallow its null
+        disclosure). The status whose own copy earns the "still catching
+        up, check back soon" promise.
+      * everything else (engine.debt_maturity.extract_maturity_ladder's own
+        "reported" / "no_maturity_facts" / "no_filings" /
+        "identity_mismatch") -- unchanged, a completed fetch cycle.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        # Structural non-filer: crypto and every ETF/macro proxy this
+        # universe carries. Never attempts a CIK lookup for these -- there
+        # is no filer identity to look up. Pure string checks -- nothing
+        # here can raise, so `not_applicable` is never reached through the
+        # except below.
+        return {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
+        from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
+        if _dm_state == "unresolved":
+            return {
+                "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "not_loaded":
+            return {
+                "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "confirmed_no_filings":
+            return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
+        block = _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+        block["fetched_at"] = _dm_facts.get("fetched_at")
+        return block
+    except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
+        # reached the else branch), so a transient fault here (import
+        # error, lookup crash, malformed cache) must degrade to
+        # `not_loaded` -- the status whose own copy already says "still
+        # catching up" -- never to `not_applicable`, which renders no chip
+        # and no section and would silently swallow a real filer's null
+        # disclosure. Loud (line-start ::warning, repo CI-annotation law)
+        # so a systemic fault is visible instead of invisible.
+        print(
+            f"::warning title=stock-library debt-maturity producer fault::{ticker} "
+            f"debt-maturity lookup raised {type(_dm_exc).__name__}: {_dm_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "debt_maturity.v1", "status": "not_loaded", "cik": None,
+            "buckets": [], "total_reported_usd": None, "total_display": None,
+            "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+            "as_of": dm_asof.isoformat(),
+        }
+
+
+def _resolve_cash_runway(ticker: str, sector: str, cr_asof, ladder) -> dict:
+    """Resolve the ``cash_runway.v1`` block for one ticker (packet B-F09-3
+    second slice). Mirrors the taxonomy of ``_resolve_debt_maturity``:
+      * "not_applicable" -- structural non-filer (crypto, ETF/macro).
+      * "unresolved" -- CIK lookup found nothing.
+      * "not_loaded" -- CIK resolved but no cache completed.
+      * "confirmed_no_filings" -- cache confirmed zero SEC filings.
+      * engine.cash_runway.extract_cash_runway's own statuses.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "cash_runway.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _cr_cik, _cr_facts, _cr_state = _dm_load(ticker)
+        from engine.cash_runway import extract_cash_runway as _cr_extract  # noqa: PLC0415
+        if _cr_state == "unresolved":
+            return {
+                "schema": "cash_runway.v1", "status": "unresolved", "cik": None,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "not_loaded":
+            return {
+                "schema": "cash_runway.v1", "status": "not_loaded", "cik": _cr_cik,
+                "cash_usd": None, "cash_display": None, "ocf_usd": None,
+                "capex_usd": None, "free_cash_flow_usd": None,
+                "monthly_burn_usd": None, "runway_months": None,
+                "runway_display": None, "near_term_cover_pct": None,
+                "period": None, "as_of": cr_asof.isoformat(),
+            }
+        if _cr_state == "confirmed_no_filings":
+            return _cr_extract(None, cik=_cr_cik, as_of=cr_asof, ladder=None)
+        block = _cr_extract(_cr_facts, cik=_cr_cik, as_of=cr_asof, ladder=ladder)
+        block["fetched_at"] = _cr_facts.get("fetched_at")
+        return block
+    except Exception as _cr_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        print(
+            f"::warning title=stock-library cash-runway producer fault::{ticker} "
+            f"cash-runway lookup raised {type(_cr_exc).__name__}: {_cr_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "cash_runway.v1", "status": "not_loaded", "cik": None,
+            "cash_usd": None, "cash_display": None, "ocf_usd": None,
+            "capex_usd": None, "free_cash_flow_usd": None,
+            "monthly_burn_usd": None, "runway_months": None,
+            "runway_display": None, "near_term_cover_pct": None,
+            "period": None, "as_of": cr_asof.isoformat(),
+        }
+
+
+def _resolve_capital_need(
+    ticker: str,
+    sector: str,
+    cn_asof,
+    debt_maturity: dict,
+    cash_runway: dict,
+) -> dict:
+    """Compose ``capital_need.v1`` from the existing issuer read models.
+
+    Ticker and sector only preserve the existing non-filer taxonomy; they are
+    never promoted into an issuer identity by this adapter.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        return {"schema": "capital_need.v1", "version": 1, "status": "not_applicable"}
+    try:
+        if _cn_assemble is None:
+            raise RuntimeError("engine.capital_need import failed at module load")
+        return _cn_assemble(debt_maturity, cash_runway, as_of=cn_asof)
+    except Exception as _cn_exc:  # noqa: BLE001 -- additive; never break stockdata
+        print(
+            f"::warning title=stock-library capital-need producer fault::{ticker} "
+            f"capital-need composition raised {type(_cn_exc).__name__}: {_cn_exc} -- "
+            "degrading to unknown",
+            flush=True,
+        )
+        return {
+            "schema": "capital_need.v1",
+            "version": 1,
+            "status": "unknown",
+            "coverage": {"state": "unknown", "reasons": ["producer_fault"]},
+            "issuer": {"issuer_id": None, "security_id": None, "cik": None, "scope": "issuer"},
+            "as_of": cn_asof.isoformat(),
+            "reported": {},
+            "derived": {},
+            "authority": {"class": "context_only", "display_only": True},
+        }
+
+
 import json
 import math
 import logging
@@ -28,6 +229,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
+from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
+from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
 from engine.cycles import analyze, market_vix_context  # noqa: E402
@@ -67,6 +270,7 @@ from lib.ticker_popularity import attach_latest_volume, latest_volume_map  # noq
 from collectors.us_names_zh import load_aliases_zh as _load_us_aliases_zh  # noqa: E402
 from collectors.us_names_zh import load_names_zh as _load_us_names_zh  # noqa: E402
 from collectors.us_names_zh import lookup as _us_name_zh  # noqa: E402
+import scripts.security_state_producer as _security_state_producer  # noqa: E402
 
 # Lineage stamp for the artifact PAIR this module writes: signal_gate.json (the gate) and
 # us_standouts.json (the board, whose rows embed a superset copy of each gate verdict).
@@ -718,106 +922,68 @@ def _apply_delisting(rec: dict, disclosure: dict) -> None:
         conv.pop("potential", None)
         conv["score"] = None
 
+# Security-state owner I/O and orchestration live in the dedicated producer
+# module. This monolith consumes that seam through its private module namespace
+# and intentionally re-exports none of its helpers.
 
-# ---------------------------------------------------------------------------
-# Market OS B1A — security_state.v1 (frozen allowlist: engine.security_state.
-# SECURITY_STATE_TICKERS, AAPL only). Three narrow, import-lazy helpers for
-# the one-ticker owner-read + K1 compile stage wired below, right before the
-# site/stockdata write loop. The pure compile itself lives entirely in
-# engine/security_state.py — everything here is owner I/O + exception
-# containment, never business logic.
-# ---------------------------------------------------------------------------
+def _bind_price_clock(tech: dict, close: pd.Series) -> dict:
+    """Bind only tech.price to its actual source bar; never borrow analysis asof.
 
-def _read_security_state_identity_rows(data_dir: Path) -> dict:
-    """Read the four DECLARED master identity artifacts (config/identity_seams.yml
-    ``master.artifacts``) into the plain dict/row shape
-    ``engine.security_state.compile_security_state`` consumes.
-
-    CIK_LEG_UNOWNED_ACCESS disclosure: ``issuer_cik`` is read directly off this
-    declared artifact column, not through ``lib.dataos.identity.IssuerMaster``
-    (whose ``SecurityIssuerRow`` deliberately omits it). Raises on a genuine
-    read failure (absent ``data/reference/`` in a sparse/CI checkout included)
-    — the caller treats that as an ordinary compile failure, never a build crash.
+    The rich snapshot coerces numeric closes and drops NaNs before choosing its
+    last price. Require the same rounded value and an unambiguous calendar index.
+    Invalid metadata is omitted, preserving the existing price and rounding.
+    This establishes no native currency or cross-field snapshot authority.
     """
-    from engine.security_state import PINNED_ISSUER_ID, PINNED_SECURITY_ID
+    import math
+    from numbers import Real
 
-    ref = data_dir / "reference"
-    security_master = pd.read_parquet(ref / "security_master.parquet")
-    issuer_master = pd.read_parquet(ref / "issuer_master.parquet")
-    issuer_migrations = pd.read_parquet(ref / "issuer_migrations.parquet")
-    security_migrations = pd.read_parquet(ref / "security_migrations.parquet")
-
-    row_df = security_master[security_master["security_id"] == PINNED_SECURITY_ID]
-    security_master_row = row_df.iloc[0].to_dict() if len(row_df) else None
-    issuer_security_ids = security_master[
-        (security_master["issuer_id"] == PINNED_ISSUER_ID) & security_master["security_state"].isna()
-    ]["security_id"].astype(str).tolist()
-    return {
-        "security_master_row": security_master_row,
-        "issuer_master_rows": issuer_master.to_dict("records"),
-        "issuer_security_ids": issuer_security_ids,
-        "issuer_migration_matches": issuer_migrations[
-            issuer_migrations["security_id"] == PINNED_SECURITY_ID
-        ].to_dict("records"),
-        "security_migration_matches": security_migrations[
-            security_migrations["security_id"] == PINNED_SECURITY_ID
-        ].to_dict("records"),
-    }
-
-
-def _compile_security_state_for_ticker(ticker: str, rec: dict, *, now: str) -> dict:
-    """One security's ``security_state.v1``. Owner reads only — the compile
-    itself is pure (``engine.security_state.compile_security_state``).
-
-    Budget: exactly ONE extra R2 fetch beyond ``load_workspace_with_disposition``
-    (the generation manifest, for the K1 ``native_digest``) — never fatal if it
-    fails; the change leg still compiles, only ``native_digest`` degrades to
-    ``unknown``.
-    """
-    from engine import security_state as ss
-    from engine.neuralweb.company_intelligence_reader import (
-        fetch_generation_manifest,
-        find_current_event_id_for_company,
-        load_workspace_with_disposition,
-    )
-
-    identity = _read_security_state_identity_rows(config.data_dir())
-    event_id = find_current_event_id_for_company(f"cik:{ss.PINNED_CIK}")
-    workspace, disposition, manifest_sha256 = None, "not_published", None
-    if event_id:
-        workspace, disposition = load_workspace_with_disposition(event_id)
-        generation_id = str((workspace or {}).get("generation_id") or "")
-        if workspace is not None and disposition == "found" and generation_id:
-            try:
-                manifest = fetch_generation_manifest(generation_id)
-                entry = (manifest.get("files") or {}).get(f"workspaces/{event_id}.json")
-                if isinstance(entry, dict):
-                    manifest_sha256 = entry.get("sha256")
-            except Exception as manifest_exc:  # noqa: BLE001 — digest degrades to unknown, never fatal
-                log.debug("security_state.v1 manifest fetch failed for %s (%s)", ticker, manifest_exc)
-    return ss.compile_security_state(
-        now=now, workspace=workspace, workspace_disposition=disposition,
-        blob=rec, manifest_sha256=manifest_sha256, **identity,
-    )
-
-
-def _read_prior_security_state(outdir: Path, ticker: str) -> dict | None:
-    """The prior cycle's FULL committed ``security_state.v1`` read — read
-    BEFORE this run overwrites ``site/stockdata/<ticker>.json`` — as the whole
-    prior state dict, never pre-reduced to the compact ``last_good`` receipt
-    shape. Owner I/O only: eligibility (was the prior read PROVEN and not
-    itself a COMPILER_FAILURE?) and the compact-receipt derivation are
-    ``engine.security_state.derive_last_good``'s pure business logic (Sol
-    blocker 4) — the caller passes this function's return straight through as
-    ``compile_security_state_failure``'s ``prior_state``."""
-    path = outdir / f"{ticker}.json"
-    if not path.exists():
-        return None
+    result = dict(tech)
+    result.pop("price_asof", None)
     try:
-        prior_state = json.loads(path.read_text()).get("security_state")
-        return prior_state if isinstance(prior_state, dict) else None
-    except Exception:  # noqa: BLE001 — no usable prior is not fatal
-        return None
+        price = result.get("price")
+        if isinstance(price, bool) or not isinstance(price, Real):
+            return result
+        if not math.isfinite(price) or price <= 0:
+            return result
+        observed = pd.to_numeric(close, errors="coerce").astype(float).dropna()
+        if (observed.empty or not isinstance(observed.index, pd.DatetimeIndex)
+                or not observed.index.is_monotonic_increasing or not observed.index.is_unique):
+            return result
+        last = float(observed.iloc[-1])
+        day = observed.index[-1]
+        if not math.isfinite(last) or pd.isna(day) or round(last, 2) != price:
+            return result
+        result["price_asof"] = day.date().isoformat()
+    except (TypeError, ValueError, OverflowError):
+        pass  # A missing price clock is honest; no default/current/build date.
+    return result
+
+
+def _enrich_stock_technicals(rec: dict, close: pd.Series,
+                            ohlcv: pd.DataFrame | None, bench: pd.Series | None) -> None:
+    """Commit the richer price and its clock together after both reads succeed.
+
+    A snapshot/squeeze failure leaves the prior thin pair untouched. The record's
+    analysis/valuation date is independent and remains on its original universe.
+    """
+    if ohlcv is not None and {"high", "low", "volume"} <= set(ohlcv.columns):
+        source_close = ohlcv["close"]
+        rich = stock_technicals.snapshot(source_close, ohlcv["high"],
+                                        ohlcv["low"], ohlcv["volume"], bench=bench)
+        sq = vol_squeeze.assess(source_close, ohlcv["high"], ohlcv["low"], ohlcv["volume"])
+    else:
+        source_close = close
+        rich = stock_technicals.snapshot(close, bench=bench)
+        sq = vol_squeeze.assess(close)
+    prior = dict(rec.get("tech") or {})
+    # If the new price has no valid date it cannot inherit the previous price's date.
+    prior.pop("price_asof", None)
+    # The thin price's native unit cannot qualify a price from another observation.
+    # Only a unit actually returned by the richer source could survive this merge.
+    prior.pop("currency", None)
+    rec["tech"] = _bind_price_clock({**prior, **rich}, source_close)
+    if sq:
+        rec["vol_squeeze"] = sq
 
 
 def _one(ticker: str, close: pd.Series, high: pd.Series | None,
@@ -860,7 +1026,7 @@ def _one(ticker: str, close: pd.Series, high: pd.Series | None,
         "ticker": ticker, "name": name, "sector": sector,
         "asof": asof,
         "history_days": int(len(c)),
-        "tech": snapshot(c),
+        "tech": _bind_price_clock(snapshot(c), c),
         "season_this": season_line(seas, month),
         "season_next": season_line(seas, month % 12 + 1),
         "season_this_zh": season_line(seas, month, zh=True),
@@ -1380,6 +1546,481 @@ def _json_safe(o):
     return o
 
 
+def _today_source_instant(value):
+    if not isinstance(value, str):
+        raise ValueError("Today source clock is unavailable")
+    instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if instant.tzinfo is None or instant.utcoffset().total_seconds() != 0:
+        raise ValueError("Today source clock must be UTC")
+    return instant
+
+
+def today_selection_source_binding(source_bytes):
+    """Bind exact displayed source bytes; this is not W3C capture acceptance."""
+    from hashlib import sha256
+    import re
+    from datetime import date
+    from engine.us_candidate_episode import canonical_json
+
+    doc = json.loads(source_bytes)
+    if not isinstance(doc, dict) or not isinstance(doc.get("buy"), list):
+        raise ValueError("Today source buy roster is unavailable")
+    emit = doc.get("emit")
+    if not isinstance(emit, dict) or not re.fullmatch(r"[0-9a-f]{32}", str(emit.get("pair_id") or "")):
+        raise ValueError("Today source pair is unavailable")
+    _today_source_instant(emit.get("at_utc"))
+    if not isinstance(doc.get("board_definition"), str) or not doc["board_definition"]:
+        raise ValueError("Today source definition is unavailable")
+    session = doc.get("as_of")
+    if not isinstance(session, str) or date.fromisoformat(session).isoformat() != session:
+        raise ValueError("Today source session is unavailable")
+    rows = []
+    for index, row in enumerate(doc["buy"]):
+        if not isinstance(row, dict):
+            raise ValueError("Today source row is unavailable")
+        rows.append({"selection_index": index, "row_receipt": "sha256:" + sha256(canonical_json(row).encode()).hexdigest()})
+    source_sha256 = "sha256:" + sha256(source_bytes).hexdigest()
+    material = {"source_sha256": source_sha256, "pair_id": emit["pair_id"], "market_session": session, "ordered_rows": rows}
+    return {**material, "selection_receipt": "sha256:" + sha256(canonical_json(material).encode()).hexdigest(),
+            "schema": "prophet.today_selection_source_binding/v1", "receipt_kind": "EXACT_DISPLAYED_SOURCE"}
+
+
+def today_selection_row_receipts(source_bytes):
+    """Optional original-producer handoff; ambiguous same-ticker rows emit nothing."""
+    doc = json.loads(source_bytes)
+    binding = today_selection_source_binding(source_bytes)
+    grouped = {}
+    for row, receipt in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        ticker = row.get("ticker")
+        if isinstance(ticker, str) and ticker:
+            grouped.setdefault(ticker, set()).add(receipt["row_receipt"])
+    return {ticker: next(iter(values)) for ticker, values in grouped.items() if len(values) == 1}
+
+
+class _NativeAssessmentBindingRefused(ValueError):
+    """A genuine owner read result did not bind the producer's own candidate."""
+
+
+# Owner reads this assembly still owes before a brief could ever be fully
+# available. The native factual assessment is no longer on this list once one
+# genuine owner read is bound; plan/evidence/quote/B4 stay unread here.
+_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES = (
+    "PLAN_NATIVE_OWNER_READ_UNAVAILABLE",
+    "EVIDENCE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "QUOTE_NATIVE_OWNER_READ_UNAVAILABLE",
+    "B4_NATIVE_OWNER_READ_UNAVAILABLE",
+)
+
+
+def _verify_native_assessment_pair(assessment, projection, *, candidate, source_key, source_receipt):
+    """Bind one genuine owner read result to this producer's candidate resolution.
+
+    ``assessment``/``projection`` are the detached ``verified_pair()`` of the ONE
+    ``build_native_factual_assessment_result`` read for this exact candidate.
+    The consumer re-checks, from its own side, that the displayed envelope
+    restates this candidate's four identity fields, asserts this exact source
+    key/receipt pair, and receipts this same read's native projection id and
+    bytes. The projection stays an internal owner capability for later B4 work:
+    it is verified here and never surfaced on the response.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import ASSESSMENT_OWNER_REF
+    from engine.us_candidate_episode import canonical_json
+
+    def refuse(detail):
+        raise _NativeAssessmentBindingRefused(f"native assessment binding refused: {detail}")
+
+    if assessment.get("schema") != "prophet.daily_brief_assessment_input/v1":
+        refuse("envelope is not the Daily Brief assessment input schema")
+    if assessment.get("owner_ref") != ASSESSMENT_OWNER_REF:
+        refuse("envelope is not issued by the fixed native assessment owner")
+    summary = assessment.get("summary")
+    if (assessment.get("state") != "REVIEW_REQUIRED"
+            or not isinstance(summary, dict)
+            or summary.get("assessment_state") != "REVIEW_REQUIRED"):
+        refuse("assessment state is not the literal REVIEW_REQUIRED observation")
+    for field in ("security_id", "episode_id", "candidate_generation_id", "market_session"):
+        if assessment.get(field) != candidate.get(field):
+            refuse(f"{field} disagrees with the producer candidate binding")
+    provenance = assessment.get("provenance")
+    if not isinstance(provenance, dict):
+        refuse("assessment provenance is missing")
+    if provenance.get("input_binding") != {
+        "candidate_source_event_id": source_key, "candidate_source_receipt": source_receipt,
+    }:
+        refuse("assessed input binding is not this candidate source key/receipt")
+    matched = provenance.get("matched_relation")
+    if (not isinstance(matched, dict)
+            or matched.get("relation_source_event_id") != source_key
+            or matched.get("relation_source_receipt") != source_receipt):
+        refuse("matched native relation is not this candidate source key/receipt")
+    if provenance.get("b3_projection_id") != projection.get("projection_id"):
+        refuse("receipted projection id is not this read's native projection")
+    if provenance.get("b3_projection_sha256") != (
+        "sha256:" + sha256(canonical_json(projection).encode()).hexdigest()
+    ):
+        refuse("receipted projection digest is not this read's native projection bytes")
+    for field in ("candidate_generation_id", "market_session"):
+        if projection.get(field) != candidate.get(field):
+            refuse(f"native projection {field} disagrees with the producer candidate binding")
+    if projection.get("generated_at") != assessment.get("asof"):
+        refuse("native projection generated_at is not this read's assembly asof")
+    rows = [row for row in projection.get("rows") or []
+            if isinstance(row, dict) and row.get("episode_id") == candidate.get("episode_id")]
+    if len(rows) != 1 or rows[0].get("security_id") != candidate.get("security_id"):
+        refuse("native projection does not carry exactly this candidate's episode row")
+
+
+def _today_native_source_candidates(raw, *, binding, doc, generation, snapshot,
+                                    source_rows, generated_at, relation_details=None):
+    """Private byte-captured original-producer native source resolver.
+
+    The one shared resolution core behind the Today projection read and the
+    fixed Plan source read. It receives the CAPTURED raw board bytes — never a
+    live re-read or a reconstructed board — plus the complete captured UCV byte
+    inventory and the actual validated B1 snapshot, and resolves every displayed
+    buy row by its full-buy original ordinal and row receipt against the
+    original source key and canonical row digest, the native candidate
+    relation, suppressions and episode lifecycle, and the one genuine B3 owner
+    read per available candidate. It is a resolver only: no normalization, no
+    receipt minting, no caller attestation and no new selector ever enter
+    here, and ``relation_details`` (used only by callers that need the original
+    relation facts beside the Today-shaped result) never alters the returned
+    resolution.
+    """
+    from hashlib import sha256
+    from engine.prophet_candidate_state import (
+        CandidateStateContractError, build_native_factual_assessment_result,
+    )
+    from engine.us_candidate_episode import canonical_json
+
+    if "sha256:" + sha256(raw).hexdigest() != binding["source_sha256"]:
+        raise ValueError("resolver inputs are not the captured source bytes")
+    withdrawn = {event.get("correction_of") for event in generation.events if event.get("event_type") == "RETRACTED"}
+    candidates = []
+    # Aligned with `candidates`: the candidate input plus the assessment of the
+    # ONE genuine owner read bound to it, composed only after the final guards.
+    native_reads = []
+    for row, selected in zip(doc["buy"], binding["ordered_rows"], strict=True):
+        item = {"selection_index": selected["selection_index"], "row_receipt": selected["row_receipt"],
+                "status": "UNAVAILABLE", "candidate_input": None, "daily_brief": None, "reason_codes": []}
+        native_facts = None
+        matching = [record for record in source_rows
+                    if record.get("stamp_date") == binding["market_session"]
+                    and record.get("ticker") == row.get("ticker")
+                    and record.get("board_definition") == doc.get("board_definition")]
+        reason = None
+        if len(matching) != 1:
+            reason = "CANDIDATE_SOURCE_UNAVAILABLE" if not matching else "CANDIDATE_SOURCE_AMBIGUOUS"
+        elif matching[0].get("today_selection_row_receipt") != selected["row_receipt"]:
+            reason = "ROW_PROVENANCE_UNAVAILABLE" if not matching[0].get("today_selection_row_receipt") else "ROW_PROVENANCE_MISMATCH"
+        if reason is None:
+            native_row = matching[0]
+            source_key = "candidate:{stamp_date}:{ticker}:{board_definition}".format(**native_row)
+            source_receipt = "sha256:" + sha256(canonical_json(native_row).encode()).hexdigest()
+            related = [event for event in generation.events
+                       if event.get("source_system") == "candidate"
+                       and event.get("source_schema") == "us_prophet_rank.candidates/v1"
+                       and event.get("source_event_id") == source_key
+                       and event.get("source_receipt") == source_receipt
+                       and event.get("event_type") in {"OPENED", "OBSERVED"}]
+            active_relations = [event for event in related if event.get("event_id") not in withdrawn]
+            suppressed = [record for record in generation.suppressions
+                          if record.get("source_system") == "candidate"
+                          and record.get("source_event_id") == source_key
+                          and record.get("source_receipt") == source_receipt]
+            episode_ids = {event.get("episode_id") for event in active_relations}
+            episodes = [episode for episode in generation.episodes if episode.get("episode_id") in episode_ids]
+            if suppressed:
+                reason = "CANDIDATE_SOURCE_SUPPRESSED"
+            elif related and not active_relations:
+                reason = "CANDIDATE_SOURCE_RETRACTED"
+            elif not active_relations:
+                reason = "CANDIDATE_RECONCILIATION_PENDING"
+            elif len(episode_ids) != 1 or len(episodes) != 1:
+                reason = "CANDIDATE_EPISODE_AMBIGUOUS"
+            elif episodes[0].get("episode_state") != "ACTIVE" or episodes[0].get("superseded_by") is not None:
+                reason = "CANDIDATE_EPISODE_TERMINAL"
+            else:
+                episode = episodes[0]
+                candidate = {"schema": "prophet.daily_brief_candidate_input/v1", "security_id": episode["security_id"],
+                             "episode_id": episode["episode_id"], "candidate_generation_id": snapshot.generation_id,
+                             "market_session": binding["market_session"], "state": "SELECTED",
+                             "owner_ref": "scripts/build_stock_library.py::main", "asof": generated_at,
+                             "source_receipt": source_receipt, "selection_receipt": binding["selection_receipt"],
+                             "display": {"ticker": row.get("ticker"), "selection_index": selected["selection_index"]}}
+                # One genuine native owner read for this exact binding. The owner
+                # revalidates the snapshot against native disk and derives the
+                # original identity/session itself; the consumer only ever takes
+                # its verified_pair(), never a reprojection or caller-supplied
+                # JSON. Owner refusal leaves the candidate binding available and
+                # the assessment typed unavailable — no receipt is fabricated.
+                assessment = None
+                assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                try:
+                    owner_result = build_native_factual_assessment_result(
+                        snapshot, candidate_source_event_id=source_key,
+                        candidate_source_receipt=source_receipt)
+                    assessment, projection = owner_result.verified_pair()
+                    _verify_native_assessment_pair(assessment, projection, candidate=candidate,
+                                                   source_key=source_key, source_receipt=source_receipt)
+                    assessment_codes = ()
+                except _NativeAssessmentBindingRefused:
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_BINDING_UNAVAILABLE",)
+                except (CandidateStateContractError, OSError, ValueError, TypeError):
+                    assessment = None
+                    assessment_codes = ("ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE",)
+                provenance = {"source_event_id": source_key, "source_receipt": source_receipt,
+                              "selection_source_emit": doc["emit"], "generation_recorded_at": generation.receipt["recorded_at"],
+                              "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                            for event in active_relations]}
+                item.update(status="AVAILABLE", candidate_input=candidate, daily_brief=None, native_provenance=provenance,
+                            reason_codes=[*assessment_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES])
+                native_reads.append((candidate, assessment))
+            if relation_details is not None:
+                episode_row = episodes[0] if len(episodes) == 1 else None
+                native_facts = {
+                    "source_event_id": source_key,
+                    "source_receipt": source_receipt,
+                    "relation": dict(related[0]) if related else None,
+                    "relations": [{key: event.get(key) for key in ("event_id", "occurred_at", "known_at", "recorded_at")}
+                                  for event in active_relations],
+                    "suppressed": bool(suppressed),
+                    "episode": None if episode_row is None else {
+                        key: episode_row.get(key)
+                        for key in ("episode_id", "security_id", "episode_state", "terminal_reason",
+                                    "superseded_by", "opened_at", "opened_session")},
+                }
+        if reason is not None:
+            item["reason_codes"] = [reason]
+            native_reads.append(None)
+        candidates.append(item)
+        if relation_details is not None:
+            relation_details.append(native_facts)
+    return candidates, native_reads
+
+
+class _OriginalSelectionNativeRefused(ValueError):
+    """The native owner could not preserve one captured source relation."""
+
+
+def _read_original_selection_native_relation(raw, *, selection_index, started_at,
+                                             expected_candidate_generation_id=None):
+    """Read original-source facts under the native owner's own byte guard.
+
+    The installation root is fixed here. Callers supply only captured immutable
+    source bytes, an original ordinal, a UTC request cut and an equality pin;
+    they cannot choose a store or supply native objects. No Plan is read here.
+    The context yields frozen facts, never a snapshot, token or assessment.
+    Normal context exit performs the final complete UCV and native HEAD check,
+    allowing the consumer's own file guards to bracket that check precisely.
+    Refused consumer reads need no subsequent native check and cannot succeed.
+    """
+    from contextlib import contextmanager
+    from types import MappingProxyType
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+
+    def refuse(code):
+        return _OriginalSelectionNativeRefused(code)
+
+    def freeze(value):
+        if isinstance(value, dict):
+            return MappingProxyType({key: freeze(item) for key, item in value.items()})
+        if isinstance(value, (list, tuple)):
+            return tuple(freeze(item) for item in value)
+        return value
+
+    @contextmanager
+    def captured_read():
+        try:
+            if not isinstance(raw, bytes):
+                raise ValueError("source must be captured immutable bytes")
+            binding = today_selection_source_binding(raw)
+            doc = json.loads(raw)
+            if (isinstance(selection_index, bool) or not isinstance(selection_index, int)
+                    or not 0 <= selection_index < len(doc["buy"])):
+                raise ValueError("original ordinal unavailable")
+            if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(started_at):
+                raise ValueError("source is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+
+        root = Path(__file__).resolve().parent.parent
+        episode_root = root / "data/us_prophet_rank/episodes"
+        try:
+            source_rows, source_receipts = read_today_candidate_source_rows(root)
+            token = attest_candidate_episode_store_bytes(episode_root)
+            snapshot = load_candidate_episode_store_snapshot(episode_root)
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("CANDIDATE_SNAPSHOT_UNAVAILABLE") from exc
+        if token.generation_id != snapshot.generation_id:
+            raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        if (expected_candidate_generation_id is not None
+                and expected_candidate_generation_id != snapshot.generation_id):
+            raise refuse("CANDIDATE_GENERATION_MISMATCH")
+        try:
+            if (_today_source_instant(snapshot.generation.receipt["recorded_at"])
+                    > _today_source_instant(started_at)):
+                raise ValueError("generation is after the request cut")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise refuse("CANDIDATE_CLOCK_UNAVAILABLE") from exc
+        details = []
+        try:
+            candidates, native_reads = _today_native_source_candidates(
+                raw, binding=binding, doc=doc, generation=snapshot.generation,
+                snapshot=snapshot, source_rows=source_rows, generated_at=started_at,
+                relation_details=details)
+            if not (len(candidates) == len(native_reads) == len(details) == len(doc["buy"])):
+                raise ValueError("unaligned native source rows")
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RESOLUTION_UNAVAILABLE") from exc
+        item = candidates[selection_index]
+        facts = details[selection_index] or {}
+        candidate = item.get("candidate_input")
+        identity = ({key: candidate.get(key) for key in (
+            "security_id", "episode_id", "candidate_generation_id", "market_session")}
+            if isinstance(candidate, dict) else None)
+        native_read = native_reads[selection_index]
+        assessment = native_read[1] if native_read is not None else None
+        assessment_codes = [code for code in item.get("reason_codes", []) if code in {
+            "ASSESSMENT_NATIVE_OWNER_READ_UNAVAILABLE", "ASSESSMENT_NATIVE_BINDING_UNAVAILABLE"}]
+        if assessment_codes:
+            identity = None
+        relation = facts.get("relation") or {}
+        yield freeze({
+            "status": item.get("status"), "reason_codes": item.get("reason_codes", []),
+            "native_identity": identity, "episode_lifecycle": facts.get("episode"),
+            "native_clocks": {
+                "native_known_at": relation.get("known_at"),
+                "native_recorded_at": relation.get("recorded_at"),
+                "generation_recorded_at": snapshot.generation.receipt.get("recorded_at"),
+            },
+            "source_event_id": facts.get("source_event_id"),
+            "source_receipt": facts.get("source_receipt"),
+            "has_assessment": isinstance(assessment, dict),
+            "assessment_asof": assessment.get("asof") if isinstance(assessment, dict) else None,
+            "assessment_codes": assessment_codes,
+        })
+        # This check runs at the original interleaving point. Nothing yielded
+        # above can mutate these captured native inputs or redirect this read.
+        try:
+            _, after_receipts = read_today_candidate_source_rows(root)
+            if (after_receipts != source_receipts
+                    or attest_candidate_episode_store_bytes(episode_root) != token):
+                raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
+        except _OriginalSelectionNativeRefused:
+            raise
+        except (OSError, ValueError, TypeError) as exc:
+            raise refuse("PLAN_SOURCE_RECHECK_UNAVAILABLE") from exc
+
+    return captured_read()
+
+
+def read_today_candidate_projection(repo_root, *, expected_source_sha256, expected_pair_id,
+                                    expected_selection_receipt, expected_candidate_generation_id=None):
+    """Read exact finalized selection plus native B1; never mutate publication."""
+    from engine.us_candidate_episode import (
+        attest_candidate_episode_store_bytes,
+        load_candidate_episode_store_snapshot,
+    )
+    from engine.us_context_vector import read_today_candidate_source_rows
+    from engine.prophet_daily_brief import compose_daily_brief
+
+    root = Path(repo_root)
+    source_path = root / "site/factordata/us_standouts.json"
+    generated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result = {"schema": "prophet.daily_brief_read/v1", "status": "UNAVAILABLE",
+              "source_binding": None, "candidate_generation_id": None,
+              "generated_at": generated_at, "candidates": [], "reason_codes": []}
+
+    def unavailable(reason):
+        return {**result, "status": "UNAVAILABLE", "candidates": [], "reason_codes": [reason],
+                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
+
+    try:
+        raw = source_path.read_bytes()
+        binding = today_selection_source_binding(raw)
+        doc = json.loads(raw)
+        if _today_source_instant(doc["emit"]["at_utc"]) > _today_source_instant(generated_at):
+            raise ValueError("Today source clock is future")
+    except (OSError, ValueError, TypeError):
+        return unavailable("SELECTION_SOURCE_UNAVAILABLE")
+    result["source_binding"] = {key: binding[key] for key in ("source_sha256", "pair_id", "selection_receipt", "market_session", "schema", "receipt_kind")}
+    if (expected_source_sha256 != binding["source_sha256"] or expected_pair_id != binding["pair_id"]):
+        return unavailable("SOURCE_BINDING_MISMATCH")
+    if expected_selection_receipt != binding["selection_receipt"]:
+        return unavailable("SELECTION_BINDING_MISMATCH")
+    try:
+        # Emission and native reconciliation remain their existing owners' work.
+        source_rows, source_receipts = read_today_candidate_source_rows(root)
+        episode_root = root / "data/us_prophet_rank/episodes"
+        token = attest_candidate_episode_store_bytes(episode_root)
+        snapshot = load_candidate_episode_store_snapshot(episode_root)
+        if token.generation_id != snapshot.generation_id:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    result["candidate_generation_id"] = snapshot.generation_id
+    if expected_candidate_generation_id is not None and expected_candidate_generation_id != snapshot.generation_id:
+        return unavailable("CANDIDATE_GENERATION_MISMATCH")
+
+    generation = snapshot.generation
+    try:
+        if _today_source_instant(generation.receipt["recorded_at"]) > _today_source_instant(generated_at):
+            return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    except (ValueError, TypeError, KeyError):
+        return unavailable("CANDIDATE_CLOCK_UNAVAILABLE")
+    candidates, native_reads = _today_native_source_candidates(
+        raw, binding=binding, doc=doc, generation=generation, snapshot=snapshot,
+        source_rows=source_rows, generated_at=generated_at)
+    try:
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+        _, after_receipts = read_today_candidate_source_rows(root)
+        if after_receipts != source_receipts or attest_candidate_episode_store_bytes(episode_root) != token:
+            return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
+        if source_path.read_bytes() != raw:
+            return unavailable("SOURCE_SNAPSHOT_CHANGED")
+    except (OSError, ValueError, TypeError):
+        return unavailable("CANDIDATE_SNAPSHOT_UNAVAILABLE")
+    # Read completion is observed once, after every owner input above is gathered
+    # and every final raw/part/HEAD guard has held. Daily Brief views compose
+    # against this instant, so a genuine native read assembled after this request
+    # started is no longer a future clock — while the original request-start cut
+    # checks above stay exactly as they are, and a native read assembled after
+    # completion itself is still refused rather than consumed.
+    read_completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result["generated_at"] = read_completed_at
+    for item, native_read in zip(candidates, native_reads, strict=True):
+        if native_read is None:
+            continue
+        candidate, assessment = native_read
+        completion_codes = ()
+        if assessment is not None:
+            try:
+                after_completion = (_today_source_instant(assessment["asof"])
+                                    > _today_source_instant(read_completed_at))
+            except (KeyError, TypeError, ValueError):
+                after_completion = True
+            if after_completion:
+                assessment = None
+                completion_codes = ("ASSESSMENT_AFTER_READ_COMPLETION_UNAVAILABLE",)
+        item["daily_brief"] = compose_daily_brief(
+            candidate=candidate, entry_availability=None, plan=None, assessment=assessment,
+            evidence=None, assembly=None, recovery=None, previous=None,
+            now=read_completed_at, quote=None)
+        if completion_codes:
+            item["reason_codes"] = [*completion_codes, *_TODAY_BRIEF_OWNER_UNAVAILABLE_CODES]
+    # Native candidate availability is narrower than a fully available brief.
+    return {**result, "status": "PARTIAL", "candidates": candidates,
+            "reason_codes": ["DAILY_BRIEF_OWNER_INPUTS_UNAVAILABLE"]}
+
+
 # Urgency values that read as actionable on the board. A blocked signal must never
 # carry any of these (check_board_contradictions.py invariant (b) asserts the
 # artifact side; this is the builder side).
@@ -1678,6 +2319,14 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
     from datetime import datetime as _dt, timezone as _tz
     from lib import nyse_calendar as _nyse
 
+    _observed = now or _dt.now(_tz.utc)
+    if _observed.tzinfo is None:
+        _observed = _observed.replace(tzinfo=_tz.utc)
+    else:
+        _observed = _observed.astimezone(_tz.utc)
+    _observed_iso = _observed.isoformat()
+    _expected = None
+
     def _unknown(reason: str, extra: "dict | None" = None) -> dict:
         # FAIL CLOSED.  "We could not date this board" is a delayed board, not a fresh
         # one — the reader gets the plain-word "updating" disclosure instead of a badge
@@ -1685,6 +2334,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         out = {"price_through": None, "age_days": None, "sessions_behind": None,
                "delayed": True, "unknown": True, "basis": "unknown",
                "unknown_reason": reason, "max_through": None,
+               "observed_at_utc": _observed_iso,
+               "expected_session": (_expected.isoformat() if _expected else None),
                "inputs": {"baskets_ohlcv_through": None, "panel": panel_reach or None,
                           "board_asof": (str(board_asof) if board_asof else None)}}
         if extra:
@@ -1692,6 +2343,7 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
         return out
 
     try:
+        _expected = _nyse.expected_last_session(_observed)
         _root = ohlcv_dir or (config.data_dir() / "baskets" / "ohlcv")
         _root = _root if isinstance(_root, Path) else Path(_root)
         _ohlcv_through: "date | None" = None
@@ -1743,9 +2395,6 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             )
         _basis_date, _basis_tag = min(_known, key=lambda kv: kv[0])
 
-        _now = now or _dt.now(_tz.utc)
-        _expected = _nyse.expected_last_session(_now)
-
         # age_days: calendar days between price_through and expected session
         _age_days = (_expected - _basis_date).days
 
@@ -1774,6 +2423,8 @@ def _compute_board_staleness(ohlcv_dir: "Path | None" = None, now: "datetime | N
             "unknown": False,
             "basis": _basis_tag,
             "max_through": (str(_max_through) if _max_through else None),
+            "observed_at_utc": _observed_iso,
+            "expected_session": _expected.isoformat(),
             "inputs": {
                 "baskets_ohlcv_through": (str(_ohlcv_through) if _ohlcv_through else None),
                 "panel": panel_reach or None,
@@ -1891,6 +2542,61 @@ def _panel_price_reach(uni: "list | None",
         "mixed_vintage": _majority_d != _max_d,
         "off_majority_tickers": _off_majority[:10],
     }
+
+
+def _clip_daily_to_completed_session(values, completed_session: date):
+    """Return a daily Series/DataFrame capped at one completed NYSE session."""
+    if values is None:
+        return None
+    idx = pd.DatetimeIndex(pd.to_datetime(values.index, errors="raise"))
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)
+    mask = idx.normalize() <= pd.Timestamp(completed_session)
+    return values.loc[mask]
+
+
+def _normalise_us_equity_universe(
+    uni: "list | None", now: "datetime | None" = None,
+) -> tuple[list, dict | None, dict]:
+    """Cap every US-equity input at one immutable completed-session clock."""
+    from lib import nyse_calendar as _nyse
+
+    observed = now or datetime.now(timezone.utc)
+    if observed.tzinfo is None:
+        observed = observed.replace(tzinfo=timezone.utc)
+    else:
+        observed = observed.astimezone(timezone.utc)
+    completed = _nyse.expected_last_session(observed)
+    crypto = _crypto_tickers()
+    raw_reach = _panel_price_reach(uni)
+    clipped: list = []
+    provisional: list[str] = []
+    for item in (uni or []):
+        ticker, close, high, *rest = item
+        if str(ticker) in crypto:
+            clipped.append(item)
+            continue
+        last = close.last_valid_index() if close is not None else None
+        if last is not None and pd.Timestamp(last).date() > completed:
+            provisional.append(str(ticker))
+        clipped.append((
+            ticker,
+            _clip_daily_to_completed_session(close, completed),
+            _clip_daily_to_completed_session(high, completed),
+            *rest,
+        ))
+    reach = _panel_price_reach(clipped)
+    raw_through = (raw_reach or {}).get("through_raw")
+    if reach is not None and raw_through:
+        reach["through_raw"] = raw_through
+    clock = {
+        "observed_at_utc": observed.isoformat(),
+        "completed_session": completed.isoformat(),
+        "raw_through": raw_through,
+        "provisional_member_count": len(provisional),
+        "provisional_tickers": sorted(provisional)[:10],
+    }
+    return clipped, reach, clock
 
 
 # Two consecutive builds claiming the SAME as_of are re-renders of the same
@@ -2734,8 +3440,16 @@ def _eb_chip_payload(ticker: str,
         return {}
 
 
-def main() -> int:
+def main(now: datetime | None = None) -> int:
     _main_t0 = time.time()
+    from lib import nyse_calendar as _board_nyse_calendar  # noqa: PLC0415
+
+    _board_observed_at = now or datetime.now(timezone.utc)
+    if _board_observed_at.tzinfo is None:
+        _board_observed_at = _board_observed_at.replace(tzinfo=timezone.utc)
+    else:
+        _board_observed_at = _board_observed_at.astimezone(timezone.utc)
+    _completed_session = _board_nyse_calendar.expected_last_session(_board_observed_at)
     site = config.ROOT / config.load()["storage"]["site_dir"]
     outdir = site / "stockdata"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -2758,9 +3472,14 @@ def main() -> int:
     log.info("net-liquidity regime for library: %s · macro-risk: %s · VIX: %s · vol-regime: %s",
              liq or "unknown", "—" if drag is None else f"{drag:.2f}", vctx or "n/a",
              (vreg or {}).get("regime") or "n/a")
-    # benchmark for per-ticker relative-strength alerts + the feed window/caps
+    # benchmark for per-ticker relative-strength alerts + the feed window/caps.
+    # The entire US score plane shares the one completed-session clock captured above;
+    # a provisional same-day SPY bar must not leak into relative-strength context.
     spy = store.read("yahoo", "SPY")
-    bench = spy["close"] if spy is not None else None
+    bench = (
+        _clip_daily_to_completed_session(spy["close"], _completed_session)
+        if spy is not None and "close" in spy.columns else None
+    )
     # live calm/risk-on regime score (validated price tape) — scales the Conviction EDGE
     # axis's residual-momentum leg up in calm tape, back toward zero in stress.
     calm = current_calm(bench)
@@ -2906,6 +3625,17 @@ def main() -> int:
             geo_rev_map = (json.loads(_geo_p.read_text()) or {}).get("by_ticker", {})
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("geo_revenue.json unreadable (%s)", e)
+    # valuation_scenario.v1 -- FROZEN SPEC B-F07-1. V1 = one pinned issuer only
+    # (AAPL); pure function over already-collected SEC companyfacts statements
+    # (engine.stock_fundamentals._load_statements(), read once here). No new
+    # collector, no network, no licensed data -- ~one extra parquet read plus
+    # ~20 float ops for one ticker, well under the render budget.
+    _VS_TICKERS = ("AAPL",)
+    _vs_statements: dict = {}
+    try:
+        _vs_statements = _vs_load_statements()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation_scenario: statements unreadable (%s)", e)
     # per-stock dealer-gamma (DISPLAY-ONLY, gated from the score by validate_gex). PRIMARY =
     # the pre-built site/gex board payloads (rich: walls + vol_hole + consistent units), which
     # already cover the curated optionable universe. The live compute_gex path is only used as a
@@ -3322,7 +4052,11 @@ def main() -> int:
     disp_map: dict[str, dict] = {}              # price / off-high / sparkline per name
     _liq_map: dict[str, dict] = {}              # P0.3 liquidity/capacity hygiene (display-only, R10)
     to_write: list[tuple[str, dict]] = []
-    uni = universe()
+    _raw_uni = universe()
+    uni, _panel_reach, _session_clock = _normalise_us_equity_universe(
+        _raw_uni, now=_board_observed_at,
+    )
+    _continuous_tickers = _crypto_tickers()
     latest_volumes = latest_volume_map("us")
     # Bare print, NOT a logger call: GitHub only parses a workflow command when
     # "::" STARTS the line, and this module's logging format prefixes every
@@ -3604,6 +4338,18 @@ def main() -> int:
         # revenue-by-geography block (collectors/edgar_geo_revenue.py; TXI W2 #3431)
         if geo_rev_map.get(ticker):
             rec["geo_revenue"] = geo_rev_map[ticker]
+        # valuation_scenario.v1 -- pinned V1 issuer only (FROZEN SPEC B-F07-1)
+        if ticker in _VS_TICKERS:
+            try:
+                _vs_price = (rec.get("tech") or {}).get("price")
+                _vs_blob = _valuation_scenario.compute(
+                    _vs_statements.get(ticker) or [],
+                    price=_vs_price, asof=rec.get("asof"), ticker=ticker,
+                )
+                if _vs_blob:
+                    rec["valuation_scenario"] = {"v1": _vs_blob}
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_scenario failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------
         # Supersede the thin close-only snapshot with the research-vetted read (ATR/ADX/
         # squeeze/volume where full OHLCV exists; momentum / 52w-proximity / realized-vol
@@ -3612,20 +4358,34 @@ def main() -> int:
         # Graceful: any failure leaves the thin snapshot in place.
         _ohlcv = None
         try:
-            _ohlcv = store.read("stocks", ticker)
-            if _ohlcv is not None and {"high", "low", "volume"} <= set(_ohlcv.columns):
-                rich = stock_technicals.snapshot(_ohlcv["close"], _ohlcv["high"],
-                                                 _ohlcv["low"], _ohlcv["volume"], bench=bench)
-                sq = vol_squeeze.assess(_ohlcv["close"], _ohlcv["high"],
-                                        _ohlcv["low"], _ohlcv["volume"])
-            else:
-                rich = stock_technicals.snapshot(close, bench=bench)
-                sq = vol_squeeze.assess(close)
-            rec["tech"] = {**(rec.get("tech") or {}), **rich}
-            if sq:
-                rec["vol_squeeze"] = sq
+            _raw_ohlcv = store.read("stocks", ticker)
+            _ohlcv = (
+                _raw_ohlcv
+                if ticker in _continuous_tickers
+                else _clip_daily_to_completed_session(_raw_ohlcv, _completed_session)
+            )
+            _enrich_stock_technicals(rec, close, _ohlcv, bench)
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
+        # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the
+        # v1 blob #6905 wrote earlier in this loop and hangs the sandbox control
+        # artifact next to it. Anchored here, twenty lines clear of #6905's own
+        # added block, so a heal round on the parent never merges into this hunk.
+        # Lazy import; never fatal.
+        _vs_v1 = (rec.get("valuation_scenario") or {}).get("v1")
+        if _vs_v1 is not None:
+            try:
+                from engine import valuation_assumptions as _valuation_assumptions
+                # as_of is the build's own point-in-time ceiling: an event
+                # dated after it has not happened yet as far as this build
+                # knows, and may not propose an assumption change.
+                rec.setdefault("valuation_scenario", {})["controls"] = (
+                    _valuation_assumptions.controls_blob(
+                        _vs_v1, as_of=rec.get("asof")
+                    )
+                )
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_assumptions failed for %s: %s", ticker, e)
         # ---- W5b liquidity chip (DISPLAY-ONLY, zero rank/gate power) ---------------
         # engine.liquidity_chip: 20-session MEDIAN dollar volume (close x volume),
         # liquidity tier (deep/ok/thin/illiquid), and days-to-build at $100k and $1M
@@ -4048,6 +4808,31 @@ def main() -> int:
                 rec["sector_pulse"] = _sp_row
         except Exception as _spe2:  # noqa: BLE001 — additive; must not break the stockdata build
             pass
+        # ---- debt maturity ladder (packet B-F09-3, bounded pure producer) ----------
+        # Top-level block in each stockdata JSON: engine.debt_maturity.v1.
+        # Identity is CIK-only via scripts/build_debt_maturity.py's committed
+        # ticker->CIK ledger + issuer_master fallback (GATE 0, fixed 2026-09-06).
+        # Taxonomy + fault-handling now live in `_resolve_debt_maturity()`
+        # (module-level, round-3 review MAJOR-2) so they are directly
+        # unit-testable against the real production code.
+        rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
+        # ---- cash runway (packet B-F09-3 second slice) ----------------------------
+        # Top-level block in each stockdata JSON: engine.cash_runway.v1.
+        # Identity is CIK-only via the same build_debt_maturity producer.
+        # Taxonomy mirrors _resolve_debt_maturity above.
+        rec["cash_runway"] = _resolve_cash_runway(
+            ticker, sector, _dt.date.today(), rec["debt_maturity"]
+        )
+        # ---- capital need read model (bounded F09 derived adapter) ------------
+        # This composes only the two blocks above.  It does not widen the
+        # Capital Structure projection or open another cache/source path.
+        rec["capital_need"] = _resolve_capital_need(
+            ticker,
+            sector,
+            _dt.date.today(),
+            rec["debt_maturity"],
+            rec["cash_runway"],
+        )
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,
@@ -4527,9 +5312,9 @@ def main() -> int:
             log.info("B2 conviction accrual: archived conviction_us for %s", alpha_asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("B2 conviction accrual (us) failed (%s)", e)
-    # ---- Market OS B1A: security_state.v1 (frozen allowlist, AAPL only) ----
-    # One owner-backed identity+K1 compile per allow-listed ticker, attached to
-    # its rec BEFORE the write loop below. Exception-contained end to end: a
+    # ---- Market OS B1A: security_state.v1 (frozen AAPL + MSFT allowlist) ----
+    # Owner identity artifacts are loaded once, then one subject-bound K1 compile
+    # runs per allow-listed ticker before the write loop. Exception-contained: a
     # failure here degrades rec["security_state"] to a typed compiler-failure
     # shell, with ``last_good`` derived from the FULL prior cycle's committed
     # read via ``engine.security_state.derive_last_good`` (Sol blocker 4) —
@@ -4538,21 +5323,130 @@ def main() -> int:
     # has that receipt carried forward unchanged, never overwritten by the
     # failed prior itself — and never loses the rest of this ticker's blob write.
     try:
-        from engine.security_state import SECURITY_STATE_TICKERS, compile_security_state_failure
-        _ss_targets = [(t, r) for t, r in to_write if r.get("ticker") in SECURITY_STATE_TICKERS]
+        from engine import security_state as _security_state
+        import engine.neuralweb.company_intelligence_reader as _security_state_reader
+        _ss_targets = _security_state_producer._select_security_state_targets(to_write)
+        _ss_mismatched = _security_state_producer._mismatched_security_state_targets(to_write)
+        _ss_validator = _security_state_producer._load_security_state_validator(
+            _security_state.SCHEMA_PATH
+        )
     except Exception as e:  # noqa: BLE001 — the whole stage is additive
         log.warning("security_state.v1 stage disabled this cycle (%s)", e)
         _ss_targets = []
+        _ss_mismatched = []
+    if _ss_mismatched:
+        # MINOR 3 (review finding): a ticker/record mismatch inside the
+        # frozen allowlist is a producer-side bug, never an expected
+        # condition (``_mismatched_security_state_targets`` docstring). The
+        # pre-fix behavior silently filtered these out of ``_ss_targets``,
+        # leaving the record's ``security_state`` key fully absent — the
+        # same "reads as nothing built, not build failed" hazard M1 already
+        # closed for the owner-identity-unavailable path below. Emit the
+        # same typed failure shell here instead of dropping it.
+        _ss_mismatch_now = pd.Timestamp.now(tz="UTC").isoformat()
+        for _ss_ticker, _ss_rec in _ss_mismatched:
+            log.warning(
+                "security_state.v1 ticker/record mismatch for %s (record ticker=%r)",
+                _ss_ticker, _ss_rec.get("ticker"),
+            )
+            _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(_ss_ticker)
+            _ss_prior = _security_state_producer._read_prior_security_state(outdir, _ss_ticker)
+            _ss_state = (
+                _security_state_producer._compile_security_state_failure_for_exception(
+                    subject=_ss_pinned_subject, now=_ss_mismatch_now,
+                    diagnostic=RuntimeError("ticker/record mismatch"),
+                    prior_state=_ss_prior,
+                    validator=_ss_validator,
+                )
+            )
+            _ss_rec["security_state"] = _ss_state
+            for _ss_idx_row in index:
+                if _ss_idx_row.get("t") == _ss_ticker:
+                    _ss_idx_row["security_state"] = {
+                        "overall_state": _ss_state["coverage"]["overall_state"],
+                        "dominant_degradation": _ss_state["dominant_degradation"],
+                        "generated_at": _ss_state["generated_at"],
+                    }
+                    break
     if _ss_targets:
-        _ss_now = pd.Timestamp.now(tz="UTC").isoformat()
+        _ss_now_timestamp = pd.Timestamp.now(tz="UTC")
+        _ss_now = _ss_now_timestamp.isoformat()
+        try:
+            _ss_identities, _ss_identity_failures = (
+                _security_state_producer._read_security_state_identity_rows(
+                    config.data_dir(),
+                    tuple(ticker for ticker, _rec in _ss_targets),
+                    decision_date=_ss_now_timestamp.date(),
+                )
+            )
+        except Exception as e:  # noqa: BLE001 — no identity means no honest subject shell
+            log.warning("security_state.v1 owner identity batch failed (%s)", e)
+            _ss_identities = {}
+            _ss_identity_failures = {}
         for _ss_ticker, _ss_rec in _ss_targets:
+            _ss_identity = _ss_identities.get(_ss_ticker)
+            if _ss_identity is None:
+                # An owner-identity read failure must never drop the
+                # ``security_state`` key outright (M1): the templates gate
+                # display on the key's mere presence, so an absent key reads
+                # as "nothing built" rather than "build failed" — and next
+                # cycle's ``_read_prior_security_state`` would see no prior
+                # at all, permanently losing ``last_good``. Emit a typed
+                # failure shell against the frozen pinned subject instead.
+                _ss_reason = _ss_identity_failures.get(_ss_ticker, "batch unavailable")
+                log.warning(
+                    "security_state.v1 identity unavailable for %s: %s",
+                    _ss_ticker, _ss_reason,
+                )
+                # The owner-identity BATCH read itself failed (M1) for every
+                # allowlisted ticker at once, so no live owner read exists for
+                # any of them here -- the failure shell must say so, never
+                # borrow a live-read subject's language. `_fallback_subject_for_ticker`
+                # is a frozen-allowlist lookup, not a per-ticker branch.
+                _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(
+                    _ss_ticker
+                )
+                _ss_prior = _security_state_producer._read_prior_security_state(
+                    outdir, _ss_ticker
+                )
+                _ss_state = (
+                    _security_state_producer._compile_security_state_failure_for_exception(
+                        subject=_ss_pinned_subject, now=_ss_now,
+                        diagnostic=RuntimeError(_ss_reason),
+                        prior_state=_ss_prior,
+                        validator=_ss_validator,
+                        owner_read_completed=False,
+                    )
+                )
+                _ss_rec["security_state"] = _ss_state
+                for _ss_idx_row in index:
+                    if _ss_idx_row.get("t") == _ss_ticker:
+                        _ss_idx_row["security_state"] = {
+                            "overall_state": _ss_state["coverage"]["overall_state"],
+                            "dominant_degradation": _ss_state["dominant_degradation"],
+                            "generated_at": _ss_state["generated_at"],
+                        }
+                        break
+                continue
             try:
-                _ss_state = _compile_security_state_for_ticker(_ss_ticker, _ss_rec, now=_ss_now)
+                _ss_state = _security_state_producer._compile_security_state_for_ticker(
+                    _ss_ticker, _ss_rec, now=_ss_now, identity=_ss_identity,
+                    validator=_ss_validator,
+                    find_event_id=_security_state_reader.find_current_event_id_for_company,
+                    load_workspace=_security_state_reader.load_workspace_with_disposition,
+                    fetch_manifest=_security_state_reader.fetch_generation_manifest,
+                )
             except Exception as e:  # noqa: BLE001 — never lose the blob write to this stage
                 log.warning("security_state.v1 compile failed for %s (%s)", _ss_ticker, e)
-                _ss_prior = _read_prior_security_state(outdir, _ss_ticker)
-                _ss_state = compile_security_state_failure(
-                    now=_ss_now, reason=f"{type(e).__name__}: {e}", prior_state=_ss_prior,
+                _ss_prior = _security_state_producer._read_prior_security_state(
+                    outdir, _ss_ticker
+                )
+                _ss_state = (
+                    _security_state_producer._compile_security_state_failure_for_exception(
+                        subject=_ss_identity["subject"], now=_ss_now, diagnostic=e,
+                        prior_state=_ss_prior,
+                        validator=_ss_validator,
+                    )
                 )
             _ss_rec["security_state"] = _ss_state
             for _ss_idx_row in index:
@@ -4596,10 +5490,17 @@ def main() -> int:
     (site / "factordata").mkdir(parents=True, exist_ok=True)
     if sig_verdict:
         try:
-            sig_out = {t: signal_gate.buy_signal(v) for t, v in sig_verdict.items()}
+            sig_out = {
+                t: {**signal_gate.buy_signal(v), "asof": v.get("asof")}
+                for t, v in sig_verdict.items()
+            }
+            validity = signal_gate.validity_block(
+                alpha_asof, _PAIR_EMIT_STAMP["at_utc"],
+                _PAIR_EMIT_STAMP["pair_id"])
             (site / "factordata" / "signal_gate.json").write_text(
                 json.dumps({"as_of": alpha_asof, "verdicts": sig_out,
-                            "emit": _PAIR_EMIT_STAMP},
+                            "emit": _PAIR_EMIT_STAMP,
+                            "validity": validity},
                            separators=(",", ":"), default=str, allow_nan=False))
             log.info("wrote signal_gate.json (%d verdicts, %d buyable)", len(sig_out),
                      sum(1 for v in sig_verdict.values() if signal_gate.is_buyable(v)))
@@ -5986,8 +6887,14 @@ def main() -> int:
         #     unconfirmed from buy to watch.  Demotion-only: adds nothing to the buy side.
         # Both are fail-soft: any exception leaves the artifact unchanged.
         try:
-            _staleness = _compute_board_staleness(panel_reach=_panel_price_reach(uni),
-                                                  board_asof=wide.get("as_of"))
+            _staleness = _compute_board_staleness(
+                panel_reach=_panel_reach,
+                board_asof=wide.get("as_of"),
+                now=_board_observed_at,
+            )
+            _staleness.setdefault("inputs", {})[
+                "completed_session_normalization"
+            ] = _session_clock
             wide["staleness"] = _staleness
             _st_panel = ((_staleness.get("inputs") or {}).get("panel") or {})
             log.info(
@@ -6230,8 +7137,32 @@ def main() -> int:
         # Same lineage stamp the gate write carries: one pair_id per writer process, so a
         # skew between the two files is readable off the artifacts themselves.
         wide["emit"] = _PAIR_EMIT_STAMP
-        (site / "factordata" / "us_standouts.json").write_text(
-            json.dumps(_json_safe(wide), separators=(",", ":"), default=str, allow_nan=False))
+        # Stable source-availability handoff, not a selection cutoff or new identity.
+        # Its native generation is the incumbent pair_id. Retry/render keeps bytes.
+        try:
+            from engine.theme_graph.selection_cohort_publication import source_handoff
+            wide["w3c_source"] = source_handoff(
+                generation_id=_PAIR_EMIT_STAMP["pair_id"], availability="VALID",
+                available_at=datetime.now(timezone.utc).isoformat())
+        except Exception as _us_source_e:  # noqa: BLE001 — original board publication survives
+            log.warning("W3C US source provenance unavailable (%s)", _us_source_e)
+        _us_final_payload = json.dumps(
+            _json_safe(wide), separators=(",", ":"), default=str, allow_nan=False)
+        (site / "factordata" / "us_standouts.json").write_text(_us_final_payload)
+        # W3C freezes the exact complete serialized Featured shelf, before any
+        # display/preview split. The import pair stamp is lineage, not this event.
+        # Missing per-use capture capability refuses without a mixed-vendor archive.
+        try:
+            from engine.theme_graph.selection_cohort_publication import (
+                default_capture_capability, publish_us_source)
+            _us_w3c = publish_us_source(
+                _us_final_payload.encode(), data_dir=config.data_dir(),
+                finalized_at=datetime.now(timezone.utc).isoformat(),
+                authorize_capture=default_capture_capability())
+            if _us_w3c["status"] != "AVAILABLE":
+                log.info("W3C source unavailable: %s", _us_w3c["reason_codes"])
+        except Exception as _us_w3c_e:  # noqa: BLE001 — provenance cannot alter board publication
+            log.warning("W3C finalization unavailable (%s)", _us_w3c_e)
         log.info("wrote us_standouts.json (%d buy · rank_by=%s · %d eligible / %d universe)",
                  len(wide["buy"]), wide["rank_by"], eligible, len(cand))
         # Render-lane self-check: the board-invariants CI job only fires on PRs that

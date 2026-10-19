@@ -1,0 +1,578 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-07T05:30:16Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:64897/account.js?v=20260814-sf-inter-font-upgrade",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:64897/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:64897/account.js?v=20260814-sf-inter-font-upgrade"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:64897/terminal_overlay.js"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1295,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 1,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 4,
+        "payload_bytes_total": 537979,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 9,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 193
+      },
+      "page_id": "stocks_AAPL.html",
+      "registry_route": "/stocks/AAPL.html",
+      "route": "/stocks/AAPL.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 309875,
+          "captured": true,
+          "file": "211e23337bcc5fab.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "211e23337bcc5fab13edbebd9c8108e4cd2b8a84fed29cdff0595c02e9d31ae5",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 305379,
+          "captured": true,
+          "file": "7f9b9535bf430a0b.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "7f9b9535bf430a0bd4decff3f1e212289c9f166da1e0a844941f15f209148d18",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 311857,
+          "captured": true,
+          "file": "a3c42d44fdb89fcc.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "a3c42d44fdb89fcc5b0997a66b55d10cbe0dc59527da525c5b20223ca6071e7f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 311216,
+          "captured": true,
+          "file": "9ce20cdcc092f91b.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "9ce20cdcc092f91b2e97f881cb0b2b45e661c9142596b609a23207d568aacaec",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 194416,
+          "captured": true,
+          "file": "534c1b5408161e98.png",
+          "force_state": null,
+          "height": 1295,
+          "locale": "en",
+          "sha256": "534c1b5408161e982a89103685ba62d69d495060deab4cc2a421f7a55d958892",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 205496,
+          "captured": true,
+          "file": "7ec55ec42d6d43ae.png",
+          "force_state": null,
+          "height": 1295,
+          "locale": "en",
+          "sha256": "7ec55ec42d6d43ae452e8603237183a93c6c898d3f5e5470b9626641e06954c5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 179007,
+          "captured": true,
+          "file": "212b92d45e682e9a.png",
+          "force_state": null,
+          "height": 1340,
+          "locale": "zh",
+          "sha256": "212b92d45e682e9ab466491ae8446c9ffe6604de58c2db71ef8f73eb1f39afe2",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 212714,
+          "captured": true,
+          "file": "8ba353003020365d.png",
+          "force_state": null,
+          "height": 1340,
+          "locale": "zh",
+          "sha256": "8ba353003020365dca6d562a2aa9117bacfb612c0d7504ea58bd37746a41f339",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:64897/account.js?v=20260814-sf-inter-font-upgrade",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:64897/terminal_overlay.js",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:64897/account.js?v=20260814-sf-inter-font-upgrade"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:64897/terminal_overlay.js"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 900,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 1231,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 900,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 1,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 4,
+        "payload_bytes_total": 440858,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 9,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 189
+      },
+      "page_id": "stocks-null_AAPL.html",
+      "registry_route": "/stocks-null/AAPL.html",
+      "route": "/stocks-null/AAPL.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 311382,
+          "captured": true,
+          "file": "ac831e216f4ed729.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "ac831e216f4ed7298e9a2bdca1182ad9c211195b7b92b0d7e1b14d2b5dd40f7f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 302384,
+          "captured": true,
+          "file": "d05075fe262b08b7.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "d05075fe262b08b7d10678b0e5f45ad56a597b6bd9a0b694a76d5ad4664960c2",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 316642,
+          "captured": true,
+          "file": "d4a12d2d051af956.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "d4a12d2d051af956ab8d780a217e4eb8d2c1bfb5b95a2b6a0fcae6f88ac86ff4",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 307628,
+          "captured": true,
+          "file": "4643cef9259c83e1.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "4643cef9259c83e161659214e0f84f0621bffa288e7ff43ba0bc2dfe45a9bbda",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 187705,
+          "captured": true,
+          "file": "d1e1a0ea52f30f87.png",
+          "force_state": null,
+          "height": 1231,
+          "locale": "en",
+          "sha256": "d1e1a0ea52f30f87be748f3a14bff525b83f0b392e0d568a5c9a31324d89abbf",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 201309,
+          "captured": true,
+          "file": "4c13c456407a028c.png",
+          "force_state": null,
+          "height": 1231,
+          "locale": "en",
+          "sha256": "4c13c456407a028cce269c8dab2deaab23b4767d3e875813f864f41a75b117f6",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 188733,
+          "captured": true,
+          "file": "4affc0d7f64014ad.png",
+          "force_state": null,
+          "height": 1187,
+          "locale": "zh",
+          "sha256": "4affc0d7f64014ade90bcfec5fcf35c73a5c22f90e58cb0b74ffafa5ffa70e18",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 201974,
+          "captured": true,
+          "file": "7e4dc42ca27e457a.png",
+          "force_state": null,
+          "height": 1187,
+          "locale": "zh",
+          "sha256": "7e4dc42ca27e457a88a4bf1c4ec08ea7072e892edbc89d744d3e83bdf5f23a2a",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/stocks/AAPL.html",
+      "/stocks-null/AAPL.html"
+    ],
+    "max_pages": 5,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 325,
+    "repo": null,
+    "selected": 2
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/private/tmp/claude-501/-Users-chriswong-Documents-Cluade-Macro-Dashboard--claude-worktrees-market-ontology-meta-ceo-b-fc4eef/7cd4fae1-1ed9-41c2-adb4-1e5c6b0fbc5b/scratchpad/vs_evidence/evidence_site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "97b4435815440fde008cd35b73c551cf704ba01ea71f18f04a2b23ebc7a0a6b7",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.2.0"
+  },
+  "totals": {
+    "pages": 2,
+    "states_attempted": 16,
+    "states_captured": 16
+  }
+}

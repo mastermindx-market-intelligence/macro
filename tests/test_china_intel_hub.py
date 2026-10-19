@@ -45,6 +45,7 @@ _FIXTURES = {
 
 def test_briefing_v2_fans_in_all_five_surfaces(monkeypatch):
     monkeypatch.setattr(bus, "_read_json", lambda rel: _FIXTURES.get(rel))
+    monkeypatch.setattr(bus, "_visit_discovery_block", lambda: None)
     b = bus.briefing(asof="2026-06-20")
     assert b["schema"] == "china_intel.briefing.v6"
     assert set(b["surfaces_present"]) == {"news", "policy", "altdata", "radar", "analysis"}
@@ -68,6 +69,7 @@ def test_briefing_partial_surfaces(monkeypatch):
     only_news = {"chinanews/sentiment.json": _FIXTURES["chinanews/sentiment.json"],
                  "chinanews/feed.json": _FIXTURES["chinanews/feed.json"]}
     monkeypatch.setattr(bus, "_read_json", lambda rel: only_news.get(rel))
+    monkeypatch.setattr(bus, "_visit_discovery_block", lambda: None)
     b = bus.briefing()
     assert b["surfaces_present"] == ["news"]
     assert b["policy"] is None and b["analysis"] is None
@@ -84,4 +86,4 @@ def test_master_brain_china_lens_includes_synthesis():
         assert set(ci).issubset({"news", "policy", "altdata", "radar", "analysis",
                                  "conviction", "cross_surface", "flagged_tickers",
                                  "what_changed", "salience", "digest", "regime", "discovery",
-                                 "is_context_only", "disclaimer", "disclaimer_zh"})
+                                 "is_context_only", "disclaimer", "disclaimer_zh", "us_theme_context"})

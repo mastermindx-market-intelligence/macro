@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_valuation_assumptions.html.j2
+  - templates/ticker.html.j2
+manifest: mockups/evidence/valuation_assumptions/manifest.json

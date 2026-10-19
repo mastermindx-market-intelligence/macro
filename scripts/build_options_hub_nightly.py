@@ -1039,6 +1039,54 @@ def _load_grades_board_rows_by_root(data_root: Path) -> dict[str, list[dict]]:
 # CLI entry point
 # --------------------------------------------------------------------------- #
 
+def _options_hub_input_root_or_none() -> Path | None:
+    """The explicit Hub input root, or None when the legacy paths stay.
+
+    Unset and empty both keep the legacy expressions. An empty string must not
+    become the current directory (``Path("")`` is ``.``). A non-empty value must
+    already be an absolute directory. This only inspects the variable. It does
+    not create the directory or open its children.
+    """
+    if "OPTIONS_HUB_INPUT_ROOT" not in os.environ:
+        return None
+    raw = os.environ["OPTIONS_HUB_INPUT_ROOT"]
+    if raw == "":
+        return None
+    path = Path(raw)
+    if not path.is_absolute() or not path.is_dir():
+        raise SystemExit(
+            "OPTIONS_HUB_INPUT_ROOT must be an absolute directory that already "
+            f"exists. Refusing {raw!r} before any write, network, or compute."
+        )
+    return path
+
+
+def resolve_options_hub_read_inputs(data_root: Path, repo_root: Path) -> dict[str, Path]:
+    """The five named Hub reads.
+
+    With no input root, each path is the expression this builder used before
+    the seam. With a root, only those five reads move under its ``data/`` and
+    ``site/`` children. The output directory, ``data_root``, R2, and ThetaData
+    are not decided here.
+    """
+    root = _options_hub_input_root_or_none()
+    if root is None:
+        return {
+            "polygon_gex_dir": data_root / _POLYGON_GEX_SUBDIR,
+            "gex_latest_path": data_root / _GEX_LATEST_REL,
+            "fear_greed_path": repo_root / "site" / _FEAR_GREED_REL,
+            "tape_flow_dir": data_root / _TAPE_FLOW_SUBDIR,
+            "live_flow_out_dir": data_root / "live_flow_out",
+        }
+    return {
+        "polygon_gex_dir": root / "data" / _POLYGON_GEX_SUBDIR,
+        "gex_latest_path": root / "data" / _GEX_LATEST_REL,
+        "fear_greed_path": root / "site" / _FEAR_GREED_REL,
+        "tape_flow_dir": root / "data" / _TAPE_FLOW_SUBDIR,
+        "live_flow_out_dir": root / "data" / "live_flow_out",
+    }
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -1059,6 +1107,10 @@ def main() -> None:
                     help="Override thetadata store root")
     args = ap.parse_args()
 
+    # A relative, missing, or non-directory input root stops here, before the
+    # watchdog, data_dir, mkdir, the store, or R2. Unset and empty do not.
+    _options_hub_input_root_or_none()
+
     # Armed before the first store touch: the 2026-08-07 wedge happened during
     # startup, so a watchdog armed any later would have been armed too late.
     _arm_stall_watchdog()
@@ -1071,17 +1123,20 @@ def main() -> None:
     moves_learned_mult = _load_learned_band_mult(data_root)
     moves_grades_by_root = _load_grades_board_rows_by_root(data_root)
 
+    # Output stays on data_root or the explicit --out. The input root cannot move it.
+    _repo_root = Path(__file__).resolve().parent.parent
+    _reads = resolve_options_hub_read_inputs(data_root, _repo_root)
     out_dir = Path(args.out) if args.out else (data_root / "live_flow_out" / "options_hub")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # CONTRACT v2 data paths (resolved once; graceful-absent throughout)
-    polygon_gex_dir = data_root / _POLYGON_GEX_SUBDIR
-    gex_latest_path = data_root / _GEX_LATEST_REL
-    # fear_greed.json lives under site/ (git-tracked, not data/)
-    _repo_root = Path(__file__).resolve().parent.parent
-    fear_greed_path = _repo_root / "site" / _FEAR_GREED_REL
-    tape_flow_dir = data_root / _TAPE_FLOW_SUBDIR
-    live_flow_out_dir = data_root / "live_flow_out"  # poller archive root
+    polygon_gex_dir = _reads["polygon_gex_dir"]
+    gex_latest_path = _reads["gex_latest_path"]
+    # fear_greed.json lives under site/ (git-tracked, not data/) unless the
+    # input root names a different site/ child.
+    fear_greed_path = _reads["fear_greed_path"]
+    tape_flow_dir = _reads["tape_flow_dir"]
+    live_flow_out_dir = _reads["live_flow_out_dir"]  # poller archive root
 
     # WP-RESOLVER — store resolution is canonical: --theta-store CLI wins, then
     # engine.thetadata_store.resolve_thetadata_store (THETADATA_STORE env →

@@ -32,6 +32,7 @@ from engine import basket_index, basket_mtf, basket_score, basket_tape, group_fl
 from engine.baskets import _ew_level, _mtd_anchor, _perf
 from engine.equity_factors import _names_sectors
 from lib import config
+from lib.closes_panel import population_observation
 
 log = logging.getLogger(__name__)
 
@@ -537,17 +538,21 @@ def _macro_leg(bid: str, mc: dict) -> tuple[float | None, list[str]]:
 
 # ----------------------------------------------------------------- per-basket legs
 def _breadth_leg(mc_closes: pd.DataFrame, i: int, fp: dict) -> tuple[float, dict]:
-    """% members above 50d / 200d MA + net new-highs−lows over the live members."""
+    """% eligible priced members above 50d / 200d MA + net new-highs−lows over live members."""
     win = mc_closes.iloc[: i + 1]
     last = win.iloc[-1]
     live = last.dropna().index
     n = len(live)
     if n == 0:
-        return 0.0, {"pct50": None, "pct200": None, "nh": 0, "nl": 0, "n": 0}
+        return 0.0, {"pct50": None, "pct200": None, "nh": 0, "nl": 0,
+                     "n": 0, "n50": 0, "n200": 0}
     ma50 = win[live].rolling(50, min_periods=25).mean().iloc[-1]
     ma200 = win[live].rolling(200, min_periods=100).mean().iloc[-1]
-    pct50 = float((last[live] > ma50).mean())
-    pct200 = float((last[live] > ma200).mean())
+    valid50 = last[live].notna() & ma50.notna()
+    valid200 = last[live].notna() & ma200.notna()
+    n50, n200 = int(valid50.sum()), int(valid200.sum())
+    pct50 = float((last[live][valid50] > ma50[valid50]).mean()) if n50 else None
+    pct200 = float((last[live][valid200] > ma200[valid200]).mean()) if n200 else None
     w = min(HI_LO_WINDOW, len(win))
     roll = win[live].iloc[-w:]
     hi, lo = roll.max(), roll.min()
@@ -555,10 +560,12 @@ def _breadth_leg(mc_closes: pd.DataFrame, i: int, fp: dict) -> tuple[float, dict
     nl = int((last[live] <= lo * (1 + NEAR)).sum())
     net_nh = (nh - nl) / n
     bz = fp.get("broadening_z")
-    leg = float(np.clip(0.45 * (2 * pct50 - 1) + 0.25 * (2 * pct200 - 1)
+    # Unavailable MA measurements contribute no directional term; weights stay fixed.
+    leg = float(np.clip(0.45 * (2 * pct50 - 1 if pct50 is not None else 0.0)
+                        + 0.25 * (2 * pct200 - 1 if pct200 is not None else 0.0)
                         + 0.20 * net_nh + 0.10 * _tanh(bz or 0.0, 0.8), -1, 1))
     return leg, {"pct50": _r(pct50, 3), "pct200": _r(pct200, 3),
-                 "nh": nh, "nl": nl, "n": n}
+                 "nh": nh, "nl": nl, "n": n, "n50": n50, "n200": n200}
 
 
 def _impulse_leg(rets: pd.DataFrame, mc_closes: pd.DataFrame, i: int) -> tuple[float, dict]:
@@ -1017,7 +1024,10 @@ def compute_theme_intel(region: str = "us") -> dict | None:
         s = _nr._setup(rcfg) if rcfg else None
     if s is None:
         return None
-    closes, rets, idx, bench = s["closes"], s["rets"], s["idx"], s["bench"]
+    closes = s.get("theme_closes", s["closes"]) if region == "us" else s["closes"]
+    rets = s.get("theme_rets", s["rets"]) if region == "us" else s["rets"]
+    idx, bench = s["idx"], s["bench"]
+    price_resolution = s.get("theme_price_resolution") if region == "us" else None
     if len(idx) < 60:
         return None
     cfg = group_flow._cfg()
@@ -1057,14 +1067,26 @@ def compute_theme_intel(region: str = "us") -> dict | None:
     bdict = s["mem"]["baskets"]
     items = bdict.items() if isinstance(bdict, dict) else [(b["id"], b) for b in bdict]
     themes: list[dict] = []
+    observation_refusals: list[dict] = []
     uni_live: set[str] = set()                 # deduped live universe for the aggregate card
     tk_meta: dict[str, dict] = {}              # ticker -> {name, theme, theme_zh, theme_id} for popups
 
     for bid, b in items:
         members = b.get("members", [])
-        present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
-        if len(present) < 3:
+        theme_observation = population_observation(closes, members, idx.max())
+        if not theme_observation["aggregate_eligible"]:
+            observation_refusals.append({"basket_id": bid, "observation": theme_observation})
+            print(
+                "::warning title=theme-observation-coverage::"
+                f"{bid} refused aggregate score at {theme_observation['effective_as_of']}: "
+                f"observed {theme_observation['observed_n']}/"
+                f"{theme_observation['configured_n']} live members; minimum "
+                f"{theme_observation['min_members']} and "
+                f"{int(round(theme_observation['min_coverage'] * 100))}% coverage",
+                flush=True,
+            )
             continue
+        present = [m["ticker"] for m in members if m["ticker"] in rets.columns]
         lvl = _ew_level(rets, members, idx)
         if lvl.dropna().empty:
             continue
@@ -1242,6 +1264,7 @@ def compute_theme_intel(region: str = "us") -> dict | None:
                          "ret": _r((perf.get(k) or {}).get("ret"), 4)} for k in
                      ("1d", "5d", "10d", "20d", "60d", "ytd")},
             "timing": _timing_snapshot(lvl, bench, i, fp),
+            "observation": theme_observation,
             "breadth": breadth_d,
             "impulse": impulse_d,
             "leadership": {"breadth": lead.get("breadth"), "top": (lead.get("top") or [])[:3]},
@@ -1508,6 +1531,12 @@ def compute_theme_intel(region: str = "us") -> dict | None:
             "zh": ("波动率仓位：在更困难的环境中，篮子总仓位缩放至约"
                    f"{int(round((rg_size.get('gross_scalar') or 1.0) * 100))}%。只影响仓位，不影响排名。"),
         },
+        "observation": s.get("observation") or {
+            "effective_as_of": idx.max().strftime("%Y-%m-%d"),
+            "status": "legacy_source_without_receipt",
+        },
+        **({"price_resolution": price_resolution} if price_resolution is not None else {}),
+        "observation_refusals": observation_refusals,
         "themes": themes,
         "rotation_5d": {"climbers": climbers, "fallers": fallers},
         "impulse_scorecard": {

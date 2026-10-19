@@ -32,13 +32,13 @@ VERIFIED ENDPOINTS (live 2026-07-25, this runner):
   POST /newircs/index/search?_t=…             form {"pageNo","pageSize","searchTypes","keyWord"}
        → {"totalRecord": 94789, "results": [...]} — the market-wide velocity read.
 
-Store contract: APPEND-ONLY point-in-time from creation. qa.parquet dedups on
-indexId keep-LAST (a same-day re-pull that now carries the company's answer CORRECTS
-the row); velocity.parquet dedups on date keep-LAST. Nothing ever deletes or rewrites
-history; every row carries fetched_at (UTC ISO, "last observed") AND first_seen ("first
-observed", carried through every correction). Writes go through a tmp sibling +
-os.replace, and an existing-but-unreadable store ABORTS the append rather than being
-replaced by tonight's rows.
+Store contract: point-in-time observation state from creation. qa.parquet keeps one
+current row per indexId (a later pull carrying an answer CORRECTS that row) while
+preserving question first_seen plus CIE-08 answer-version clocks/digests. A changed or
+temporarily absent answer is typed; it is never silently relabelled as analyst silence.
+velocity.parquet dedups on date keep-LAST. Writes go through a tmp sibling + os.replace,
+and an existing-but-unreadable store ABORTS the append rather than being replaced by
+tonight's rows.
 
 Politeness + budget: ≥1.0 s + jitter before EVERY request (single host, no parallelism)
 and a ~100 s in-collector wall-clock guard. When the guard fires mid-shard the cursor is
@@ -49,6 +49,7 @@ every leg failed at transport level, which is what the circuit breaker should se
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -56,6 +57,7 @@ import random
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -100,7 +102,14 @@ _QA_COLUMNS = (
     "industry",     # trade[0]
     "source",       # raw pubClient
     "fetched_at",   # LAST observation of this indexId
-    "first_seen",   # FIRST observation — never overwritten by a keep-LAST correction
+    "first_seen",   # FIRST observation of the question — never overwritten
+    # CIE-08 answer-version clocks. Same canonical row; no second Q&A store.
+    "answer_sha256",            # current answer text digest; "" while unanswered/absent
+    "prior_answer_sha256",      # immediately prior distinct answer digest, when observed
+    "answer_first_observed_at", # first observation of any answer (or legacy upper bound)
+    "answer_last_changed_at",   # observation clock of current answer-state transition
+    "answer_clock_quality",     # observed_exact | legacy_upper_bound | not_answered
+    "answer_change_state",      # unanswered | first_answer | unchanged | revised | ...
 )
 _VELOCITY_COLUMNS = ("date", "total_record", "max_pub_ts_page1", "asof")
 
@@ -209,6 +218,145 @@ def _restore_first_seen(merged: pd.DataFrame, existing: pd.DataFrame,
     return out
 
 
+def _answer_digest(answer: Any) -> str:
+    """SHA-256 of one non-empty answer text; empty/NA values stay empty."""
+    try:
+        if answer is None or pd.isna(answer):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    text = str(answer).strip()
+    return hashlib.sha256(text.encode("utf-8")).hexdigest() if text else ""
+
+
+def _clean_clock(value: Any) -> str:
+    try:
+        if value is None or pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    text = str(value).strip()
+    return "" if text in ("", "nan", "None", "NaT", "<NA>") else text
+
+
+def _ensure_answer_metadata(df: pd.DataFrame) -> pd.DataFrame:
+    """Backfill answer-version metadata for legacy rows without inventing clocks.
+
+    A legacy answered row proves the answer existed no later than its historical
+    fetched_at, but does not prove that was the first answer observation. That
+    clock is therefore retained with quality=legacy_upper_bound.
+    """
+    out = df.copy()
+    for col in (
+        "answer_sha256", "prior_answer_sha256", "answer_first_observed_at",
+        "answer_last_changed_at", "answer_clock_quality", "answer_change_state",
+    ):
+        if col not in out.columns:
+            out[col] = ""
+        else:
+            # Legacy reindex creates all-NA float columns. Normalize them to
+            # string/object before assigning hashes/states so pandas 2/3 never
+            # has to coerce a text lineage value into float64.
+            out[col] = out[col].map(_clean_clock).astype("object")
+
+    for idx, row in out.iterrows():
+        answer_hash = _clean_clock(row.get("answer_sha256")) or _answer_digest(row.get("answer"))
+        out.at[idx, "answer_sha256"] = answer_hash
+        prior = _clean_clock(row.get("prior_answer_sha256"))
+        out.at[idx, "prior_answer_sha256"] = prior
+
+        first = _clean_clock(row.get("answer_first_observed_at"))
+        changed = _clean_clock(row.get("answer_last_changed_at"))
+        quality = _clean_clock(row.get("answer_clock_quality"))
+        state = _clean_clock(row.get("answer_change_state"))
+
+        if answer_hash:
+            if not first:
+                # Existing pre-CIE-08 rows only give an upper bound, never an exact
+                # first-answer time.
+                first = _clean_clock(row.get("fetched_at"))
+                quality = "legacy_upper_bound" if first else ""
+            if not changed:
+                changed = _clean_clock(row.get("fetched_at"))
+            if not state:
+                state = "legacy_answer"
+        else:
+            if not quality:
+                quality = "not_answered"
+            if not state:
+                state = "unanswered"
+
+        out.at[idx, "answer_first_observed_at"] = first
+        out.at[idx, "answer_last_changed_at"] = changed
+        out.at[idx, "answer_clock_quality"] = quality
+        out.at[idx, "answer_change_state"] = state
+    return out
+
+
+def _apply_answer_transitions(new_df: pd.DataFrame, existing: pd.DataFrame) -> pd.DataFrame:
+    """Carry answer observation clocks through keep-LAST corrections. Pure."""
+    out = _ensure_answer_metadata(new_df)
+    old = _ensure_answer_metadata(existing)
+    if old.empty:
+        return out
+
+    old_by_id = {
+        str(row.get("index_id")): row
+        for _, row in old.iterrows()
+        if _clean_clock(row.get("index_id"))
+    }
+
+    for idx, row in out.iterrows():
+        key = _clean_clock(row.get("index_id"))
+        prev = old_by_id.get(key)
+        if prev is None:
+            continue
+
+        prev_hash = _clean_clock(prev.get("answer_sha256"))
+        new_hash = _clean_clock(row.get("answer_sha256"))
+        first = _clean_clock(prev.get("answer_first_observed_at"))
+        first_quality = _clean_clock(prev.get("answer_clock_quality"))
+        prev_changed = _clean_clock(prev.get("answer_last_changed_at"))
+        prev_prior = _clean_clock(prev.get("prior_answer_sha256"))
+        observed_at = _clean_clock(row.get("fetched_at"))
+
+        if prev_hash == new_hash:
+            out.at[idx, "answer_first_observed_at"] = first
+            out.at[idx, "answer_last_changed_at"] = prev_changed
+            out.at[idx, "answer_clock_quality"] = (
+                first_quality or ("not_answered" if not new_hash else "legacy_upper_bound")
+            )
+            out.at[idx, "prior_answer_sha256"] = prev_prior
+            out.at[idx, "answer_change_state"] = "unchanged" if new_hash else "unanswered"
+        elif not prev_hash and new_hash:
+            if first:
+                # A previously observed answer became absent and has now reappeared
+                # or changed; do not relabel it as a first-ever answer.
+                out.at[idx, "answer_first_observed_at"] = first
+                out.at[idx, "answer_clock_quality"] = first_quality or "legacy_upper_bound"
+                out.at[idx, "prior_answer_sha256"] = prev_prior
+                out.at[idx, "answer_change_state"] = "restored_or_reappeared"
+            else:
+                out.at[idx, "answer_first_observed_at"] = observed_at
+                out.at[idx, "answer_clock_quality"] = "observed_exact"
+                out.at[idx, "prior_answer_sha256"] = ""
+                out.at[idx, "answer_change_state"] = "first_answer"
+            out.at[idx, "answer_last_changed_at"] = observed_at
+        elif prev_hash and new_hash:
+            out.at[idx, "answer_first_observed_at"] = first
+            out.at[idx, "answer_clock_quality"] = first_quality or "legacy_upper_bound"
+            out.at[idx, "answer_last_changed_at"] = observed_at
+            out.at[idx, "prior_answer_sha256"] = prev_hash
+            out.at[idx, "answer_change_state"] = "revised"
+        else:  # prior answer existed, current source no longer carries it
+            out.at[idx, "answer_first_observed_at"] = first
+            out.at[idx, "answer_clock_quality"] = first_quality or "legacy_upper_bound"
+            out.at[idx, "answer_last_changed_at"] = observed_at
+            out.at[idx, "prior_answer_sha256"] = prev_hash
+            out.at[idx, "answer_change_state"] = "removed_or_unavailable"
+    return out
+
+
 def load_qa() -> pd.DataFrame:
     """Existing qa.parquet, or an empty frame with the canonical schema.
 
@@ -217,7 +365,10 @@ def load_qa() -> pd.DataFrame:
     frame can never be written back over the real one.
     """
     df = _read_store(_qa_path(), _QA_COLUMNS)
-    return pd.DataFrame(columns=list(_QA_COLUMNS)) if df is None else df
+    return (
+        pd.DataFrame(columns=list(_QA_COLUMNS))
+        if df is None else _ensure_answer_metadata(df)
+    )
 
 
 def write_qa(rows: list[dict]) -> int:
@@ -240,8 +391,10 @@ def write_qa(rows: list[dict]) -> int:
             log.error("china_irm: ABORTING the qa.parquet append — the accrued store is "
                       "unreadable and is left untouched for manual recovery")
             return 0
+        existing = _ensure_answer_metadata(existing)
         new_df = pd.DataFrame(rows).reindex(columns=list(_QA_COLUMNS))
         new_df["first_seen"] = new_df["first_seen"].fillna(new_df["fetched_at"])
+        new_df = _apply_answer_transitions(new_df, existing)
         if existing.empty:
             merged = new_df.drop_duplicates(subset=["index_id"], keep="last")
             net_new = len(merged)
@@ -411,6 +564,14 @@ def parse_question_row(raw: dict, fetched_at: str) -> dict:
         "industry": industry,
         "source": _text(raw.get("pubClient")),
         "fetched_at": fetched_at,
+        # First observation under this instrument. write_qa() reconciles these
+        # fields against an existing row and preserves earlier clocks.
+        "answer_sha256": _answer_digest(answer),
+        "prior_answer_sha256": "",
+        "answer_first_observed_at": fetched_at if answer else "",
+        "answer_last_changed_at": fetched_at if answer else "",
+        "answer_clock_quality": "observed_exact" if answer else "not_answered",
+        "answer_change_state": "first_answer" if answer else "unanswered",
     }
 
 

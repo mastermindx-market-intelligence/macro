@@ -1,0 +1,44 @@
+{
+  "base_sha": "c3d4b81acee75081138c9e40aba8d7589aa341e3",
+  "hashes": {
+    "research/evidence/options-workbench-expiry-clock-20260917/broad-green.log": "c964f79d6e72c6549857d5d2cd5ae88f8bd6bd9bf2626737af0ff126ef8d61a2",
+    "research/evidence/options-workbench-expiry-clock-20260917/focused-green-after-restore.log": "0ac96535eb550e4d5ae133630cf77f0f5bfbbbdac035b1fee8ec7dfa409e41ab",
+    "research/evidence/options-workbench-expiry-clock-20260917/original-discrimination.log": "774fab45b96abe08b833193f7fb7a44b4ef6f4d62e831be1df208e4baf17e2ce",
+    "scripts/build_flow_surface.py": "bf030fec7ac762975f14776b78a76799966ceacb4436952eaa08e4a544a3a537",
+    "scripts/live_flow_poller.py": "2e08e5a641d84fa6cd305755198d542bcfe8b49eb027235fd9e3275cd1361e21",
+    "tests/test_flow_surface.py": "f072c884c2644236590c68b1554c640d7d54415bbd461a6aadfbe79a9647de51",
+    "tests/test_live_flow.py": "f52658085cfc9891b1d86dd361d69f941b10e1a587013d53167caf42a58bef03"
+  },
+  "non_claims": [
+    "production deployment",
+    "live market freshness",
+    "observed dealer inventory",
+    "predictive edge",
+    "QuantedOptions parity"
+  ],
+  "operation": "options-workbench-r0-expiry-clock-20260917-sol-001",
+  "results": {
+    "broad": {
+      "failed": 0,
+      "passed": 509,
+      "skipped": 1
+    },
+    "compileall_exit": 0,
+    "diff_check_exit": 0,
+    "focused_after_restore": {
+      "failed": 0,
+      "passed": 74
+    },
+    "live_flow": {
+      "failed": 0,
+      "passed": 284
+    },
+    "original_discrimination": {
+      "exit": 1,
+      "expected": "four targeted tests fail on original source"
+    }
+  },
+  "schema": "mastermind.options_workbench.expiry_clock_evidence.v1",
+  "skillpack_sha": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "state": "BUILT_NOT_PROVEN"
+}

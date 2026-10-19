@@ -15,6 +15,7 @@ import json
 import logging
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -575,24 +576,37 @@ def panel(root: Path | None = None) -> dict:
     """
     try:
         has_token = bool(github_api.token())
-        # Batch all repo-variable reads into ONE API call.  This panel reads
-        # AUTONOMY_PAUSED, METAB_INTENSITY, METAB_PACE, METAB_KEYS_ENABLED and
-        # METAB_RUN_UNTIL — previously 5 sequential get_repo_variable() round
-        # trips.  list_repo_variables() returns None on no-token / API error,
-        # in which case every _read_var() falls back to the single-variable
-        # getter (identical behaviour, just un-batched).
-        vars_cache = github_api.list_repo_variables()
-        variable_value = _read_var(_VAR_NAME, vars_cache)
-        armed, state = _armed_state(variable_value)
-        # Fetch enough runs to feed the duration calculator (needs completed cycle runs)
-        runs = _recent_metabolism_runs(cap=15)
-        organism = _organism_summary()
-        key_health = _key_health(root)
-        freezes = _freezes_7d()
-        throttle_data = throttle(root, vars_cache=vars_cache)
+        # The two remote GitHub reads are independent.  Running them serially made
+        # the panel pay the sum of two network round trips before it could paint;
+        # overlap them and let the local file folds run while the workflow request
+        # is still in flight.  The existing helpers remain fail-soft, so this does
+        # not create a second retry/error policy.
+        with ThreadPoolExecutor(max_workers=2, thread_name_prefix="admin-metabolism") as pool:
+            vars_future = pool.submit(github_api.list_repo_variables)
+            runs_future = pool.submit(_recent_metabolism_runs, cap=15)
+
+            # Batch all repo-variable reads into ONE API call.  This panel reads
+            # AUTONOMY_PAUSED, METAB_INTENSITY, METAB_PACE, METAB_KEYS_ENABLED and
+            # METAB_RUN_UNTIL — previously 5 sequential get_repo_variable() round
+            # trips.  list_repo_variables() returns None on no-token / API error,
+            # in which case every _read_var() falls back to the single-variable
+            # getter (identical behaviour, just un-batched).
+            vars_cache = vars_future.result()
+            variable_value = _read_var(_VAR_NAME, vars_cache)
+            armed, state = _armed_state(variable_value)
+
+            organism = _organism_summary()
+            key_health = _key_health(root)
+            freezes = _freezes_7d()
+            throttle_data = throttle(root, vars_cache=vars_cache)
+            budget_st = _budget_status(root)
+            run_until_val = _run_until_value(root, vars_cache=vars_cache)
+
+            # Fetch enough runs to feed the duration calculator (needs completed
+            # cycle runs).  In the common case this request has completed while
+            # the local folds above were running.
+            runs = runs_future.result()
         loop_dur = _median_cycle_duration(runs)
-        budget_st = _budget_status(root)
-        run_until_val = _run_until_value(root, vars_cache=vars_cache)
 
         return {
             "variable_value": variable_value,

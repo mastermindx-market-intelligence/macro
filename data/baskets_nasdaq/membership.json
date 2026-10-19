@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-09-01",
+ "as_of": "2026-10-15",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -32,24 +32,24 @@
      "name": "Intel Corp"
     },
     {
-     "ticker": "ARM",
-     "name": "Arm Holdings Plc ADR"
-    },
-    {
      "ticker": "TXN",
      "name": "Texas Instruments Inc"
+    },
+    {
+     "ticker": "ARM",
+     "name": "Arm Holdings Plc ADR"
     },
     {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -78,32 +78,32 @@
      "name": "Shopify Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
      "ticker": "ADP",
      "name": "Automatic Data Processing Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
-     "ticker": "CDNS",
-     "name": "Cadence Design Systems Inc"
     },
     {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
+     "ticker": "CDNS",
+     "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
      "name": "Strategy Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "WDAY",
@@ -200,12 +200,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     }
    ]
   },
@@ -214,11 +214,11 @@
    "sector": "Internet & Platforms",
    "members": [
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
@@ -234,6 +234,10 @@
     {
      "ticker": "VRTX",
      "name": "Vertex Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "MRNA",
+     "name": "Moderna Inc"
     },
     {
      "ticker": "REGN",
@@ -316,10 +320,6 @@
      "name": "Lumentum Holdings Inc"
     },
     {
-     "ticker": "ANET",
-     "name": "ANET"
-    },
-    {
      "ticker": "CIEN",
      "name": "CIEN"
     },
@@ -334,12 +334,12 @@
    "sector": "Software & Cloud",
    "members": [
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
+    },
+    {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
     },
     {
      "ticker": "KTOS",
@@ -386,24 +386,24 @@
      "name": "Intel Corp"
     },
     {
-     "ticker": "ARM",
-     "name": "Arm Holdings Plc ADR"
-    },
-    {
      "ticker": "TXN",
      "name": "Texas Instruments Inc"
+    },
+    {
+     "ticker": "ARM",
+     "name": "Arm Holdings Plc ADR"
     },
     {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -448,10 +448,6 @@
     {
      "ticker": "LITE",
      "name": "Lumentum Holdings Inc"
-    },
-    {
-     "ticker": "ANET",
-     "name": "ANET"
     },
     {
      "ticker": "CIEN",
@@ -520,32 +516,32 @@
      "name": "Shopify Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
      "ticker": "ADP",
      "name": "Automatic Data Processing Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
-     "ticker": "CDNS",
-     "name": "Cadence Design Systems Inc"
     },
     {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
+     "ticker": "CDNS",
+     "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
      "name": "Strategy Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "WDAY",
@@ -572,12 +568,12 @@
      "name": "Copart Inc"
     },
     {
-     "ticker": "AXON",
-     "name": "Axon Enterprise Inc"
-    },
-    {
      "ticker": "RKLB",
      "name": "Rocket Lab Corp"
+    },
+    {
+     "ticker": "AXON",
+     "name": "Axon Enterprise Inc"
     },
     {
      "ticker": "KTOS",
@@ -610,11 +606,11 @@
    "name_zh": "互联网与平台",
    "members": [
     {
-     "ticker": "GOOGL",
+     "ticker": "GOOG",
      "name": "Alphabet Inc"
     },
     {
-     "ticker": "GOOG",
+     "ticker": "GOOGL",
      "name": "Alphabet Inc"
     },
     {
@@ -630,12 +626,12 @@
      "name": "PDD Holdings Inc ADR"
     },
     {
-     "ticker": "DASH",
-     "name": "DoorDash Inc"
-    },
-    {
      "ticker": "MELI",
      "name": "MercadoLibre Inc"
+    },
+    {
+     "ticker": "DASH",
+     "name": "DoorDash Inc"
     },
     {
      "ticker": "TMUS",
@@ -659,7 +655,7 @@
     },
     {
      "ticker": "WBD",
-     "name": "Warner Bros. Discovery Inc"
+     "name": "WBD"
     },
     {
      "ticker": "EA",
@@ -786,6 +782,10 @@
      "name": "Vertex Pharmaceuticals Inc"
     },
     {
+     "ticker": "MRNA",
+     "name": "Moderna Inc"
+    },
+    {
      "ticker": "REGN",
      "name": "Regeneron Pharmaceuticals Inc"
     },
@@ -853,7 +853,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

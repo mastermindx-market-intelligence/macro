@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Research Vault ingest trigger bridge. The MarketDesk trickle daemon owns
+  discovery/download/publish; this watcher only checks the canonical DB and
+  dispatches research-ingest.yml when vaulted_at advances.
+
+  Install after replacing __HOME__:
+    cp deploy/ai.marketdesk.feed.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/ai.marketdesk.feed.plist
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>ai.marketdesk.feed</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__HOME__/mastermind-research/feed.sh</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>900</integer>
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- This short bridge must start and finish even when the research host is busy. -->
+    <key>ProcessType</key>
+    <string>Standard</string>
+
+    <key>StandardOutPath</key>
+    <string>__HOME__/mastermind-research/feed.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/mastermind-research/feed.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+</dict>
+</plist>

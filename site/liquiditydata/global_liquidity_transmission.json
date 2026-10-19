@@ -1,0 +1,734 @@
+{
+  "freshness": {
+    "asof": "2026-10-09",
+    "clocks": {
+      "adapter_known_at_field": "first_known_at",
+      "adapter_observed_at_field": "evidence_available_at",
+      "evidence_available_at": "2026-10-09T00:00:00Z",
+      "evidence_available_at_contributions": {
+        "monetary": "2026-10-08T00:00:00Z",
+        "us_liquidity_quality": null,
+        "usd_funding": "2026-10-09T00:00:00Z"
+      },
+      "evidence_available_at_excludes": "quality.global_credit is outside state.event_reference and keeps its own per-component reference/availability stamps; it is separately timestamped rather than folded into this clock",
+      "evidence_available_at_law": "no earlier than the latest availability of every field copied into state.event_reference: all monetary receipts, all usd_funding receipts, and the embedded us_liquidity_quality asof taken as its conservative availability lower bound",
+      "first_known_at": "2026-10-16T18:16:51.754201Z",
+      "latest_component_observed_at": "2026-10-07T00:00:00Z",
+      "monetary_release_at": "2026-10-08T00:00:00Z",
+      "release_at": "2026-10-09T00:00:00Z",
+      "release_at_semantics": "alias of evidence_available_at; never the monetary-only release",
+      "release_clock_precision": "conservative_date_only",
+      "state_asof": "2026-10-09T00:00:00Z"
+    },
+    "component_snapshot": {
+      "monetary": {
+        "boj": {
+          "component_hash": "ae62bb2ba9c42b056194f117826ea2b36db4a95b6d1485f9d402b3f068899d20",
+          "current_contribution_z": 0.830764,
+          "history_hash": "2c6935857684565fa849612ed7053495a9aa10d6088714f50f6d7f19035e0a13",
+          "model_spec": {
+            "column": "boj_assets",
+            "frequency": "monthly_end_of_period",
+            "fx": {
+              "column": "close",
+              "invert": true,
+              "key": "USDJPY=X",
+              "store": "yahoo"
+            },
+            "key": "JPNASSETS",
+            "period_anchor": "month_end",
+            "pit_status": "release_lag_aligned_revision_unknown",
+            "provider": "Bank of Japan via FRED",
+            "release_lag_bdays": 2,
+            "revision_risk": "medium",
+            "source_id": "JPNASSETS",
+            "stale_after_calendar_days": 45,
+            "store": "fred",
+            "transform": "log_level",
+            "unit_multiplier": 100000000.0,
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 9,
+            "available_date": "2026-10-02",
+            "frequency": "monthly_end_of_period",
+            "pit_status": "release_lag_aligned_revision_unknown",
+            "provider": "Bank of Japan via FRED",
+            "reference_date": "2026-09-30",
+            "revision_risk": "medium",
+            "source_id": "JPNASSETS",
+            "stale_after_calendar_days": 45,
+            "status": "usable"
+          }
+        },
+        "ecb": {
+          "component_hash": "a36037684cefe709e5d537be7c62f00482037a83e432d393d7b72cb06895f063",
+          "current_contribution_z": 0.953589,
+          "history_hash": "e97f9068b38d6d73d474c1368c5a974ce9cd36696dcca201cc6e4b0c0d741c6c",
+          "model_spec": {
+            "column": "ecb_assets",
+            "frequency": "weekly",
+            "fx": {
+              "column": "close",
+              "invert": false,
+              "key": "EURUSD=X",
+              "store": "yahoo"
+            },
+            "key": "ECBASSETSW",
+            "period_anchor": "observation_date",
+            "pit_status": "release_lag_aligned_revision_unknown",
+            "provider": "European Central Bank via FRED",
+            "release_lag_bdays": 2,
+            "revision_risk": "medium",
+            "source_id": "ECBASSETSW",
+            "stale_after_calendar_days": 12,
+            "store": "fred",
+            "transform": "log_level",
+            "unit_multiplier": 1000000.0,
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 7,
+            "available_date": "2026-10-06",
+            "frequency": "weekly",
+            "pit_status": "release_lag_aligned_revision_unknown",
+            "provider": "European Central Bank via FRED",
+            "reference_date": "2026-10-02",
+            "revision_risk": "medium",
+            "source_id": "ECBASSETSW",
+            "stale_after_calendar_days": 12,
+            "status": "usable"
+          }
+        },
+        "fed": {
+          "component_hash": "058891a144b6d0241b4c71bc8471f3e0f093d7f611457aa69bf31b78f190d1f5",
+          "current_contribution_z": 0.968795,
+          "history_hash": "f39c59fa6a4cfde522e5b5e0f666c2578e92ddea169e3a5c59d3bd9ad7f3d50c",
+          "model_spec": {
+            "column": "fed_balance_sheet",
+            "frequency": "weekly_as_of_wednesday",
+            "fx": null,
+            "key": "WALCL",
+            "period_anchor": "observation_date",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System",
+            "release_lag_bdays": 1,
+            "revision_risk": "low",
+            "source_id": "WALCL",
+            "stale_after_calendar_days": 10,
+            "store": "fred",
+            "transform": "log_level",
+            "unit_multiplier": 1000000.0,
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 2,
+            "available_date": "2026-10-08",
+            "frequency": "weekly_as_of_wednesday",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System",
+            "reference_date": "2026-10-07",
+            "revision_risk": "low",
+            "source_id": "WALCL",
+            "stale_after_calendar_days": 10,
+            "status": "usable"
+          }
+        }
+      },
+      "usd_funding": {
+        "broad_dollar": {
+          "component_hash": "7d91acc49984d2ea7b46f37f91c34e0f29703dca6a8125c370a4f9880448dc20",
+          "current_contribution_z": -0.119342,
+          "history_hash": "037bcd051b684e87c0589226a6c705750c8dcf737351a65659cec0d1a95a20de",
+          "model_spec": {
+            "change_periods": 13,
+            "change_transform": "log_change",
+            "column": "broad_dollar",
+            "direction_multiplier": -1.0,
+            "frequency": "daily_business",
+            "key": "DTWEXBGS",
+            "period_anchor": "observation_date",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System via FRED",
+            "release_lag_bdays": 1,
+            "revision_risk": "low",
+            "source_id": "DTWEXBGS",
+            "stale_after_calendar_days": 10,
+            "store": "fred",
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 1,
+            "available_date": "2026-10-09",
+            "frequency": "daily_business",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System via FRED",
+            "reference_date": "2026-10-08",
+            "revision_risk": "low",
+            "source_id": "DTWEXBGS",
+            "stale_after_calendar_days": 10,
+            "status": "usable"
+          }
+        },
+        "high_yield_oas": {
+          "component_hash": "3d8d83e38dae664dad1abed7a95fa02ffbdce28dbd9a98c11163c6bf28725cbb",
+          "current_contribution_z": -0.305917,
+          "history_hash": "f1302fbd482625440fbf41376c85fb1737480fd5ae9eb2063b830f1dd7adbbe7",
+          "model_spec": {
+            "change_periods": 13,
+            "change_transform": "level_change",
+            "column": "hy_oas",
+            "direction_multiplier": -1.0,
+            "frequency": "daily_business",
+            "key": "BAMLH0A0HYM2",
+            "period_anchor": "observation_date",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "ICE BofA via FRED and the repo append-only archive",
+            "release_lag_bdays": 1,
+            "revision_risk": "low",
+            "source_id": "BAMLH0A0HYM2",
+            "stale_after_calendar_days": 7,
+            "store": "fred",
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 1,
+            "available_date": "2026-10-09",
+            "frequency": "daily_business",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "ICE BofA via FRED and the repo append-only archive",
+            "reference_date": "2026-10-08",
+            "revision_risk": "low",
+            "source_id": "BAMLH0A0HYM2",
+            "stale_after_calendar_days": 7,
+            "status": "usable"
+          }
+        },
+        "real_yield_10y": {
+          "component_hash": "99b1f8f1cbfd52581068d40eee7e09f9780da5a7ba78cc8e5020fc4c3b9cbafc",
+          "current_contribution_z": -1.508251,
+          "history_hash": "939dec24f20222bc7f7c3cd8418135d0094456b046d165047e8c2ffca151da74",
+          "model_spec": {
+            "change_periods": 13,
+            "change_transform": "level_change",
+            "column": "us10y_real",
+            "direction_multiplier": -1.0,
+            "frequency": "daily_business",
+            "key": "DFII10",
+            "period_anchor": "observation_date",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System via FRED",
+            "release_lag_bdays": 1,
+            "revision_risk": "low",
+            "source_id": "DFII10",
+            "stale_after_calendar_days": 7,
+            "store": "fred",
+            "weight": 1.0
+          },
+          "receipt": {
+            "age_calendar_days": 1,
+            "available_date": "2026-10-09",
+            "frequency": "daily_business",
+            "pit_status": "release_lag_aligned_non_revised",
+            "provider": "Board of Governors of the Federal Reserve System via FRED",
+            "reference_date": "2026-10-08",
+            "revision_risk": "low",
+            "source_id": "DFII10",
+            "stale_after_calendar_days": 7,
+            "status": "usable"
+          }
+        }
+      }
+    },
+    "components": {
+      "monetary": {
+        "boj": {
+          "age_calendar_days": 9,
+          "available_date": "2026-10-02",
+          "frequency": "monthly_end_of_period",
+          "pit_status": "release_lag_aligned_revision_unknown",
+          "provider": "Bank of Japan via FRED",
+          "reference_date": "2026-09-30",
+          "revision_risk": "medium",
+          "source_id": "JPNASSETS",
+          "stale_after_calendar_days": 45,
+          "status": "usable"
+        },
+        "ecb": {
+          "age_calendar_days": 7,
+          "available_date": "2026-10-06",
+          "frequency": "weekly",
+          "pit_status": "release_lag_aligned_revision_unknown",
+          "provider": "European Central Bank via FRED",
+          "reference_date": "2026-10-02",
+          "revision_risk": "medium",
+          "source_id": "ECBASSETSW",
+          "stale_after_calendar_days": 12,
+          "status": "usable"
+        },
+        "fed": {
+          "age_calendar_days": 2,
+          "available_date": "2026-10-08",
+          "frequency": "weekly_as_of_wednesday",
+          "pit_status": "release_lag_aligned_non_revised",
+          "provider": "Board of Governors of the Federal Reserve System",
+          "reference_date": "2026-10-07",
+          "revision_risk": "low",
+          "source_id": "WALCL",
+          "stale_after_calendar_days": 10,
+          "status": "usable"
+        }
+      },
+      "usd_funding": {
+        "broad_dollar": {
+          "age_calendar_days": 1,
+          "available_date": "2026-10-09",
+          "frequency": "daily_business",
+          "pit_status": "release_lag_aligned_non_revised",
+          "provider": "Board of Governors of the Federal Reserve System via FRED",
+          "reference_date": "2026-10-08",
+          "revision_risk": "low",
+          "source_id": "DTWEXBGS",
+          "stale_after_calendar_days": 10,
+          "status": "usable"
+        },
+        "high_yield_oas": {
+          "age_calendar_days": 1,
+          "available_date": "2026-10-09",
+          "frequency": "daily_business",
+          "pit_status": "release_lag_aligned_non_revised",
+          "provider": "ICE BofA via FRED and the repo append-only archive",
+          "reference_date": "2026-10-08",
+          "revision_risk": "low",
+          "source_id": "BAMLH0A0HYM2",
+          "stale_after_calendar_days": 7,
+          "status": "usable"
+        },
+        "real_yield_10y": {
+          "age_calendar_days": 1,
+          "available_date": "2026-10-09",
+          "frequency": "daily_business",
+          "pit_status": "release_lag_aligned_non_revised",
+          "provider": "Board of Governors of the Federal Reserve System via FRED",
+          "reference_date": "2026-10-08",
+          "revision_risk": "low",
+          "source_id": "DFII10",
+          "stale_after_calendar_days": 7,
+          "status": "usable"
+        }
+      }
+    },
+    "degraded": false,
+    "funding_coverage_ratio": 1.0,
+    "monetary_coverage_ratio": 1.0,
+    "status": "fresh"
+  },
+  "meta": {
+    "architecture_authority": "Mastermind issue #117; orchestration and acceptance authority Mastermind issue #123",
+    "authority": "measurement_only",
+    "config_hash": "f02d493baed5f6cc54464583552bb51384f8f81288b47ea978f6224bc07a487b",
+    "contract_scope": "state_quality_freshness_only",
+    "data_version": "glt_data:a948e779d83d6c92",
+    "forbidden_authority": [
+      "trade",
+      "allocation",
+      "alert",
+      "dispatch",
+      "transmission_curve",
+      "repricing_gap"
+    ],
+    "frequency": "W-FRI",
+    "generated_at": "2026-10-16T18:16:51.754201+00:00",
+    "hash_algorithm": "sha256_canonical_json",
+    "historical_first_known_status": "not_reconstructable_before_this_producer_existed",
+    "methodology": "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md",
+    "model_version": "glt_state.v1",
+    "owner": "Macro/Data Producer W-LIQ.1",
+    "pit_policy": "economic reference date plus conservative business-day release lag; expanding transforms use only prior observations",
+    "producer_version": "w-liq.1.0",
+    "revision_law": {
+      "changed_source_or_model": "emit a new snapshot and data/model version; never rewrite a downstream first-known episode",
+      "episode_amendments": "owned by W-LIQ.3 append-only ledgers, not this producer",
+      "exact_retry": "same hash is the same immutable source snapshot and preserves its earliest published first_known_at",
+      "snapshot_identity": "source_snapshot_hash"
+    },
+    "schema": "global_liquidity_transmission.v1",
+    "source_snapshot_hash": "a948e779d83d6c92a08d11ce1e0391aa619616a17bfe7e72a636992213e4f6c9"
+  },
+  "quality": {
+    "confidence": {
+      "kind": "data_lineage_and_coverage_only",
+      "not": [
+        "predictive_probability",
+        "alpha_confidence",
+        "promotion_grade"
+      ],
+      "value": 0.833333
+    },
+    "degraded": true,
+    "event_quality": "mixed",
+    "event_quality_enum": [
+      "easing",
+      "tightening",
+      "mixed",
+      "unknown"
+    ],
+    "global_credit": {
+      "components": {
+        "china_total_social_financing": {
+          "available_date": "2026-09-16",
+          "credit_impulse_acceleration_pct": -17.686,
+          "credit_impulse_level_pct": -0.082,
+          "direction": "weakening",
+          "pit_status": "explicit_conservative_availability_date",
+          "reference_date": "2026-08-01",
+          "source_id": "PBOC_TSF",
+          "status": "context_only"
+        },
+        "us_bank_credit": {
+          "ci_loans_yoy_pct": 9.96,
+          "direction": "improving",
+          "pit_status": "initial_release_archive_available_from_1996_but_not_used_in_this_current_context_read",
+          "reference_date": "2026-09-01",
+          "source_id": "BUSLOANS",
+          "status": "context_only"
+        }
+      },
+      "credit_impulse_global": null,
+      "reason": "US C&I loans and China TSF are different constructs; BIS coverage is quarterly and lacks repository release-vintage timestamps.",
+      "status": "insufficient_comparable_pit_coverage"
+    },
+    "missing_or_stale": [],
+    "revision_limitations": [
+      "ECB and BoJ stores do not carry full vintage histories; release-lag alignment does not eliminate later-revision risk.",
+      "China M2 has no repository release timestamp or vintage and is excluded from the causal state.",
+      "NFCI and ANFCI revise their full histories and are excluded from the causal state.",
+      "BoE, SNB, and clean keyless PBoC total assets lack adequate canonical balance-sheet feeds and are omitted."
+    ],
+    "source_semantics": {
+      "credit": "US and China directions remain separate context; no false global scalar",
+      "monetary": "Fed, ECB, and BoJ balance-sheet stance; coverage-renormalised, never zero-filled",
+      "treasury_plumbing": "canonical US WALCL minus RRP minus TGA quality classifier, reused without re-derivation",
+      "usd_funding": "broad dollar, 10Y real yield, and HY OAS; positive means easier funding"
+    },
+    "status": "degraded",
+    "us_liquidity_quality": null
+  },
+  "state": {
+    "asof": "2026-10-09",
+    "credit_impulse_global": null,
+    "event_reference": {
+      "breadth": 0.333333,
+      "clocks": {
+        "adapter_known_at_field": "first_known_at",
+        "adapter_observed_at_field": "evidence_available_at",
+        "evidence_available_at": "2026-10-09T00:00:00Z",
+        "evidence_available_at_contributions": {
+          "monetary": "2026-10-08T00:00:00Z",
+          "us_liquidity_quality": null,
+          "usd_funding": "2026-10-09T00:00:00Z"
+        },
+        "evidence_available_at_excludes": "quality.global_credit is outside state.event_reference and keeps its own per-component reference/availability stamps; it is separately timestamped rather than folded into this clock",
+        "evidence_available_at_law": "no earlier than the latest availability of every field copied into state.event_reference: all monetary receipts, all usd_funding receipts, and the embedded us_liquidity_quality asof taken as its conservative availability lower bound",
+        "first_known_at": "2026-10-16T18:16:51.754201Z",
+        "latest_component_observed_at": "2026-10-07T00:00:00Z",
+        "monetary_release_at": "2026-10-08T00:00:00Z",
+        "release_at": "2026-10-09T00:00:00Z",
+        "release_at_semantics": "alias of evidence_available_at; never the monetary-only release",
+        "release_clock_precision": "conservative_date_only",
+        "state_asof": "2026-10-09T00:00:00Z"
+      },
+      "component_snapshot": {
+        "monetary": {
+          "boj": {
+            "component_hash": "ae62bb2ba9c42b056194f117826ea2b36db4a95b6d1485f9d402b3f068899d20",
+            "current_contribution_z": 0.830764,
+            "history_hash": "2c6935857684565fa849612ed7053495a9aa10d6088714f50f6d7f19035e0a13",
+            "model_spec": {
+              "column": "boj_assets",
+              "frequency": "monthly_end_of_period",
+              "fx": {
+                "column": "close",
+                "invert": true,
+                "key": "USDJPY=X",
+                "store": "yahoo"
+              },
+              "key": "JPNASSETS",
+              "period_anchor": "month_end",
+              "pit_status": "release_lag_aligned_revision_unknown",
+              "provider": "Bank of Japan via FRED",
+              "release_lag_bdays": 2,
+              "revision_risk": "medium",
+              "source_id": "JPNASSETS",
+              "stale_after_calendar_days": 45,
+              "store": "fred",
+              "transform": "log_level",
+              "unit_multiplier": 100000000.0,
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 9,
+              "available_date": "2026-10-02",
+              "frequency": "monthly_end_of_period",
+              "pit_status": "release_lag_aligned_revision_unknown",
+              "provider": "Bank of Japan via FRED",
+              "reference_date": "2026-09-30",
+              "revision_risk": "medium",
+              "source_id": "JPNASSETS",
+              "stale_after_calendar_days": 45,
+              "status": "usable"
+            }
+          },
+          "ecb": {
+            "component_hash": "a36037684cefe709e5d537be7c62f00482037a83e432d393d7b72cb06895f063",
+            "current_contribution_z": 0.953589,
+            "history_hash": "e97f9068b38d6d73d474c1368c5a974ce9cd36696dcca201cc6e4b0c0d741c6c",
+            "model_spec": {
+              "column": "ecb_assets",
+              "frequency": "weekly",
+              "fx": {
+                "column": "close",
+                "invert": false,
+                "key": "EURUSD=X",
+                "store": "yahoo"
+              },
+              "key": "ECBASSETSW",
+              "period_anchor": "observation_date",
+              "pit_status": "release_lag_aligned_revision_unknown",
+              "provider": "European Central Bank via FRED",
+              "release_lag_bdays": 2,
+              "revision_risk": "medium",
+              "source_id": "ECBASSETSW",
+              "stale_after_calendar_days": 12,
+              "store": "fred",
+              "transform": "log_level",
+              "unit_multiplier": 1000000.0,
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 7,
+              "available_date": "2026-10-06",
+              "frequency": "weekly",
+              "pit_status": "release_lag_aligned_revision_unknown",
+              "provider": "European Central Bank via FRED",
+              "reference_date": "2026-10-02",
+              "revision_risk": "medium",
+              "source_id": "ECBASSETSW",
+              "stale_after_calendar_days": 12,
+              "status": "usable"
+            }
+          },
+          "fed": {
+            "component_hash": "058891a144b6d0241b4c71bc8471f3e0f093d7f611457aa69bf31b78f190d1f5",
+            "current_contribution_z": 0.968795,
+            "history_hash": "f39c59fa6a4cfde522e5b5e0f666c2578e92ddea169e3a5c59d3bd9ad7f3d50c",
+            "model_spec": {
+              "column": "fed_balance_sheet",
+              "frequency": "weekly_as_of_wednesday",
+              "fx": null,
+              "key": "WALCL",
+              "period_anchor": "observation_date",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System",
+              "release_lag_bdays": 1,
+              "revision_risk": "low",
+              "source_id": "WALCL",
+              "stale_after_calendar_days": 10,
+              "store": "fred",
+              "transform": "log_level",
+              "unit_multiplier": 1000000.0,
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 2,
+              "available_date": "2026-10-08",
+              "frequency": "weekly_as_of_wednesday",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System",
+              "reference_date": "2026-10-07",
+              "revision_risk": "low",
+              "source_id": "WALCL",
+              "stale_after_calendar_days": 10,
+              "status": "usable"
+            }
+          }
+        },
+        "usd_funding": {
+          "broad_dollar": {
+            "component_hash": "7d91acc49984d2ea7b46f37f91c34e0f29703dca6a8125c370a4f9880448dc20",
+            "current_contribution_z": -0.119342,
+            "history_hash": "037bcd051b684e87c0589226a6c705750c8dcf737351a65659cec0d1a95a20de",
+            "model_spec": {
+              "change_periods": 13,
+              "change_transform": "log_change",
+              "column": "broad_dollar",
+              "direction_multiplier": -1.0,
+              "frequency": "daily_business",
+              "key": "DTWEXBGS",
+              "period_anchor": "observation_date",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System via FRED",
+              "release_lag_bdays": 1,
+              "revision_risk": "low",
+              "source_id": "DTWEXBGS",
+              "stale_after_calendar_days": 10,
+              "store": "fred",
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 1,
+              "available_date": "2026-10-09",
+              "frequency": "daily_business",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System via FRED",
+              "reference_date": "2026-10-08",
+              "revision_risk": "low",
+              "source_id": "DTWEXBGS",
+              "stale_after_calendar_days": 10,
+              "status": "usable"
+            }
+          },
+          "high_yield_oas": {
+            "component_hash": "3d8d83e38dae664dad1abed7a95fa02ffbdce28dbd9a98c11163c6bf28725cbb",
+            "current_contribution_z": -0.305917,
+            "history_hash": "f1302fbd482625440fbf41376c85fb1737480fd5ae9eb2063b830f1dd7adbbe7",
+            "model_spec": {
+              "change_periods": 13,
+              "change_transform": "level_change",
+              "column": "hy_oas",
+              "direction_multiplier": -1.0,
+              "frequency": "daily_business",
+              "key": "BAMLH0A0HYM2",
+              "period_anchor": "observation_date",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "ICE BofA via FRED and the repo append-only archive",
+              "release_lag_bdays": 1,
+              "revision_risk": "low",
+              "source_id": "BAMLH0A0HYM2",
+              "stale_after_calendar_days": 7,
+              "store": "fred",
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 1,
+              "available_date": "2026-10-09",
+              "frequency": "daily_business",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "ICE BofA via FRED and the repo append-only archive",
+              "reference_date": "2026-10-08",
+              "revision_risk": "low",
+              "source_id": "BAMLH0A0HYM2",
+              "stale_after_calendar_days": 7,
+              "status": "usable"
+            }
+          },
+          "real_yield_10y": {
+            "component_hash": "99b1f8f1cbfd52581068d40eee7e09f9780da5a7ba78cc8e5020fc4c3b9cbafc",
+            "current_contribution_z": -1.508251,
+            "history_hash": "939dec24f20222bc7f7c3cd8418135d0094456b046d165047e8c2ffca151da74",
+            "model_spec": {
+              "change_periods": 13,
+              "change_transform": "level_change",
+              "column": "us10y_real",
+              "direction_multiplier": -1.0,
+              "frequency": "daily_business",
+              "key": "DFII10",
+              "period_anchor": "observation_date",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System via FRED",
+              "release_lag_bdays": 1,
+              "revision_risk": "low",
+              "source_id": "DFII10",
+              "stale_after_calendar_days": 7,
+              "store": "fred",
+              "weight": 1.0
+            },
+            "receipt": {
+              "age_calendar_days": 1,
+              "available_date": "2026-10-09",
+              "frequency": "daily_business",
+              "pit_status": "release_lag_aligned_non_revised",
+              "provider": "Board of Governors of the Federal Reserve System via FRED",
+              "reference_date": "2026-10-08",
+              "revision_risk": "low",
+              "source_id": "DFII10",
+              "stale_after_calendar_days": 7,
+              "status": "usable"
+            }
+          }
+        }
+      },
+      "conditions": {
+        "us_liquidity_quality": "unknown",
+        "usd_funding_impulse": -0.644503
+      },
+      "confidence": 0.833333,
+      "confidence_semantics": "monetary coverage times mean disclosed PIT reliability; data confidence only, not predictive confidence",
+      "coverage": 1.0,
+      "data_version": "glt_data:a948e779d83d6c92",
+      "direction": -1,
+      "direction_label": "flat",
+      "direction_label_enum": [
+        "expanding",
+        "flat",
+        "contracting",
+        "unknown"
+      ],
+      "freshness": "fresh",
+      "magnitude": -0.00169,
+      "magnitude_field": "state.monetary_impulse",
+      "magnitude_semantics": "magnitude is a first difference of a z-scored stance and is NOT standardized; magnitude_z is the causal expanding-z standardization of that difference; direction is the raw sign of magnitude",
+      "magnitude_unit": "weekly_change_in_expanding_z_score",
+      "magnitude_z": -0.00392,
+      "magnitude_z_field": "state.monetary_impulse_z",
+      "magnitude_z_unit": "prior_only_expanding_z_score_of_weekly_change_in_expanding_z_score",
+      "model_version": "glt_state.v1",
+      "producer_schema": "global_liquidity_transmission.v1",
+      "quality": "mixed",
+      "quality_enum": [
+        "easing",
+        "tightening",
+        "mixed",
+        "unknown"
+      ],
+      "quality_vocabulary": "state_vs_us_quality_agreement",
+      "regional_gates": {},
+      "shock_type": "policy_liquidity_impulse",
+      "source_snapshot_hash": "a948e779d83d6c92a08d11ce1e0391aa619616a17bfe7e72a636992213e4f6c9",
+      "state_family": "monetary_impulse",
+      "vocabulary_law": "direction_label_enum and quality_enum are two separate closed vocabularies whose only shared member is 'unknown'; 'easing'/'tightening' are state-vs-US-quality agreement labels and are never synonyms for 'expanding'/'contracting'"
+    },
+    "label": "flat",
+    "label_enum": [
+      "expanding",
+      "flat",
+      "contracting",
+      "unknown"
+    ],
+    "label_rule": {
+      "config_key": "quality_thresholds.monetary_impulse_flat_band",
+      "field": "state.monetary_impulse",
+      "flat_band_abs": 0.05,
+      "note": "direction reading only; it is not applied to monetary_impulse_z and mints no event",
+      "unit": "weekly_change_in_expanding_z_score"
+    },
+    "label_vocabulary": "state_direction",
+    "liquidity_breadth": 0.333333,
+    "monetary_impulse": -0.00169,
+    "monetary_impulse_z": -0.00392,
+    "monetary_stance": 0.917716,
+    "orthogonalised_impulse": 0.011128,
+    "policy_liquidity_impulse": -0.00169,
+    "units": {
+      "credit_impulse_global": "null_until_comparable_pit_coverage",
+      "liquidity_breadth": "share_0_to_1",
+      "monetary_impulse": "weekly_change_in_expanding_z_score",
+      "monetary_impulse_z": "prior_only_expanding_z_score_of_weekly_change_in_expanding_z_score",
+      "monetary_stance": "expanding_z_score",
+      "orthogonalised_impulse": "causal_regression_residual_z_units",
+      "policy_liquidity_impulse": "weekly_change_in_expanding_z_score",
+      "usd_funding_impulse": "expanding_z_score_positive_is_easier"
+    },
+    "usd_funding_impulse": -0.644503
+  }
+}

@@ -1,422 +1,420 @@
 {
-  "as_of": "2026-08-23",
+  "as_of": "2026-09-13",
   "by_author": [
     {
       "author": "FirstSquawk",
-      "med_interaction_rate": 0.001121,
-      "med_likes": 14.0,
-      "med_repost_rate": 0.000169,
+      "med_interaction_rate": 0.001042,
+      "med_likes": 13.0,
+      "med_repost_rate": 0.000172,
       "med_retweets": 3.0,
-      "med_views": 18762.5,
-      "n": 379,
+      "med_views": 17061.0,
+      "n": 539,
       "n_no_views": 1,
-      "n_rate": 378
+      "n_rate": 538
     },
     {
       "author": "unusual_whales",
-      "med_interaction_rate": 0.005336,
-      "med_likes": 533.5,
-      "med_repost_rate": 0.000294,
-      "med_retweets": 35.0,
-      "med_views": 127497.0,
-      "n": 362,
+      "med_interaction_rate": 0.005631,
+      "med_likes": 595.0,
+      "med_repost_rate": 0.0003,
+      "med_retweets": 38.0,
+      "med_views": 128138.0,
+      "n": 511,
       "n_no_views": 0,
-      "n_rate": 362
-    },
-    {
-      "author": "Barchart",
-      "med_interaction_rate": 0.009659,
-      "med_likes": 605.0,
-      "med_repost_rate": 0.00102,
-      "med_retweets": 78.5,
-      "med_views": 64899.0,
-      "n": 265,
-      "n_no_views": 0,
-      "n_rate": 265
+      "n_rate": 511
     },
     {
       "author": "DeItaone",
-      "med_interaction_rate": 0.003125,
-      "med_likes": 344.0,
-      "med_repost_rate": 0.000237,
-      "med_retweets": 33.0,
-      "med_views": 138850.5,
-      "n": 264,
+      "med_interaction_rate": 0.002968,
+      "med_likes": 320.0,
+      "med_repost_rate": 0.000215,
+      "med_retweets": 29.0,
+      "med_views": 132719.0,
+      "n": 405,
       "n_no_views": 0,
-      "n_rate": 264
+      "n_rate": 405
+    },
+    {
+      "author": "Barchart",
+      "med_interaction_rate": 0.010018,
+      "med_likes": 613.0,
+      "med_repost_rate": 0.00105,
+      "med_retweets": 82.0,
+      "med_views": 65913.0,
+      "n": 384,
+      "n_no_views": 0,
+      "n_rate": 384
     },
     {
       "author": "KobeissiLetter",
-      "med_interaction_rate": 0.007935,
-      "med_likes": 2270.0,
-      "med_repost_rate": 0.000747,
-      "med_retweets": 266.0,
-      "med_views": 288562.0,
-      "n": 239,
+      "med_interaction_rate": 0.008335,
+      "med_likes": 2317.0,
+      "med_repost_rate": 0.000801,
+      "med_retweets": 270.5,
+      "med_views": 282444.0,
+      "n": 358,
       "n_no_views": 0,
-      "n_rate": 239
-    },
-    {
-      "author": "StockMKTNewz",
-      "med_interaction_rate": 0.003786,
-      "med_likes": 113.0,
-      "med_repost_rate": 0.000211,
-      "med_retweets": 7.0,
-      "med_views": 35853.0,
-      "n": 59,
-      "n_no_views": 0,
-      "n_rate": 59
+      "n_rate": 358
     },
     {
       "author": "wallstengine",
-      "med_interaction_rate": 0.003988,
-      "med_likes": 101.0,
-      "med_repost_rate": 0.000352,
-      "med_retweets": 11.0,
-      "med_views": 27458.0,
+      "med_interaction_rate": 0.004289,
+      "med_likes": 108.0,
+      "med_repost_rate": 0.000345,
+      "med_retweets": 12.0,
+      "med_views": 29052.0,
+      "n": 78,
+      "n_no_views": 0,
+      "n_rate": 78
+    },
+    {
+      "author": "Mr_Derivatives",
+      "med_interaction_rate": 0.006358,
+      "med_likes": 231.0,
+      "med_repost_rate": 0.000225,
+      "med_retweets": 9.0,
+      "med_views": 43105.0,
+      "n": 76,
+      "n_no_views": 0,
+      "n_rate": 76
+    },
+    {
+      "author": "StockMKTNewz",
+      "med_interaction_rate": 0.003818,
+      "med_likes": 115.5,
+      "med_repost_rate": 0.000213,
+      "med_retweets": 7.0,
+      "med_views": 35559.0,
+      "n": 74,
+      "n_no_views": 0,
+      "n_rate": 74
+    },
+    {
+      "author": "bespokeinvest",
+      "med_interaction_rate": 0.001996,
+      "med_likes": 11.5,
+      "med_repost_rate": 0.000236,
+      "med_retweets": 2.0,
+      "med_views": 8345.0,
+      "n": 71,
+      "n_no_views": 0,
+      "n_rate": 71
+    },
+    {
+      "author": "PeterLBrandt",
+      "med_interaction_rate": 0.005542,
+      "med_likes": 267.0,
+      "med_repost_rate": 0.000264,
+      "med_retweets": 12.0,
+      "med_views": 53584.0,
+      "n": 67,
+      "n_no_views": 0,
+      "n_rate": 67
+    },
+    {
+      "author": "alphatrends",
+      "med_interaction_rate": 0.005544,
+      "med_likes": 122.0,
+      "med_repost_rate": 0.000247,
+      "med_retweets": 6.0,
+      "med_views": 24349.5,
+      "n": 60,
+      "n_no_views": 0,
+      "n_rate": 60
+    },
+    {
+      "author": "traderstewie",
+      "med_interaction_rate": 0.002955,
+      "med_likes": 96.0,
+      "med_repost_rate": 0.000116,
+      "med_retweets": 5.0,
+      "med_views": 38068.5,
+      "n": 60,
+      "n_no_views": 0,
+      "n_rate": 60
+    },
+    {
+      "author": "LizAnnSonders",
+      "med_interaction_rate": 0.003781,
+      "med_likes": 67.0,
+      "med_repost_rate": 0.000553,
+      "med_retweets": 13.0,
+      "med_views": 23607.0,
       "n": 59,
       "n_no_views": 0,
       "n_rate": 59
     },
     {
-      "author": "Mr_Derivatives",
-      "med_interaction_rate": 0.00633,
-      "med_likes": 198.5,
-      "med_repost_rate": 0.000232,
-      "med_retweets": 9.0,
-      "med_views": 41974.0,
-      "n": 56,
+      "author": "RyanDetrick",
+      "med_interaction_rate": 0.007813,
+      "med_likes": 98.5,
+      "med_repost_rate": 0.00042,
+      "med_retweets": 7.0,
+      "med_views": 15281.0,
+      "n": 58,
       "n_no_views": 0,
-      "n_rate": 56
+      "n_rate": 58
     },
     {
-      "author": "bespokeinvest",
-      "med_interaction_rate": 0.00172,
-      "med_likes": 11.0,
-      "med_repost_rate": 0.000236,
-      "med_retweets": 2.0,
-      "med_views": 8380.5,
+      "author": "markminervini",
+      "med_interaction_rate": 0.004407,
+      "med_likes": 534.0,
+      "med_repost_rate": 0.000173,
+      "med_retweets": 27.0,
+      "med_views": 107828.0,
       "n": 52,
       "n_no_views": 0,
       "n_rate": 52
     },
     {
-      "author": "PeterLBrandt",
-      "med_interaction_rate": 0.004907,
-      "med_likes": 267.0,
-      "med_repost_rate": 0.000231,
-      "med_retweets": 12.0,
-      "med_views": 54994.0,
-      "n": 49,
-      "n_no_views": 0,
-      "n_rate": 49
-    },
-    {
-      "author": "alphatrends",
-      "med_interaction_rate": 0.005789,
-      "med_likes": 134.5,
-      "med_repost_rate": 0.000255,
-      "med_retweets": 7.0,
-      "med_views": 26758.0,
+      "author": "charliebilello",
+      "med_interaction_rate": 0.008979,
+      "med_likes": 293.5,
+      "med_repost_rate": 0.001019,
+      "med_retweets": 42.5,
+      "med_views": 36852.0,
       "n": 44,
       "n_no_views": 0,
       "n_rate": 44
     },
     {
-      "author": "RyanDetrick",
-      "med_interaction_rate": 0.007941,
-      "med_likes": 105.0,
-      "med_repost_rate": 0.000445,
-      "med_retweets": 7.5,
-      "med_views": 14873.0,
-      "n": 43,
-      "n_no_views": 0,
-      "n_rate": 43
-    },
-    {
-      "author": "traderstewie",
-      "med_interaction_rate": 0.003016,
-      "med_likes": 95.0,
-      "med_repost_rate": 0.000119,
-      "med_retweets": 5.0,
-      "med_views": 38583.5,
-      "n": 40,
-      "n_no_views": 0,
-      "n_rate": 40
-    },
-    {
-      "author": "LizAnnSonders",
-      "med_interaction_rate": 0.003572,
-      "med_likes": 66.0,
-      "med_repost_rate": 0.000553,
-      "med_retweets": 13.0,
-      "med_views": 23539.0,
-      "n": 39,
-      "n_no_views": 0,
-      "n_rate": 39
-    },
-    {
-      "author": "markminervini",
-      "med_interaction_rate": 0.0043,
-      "med_likes": 538.0,
-      "med_repost_rate": 0.000147,
-      "med_retweets": 27.0,
-      "med_views": 108869.0,
-      "n": 35,
-      "n_no_views": 0,
-      "n_rate": 35
-    },
-    {
-      "author": "charliebilello",
-      "med_interaction_rate": 0.008925,
-      "med_likes": 288.0,
-      "med_repost_rate": 0.001019,
-      "med_retweets": 46.0,
-      "med_views": 36852.0,
-      "n": 34,
-      "n_no_views": 0,
-      "n_rate": 34
-    },
-    {
       "author": "jam_croissant",
-      "med_interaction_rate": 0.005942,
-      "med_likes": 228.0,
-      "med_repost_rate": 0.000333,
-      "med_retweets": 12.0,
-      "med_views": 42165.0,
-      "n": 10,
+      "med_interaction_rate": 0.004082,
+      "med_likes": 249.0,
+      "med_repost_rate": 0.00032,
+      "med_retweets": 13.0,
+      "med_views": 43664.0,
+      "n": 13,
       "n_no_views": 0,
-      "n_rate": 10,
-      "verdict": "seeding",
-      "verdict_note": "10 posts against an n-floor of 12 — no ranking claim is made from this row"
+      "n_rate": 13
     }
   ],
   "by_register": [
     {
-      "med_interaction_rate": 0.002647,
-      "med_likes": 187.0,
-      "med_repost_rate": 0.000225,
-      "med_retweets": 17.0,
-      "med_views": 97347.5,
-      "n": 1005,
+      "med_interaction_rate": 0.002556,
+      "med_likes": 190.0,
+      "med_repost_rate": 0.000222,
+      "med_retweets": 16.0,
+      "med_views": 97813.5,
+      "n": 1455,
       "n_no_views": 1,
-      "n_rate": 1004,
+      "n_rate": 1454,
       "register": "wire"
     },
     {
-      "med_interaction_rate": 0.007904,
-      "med_likes": 814.0,
-      "med_repost_rate": 0.000746,
-      "med_retweets": 102.0,
-      "med_views": 110024.0,
-      "n": 622,
+      "med_interaction_rate": 0.008154,
+      "med_likes": 866.5,
+      "med_repost_rate": 0.000793,
+      "med_retweets": 110.5,
+      "med_views": 115017.0,
+      "n": 894,
       "n_no_views": 0,
-      "n_rate": 622,
+      "n_rate": 894,
       "register": "aggregator"
     },
     {
-      "med_interaction_rate": 0.004868,
-      "med_likes": 176.5,
-      "med_repost_rate": 0.000207,
+      "med_interaction_rate": 0.00483,
+      "med_likes": 177.0,
+      "med_repost_rate": 0.000208,
       "med_retweets": 9.0,
-      "med_views": 48109.5,
-      "n": 224,
+      "med_views": 47616.0,
+      "n": 315,
       "n_no_views": 0,
-      "n_rate": 224,
+      "n_rate": 315,
       "register": "trader"
     },
     {
-      "med_interaction_rate": 0.004808,
-      "med_likes": 49.5,
-      "med_repost_rate": 0.000528,
+      "med_interaction_rate": 0.004869,
+      "med_likes": 46.5,
+      "med_repost_rate": 0.000505,
       "med_retweets": 8.0,
-      "med_views": 13429.0,
-      "n": 129,
+      "med_views": 13367.0,
+      "n": 173,
       "n_no_views": 0,
-      "n_rate": 129,
+      "n_rate": 173,
       "register": "commentary"
     },
     {
-      "med_interaction_rate": 0.003718,
+      "med_interaction_rate": 0.00382,
       "med_likes": 78.0,
-      "med_repost_rate": 0.000482,
+      "med_repost_rate": 0.000485,
       "med_retweets": 13.0,
-      "med_views": 24691.0,
-      "n": 49,
+      "med_views": 24753.0,
+      "n": 72,
       "n_no_views": 0,
-      "n_rate": 49,
+      "n_rate": 72,
       "register": "macro_color"
     }
   ],
   "by_shape": [
     {
-      "med_interaction_rate": 0.003575,
-      "med_likes": 179.0,
-      "med_repost_rate": 0.000273,
+      "med_interaction_rate": 0.003572,
+      "med_likes": 188.0,
+      "med_repost_rate": 0.000284,
       "med_retweets": 17.0,
-      "med_views": 51785.0,
-      "n": 1161,
+      "med_views": 55063.0,
+      "n": 1684,
       "n_no_views": 1,
-      "n_rate": 1160,
+      "n_rate": 1683,
       "shape": "one_liner"
     },
     {
-      "med_interaction_rate": 0.005096,
-      "med_likes": 409.0,
-      "med_repost_rate": 0.000414,
-      "med_retweets": 43.0,
-      "med_views": 123499.0,
-      "n": 501,
+      "med_interaction_rate": 0.005207,
+      "med_likes": 435.0,
+      "med_repost_rate": 0.000424,
+      "med_retweets": 46.0,
+      "med_views": 131233.0,
+      "n": 705,
       "n_no_views": 0,
-      "n_rate": 501,
+      "n_rate": 705,
       "shape": "stack"
     },
     {
-      "med_interaction_rate": 0.005682,
-      "med_likes": 240.0,
-      "med_repost_rate": 0.000357,
-      "med_retweets": 18.0,
-      "med_views": 55031.0,
-      "n": 226,
+      "med_interaction_rate": 0.005776,
+      "med_likes": 248.0,
+      "med_repost_rate": 0.000397,
+      "med_retweets": 23.0,
+      "med_views": 65332.0,
+      "n": 329,
       "n_no_views": 0,
-      "n_rate": 226,
+      "n_rate": 329,
       "shape": "two_part"
     },
     {
-      "med_interaction_rate": 0.007829,
-      "med_likes": 366.0,
-      "med_repost_rate": 0.000506,
-      "med_retweets": 34.0,
-      "med_views": 50665.5,
-      "n": 102,
+      "med_interaction_rate": 0.007313,
+      "med_likes": 240.0,
+      "med_repost_rate": 0.000455,
+      "med_retweets": 22.0,
+      "med_views": 40096.0,
+      "n": 137,
       "n_no_views": 0,
-      "n_rate": 102,
+      "n_rate": 137,
       "shape": "caption"
     },
     {
-      "med_interaction_rate": 0.004623,
-      "med_likes": 625.0,
-      "med_repost_rate": 0.000437,
-      "med_retweets": 100.0,
-      "med_views": 174122.0,
-      "n": 39,
+      "med_interaction_rate": 0.005644,
+      "med_likes": 748.0,
+      "med_repost_rate": 0.000419,
+      "med_retweets": 105.0,
+      "med_views": 163986.5,
+      "n": 54,
       "n_no_views": 0,
-      "n_rate": 39,
+      "n_rate": 54,
       "shape": "list"
     }
   ],
   "diff_vs_prior": {
     "available": true,
-    "prior_as_of": "2026-08-09",
-    "prior_n_posts": 969,
+    "prior_as_of": "2026-08-23",
+    "prior_n_posts": 2029,
     "rates": {
       "all_caps_lead_rate": {
-        "delta": 0.0702,
-        "now": 0.5067,
-        "was": 0.4365
+        "delta": 0.0034,
+        "now": 0.5101,
+        "was": 0.5067
       },
       "bare_int_rate": {
-        "delta": 0.0068,
-        "now": 0.6343,
-        "was": 0.6275
+        "delta": -0.0032,
+        "now": 0.6311,
+        "was": 0.6343
       },
       "blank_spacer_rate": {
-        "delta": -0.0155,
-        "now": 0.3529,
-        "was": 0.3684
+        "delta": -0.0016,
+        "now": 0.3513,
+        "was": 0.3529
       },
       "cashtag_rate": {
-        "delta": -0.0049,
-        "now": 0.1922,
-        "was": 0.1971
+        "delta": -0.0093,
+        "now": 0.1829,
+        "was": 0.1922
       },
       "decimal_any_rate": {
-        "delta": 0.0118,
-        "now": 0.1769,
-        "was": 0.1651
+        "delta": 0.0001,
+        "now": 0.177,
+        "was": 0.1769
       },
       "decimal_strict_rate": {
-        "delta": 0.0167,
-        "now": 0.0724,
-        "was": 0.0557
+        "delta": 0.0008,
+        "now": 0.0732,
+        "was": 0.0724
       },
       "emoji_rate": {
-        "delta": 0.0088,
-        "now": 0.1636,
-        "was": 0.1548
+        "delta": -0.0051,
+        "now": 0.1585,
+        "was": 0.1636
       },
       "has_number_rate": {
-        "delta": 0.001,
-        "now": 0.6708,
-        "was": 0.6698
+        "delta": -0.0032,
+        "now": 0.6676,
+        "was": 0.6708
       },
       "quote_rate": {
-        "delta": -0.0204,
-        "now": 0.0828,
-        "was": 0.1032
+        "delta": -0.0037,
+        "now": 0.0791,
+        "was": 0.0828
       },
       "starts_cashtag_rate": {
-        "delta": -0.006,
-        "now": 0.0291,
-        "was": 0.0351
+        "delta": -0.0023,
+        "now": 0.0268,
+        "was": 0.0291
       },
       "url_rate": {
-        "delta": -0.0274,
-        "now": 0.3534,
-        "was": 0.3808
+        "delta": -0.0059,
+        "now": 0.3475,
+        "was": 0.3534
       }
     },
     "shapes": {
       "caption": {
-        "delta": -0.0023,
-        "now": 0.0503,
-        "was": 0.0526
+        "delta": -0.0032,
+        "now": 0.0471,
+        "was": 0.0503
       },
       "list": {
-        "delta": -0.0004,
-        "now": 0.0192,
-        "was": 0.0196
+        "delta": -0.0006,
+        "now": 0.0186,
+        "was": 0.0192
       },
       "one_liner": {
-        "delta": 0.0304,
-        "now": 0.5722,
-        "was": 0.5418
+        "delta": 0.0067,
+        "now": 0.5789,
+        "was": 0.5722
       },
       "stack": {
-        "delta": -0.0039,
-        "now": 0.2469,
-        "was": 0.2508
+        "delta": -0.0045,
+        "now": 0.2424,
+        "was": 0.2469
       },
       "two_part": {
-        "delta": -0.0238,
-        "now": 0.1114,
-        "was": 0.1352
+        "delta": 0.0017,
+        "now": 0.1131,
+        "was": 0.1114
       }
     }
   },
-  "generated_at": "2026-08-23T22:12:06Z",
+  "generated_at": "2026-09-13T23:47:40Z",
   "n_authors": 17,
   "n_floor": 12,
-  "n_posts": 2029,
-  "n_posts_all_time": 2029,
+  "n_posts": 2909,
+  "n_posts_all_time": 2909,
   "note": "Operator/writer-desk artifact. Deterministic arithmetic over observed counters — no model scored anything here (charter §2 amendment 9). Posts with no view count are excluded from every rate denominator and counted in n_no_views; an unmeasured post is not a zero-rate post.",
   "our_shape_quotas": {
     "one_liner_min": 0.25,
     "two_part_max": 0.3
   },
   "precision": {
-    "all_caps_lead_rate": 0.5067,
-    "bare_int_rate": 0.6343,
-    "blank_spacer_rate": 0.3529,
-    "cashtag_rate": 0.1922,
-    "decimal_any_rate": 0.1769,
-    "decimal_strict_rate": 0.0724,
-    "emoji_rate": 0.1636,
-    "has_number_rate": 0.6708,
+    "all_caps_lead_rate": 0.5101,
+    "bare_int_rate": 0.6311,
+    "blank_spacer_rate": 0.3513,
+    "cashtag_rate": 0.1829,
+    "decimal_any_rate": 0.177,
+    "decimal_strict_rate": 0.0732,
+    "emoji_rate": 0.1585,
+    "has_number_rate": 0.6676,
     "note": "strict decimal is the docket's \\d+\\.\\d\\d (4.75); any-decimal also catches the far more common single-decimal percent (4.7%). The gap between them IS the finding — see the docket's key finding #2.",
-    "quote_rate": 0.0828,
-    "starts_cashtag_rate": 0.0291,
-    "url_rate": 0.3534
+    "quote_rate": 0.0791,
+    "starts_cashtag_rate": 0.0268,
+    "url_rate": 0.3475
   },
   "produced_by": "engine/marketing/x_intel.py",
   "quota_gap": [
@@ -424,22 +422,22 @@
       "note": "corpus share of single-content-line posts vs our floor",
       "ours_min": 0.25,
       "shape": "one_liner",
-      "theirs": 0.5722
+      "theirs": 0.5789
     },
     {
       "note": "corpus share of two-content-line posts vs our ceiling",
       "ours_max": 0.3,
       "shape": "two_part",
-      "theirs": 0.1114
+      "theirs": 0.1131
     }
   ],
   "schema": "marketing.x_intel_report/v1",
   "shape_distribution": {
-    "caption": 0.0503,
-    "list": 0.0192,
-    "one_liner": 0.5722,
-    "stack": 0.2469,
-    "two_part": 0.1114
+    "caption": 0.0471,
+    "list": 0.0186,
+    "one_liner": 0.5789,
+    "stack": 0.2424,
+    "two_part": 0.1131
   },
   "window_days": 90
 }
