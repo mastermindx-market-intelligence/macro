@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import resource
 import shutil
+import sqlite3
 import stat
 import tempfile
 import threading
@@ -100,6 +101,7 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
               'model_calls': 0, 'phase_seconds': {},
               'limits': ['read-only candidate composition; not a production generation',
                          'excludes inbox intake, processed-index, extraction and mutable publication time']}
+    phase = 'restore'
     try:
         selected = store.get_bytes_strict_bounded_versioned(catalog.CATALOG_KEY, contract.CATALOG_MAX_BYTES)
         if selected is None:
@@ -118,6 +120,7 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
             del blob
             from engine.research_vault.producer_read_cache import CorpusReadCache
             cache = CorpusReadCache(p, doc)
+            phase = 'begin_census'
             t = clock()
             try:
                 initial = cache.inherited_members(doc, doc.get(contract.GENERATION_FIELD), store,
@@ -130,7 +133,9 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
             finally:
                 cache.close()
             result['phase_seconds']['begin_census'] = clock() - t
+            result['sealed_cache_corpus_bytes'] = p.stat().st_size
             result['initial_classifications'] = dict(Counter(row['layer'] for row in initial))
+            phase = 'full_body_stage'
             conn = corpus.open_db(p)
             try:
                 t = clock()
@@ -144,6 +149,7 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
                 conn.close()
             result['staged_counts'] = staged['counts']
             result['final_corpus_bytes'] = p.stat().st_size
+            phase = 'complete_census'
             t = clock();final = _census(store, doc)
             result['phase_seconds']['complete_census'] = clock() - t
             result['source_cut_unchanged'] = staged['source_digests'] == {
@@ -158,11 +164,17 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
                 result['state'] = 'RESOURCE_BOUND_EXCEEDED'
             else:
                 t = clock()
+                phase = 'source_cut_validation'
                 _validate_fulltext_source_cut(p.read_bytes(), doc, final)
                 result['phase_seconds']['source_cut_validation'] = clock() - t
                 result['state'] = 'READONLY_RESOURCE_CHECK_PASSED'
     except Exception as exc:
-        result.update(state='READONLY_RESOURCE_CHECK_UNAVAILABLE', error_class=type(exc).__name__)
+        result.update(state='READONLY_RESOURCE_CHECK_UNAVAILABLE',
+                      error_class=type(exc).__name__, error_phase=phase)
+        if isinstance(exc, sqlite3.Error):
+            # Numeric SQLite diagnostics contain neither SQL nor licensed values.
+            result['sqlite_errorcode'] = getattr(exc, 'sqlite_errorcode', None)
+            result['sqlite_errorname'] = getattr(exc, 'sqlite_errorname', None)
     result['elapsed_seconds'] = clock() - started
     if (result['state'] == 'READONLY_RESOURCE_CHECK_PASSED'
             and result['elapsed_seconds'] > max_seconds):

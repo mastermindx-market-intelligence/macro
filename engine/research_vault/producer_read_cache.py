@@ -117,9 +117,10 @@ class CorpusReadCache:
         with self.lock:
             self._store(self.conn, rid, receipt, record)
 
-    def _entry(self, rid, *, receipt_only=False):
-        own = self.conn is not None
-        conn = self.conn if own else sqlite3.connect(self.path.resolve().as_uri() + '?mode=ro', uri=True)
+    def _entry(self, rid, *, receipt_only=False, connection=None):
+        borrowed = connection if connection is not None else self.conn
+        own = borrowed is not None
+        conn = borrowed if own else sqlite3.connect(self.path.resolve().as_uri() + '?mode=ro', uri=True)
         try:
             with self.lock:
                 record_fields = 'NULL,NULL,0' if receipt_only else 'substr(record,1,?),record_sha256,record_size'
@@ -207,7 +208,10 @@ class CorpusReadCache:
         own_entries = set()
 
         def load(rid):
-            entry = self._entry(rid) if rid in self.ids else None
+            # The active writer can spill its page cache and acquire an
+            # exclusive rollback-journal lock. Read through that same transaction
+            # so a second connection cannot deadlock against our own writes.
+            entry = self._entry(rid, connection=conn) if rid in self.ids else None
             receipt, raw = (None, None) if entry is None else entry
             member = self.members.get(rid)
             key = fulltext_store.receipt_key(rid)
@@ -259,7 +263,7 @@ class CorpusReadCache:
             self.sizes = {rid: size for rid, size in self.sizes.items() if rid in sources}
             self.total = sum(self.sizes.values())
             for rid in own_entries:
-                entry = self._entry(rid) if rid in self.ids else None
+                entry = self._entry(rid, connection=conn) if rid in self.ids else None
                 old_receipt, record = (None, None) if entry is None else entry
                 receipt = overrides[fulltext_store.receipt_key(rid)]
                 old_digest = fulltext_store.parse_receipt_digest(old_receipt, rid) if old_receipt is not None else None

@@ -249,3 +249,22 @@ def test_cache_cohort_turnover_prunes_retired_rows_and_reopens(ready, tmp_path, 
         assert set(reopened.sizes) == {new_item['id']}
         assert reopened.total == len(raw)
     finally:reopened.close()
+
+
+def test_fullbody_stage_reads_cache_under_writer_cache_spill(ready, tmp_path):
+    store, doc = ready
+    p = tmp_path / 'spilled-writer.sqlite'
+    p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    snapshot = cache.CorpusReadCache(p, doc)
+    snapshot.seal(writer._census(store, doc, read_cache=snapshot))
+    conn = corpus.open_db(p)
+    try:
+        conn.execute('PRAGMA cache_size=1')
+        conn.execute('PRAGMA cache_spill=1')
+        conn.execute('INSERT INTO meta(key,value) VALUES(?,?)', ('spill-padding', 'x' * 131072))
+        staged = snapshot.stage(conn, doc, [], max_rows=10000, max_body_bytes=256 * 1024 * 1024)
+        assert staged['counts']['full'] == 1
+        conn.commit()
+        assert corpus.search(conn, 'bodytailwitness')[0]['id'] == RID
+    finally:
+        conn.close()
