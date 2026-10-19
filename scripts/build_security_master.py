@@ -2523,7 +2523,9 @@ def apply_issuer_correction(
     finally covers its ticker — the contract's own promised self-heal (spec §11 "FI/
     FISV ... self-heals on a later map") was unreachable.  ``RESOLVED``,
     ``DEFERRED_IDENTITY_EXCEPTION`` and ``EVIDENCE_CONFLICT`` rows stay mint-once —
-    never revisited: a later run whose seeds are unchanged sees the SAME pending set
+    never revisited (sole exception: an allowlist-refused EVIDENCE_CONFLICT whose
+    issuer_id is still NULL and whose stamped CIK has since been ratified in
+    config/issuer_group_allowlist.yml — see the reopen below): a later run whose seeds are unchanged sees the SAME pending set
     (only the unstamped + NO_ISSUER_EVIDENCE rows) and, if none of them can change
     outcome, returns byte-stable rows.  A CIK group that later grows to include an
     already-RESOLVED member ADOPTS that member's existing ``issuer_id`` rather than
@@ -2581,9 +2583,21 @@ def apply_issuer_correction(
     # a CIK group, and a future CIK map carrying its old symbol can never trip it into
     # EVIDENCE_CONFLICT (H4).  Its issuer columns stay exactly as committed, frozen.
     _REOPENABLE = (None, "", "NO_ISSUER_EVIDENCE", "AMBIGUOUS")
+    # ALLOWLIST RATIFICATION REOPEN (#9570): a row the FIX 5 gate refused — typed
+    # EVIDENCE_CONFLICT with its stamped issuer_cik — whose CIK has SINCE been
+    # ratified in config/issuer_group_allowlist.yml is re-examined, but ONLY while
+    # its issuer_id is still NULL.  With no committed value there is nothing for
+    # mint-once to protect, and the ratification row IS the review the gate asked
+    # for.  A conflict that carries a committed issuer_id (FIX 1(b), or a refused
+    # legacy row) stays terminal: reopening it would rewrite an assignment.
     pending = [
         r for r in rows
-        if r.get("issuer_state") in _REOPENABLE and not r.get("security_state")
+        if not r.get("security_state") and (
+            r.get("issuer_state") in _REOPENABLE
+            or (r.get("issuer_state") == "EVIDENCE_CONFLICT"
+                and r.get("issuer_id") is None
+                and r.get("issuer_cik") in allowed_ciks)
+        )
     ]
     if not pending:
         return rows, []
