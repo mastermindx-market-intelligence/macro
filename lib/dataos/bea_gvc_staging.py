@@ -8,6 +8,7 @@ authentication; a stage receipt is not a Data OS installation receipt.
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
+from importlib import import_module
 import hashlib
 import json
 import os
@@ -93,13 +94,27 @@ def _write_exact(base: Path, name: str, value: bytes) -> None:
     if type(value) is not bytes:
         raise BEAGVCStageRefused("immutable stage bytes required")
     target = base.joinpath(*rel.parts)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    with target.open("xb") as out:
+    target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    # Exact 0600 at creation: a permissive umask must never make candidate
+    # originals or receipts world-readable even for a moment.
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(target, flags, 0o600)
+    with os.fdopen(fd, "wb") as out:
         out.write(value)
         out.flush()
         os.fsync(out.fileno())
     if _sha(target.read_bytes()) != _sha(value):
         raise BEAGVCStageRefused("stage readback mismatch")
+
+
+def _fsync_directory(path: Path) -> None:
+    """Durability barrier on stage directory entries; refuse an unproven sync."""
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    fd = os.open(path, flags)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
 
 
 def _stage_verified_bytes(
@@ -137,7 +152,17 @@ def _stage_verified_bytes(
         _write_exact(temp, "stage_receipt.json", _canonical(receipt.as_dict()))
         if final.exists() or final.is_symlink():
             raise BEAGVCStageRefused("candidate stage collision")
+        # File content fsync is insufficient for nested path metadata.
+        # Flush all newly-created directories before atomically exposing it.
+        for folder in sorted((p for p in temp.rglob("*") if p.is_dir()),
+                             key=lambda p: len(p.parts), reverse=True):
+            _fsync_directory(folder)
+        _fsync_directory(temp)
         os.rename(temp, final)
+        # If this final durability barrier fails, the stage may already be
+        # visible. Do not silently undo or retry an uncertain effect; the
+        # original owner must reconcile its generation directory first.
+        _fsync_directory(root)
         return receipt
     except BaseException:
         if temp.exists():
@@ -158,9 +183,16 @@ def stage_native_bea_gvc_candidate(
     root = _checked_root(root)
     manifest_pin = _digest(expected_manifest_sha256)
     index_pin = _digest(expected_index_sha256)
+    # This source module lives in held #9444, so it is deliberately absent
+    # from main. A first-party 'from collectors import ...' is an invalid
+    # import on main and is correctly rejected by the import-name CI guard.
+    # Resolve the optional installed producer only at explicit stage time.
+    # Never swallow a missing transitive dependency as 'source unavailable'.
     try:
-        from collectors import bea_gvc_native as bea
-    except ImportError as exc:
+        bea = import_module("collectors.bea_gvc_native")
+    except ModuleNotFoundError as exc:
+        if exc.name != "collectors.bea_gvc_native":
+            raise
         raise BEAGVCStageRefused("native BEA source producer unavailable") from exc
     if not isinstance(candidate, bea.BEAGVCCandidate):
         raise BEAGVCStageRefused("native candidate object required")

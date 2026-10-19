@@ -520,3 +520,98 @@ def test_bea_stage_symlink_root_and_unbound_source_refuse(tmp_path):
             expected_manifest_sha256="b" * 64,
             expected_index_sha256="c" * 64)
     assert not tuple(actual.iterdir())
+
+def test_bea_stage_stays_owner_only_under_permissive_umask(tmp_path):
+    import stat
+    import os
+    root = tmp_path.resolve()
+    previous = os.umask(0)
+    try:
+        output = _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={
+                "nested/synthetic.json": b'{"synthetic":true}',
+                "candidate_manifest.json": b"synthetic",
+            }, receipt=_bea_staging_receipt())
+    finally:
+        os.umask(previous)
+    stage = root / output.relative_directory
+    assert stat.S_IMODE(stage.stat().st_mode) == 0o700
+    for path in stage.rglob("*"):
+        if path.is_file():
+            assert stat.S_IMODE(path.stat().st_mode) == 0o600
+        elif path.is_dir():
+            assert stat.S_IMODE(path.stat().st_mode) == 0o700
+
+
+def test_bea_stage_syncs_all_directories_before_return(tmp_path, monkeypatch):
+    root = tmp_path.resolve()
+    original_sync = _bea_stage._fsync_directory
+    synced = []
+
+    def record_sync(path):
+        synced.append(path)
+        return original_sync(path)
+
+    monkeypatch.setattr(_bea_stage, "_fsync_directory", record_sync)
+    result = _bea_stage._stage_verified_bytes(
+        root, generation=_BEA_STAGE_GEN,
+        files={"nested/a.json": b"a"}, receipt=_bea_staging_receipt())
+    assert synced[-1] == root
+    assert any("nested" in path.parts for path in synced[:-1])
+    assert (root / result.relative_directory / "nested/a.json").read_bytes() == b"a"
+
+
+def test_bea_stage_post_rename_sync_uncertain_effect_cannot_blind_retry(tmp_path, monkeypatch):
+    root = tmp_path.resolve()
+    original_sync = _bea_stage._fsync_directory
+
+    def fail_after_visible_rename(path):
+        if path == root:
+            raise OSError("synthetic directory durability interruption")
+        return original_sync(path)
+
+    monkeypatch.setattr(_bea_stage, "_fsync_directory", fail_after_visible_rename)
+    with pytest.raises(OSError, match="synthetic directory durability interruption"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"candidate_manifest.json": b"synthetic"},
+            receipt=_bea_staging_receipt())
+    observed = root / ("candidate-" + _BEA_STAGE_GEN)
+    assert (observed / "candidate_manifest.json").read_bytes() == b"synthetic"
+    with pytest.raises(_bea_stage.BEAGVCStageRefused, match="already staged"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"candidate_manifest.json": b"synthetic"},
+            receipt=_bea_staging_receipt())
+
+
+def test_bea_stage_optional_source_import_only_at_invocation(tmp_path, monkeypatch):
+    calls = []
+
+    def missing_source(name):
+        calls.append(name)
+        raise ModuleNotFoundError("synthetic missing native source", name=name)
+
+    monkeypatch.setattr(_bea_stage, "import_module", missing_source)
+    with pytest.raises(_bea_stage.BEAGVCStageRefused, match="producer unavailable"):
+        _bea_stage.stage_native_bea_gvc_candidate(
+            object(), root=tmp_path.resolve(),
+            expected_manifest_sha256="b" * 64,
+            expected_index_sha256="c" * 64)
+    assert calls == ["collectors.bea_gvc_native"]
+    assert not tuple(tmp_path.iterdir())
+
+
+def test_bea_stage_nested_source_import_failure_is_not_hidden(tmp_path, monkeypatch):
+    def missing_transitive(name):
+        raise ModuleNotFoundError("synthetic transitive failure", name="missing_dependency")
+
+    monkeypatch.setattr(_bea_stage, "import_module", missing_transitive)
+    with pytest.raises(ModuleNotFoundError, match="synthetic transitive failure"):
+        _bea_stage.stage_native_bea_gvc_candidate(
+            object(), root=tmp_path.resolve(),
+            expected_manifest_sha256="b" * 64,
+            expected_index_sha256="c" * 64)
+    assert not tuple(tmp_path.iterdir())
+
