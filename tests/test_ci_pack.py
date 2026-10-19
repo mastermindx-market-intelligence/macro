@@ -5016,7 +5016,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_613),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_636),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5041,6 +5041,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     excess only: 5,600 -> 5,613, no padding. This is retained measurement reuse,
     not a new selector or suite change. Job counts, other weights and ten packs
     remain fixed; current-head hosted CI must execute the updated assertion.
+    The held F11 composition adds its accepted 14-suite API invocation:
+    research-vault-api weight 7 -> 30, the sole changed job weight (+23).
+    Its actual local packing probe measured 134 jobs / 5,636 against 5,613;
+    declaration, dependency coverage and opaque-tier-only checks passed.
+    Fund this measured API coverage at 5,636, with no additional headroom,
+    suite removal, selector change, job-count or pack-limit change. Reuse
+    the retained probe measurement; hosted CI must execute the final gate.
     Dropping the imported validator or understating the suite weight would
     discard coverage or hide the actual added test load.
 
