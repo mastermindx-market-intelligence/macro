@@ -718,7 +718,7 @@ def test_transition_count_is_reported_separately_from_reference_count(tmp_path):
     k1 = _compose(root)["evidence"]["k1"]
     assert k1["recorded_transitions"] == 1
     assert k1["refs_count"] == 0
-    assert k1["reason_code"] == "eligible_transition_not_k1_resolved"
+    assert k1["reason_code"] == "native_transition_reference_unavailable"
 
 
 def test_an_arbitrary_json_object_cannot_manufacture_evidence(tmp_path):
@@ -1776,3 +1776,139 @@ def test_x2_request_time_freshness_does_not_mint_new_snapshot_identity(x2_inputs
     second=_x2_run(x2_inputs)
     assert first['assumption_id']==second['assumption_id']
     assert first['scenario_eval_id']==second['scenario_eval_id']
+
+
+
+def _native_k1_transition(**changes):
+    row = {'chain': fx.SLUG, 'rev': 2, 'episode_id': fx.SLUG+'@r2:2026-01-01',
+           'transition': 'arming', 'hop': 0, 'asof': '2026-01-01',
+           'receipts': {'PRIVATE_BODY': [{'value': 123.456}]}}
+    row.update(changes)
+    return row
+
+
+def test_native_transition_k1_reference_uses_real_reader_and_validator(tmp_path, monkeypatch):
+    from engine import transmission_chains as txi
+    from lib import evidence_foundation as foundation
+    original_reader, original_validate = txi._read_ledger, foundation.validate_reference
+    calls = {'reader':0, 'validator':0}
+    def reader(path):
+        calls['reader'] += 1
+        return original_reader(path)
+    def validator(ref):
+        calls['validator'] += 1
+        return original_validate(ref)
+    monkeypatch.setattr(txi, '_read_ledger', reader)
+    monkeypatch.setattr(foundation, 'validate_reference', validator)
+    root = _root_with_episodes(tmp_path, [_native_k1_transition()])
+    k1 = _compose(root)['evidence']['k1']
+    assert calls == {'reader':1, 'validator':1}
+    assert k1['refs_count'] == k1['recorded_transitions'] == 1
+    assert k1['status'] == 'partial' and k1['reason_code'] == 'native_transition_policy_unavailable'
+    ref = k1['refs'][0]
+    assert foundation.validate_reference(ref) == ref
+    assert ref['owner_store'] == 'txi.episode_transition' and ref['object_class'] == 'instrument_state'
+    assert ref['clocks'] == [{'class':'belief_or_build','field':'asof','value_state':'known','value':'2026-01-01','grain':'date'}]
+    assert ref['rights'] == {'state':'unknown','policy_id':None}
+    assert ref['freshness'] == {'state':'unknown','clock_field':None,'policy_id':None}
+    assert ref['native_digest'] == {'state':'unknown','sha256':None}
+    assert ref['coverage_class'] == 'prospective_only'
+    assert not any(ref['authority'].values())
+    assert 'PRIVATE_BODY' not in json.dumps(k1) and '123.456' not in json.dumps(k1)
+    assert ref['provenance']['owner_reader_kind'] == 'collection'
+    assert k1['detail']['current_head_class'] == 'excluded_derived_head'
+
+
+def test_native_transition_k1_repeated_rows_do_not_become_independent_evidence(tmp_path):
+    row = _native_k1_transition()
+    k1 = _compose(_root_with_episodes(tmp_path,[row,row]))['evidence']['k1']
+    assert k1['recorded_transitions'] == 2 and k1['refs_count'] == 1
+    assert k1['detail']['repeated_native_rows'] == 1
+    assert k1['detail']['independence'] == 'not_established'
+    assert k1['refs'][0]['relations'] == [] and k1['detail']['automatic_effects'] is False
+
+
+def test_native_transition_k1_conflicting_same_key_is_unavailable(tmp_path):
+    a = _native_k1_transition(); b = _native_k1_transition(receipts={'different':[]})
+    k1 = _compose(_root_with_episodes(tmp_path,[a,b]))['evidence']['k1']
+    assert k1['refs_count'] == 0 and k1['recorded_transitions'] == 2
+    assert k1['detail']['conflicting_native_keys'] == 1
+
+
+@pytest.mark.parametrize('change', [
+    {'episode_id':'wrong@r2:2026-01-01'}, {'episode_id':'invalid'}, {'hop':-1},
+    {'transition':'dormant'}, {'asof':'2026-01-03'}, {'rev':3}, {'chain':'other_chain'},
+    {'episode_id':None}, {'hop':True}, {'rev':'2'},
+    {'episode_id':fx.SLUG+'@r2:2026-02-30'}, {'episode_id':fx.SLUG+'@r2:2026-01-02'},
+])
+def test_native_transition_k1_refuses_foreign_or_invalid_owner_identity(tmp_path, change):
+    k1 = _compose(_root_with_episodes(tmp_path,[_native_k1_transition(**change)]))['evidence']['k1']
+    assert k1['refs_count'] == 0 and k1['status'] == 'unavailable_for_object'
+
+
+def test_native_transition_k1_keeps_each_reference_clock(tmp_path):
+    from lib import evidence_foundation as foundation
+    rows = [_native_k1_transition(), _native_k1_transition(transition='propagating',hop=1,asof='2026-01-02')]
+    refs = _compose(_root_with_episodes(tmp_path,rows))['evidence']['k1']['refs']
+    assert len(refs) == 2
+    assert [r['clocks'][0]['value'] for r in refs] == ['2026-01-01','2026-01-02']
+    assert len({r['reference_id'] for r in refs}) == 2
+    for ref in refs: foundation.validate_reference(ref)
+
+
+def test_native_transition_k1_rejects_duplicate_json_fields_without_logging_body(tmp_path, caplog):
+    root = fx.build_root(tmp_path)
+    row = json.dumps(_native_k1_transition())
+    row = row[:-1]+',"asof":"2026-01-02"}'
+    (root/'data/transmission/chain_episodes.jsonl').write_text(row+'\n')
+    k1 = _compose(root)['evidence']['k1']
+    assert k1['refs_count'] == 0 and k1['detail']['invalid_native_rows'] == 1
+    assert 'PRIVATE_BODY' not in caplog.text
+
+
+
+def test_native_transition_k1_has_a_disclosed_reference_window(tmp_path):
+    rows = [_native_k1_transition(episode_id=fx.SLUG+'@r2:2026-01-01', hop=i) for i in range(40)]
+    k1 = _compose(_root_with_episodes(tmp_path,rows))['evidence']['k1']
+    assert k1['recorded_transitions'] == 40 and k1['refs_count'] == 32
+    assert k1['detail']['omitted_native_keys'] == 8
+    assert [r['native_identity']['hop'] for r in k1['refs']] == list(range(8,40))
+    assert k1['detail']['reference_window'] == 'last_native_ledger_keys'
+
+
+
+def test_native_transition_k1_source_mutation_after_validation_is_refused(tmp_path, monkeypatch):
+    from engine.ontology_explorer import SourceIncoherent
+    from lib import evidence_foundation as foundation
+    root = _root_with_episodes(tmp_path,[_native_k1_transition()])
+    original = foundation.validate_reference
+    def changed(ref):
+        result = original(ref)
+        path = root/'data/transmission/chain_episodes.jsonl'
+        path.write_text(path.read_text()+'\n')
+        return result
+    monkeypatch.setattr(foundation,'validate_reference',changed)
+    with pytest.raises(SourceIncoherent, match='mid_read_mutation'):
+        _compose(root)
+
+
+def test_native_transition_k1_does_not_fabricate_a_selection_clock():
+    from engine.ontology_explorer import _evidence
+    row = _native_k1_transition()
+    k1 = _evidence(json.dumps(row).encode(), [], chain=fx.SLUG,rev=2,cutoff=None)['k1']
+    assert k1['refs_count'] == 0
+    assert k1['detail']['selection_clock'] == 'unavailable'
+
+
+
+def test_native_transition_k1_missing_contract_keeps_owner_truth(tmp_path, monkeypatch):
+    from lib import evidence_foundation as foundation
+    root = _root_with_episodes(tmp_path,[_native_k1_transition()])
+    def unavailable():
+        raise OSError('PRIVATE_CONTRACT_FAILURE')
+    monkeypatch.setattr(foundation,'load_vocabulary',unavailable)
+    snapshot = _compose(root)
+    assert snapshot['what_changed']['status'] == 'recorded_transition'
+    k1 = snapshot['evidence']['k1']
+    assert k1['refs_count'] == 0 and k1['detail']['resolver_state'] == 'unavailable'
+    assert 'PRIVATE_CONTRACT_FAILURE' not in json.dumps(snapshot)

@@ -86,6 +86,7 @@ MAX_PATH_LEGS = 12
 #: Bytes, not rows: a bound that counts only nodes leaves the payload unbounded.
 MAX_SOURCE_BYTES = 2_000_000
 MAX_EPISODE_ROWS = 5_000
+MAX_K1_REFERENCES = 32
 
 #: The owner's closed transition vocabulary (`transmission_chains._mk_transition`
 #: call sites). A row naming anything else is not one of the owner's events.
@@ -1212,47 +1213,174 @@ def _next_action(state_code: str, first_blocking: dict | None,
     }
 
 
+def _transition_references(episodes_raw: bytes | None, eligible: list[dict]) -> tuple[list[dict], dict]:
+    """Resolve captured owner rows through native TXI and the existing K1 validator.
+
+    No Evidence Foundation owner read/store is introduced. The native collection
+    reader consumes a read-only view of already-manifested ledger bytes. Invalid
+    JSON is rejected before that reader so its diagnostic cannot log a raw line.
+    """
+    detail = {"repeated_native_rows": 0, "conflicting_native_keys": 0,
+              "invalid_native_rows": 0, "reference_validation_failures": 0}
+    if not episodes_raw or not eligible:
+        return [], detail
+    from lib import evidence_foundation as foundation
+    from engine import transmission_chains as txi
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate native field")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite native value")
+
+    try:
+        lines = episodes_raw.decode("utf-8").splitlines()
+    except UnicodeError:
+        detail["invalid_native_rows"] = 1
+        return [], detail
+    captured = []
+    seen = 0
+    for line in lines:
+        if not line.strip():
+            continue
+        seen += 1
+        if seen > MAX_EPISODE_ROWS:
+            break
+        try:
+            value = json.loads(line, object_pairs_hook=unique, parse_constant=nonfinite)
+        except (TypeError, ValueError, RecursionError):
+            detail["invalid_native_rows"] += 1
+            continue
+        if isinstance(value, dict):
+            captured.append(line)
+
+    class CapturedLedger:
+        # The native reader's two read-only Path operations, over exact captured
+        # lines. No temporary file, filesystem owner redirection or second store.
+        def exists(self):
+            return True
+
+        def read_text(self):
+            return "\n".join(captured)
+
+    native_rows = txi._read_ledger(CapturedLedger())
+    eligible_keys = {txi._ledger_key(row) for row in eligible}
+    by_key, conflicts = {}, set()
+    for row in native_rows:
+        # Eligible rows already pass the existing chain/revision/date selection.
+        # Other native objects never become references for this selected path.
+        try:
+            key = txi._ledger_key(row)
+            if key not in eligible_keys:
+                continue
+            payload = foundation.canonical_json_bytes(row)
+            if key in by_key:
+                if by_key[key][1] != payload:
+                    conflicts.add(key)
+                else:
+                    detail["repeated_native_rows"] += 1
+            else:
+                by_key[key] = (row, payload)
+        except (TypeError, ValueError):
+            detail["invalid_native_rows"] += 1
+    detail["conflicting_native_keys"] = len(conflicts)
+    vocabulary = foundation.load_vocabulary()
+    owner = vocabulary["owner_stores"]["txi.episode_transition"]
+    refs = []
+    detail["reference_limit"] = MAX_K1_REFERENCES
+    detail["reference_window"] = "last_native_ledger_keys"
+    detail["omitted_native_keys"] = max(0, len(by_key) - MAX_K1_REFERENCES)
+    for key, (row, _payload) in list(by_key.items())[-MAX_K1_REFERENCES:]:
+        if key in conflicts:
+            continue
+        identity = {field: row[field] for field in owner["native_identity_fields"]}
+        try:
+            # The owner generates the episode suffix from a real arming date;
+            # a regex-shaped impossible/future start is not a native episode.
+            started = identity["episode_id"].rsplit(":", 1)[-1]
+            if (not _is_iso_date(started) or started > row["asof"]
+                    or txi._episode_id(row["chain"], row["rev"], started) != identity["episode_id"]):
+                raise foundation.EvidenceFoundationError("native_episode_identity_invalid")
+            pointer = foundation.render_owner_pointer(owner, identity)
+        except foundation.EvidenceFoundationError:
+            detail["reference_validation_failures"] += 1
+            continue
+        reference = {
+            "schema": foundation.SCHEMA, "version": foundation.VERSION,
+            "object_class": "instrument_state", "owner_store": "txi.episode_transition",
+            "native_identity": identity, "native_schema": owner["native_schemas"][0],
+            # TXI's native row publishes no digest or freshness/rights policy.
+            # The enclosing source manifest is not a native per-object digest.
+            "native_digest": {"state": "unknown", "sha256": None},
+            "coverage_class": "prospective_only",
+            "freshness": {"state": "unknown", "clock_field": None, "policy_id": None},
+            "rights": {"state": "unknown", "policy_id": None},
+            "authority_class": "deterministic",
+            "subject": {"key_type": "chain_id", "key": row["chain"]}, "secondary_subjects": [],
+            "clocks": [{"class": "belief_or_build", "field": "asof", "value_state": "known",
+                        "value": row["asof"], "grain": "date"}],
+            "provenance": {"pointer_only": True, "body_embedded": False,
+                "owner_reader": owner["reader"], "owner_reader_kind": owner["reader_kind"],
+                "pointer": pointer},
+            "relations": [],
+            "missingness": {"state": "present", "reason": None, "zero_substituted": False},
+            "correction": {"kind": "none", "predecessor_reference_ids": [], "clock_field": None,
+                "chronology_state": "not_applicable", "append_only": True, "mutates_predecessor": False},
+            "replay": {"mode": "live", "cutoffs": {
+                field: {"state": "unknown", "value": None, "grain": "date"}
+                for field in vocabulary["clock_classes"]},
+                "code_revision": None, "input_digest": None, "vintage_state": "owner_native"},
+            "authority": dict(foundation.ALL_FALSE_AUTHORITY),
+        }
+        try:
+            reference["reference_id"] = foundation.compute_reference_id(reference)
+            refs.append(foundation.validate_reference(reference))
+        except (foundation.EvidenceFoundationError, TypeError, ValueError):
+            detail["reference_validation_failures"] += 1
+    return refs, detail
+
+
 def _evidence(episodes_raw: bytes | None, legs: list[dict], *,
               chain: str, rev: Any, cutoff: Any) -> dict[str, Any]:
-    """K1 binding, plus the owner receipts that stand in its place.
-
-    The K1 vocabulary admits ``txi.episode_transition`` as an owner store and
-    lists ``txi.chain_state`` as an EXCLUDED DERIVED HEAD. So the current head
-    this surface reads is not, by the contract's own terms, referenceable — and
-    a path with no recorded transition has no eligible transition to reference
-    either. The limitation is emitted as a machine-readable reason rather than
-    papered over with a synthesised reference; a real reference is emitted only
-    where a genuine eligible transition exists.
-    """
-    transitions = len(_episode_rows(episodes_raw, chain=chain, rev=rev, cutoff=cutoff))
-    # A recorded transition is a TRANSITION. A reference is a reference that
-    # resolved against the K1 contract. The first version conflated them and
-    # declared K1 "available" off a row count while creating and validating no
-    # EvidenceRef at all — so any JSON object carrying a matching chain name
-    # manufactured evidence, and the client then hid the binding limitation.
-    # This module resolves no references (building a second evidence library is
-    # forbidden), so the reference count is zero and the status stays
-    # unavailable; only the REASON changes once an eligible transition exists.
+    """Pointer-only native transition binding; the derived head stays excluded."""
+    report = {}
+    transitions = _episode_rows(episodes_raw, chain=chain, rev=rev, cutoff=cutoff, report=report)
+    if not _is_iso_date(cutoff):
+        refs, resolution = [], {"selection_clock": "unavailable"}
+    else:
+        try:
+            refs, resolution = _transition_references(episodes_raw, transitions)
+        except (ImportError, OSError, TypeError, ValueError, KeyError):
+            # K1 is an optional evidence pointer, never replacement owner truth.
+            # Missing/changed contracts cannot erase the native path reading.
+            refs, resolution = [], {"resolver_state": "unavailable"}
     k1 = {
-        "status": "unavailable_for_object",
-        "reason_code": ("eligible_transition_not_k1_resolved" if transitions
-                        else "excluded_derived_head_no_eligible_transition"),
-        "refs": [],
-        "refs_count": 0,
-        "recorded_transitions": transitions,
+        # Bound references can be present while native rights/freshness policies
+        # remain unavailable. This is never full evidence/permission readiness.
+        "status": "partial" if refs else "unavailable_for_object",
+        "reason_code": ("native_transition_policy_unavailable" if refs else
+                        "native_transition_reference_unavailable" if transitions else
+                        "excluded_derived_head_no_eligible_transition"),
+        "refs": refs, "refs_count": len(refs), "recorded_transitions": len(transitions),
         "detail": {
-            "current_head": "txi.chain_state",
-            "current_head_class": "excluded_derived_head",
+            "current_head": "txi.chain_state", "current_head_class": "excluded_derived_head",
             "eligible_owner_store": "txi.episode_transition",
-            "eligible_transitions_found": transitions,
-            "resolver": "none_in_this_module",
+            "eligible_transitions_found": len(transitions),
+            "resolver": "lib.evidence_foundation.validate_reference",
+            "native_reader": "engine.transmission_chains._read_ledger",
+            "native_read_report": report, **resolution,
+            "rights_policy": "unavailable", "freshness_policy": "unavailable",
+            "body_access": "unavailable", "historical_replay": "unavailable",
+            "independence": "not_established", "automatic_effects": False,
         },
     }
-    return {
-        "k1": k1,
-        "receipts": [{"node_id": leg["node_id"], "receipts": leg["receipts"]}
-                     for leg in legs],
-    }
+    return {"k1": k1,
+        "receipts": [{"node_id": leg["node_id"], "receipts": leg["receipts"]} for leg in legs]}
 
 
 def _clocks(observed: dict, state_doc: dict, hops: list[dict], *,
