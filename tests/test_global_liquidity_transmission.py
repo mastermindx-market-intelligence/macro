@@ -823,3 +823,66 @@ def test_t23_exactly_one_notice_per_run(glt_builder, monkeypatch, capsys):
     glt_builder.run(asof="2018-02-07", out=str(glt_builder.tmp_path / "replay.json"))
     notices = _notices()  # replayed, through build()
     assert len(notices) == 1 and "outcome=replayed" in notices[0]
+
+
+def test_t23_unchanged_and_refused_notice_reports_the_kept_artifact(glt_builder, capsys):
+    """The run's one notice describes the artifact of record. The producer stamps a fresh
+    first_known_at on every candidate (the source hash excludes it), so an unchanged or a
+    refused run must never report the unwritten candidate's clock."""
+    glt_builder.run()
+    stored = glt_builder.contract()
+    stored_fk = stored["state"]["event_reference"]["clocks"]["first_known_at"]
+
+    def _notice_and_result(payload):
+        glt_builder.set_next(payload)
+        capsys.readouterr()
+        result = glt_builder.run()
+        notices = [ln for ln in capsys.readouterr().out.splitlines()
+                   if ln.startswith("::notice title=glt-nightly::")]
+        assert len(notices) == 1
+        return notices[0], result
+
+    rerun = glt_builder.payload()  # same asof + hash; candidate carries a re-stamped clock
+    rerun["state"]["event_reference"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    rerun["freshness"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    notice, result = _notice_and_result(rerun)
+    assert "outcome=unchanged" in notice
+    assert f"first_known_at={stored_fk} " in notice
+    assert result["first_known_at"] == stored_fk
+
+    stale = glt_builder.payload()  # new hash, regressed evidence clock: refused
+    stale["meta"]["source_snapshot_hash"] = "b" * 64
+    stale["freshness"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    stale["state"]["event_reference"]["clocks"]["evidence_available_at"] = "2026-10-07T00:00:00Z"
+    stale["state"]["event_reference"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    stale["freshness"]["clocks"]["first_known_at"] = "2026-10-18T06:00:00Z"
+    notice, result = _notice_and_result(stale)
+    assert "outcome=refused" in notice
+    assert f"source_snapshot_hash={stored['meta']['source_snapshot_hash']} " in notice
+    assert f"first_known_at={stored_fk} " in notice
+    assert result["first_known_at"] == stored_fk
+    assert glt_builder.contract() == stored
+
+
+def test_t23_same_hash_future_clocked_artifact_is_rewritten_not_kept_c11(glt_builder, capsys):
+    glt_builder.run()
+    future_fk = (datetime.now(timezone.utc) + timedelta(days=2)).isoformat().replace("+00:00", "Z")
+    contract = glt_builder.contract()
+    contract["state"]["event_reference"]["clocks"]["first_known_at"] = future_fk
+    contract["freshness"]["clocks"]["first_known_at"] = future_fk
+    glt_builder.mod.CONTRACT_PATH.write_text(json.dumps(contract))
+
+    glt_builder.set_next(glt_builder.payload())  # same asof + same source hash
+    capsys.readouterr()
+    result = glt_builder.run()
+    out = capsys.readouterr().out
+
+    assert len([ln for ln in out.splitlines()
+                if ln.startswith("::warning title=glt-future-clock-refused::")]) == 1
+    notices = [ln for ln in out.splitlines() if ln.startswith("::notice title=glt-nightly::")]
+    assert len(notices) == 1 and "outcome=written" in notices[0] and future_fk not in notices[0]
+    assert result["outcome"] == "written"
+    fresh_fk = _t23_payload()["state"]["event_reference"]["clocks"]["first_known_at"]
+    stored = glt_builder.contract()
+    assert stored["state"]["event_reference"]["clocks"]["first_known_at"] == fresh_fk
+    assert stored["freshness"]["clocks"]["first_known_at"] == fresh_fk

@@ -65,11 +65,14 @@ trigger.
 ## Refusal rules, receipts, and their tests
 
 All refusals keep the previous artifact untouched, exit 0, and emit one
-line-start GitHub annotation (never through a logger):
+line-start GitHub annotation (never through a logger). The future-clock rule
+is the one exception to "untouched": a clock later than now is not inherited,
+so the artifact is rewritten with fresh clocks, even at an equal asof and
+source hash (it is never kept as `unchanged`):
 
 | Rule | `::warning` title | Test |
 | --- | --- | --- |
-| Future clock not inherited (C11) | `glt-future-clock-refused` | `test_t23_future_clock_not_inherited_c11` |
+| Future clock not inherited (C11) | `glt-future-clock-refused` | `test_t23_future_clock_not_inherited_c11`, `test_t23_same_hash_future_clocked_artifact_is_rewritten_not_kept_c11` |
 | Stale source (evidence clock or asof regressed) | `glt-stale-source-refused` | `test_t23_stale_source_promotion_refused` |
 | Backdated leg receipt / generated_at | `glt-backdated-receipt-refused` | `test_t23_backdated_receipt_refused_keeps_previous` |
 
@@ -80,6 +83,11 @@ aged rerun `test_t23_aged_rerun_keeps_first_known_and_reads_stale_c11`,
 replay bounds `test_t23_replay_asof_bounded_and_never_rewrites_store`,
 one-notice law `test_t23_exactly_one_notice_per_run`. Every run ends with
 exactly one `::notice title=glt-nightly::… outcome=written|unchanged|refused|replayed`.
+The notice and the printed result describe the artifact of record after the
+run. An `unchanged` or `refused` run wrote nothing, so it reports the kept
+artifact's `asof`, `source_snapshot_hash` and `first_known_at`, never the
+unwritten candidate's freshly stamped clock
+(`test_t23_unchanged_and_refused_notice_reports_the_kept_artifact`).
 
 ## Recovery path
 

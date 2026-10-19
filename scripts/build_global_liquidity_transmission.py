@@ -211,8 +211,10 @@ def build(asof: str | None = None, *, out: str | None = None, print_notice: bool
         prev_hash = (previous.get("meta") or {}).get("source_snapshot_hash")
         new_hash = (payload.get("meta") or {}).get("source_snapshot_hash")
 
-        if prev_asof == new_asof and prev_hash == new_hash:
-            outcome = "unchanged"  # (b) write NOTHING
+        if trusted and prev_asof == new_asof and prev_hash == new_hash:
+            # (b) write NOTHING. An untrusted (future-clocked) artifact is never kept
+            # as-is: it falls through and is rewritten with fresh clocks (C11).
+            outcome = "unchanged"
         else:
             stale = None
             prev_evidence = _parse_iso(_evidence_clock(previous))
@@ -314,7 +316,11 @@ def build(asof: str | None = None, *, out: str | None = None, print_notice: bool
         _write_json(HISTORY_META_PATH, metadata)
         _write_json(CONTRACT_PATH, payload)
 
-    return _finish(payload, outcome, wall_start, print_notice=print_notice)
+    # The notice and the result describe the artifact of record after this run. An
+    # unchanged or refused run wrote nothing, so they report the kept artifact, never
+    # the unwritten candidate (whose first_known_at is this run's own wall clock).
+    record = payload if outcome == "written" else previous
+    return _finish(record, outcome, wall_start, print_notice=print_notice)
 
 
 def _notice_line(asof, source_snapshot_hash, first_known_at, wall_s: float, outcome: str) -> str:
@@ -332,10 +338,10 @@ def _finish(payload: dict, outcome: str, wall_start: float, *,
         "history": _display(HISTORY_PATH),
         "history_meta": _display(HISTORY_META_PATH),
         "comparison": _display(COMPARISON_PATH),
-        "asof": payload["state"]["asof"],
-        "quality_status": payload["quality"]["status"],
+        "asof": (payload.get("state") or {}).get("asof"),
+        "quality_status": (payload.get("quality") or {}).get("status"),
         "outcome": outcome,
-        "source_snapshot_hash": payload["meta"]["source_snapshot_hash"],
+        "source_snapshot_hash": (payload.get("meta") or {}).get("source_snapshot_hash"),
         "first_known_at": _first_known(payload),
         "wall_s": round(time.monotonic() - wall_start, 2),
     }
