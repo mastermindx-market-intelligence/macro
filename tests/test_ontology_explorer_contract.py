@@ -1679,7 +1679,7 @@ def test_x2_reproducibility_binds_owner_calendar_series_and_method(x2_inputs):
         assert changed['scenario_eval_id'] != first['scenario_eval_id']
     changed = baseline.series.copy(); changed.iloc[-2] += 1
     assert _x2_run((snapshot, chain, replace(baseline, series=changed), assumption))['scenario_eval_id'] != first['scenario_eval_id']
-    assert 'created_at' not in first['assumption']
+    assert first['assumption']['created_at'] == baseline.knowledge_cutoff
 
 
 def test_x2_real_rate_refuses_absent_native_estimation_metadata(x2_inputs):
@@ -1745,3 +1745,26 @@ def test_x2_does_not_reject_irrelevant_negative_native_history(x2_inputs):
     snapshot, chain, baseline, assumption = x2_inputs
     values = baseline.series.copy(); values.iloc[0] = -1.0
     assert _x2_run((snapshot, chain, replace(baseline, series=values), assumption))['root_evaluation']['confirmed'] is True
+
+
+def test_x2_creation_clock_is_explicit_but_not_assumption_identity(x2_inputs):
+    from engine.ontology_scenario import evaluate_scenario, ScenarioInputError
+    snapshot, chain, baseline, assumption = x2_inputs
+    first = _x2_run(x2_inputs)
+    later = evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
+                              created_at=baseline.knowledge_cutoff, evaluated_at='2026-12-31T23:00:00Z')
+    assert later['assumption'] == first['assumption']
+    assert later['scenario_eval_id'] == first['scenario_eval_id']
+    with pytest.raises(ScenarioInputError):
+        evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
+                          created_at='2026-12-31T23:00:00Z', evaluated_at=baseline.knowledge_cutoff)
+
+
+def test_x2_native_unresolved_is_unknown_not_a_false_observation(x2_inputs, monkeypatch):
+    from engine import transmission_chains as txi
+    def unavailable(*args):
+        return {'id':'oil_shock','resolved':False,'confirmed':False,'receipts':[],
+                'unresolved_reason':'synthetic owner refusal'}
+    monkeypatch.setattr(txi,'eval_node',unavailable)
+    root = _x2_run(x2_inputs)['root_evaluation']
+    assert root['status'] == 'UNAVAILABLE' and root['confirmed'] is None

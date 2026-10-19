@@ -155,7 +155,7 @@ def _owner_tuple(baseline: SeriesBaseline) -> tuple[dict, pd.Series]:
 
 
 def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
-                      baseline: SeriesBaseline, evaluated_at: str) -> dict:
+                      baseline: SeriesBaseline, evaluated_at: str, created_at: str | None = None) -> dict:
     """Return a private derived result; caller retains it only for this reading.
 
     The snapshot, chain and SeriesBaseline are trusted native-owner inputs, NEVER
@@ -164,7 +164,9 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
     Missing tuple members abstain; no cached/live fallback exists here.
     """
     normalized = _normalize(assumption)
-    _stamp(evaluated_at)
+    evaluated = _stamp(evaluated_at)
+    created_at = created_at or evaluated_at
+    if _stamp(created_at) > evaluated: raise ScenarioInputError('CREATED_AFTER_EVALUATION')
     method_available = True
     try:
         method_versions = [METHOD, 'pandas:' + pd.__version__, _hash([
@@ -192,6 +194,8 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
             # scenarios() currently consumes only raw betas; its artifact carries
             # no estimation span/N/calendar/vintage contract for frozen X2 replay.
             root = _unavailable('NUMERIC_OWNER_METADATA_UNAVAILABLE')
+            root['missing_owner_contract'] = ['scenario_beta_estimation_span', 'scenario_beta_sample_counts',
+                                              'owner_calendar_and_knowledge_cutoff']
         elif normalized['horizon'] != '60d':
             root = _unavailable('HORIZON_INCOMPATIBLE')
         elif len(baseline.future_sessions) < 60:
@@ -225,6 +229,7 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
                             path_condition='UNDETERMINED', threshold_evaluation=dict(confirmed=passed, receipts=receipts))
             else:
                 native = txi.eval_node(chain, 'oil_shock', adapters)
+                if not native['resolved']: native = {**native, 'confirmed': None}
                 root = dict(status=('ROOT_THRESHOLD_MET' if native['confirmed'] else 'SCENARIO_NOT_ARMED')
                             if native['resolved'] else 'UNAVAILABLE', method_class='THRESHOLD_STATE_ONLY', **native)
             root['input_status'] = dict(history='OBSERVED_BASELINE', future='ASSUMED', calendar='OWNER_SUPPLIED')
@@ -236,7 +241,8 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
     logical = dict(assumption_id=assumption_id, snapshot_id=snapshot_id, chain_hash=_hash(chain),
                    owner=owner_receipt, method_versions=method_versions, root=root, hops=hops)
     return dict(schema='ontology_scenario_eval.v1', scenario_eval_id=_hash(logical),
-                assumption={**normalized, 'assumption_id': assumption_id, 'snapshot_id': snapshot_id},
+                assumption={**normalized, 'assumption_id': assumption_id, 'snapshot_id': snapshot_id,
+                            'created_at': created_at},
                 assumption_id=assumption_id, snapshot_id=snapshot_id, evaluated_at=evaluated_at,
                 method_versions=method_versions, owner_receipt=owner_receipt, root_evaluation=root,
                 hop_evaluations=hops, combined_estimate=None,
