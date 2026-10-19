@@ -4839,6 +4839,12 @@ CURATED_EXCLUSIVE = {
     # 2 introduced. scope: exclusive pins it to its declared static import
     # closure plus ancestor inits; ceilings stay fixed.
     "c19-wp31-incremental-information",
+    # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
+    # engine/ modules, so inference selected the new job on the
+    # build_free_content (135 > 134) and index-template (137 > 136) packing
+    # probes. scope: exclusive pins it to its declared static import closure
+    # plus ancestor inits; ceilings stay fixed.
+    "c19-wp32-integrated-answer-correction-denial-pins",
 }
 
 
