@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DHI-BULL-20260818",
-  "asof": "2026-10-15",
+  "asof": "2026-10-18",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 22.1,
@@ -12,15 +12,15 @@
   "components": {
     "validity": 4.3,
     "progress": 0.0,
-    "pace": 14.0,
+    "pace": 10.0,
     "retention": 31.7,
-    "overlay": 46.9
+    "overlay": 26.9
   },
   "geometry": {
     "dist_to_stop_r": 0.139,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 126.7,
+    "horizon_pct_used": 133.3,
     "p1": -0.5737,
     "p2": -0.2868,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 57,
-  "tau": 1.2667
+  "days_elapsed": 60,
+  "tau": 1.3333
 }

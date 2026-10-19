@@ -519,3 +519,34 @@ class TestExtend:
         code,out,err=run_cli(['extend','--archive',str(tmp_path/'parent'),
             '--manifest-sha256',SHA256,'--input',str(source),'--output',str(tmp_path/'next')],capsys)
         assert code==0 and json.loads(out)['output_created'] is False and not (tmp_path/'next').exists()
+
+
+
+def test_cli_forwards_offline_transcript_catalog(monkeypatch,tmp_path,capsys):
+    box=Recorder(result={'transcript_records':1});monkeypatch.setattr(cli,'export_browser',box)
+    assert cli.main(['export','--archive',str(tmp_path/'archive'),'--manifest-sha256',SHA256,
+        '--output',str(tmp_path/'out.html'),'--transcripts-catalog',str(tmp_path/'catalog.json'),
+        '--transcripts-catalog-sha256',SHA256])==0
+    assert box.last[1]['transcripts_catalog_path']==tmp_path/'catalog.json'
+    assert box.last[1]['expected_transcripts_catalog_sha256']==SHA256
+
+
+
+def test_cli_catalog_uses_bound_metadata_only_and_never_overwrites(tmp_path,capsys):
+    from tests.test_market_memory_history_transcripts import payload
+    from lib.dataos.web_workspace import load_workspace_config
+    raw=payload();source=tmp_path/'stock_earning_call_transcripts.parquet';source.write_bytes(raw)
+    registry=tmp_path/'registry.yml';registry.write_text('schema: dataset_registry.v1\ndatasets: []\n')
+    config=tmp_path/'host.json';config.write_text(json.dumps({'schema_version':'mastermind.data_workspace_bindings/v1',
+        'registry_path':str(registry),'roots':[{'alias':'fixture','path':str(tmp_path),'evidence_kind':'research_capture','note':'synthetic fixture'}]}))
+    ws=load_workspace_config(config);version=ws.describe('fixture:'+source.name)['source']['file_version']
+    output=tmp_path/'call-catalog.json'
+    args=['transcripts-catalog','--config',str(config),'--ref','fixture:'+source.name,
+          '--expected-version',version,'--output',str(output)]
+    assert cli.main(args)==0
+    report=json.loads(capsys.readouterr().out)
+    assert report['records']==1 and report['body_columns_read'] is False
+    stored=output.read_bytes();assert b'Original words' not in stored
+    assert source.read_bytes()==raw
+    assert cli.main(args)==1
+    assert output.read_bytes()==stored and 'error' in json.loads(capsys.readouterr().err)
