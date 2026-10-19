@@ -184,6 +184,16 @@
       "code": "filer_category_unbound",
       "parameter": null,
       "meaning": "the packet entity binds no filer category, so the CAM regime cannot be established"
+    },
+    {
+      "code": "narrative_span_not_located",
+      "parameter": null,
+      "meaning": "the governing section the field reads is present in the admitted package and was read in full, and no span satisfying the field exists"
+    },
+    {
+      "code": "governing_section_not_supplied",
+      "parameter": null,
+      "meaning": "the admitted package does not contain the section the field reads (Item 9A, the auditor's report, or the going-concern disclosure), so absence cannot be established"
     }
   ],
   "type": "object",
