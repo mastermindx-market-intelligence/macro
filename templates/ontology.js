@@ -40,6 +40,8 @@
     activeRequest = null;
     portfolioReading = null;
     scenarioReading = null;
+    var theme = document.getElementById("ox-theme");
+    if (theme) theme.dispatchEvent(new CustomEvent("ontology-source-changed"));
     var scenario = document.getElementById("ox-scenario");
     if (scenario) scenario.dispatchEvent(new CustomEvent("ontology-source-changed"));
     var portfolio = document.getElementById("ox-portfolio");
@@ -1292,7 +1294,32 @@
     var k1 = snapshot.evidence.k1;
     if (k1.status !== "available") {
       var k1p = el("p", "ox-note");
-      if (k1.reason_code === "eligible_transition_not_k1_resolved") {
+      if (k1.status === "partial" && Array.isArray(k1.refs) && k1.refs.length > 0
+          && k1.refs_count === k1.refs.length) {
+        k1p.appendChild(say(
+          "Bound transition references: " + k1.refs_count + ". These identify recorded instrument events, not independent market evidence. "
+          + "Native rights and freshness policies, source-body access and historical replay remain unavailable.",
+          "已绑定状态转换引用：" + k1.refs_count + "。这些引用标识已记录的工具事件，并非独立市场证据。"
+          + "原生权限与时效政策、来源正文访问及历史回放仍不可用。"));
+        var references = el("details", "ox-detail");
+        var title = el("summary");
+        title.appendChild(say("Transition reference details", "状态转换引用详情"));
+        references.appendChild(title);
+        var referenceList = el("ul");
+        k1.refs.forEach(function (ref) {
+          var entry = el("li"), native = ref.native_identity || {};
+          entry.appendChild(el("p", "ox-note", String(native.transition || "") + " · " + String(native.asof || "")));
+          [ref.reference_id, ref.provenance && ref.provenance.pointer].forEach(function (value) {
+            var reference = el("p", "ox-hash");
+            reference.appendChild(el("code", "", String(value || "")));
+            entry.appendChild(reference);
+          });
+          referenceList.appendChild(entry);
+        });
+        references.appendChild(referenceList);
+        d.appendChild(references);
+      } else if (k1.reason_code === "eligible_transition_not_k1_resolved"
+          || k1.reason_code === "native_transition_reference_unavailable") {
         k1p.appendChild(say(
           "The owners have recorded " + k1.recorded_transitions + " transition(s) for this "
           + "path, but this page resolved none of them into a formal evidence reference, so "
@@ -1389,6 +1416,11 @@
     return d;
   }
 
+  var themeRoot = document.getElementById("ox-theme");
+  function deliverThemeReading() {
+    if (themeRoot && scenarioReading) themeRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: scenarioReading }));
+  }
+  if (themeRoot) themeRoot.addEventListener("ontology-consumer-ready", deliverThemeReading);
   var scenarioRoot = document.getElementById("ox-scenario");
   function deliverScenarioReading() {
     if (scenarioRoot && scenarioReading) scenarioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: scenarioReading }));
@@ -1491,6 +1523,7 @@
       if (epoch !== readingEpoch) return;
       if (!sameOwner) { signedOutGate(); return; }
       render(snapshot);
+      focusFromHash();
       portfolioReading = {
         chain: snapshot.source.chain, source_manifest_hash: snapshot.source.source_manifest_hash,
         asof: snapshot.company_exposure && snapshot.company_exposure.asof,
@@ -1501,7 +1534,7 @@
       deliverPortfolioReading();
       scenarioReading = Object.assign({}, snapshot.source, { owner_id: auth.identity.id });
       deliverScenarioReading();
-      focusFromHash();
+      deliverThemeReading();
     } catch (error) {
       if (epoch === readingEpoch) gateForFailure("request_failed");
     } finally {

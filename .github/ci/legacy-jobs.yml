@@ -37,6 +37,13 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -1784,6 +1791,14 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -2594,6 +2609,14 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -4923,6 +4946,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -6244,6 +6268,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_theme.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -8508,6 +8535,14 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -10291,6 +10326,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
@@ -11547,6 +11583,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/validation.py"
+      - "scripts/calibrate_rate_inflation.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # Rotation/risk context extends this owner's actual transitive read closure.
@@ -11741,7 +11779,11 @@ jobs:
     # Declared additions retain inference and must also cover every named suite.
     # Python invokes this Node suite; name its non-Python dependency explicitly.
     paths:
+      - "contracts/evidence_foundation/**"
       - "tests/ontology_company_controller.test.mjs"
+      - "engine/ontology_theme.py"
+      - "templates/ontology-theme.js"
+      - "tests/test_ontology_theme_browser.py"
       - "tests/test_ontology_company_browser.py"
       - "tests/test_ontology_company_controller.py"
       - "tests/test_ontology_explorer_brain_browser.py"
@@ -11758,7 +11800,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright jsonschema==4.26.0
       - name: install ontology browser
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
@@ -11766,7 +11808,7 @@ jobs:
       - name: ontology explorer — identity, private transport, public shell
         run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -15381,6 +15423,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -17888,6 +17931,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/ontology_theme.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -18650,6 +18696,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/ontology_theme.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -20641,6 +20690,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -21443,6 +21500,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
@@ -22212,6 +22270,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "tests/fixtures/government_program_ontology/builders.py"
@@ -22986,6 +23045,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/ontology_theme.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -24082,6 +24144,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -25408,6 +25471,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       # Connected Research Factory import closure (PR9463).
@@ -28353,6 +28417,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/ontology_theme.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -28841,6 +28908,14 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -30190,6 +30265,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -31684,6 +31760,14 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/identity_resolution.v1.schema.json"
+      - "contracts/theme_graph/ontology_neighborhood.v1.schema.json"
+      - "engine/ontology_theme.py"
+      - "engine/theme_graph/change_report.py"
+      - "engine/theme_graph/security_navigation.py"
+      - "engine/theme_graph/structural_navigation.py"
+      - "engine/transmission_chains.py"
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/ontology_portfolio.py"
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
@@ -33121,6 +33205,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "scripts/calibrate_rate_inflation.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - engine/research_codegen/__init__.py

@@ -395,6 +395,26 @@ def _open(
     return context, page
 
 
+@pytest.mark.parametrize('language',['en','zh'])
+def test_native_transition_references_keep_policy_limits_visible(browser,tmp_path,language):
+    from tests.test_ontology_explorer_contract import _root_with_episodes, _native_k1_transition
+    root = _root_with_episodes(tmp_path, [_native_k1_transition()])
+    snapshot = compose_snapshot(root, chain=SLUG, now=datetime(2026,1,4,tzinfo=UTC))
+    assert snapshot['evidence']['k1']['status']=='partial'
+    context,page=_open(browser,snapshot,width=390,height=844)
+    try:
+        page.evaluate("lang=>document.documentElement.dataset.lang=lang",language)
+        page.locator('#ox-root details').evaluate_all("nodes=>nodes.forEach(n=>n.open=true)")
+        text=page.locator('#ox-root').inner_text()
+        assert ('Bound transition references: 1' if language=='en' else '已绑定状态转换引用：1') in text
+        assert ('not independent market evidence' if language=='en' else '并非独立市场证据') in text
+        assert ('historical replay remain unavailable' if language=='en' else '历史回放仍不可用') in text
+        assert snapshot['evidence']['k1']['refs'][0]['reference_id'] in text
+        assert 'PRIVATE_BODY' not in text
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    finally:context.close()
+
+
 @pytest.mark.parametrize("size", ((1440, 900), (390, 844)))
 def test_selected_leg_opens_existing_brain_with_bounded_context_and_exact_return(
     browser,

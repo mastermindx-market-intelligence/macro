@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology.css
+manifest: mockups/evidence/ontology-theme-20261019/k1-manifest.json

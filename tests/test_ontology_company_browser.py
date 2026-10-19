@@ -159,7 +159,7 @@ def test_complete_private_read_without_storage_or_implied_exposure(page, theme, 
     lookup(page)
     settled(page, "ready")
     assert len(seen) == 2  # No automatic fact read.
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     page.get_by_text("SYNTHETIC TEST PRODUCT", exact=True).wait_for()
     assert len(seen) == 3
     assert "ISS%3AUS-XNAS-TEST" in seen[1]["url"]
@@ -190,7 +190,7 @@ def test_malformed_or_unjoined_fact_is_never_rendered(page, kind):
     seen, errors = start(page, fact=fact)
     lookup(page)
     settled(page, "ready")
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     settled(page, "unavailable")
     assert "SYNTHETIC TEST PRODUCT" not in page.content()
     assert "MUST_NOT_RENDER" not in page.content()
@@ -218,7 +218,7 @@ def test_empty_selection_is_not_an_error_or_a_fact(page):
     lookup(page)
     settled(page, "empty")
     assert len(seen) == 2
-    assert page.locator(".ox-company-choices button").count() == 0
+    assert page.locator("#ox-company .ox-company-choices button").count() == 0
 
 
 @pytest.mark.parametrize("missing", ["Cache-Control", "Vary", "Content-Type"])
@@ -251,7 +251,7 @@ def test_user_text_never_becomes_html(page):
     seen, _ = start(page, fact=fact)
     lookup(page)
     settled(page, "ready")
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     page.get_by_text(fact["fact"]["product"], exact=True).wait_for()
     assert page.locator(".ox-company-fact img").count() == 0
     assert len(seen) == 3
@@ -261,7 +261,7 @@ def test_canonical_fallback_signout_cannot_reauthorize_from_stale_sdk_session(pa
     seen, _ = start(page)
     lookup(page)
     settled(page, "ready")
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     page.get_by_text("SYNTHETIC TEST PRODUCT", exact=True).wait_for()
     page.evaluate("window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:null,event:'SIGNED_OUT'}}))")
     settled(page, "idle")
@@ -284,7 +284,7 @@ def test_draft_query_edit_removes_previous_issuer_and_fact(page):
     seen, _ = start(page)
     lookup(page)
     settled(page, "ready")
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     page.get_by_text("SYNTHETIC TEST PRODUCT", exact=True).wait_for()
     page.locator("input").fill("OTHER")
     settled(page, "idle")
@@ -298,7 +298,7 @@ def test_actual_macro_shell_auth_and_analytics_keep_private_values_local(page):
     page.wait_for_function("window.MDXAuth && window.MDXAuth.user()")
     lookup(page)
     settled(page, "ready")
-    page.locator(".ox-company-choices button").click()
+    page.locator("#ox-company .ox-company-choices button").click()
     page.get_by_text("SYNTHETIC TEST PRODUCT", exact=True).wait_for()
     page.locator("#ox-company summary").click()
     page.locator(".ox-company-fact dd").first.click()
@@ -336,5 +336,5 @@ def test_restored_page_rereads_canonical_owner_despite_stale_sdk(page, canonical
     lookup(page)
     settled(page, "signed_out")
     assert len(seen) == 2
-    assert page.locator(".ox-company-choices button").count() == 0
+    assert page.locator("#ox-company .ox-company-choices button").count() == 0
     assert errors == []

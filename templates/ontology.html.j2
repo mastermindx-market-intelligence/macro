@@ -105,6 +105,16 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     </div>
   </section>
 
+  <section id="ox-theme" class="ox-company" aria-labelledby="ox-theme-title">
+    <h2 id="ox-theme-title">{{ t('Company Theme Map', '公司主题图谱') }}</h2>
+    <p class="ox-note">{{ t('Follow the selected company into Mastermind’s curated theme hierarchy. Membership describes classification, not revenue exposure or an estimated market impact.', '沿所选公司查看 Mastermind 整理的主题层级。成员关系表示分类，不代表收入敞口或市场影响估计。') }}</p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-theme-read disabled>{{ t('Read house Theme Map', '读取自有主题图谱') }}</button>
+      <button class="ox-cta secondary" type="button" data-theme-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-theme-result aria-live="polite" aria-busy="false"></div>
+  </section>
+
   <noscript>
     <section class="ox-gate">
       <h2>{{ t('This page needs JavaScript', '本页面需要 JavaScript') }}</h2>
@@ -140,5 +150,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script type="module" src="{{ nav_prefix|default('') }}ontology-portfolio.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-scenario.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-theme.js"></script>
 </body>
 </html>

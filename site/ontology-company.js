@@ -42,6 +42,11 @@ export function mountCompanyResearch(root) {
   let client = null;
   let controller;
   let selectedFrom = null;
+  let selectedIdentity = null;
+  function publishIdentity() {
+    root.dispatchEvent(new CustomEvent('ontology-company-identity', { detail: selectedIdentity }));
+  }
+  root.addEventListener('ontology-identity-ready', publishIdentity);
   // The module can finish loading after a canonical sign-out. A missed event
   // must never let an SDK's older cached session authorize a private read.
   let canonicalKnown = true;
@@ -97,6 +102,11 @@ export function mountCompanyResearch(root) {
 
   function render(state) {
     if (disposed) return;
+    selectedIdentity = state.context && state.selection ? {
+      identity_kind: 'security', identity_id: state.context.security_id,
+      symbol: state.context.query.symbol, owner_id: canonicalOwner,
+    } : null;
+    publishIdentity();
     // Replacing the entire result drops the previous issuer, fact and open details
     // together; no stale fact survives a query, identity or generation change.
     output.replaceChildren();
@@ -235,7 +245,8 @@ export function mountCompanyResearch(root) {
       client = null;
       if (subscription) subscription.unsubscribe();
       subscription = null;
-      selectedFrom = null;
+      selectedFrom = null; selectedIdentity = null; publishIdentity();
+      root.removeEventListener('ontology-identity-ready', publishIdentity);
       delete root.dataset.companyReady;
       root.removeEventListener('ontology-select-company', selectExposure);
       root.removeEventListener('ontology-source-changed', clear);

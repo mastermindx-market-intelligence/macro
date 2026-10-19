@@ -395,7 +395,15 @@ def test_every_engine_gap_kind_has_a_reader_facing_sentence():
     #       if count: gaps.append({"kind": kind, "count": count})
     # Capture those literal strings too, so the parity test pins EVERY kind
     # the composer can emit (literal or via a loop variable).
-    emitted_literal = set(re.findall(r'\{"kind":\s*"([^"]+)"', engine_src))
+    import ast
+    emitted_literal = set()
+    for call in ast.walk(ast.parse(engine_src)):
+        if (isinstance(call, ast.Call) and isinstance(call.func, ast.Attribute)
+                and isinstance(call.func.value, ast.Name) and call.func.value.id == "gaps"
+                and call.func.attr == "append" and call.args and isinstance(call.args[0], ast.Dict)):
+            for key, value in zip(call.args[0].keys, call.args[0].values):
+                if isinstance(key, ast.Constant) and key.value == "kind" and isinstance(value, ast.Constant):
+                    emitted_literal.add(value.value)
     emitted_loop = set(re.findall(
         r'\(\s*\w+\s*,\s*"(transitions_\w+)"\s*\)', engine_src))
     emitted = sorted(emitted_literal | emitted_loop)
