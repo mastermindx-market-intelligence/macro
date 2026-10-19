@@ -362,20 +362,52 @@ def test_exact_cutoff_mode_and_method_cannot_select_another_cached_cohort(origin
     assert len(builds) == 3
 
 
-def test_factory_and_other_application_policies_do_not_enter_site_cache(original, monkeypatch, bounded_cohort_reuse):
+@pytest.mark.parametrize("policy_type", [use.RetainedFactoryUsePolicy,
+    type("OtherHousePolicy", (use.RetainedHouseUsePolicy,), {})])
+def test_factory_and_other_application_policies_do_not_enter_site_cache(
+        original, monkeypatch, bounded_cohort_reuse, policy_type):
     from engine.neuralweb import market_memory_retained_context_cohort as cohort
     from engine.neuralweb import market_memory_episode_retrieval as retrieval
     sentinel = object()
-    # Dispatch test only: this deliberately uninitialized object grants no rights.
-    policy = object.__new__(use.RetainedFactoryUsePolicy)
+    # Dispatch test only: these uninitialized objects grant no rights.
+    policy = object.__new__(policy_type)
     monkeypatch.setattr(cohort, "read_retained_context_cohort", lambda *a, **k: sentinel)
-    monkeypatch.setattr(bounded_cohort_reuse.BoundedCohortCache, "get",
-                        lambda *a, **k: pytest.fail("Factory policy entered site cache"))
-    value = bounded_cohort_reuse.read_exact_retained_cohort(
+    monkeypatch.setattr(bounded_cohort_reuse, "read_exact_retained_cohort",
+                        lambda *a, **k: pytest.fail("nonexact House owner entered site cache"))
+    value = policy._read_retained_context_cohort(
         original[1], original[2], subject_id=original[3]["subject_id"],
-        query_cutoff=original[3]["query_cutoff"], policy=policy,
+        query_cutoff=original[3]["query_cutoff"],
         method=retrieval.RetainedContextMethodSpec(5, 5, "historical_hypothetical"))
     assert value is sentinel
+
+
+def test_generic_owner_policy_uses_original_issuance_without_site_reader(
+        original, monkeypatch, bounded_cohort_reuse):
+    from engine.neuralweb import market_memory_retained_context_cohort as cohort
+    from engine.neuralweb import market_memory_episode_retrieval as retrieval
+    root, reader, pin, spec, _ = original
+    bound = use.RetainedHouseUsePolicy(root, user_id="member", mode="historical_hypothetical",
+        **{k: spec[k] for k in ("subject_id", "generation_id", "generation_sha256", "query_cutoff")},
+        store_id=pin.store_id)
+    class GenericPolicy:
+        # This supplies only the incumbent policy protocol, never a reader hook.
+        policy_id, expected = bound.policy_id, bound.expected
+        check = staticmethod(bound.check)
+    policy = GenericPolicy()
+    read = cohort.read_retained_context_cohort
+    reads = []
+    def counted(*args, **kwargs):
+        reads.append(kwargs["policy"])
+        return read(*args, **kwargs)
+    monkeypatch.setattr(cohort, "read_retained_context_cohort", counted)
+    monkeypatch.setattr(bounded_cohort_reuse, "read_exact_retained_cohort",
+                        lambda *a, **k: pytest.fail("generic owner entered site cache"))
+    for _ in range(2):
+        selection, packet = mm.compose_retained_macro_capabilities(reader, policy=policy,
+            **{k: spec[k] for k in ("query_id", "subject_id", "generation_id", "generation_sha256", "query_cutoff")},
+            method=retrieval.RetainedContextMethodSpec(5, 5, "historical_hypothetical"), limit=8)
+        assert selection is not None and packet is not None
+    assert reads == [policy, policy]
 
 
 def test_finite_cohort_storage_lru_bytes_replacement_and_identity_discard(original, bounded_cohort_reuse):
