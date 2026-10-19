@@ -313,6 +313,7 @@ def test_routes_declare_always_on_site_full_and_production_mounts_them() -> None
         f"{PREFIX}/issuers/{{issuer_id}}/events",
         f"{PREFIX}/issuers/{{issuer_id}}/state",
         f"{PREFIX}/issuers/{{issuer_id}}/state/registration",
+        f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate",
         f"{PREFIX}/issuers/{{issuer_id}}/evidence/{{manifest_id}}/{{span_id}}",
     }
     for route in api.router.routes:
