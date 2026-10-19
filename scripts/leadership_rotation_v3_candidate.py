@@ -14,12 +14,13 @@ No future-price outcomes, V3 pass/claim decision, release gate or cache here.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from statistics import fmean
 from typing import Sequence
 
 from scripts import leadership_rotation_episodes as ep
 
-__all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candidate_h2_prior_control_match"]
+__all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candidate_h2_prior_control_match", "SyntheticH3Event", "candidate_h3_synthetic_interaction"]
 
 MATCH_WINDOW = 40
 MISS_DELAY = MATCH_WINDOW + 1
@@ -196,3 +197,142 @@ def candidate_h2_prior_control_match(
         "control_forward20_matured_before_a1": True,
         "v3_preregistered": False, "size_or_power_proven": False,
     }
+
+
+
+@dataclass(frozen=True)
+class SyntheticH3Event:
+    """Caller-labelled P0 event; no real source reader or inferred trade."""
+
+    pair_id: str
+    origin: int
+    arm: str                     # A1 original pair, B3 receiver-only reference
+    donor_weak: bool              # past donor-relative-to-SPY classification
+    receiver_spy_sign: int        # past -1/0/+1 momentum sign
+    volatility_quintile: int      # 0..4, computed from past input only
+    feature_asof: int             # latest index used by pre-origin features
+    warmup_sessions: int
+    residual_y20: float | None    # synthetic matured future-only label, never selector
+    matured_at: int | None        # origin+20 iff measured
+
+
+def candidate_h3_synthetic_interaction(
+    a1_events: Sequence[SyntheticH3Event],
+    b3_events: Sequence[SyntheticH3Event],
+) -> dict:
+    """Test only H3 arithmetic and past-only, one-to-one B3 eligibility.
+
+    The actual A1/B3 generators, SPY beta-residual Y20 labels, pair universe,
+    volatility quintiles, censoring and bootstrap remain original owner code.
+    Here the input is a *synthetic P0 demonstration*, not a market file.
+
+    Pre-origin features are checked for lookahead; matched B3 choice uses
+    exclusively pair, donor-weakness, receiver momentum, vol quintile, date and
+    one-to-one availability. Only AFTER selection can Y20^res labels contribute
+    to the effect-modifier arithmetic. No effect p-value, power or market claim.
+    """
+
+    def validate(x: SyntheticH3Event, expected_arm: str) -> None:
+        if type(x) is not SyntheticH3Event:
+            raise TypeError("H3 P0 input must be SyntheticH3Event")
+        if not isinstance(x.pair_id, str) or not x.pair_id.strip():
+            raise ValueError("nonempty synthetic pair identity required")
+        if x.arm != expected_arm:
+            raise ValueError("INCORRECT_FROZEN_ARM")
+        if any(type(z) is not int for z in (
+            x.origin, x.receiver_spy_sign, x.volatility_quintile,
+            x.feature_asof, x.warmup_sessions
+        )):
+            raise ValueError("H3 calendar and feature values must be integers")
+        if x.origin < 0 or not 0 <= x.feature_asof <= x.origin:
+            raise ValueError("LOOKAHEAD_FEATURE_DATE")
+        if x.receiver_spy_sign not in (-1, 0, 1):
+            raise ValueError("invalid receiver momentum sign")
+        if x.volatility_quintile not in range(5):
+            raise ValueError("volatility quintile must be 0..4")
+        if type(x.donor_weak) is not bool:
+            raise ValueError("donor_weak must be boolean, not imputed")
+        if not 0 <= x.warmup_sessions <= x.origin:
+            raise ValueError("invalid source warmup")
+        if x.residual_y20 is None:
+            if x.matured_at is not None:
+                raise ValueError("unmeasured residual must not claim maturity")
+        else:
+            if type(x.residual_y20) not in (int, float) or not math.isfinite(float(x.residual_y20)):
+                raise ValueError("invalid future residual observation")
+            if type(x.matured_at) is not int or x.matured_at != x.origin + 20:
+                raise ValueError("residual Y20 requires exact future-only maturity")
+
+    for x in a1_events:
+        validate(x, "A1")
+    for x in b3_events:
+        validate(x, "B3")
+    all_events = list(a1_events) + list(b3_events)
+    event_ids = [(x.arm, x.pair_id, x.origin) for x in all_events]
+    if len(set(event_ids)) != len(event_ids):
+        raise ValueError("AMBIGUOUS_DUPLICATE_H3_EVENT")
+
+    # Greedy oldest-onset-first pairing; one physical B3 alarm can be used
+    # only once, even if multiple A1 events pass through its risk set.
+    used: set[tuple[str, int]] = set()
+    eligible_counts = {True: 0, False: 0}
+    measured_differences = {True: [], False: []}
+    chosen: list[dict] = []
+    unpaired = 0
+    unmeasured = 0
+    for a in sorted(a1_events, key=lambda x: (x.origin, x.pair_id)):
+        if a.warmup_sessions < 252:
+            unpaired += 1
+            continue
+        risk_set = [
+            b for b in b3_events
+            if b.pair_id == a.pair_id
+            and (b.pair_id, b.origin) not in used
+            and b.warmup_sessions >= 252
+            and b.donor_weak == a.donor_weak
+            and b.receiver_spy_sign == a.receiver_spy_sign
+            and b.volatility_quintile == a.volatility_quintile
+            and 21 <= a.origin - b.origin <= 63
+        ]
+        if not risk_set:
+            unpaired += 1
+            continue
+        b = max(risk_set, key=lambda x: x.origin)
+        used.add((b.pair_id, b.origin))
+        eligible_counts[a.donor_weak] += 1
+        # Record time-based selection even if the outcome was not measurable.
+        chosen.append({
+            "a1_t": a.origin, "b3_t": b.origin,
+            "pair_id": a.pair_id, "donor_weak": a.donor_weak,
+        })
+        if a.residual_y20 is None or b.residual_y20 is None:
+            unmeasured += 1
+            continue
+        measured_differences[a.donor_weak].append(
+            float(a.residual_y20) - float(b.residual_y20)
+        )
+
+    result = {
+        "scope": "P0_SYNTHETIC_ONLY",
+        "status": "NOT_EXECUTABLE",
+        "reason": "MISSING_MEASURED_H3_STRATUM",
+        "n_a1": len(a1_events),
+        "n_selected": len(chosen),
+        "n_unpaired": unpaired,
+        "n_unmeasured": unmeasured,
+        "n_weak": len(measured_differences[True]),
+        "n_not_weak": len(measured_differences[False]),
+        "selected_dates": chosen,
+        "delta_log_units": None,
+        "v3_preregistered": False,
+        "size_or_power_proven": False,
+        "matching_and_cluster_inference_proven": False,
+    }
+    if measured_differences[True] and measured_differences[False]:
+        result["status"] = "DESCRIPTIVE"
+        result["reason"] = None
+        result["delta_log_units"] = (
+            fmean(measured_differences[True]) -
+            fmean(measured_differences[False])
+        )
+    return result
