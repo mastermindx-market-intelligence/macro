@@ -341,3 +341,84 @@ def test_market_concentration_ad_lookbacks_never_zero_fill_nan_or_duplicate_rows
     duplicate = pd.concat([frame.iloc[:-1], frame.iloc[-2:-1]])
     state["frame"] = duplicate
     assert bs.market_concentration("us")["ad_3d"] is None
+
+
+
+def test_theme_desk_breadth_refuses_missing_vintage_and_false_sp1500():
+    """Run the actual Theme Rotation renderer, not only its source strings."""
+    from pathlib import Path
+    import shutil
+    import subprocess
+    import pytest
+
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates" / "baskets_desk.js").read_bytes()
+    served = (root / "site" / "baskets_desk.js").read_bytes()
+    assert template == served
+
+    text = template.decode("utf-8")
+    assert text.count("function renderConcentration(){") == 1
+    fragment = (
+        "function renderConcentration(){"
+        + text.split("function renderConcentration(){", 1)[1]
+        .split("\nfunction _bbase(){", 1)[0]
+    )
+    assert "Object.prototype.hasOwnProperty.call(vmap,mc.verdict)" in fragment
+    assert "vmap[mc.verdict]||vmap.mixed" not in fragment
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node unavailable; byte-parity and source guards checked")
+
+    prelude = """
+let THEME, html='', zh=false;
+const window={BASKET_BASE:'basket/'};
+const document={getElementById:(id)=>id==='concentration'
+  ?{set innerHTML(s){html=s;}}
+  :id==='concentration-section'?{style:{}}:null};
+const L=(en,cn)=>zh?cn:en;
+const esc=(s)=>String(s);
+const heatDot=()=>'<span></span>';
+"""
+    cases = """
+function render(mc, asOf='2026-10-16', language=false){
+  zh=language;html='';
+  THEME={as_of:asOf,bench_label:'S&P 1500',bench_label_zh:'标普1500',
+    market_concentration:mc, themes:[],breadth_leaders:[],breadth_laggards:[],
+    entries:[],rollover:[]};
+  renderConcentration();
+  return html;
+}
+const d='2026-10-16';
+const valid={source_as_of:d,source_universe:'sp500_current_constituents',
+  verdict:'broad',ad_ratio:1.6,ad_3d:1.5,ad_w:1.4,ad_m:null,
+  pct_above_50:65,pct_above_200:61,nh:12,nl:3};
+const unknown=render({});
+const stale=render({...valid,source_as_of:'2026-10-14'});
+const forged=render({...valid,source_universe:'sp1500'});
+for(const x of [unknown,stale,forged]){
+  if(!x.includes('not measured')||!x.includes('Source session or coverage unverified')||
+     x.includes('1.60')||x.includes('65%')||x.includes('>null<')){
+    throw Error('unsupported breadth became a measurement: '+x.slice(0,1000));
+  }
+}
+const current=render(valid);
+if(!current.includes('S&P 500 sampled breadth')||!current.includes('broad')||
+   !current.includes('1.60')||!current.includes('1.50')||
+   !current.includes('61%')||!current.includes('>—<')){
+  throw Error('valid S&P500 source not displayed correctly: '+current.slice(0,1400));
+}
+const limited=render({...valid,verdict:null});
+if(!limited.includes('not measured')||!limited.includes('1.60')){
+  throw Error('separate measured A/D lost when verdict absent: '+limited.slice(0,1000));
+}
+const chinese=render({},d,true);
+if(!chinese.includes('未测')||!chinese.includes('数据来源交易日或覆盖范围未核验')){
+  throw Error('unmeasured Chinese state not visible');
+}
+"""
+    done = subprocess.run(
+        [node, "-e", prelude + fragment + cases],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert done.returncode == 0, done.stderr
