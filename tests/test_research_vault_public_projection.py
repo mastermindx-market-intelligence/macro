@@ -434,3 +434,23 @@ def test_dry_run_publishes_no_mirror(cli):
     assert not (cli.state.repo_dir / "catalog.json").exists()
     assert cli.state.store.puts == [], "--dry-run must publish nothing to the store"
     assert summary["catalog_bytes"].startswith(b"{"), "input bytes untouched"
+
+
+def test_preview_ids_match_the_app_envelope_and_the_frozen_oracle():
+    # Consumer parity belongs to the API suite; keep backend tests app-independent.
+    import json
+    from app import research as research_app
+    from engine.research_vault import catalog as catalog_mod
+    from tests.test_research_vault_read_runtime import _preview_catalogs, _catalog_preview
+    for catalog in _preview_catalogs():
+        new = research_app._catalog_preview(catalog)
+        old = _catalog_preview(catalog)
+        assert json.dumps(new, sort_keys=True) == json.dumps(old, sort_keys=True)
+        got = [
+            str((item or {}).get("id") or "")
+            for item in new["items"]
+        ]
+        assert got == catalog_mod.preview_ids(catalog)
+        assert new["count"] == len(list(catalog.get("items") or []))
+        assert new["preview"] is True
+        assert set(new) >= {"items", "count", "preview", "summary", "institutions"}

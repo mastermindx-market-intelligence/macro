@@ -56,8 +56,55 @@ jobs:
       - "engine/research_vault/read_service.py"
       - "engine/research_vault/source_layout.py"
       - "scripts/check_research_vault_source_freshness.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -115,9 +162,11 @@ jobs:
       - "collectors/dod_budget_live.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"
+      - "collectors/edgar_8k.py"
       - "collectors/edgar_deadname_prices.py"
       - "collectors/edgar_deadnames.py"
       - "collectors/edgar_delisting.py"
+      - "collectors/edgar_dilution.py"
       - "collectors/edgar_eps.py"
       - "collectors/edgar_facts.py"
       - "collectors/edgar_flow_quality.py"
@@ -137,6 +186,7 @@ jobs:
       - "collectors/holdings.py"
       - "collectors/openfigi.py"
       - "collectors/sbir_awards.py"
+      - "collectors/sec_capital_structure.py"
       - "collectors/sec_document_spine.py"
       - "collectors/sec_filing_parser.py"
       - "collectors/sec_request_pacer.py"
@@ -149,6 +199,7 @@ jobs:
       - "config/biocatalyst_sources.yml"
       - "config/biocatalyst_sponsor_ticker_map.yml"
       - "config/capability_manifest.yml"
+      - "config/capital_structure_share_source_admission.v1.json"
       - "config/compiled_kill_registry.yml"
       - "config/dataset_registry.yml"
       - "config/delisted_symbols.yml"
@@ -176,7 +227,14 @@ jobs:
       - "config/theme_sources.yml"
       - "config/us_names_zh.json"
       - "config/us_search_aliases_zh.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
       - "contracts/capital_structure_projection.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
@@ -253,10 +311,37 @@ jobs:
       - "engine/capital_allocation.py"
       - "engine/capital_need.py"
       - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
       - "engine/capital_structure/event_spine.py"
       - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
       - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
       - "engine/capital_structure/spine_paths.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
       - "engine/cash_runway.py"
       - "engine/catalyst_tone.py"
       - "engine/china_altdata.py"
@@ -790,6 +875,7 @@ jobs:
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
       - "scripts/publish_company_disclosure.py"
       - "scripts/query_k3e_expectation_surface.py"
       - "scripts/security_state_producer.py"
@@ -1822,6 +1908,53 @@ jobs:
       - "engine/research_vault/read_service.py"
       - "engine/research_vault/source_layout.py"
       - "scripts/check_research_vault_source_freshness.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "tests/test_c19_wp32_correction.py"
       - "tests/test_c19_wp32_denial_cache.py"
@@ -1834,6 +1967,45 @@ jobs:
       - "engine/company_intelligence/views.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/government_revenue/public_agreement.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # 2026-10-18 scope: exclusive closure: the static import closure of the three test
       # files (curated_exclusive_closure_findings), listed literally so no glob widens
       # the job onto the packing-probe paths.
@@ -2651,7 +2823,54 @@ jobs:
       - "engine/research_vault/read_service.py"
       - "engine/research_vault/source_layout.py"
       - "scripts/check_research_vault_source_freshness.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
@@ -3452,6 +3671,45 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6305,6 +6563,13 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -7188,6 +7453,7 @@ jobs:
           tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
+          tests/test_ipo.py
           tests/test_cash_runway.py
           tests/test_capital_need.py
           tests/test_hk_v37_composer.py
@@ -7196,6 +7462,8 @@ jobs:
           tests/test_commodity_confluence.py
           tests/test_commodity_cycle_state.py
           tests/test_commodity_coverage_matrix.py
+          tests/test_critical_minerals_display.py
+          tests/test_critical_minerals_panel.py
           tests/test_china_gold_premium.py
           tests/test_fear_euphoria.py tests/test_froth_fragility.py
           tests/test_vol_velocity.py tests/test_fear_greed_honesty.py
@@ -7328,6 +7596,7 @@ jobs:
           tests/test_stretch_oracle_contract.py
           tests/test_opex.py
           tests/test_opex_risk.py
+          tests/test_strategies_build.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
           tests/test_research_priority_ordering.py -q
@@ -8578,13 +8847,96 @@ jobs:
       - "engine/research_vault/producer_generation.py"
       - "engine/research_vault/qualified_reader.py"
       - "engine/research_vault/source_layout.py"
+      - "templates/institutional_holding_research.js"
+      - "templates/institutional_holding_research.css"
+      - "site/institutional_holding_research.js"
+      - "site/institutional_holding_research.css"
+      - "tests/institutional_holding_research.test.mjs"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "lib/institutional_intelligence.py"
+      - "tests/test_institutional_catalog_scope.py"
+      - "app/institutional_research.py"
+      - "engine/institutional_census/**"
+      - "lib/institutional_13f_adapter.py"
+      - "tests/test_institutional_research_api.py"
+      - "tests/test_institutional_research_context.py"
+      - "tests/test_institutional_census_k3e_projection.py"
       - "engine/government_revenue/public_agreement.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
-      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
-      - lib/symbol_directory_receipts.py
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -9328,6 +9680,8 @@ jobs:
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/fif_a1_journey_ledger.py"
+      - "scripts/fif_a1_lineage_causes.py"
       - "scripts/fif_excel_refresh_harness.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
@@ -9355,6 +9709,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
@@ -9435,6 +9790,7 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_fif_a1_journey_ledger.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
@@ -9448,6 +9804,9 @@ jobs:
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_api_client.py
+          tests/test_institutional_research_api.py
+          tests/test_institutional_research_context.py
+          tests/test_institutional_catalog_scope.py
           tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
@@ -9524,7 +9883,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/institutional_holding_research.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -9655,6 +10014,8 @@ jobs:
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
           tests/test_capital_structure_api.py
+          tests/test_capital_structure_state_bundle.py
+          tests/test_capital_structure_state_api.py
           tests/test_capital_structure_source_identity.py
           tests/test_capital_structure_source_manifest.py
           tests/test_capital_structure_ingestion_health.py
@@ -9672,6 +10033,9 @@ jobs:
           tests/test_sec_capital_structure_companyfacts.py
           tests/test_capital_structure_evidence_identity.py
           tests/test_capital_structure_reference_qualification.py
+          tests/test_capital_structure_g0_reference.py
+          tests/test_capital_structure_a0_reference_lineage.py
+          tests/test_capital_structure_reference_dossiers.py
           tests/test_capital_structure_rule_applicability.py
           tests/test_capital_structure_capacity_joint.py
           tests/test_capital_structure_capacity.py
@@ -9679,6 +10043,9 @@ jobs:
           tests/test_capital_structure_capacity_c2b.py
           tests/test_capital_structure_capacity_c2c_a.py
           tests/test_capital_structure_capacity_c2x.py
+          tests/test_capital_structure_capacity_c2d.py
+          tests/test_capital_structure_g0_venue.py
+          tests/test_capital_structure_g0_verification.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_authorized_shares.py
@@ -9689,9 +10056,17 @@ jobs:
           tests/test_capital_structure_transactions.py
           tests/test_capital_structure_variable_terms.py
           tests/test_capital_structure_supply_variable.py
+          tests/test_capital_structure_scenario_composition.py
+          tests/test_capital_structure_scenario_inputs.py
+          tests/test_capital_structure_state_changes.py
+          tests/test_capital_structure_saved_scenarios.py
+          tests/test_capital_structure_scenario_export.py
+          tests/test_capital_structure_v0_recovery.py
+          tests/test_capital_structure_a1_served_properties.py
           tests/test_nwqs_c_dilution.py
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
+          tests/test_covenant_html.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
   covenant-headroom:
@@ -9712,6 +10087,7 @@ jobs:
       - "engine/analyst_revisions.py"
       - "engine/capital_allocation.py"
       - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/covenant_html.py"
       - "engine/capital_structure/covenant_terms.py"
       - "engine/capital_structure/document_terms.py"
       - "engine/capital_structure/event_spine.py"
@@ -11876,7 +12252,6 @@ jobs:
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
           tests/test_research_codegen_factory_fence.py
-          tests/test_market_memory_e0_control_records.py
           tests/test_market_memory_evidence_accounting.py
           tests/test_market_memory_evidence_accounting_parent.py
           tests/test_research_factory_market_memory_evidence.py
@@ -11897,6 +12272,65 @@ jobs:
           tests/test_research_codegen_admin_tokens.py
           tests/test_holdout_vault.py
           tests/test_promotion_gate.py
+          -q
+
+  market-memory-e0-contract:
+    # E0 semantic/storage contracts have one narrow CI owner. Keep the universal
+    # Research Factory authority guard above broad; these suites do not need to
+    # increase the selected weight of unrelated templates/scripts/engines.
+    if: ${{ false }}  # executed inside the existing ci-pack matrix
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/research_factory/market_memory_e0_*.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "tests/test_market_memory_e0_*.py"
+      - "tests/fixtures/market_memory_e0/**"
+      - "contracts/market_memory/**"
+      - "config/market_memory_canary.v1.json"
+      - "engine/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "engine/neuralweb/market_memory_episode_features.py"
+      - "engine/neuralweb/market_memory_episode_retrieval.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_lineage.py"
+      - "engine/neuralweb/market_memory_operating_cortex_service.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/neuralweb/market_memory_projection.py"
+      - "engine/neuralweb/market_memory_retained_context_cohort.py"
+      - "engine/neuralweb/market_memory_trusted.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_evidence_accounting.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json"
+      - "tests/__init__.py"
+      - "tests/market_memory_e0_fixtures.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install E0 source dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
+      - name: Market Memory E0 control, reservation and condition contracts
+        run: >-
+          python -m pytest
+          tests/test_market_memory_e0_control_records.py
+          tests/test_market_memory_e0_domains.py
+          tests/test_market_memory_e0_evaluation_spec.py
+          tests/test_market_memory_e0_domain_serialization.py
+          tests/test_market_memory_e0_critical_claims.py
+          tests/test_market_memory_e0_reservations.py
+          tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_allocation.py
           -q
 
   research-codegen-runtime-qualification:
@@ -15712,6 +16146,7 @@ jobs:
       - tests/test_gmi_activity_membership_admission.py
       - tests/test_gmi_coverage_proof.py
       - tests/test_gmi_history_integrity.py
+      - tests/test_gmi_operating_proof.py
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_activity_membership_history.py
       - tests/test_theme_graph_selection_cohort.py
@@ -16622,7 +17057,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -17934,11 +18369,9 @@ jobs:
     gate: code
     scope: exclusive
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
-    # Preserve all 36 suites while removing unrelated opaque fallback fanout.
+    # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
-      # F11 composition: exact newly reached import closure.
       - "engine/research_vault/comparison.py"
-      - "engine/research_vault/qualified_reader.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
       - "collectors/base.py"
@@ -18212,6 +18645,14 @@ jobs:
       - "engine/research_vault/read_adapters.py"
       - "engine/research_vault/read_port.py"
       - "engine/research_vault/read_service.py"
+      - "engine/research_vault/qualified_reader.py"
+      - "engine/research_vault/read_runtime.py"
+      - "tests/test_research_vault_f11_factory.py"
+      - "tests/test_research_vault_generation_selection.py"
+      - "tests/test_research_vault_generation_window.py"
+      - "tests/test_research_vault_qualified_reader.py"
+      - "tests/test_research_vault_read_runtime.py"
+      - "tests/test_research_vault_rio_source_qualification.py"
       - "engine/research_vault/retrieval_eval.py"
       - "engine/research_vault/sidecar.py"
       - "engine/research_vault/slugs.py"
@@ -18379,7 +18820,7 @@ jobs:
       # One canonical code-gate invocation preserves producer, intelligence,
       # retrieval and page contracts from both composed source families.
       - name: research vault generation, ingestion, intelligence, retrieval and page tests
-        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_transport.py tests/test_research_vault_generation_recovery.py tests/test_research_vault_generation_continuation.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault_fulltext_index.py tests/test_research_vault_producer_read_cache.py tests/test_research_vault_fulltext_publication.py tests/test_research_vault_fulltext_qualification.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py tests/test_research_vault_reading_order_v2.py tests/test_research_vault_source_layout.py tests/test_research_intelligence_comparison.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_intelligence_selection.py tests/test_research_intelligence_selection_contract.py tests/test_research_intelligence_selector_semantics.py tests/test_research_vault_evaluation_runner.py -q
+        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_transport.py tests/test_research_vault_generation_recovery.py tests/test_research_vault_generation_continuation.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault_fulltext_index.py tests/test_research_vault_producer_read_cache.py tests/test_research_vault_fulltext_publication.py tests/test_research_vault_fulltext_qualification.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py tests/test_research_vault_reading_order_v2.py tests/test_research_vault_source_layout.py tests/test_research_intelligence_comparison.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_intelligence_selection.py tests/test_research_intelligence_selection_contract.py tests/test_research_intelligence_selector_semantics.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_f11_factory.py tests/test_research_vault_generation_selection.py tests/test_research_vault_generation_window.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_read_runtime.py tests/test_research_vault_rio_source_qualification.py -q
 
 
   research-vault-source-lineage:
@@ -18452,10 +18893,12 @@ jobs:
         # Fundamental Forensics package import in this isolated environment.
         # requests closes app.main's eager app.market_memory import.
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
-      # API security, source-bound evidence and F11 use this same environment.
-      # Combine the incumbent calls rather than adding packing step overhead.
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_producer_generation.py tests/test_research_vault_generation_window.py tests/test_research_vault_generation_selection.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
+        run: python -m pytest tests/test_research_api.py -q
+      - name: source-bound report evidence — corpus selector
+        run: python -m pytest tests/test_research_evidence_passages.py -q
+      - name: F11 shared read, comparison and public projection contracts
+        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_public_projection.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
@@ -18474,6 +18917,13 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # Connected Research Factory import closure (PR9463).
@@ -19240,6 +19690,13 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -21241,13 +21698,101 @@ jobs:
       - "engine/research_vault/producer_generation.py"
       - "engine/research_vault/qualified_reader.py"
       - "engine/research_vault/source_layout.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - contracts/theme_graph/activity_membership_proposal.v1.schema.json
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/government_revenue/program_dossier.py"
-      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
-      - lib/symbol_directory_receipts.py
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -22827,6 +23372,13 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "tests/__init__.py"
       - "tests/test_government_program_public_agreement.py"
       - "engine/market_ontology/__init__.py"
@@ -23201,7 +23753,7 @@ jobs:
       - "tests/test_shared_theme_progressive_loader.cjs"
       - "templates/theme.js"
       - "tests/fixtures/government_revenue/archetypes/**"
-    timeout-minutes: 8
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23614,6 +24166,13 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29008,6 +29567,13 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29505,35 +30071,121 @@ jobs:
       - "engine/research_vault/producer_generation.py"
       - "engine/research_vault/qualified_reader.py"
       - "engine/research_vault/source_layout.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
-      - lib/dataos/web_history.py
-      - lib/dataos/web_readers.py
-      - lib/dataos/web_workspace.py
-      - engine/neuralweb/market_memory_history_transcripts.py
-      - tests/test_market_memory_history_transcripts.py
-      - engine/neuralweb/market_memory_history_filings.py
-      - tests/test_market_memory_history_filings.py
+      - "lib/dataos/web_history.py"
+      - "lib/dataos/web_readers.py"
+      - "lib/dataos/web_workspace.py"
+      - "engine/neuralweb/market_memory_history_transcripts.py"
+      - "tests/test_market_memory_history_transcripts.py"
+      - "engine/neuralweb/market_memory_history_filings.py"
+      - "tests/test_market_memory_history_filings.py"
       - "engine/government_revenue/program_dossier.py"
-      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
-      - lib/symbol_directory_receipts.py
-      - collectors/biocatalyst/__init__.py
-      - engine/biocatalyst/__init__.py
-      - engine/capital_structure/__init__.py
-      - engine/close_pass/__init__.py
-      - engine/codex_lane/__init__.py
-      - engine/context_index/__init__.py
-      - engine/earnings_narrative/__init__.py
-      - engine/earnings_release/__init__.py
-      - engine/fundamental_forensics/__init__.py
-      - engine/intelligence_workspace/adapters/__init__.py
-      - engine/marketing/__init__.py
-      - engine/oracle/__init__.py
-      - engine/press/__init__.py
-      - engine/seasonality/__init__.py
+      - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
+      - "lib/symbol_directory_receipts.py"
+      - "collectors/biocatalyst/__init__.py"
+      - "engine/biocatalyst/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/close_pass/__init__.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/context_index/__init__.py"
+      - "engine/earnings_narrative/__init__.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/fundamental_forensics/__init__.py"
+      - "engine/intelligence_workspace/adapters/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/oracle/__init__.py"
+      - "engine/press/__init__.py"
+      - "engine/seasonality/__init__.py"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # R15: the existing phase1 tests now reach both native 30m pivot families.
@@ -32406,11 +33058,64 @@ jobs:
       - "engine/research_vault/producer_generation.py"
       - "engine/research_vault/qualified_reader.py"
       - "engine/research_vault/source_layout.py"
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
+      # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "config/capital_structure_share_source_admission.v1.json"
+      - "contracts/capital_structure_capacity_inputs.v1.schema.json"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_instrument_candidate_term.schema.json"
+      - "contracts/capital_structure_registration_lifecycle.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/authorized_shares.py"
+      - "engine/capital_structure/capacity.py"
+      - "engine/capital_structure/capacity_joint.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/funding.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/instrument_candidates.py"
+      - "engine/capital_structure/instrument_resolution.py"
+      - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
+      - "engine/capital_structure/reference_qualification.py"
+      - "engine/capital_structure/registration_integration.py"
+      - "engine/capital_structure/registration_lifecycle.py"
+      - "engine/capital_structure/rule_applicability.py"
+      - "engine/capital_structure/scenario_composition.py"
+      - "engine/capital_structure/scenario_inputs.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/share_basis.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/capital_structure/state_bundle.py"
+      - "engine/capital_structure/supply_scenarios.py"
+      - "engine/capital_structure/term_integration.py"
+      - "engine/capital_structure/transactions.py"
+      - "engine/capital_structure/variable_terms.py"
+      - "engine/capital_structure/verified_projection_generation.py"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
+      - "scripts/compile_capital_structure_events.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
       - lib/native_parquet.py
       - "engine/government_revenue/program_dossier.py"

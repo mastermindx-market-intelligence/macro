@@ -912,15 +912,21 @@ def test_research_tool_schema_shape_and_attribution_instruction():
     assert schema["name"] == "search_research"
     props = schema["input_schema"]["properties"]
     # `mode` joined query/limit with the W2 street-clusters build and `report_id`
-    # with the W4 full-report escalation; `required` did NOT change either time,
+    # with the W4 full-report escalation; F11 adds bounded private comparison.
+    # `required` remains unchanged so ordinary search callers still work.
+    # The comparison object rejects arbitrary caller policy fields;
     # so the gateway's existing query=… call site keeps working.
-    assert set(props) == {"query", "limit", "mode", "report_id"}
+    assert set(props) == {"query", "limit", "mode", "report_id", "comparison"}
     assert props["query"]["type"] == "string" and props["limit"]["type"] == "integer"
     query_description = props["query"]["description"]
     assert "One meaningful term is accepted" in query_description
     assert "中国流动性" in query_description
     assert "at least 2 words" not in query_description
     assert props["report_id"]["type"] == "string"
+    comparison = props["comparison"]
+    assert comparison["type"] == "object" and comparison["additionalProperties"] is False
+    assert set(comparison["required"]) == {"action", "left", "right"}
+    assert comparison["properties"]["action"]["enum"] == ["prepare", "compare"]
     assert schema["input_schema"]["required"] == ["query"]
     assert "1..8" in props["limit"]["description"] and "default 5" in props["limit"]["description"]
     description = schema["description"]
@@ -935,7 +941,7 @@ def test_research_tool_schema_offers_every_mode_and_fences_convergence():
     evidence the view is right."""
     props = bmi.RESEARCH_TOOL_SCHEMA["input_schema"]["properties"]
     assert props["mode"]["type"] == "string"
-    assert props["mode"]["enum"] == ["search", "clusters", "report"]
+    assert props["mode"]["enum"] == ["search", "clusters", "report", "compare"]
     description = bmi.RESEARCH_TOOL_SCHEMA["description"]
     assert "clusters" in description, "the mode is unreachable if never mentioned"
     assert "crowding" in description

@@ -2965,6 +2965,31 @@ def test_plan_is_deterministic() -> None:
     assert any(first.pack_jobs)
 
 
+def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Calibration changes the attested assignment, never the work it proves."""
+    calibrated = _full_plan()
+    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+    heuristic = _full_plan()
+
+    assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.pack_count == heuristic.pack_count == 12
+    assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
+    assert calibrated.pack_jobs != heuristic.pack_jobs
+    assert calibrated.plan_sha256 != heuristic.plan_sha256
+    before = {job.logical_job_id: job for job in heuristic.semantic_jobs}
+    for job in calibrated.semantic_jobs:
+        assert job.job_exec_sha256 == before[job.logical_job_id].job_exec_sha256
+        assert job.steps == before[job.logical_job_id].steps
+    flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
+    assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
+    assert set(flattened) == set(calibrated.eligible_job_ids)
+    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
+
+
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
     """The hash is what makes twelve independent derivations one decision."""
     plan = _full_plan()
@@ -4326,6 +4351,7 @@ CURATED_EXCLUSIVE = {
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
     "research-vault",
+    "market-memory-e0-contract",  # E0 suites own their exact dependency closure.
     # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
     "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
@@ -5057,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_641),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_639),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5067,11 +5093,14 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
-    The refreshed protected base measures 5,618 for build_free_content.
-    Held F11 raises the research-vault-api job weight 7 -> 30 (+23); the
-    actual combined probe measured 134 jobs / 5,641. Fund exactly 5,641,
-    with no extra headroom or other ceiling changes. Fresh hosted checks
-    remain necessary before release.
+    Full F11 consumer reconciliation on protected 521306fe (2026-10-19):
+    keep the protected 42 Vault suites and 2 API suites, then add only the 5
+    remaining consumer suites to the API job. All 49 unique suites run once;
+    the API estimator changes 7 -> 18. Canonical measurement records 135/5764,
+    134/5639 and 128/5513 jobs/weight for the three probes, all at 10 packs.
+    Fund only the sole actual breach, build_free_content 5630 -> 5639. Other
+    ceilings, job counts, selectors and suite coverage remain unchanged.
+    This replaces neither tests nor required exact-head hosted execution.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight
@@ -5088,13 +5117,6 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     excess only: 5,600 -> 5,613, no padding. This is retained measurement reuse,
     not a new selector or suite change. Job counts, other weights and ten packs
     remain fixed; current-head hosted CI must execute the updated assertion.
-    The held F11 composition adds its accepted 14-suite API invocation:
-    research-vault-api weight 7 -> 30, the sole changed job weight (+23).
-    Its actual local packing probe measured 134 jobs / 5,636 against 5,613;
-    declaration, dependency coverage and opaque-tier-only checks passed.
-    Fund this measured API coverage at 5,636, with no additional headroom,
-    suite removal, selector change, job-count or pack-limit change. Reuse
-    the retained probe measurement; hosted CI must execute the final gate.
     Dropping the imported validator or understating the suite weight would
     discard coverage or hide the actual added test load.
 
@@ -5104,6 +5126,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
     only the measured 5,618. Job counts, the other two weight ceilings,
     all suites and the ten-pack ceiling remain unchanged.
+
+    Guarded dedicated-reader backend composition (2026-10-19) adds six
+    backend suites to research-vault's existing canonical command: exactly
+    twelve estimator units. Fund only the affected build_free_content probe's
+    5,618 -> 5,630 increase. Job counts, other probe ceilings, selectors and
+    the ten-pack bound remain unchanged; ordinary Brain F11 suites remain held.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
