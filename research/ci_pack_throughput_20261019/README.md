@@ -76,11 +76,11 @@ Pack 8 finished last at 12:53:16Z. The gate began at 13:07:01Z and finished at 1
 At 13:46Z, all five naturally occurring PR runs created after merge were still queued. No completed treated fleet cohort exists yet. Use exact tested implementation bytes and canonical plan coverage to establish eligibility; creation time alone is insufficient. Keep twelve packs and the current proof/isolation controls. Investigate further partitioning only after comparable timing evidence identifies a useful reduction in the remaining floor and its queue/cost consequence.
 
 
-## Natural traffic, 15:51Z
+## Natural traffic, 16:50Z
 
-The snapshot contains 43 runs: 16 pending, 5 cancelled, 1 completed rerun excluded, and **21 verified first-attempt completions (18 success, 3 failure)**. Every eligible tested-tree planner blob matches the landed optimization and its base descends from the merge. All are scoped. None matches a retained baseline's complete selected-job set or execution/proof signature. `natural-comparison.json` retains identities, canonical signatures, eligibility and strata; `natural-comparison-method.md` fixes the comparison method.
+The snapshot contains **57 runs: 9 pending, 9 cancelled, 2 completed reruns excluded, and 37 verified first-attempt completions (30 success, 7 failure)**. Every eligible tested-tree planner blob matches the landed first optimization and its base descends from the merge. There are 36 scoped completions and one global success (257 jobs, 3067 seconds). Two scoped runs now match a baseline selected-job set, but **none matches its execution/step-proof signature**. `natural-comparison.json` retains identities, canonical signatures, eligibility and strata; `natural-comparison-method.md` fixes the method.
 
-The 18 scoped successes have run-to-gate p50/p95 **2106/3565 seconds**, versus **3265.5/4074 seconds** for fourteen historical scoped successes. Summed job wall minutes have p50/p95 **152.62/245.67**, versus **223.02/257.63**. The three scoped failures have first-failed-step-completion p50/p95 **1752/2224 seconds**, versus **3118/4178 seconds** for four historical scoped failures. These are different-work, completion-conditioned descriptive strata with pending slow observations, not a causal estimate or proof of the 30% target. No treated natural full-suite run has concluded.
+The 29 scoped successes have run-to-gate p50/p95 **1920/3511 seconds**, versus **3265.5/4074 seconds** for fourteen historical scoped successes. Summed job wall minutes have p50/p95 **145.37/216.80**, versus **223.02/257.63**. The seven scoped failures have first-failed-step-completion p50/p95 **1768/2686 seconds**, versus **3118/4178 seconds** for four historical scoped failures. These are different-work, completion-conditioned descriptive strata with nine pending observations, not a causal estimate or proof of the 30% target. The single new global success also differs in coverage from the earlier full trial.
 
 ## Second bounded trial: calibrate two heavy-job weights
 
@@ -105,3 +105,11 @@ The optional Fabric review attempt `ci-pack-20261019-01a153e8-weight-review` end
 Rollback is a normal revert of the two weight entries. No command, selector, proof contract, runner route, shard count or external runtime configuration changes.
 
 Candidate validation: **7 targeted packing/coverage/hash/curation tests passed** in 135.76 seconds, and **200 authority/negative controls passed** in 58.43 seconds. Both runs emitted 42 existing pytest temporary-directory cleanup warnings. No packing ceiling was raised.
+
+## Second hosted trial: base timeout, then landed-fix recovery
+
+[Run 39282678531](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39282678531) tested head `aebcbe276560553b306ada6b467444cd2d446fe9` at merge tree `0e42e3232b0bc9b297ab8e6d7114df2ae6a30c4f`. Its authoritative plan selected all 256 code jobs and reproduced the calibrated assignment exactly; all job execution and step proofs matched the exact tested manifest. Relative to the first full trial, main added `research-codegen-runtime-qualification` and changed seven other job definitions. These are material comparability limits, preserved in `weight-failed-trial.json`.
+
+Eleven packs, authority, fences and contract-delta passed. Pack 7 and the semantic gate failed because **defense-rail-laws exhausted its eight-minute deadline on both candidate and isolated base replay**, at 16:26:24Z and 16:52:46Z respectively. The run is a failed observation containing extra replay work, not a comparable successful throughput sample. Its observer settled with exit 1 and was consumed; all logs are retained.
+
+The independently owned [PR 9758](https://github.com/mastermindx-market-intelligence/macro/pull/9758) had already diagnosed this expanded battery, passed its required hosted checks, and merged as `bee22730967cf12d6aabbc18b79a37135f9b3c01` at 16:46:22Z. Its only manifest change raises that logical job's deadline from eight to twelve minutes while keeping all commands. Recovery incorporates this landed fix through a normal main merge into PR 9763, preserving the two-weight trial unchanged. The new source receives normal CI; no blind rerun, gate suppression or duplicate repair is used. Hosted success on the refreshed source remains required.

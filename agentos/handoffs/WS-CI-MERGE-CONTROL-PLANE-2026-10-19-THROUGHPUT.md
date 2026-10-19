@@ -103,8 +103,39 @@ No ceiling or gate weakened. Optional same-ID Fabric weight review
 `admission_denied reason=canonical_source_unreadable`; no verdict/no acceptance,
 no alternate provider. Initial dedup review remains accepted for its original scope.
 
-Next: publish this bounded trial plus batched evidence through normal GitHub source,
-consume one verified CI observer, resolve genuine failures, then normal merge.
+Current delivery: PR https://github.com/mastermindx-market-intelligence/macro/pull/9763
+remains open and armed. Trial head aebcbe276560553b306ada6b467444cd2d446fe9
+failed CI39282678531 in defense-rail-laws: eight-minute timeout on candidate AND
+isolated base replay. Eleven packs, authority, fences and contract-delta passed;
+semantic gate correctly refused. Observer70423 settled rc1 and was consumed.
+Never recreate it. `weight-trial-full.log` and `weight-failed-trial.json` retain
+failure evidence; no successful-run cost claim may include this failed replay.
+
+Exact hosted plan: merge tree0e42e3232b0bc9b297ab8e6d7114df2ae6a30c4f,
+base2f1fd99a8ae295c4aeec2ca3726aa498a7545e97,256 selected code jobs,
+plan4d7c321994a54dfda5ab05976e2f93b55b313109a3b0fe40fe9727fc06aa0419.
+Published assignment reproduced and all256 execution/step proofs checked against
+exact tested manifest. Main added one job and changed seven definitions versus
+first full trial. See weight-hosted-plan-verification.json and weight-plan-comparison.json.
+
+The existing heal PR9758 merged at16:46:22Z as
+bee22730967cf12d6aabbc18b79a37135f9b3c01 after all required checks passed.
+It changes only defense-rail-laws timeout8->12 minutes. Landed fix incorporated
+through main d559d17ef53e13a4a4fe6b64fa1169efe1306cff, merge commit
+df6e8866620dabc20348353db5a8466def6867c1. Trial source remains unchanged;
+calibration regression passed (1 test,4.94s), Agent OS0 errors/123 inherited
+warnings. Push the batched evidence update once for normal CI. No extra timeout
+edit or blind rerun is justified.
+
+Natural16:50 snapshot:57 runs,9 pending,9 cancelled,2 reruns excluded;
+37 identity-verified first attempts (30 success/7 failure), including one global
+success with257 jobs. Two selected-set matches but ZERO execution-proof matches.
+Scoped success p50/p95 1920/3511 sec (29 observations) remains descriptive only.
+Raw post-* captures and natural-comparison-latest.json retained; report updated.
+
+Next: finish source refresh, run affected calibration check, push and consume one
+new-head CI observer through required checks and normal merge. Record its actual
+head/run/handle after successful launch. After success collect stage costs once,
+respecting300-second same-run cooldown and separating replay/queue/install effects.
 No artificial CI, peer messages, new coordinator/control plane, extra shards or
-unrelated deploy. After hosted correctness, compare real per-stage costs and natural
-matched traffic; do not infer throughput acceptance from a green run or model.
+unrelated deploy. Preserve original root and all unresolved effects.

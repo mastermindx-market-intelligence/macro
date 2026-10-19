@@ -254,12 +254,14 @@ waves:
       hosted proof. First broad trial took 78.1 minutes, including 825 seconds
       of post-pack queueing; packing-contract group 740.414 seconds versus a
       historical 847.738-second median is descriptive, not a causal gain.
-      Natural cohort now has 21 verified first-attempt completions, but zero
-      exact baseline coverage matches and 16 pending runs; no causal gain.
+      Natural cohort has 37 verified first-attempt completions, two selected-set
+      matches but zero execution-proof matches and nine pending; no causal gain.
       A twelve-pack replay of all 255 measured job costs supports a bounded
       FIF/earnings weight calibration: modeled maximum command time
       2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
-      Source trial and real hosted validation remain in progress.
+      Trial PR9763 hit the existing Defense eight-minute timeout on both
+      candidate and base. Landed heal PR9758 is being incorporated for fresh
+      normal hosted validation; no blind rerun or new timeout change.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
