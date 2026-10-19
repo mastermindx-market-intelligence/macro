@@ -58,22 +58,25 @@ def _clock(value: object) -> datetime:
     return parsed
 
 
-def _bounded_tree(value: object) -> None:
+def _bounded_tree(value: object, *, domain: bool = False) -> None:
+    node_limit = MAX_DOMAIN_NODES if domain else MAX_NODES
+    string_limit = MAX_DOMAIN_OBJECT_BYTES if domain else MAX_CONTROL_BYTES
+    prefix = "domain" if domain else "control"
     active: set[int] = set()
     nodes = 0
 
     def visit(item: object, depth: int) -> None:
         nonlocal nodes
         nodes += 1
-        if nodes > MAX_NODES or depth > MAX_DEPTH:
-            raise E0ControlError("control_metadata_complexity_limit")
+        if nodes > node_limit or depth > MAX_DEPTH:
+            raise E0ControlError(prefix + "_metadata_complexity_limit")
         if type(item) is str:
             try:
                 item.encode("utf-8")
             except UnicodeEncodeError as exc:
                 raise E0ControlError("invalid_unicode") from exc
-            if len(item) > MAX_CONTROL_BYTES:
-                raise E0ControlError("control_string_limit")
+            if len(item) > string_limit:
+                raise E0ControlError(prefix + "_string_limit")
             return
         if item is None or type(item) in (bool, int):
             return
@@ -270,6 +273,9 @@ _FROZEN_JSON_SCHEMAS = {
     "market_memory.e0_prelabel_design_binding.v1": "prelabel_binding",
 }
 MAX_DOMAIN_OBJECTS = 64
+# Domain objects have a separate budget; the full 109-task candidate has 58,221 nodes.
+# Control records retain their original 20,000-node limit.
+MAX_DOMAIN_NODES = 200_000
 MAX_DOMAIN_OBJECT_BYTES = 4 * 1024 * 1024  # Existing reference-schema ceiling.
 MAX_DOMAIN_TOTAL_BYTES = 32 * 1024 * 1024
 _DOMAIN_KEYS = ("tasks_ref", "source_coverage_ref", "interval_split_ref", "design_ref",
@@ -295,7 +301,7 @@ def _validate_task_bindings(value: object, body: bytes, membership: dict | None)
     nor a matching source identity establishes answerability, entailment,
     usefulness, independent samples, source rights or prelabel registration.
     """
-    detached, canonical = _snapshot(value)
+    detached, canonical = _domain_snapshot(value)
     if next(_task_validator().iter_errors(detached), None) is not None:
         raise E0ControlError("task_schema_violation")
     if canonical != body:
@@ -363,7 +369,7 @@ def _validate_reviewer_plan_declaration(value: object, body: bytes, reg: dict) -
     or independence. Neither a caller's clock nor declared blinding authenticates
     preregistration, actual packet suppression or annotation isolation.
     """
-    plan, canonical = _snapshot(value)
+    plan, canonical = _domain_snapshot(value)
     if next(_reviewer_plan_validator().iter_errors(plan), None) is not None:
         raise E0ControlError("reviewer_plan_schema_violation")
     if canonical != body:
@@ -441,7 +447,21 @@ def _domain_reference(value: object) -> dict:
     return dict(value)
 
 
+def _domain_snapshot(value: object) -> tuple[dict, bytes]:
+    """Canonical detached domain object under domain, never control, budgets."""
+    _bounded_tree(value, domain=True)
+    try:
+        detached, body = _freeze_exact_json_object(value, label="e0_domain")
+    except ValueError as exc:
+        raise E0ControlError("exact_domain_object_required") from exc
+    if len(body) > MAX_DOMAIN_OBJECT_BYTES:
+        raise E0ControlError("domain_metadata_byte_limit")
+    return detached, body
+
+
 def _domain_json(body: bytes) -> object:
+    if type(body) is not bytes or not 0 < len(body) <= MAX_DOMAIN_OBJECT_BYTES:
+        raise E0ControlError("bounded_domain_bytes_required")
     def pairs(values):
         result = {}
         for key, value in values:
@@ -455,7 +475,7 @@ def _domain_json(body: bytes) -> object:
 
     try:
         value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs, parse_constant=nonfinite)
-        _bounded_tree(value)
+        _bounded_tree(value, domain=True)
     except (UnicodeError, ValueError, RecursionError) as exc:
         raise E0ControlError("invalid_domain_json") from exc
     return value
