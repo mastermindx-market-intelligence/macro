@@ -31,7 +31,7 @@ import math
 import os
 import shutil
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -889,6 +889,7 @@ def _tree_metric_observations(
     metric_ids: tuple[str, ...],
     excluded_metrics: frozenset[str],
     accession_periods: Mapping[str, str],
+    same_end: dict[str, tuple[MetricObservation, ...]] | None = None,
 ) -> dict[str, MetricObservation] | None:
     """Project the latest available cell per metric from the precomputed trees.
 
@@ -898,10 +899,17 @@ def _tree_metric_observations(
     observation); no value is converted, scaled, rounded, or floated here.
     ``excluded_metrics`` is the member's class-derived not-applicable closure
     (G0-b), intersected with the field denominator by the caller.
+
+    Cells sharing the latest end date (a 10-Q's quarter beside its
+    year-to-date column) resolve to the shortest stated duration, so the pick
+    never depends on cell order. When ``same_end`` is given, every metric
+    whose latest end date carried more than one cell gets all of them there,
+    for the caller to align against an anchor (``_aligned_to_anchor``).
     """
     wanted = set(metric_ids)
     latest: dict[str, MetricObservation] = {}
-    latest_end: dict[str, str] = {}
+    latest_end: dict[str, date] = {}
+    candidates: dict[str, list[MetricObservation]] = {}
     metric_statement_types: dict[str, set[str]] = {}
     refused: set[tuple[str, str]] = set()
     readable = False
@@ -943,11 +951,11 @@ def _tree_metric_observations(
                         value = Decimal(value_text)
                     except (ValueError, InvalidOperation):
                         continue
-                    if metric_id in latest_end and end <= latest_end[metric_id]:
+                    incumbent_end = latest_end.get(metric_id)
+                    if incumbent_end is not None and end_date < incumbent_end:
                         continue
-                    latest_end[metric_id] = end
                     cell_unit = cell.get("unit")
-                    latest[metric_id] = MetricObservation(
+                    observation = MetricObservation(
                         value=value,
                         period_end=end_date,
                         period_basis=str(period.get("kind") or ""),
@@ -958,6 +966,16 @@ def _tree_metric_observations(
                         else None,
                         metric_version=None,
                     )
+                    if incumbent_end is None or end_date > incumbent_end:
+                        latest_end[metric_id] = end_date
+                        latest[metric_id] = observation
+                        candidates[metric_id] = [observation]
+                        continue
+                    candidates[metric_id].append(observation)
+                    days = _duration_days(observation)
+                    incumbent_days = _duration_days(latest[metric_id])
+                    if days is not None and (incumbent_days is None or days < incumbent_days):
+                        latest[metric_id] = observation
     for metric_id, observation in list(latest.items()):
         statement_types = metric_statement_types.get(metric_id, set())
         if not statement_types:
@@ -984,7 +1002,18 @@ def _tree_metric_observations(
                 applicable=observation.applicable,
                 withheld=True,
             )
+    if same_end is not None:
+        for metric_id, observation in latest.items():
+            pool = candidates.get(metric_id, [])
+            if len(pool) > 1 and not observation.withheld:
+                same_end[metric_id] = tuple(pool)
     return latest if readable else None
+
+
+def _duration_days(observation: MetricObservation) -> int | None:
+    if observation.period_start is None or observation.period_end is None:
+        return None
+    return (observation.period_end - observation.period_start).days
 
 
 @dataclass(frozen=True)
@@ -994,6 +1023,34 @@ class _AdmittedPeer:
     sic: str
     issuer_class: str
     observations: Mapping[str, MetricObservation]
+    same_end: Mapping[str, tuple[MetricObservation, ...]] = field(default_factory=dict)
+
+
+def _aligned_to_anchor(
+    peer: _AdmittedPeer, anchor_observations: Mapping[str, MetricObservation]
+) -> Mapping[str, MetricObservation]:
+    """The peer's observations with each same-end tie resolved toward the anchor.
+
+    Only a metric whose latest end date carried several cells is touched: the
+    one closest in duration to the anchor's own cell replaces the default
+    (shortest) pick. Nothing moves off the latest end date, so a duration no
+    candidate can match still reaches the kernel's A35-D1 exclusion.
+    """
+    aligned = dict(peer.observations)
+    for metric_id, pool in peer.same_end.items():
+        anchor_obs = anchor_observations.get(metric_id)
+        target = None if anchor_obs is None else _duration_days(anchor_obs)
+        if target is None:
+            continue
+        aligned[metric_id] = min(
+            pool,
+            key=lambda obs: (
+                _duration_days(obs) is None,
+                abs((_duration_days(obs) or 0) - target),
+                _duration_days(obs) or 0,
+            ),
+        )
+    return aligned
 
 
 def _member_exclusion(
@@ -1072,9 +1129,10 @@ def _compose_peer_cohort(
         excluded_metrics = (
             frozenset(metric_ids) & class_not_applicable.get(issuer_class, frozenset())
         )
+        same_end: dict[str, tuple[MetricObservation, ...]] = {}
         observations = _tree_metric_observations(
             generation, member["accessions"], metric_ids, excluded_metrics,
-            member.get("accession_periods") or {},
+            member.get("accession_periods") or {}, same_end=same_end,
         )
         if observations is None:
             exclusions.append(_member_exclusion(
@@ -1088,6 +1146,7 @@ def _compose_peer_cohort(
             sic=sic,
             issuer_class=issuer_class,
             observations=observations,
+            same_end=same_end,
         ))
 
     # Distinct contract CIKs can in principle join to one issuer id; the
@@ -1108,9 +1167,14 @@ def _compose_peer_cohort(
     if not admitted:
         return None, PEER_COHORT_REASON_DATASET_ABSENT
 
-    observations_by_issuer = {peer.issuer_id: peer.observations for peer in admitted}
     tables: list[dict[str, Any]] = []
     for anchor in admitted:
+        observations_by_issuer = {
+            peer.issuer_id: peer.observations
+            if peer is anchor
+            else _aligned_to_anchor(peer, anchor.observations)
+            for peer in admitted
+        }
         definition = CohortDefinition(
             cohort_id=f"{contract_id}:{anchor.issuer_id}" if contract_id else anchor.issuer_id,
             anchor_issuer_id=anchor.issuer_id,

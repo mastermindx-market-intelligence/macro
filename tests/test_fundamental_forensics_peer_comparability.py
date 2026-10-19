@@ -605,3 +605,142 @@ def test_tree_metric_observations_carries_start_unit_and_keeps_latest_end() -> N
     # an empty unit string is normalized to None
     assert latest["emptyunit"].unit is None
     assert latest["emptyunit"].period_start == date(2026, 4, 1)
+
+
+# ── (6) same-end ties: deterministic pick, then alignment to the anchor ──────
+
+_QUARTER = {"start": "2026-07-01", "end": "2026-09-30"}  # 91 days
+_YEAR_TO_DATE = {"start": "2026-01-01", "end": "2026-09-30"}  # 272 days
+
+
+@pytest.mark.parametrize("quarter_first", [True, False], ids=["quarter-first", "ytd-first"])
+def test_same_end_cells_resolve_to_the_shortest_duration_in_either_order(
+    quarter_first: bool,
+) -> None:
+    cells = [_cell("300", **_QUARTER), _cell("900", **_YEAR_TO_DATE)]
+    if not quarter_first:
+        cells.reverse()
+    generation = _FakeGeneration({"acc-1": _tree([_row("revenue", cells)])})
+    same_end: dict = {}
+    latest = bff._tree_metric_observations(
+        generation, ["acc-1"], ("revenue",), frozenset(), {}, same_end=same_end
+    )
+    assert latest is not None
+    assert latest["revenue"].value == Decimal("300")
+    assert latest["revenue"].period_start == date(2026, 7, 1)
+    assert sorted(obs.value for obs in same_end["revenue"]) == [Decimal("300"), Decimal("900")]
+
+
+def test_a_dated_cell_outranks_an_undated_one_on_the_same_end() -> None:
+    generation = _FakeGeneration({
+        "acc-1": _tree([_row("revenue", [_cell("1", start=None, end="2026-09-30"), _cell("2", **_QUARTER)])]),
+    })
+    latest = bff._tree_metric_observations(generation, ["acc-1"], ("revenue",), frozenset(), {})
+    assert latest is not None
+    assert latest["revenue"].value == Decimal("2")
+
+
+def test_same_end_pool_is_only_recorded_for_ties_at_the_latest_end() -> None:
+    generation = _FakeGeneration({
+        "acc-1": _tree([
+            # a tie at an earlier end is superseded by the later single cell
+            _row("revenue", [
+                _cell("10", start="2026-04-01", end="2026-06-30"),
+                _cell("20", start="2026-01-01", end="2026-06-30"),
+                _cell("30", **_QUARTER),
+            ]),
+            _row("cost", [_cell("5", **_QUARTER)]),
+        ]),
+    })
+    same_end: dict = {}
+    latest = bff._tree_metric_observations(
+        generation, ["acc-1"], ("revenue", "cost"), frozenset(), {}, same_end=same_end
+    )
+    assert latest is not None
+    assert latest["revenue"].value == Decimal("30")
+    assert same_end == {}
+
+
+def test_a_withheld_metric_carries_no_same_end_pool() -> None:
+    generation = _FakeGeneration({
+        "acc-1": _tree([_row("revenue", [_cell("300", **_QUARTER), _cell("900", **_YEAR_TO_DATE)])]),
+        # a later income-statement refusal withholds the older cells
+        "acc-2": {"statements": [{"statement_type": "income_statement", "refusal": {"code": "R"}, "rows": []}]},
+    })
+    same_end: dict = {}
+    latest = bff._tree_metric_observations(
+        generation, ["acc-1", "acc-2"], ("revenue",), frozenset(),
+        {"acc-2": "2026-12-31"}, same_end=same_end,
+    )
+    assert latest is not None
+    assert latest["revenue"].withheld is True
+    assert same_end == {}
+
+
+def _peer(issuer_id: str, observations: dict, same_end: dict | None = None):
+    return bff._AdmittedPeer(
+        member={"ticker": issuer_id, "cik10": "0000000001"},
+        issuer_id=issuer_id,
+        sic="7370",
+        issuer_class="industrial",
+        observations=observations,
+        same_end=same_end or {},
+    )
+
+
+_END = date(2026, 9, 30)
+_Q = _obs("300", _END, period_basis="duration", period_start=date(2026, 7, 1))
+_YTD = _obs("900", _END, period_basis="duration", period_start=date(2026, 1, 1))
+
+
+@pytest.mark.parametrize(
+    "anchor_obs, expected",
+    [
+        pytest.param(_obs("1", _END, period_basis="duration", period_start=date(2026, 1, 2)), "900", id="ytd-anchor"),
+        pytest.param(_obs("1", _END, period_basis="duration", period_start=date(2026, 7, 2)), "300", id="quarter-anchor"),
+        pytest.param(_obs("1", _END, period_basis="duration"), "300", id="undated-anchor-keeps-default"),
+    ],
+)
+def test_aligned_to_anchor_picks_the_closest_duration_on_the_same_end(anchor_obs, expected: str) -> None:
+    peer = _peer(MSFT, {METRIC: _Q}, {METRIC: (_Q, _YTD)})
+    aligned = bff._aligned_to_anchor(peer, {METRIC: anchor_obs})
+    assert aligned[METRIC].value == Decimal(expected)
+    # the peer's own default never changes in place
+    assert peer.observations[METRIC] is _Q
+
+
+def test_aligned_to_anchor_leaves_metrics_without_a_tie_or_an_anchor_cell() -> None:
+    other = _obs("7", _END, period_basis="duration", period_start=date(2026, 7, 1))
+    peer = _peer(MSFT, {METRIC: _Q, "cost": other}, {METRIC: (_Q, _YTD)})
+    aligned = bff._aligned_to_anchor(peer, {"cost": _YTD})
+    assert aligned == {METRIC: _Q, "cost": other}
+
+
+def _ytd(value: str) -> MetricObservation:
+    return _obs(value, _END, period_basis="duration", period_start=date(2026, 1, 1))
+
+
+def test_alignment_keeps_a_year_to_date_anchor_from_excluding_a_tied_peer() -> None:
+    members = (
+        _member(CAT, "0000018230", "CAT"),
+        _member(AAPL, "0000320193", "AAPL"),
+        _member(MSFT, "0000789019", "MSFT"),
+        _member(NVDA, "0001045810", "NVDA"),
+    )
+    anchor = _peer(CAT, {METRIC: _ytd("40")})
+    tied = _peer(AAPL, {METRIC: _Q}, {METRIC: (_Q, _YTD)})
+    observations = {
+        CAT: anchor.observations,
+        AAPL: bff._aligned_to_anchor(tied, anchor.observations),
+        MSFT: {METRIC: _ytd("90")},
+        NVDA: {METRIC: _ytd("80")},
+    }
+    table = build_cohort_table(_definition(members, anchor_issuer_id=CAT), observations)
+    assert not [item for item in table.exclusions if item.code == "A35-D1"]
+    rows = {row.issuer_id: row.value for row in table.emissions[0].rows}
+    assert rows[AAPL] == Decimal("900")
+    # without alignment the same peer's default quarter is D1-excluded
+    unaligned = build_cohort_table(
+        _definition(members, anchor_issuer_id=CAT), {**observations, AAPL: tied.observations}
+    )
+    assert [item.issuer_id for item in unaligned.exclusions if item.code == "A35-D1"] == [AAPL]
