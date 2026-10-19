@@ -901,8 +901,7 @@ def test_f15_writer_lock_excluded_from_uploadable(tmp_path):
 
 
 def test_f15_writer_lock_gitignored():
-    text = open("/Users/chriswong/Documents/Cluade/Macro Dashboard/.claude/"
-               "worktrees/thetadata-canonical-options-source-da82b6/.gitignore").read()
+    text = (REPO_ROOT / ".gitignore").read_text()
     assert "data/thetadata_eod/_writer.lock" in text
 
 
@@ -1047,6 +1046,21 @@ def test_denominator_has_no_hardcoded_universe_size():
     src = inspect.getsource(topup)
     for lit in ("375", "378"):
         assert lit not in src, f"found hard-coded universe literal {lit!r} in topup module"
+
+
+# ── Live-flow anchor retention (native resolver regression) ─────────────────
+def test_daily_universe_keeps_live_flow_anchor_etfs_exactly_once(monkeypatch):
+    """Live-flow commodity/rate anchors survive the native daily resolver,
+    including case-normalized duplicates from the independently owned basket.
+    Existing index and basket members retain their first-seen ordering.
+    """
+    monkeypatch.setattr("engine.options_universe.gex_symbols",
+                        lambda: ["gld", "AAPL", "MSFT", "SPY"])
+    roots = topup._daily_universe()
+    for root in ("GLD", "SLV", "TLT", "HYG", "SPY", "SPX", "SPXW", "AAPL", "MSFT"):
+        assert roots.count(root) == 1
+    assert roots.index("HYG") < roots.index("SPX") < roots.index("SPXW")
+    assert roots.index("SPXW") < roots.index("AAPL") < roots.index("MSFT")
 
 
 # ═════════════════════════ DEADLINE (F2) ════════════════════════════════════
