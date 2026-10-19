@@ -28938,3 +28938,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  options-pilot-chronology-code:
+    # Synthetic guards must run on source PRs; flow-surface is data-gated.
+    # These are the literal source/reference inputs of the two offline suites.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    scope: exclusive
+    paths:
+      - scripts/options_pilot_study_adapter.py
+      - tests/test_options_pilot_study_adapter.py
+      - tests/test_options_pilot_chronology.py
+      - research/options_intelligence/2026-10-03/pilot-study-spec.v1.json
+      - research/options_intelligence/2026-10-03/pilot-p3-reference.py
+      - research/options_intelligence/2026-10-03/gex-published-board-extract.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: frozen study refusal and chronology guards (no empirical execution)
+        run: |
+          python tests/test_options_pilot_study_adapter.py
+          python tests/test_options_pilot_chronology.py
