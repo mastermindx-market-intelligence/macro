@@ -125,3 +125,31 @@ def test_wrong_supplied_allocator_source_is_a_contradiction(allocation_bundle):
     objects[reg["allocation"]["algorithm_ref"]["sha256"]] = source
     with pytest.raises(control.E0ControlError, match="algorithm_source_mismatch"):
         resolve(original)
+
+
+@pytest.mark.parametrize("field", [
+    "seed_is_secret", "operational_admission", "blinding_established",
+    "actual_task_provenance_authenticated",
+])
+@pytest.mark.parametrize("replacement", [0, 1, True])
+def test_native_false_flags_cannot_be_coerced(allocation_bundle, field, replacement):
+    original, declared, _ = allocation_bundle
+    declared[field] = replacement
+    declared.pop("allocation_sha256")
+    declared["allocation_sha256"] = hashlib.sha256(canonical(declared)).hexdigest()
+    install_assignment(original, declared)
+    with pytest.raises(control.E0ControlError, match="native_mismatch"):
+        resolve(original)
+
+
+def test_declaration_bytes_and_detachment_are_real_boundaries(allocation_bundle):
+    original, declared, _ = allocation_bundle
+    body = canonical(declared)
+    validated = binding.validate_declaration(declared, body, registration=original[0])
+    assert validated == declared
+    validated["assignments"][0]["order"].reverse()
+    assert canonical(declared) == body
+    with pytest.raises(control.E0ControlError, match="noncanonical_allocation_declaration_bytes"):
+        binding.validate_declaration(declared, body + b"\n", registration=original[0])
+    with pytest.raises(control.E0ControlError, match="bounded_allocation_declaration_bytes_required"):
+        binding.validate_declaration(declared, declared, registration=original[0])
