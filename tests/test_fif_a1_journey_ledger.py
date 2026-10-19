@@ -16,6 +16,8 @@ call the REAL kernel guards — ``evaluate_confirmation`` and
 """
 from __future__ import annotations
 
+import argparse
+import errno
 import json
 import re
 import shutil
@@ -1937,3 +1939,260 @@ def test_t_m6d_reported_not_attempted_beats_issuer_dropped(a1_store, tmp_path):
     }
     assert ("publish_not_attempted", "THIRD") in failed
     assert ("issuer_dropped", "THIRD") not in failed
+
+
+# ---------------------------------------------------------------------------
+# r8: per-issuer read errors are FAIL rows; the two outputs are a pair
+# ---------------------------------------------------------------------------
+
+
+def _generation_without_role(monkeypatch, ledger_module, role):
+    """Serve every generation without ``role`` (one issuer's read error)."""
+    import dataclasses
+
+    real_load = ledger_module.load_latest_generation
+
+    def _load(store, issuer_id):
+        generation = real_load(store, issuer_id)
+        if generation is None:
+            return None
+        payloads = {k: v for k, v in generation.role_payloads.items() if k != role}
+        return dataclasses.replace(generation, role_payloads=payloads)
+
+    monkeypatch.setattr(ledger_module, "load_latest_generation", _load)
+
+
+def _rows_for(document, tickers):
+    """The sorted (id, issuer, status, detail) check rows of ``tickers``."""
+    return sorted(
+        (c["id"], c["issuer"], c["status"], c["detail"])
+        for c in document["checks"]
+        if c["issuer"] in tickers
+    )
+
+
+def _only_row(document, check_id, issuer):
+    matches = [
+        c for c in document["checks"] if c["id"] == check_id and c["issuer"] == issuer
+    ]
+    assert len(matches) == 1, (check_id, issuer, matches)
+    return matches[0]
+
+
+_R8_MINIMAL_COVERAGE_ROW = {
+    "ticker": "AAPL",
+    "contract": "unavailable",
+    "captured": "unavailable",
+    "admitted": "unavailable",
+    "served": "unavailable",
+    "statements_served": "unavailable",
+    "statement_refusals": "unavailable",
+    "lineage_receipts": "unavailable",
+    "lineage_refusals": "unavailable",
+    "lineage_refusal_codes": {},
+    "bridge": "unavailable",
+}
+
+
+def test_t_r8a_lineage_role_missing_is_a_fail_row_others_survive(
+    a1_store, a1_extra_run, tmp_path, monkeypatch
+):
+    """T-r8a: a missing lineage_evidence_json role is a FAIL row for that
+    issuer; the census reads "unavailable" (never a fake 0) and the other
+    issuers' rows survive unchanged."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    _generation_without_role(monkeypatch, ledger_module, "lineage_evidence_json")
+    document = _build_in_process(a1_store, tmp_path, extra_issuers=True)
+
+    unreadable = _only_row(document, "lineage_evidence_unreadable", "AAPL")
+    assert unreadable["status"] == "fail"
+    assert unreadable["detail"] == (
+        "lineage evidence cannot be read from the generation (KeyError)"
+    )
+    count = _only_row(document, "lineage_count", "AAPL")
+    assert count["status"] == "fail"
+    assert count["detail"] == (
+        "generation lineage receipts are unreadable; "
+        "the report lineage_receipt_count cannot be compared"
+    )
+    assert all(c["id"] != "issuer_internal_error" for c in document["checks"])
+    assert [r["ticker"] for r in document["coverage_table"]] == ["AAPL", "SECOND", "THIRD"]
+    aapl_row = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
+    assert aapl_row["lineage_receipts"] == "unavailable"
+    aapl = next(i for i in document["issuers"] if i["ticker"] == "AAPL")
+    assert aapl["lineage"]["receipt_count"] == "unavailable"
+    assert aapl["lineage"]["receipts"] == {
+        "v1_pair": "unavailable",
+        "v2_chain": "unavailable",
+    }
+    assert _rows_for(document, {"SECOND", "THIRD"}) == _rows_for(
+        a1_extra_run["document"], {"SECOND", "THIRD"}
+    )
+    assert document["all_checks_passed"] is False
+
+
+def test_t_r8b_trees_role_missing_is_a_fail_row_others_survive(
+    a1_store, a1_extra_run, tmp_path, monkeypatch
+):
+    """T-r8b: a missing statement_trees_json role is the
+    statement_trees_unreadable FAIL row naming every served accession; the
+    other issuers' rows survive unchanged."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    _generation_without_role(monkeypatch, ledger_module, "statement_trees_json")
+    document = _build_in_process(a1_store, tmp_path, extra_issuers=True)
+
+    unreadable = _only_row(document, "statement_trees_unreadable", "AAPL")
+    assert unreadable["status"] == "fail"
+    for accession in a1_store["accessions"]:
+        assert f"{accession} (KeyError)" in unreadable["detail"]
+    assert all(c["id"] != "issuer_internal_error" for c in document["checks"])
+    assert [r["ticker"] for r in document["coverage_table"]] == ["AAPL", "SECOND", "THIRD"]
+    assert _rows_for(document, {"SECOND", "THIRD"}) == _rows_for(
+        a1_extra_run["document"], {"SECOND", "THIRD"}
+    )
+    assert document["all_checks_passed"] is False
+
+
+def test_t_r8c_unexpected_issuer_error_is_issuer_internal_error(
+    a1_store, a1_extra_run, tmp_path, monkeypatch
+):
+    """T-r8c: any other per-issuer error is the issuer_internal_error FAIL row
+    with a minimal "unavailable" entry; the remaining issuers are still
+    ledgered and the markdown renders every issuer."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    real_hits = ledger_module._fixture_locator_hits
+
+    def _hits(gen):
+        if gen is not None:
+            raise RuntimeError("synthetic per-issuer failure")
+        return real_hits(gen)
+
+    monkeypatch.setattr(ledger_module, "_fixture_locator_hits", _hits)
+    document = _build_in_process(a1_store, tmp_path, extra_issuers=True)
+
+    internal = _only_row(document, "issuer_internal_error", "AAPL")
+    assert internal["status"] == "fail"
+    assert internal["detail"] == (
+        "issuer ledger stopped at an internal error (RuntimeError); "
+        "the remaining issuers were still processed"
+    )
+    assert [r["ticker"] for r in document["coverage_table"]] == ["AAPL", "SECOND", "THIRD"]
+    aapl_row = next(r for r in document["coverage_table"] if r["ticker"] == "AAPL")
+    assert aapl_row == _R8_MINIMAL_COVERAGE_ROW
+    aapl = next(i for i in document["issuers"] if i["ticker"] == "AAPL")
+    assert aapl["bridge"]["status"] == "unavailable"
+    assert _rows_for(document, {"SECOND", "THIRD"}) == _rows_for(
+        a1_extra_run["document"], {"SECOND", "THIRD"}
+    )
+    assert document["all_checks_passed"] is False
+    markdown = ledger_module._render_markdown(document)
+    assert "## AAPL" in markdown
+    assert "## SECOND" in markdown
+    assert "## THIRD" in markdown
+
+
+def test_t_r8d_cli_bad_issuer_exits_1_and_writes_both(a1_store, tmp_path, monkeypatch):
+    """T-r8d: an end-to-end run with one unreadable issuer exits 1 (not the
+    run-wide exit 3) and writes both outputs with every issuer."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    _generation_without_role(monkeypatch, ledger_module, "lineage_evidence_json")
+    directory = tmp_path / "r8d"
+    report_path, contract_path = _write_inputs(
+        directory, _report_document(a1_store, extra_issuers=True), extra_issuers=True
+    )
+    exit_code = ledger_module.main(
+        [
+            "--production-report",
+            str(report_path),
+            "--store-dir",
+            str(a1_store["store_dir"]),
+            "--coverage-file",
+            str(contract_path),
+            "--out-json",
+            str(directory / "o.json"),
+            "--out-md",
+            str(directory / "o.md"),
+        ]
+    )
+    assert exit_code == 1
+    assert (directory / "o.json").is_file()
+    assert (directory / "o.md").is_file()
+    document = json.loads((directory / "o.json").read_text(encoding="utf-8"))
+    ids = [c["id"] for c in document["checks"]]
+    assert "lineage_evidence_unreadable" in ids
+    assert "harness_internal_error" not in ids
+    assert len(document["coverage_table"]) == 3
+    assert "## SECOND" in (directory / "o.md").read_text(encoding="utf-8")
+
+
+def test_t_r8e_markdown_write_failure_leaves_no_json(tmp_path, capsys):
+    """T-r8e: when the markdown cannot be written, the JSON is not left
+    behind and no temp file survives."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    d = tmp_path / "out"
+    d.mkdir()
+    blocker = d / "blocker"
+    blocker.write_text("a regular file, not a directory\n", encoding="utf-8")
+    result = ledger_module._write_outputs(
+        argparse.Namespace(out_json=str(d / "o.json"), out_md=str(blocker / "o.md")),
+        {"a": 1},
+        "md\n",
+    )
+    assert result == 2
+    assert not (d / "o.json").exists()
+    assert sorted(p.name for p in d.iterdir()) == ["blocker"]
+    assert "output is unwritable: o.md" in capsys.readouterr().err
+
+
+def test_t_r8f_second_rename_failure_removes_the_first(tmp_path, capsys, monkeypatch):
+    """T-r8f: a failure on the second rename removes the already-renamed
+    first output, so a half pair never survives."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    d = tmp_path / "out"
+    d.mkdir()
+    real_replace = ledger_module.os.replace
+
+    def _replace(src, dst, *args, **kwargs):
+        if str(dst).endswith("o.md"):
+            raise OSError(errno.EACCES, "Permission denied")
+        return real_replace(src, dst, *args, **kwargs)
+
+    monkeypatch.setattr(ledger_module.os, "replace", _replace)
+    result = ledger_module._write_outputs(
+        argparse.Namespace(out_json=str(d / "o.json"), out_md=str(d / "o.md")),
+        {"a": 1},
+        "md\n",
+    )
+    assert result == 2
+    assert not (d / "o.json").exists()
+    assert not (d / "o.md").exists()
+    assert list(d.iterdir()) == []
+    assert "output is unwritable: o.md" in capsys.readouterr().err
+
+
+def test_t_r8g_success_writes_both_with_no_leftovers(tmp_path):
+    """T-r8g: a successful write publishes both outputs byte-exactly and
+    leaves no temp file."""
+    import scripts.fif_a1_journey_ledger as ledger_module
+
+    d = tmp_path / "out"
+    d.mkdir()
+    document = {"b": [1, 2], "a": "café"}
+    markdown = "# ledger\n\nall_checks_passed: **false**\n"
+    result = ledger_module._write_outputs(
+        argparse.Namespace(out_json=str(d / "o.json"), out_md=str(d / "o.md")),
+        document,
+        markdown,
+    )
+    assert result is None
+    assert (d / "o.json").read_text(encoding="utf-8") == (
+        json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+    )
+    assert (d / "o.md").read_text(encoding="utf-8") == markdown
+    assert sorted(p.name for p in d.iterdir()) == ["o.json", "o.md"]

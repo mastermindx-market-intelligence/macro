@@ -30,7 +30,9 @@ Exit codes (an uncaught traceback is never the exit path):
 
 * 0 — every check passed;
 * 1 — the ledger was written and at least one check failed (both outputs are
-  still written);
+  still written); a per-issuer read or internal error is a FAIL row for that
+  issuer (``statement_trees_unreadable``, ``lineage_evidence_unreadable``,
+  ``issuer_internal_error``) and the other issuers are still ledgered;
 * 2 — unusable arguments/inputs: one typed stderr line plus a FAIL ledger
   carrying the ``harness_input`` check row, written to both out paths (stale
   out files are unlinked first, so no previous run's bytes survive);
@@ -42,6 +44,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 from functools import partial
@@ -921,7 +924,8 @@ def build_ledger(
 
     contract_issuers = _issuer_rows(contract.get("issuers"))
 
-    for issuer_row in contract_issuers:
+    def _ledger_issuer(issuer_row: Mapping[str, Any]) -> None:
+        """Ledger one contract issuer; appends its issuer entry and coverage row."""
         ticker = str(issuer_row.get("ticker") or "")
         cik = str(issuer_row.get("cik") or "")
         binding = issuer_row.get("security_master_binding") or {}
@@ -944,7 +948,7 @@ def build_ledger(
                 False,
                 f"coverage contract issuer row in {contract_basename}: " + "; ".join(malformed),
             )
-            continue
+            return
         pub_row = _row_by_cik(published_rows, cik)
         exc_row = _row_by_cik(excluded_rows, cik)
         cov_row = _row_by_cik(coverage_rows, cik)
@@ -1079,7 +1083,7 @@ def build_ledger(
 
         statements_served = 0
         statement_refusals = 0
-        lineage_receipts_total = 0
+        lineage_receipts_total: int | str = 0
         refusal_causes: dict[str, Any] | None = None
 
         # ---- 2. accessions ---------------------------------------------
@@ -1177,7 +1181,7 @@ def build_ledger(
                     trees = statement_trees_from_role_payload(
                         generation.role_payloads["statement_trees_json"], accession
                     )
-                except ProductionDatasetError as exc:
+                except Exception as exc:  # noqa: BLE001 - a per-issuer read error is a FAIL row, never a crash
                     unreadable_trees.add(f"{accession} ({type(exc).__name__})")
                     continue
                 for statement in trees.get("statements") or []:
@@ -1332,14 +1336,27 @@ def build_ledger(
             }
 
             # ---- 4. lineage receipts + 4b causes -------------------------
-            receipts = lineage_from_role_payload(
-                generation.role_payloads["lineage_evidence_json"]
-            )
+            try:
+                receipts = lineage_from_role_payload(
+                    generation.role_payloads["lineage_evidence_json"]
+                )
+            except Exception as exc:  # noqa: BLE001 - a per-issuer read error is a FAIL row, never a crash
+                receipts = None
+                checks.add(
+                    "lineage_evidence_unreadable",
+                    ticker,
+                    False,
+                    f"lineage evidence cannot be read from the generation ({type(exc).__name__})",
+                )
             by_version: dict[str, int] = {}
-            for receipt in receipts:
-                version = str(getattr(receipt, "evidence_rule_version", ""))
-                by_version[version] = by_version.get(version, 0) + 1
-            lineage_receipts_total = len(receipts)
+            if receipts is not None:
+                for receipt in receipts:
+                    version = str(getattr(receipt, "evidence_rule_version", ""))
+                    by_version[version] = by_version.get(version, 0) + 1
+                lineage_receipts_total = len(receipts)
+            else:
+                # Never a fake 0: a 0 would claim a census that never ran.
+                lineage_receipts_total = "unavailable"
             reported_receipt_count = (
                 pub_row.get("lineage_receipt_count") if pub_row is not None else None
             )
@@ -1347,7 +1364,15 @@ def build_ledger(
                 # The census is ALWAYS answered for a published issuer: a
                 # missing or non-integer report count is a failed check, not
                 # a skipped comparison.
-                if isinstance(reported_receipt_count, bool) or not isinstance(
+                if receipts is None:
+                    checks.add(
+                        "lineage_count",
+                        ticker,
+                        False,
+                        "generation lineage receipts are unreadable; "
+                        "the report lineage_receipt_count cannot be compared",
+                    )
+                elif isinstance(reported_receipt_count, bool) or not isinstance(
                     reported_receipt_count, int
                 ):
                     checks.add(
@@ -1517,10 +1542,14 @@ def build_ledger(
                     "total_unlinked_cells": None,
                 }
             issuer_out["lineage"] = {
-                "receipts": {
-                    "v1_pair": by_version.get("1", 0),
-                    "v2_chain": by_version.get("2", 0),
-                },
+                "receipts": (
+                    {
+                        "v1_pair": by_version.get("1", 0),
+                        "v2_chain": by_version.get("2", 0),
+                    }
+                    if receipts is not None
+                    else {"v1_pair": "unavailable", "v2_chain": "unavailable"}
+                ),
                 "receipt_count": lineage_receipts_total,
                 "refusal_causes": refusal_causes,
             }
@@ -1621,6 +1650,54 @@ def build_ledger(
             }
         )
         issuers_out.append(issuer_out)
+
+    for issuer_row in contract_issuers:
+        issuers_mark = len(issuers_out)
+        table_mark = len(coverage_table)
+        try:
+            _ledger_issuer(issuer_row)
+        except Exception as exc:  # noqa: BLE001 - one issuer's internal error is a FAIL row
+            del issuers_out[issuers_mark:]
+            del coverage_table[table_mark:]
+            failed_ticker = str(issuer_row.get("ticker") or "") or None
+            checks.add(
+                "issuer_internal_error",
+                failed_ticker,
+                False,
+                f"issuer ledger stopped at an internal error ({type(exc).__name__}); "
+                "the remaining issuers were still processed",
+            )
+            coverage_table.append(
+                {
+                    "ticker": failed_ticker or "",
+                    "contract": "unavailable",
+                    "captured": "unavailable",
+                    "admitted": "unavailable",
+                    "served": "unavailable",
+                    "statements_served": "unavailable",
+                    "statement_refusals": "unavailable",
+                    "lineage_receipts": "unavailable",
+                    "lineage_refusals": "unavailable",
+                    "lineage_refusal_codes": {},
+                    "bridge": "unavailable",
+                }
+            )
+            issuers_out.append(
+                {
+                    "ticker": failed_ticker or "",
+                    "bridge": {
+                        "status": "unavailable",
+                        "production_generation_id": None,
+                        "local_generation_id": None,
+                        "production_outcome": None,
+                        "production_clock_basis": None,
+                        "manifest_key": None,
+                    },
+                    "basis": None,
+                    "query_journeys": [],
+                    "lineage": None,
+                }
+            )
 
     # ---- 6b. report issuers versus the coverage contract -----------------
     contract_ciks = {
@@ -1772,23 +1849,47 @@ def _write_outputs(
     """Write both out paths; the typed OSError exit (2) when either refuses.
 
     ``None`` means both files were written — the caller owns the exit code.
+    The two outputs are a pair: both are staged to same-directory temp files
+    and renamed into place only after both writes succeed, and any failure
+    removes every staged and already-renamed file, so a half pair never
+    survives.
     """
-    for path_text, payload in (
-        (args.out_json, json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n"),
-        (args.out_md, markdown),
-    ):
-        target = Path(path_text)
-        try:
+    pairs = [
+        (
+            Path(args.out_json),
+            json.dumps(document, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        ),
+        (Path(args.out_md), markdown),
+    ]
+    staged: list[Path] = []
+    published: list[Path] = []
+    target = pairs[0][0]
+    try:
+        temps: list[tuple[Path, Path]] = []
+        # Phase 1 (stage): write each payload next to its target.
+        for target, payload in pairs:
             if target.parent and not target.parent.exists():
                 target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(payload, encoding="utf-8")
-        except OSError as exc:
-            print(
-                f"fif_a1_journey_ledger: output is unwritable: {target.name} ({exc.strerror})",
-                file=sys.stderr,
-                flush=True,
-            )
-            return 2
+            temp = target.with_name(f".{target.name}.partial-{os.getpid()}")
+            staged.append(temp)
+            temp.write_text(payload, encoding="utf-8")
+            temps.append((temp, target))
+        # Phase 2 (publish): rename only after BOTH temps are written.
+        for temp, target in temps:
+            os.replace(temp, target)
+            published.append(target)
+    except OSError as exc:
+        for leftover in (*staged, *published):
+            try:
+                leftover.unlink(missing_ok=True)
+            except OSError:
+                pass
+        print(
+            f"fif_a1_journey_ledger: output is unwritable: {target.name} ({exc.strerror})",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 2
     return None
 
 
