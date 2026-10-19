@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 import inspect
 from pathlib import Path
+import re
 
 import pytest
 import warnings
@@ -53,6 +54,32 @@ _QUALITY_COVERAGE = {
 
 def _minimal_result(pack_id: str) -> dict:
     slug = pack_id.lower()
+    # Read through the module so a monkeypatched catalogue drives the shape.
+    if pack_contract.load_pack_schema(pack_id).get("catalogue_state") == "specified":
+        # A frozen catalogue closes the reason vocabulary (R-K2'), so the
+        # minimal pin is a typed not_applicable abstention, never free text.
+        applicability = {
+            "state": "not_applicable",
+            "reason": "form_outside_pack_forms",
+            "rule_id": f"pack.{slug}.applicability/v1",
+            "sic": None,
+            "sic_source": None,
+        }
+        limitation = (
+            "Form outside the pack's frozen forms; this envelope is a contract pin,"
+            " not an evaluation."
+        )
+    else:
+        applicability = {
+            "state": "not_evaluable",
+            "reason": "catalogue unspecified; pack not evaluated",
+            "rule_id": "specialist_pack.catalogue_unspecified",
+            "sic": None,
+            "sic_source": None,
+        }
+        limitation = (
+            "Pack catalogue is unspecified; this envelope is a contract pin, not an evaluation."
+        )
     obj = {
         "schema": "specialist_pack_result.v1",
         "pack_id": pack_id,
@@ -61,13 +88,7 @@ def _minimal_result(pack_id: str) -> dict:
         "packet_id": "fip_" + "a" * 24,
         "entity": deepcopy(_ENTITY),
         "query": deepcopy(_QUERY),
-        "applicability": {
-            "state": "not_evaluable",
-            "reason": "catalogue unspecified; pack not evaluated",
-            "rule_id": "specialist_pack.catalogue_unspecified",
-            "sic": None,
-            "sic_source": None,
-        },
+        "applicability": applicability,
         "fields": [],
         "checks": [],
         "coverage": {
@@ -78,9 +99,7 @@ def _minimal_result(pack_id: str) -> dict:
             "not_evaluable_fields": 0,
             "disclosure_coverage_state": "not_supplied",
         },
-        "limitations": [
-            "Pack catalogue is unspecified; this envelope is a contract pin, not an evaluation."
-        ],
+        "limitations": [limitation],
         "receipts": [],
         "authority": {"class": "context_only", "display_only": True},
     }
@@ -221,6 +240,108 @@ def _specified_catalogue() -> dict:
     return schema
 
 
+# --- FIF K1-K4 pack freeze: frozen catalogue pins -------------------------
+#
+# One entry lands per pack-freeze PR, in the frozen order PK06, PK01, PK02,
+# PK04, PK03, PK05, PK09, PK07, PK08, PK11, PK10, PK12. Each digest is
+# regenerated through ``pack_schema_digest`` and never edited by hand. A pack
+# outside this map must still be ``catalogue_state: unspecified``.
+
+# R-K2' shared reason codes (K3/K4 spec §2), byte-identical: code ->
+# (parameter, meaning). Every frozen catalogue copies the ones it can emit.
+_RK2_SHARED_REASON_CODES = {
+    "applicability_rule_satisfied": (
+        None,
+        "the pack's versioned applicability rule (`applicability.rule_id`) evaluated true",
+    ),
+    "form_outside_pack_forms": (
+        None,
+        "the admitted form is outside the pack's Q0-frozen forms",
+    ),
+    "missing_standard_fact": (
+        "concept",
+        "the standard concept named by the parameter has no admitted fact for the period",
+    ),
+    "extension_concept_unaliased": (
+        "prefix",
+        "the value exists only under an extension prefix with no frozen alias",
+    ),
+    "disallowed_dimension": (
+        None,
+        "the only facts carry a dimension the field does not admit",
+    ),
+    "missing_dependency": (
+        None,
+        "a formula/check operand is not valued (R-K3: never an implied zero)",
+    ),
+    "division_by_zero": (None, "a ratio denominator is zero"),
+    "unit_mismatch": (None, "operands differ in unit/currency/period basis"),
+    "numeric_value_in_narrative_only": (
+        None,
+        "the number appears only inside narrative text; R-K4' forbids extracting it",
+    ),
+    "issuer_class_unknown": (
+        None,
+        "the SIC needed to resolve applicability is unbound",
+    ),
+    "industrial_basis_excluded_for_financial_institution": (
+        None,
+        "(K1K2) an industrial-basis row on a bank-class issuer",
+    ),
+    "bank_interest_not_contract_revenue": (
+        None,
+        "(K1K2) bank interest is not ASC 606 contract revenue",
+    ),
+}
+
+_FROZEN_PACKS = {
+    "PK06": {
+        "digest": "5a3035afe8eb3bab6531a8d3f8a072ac1523f0b2f1d14f72a2103f226ac6cc47",
+        "fields": (
+            "rou_assets_operating",
+            "rou_assets_finance",
+            "operating_lease_liability_current",
+            "operating_lease_liability_noncurrent",
+            "finance_lease_liability_current",
+            "finance_lease_liability_noncurrent",
+            "lease_cost_operating",
+            "lease_cost_finance_amortization",
+            "lease_cost_finance_interest",
+            "lease_cost_variable",
+            "lease_cost_short_term",
+            "lease_cost_total",
+            "lease_cash_payments",
+            "weighted_average_remaining_term",
+            "weighted_average_discount_rate",
+            "undiscounted_payments_total",
+            "undiscounted_payments_by_year",
+            "offbalance_purchase_commitments",
+            "operating_lease_liability_total",
+            "finance_lease_liability_total",
+            "lease_imputed_interest",
+        ),
+        "required": (),
+        "checks": (
+            "lease_liability_split_vs_total",
+            "undiscounted_minus_imputed_equals_liability",
+            "commitments_not_in_contingencies",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+        ),
+        "pack_specific_codes": (),
+    },
+}
+_FROZEN_IDS = sorted(_FROZEN_PACKS)
+
+
 def _object_nodes(node: object, path: str = "$"):
     if isinstance(node, dict):
         types = node.get("type")
@@ -329,9 +450,16 @@ def test_pack_file_parses_and_pack_schema_id_matches(pack_id: str) -> None:
     slug = pack_id.lower()
     assert schema["pack_schema_id"] == f"pack.{slug}/v1"
     assert schema["pack_id"] == pack_id
-    assert schema["catalogue_state"] == "unspecified"
-    assert schema["fields"] == []
-    assert schema["checks"] == []
+    if pack_id in _FROZEN_PACKS:
+        pin = _FROZEN_PACKS[pack_id]
+        assert schema["catalogue_state"] == "specified"
+        assert tuple(row["field_id"] for row in schema["fields"]) == pin["fields"]
+        assert tuple(row["check_id"] for row in schema["checks"]) == pin["checks"]
+        assert pack_schema_digest(pack_id) == pin["digest"]
+    else:
+        assert schema["catalogue_state"] == "unspecified"
+        assert schema["fields"] == []
+        assert schema["checks"] == []
     path = PACK_DIR / f"pack.{slug}.v1.schema.json"
     assert path.is_file()
 
@@ -1011,7 +1139,14 @@ def test_reason_code_all_pack_files_pass_catalogue_errors_with_empty_reason_code
 ) -> None:
     schema = load_pack_schema(pack_id)
     assert "reason_codes" in schema
-    assert schema["reason_codes"] == []
+    if pack_id in _FROZEN_PACKS:
+        # A frozen pack carries exactly its pinned closed vocabulary.
+        assert (
+            tuple(row["code"] for row in schema["reason_codes"])
+            == _FROZEN_PACKS[pack_id]["reason_codes"]
+        )
+    else:
+        assert schema["reason_codes"] == []
     assert catalogue_errors(pack_id) == []
 
 
@@ -1303,3 +1438,195 @@ def test_r8_pack_schema_missing_catalogue_state_refused(
         == "catalogue_state: None is not a known catalogue state; result refused"
         for item in errors
     )
+
+
+# --- FIF K1-K4 pack freeze: per-pack membership, mutation, typed absence ---
+#
+# Operand grammar for frozen checks: a bare id names a field of the same pack;
+# ``core:<metric_id>`` names a core-owned metric (config mappings/core.yaml);
+# ``pkNN:<field_id>`` names a field owned by another specialist pack.
+
+_CORE_MAPPINGS = (
+    ROOT / "config" / "fundamental_forensics" / "metrics" / "v1" / "mappings" / "core.yaml"
+)
+_OPERAND = re.compile(r"^(?:(core|pk(?:0[1-9]|1[0-2])):)?([a-z][a-z0-9_]*)$")
+_FIXTURE_END = "2025-09-27"
+_FIXTURE_START = "2024-09-29"
+
+
+def _core_metric_ids() -> set[str]:
+    text = _CORE_MAPPINGS.read_text(encoding="utf-8")
+    return set(re.findall(r"^  - metric_id: (\w+)$", text, flags=re.M))
+
+
+def _frozen_absence_row(field: dict) -> dict:
+    kind = field.get("period_kind") or "instant"
+    period = {"kind": kind, "end": _FIXTURE_END}
+    if kind == "duration":
+        period["start"] = _FIXTURE_START
+    evidence = field["allowed_evidence_kinds"][0]
+    return _field_row(
+        field_id=field["field_id"],
+        name=field["name"],
+        type=field["type"],
+        unit=field["unit"],
+        period=period,
+        evidence_kind=evidence,
+        required_evidence_kind=evidence,
+        quality_state="not_evaluable",
+        non_value_state="not_evaluable",
+        reason="missing_dependency",
+    )
+
+
+def _frozen_applicable_result(pack_id: str) -> dict:
+    """An applicable result whose every row and check is a typed abstention."""
+    slug = pack_id.lower()
+    schema = pack_contract.load_pack_schema(pack_id)
+    obj = _minimal_result(pack_id)
+    obj["applicability"] = {
+        "state": "applicable",
+        "reason": "applicability_rule_satisfied",
+        "rule_id": f"pack.{slug}.applicability/v1",
+        "sic": None,
+        "sic_source": None,
+    }
+    obj["fields"] = [_frozen_absence_row(field) for field in schema["fields"]]
+    obj["checks"] = [
+        {
+            "check_id": check["check_id"],
+            "kind": check["kind"],
+            "status": "not_evaluable",
+            "operands": list(check["operands"]),
+            "tolerance": None,
+            "evidence_field_ids": [],
+            "reason": "missing_dependency",
+        }
+        for check in schema["checks"]
+    ]
+    return _finish(obj)
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_catalogue_is_pinned(pack_id: str) -> None:
+    pin = _FROZEN_PACKS[pack_id]
+    schema = load_pack_schema(pack_id)
+    assert schema["catalogue_state"] == "specified"
+    assert tuple(f["field_id"] for f in schema["fields"]) == pin["fields"]
+    assert tuple(f["field_id"] for f in schema["fields"] if f["required"]) == pin["required"]
+    assert tuple(c["check_id"] for c in schema["checks"]) == pin["checks"]
+    assert tuple(r["code"] for r in schema["reason_codes"]) == pin["reason_codes"]
+    assert catalogue_errors(pack_id) == []
+    assert pack_schema_digest(pack_id) == pin["digest"]
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_shared_reason_codes_are_byte_identical(pack_id: str) -> None:
+    pin = _FROZEN_PACKS[pack_id]
+    rows = load_pack_schema(pack_id)["reason_codes"]
+    specific = set(pin["pack_specific_codes"])
+    for row in rows:
+        if row["code"] in specific:
+            assert row["code"] not in _RK2_SHARED_REASON_CODES
+            assert row["parameter"] is None
+            continue
+        assert row["code"] in _RK2_SHARED_REASON_CODES, row["code"]
+        assert (row["parameter"], row["meaning"]) == _RK2_SHARED_REASON_CODES[row["code"]]
+    assert specific <= {row["code"] for row in rows}
+    # Every abstention the frozen result shapes below emit is in the catalogue.
+    codes = {row["code"] for row in rows}
+    assert {"applicability_rule_satisfied", "form_outside_pack_forms", "missing_dependency"} <= codes
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_check_operands_resolve(pack_id: str) -> None:
+    schema = load_pack_schema(pack_id)
+    own = {f["field_id"] for f in schema["fields"]}
+    core = _core_metric_ids()
+    for check in schema["checks"]:
+        assert check["operands"], check["check_id"]
+        for operand in check["operands"]:
+            match = _OPERAND.match(operand)
+            assert match, operand
+            owner, name = match.groups()
+            if owner is None:
+                assert name in own, operand
+            elif owner == "core":
+                assert name in core, operand
+            else:
+                assert owner != pack_id.lower(), operand
+                other = load_pack_schema(owner.upper())
+                if other["catalogue_state"] == "specified":
+                    assert name in {f["field_id"] for f in other["fields"]}, operand
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_typed_absence_result_accepted(pack_id: str) -> None:
+    assert validate_pack_result(_minimal_result(pack_id)) == []
+    assert validate_pack_result(_frozen_applicable_result(pack_id)) == []
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_out_of_catalogue_field_refused(pack_id: str) -> None:
+    obj = _frozen_applicable_result(pack_id)
+    stray = deepcopy(load_pack_schema(pack_id)["fields"][0])
+    stray["field_id"] = "zz_not_in_catalogue"
+    obj["fields"].append(_frozen_absence_row(stray))
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert any("is not in the pack catalogue" in item for item in errors), errors
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_out_of_catalogue_check_refused(pack_id: str) -> None:
+    obj = _frozen_applicable_result(pack_id)
+    stray = deepcopy(obj["checks"][0])
+    stray["check_id"] = "zz_not_in_catalogue"
+    obj["checks"].append(stray)
+    _finish(obj)
+    index = len(obj["checks"]) - 1
+    assert (
+        f"checks.{index}.check_id: 'zz_not_in_catalogue' is not in the pack catalogue"
+        in validate_pack_result(obj)
+    )
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_out_of_catalogue_reason_code_refused(pack_id: str) -> None:
+    obj = _frozen_applicable_result(pack_id)
+    obj["fields"][0]["reason"] = "zz_not_a_catalogue_code"
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert any("is not a catalogue reason code" in item for item in errors), errors
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_removing_a_field_breaks_the_digest_pin(
+    pack_id: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    pin = _FROZEN_PACKS[pack_id]
+    obj = _frozen_applicable_result(pack_id)
+    mutated = load_pack_schema(pack_id)
+    victim = pin["required"][0] if pin["required"] else pin["fields"][0]
+    mutated["fields"] = [f for f in mutated["fields"] if f["field_id"] != victim]
+    monkeypatch.setattr(pack_contract, "load_pack_schema", lambda _pack_id: deepcopy(mutated))
+    assert pack_schema_digest(pack_id) != pin["digest"]
+    errors = validate_pack_result(obj)
+    assert any(
+        "pack_schema_digest: value does not equal the recomputed pack schema digest" in item
+        for item in errors
+    ), errors
+
+
+@pytest.mark.parametrize("pack_id", _FROZEN_IDS)
+def test_frozen_pack_required_fields_enforced(pack_id: str) -> None:
+    pin = _FROZEN_PACKS[pack_id]
+    obj = _frozen_applicable_result(pack_id)
+    victim = pin["required"][0] if pin["required"] else pin["fields"][0]
+    obj["fields"] = [row for row in obj["fields"] if row["field_id"] != victim]
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    if pin["required"]:
+        assert f"fields: required field_id '{victim}' is absent" in errors, errors
+    else:
+        assert errors == []
