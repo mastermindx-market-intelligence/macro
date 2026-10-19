@@ -1424,6 +1424,34 @@ class _ForgedTreeProvider(GoldenAaplStatementProvider):
         return _forged_tree_package(self._tree)
 
 
+def test_production_refusal_entry_passes_through_without_message_text() -> None:
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    registry = load_core_registry(ROOT)
+    reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+    statements = [dict(item) for item in reconstructed["statements"]]
+    statements[0] = {
+        "statement_type": "income_statement",
+        "role_uri": None,
+        "title": None,
+        "columns": [],
+        "row_count": 0,
+        "rows": [],
+        "refusal": {"code": "statement_role_not_consolidated"},
+    }
+    tree = {
+        "parsed_document_kind": reconstructed["parsed_document_kind"],
+        "fact_count": reconstructed["fact_count"],
+        "context_count": reconstructed["context_count"],
+        "statements": statements,
+    }
+    provider = _ForgedTreeProvider(tree)
+    result = _execute(provider=provider)
+    served = result.envelope["statements"][0]
+    assert served["refusal"] == {"code": "statement_role_not_consolidated"}
+    assert "message" not in served
+    assert "message" not in result.body.decode("utf-8")
+
+
 def test_statement_cell_values_are_canonical_decimal_text_or_none() -> None:
     result = _execute()
     envelope = json.loads(result.body)
