@@ -8678,6 +8678,7 @@ jobs:
       - "contracts/evidence_foundation/recipe.v1.schema.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/vocabulary.v1.json"
+      - "contracts/excel/fif_financial_query.pq"
       - "contracts/financial_intelligence_packet.schema.json"
       - "contracts/fundamental_forensics_attestation_admission.schema.json"
       - "contracts/fundamental_forensics_broad_sec_issuer_manifest.schema.json"
@@ -9242,6 +9243,7 @@ jobs:
       - "scripts/check_board_contradictions.py"
       - "scripts/check_signal_gate_coherence.py"
       - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/fif_excel_refresh_harness.py"
       - "scripts/fundamental_forensics_disclosure_bundle.py"
       - "scripts/publish_company_disclosure.py"
       - "scripts/publish_fif_production_datasets.py"
@@ -9268,6 +9270,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
       - "tests/test_fif_publication_workflow_shape.py"
@@ -9347,6 +9350,7 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_fif_excel_refresh_harness.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
