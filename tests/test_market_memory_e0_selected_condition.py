@@ -130,12 +130,15 @@ def test_access_and_selection_races_prevent_return(condition_files, change):
         prepare(data, verify=verify)
 
 
-def test_installed_allocator_bytes_are_checked_even_if_commit_check_passes(tmp_path, monkeypatch):
+def test_installed_allocator_bytes_are_checked_even_if_commit_check_passes(selection, monkeypatch):
+    # The real source reader rejects world-writable ancestors such as Linux
+    # /tmp. Reuse the private owner fixture so this test reaches byte integrity.
+    installed_root = selection[0]
     source = Path(binding.allocator.__file__).read_bytes()
-    path = tmp_path / selected_owner._ALLOCATOR
+    path = installed_root / selected_owner._ALLOCATOR
     path.parent.mkdir(parents=True)
     path.write_bytes(source)
-    monkeypatch.setattr(owner, "INSTALLED_ROOT", tmp_path)
+    monkeypatch.setattr(owner, "INSTALLED_ROOT", installed_root)
     monkeypatch.setattr(owner, "_verify_source", lambda *a, **kw: None)
     selected_owner._verify_sources(COMMIT)
     path.write_bytes(b"#" + source[1:])
