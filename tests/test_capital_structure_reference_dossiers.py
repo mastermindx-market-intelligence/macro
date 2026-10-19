@@ -21,6 +21,8 @@ import shutil
 
 import pytest
 
+import tests.test_capital_structure_state_bundle as state_suite
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = ROOT / "scripts" / "check_capital_structure_reference_dossiers.py"
 REFERENCE_DIR = ROOT / "research" / "capital_structure" / "e2e_20261013" / "reference"
@@ -134,7 +136,6 @@ def test_a0_whk_is_withheld_by_construction():
 
 
 def test_a0_checker_reports_traceability_against_fixture_bundle(tmp_path):
-    state_suite = pytest.importorskip("tests.test_capital_structure_state_bundle")
     events, edges = state_suite._two_issuer_rows()
     rule_pack = state_suite.load_rule_applicability_pack()
     _generation, _projection, bundle = state_suite._built(
