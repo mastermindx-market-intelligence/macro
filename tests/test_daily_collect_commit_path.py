@@ -1741,6 +1741,23 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
             ["git", "push", "-q", "origin", "HEAD:main"],
             cwd=racer, env=racer_env, check=True,
         )
+    elif race == "reset":
+        # A divergent capital-structure manifest: the CS carve-out leaves its
+        # bytes dirty (they ride the autostash) and the path is NOT merge=union,
+        # so the autostash re-apply conflicts and push_autostash_ok runs
+        # `git reset --hard HEAD` even with the park step in place. The racer
+        # never touches data/qledger or site/qledger.
+        cs_dir = racer / "data" / "capital_structure"
+        cs_dir.mkdir(parents=True, exist_ok=True)
+        (cs_dir / "source_manifest.jsonl").write_bytes(b"racer-cs\n")
+        subprocess.run(["git", "add", "data/capital_structure/source_manifest.jsonl"],
+                       cwd=racer, env=racer_env, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "racer cs manifest"],
+                       cwd=racer, env=racer_env, check=True)
+        subprocess.run(
+            ["git", "push", "-q", "origin", "HEAD:main"],
+            cwd=racer, env=racer_env, check=True,
+        )
     else:
         raise AssertionError(f"unknown race: {race!r}")
 
@@ -1795,7 +1812,7 @@ def _run_carve_publish(tmp_path, collect_steps, monkeypatch, race):
     }
 
 
-@pytest.mark.parametrize("race", ["clean", "conflicted"])
+@pytest.mark.parametrize("race", ["clean", "conflicted", "reset"])
 def test_qledger_carve_custody_survives_the_market_push(
     tmp_path, collect_steps, monkeypatch, race,
 ):
@@ -1803,10 +1820,13 @@ def test_qledger_carve_custody_survives_the_market_push(
     NOT silently destroy unpublished claims. A synthetic racer clone forces a
     real rebase race (clean = racing-lane only; conflicted = divergent
     site/qledger/track_record.json, the EXACT autostash-conflict scenario).
+    reset = divergent capital-structure manifest, which forces a REAL
+    conflicted autostash apply and `git reset --hard HEAD` even with the park
+    step, so the claims must come back from the custody snapshot.
     On a52f5ad8 the carve-out is unprotected; the assertion order below makes
-    the first failure the substantive one (BYTES for conflicted, SIGNAL for
-    clean — autostash re-applies cleanly when origin hasn't touched the
-    carved paths)."""
+    the first failure the substantive one (BYTES for conflicted and reset,
+    SIGNAL for clean — autostash re-applies cleanly when origin hasn't touched
+    the carved paths)."""
     h = _run_carve_publish(tmp_path, collect_steps, monkeypatch, race)
 
     # 1. pushdata rc == 0 and `published` == "true".
@@ -1855,22 +1875,40 @@ def test_qledger_carve_custody_survives_the_market_push(
     assert worktree_twin_hash == h["deferred_twin"], (
         f"worktree twin hash {worktree_twin_hash} != deferred {h['deferred_twin']}"
     )
-    assert (h["repo"] / "data" / "capital_structure"
-            / "source_manifest.jsonl").read_bytes() == b"m2\n", (
-        "the CS carve-out must keep its local bytes untouched in the worktree"
-    )
+    if race == "reset":
+        # The conflicted re-apply discarding the dirty CS manifest is
+        # push_retry.sh's pre-existing behaviour (out of scope); pinning the
+        # exact post-reset content pins the premise that the reset happened.
+        assert (h["repo"] / "data" / "capital_structure"
+                / "source_manifest.jsonl").read_bytes() == b"racer-cs\n", (
+            "race=reset: the CS manifest should hold the racer's bytes after "
+            "push_autostash_ok's hard reset"
+        )
+    else:
+        assert (h["repo"] / "data" / "capital_structure"
+                / "source_manifest.jsonl").read_bytes() == b"m2\n", (
+            "the CS carve-out must keep its local bytes untouched in the worktree"
+        )
 
     # 3. push stdout+stderr must not contain autostash-conflict markers — the
-    #    park step is what isolates the carved bytes from --autostash.
+    #    park step is what isolates the carved bytes from --autostash. The
+    #    reset race instead REQUIRES the marker: it exists to prove the claims
+    #    survive a real hard reset.
     push_text = (push.stdout or "") + (push.stderr or "")
-    assert "autostash-conflict" not in push_text, (
-        f"pushdata reported autostash-conflict; the park step failed to "
-        f"isolate the carved bytes from --autostash. Output: {push_text!r}"
-    )
-    assert "conflicted autostash apply" not in push_text, (
-        f"pushdata reset hard after a conflicted autostash apply; the carve "
-        f"bytes would be silently destroyed. Output: {push_text!r}"
-    )
+    if race == "reset":
+        assert "conflicted autostash apply" in push_text, (
+            f"race=reset: the harness failed to force the conflicted autostash "
+            f"apply / hard reset this race exists to prove. Output: {push_text!r}"
+        )
+    else:
+        assert "autostash-conflict" not in push_text, (
+            f"pushdata reported autostash-conflict; the park step failed to "
+            f"isolate the carved bytes from --autostash. Output: {push_text!r}"
+        )
+        assert "conflicted autostash apply" not in push_text, (
+            f"pushdata reset hard after a conflicted autostash apply; the carve "
+            f"bytes would be silently destroyed. Output: {push_text!r}"
+        )
 
     # 4. Origin's main has the expected blobs.
     main_market = subprocess.run(
@@ -1909,11 +1947,23 @@ def test_qledger_carve_custody_survives_the_market_push(
          "main:site/qledger/track_record.json"],
         capture_output=True, check=True,
     ).stdout
-    expected_twin_main = h["twin_at_base"] if race == "clean" else b'{"racer":2}'
+    expected_twin_main = (
+        b'{"racer":2}' if race == "conflicted" else h["twin_at_base"]
+    )
     assert main_twin == expected_twin_main, (
         f"main twin mismatch for race={race!r}: got {main_twin!r}, "
         f"want {expected_twin_main!r}"
     )
+    if race == "reset":
+        main_cs = subprocess.run(
+            ["git", "--git-dir", str(h["origin"]), "show",
+             "main:data/capital_structure/source_manifest.jsonl"],
+            capture_output=True, check=True,
+        ).stdout
+        assert main_cs == b"racer-cs\n", (
+            f"race=reset: origin main CS manifest should be the racer's, got "
+            f"{main_cs!r}"
+        )
 
     # 5. Every blob in main's tree (above base) must NOT include the deferred
     #    blobs and must not exceed _LIMIT (GH001 invariant).
