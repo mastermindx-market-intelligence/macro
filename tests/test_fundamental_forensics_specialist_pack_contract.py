@@ -717,6 +717,39 @@ _FROZEN_PACKS = {
             "issuer_class_not_bank",
         ),
     },
+    "PK10": {
+        "digest": "e1f724e071d21f8cebd1c0b02338c214c17e5b7a1f748be5ba9fae5fee476b3d",
+        "fields": (
+            "ceo_total_comp",
+            "other_neo_total",
+            "comp_actually_paid_peo",
+            "compensation_year",
+            "total_shareholder_return",
+            "peer_group_tsr",
+            "performance_measure_selected",
+            "director_independence_span",
+            "related_party_span",
+            "say_on_pay_frequency",
+        ),
+        "required": (),
+        "checks": (
+            "pvp_table_present",
+            "sct_table_present",
+            "sct_year_matches_fiscal",
+            "cap_vs_sct_total",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+            "proxy_package_not_supplied",
+        ),
+        "pack_specific_codes": (
+            "proxy_package_not_supplied",
+        ),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
@@ -2055,4 +2088,20 @@ def test_pk11_non_bank_class_abstention_accepted() -> None:
         "sic_source": None,
     }
     _finish(obj)
+    assert validate_pack_result(obj) == []
+
+
+def test_pk10_proxy_package_not_supplied_abstention_accepted() -> None:
+    """PK10 waits on an admitted DEF 14A package; without one it abstains typed."""
+    obj = _minimal_result("PK10")
+    obj["applicability"] = {
+        "state": "not_evaluable",
+        "reason": "proxy_package_not_supplied",
+        "rule_id": "pack.pk10.applicability/v1",
+        "sic": None,
+        "sic_source": None,
+    }
+    _finish(obj)
+    assert obj["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert obj["fields"] == [] and obj["checks"] == []
     assert validate_pack_result(obj) == []
