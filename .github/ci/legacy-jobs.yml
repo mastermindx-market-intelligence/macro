@@ -12174,6 +12174,8 @@ jobs:
           tests/test_market_memory_e0_control_records.py
           tests/test_market_memory_e0_domains.py
           tests/test_market_memory_e0_evaluation_spec.py
+          tests/test_market_memory_e0_domain_serialization.py
+          tests/test_market_memory_e0_critical_claims.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
           tests/test_market_memory_e0_condition_evidence.py
