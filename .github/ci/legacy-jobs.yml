@@ -8814,6 +8814,7 @@ jobs:
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
       - "engine/capital_structure/listing_facts.py"
+      - "scripts/check_validated_claims.py"
       - "scripts/fif_cost_ledger.py"
       - "scripts/fif_coverage_proof.py"
       - "scripts/fif_finding_judgments.py"

@@ -2635,7 +2635,12 @@
     'A35-B1': ['This metric does not apply', '该指标不适用'],
     'A35-W1': ['Statement not rebuilt from this filing', '未能从该财报重建此报表'],
     'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
-    'A35-P2': ['Shifted period', '期间已平移']
+    'A35-P2': ['Shifted period', '期间已平移'],
+    'A35-R1': ['No comparable reference for this company', '本公司无可比基准'],
+    'A35-K1': ['Period type differs from the reference', '期间类型与基准不同'],
+    'A35-U1': ['Unit differs from the reference', '单位与基准不同'],
+    'A35-D1': ['Period length differs from the reference', '期间长度与基准不同'],
+    'A35-V1': ['Metric definition version differs', '指标定义版本不同']
   };
 
   function peerExclusionCopy(code) {
