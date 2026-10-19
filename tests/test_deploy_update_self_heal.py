@@ -376,6 +376,18 @@ MUST_RESTART = [
     "engine/government_revenue/candidates.py",
     "engine/government_revenue/idv_dossiers.py",
     "engine/government_revenue/subaward_dossiers.py",
+    "engine/government_revenue/sbir_progression.py",
+    "engine/government_revenue/defense_economics.py",
+    "engine/government_revenue/defense_interpretation.py",
+    "engine/government_revenue/research_state.py",
+    "engine/government_revenue/candidate_grader.py",
+    "engine/government_revenue/program_theme_publication.py",
+    "engine/government_revenue/program_theme_context.py",
+    "engine/government_revenue/program_theme_disclosure.py",
+    "engine/government_revenue/program_ontology.py",
+    "engine/government_revenue/budget_allocation_context.py",
+    "engine/government_revenue/identity_atlas.py",
+    "contracts/government_revenue/government_revenue_identity_atlas.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_historical_suppressions.v1.schema.json",
     "contracts/government_revenue/government_revenue_candidate_issuance_corrections.v1.schema.json",
@@ -509,6 +521,12 @@ MUST_NOT_RESTART = [
     # schemas read WITHOUT lru_cache re-read the file per call and self-heal
     # without a restart; the v1 procurement generation is nightly-only
     "contracts/government_revenue/government_budget_program_graph.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_context.v1.schema.json",
+    "contracts/government_revenue/government_program_theme_public_disclosure.v1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1.schema.json",
+    "contracts/government_revenue/government_budget_program_graph.v1_1.schema.json",
+    "contracts/government_revenue/government_program_ontology.v1_1.schema.json",
+    "contracts/government_revenue/defense_economics.v1.schema.json",
     "contracts/government_revenue/government_procurement_event.v1.schema.json",
     # API candidate cache includes this exact path's mtime/size and re-hashes
     # the manifest on every cache miss; config review does not need a restart.
@@ -651,6 +669,10 @@ ADMIN_MUST_NOT_RESTART = [
     "app/research.py",
     "lib/config.py",
     "scripts/build_site.py",
+    "engine/research_codegen/transport.py",
+    "engine/experiments_registry.py",
+    "data/research_factory/review/queue.json",
+    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -900,6 +922,19 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
     )
 
 
+def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
+    """Only the GMI API's actual import-cached modules need the API restart."""
+    for path in (
+        "engine/market_ontology/__init__.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/bea_gvc_current.py",
+    ):
+        assert _triggers_restart(path), path
+    # Other ontology research modules are not imported by macro-api on startup.
+    # Adding a blanket directory regex would restart on research-only changes.
+    assert not _triggers_restart("engine/market_ontology/mining_theme_research.py")
+
+
 def test_load_time_closure_probe_is_not_vacuous():
     """Guard the guard: an AST/glob regression must not silently pass the above."""
     closure = _api_load_time_closure()
@@ -1033,6 +1068,11 @@ def test_admin_closure_probe_is_not_vacuous():
     # __init__ -> state -> the substrate
     assert "engine/marketing/__init__.py" in closure, closure
     assert "engine/marketing/state.py" in closure, closure
+    # Read-only diagnostic validation loads the bridge and its direct contracts.
+    assert "engine/research_codegen/bridge.py" in closure
+    assert "engine/research_codegen/input_contract.py" in closure
+    assert "engine/research_codegen/evaluation.py" in closure
+    assert "engine/research_codegen/transport.py" not in closure
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure

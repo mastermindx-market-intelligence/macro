@@ -1,0 +1,46 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_site_nav.html.j2
+  - templates/_navlinks.html.j2
+  - templates/nav_market.js
+  - templates/account.js
+  - templates/supabase.js
+  - templates/government-revenue-page.js.j2
+  - templates/government-revenue-investor-start.js
+  - templates/theme.js
+  - templates/theme.css
+  - templates/product-nav-icons.css
+  - templates/navigation-refresh.css
+  - scripts/build_government_revenue.py
+  - lib/site_assets.py
+  - templates/government_revenue.html.j2
+  - templates/government-revenue-investor.js
+  - templates/government-revenue-investor.css
+  - templates/government-revenue-theme-context.js
+  - templates/government-revenue-theme-context.css
+  - templates/government-revenue-dossiers.js
+  - templates/government-revenue-sbir.js
+  - templates/government-revenue-sbir.css
+  - templates/government-revenue-briefcase.js
+  - templates/government-revenue-briefcase-ui.js
+  - templates/government-revenue-parity.css
+  - .github/ci/legacy-jobs.yml
+  - .github/workflows/ci-main-heartbeat.yml
+  - config/runtime_style_injection_allowlist.json
+  - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json
+  - mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json
+  - mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json
+  - requirements.txt
+  - scripts/check_template_site_sync.py
+  - tests/test_ca1a_producers_contract.py
+  - tests/test_government_revenue_html_packaging.py
+  - tests/test_government_revenue_priority.cjs
+  - tests/test_government_revenue_theme_context_ui.js
+  - tests/test_lens_nested_control_taps.py
+  - tests/test_nav_hover_bridge.py
+  - tests/test_navigation_refresh.py
+  - tests/test_shared_pref_atomics.py
+  - tests/test_site_assets.py
+  - tests/test_template_site_sync_tokens.py
+  - tests/test_terminal_overlay_contract.py
+manifest: mockups/evidence/defense-v9-local/manifest.json

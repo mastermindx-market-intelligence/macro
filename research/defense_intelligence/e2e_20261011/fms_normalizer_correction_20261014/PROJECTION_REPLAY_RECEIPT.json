@@ -1,0 +1,19 @@
+{
+  "schema": "defense.fms_normalizer_projection_replay.v1",
+  "incumbent_invocation": "collectors.fms_notifications_live.fms_cases.build_fms_case_graph retained originalcoverage kwargs; no acquire",
+  "baseline_exact_graph_replay": true,
+  "changed_cases": [
+    "fms:transmittal:25-104"
+  ],
+  "changed_case_fields": [
+    "contractors",
+    "observations"
+  ],
+  "source_coverage_scope_unchanged": true,
+  "old_graph_sha256": "3c3719c7cfaa3a0813e6db8ad5a64c1b2ac6bb6834f15077543badf702343a27",
+  "new_graph_sha256": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df",
+  "new_graph_known_at": "2026-10-14T02:33:08.231760+00:00",
+  "new_graph_generated_at": "2026-10-14T02:39:09.686036+00:00",
+  "new_source_receipts": 0,
+  "upstream_private_shared_writes": false
+}

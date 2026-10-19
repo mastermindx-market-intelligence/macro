@@ -1091,6 +1091,14 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
           <span class="lbl"><span class="l-en">Headline mult</span><span class="l-zh">整体倍数</span></span>
           <span class="val">{{ eng_recal.headline.recal_multiplier }}×</span>
         </div>
+        {% if eng_recal.headline.get('recal_halfwidth_days') is not none %}
+        <div class="mh-recal-stat">
+          <span class="lbl">
+            <span class="l-en">Half-width (days)</span><span class="l-zh">半宽（天）</span>
+          </span>
+          <span class="val">{{ eng_recal.headline.recal_halfwidth_days | round(1) }}</span>
+        </div>
+        {% endif %}
         <div class="mh-recal-stat">
           <span class="lbl"><span class="l-en">Forward-only mult</span><span class="l-zh">仅前向倍数</span></span>
           <span class="val">{{ eng_recal.forward_only.recal_multiplier }}×</span>
@@ -1742,6 +1750,21 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
 
+    {%- macro thesis_overlay(row, lead='', absent='') -%}
+    {%- set ovmap = {'INTACT': ['still tracked', '仍在跟踪'],
+                     'BROKEN': ['broken', '已失效'],
+                     'WEAKENING': ['weakening', '走弱']} -%}
+    {%- if row.llm_status and 'llm_heat_at_open' in row and 'llm_heat_now' in row -%}
+    {%- set ov = ovmap.get(row.llm_status, [row.llm_status, row.llm_status]) -%}
+    {%- set rs = row.llm_broken_reasons or [] -%}
+    {%- set enf = (' · fired: ' ~ (rs|join(', ')|e)) if rs else '' -%}
+    {%- set zhf = (' · 触发：' ~ (rs|join('、')|e)) if rs else '' -%}
+    {{ lead }}<span class="l-en">overlay {{ ov[0]|e }} · heat
+      {{ row.llm_heat_at_open|e }} → {{ row.llm_heat_now|e }}{{ enf }}</span>
+    <span class="l-zh">叠加 {{ ov[1]|e }} · 热度
+      {{ row.llm_heat_at_open|e }} → {{ row.llm_heat_now|e }}{{ zhf }}</span>
+    {%- else -%}{{ absent }}{%- endif -%}
+    {%- endmacro -%}
     {# ── 0. BROKEN THESES (thesis monitor) — display only ─────────────────
        Self-defaulting like the ETF-windows tile, so the panel is absent-safe in
        ANY render context.  autoescape=False in the builder: every interpolated
@@ -1784,6 +1807,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
               {% else %}
               —
               {% endif %}
+              {{ thesis_overlay(row, lead='<br>') }}
             </td>
           </tr>
           {% endfor %}
@@ -1792,11 +1816,48 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
       </div>{# end .eg-table-wrap #}
       <div class="eg-footnote">
         <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
-        Deterministic kill criteria; an llm_inputs row lists the inputs an AI-judged
-        thesis was broken on, not which one fired. Display only, not a sizing input.</span>
+        Deterministic kill criteria. An AI-judged thesis names each condition the
+        monitor recorded: physical_lost (physical confirmation lost), below_quorum
+        (too few surfaces), heat_drop (heat fell past the break line); a row
+        without that record shows llm_inputs, the inputs it was judged on.
+        Display only, not a sizing input.</span>
         <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
-        确定性失效条件；llm_inputs 行列出 AI 评判论点所依据的输入，不指明具体触发哪一项。
-        仅供展示，不用于仓位决策。</span>
+        确定性失效条件。AI 评判的论点列出监测器记录的每项触发条件：physical_lost（实体确认丢失）、
+        below_quorum（信号面不足）、heat_drop（热度跌破失效线）；未带该记录的行显示 llm_inputs，
+        即其评判所依据的输入。仅供展示，不用于仓位决策。</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {# ── 0b. STILL TRACKED theses (INTACT sibling, spec 4) — display only;
+       hidden when intact_rows is empty.  Not a claim the thesis is true. #}
+    {% if thesis_monitor_broken and thesis_monitor_broken.get('available')
+          and thesis_monitor_broken.intact_rows %}
+    <div class="eg-subpanel" id="eg-thesis-intact">
+      <div class="eg-subhd">
+        <h3><span class="l-en">Still tracked</span><span class="l-zh">仍在跟踪</span></h3>
+      </div>
+      <div class="eg-table-wrap">
+      <table class="eg-table">
+        <thead>
+          <tr>
+            <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
+            <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
+            <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">AI overlay</span><span class="l-zh">AI 叠加</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in thesis_monitor_broken.intact_rows %}
+          <tr>
+            <td class="eg-mono">{{ row.theme|e }}</td>
+            <td class="eg-mono">{{ (row.opened or '—')|e }}</td>
+            <td class="eg-mono">{{ (row.stage_at_open or '—')|e }}</td>
+            <td>{{ thesis_overlay(row, absent='—') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       </div>
     </div>
     {% endif %}
@@ -1822,6 +1883,7 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             <th><span class="l-en">Ledger key</span><span class="l-zh">账本键</span></th>
             <th><span class="l-en">n_logged</span><span class="l-zh">已记录</span></th>
             <th><span class="l-en">n_graded</span><span class="l-zh">已评分</span></th>
+            <th><span class="l-en">Last graded</span><span class="l-zh">最近评分</span></th>
             <th><span class="l-en">Verdict</span><span class="l-zh">裁定</span></th>
             <th><span class="l-en">Starvation (TIME vs BUILD)</span><span class="l-zh">缺失类型（时间 vs 构建）</span></th>
           </tr>
@@ -1832,6 +1894,9 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
             <td class="eg-mono">{{ row.key }}</td>
             <td class="eg-num">{{ row.n_logged }}</td>
             <td class="eg-num">{{ row.n_graded }}</td>
+            <td class="eg-mono">
+              {% if row.last_graded_at %}{{ row.last_graded_at[:10] }}{% else %}—{% endif %}
+            </td>
             <td>
               {% if row.verdict == 'CLOSED' %}
               <span class="verdict verdict-pass"><span class="l-en">CLOSED</span><span class="l-zh">已关闭</span></span>
@@ -2145,12 +2210,32 @@ html[data-theme="light"] #vp-section .vp-cf{box-shadow:none}
         <div class="mh-metric-note">
           <span class="l-en">{{ h.ahead_str }} ahead of {{ efw.benchmark }} · outright median {{ h.median_ret_str }} · {{ h.n_pending }} window{{ '' if h.n_pending == 1 else 's' }} still open</span>
           <span class="l-zh">{{ h.ahead_str }} 跑赢 {{ efw.benchmark }} · 绝对中位数 {{ h.median_ret_str }} · 仍有 {{ h.n_pending }} 个窗口未收官</span>
+          {% if h.get('n_immature') or h.get('n_unpriceable') %}
+          <span class="l-en">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} still maturing{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} cannot be priced{% endif %}
+          </span>
+          <span class="l-zh">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} 仍在成熟{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} 无法定价{% endif %}
+          </span>
+          {% endif %}
         </div>
         {% else %}
         <div class="mh-metric-val">—</div>
         <div class="mh-metric-ci">
           <span class="l-en">collecting — {{ h.n_pending }} window{{ '' if h.n_pending == 1 else 's' }} still open</span>
           <span class="l-zh">积累中——仍有 {{ h.n_pending }} 个窗口未收官</span>
+          {% if h.get('n_immature') or h.get('n_unpriceable') %}
+          <span class="l-en">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} still maturing{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} cannot be priced{% endif %}
+          </span>
+          <span class="l-zh">
+            {% if h.get('n_immature') %}· {{ h.n_immature }} 仍在成熟{% endif %}
+            {% if h.get('n_unpriceable') %} · {{ h.n_unpriceable }} 无法定价{% endif %}
+          </span>
+          {% endif %}
         </div>
         <div class="mh-metric-note">
           <span class="l-en">A window closes {{ h.horizon }} trading sessions after its board is logged. Nothing to report until one does.</span>
