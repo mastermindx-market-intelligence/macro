@@ -20,6 +20,7 @@ telling the researcher something the owners never said.
 """
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import sys
@@ -1300,3 +1301,250 @@ def test_additive_membership_has_no_rank_private_state_or_new_href(tmp_path):
     for forbidden in ("ranked", '"href"', "portfolio", "scenario", "access_token"):
         assert forbidden not in text
     assert snap["company_exposure"]["authority_ceiling"] == "research_display_only"
+
+
+# Synthetic pure-projection cases authored by the admitted Fabric leaf and
+# aligned here to the final Macro identity-pair contract.
+_project_company_exposure = explorer._project_company_exposure
+
+MISSING = object()
+USE_FAKE = object()
+
+ACTIVE_STATES = ("arming", "propagating", "expressed")
+ASOF = "2026-01-02"
+LABEL = {"en": "Synthetic", "zh": "合成"}
+NOTE = {"en": "Synthetic note", "zh": "合成说明"}
+SUBSTRATE = {"universe": 10, "substrate_asof": {"min": "2026-01-01", "max": "2026-01-02"}}
+BLAST = {
+    "label": LABEL,
+    "note": NOTE,
+    "resolved": True,
+    "n": 2,
+    "unevaluable": 3,
+    "names": ["SYNB", "SYNA"],
+    "cuts": {"synthetic.field": 4.0},
+}
+
+
+def make_definition():
+    return {
+        "chain": "synthetic_probe",
+        "exposure_screens": {"channel": {"label": copy.deepcopy(LABEL), "note": copy.deepcopy(NOTE)}},
+    }
+
+
+def make_state_doc(asof=ASOF):
+    doc = {"substrate": copy.deepcopy(SUBSTRATE)}
+    if asof is not MISSING:
+        doc["asof"] = asof
+    return doc
+
+
+def make_observed(state="arming", blast=None, include_blast=True):
+    body = {"chain": "synthetic_probe", "state": state}
+    if include_blast:
+        body["blast"] = copy.deepcopy(blast) if blast is not None else {"channel": copy.deepcopy(BLAST)}
+    return body
+
+
+class FakeAliases:
+    """Duck alias surface: SYNA resolves to SEC:US:SYNA; SYNB is unmapped."""
+
+    def __init__(self, forward=None, reverse=None):
+        self._forward = {"SYNA": "SEC:US:SYNA"}
+        self._reverse = {"SEC:US:SYNA": "SYNA"}
+        self._forward.update(forward or {})
+        self._reverse.update(reverse or {})
+
+    def resolve(self, vendor, symbol, date):
+        assert vendor == "store" and date.isoformat() == ASOF
+        return self._forward.get(symbol)
+
+    def vendor_symbol_for(self, vendor, security_id, date):
+        assert vendor == "store" and date.isoformat() == ASOF
+        return self._reverse.get(security_id)
+
+
+def project(state="arming", blast=None, include_blast=True, asof=ASOF, aliases=USE_FAKE):
+    if aliases is USE_FAKE:
+        aliases = FakeAliases()
+    return _project_company_exposure(
+        make_definition(),
+        make_state_doc(asof=asof),
+        make_observed(state=state, blast=blast, include_blast=include_blast),
+        aliases,
+    )
+
+
+def test_available_projection_conserves_owner_membership_and_identity():
+    out = project()
+    assert set(out) == {"schema", "authority_ceiling", "status", "reason", "asof", "rev", "substrate", "channels"}
+    assert out["schema"] == "ontology_company_exposure.v1"
+    assert out["authority_ceiling"] == "research_display_only"
+    assert out["status"] == "available"
+    assert out["reason"] is None
+    assert out["asof"] == ASOF  # source clock copied verbatim, never today's date
+    assert out["substrate"] == SUBSTRATE
+
+    assert len(out["channels"]) == 1
+    channel = out["channels"][0]
+    assert set(channel) == {
+        "id", "label", "note", "resolved", "n", "unevaluable", "cuts", "names", "status", "reason", "companies",
+    }
+    assert channel["id"] == "channel"
+    assert channel["label"] == LABEL
+    assert channel["note"] == NOTE
+    assert channel["resolved"] is True
+    assert channel["n"] == 2
+    assert channel["unevaluable"] == 3
+    assert channel["names"] == ["SYNB", "SYNA"]  # owner array order preserved, not sorted
+    assert channel["cuts"] == {"synthetic.field": 4.0}
+    assert channel["status"] == "available"
+
+    companies = channel["companies"]
+    assert set(companies) == {
+        "linked",
+        "unlinked",
+        "n_linked",
+        "n_unlinked",
+        "identity_unavailable",
+    }  # 'ranked' must stay omitted
+    assert [entry["symbol"] for entry in companies["linked"]] == ["SYNA"]
+    linked = companies["linked"][0]
+    assert set(linked) == {"symbol", "security_id"}
+    assert linked["security_id"] == "SEC:US:SYNA"
+    assert companies["unlinked"] == [{"symbol": "SYNB", "reason": "unresolved"}]
+    assert companies["n_linked"] == 1
+    assert companies["n_unlinked"] == 1
+    assert companies["n_linked"] + companies["n_unlinked"] == channel["n"]
+    assert companies["identity_unavailable"] is False
+
+
+def test_projection_does_not_mutate_inputs():
+    definition = make_definition()
+    state_doc = make_state_doc()
+    observed = make_observed()
+    aliases = FakeAliases()
+    before = copy.deepcopy((definition, state_doc, observed))
+
+    _project_company_exposure(definition, state_doc, observed, aliases)
+
+    assert (definition, state_doc, observed) == before
+
+
+@pytest.mark.parametrize("state", ACTIVE_STATES)
+def test_every_active_state_projects_available(state):
+    out = project(state=state)
+    assert out["status"] == "available"
+    assert out["reason"] is None
+    assert [channel["status"] for channel in out["channels"]] == ["available"]
+
+
+def test_inactive_chain_refuses_even_a_forged_blast():
+    out = project(state="retired")
+    assert out["status"] == "unavailable"
+    assert out["reason"] == "chain_inactive"
+    assert out["channels"] == []
+
+
+@pytest.mark.parametrize(
+    "asof",
+    ["2026-1-2", "2026-13-01", "02-01-2026", "", None, MISSING],
+    ids=["not-zero-padded", "month-13", "swapped-order", "empty", "none", "absent"],
+)
+def test_invalid_or_absent_owner_clock_refuses_projection(asof):
+    out = project(asof=asof)
+    assert out["status"] == "unavailable"
+    assert out["reason"] == "owner_clock_unavailable"
+    assert out["channels"] == []
+
+
+@pytest.mark.parametrize("include_blast", [True, False], ids=["empty-blast", "missing-blast"])
+def test_empty_or_missing_blast_refuses_owner_membership(include_blast):
+    out = project(blast={}, include_blast=include_blast)
+    assert out["status"] == "unavailable"
+    assert out["reason"] == "owner_membership_absent"
+    assert out["channels"] == []
+
+
+@pytest.mark.parametrize("resolved", [False, "yes", MISSING], ids=["false", "non-boolean", "absent"])
+def test_unresolved_channel_is_dropped_without_companies(resolved):
+    payload = copy.deepcopy(BLAST)
+    if resolved is MISSING:
+        payload.pop("resolved")
+    else:
+        payload["resolved"] = resolved
+    out = project(blast={"channel": payload})
+    assert out["status"] == "unavailable"
+    assert out["reason"] == "channels_unavailable"
+    assert len(out["channels"]) == 1
+    refused = out["channels"][0]
+    assert refused["status"] == "unavailable"
+    assert refused["reason"] == "channel_unresolved"
+    assert refused["names"] == []
+    assert refused["companies"] is None  # no company CTA for a refused channel
+
+
+def test_undeclared_blast_channel_refused_while_declared_channel_survives():
+    out = project(blast={"channel": copy.deepcopy(BLAST), "ghost": copy.deepcopy(BLAST)})
+    assert out["status"] == "available"
+    by_id = {channel["id"]: channel for channel in out["channels"]}
+    assert set(by_id) == {"channel", "ghost"}
+    assert by_id["channel"]["status"] == "available"
+    ghost = by_id["ghost"]
+    assert ghost["status"] == "unavailable"
+    assert ghost["reason"] == "channel_not_declared"
+    assert ghost["names"] == []
+    assert ghost["companies"] is None
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda payload: payload.update(names="SYNA"),
+        lambda payload: payload.update(names=["SYNA", 42]),
+        lambda payload: payload.update(n="2"),
+        lambda payload: payload.update(unevaluable=None),
+        lambda payload: payload.update(cuts=[("synthetic.field", 4.0)]),
+        lambda payload: payload.update(cuts={"synthetic.field": 10**1000}),
+        lambda payload: payload.update(names=["SYNA", "SYNA"]),
+    ],
+    ids=["names-scalar", "names-non-string-entry", "n-not-int", "unevaluable-not-int", "cuts-not-dict", "cut-overflow", "duplicate-name"],
+)
+def test_malformed_channel_payload_refused(mutate):
+    payload = copy.deepcopy(BLAST)
+    mutate(payload)
+    out = project(blast={"channel": payload})
+    assert out["status"] == "unavailable"
+    assert out["reason"] == "channels_unavailable"
+    assert len(out["channels"]) == 1
+    refused = out["channels"][0]
+    assert refused["status"] == "unavailable"
+    assert refused["reason"] == "channel_malformed"
+    assert refused["names"] == []
+    assert refused["companies"] is None
+
+
+def test_aliases_none_keeps_membership_but_marks_identity_unavailable():
+    out = project(aliases=None)
+    channel = out["channels"][0]
+    assert out["status"] == "available"
+    assert channel["names"] == ["SYNB", "SYNA"]
+    assert channel["n"] == 2
+    assert channel["unevaluable"] == 3
+    companies = channel["companies"]
+    assert companies["linked"] == []
+    assert companies["unlinked"] == [{"symbol": symbol, "reason": "identity_source_unavailable"} for symbol in ("SYNA", "SYNB")]
+    assert companies["n_linked"] == 0
+    assert companies["n_unlinked"] == 2
+    assert companies["identity_unavailable"] is True
+
+
+def test_stale_reverse_alias_mismatch_never_links():
+    out = project(aliases=FakeAliases(reverse={"SEC:US:SYNA": "SYNA_STALE"}))
+    assert out["status"] == "available"
+    companies = out["channels"][0]["companies"]
+    assert companies["linked"] == []
+    assert companies["n_linked"] == 0
+    assert {"symbol": "SYNA", "reason": "stale_alias"} in companies["unlinked"]
+    assert companies["identity_unavailable"] is False
