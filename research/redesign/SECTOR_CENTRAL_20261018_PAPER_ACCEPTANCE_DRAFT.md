@@ -1,8 +1,11 @@
 # Sector Central — Paper application and acceptance package
 
+> Draft planning only. This candidate has no approved RIG receipt and is not an executable migration packet. Preserve the existing Sector Central owner and all recorded holds. Before a builder consumes it as a migration contract, that owner must complete the reference review and publish the approved packet under `research/migration_packets/` with its real `RIG-RECEIPT:`.
+
+
 Parent: macro#7646 / sector-central-redesign-20260921-sol-001.
 Status: PREPARED DESIGN PACKAGE. No new Paper nodes or production candidate are claimed.
-Binding contract: MP-20261018-sector-central.md and its 92-capability crosswalk.
+Draft planning context: SECTOR_CENTRAL_20261018_DESIGN_DRAFT.md and its 92-capability crosswalk.
 
 ## 1. Exact Paper target and recovery condition
 
