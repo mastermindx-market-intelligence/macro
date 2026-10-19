@@ -20,11 +20,14 @@ telling the researcher something the owners never said.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
 
 import pytest
+import pandas as pd
+import engine.ontology_explorer as explorer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -1201,3 +1204,99 @@ def test_a_malformed_node_collection_is_a_typed_source_failure(tmp_path):
     with pytest.raises(SourceIncoherent) as excinfo:
         _compose(fx.build_root(tmp_path, state_doc=state))
     assert "malformed_nodes" in str(excinfo.value)
+
+
+# Additive TXI membership: exact source bytes and dated identity, all synthetic.
+def _exposure_root(tmp_path):
+    state = fx.chain_state(state="arming")
+    state["substrate"] = {"universe": 8, "internal_vendor_report": "SYNTHETIC_PRIVATE_REPORT", "substrate_asof": {
+        "min": "2026-01-01", "max": "2026-01-02"}}
+    state["chains"][0]["blast"] = {"synthetic_screen": {
+        "label": {"en": "Synthetic screen", "zh": "合成筛选"},
+        "note": {"en": "Synthetic membership", "zh": "合成成员"},
+        "resolved": True, "n": 2, "unevaluable": 3,
+        "cuts": {"synthetic.field": 1.5}, "names": ["SYNA", "SYNB"],
+    }}
+    return fx.build_root(tmp_path, state_doc=state)
+
+
+def _exposure_aliases(root, symbol="SYNA"):
+    path = root / "data/reference/vendor_aliases.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{"vendor": "store", "vendor_symbol": symbol,
+                   "security_id": "SEC:0:SYNTHETIC", "valid_from": None,
+                   "valid_to": None}]).to_parquet(path, index=False)
+    return path
+
+
+def test_alias_bytes_in_manifest_are_the_bytes_used_for_identity(tmp_path, monkeypatch):
+    import engine.transmission_chains as owner
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("a request-time read must never recompute owner blast")
+
+    monkeypatch.setattr(owner, "resolve_blast", forbidden)
+    root = _exposure_root(tmp_path)
+    path = _exposure_aliases(root)
+    before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    first = explorer.compose_snapshot(root, chain=fx.SLUG)
+    exposure = first["company_exposure"]
+    channel = exposure["channels"][0]
+    assert exposure["asof"] == "2026-01-02"
+    assert exposure["substrate"]["substrate_asof"]["min"] == "2026-01-01"
+    assert "SYNTHETIC_PRIVATE_REPORT" not in json.dumps(exposure)
+    assert channel["companies"]["linked"] == [
+        {"symbol": "SYNA", "security_id": "SEC:0:SYNTHETIC"}]
+    assert channel["companies"]["unlinked"] == [{"symbol": "SYNB", "reason": "unresolved"}]
+    alias_read = next(r for r in first["source"]["reads"] if r["path"] == explorer._ALIASES_REL)
+    assert alias_read["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert exposure["identity_source"]["sha256"] == alias_read["sha256"]
+    assert before == {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+
+    _exposure_aliases(root, symbol="SYNB")
+    second = explorer.compose_snapshot(root, chain=fx.SLUG)
+    assert second["source"]["source_manifest_hash"] != first["source"]["source_manifest_hash"]
+    assert second["company_exposure"]["channels"][0]["companies"]["linked"][0]["symbol"] == "SYNB"
+
+
+@pytest.mark.parametrize("present", [False, True])
+def test_missing_or_unreadable_identity_retains_membership_without_action(tmp_path, present):
+    root = _exposure_root(tmp_path)
+    if present:
+        path = root / explorer._ALIASES_REL
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b"synthetic unreadable parquet")
+    snap = explorer.compose_snapshot(root, chain=fx.SLUG)
+    exposure = snap["company_exposure"]
+    channel = exposure["channels"][0]
+    assert channel["status"] == "available"
+    assert channel["names"] == ["SYNA", "SYNB"]
+    assert channel["n"] == 2 and channel["unevaluable"] == 3
+    assert channel["companies"]["linked"] == []
+    assert channel["companies"]["identity_unavailable"] is True
+    assert exposure["identity_source"]["status"] == "unavailable"
+
+
+def test_alias_rewrite_during_composition_refuses_mixed_read(tmp_path, monkeypatch):
+    root = _exposure_root(tmp_path)
+    path = _exposure_aliases(root)
+    original = explorer._build
+
+    def changed(*args, **kwargs):
+        result = original(*args, **kwargs)
+        path.write_bytes(b"different synthetic bytes")
+        return result
+
+    monkeypatch.setattr(explorer, "_build", changed)
+    with pytest.raises(explorer.SourceIncoherent, match="mid_read_mutation:.*vendor_aliases"):
+        explorer.compose_snapshot(root, chain=fx.SLUG)
+
+
+def test_additive_membership_has_no_rank_private_state_or_new_href(tmp_path):
+    root = _exposure_root(tmp_path)
+    _exposure_aliases(root)
+    snap = explorer.compose_snapshot(root, chain=fx.SLUG)
+    text = json.dumps(snap["company_exposure"])
+    for forbidden in ("ranked", '"href"', "portfolio", "scenario", "access_token"):
+        assert forbidden not in text
+    assert snap["company_exposure"]["authority_ceiling"] == "research_display_only"

@@ -9,6 +9,7 @@ answers it by composing artifacts that other owners already produced:
     knowledge/transmission/<chain>.yaml     the path definition (canonical)
     data/transmission/chain_state.json      the compiled owner observation
     data/transmission/chain_episodes.jsonl  recorded transitions, when present
+    data/reference/vendor_aliases.parquet  optional dated company identity
 
 It creates no graph, no causal model, no truth store, no cache and no second
 evaluation of anything. ``/transmission.html`` remains the canonical rates/TXI
@@ -51,6 +52,7 @@ this surface carries no rank, gate, size or trade authority.
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import math
 import logging
@@ -68,7 +70,7 @@ SCHEMA_ID = "ontology_explorer_snapshot.v1"
 #: read byte-identical sources and still differ, because the meaning is produced
 #: by THIS code — so the method that read them is part of what the digest binds.
 #: It is still a read receipt, never a native owner generation.
-COMPOSER_METHOD = "ontology_explorer.compose.v2"
+COMPOSER_METHOD = "ontology_explorer.compose.v3"
 ERROR_SCHEMA_ID = "ontology_explorer_error.v1"
 DEFAULT_CHAIN = "oil_inflation_duration_derate"
 
@@ -99,6 +101,7 @@ _MISSING = object()
 _KNOWLEDGE_REL = "knowledge/transmission"
 _STATE_REL = "data/transmission/chain_state.json"
 _EPISODES_REL = "data/transmission/chain_episodes.jsonl"
+_ALIASES_REL = "data/reference/vendor_aliases.parquet"
 
 
 class SourceUnavailable(RuntimeError):
@@ -282,8 +285,41 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
     if not isinstance(definition, dict) or not isinstance(state_doc, dict):
         raise SourceUnavailable("malformed_source")
 
+    # Identity is optional; its absence must not erase owner-backed membership.
+    # Parse the EXACT bytes that enter the read manifest, never a second file
+    # read hidden inside an identity loader. Reverification below covers this
+    # source too, including a change while parquet is being decoded.
+    aliases = None
+    identity_reason = "identity_source_unavailable"
+    try:
+        alias_raw = _read_source(root / _ALIASES_REL)
+    except OSError:
+        pass
+    else:
+        raws[_ALIASES_REL] = alias_raw
+        rels.append(_ALIASES_REL)
+        digests[_ALIASES_REL] = _digest(alias_raw)
+        if len(alias_raw) <= MAX_SOURCE_BYTES:
+            try:
+                import pandas as pd
+                from lib.dataos.identity import VendorAliasTable
+
+                aliases = VendorAliasTable.from_records(
+                    pd.read_parquet(io.BytesIO(alias_raw)).to_dict("records"))
+                identity_reason = None
+            except Exception:
+                identity_reason = "identity_source_unreadable"
+        else:
+            identity_reason = "identity_source_exceeds_bound"
+
     snapshot = _build(definition, state_doc, raws.get(_EPISODES_REL), chain=chain,
-                      now=now or datetime.now(UTC))
+                      now=now or datetime.now(UTC), aliases=aliases)
+    snapshot["company_exposure"]["identity_source"] = {
+        "status": "available" if aliases is not None else "unavailable",
+        "reason": identity_reason,
+        "path": _ALIASES_REL,
+        "sha256": digests.get(_ALIASES_REL),
+    }
 
     # Re-verify AFTER composing, by re-reading rather than by trusting a stat
     # taken beforehand. This catches any source rewritten after this process
@@ -307,7 +343,7 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
 
 
 def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
-           chain: str, now: datetime) -> dict[str, Any]:
+           chain: str, now: datetime, aliases: Any = None) -> dict[str, Any]:
     gaps: list[dict[str, Any]] = []
     state_schema = state_doc.get("schema")
     if state_schema not in COMPATIBLE_STATE_SCHEMAS:
@@ -467,6 +503,8 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         "clocks": _clocks(observed, state_doc, hops, now=now),
         "invalidators": invalidators,
         "exposure_screens": exposure_screens,
+        "company_exposure": _project_company_exposure(
+            definition, state_doc, observed, aliases, gaps=gaps),
         "display_permission": {
             "status": "not_determined_here",
             "policy": "site_full entitlement, enforced at the transport layer",
@@ -478,6 +516,151 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
     # payload literal is being built.
     _label_gaps(gaps, legs)
     return payload
+
+
+def _project_company_exposure(definition: dict, state_doc: dict, observed: dict,
+                              aliases: Any, *, gaps: list | None = None) -> dict:
+    """Project TXI's existing blast; never run a screen or infer a theme edge.
+
+    Membership is an owner observation. Identity merely determines whether an
+    explicit company-research action is safe. Its failure cannot turn unknown
+    identity into a different company's link or erase the observed membership.
+    """
+    from engine.transmission_company_continuation import (
+        ContinuationLink, chain_decision_date, continuation_for,
+    )
+
+    gaps = [] if gaps is None else gaps
+    # Substrate provenance is a closed display projection, not a pass-through
+    # for future vendor reports or other internal owner metadata.
+    source_substrate = state_doc.get("substrate")
+    substrate = None
+    if isinstance(source_substrate, dict):
+        universe = source_substrate.get("universe")
+        clock = source_substrate.get("substrate_asof")
+        substrate = {
+            "universe": universe if type(universe) is int and universe >= 0 else None,
+            "substrate_asof": None,
+        }
+        if isinstance(clock, dict):
+            substrate["substrate_asof"] = {
+                key: clock.get(key) if chain_decision_date(clock.get(key)) else None
+                for key in ("min", "max")
+            }
+    result = {
+        "schema": "ontology_company_exposure.v1",
+        "authority_ceiling": "research_display_only",
+        "status": "unavailable", "reason": None,
+        "asof": state_doc.get("asof"),
+        "rev": observed.get("rev"),
+        "substrate": substrate,
+        "channels": [],
+    }
+    if observed.get("state") not in {"arming", "propagating", "expressed"}:
+        result["reason"] = "chain_inactive"
+        return result
+    decision_date = chain_decision_date(state_doc.get("asof"))
+    if decision_date is None:
+        result["reason"] = "owner_clock_unavailable"
+        return result
+    blast = observed.get("blast")
+    if not isinstance(blast, dict) or not blast:
+        result["reason"] = "owner_membership_absent"
+        return result
+
+    declared = definition.get("exposure_screens")
+    declared = declared if isinstance(declared, dict) else {}
+
+    def finite_cut(value):
+        if type(value) not in (int, float):
+            return False
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            return False
+
+    for channel_id, entry in sorted(blast.items(), key=lambda item: str(item[0])):
+        channel = {
+            "id": str(channel_id), "status": "unavailable", "reason": None,
+            "label": None, "note": None, "resolved": False,
+            "n": None, "unevaluable": None, "cuts": {}, "names": [],
+            "companies": None,
+        }
+        result["channels"].append(channel)
+        if channel_id not in declared:
+            channel["reason"] = "channel_not_declared"
+            continue
+        if not isinstance(entry, dict) or entry.get("resolved") is not True:
+            channel["reason"] = "channel_unresolved"
+            # A dropped screen's owner note explains why it is unavailable.
+            if isinstance(entry, dict):
+                channel["label"] = _reader_text(
+                    entry.get("label"), kind=IDENTITY,
+                    where=f"exposure_screens.{channel_id}.label", gaps=gaps,
+                    fallback={"en": "An exposure channel", "zh": "某敞口通道"})
+                channel["note"] = _reader_text(
+                    entry.get("note"), kind=PROSE,
+                    where=f"exposure_screens.{channel_id}.note", gaps=gaps)
+                for key in ("n", "unevaluable"):
+                    if type(entry.get(key)) is int and entry[key] >= 0:
+                        channel[key] = entry[key]
+            continue
+        names, cuts = entry.get("names"), entry.get("cuts")
+        counts = (entry.get("n"), entry.get("unevaluable"))
+        valid = (
+            isinstance(names, list)
+            and all(isinstance(name, str) and bool(name) and name == name.strip()
+                    for name in names)
+            and len(names) == len(set(names))
+            and all(type(count) is int and count >= 0 for count in counts)
+            and counts[0] == len(names)
+            and isinstance(cuts, dict)
+            and all(isinstance(key, str) and finite_cut(value) for key, value in cuts.items())
+        )
+        if not valid:
+            channel["reason"] = "channel_malformed"
+            continue
+        label = _reader_text(entry.get("label"), kind=IDENTITY,
+                             where=f"exposure_screens.{channel_id}.label", gaps=gaps,
+                             fallback={"en": "An exposure channel", "zh": "某敞口通道"})
+        note = _reader_text(entry.get("note"), kind=PROSE,
+                            where=f"exposure_screens.{channel_id}.note", gaps=gaps)
+        # Reuse the existing exact dated identity law, leaving its Terminal/J1
+        # href unchanged. This Macro consumer needs only the verified identity
+        # pair; its explicit in-memory action creates no new link vocabulary.
+        linked, unlinked = [], []
+        identity_unavailable = aliases is None
+        for symbol in sorted(names):
+            if aliases is None:
+                unlinked.append({"symbol": symbol, "reason": "identity_source_unavailable"})
+                continue
+            try:
+                identity = continuation_for(
+                    symbol, aliases, decision_date, chain_id=observed.get("chain"),
+                    channel_id=str(channel_id), chain_asof=state_doc["asof"])
+            except Exception:
+                identity_unavailable = True
+                unlinked.append({"symbol": symbol, "reason": "identity_read_refused"})
+                continue
+            if isinstance(identity, ContinuationLink):
+                linked.append({"symbol": identity.symbol, "security_id": identity.security_id})
+            else:
+                unlinked.append(identity.as_dict())
+        companies = {
+            "linked": linked, "unlinked": unlinked,
+            "n_linked": len(linked), "n_unlinked": len(unlinked),
+            "identity_unavailable": identity_unavailable,
+        }
+        channel.update({
+            "status": "available", "resolved": True, "label": label, "note": note,
+            "n": counts[0], "unevaluable": counts[1], "cuts": dict(cuts),
+            "names": list(names), "companies": companies,
+        })
+    result["status"] = (
+        "available" if any(c["status"] == "available" for c in result["channels"])
+        else "unavailable")
+    result["reason"] = None if result["status"] == "available" else "channels_unavailable"
+    return result
 
 
 #: The owner's own episode vocabulary (`engine/transmission_chains.py`).
