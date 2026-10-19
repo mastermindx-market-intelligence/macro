@@ -414,6 +414,47 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK02": {
+        "digest": "23278eb58058b7ec49d619f76538d3dca56b7ad12dfbfccedf341b11bd03e560",
+        "fields": (
+            "sbc_expense_total",
+            "sbc_allocated_by_line",
+            "weighted_average_shares_basic",
+            "weighted_average_shares_diluted",
+            "eps_basic",
+            "eps_diluted",
+            "antidilutive_securities_excluded",
+            "shares_outstanding_cover",
+            "shares_issued_parenthetical",
+            "share_repurchase_amount",
+            "sbc_capitalized",
+            "dilutive_securities_increment",
+            "net_income_available_to_common",
+        ),
+        "required": (
+            "sbc_expense_total",
+            "weighted_average_shares_basic",
+            "weighted_average_shares_diluted",
+        ),
+        "checks": (
+            "basic_to_diluted_reconciliation",
+            "antidilutive_table_total_vs_rows",
+            "per_class_shares_vs_cover",
+            "eps_identity",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "division_by_zero",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
