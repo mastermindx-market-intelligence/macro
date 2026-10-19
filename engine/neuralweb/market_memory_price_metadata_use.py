@@ -105,15 +105,24 @@ class MarketMemoryPriceMetadataPolicyError(Exception):
 
 def _git_bounded(root: Path, *args: str) -> str:
     """Run one bounded read-only Git query against the installed checkout."""
+    # -C does not override GIT_DIR, GIT_WORK_TREE, object-store overrides or
+    # injected config. Qualify this checkout, never a caller-selected Git view.
+    environment = {key: value for key, value in os.environ.items()
+                   if not key.startswith("GIT_")}
+    environment.update({
+        "GIT_NO_LAZY_FETCH": "1", "GIT_OPTIONAL_LOCKS": "0",
+        "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1",
+        "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+        "GIT_ALLOW_PROTOCOL": "",
+    })
     try:
         result = subprocess.run(
-            ["git", "-C", str(root), *args],
+            ["/usr/bin/git", "-c", "protocol.allow=never", "-C", str(root), *args],
             check=True,
             capture_output=True,
             text=True,
             timeout=_GIT_TIMEOUT_SECONDS,
-            env={**os.environ, "GIT_NO_LAZY_FETCH": "1", "GIT_OPTIONAL_LOCKS": "0",
-                 "GIT_TERMINAL_PROMPT": "0", "GIT_NO_REPLACE_OBJECTS": "1"},
+            env=environment,
         )
     except (OSError, subprocess.SubprocessError) as exc:
         raise MarketMemoryPriceMetadataPolicyError(

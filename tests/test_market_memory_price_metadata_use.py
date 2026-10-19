@@ -571,3 +571,143 @@ def test_bad_arguments_do_not_echo_private_text(pinned, capsys):
     assert code == 2 and json.loads(payload)["failure"] == "usage"
     captured = capsys.readouterr()
     assert captured.out == captured.err == ""
+
+
+def test_foreign_git_environment_cannot_redirect_provenance(pinned, tmp_path, monkeypatch):
+    expected = _workspace_head()
+    foreign = tmp_path / "foreign"
+    foreign.mkdir()
+    (foreign / "other.txt").write_text("foreign provenance\n")
+    for args in (("init", "-q"), ("add", "."),
+                 ("-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                  "-c", "core.hooksPath=/dev/null", "commit", "-qm", "Foreign tree")):
+        subprocess.run(["/usr/bin/git", "-C", str(foreign), *args], check=True, capture_output=True)
+    monkeypatch.setenv("GIT_DIR", str(foreign / ".git"))
+    monkeypatch.setenv("GIT_WORK_TREE", str(foreign))
+    monkeypatch.setenv("GIT_COMMON_DIR", str(foreign / ".git"))
+    # Demonstrate the adverse fixture really redirects a plain git -C query.
+    redirected = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
+    assert redirected != expected
+    assert use.verify_installed_price_metadata_closure(
+        REPO, expected_head=expected)["deployed_head"] == expected
+
+
+def test_git_environment_drops_all_caller_configuration(monkeypatch):
+    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_NAMESPACE",
+                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+                 "GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0",
+                 "GIT_CONFIG_PARAMETERS", "GIT_EXEC_PATH", "GIT_SSH_COMMAND"):
+        monkeypatch.setenv(name, "caller-controlled")
+    observed = []
+    def capture(args, **kwargs):
+        observed.append((args, kwargs["env"]))
+        return subprocess.CompletedProcess(args, 0, "a" * 40 + "\n", "")
+    monkeypatch.setattr(use.subprocess, "run", capture)
+    use._git_bounded(Path("/synthetic"), "rev-parse", "HEAD")
+    args, environment = observed[0]
+    assert args[:3] == ["/usr/bin/git", "-c", "protocol.allow=never"]
+    assert not any(value == "caller-controlled" for value in environment.values())
+    assert environment["GIT_ALLOW_PROTOCOL"] == ""
+    assert environment["GIT_CONFIG_NOSYSTEM"] == "1"
+    assert environment["GIT_CONFIG_GLOBAL"] == os.devnull
+
+
+def _synthetic_installed_invocation(monkeypatch):
+    """Only an environment-gate fixture, never an actual administrator grant."""
+    monkeypatch.setattr(cli, "__spec__", None)
+    monkeypatch.setattr(cli, "__package__", None)
+    monkeypatch.setattr(cli.sys, "platform", "linux")
+    monkeypatch.setattr(cli.os, "geteuid", lambda: 0)
+    monkeypatch.setattr(cli, "__file__", str(cli.INSTALLED_SCRIPT_PATH))
+    monkeypatch.setattr(cli.sys, "argv", [str(cli.INSTALLED_SCRIPT_PATH)])
+    for role, module in (("price_metadata_use_policy", use), ("technical_store", store),
+                         ("technical_observation", obs), ("technical_pit_kernel", pit)):
+        monkeypatch.setattr(module, "__file__", str(
+            use.INSTALLED_REPOSITORY_ROOT / use._CLOSURE_CODE_MODULE_PATHS[role]))
+
+
+@pytest.mark.parametrize("module", [use, store, obs, pit])
+def test_production_gate_refuses_each_foreign_loaded_module(monkeypatch, module):
+    _synthetic_installed_invocation(monkeypatch)
+    cli._verify_production_environment()
+    monkeypatch.setattr(module, "__file__", "/foreign/engine.py")
+    with pytest.raises(cli._ProductionEnvironmentError, match="loaded module"):
+        cli._verify_production_environment()
+
+
+def test_module_mode_is_refused_even_with_exact_argv_and_module_origins(monkeypatch):
+    _synthetic_installed_invocation(monkeypatch)
+    monkeypatch.setattr(cli, "__spec__", object())
+    with pytest.raises(cli._ProductionEnvironmentError, match="direct script"):
+        cli._verify_production_environment()
+
+
+def test_real_module_mode_returns_redacted_failure():
+    result = subprocess.run(
+        [os.sys.executable, "-B", "-m", "scripts.inspect_market_memory_price_coverage"],
+        cwd=SOURCE_REPO, capture_output=True, timeout=30)
+    assert result.returncode == 1 and result.stderr == b""
+    assert json.loads(result.stdout)["failure"] == "environment"
+
+
+def test_deadline_during_nested_policy_check_stays_typed(pinned, monkeypatch):
+    root, pin, argv = pinned
+    verifier = _FakeVerifier()
+    policy = _policy(pin, closure_verifier=verifier)
+    def deadline(*args, **kwargs):
+        raise cli._WallClockExceeded
+    policy._verifier = deadline
+    monkeypatch.setattr(use, "RetainedSourceBarMetadataUsePolicy", lambda **kwargs: policy)
+    code, payload = _run(root, argv)
+    assert code == 1 and json.loads(payload)["failure"] == "wall_clock_limit_exceeded"
+
+
+@pytest.mark.parametrize("timeout", [False, True])
+def test_main_disarms_deadline_before_output(monkeypatch, timeout):
+    events = []
+    monkeypatch.setattr(cli, "_verify_production_environment", lambda: None)
+    monkeypatch.setattr(cli, "_apply_production_bounds", lambda: events.append("armed"))
+    monkeypatch.setattr(cli.signal, "alarm", lambda seconds: events.append(("alarm", seconds)))
+    def run(**kwargs):
+        if timeout:
+            raise cli._WallClockExceeded
+        return 0, b"{}\n"
+    monkeypatch.setattr(cli, "_run_inspection", run)
+    def emit(payload):
+        assert events[-1] == ("alarm", 0)
+        events.append("emitted")
+        if timeout:
+            assert json.loads(payload)["failure"] == "wall_clock_limit_exceeded"
+    monkeypatch.setattr(cli, "_emit", emit)
+    assert cli.main([]) == int(timeout)
+    assert events == ["armed", ("alarm", 0), "emitted"]
+
+
+def test_future_nested_owner_fields_are_not_automatically_disclosed(pinned, monkeypatch):
+    root, _, argv = pinned
+    original = store.disclose_retained_source_bar_metadata
+    def extended(*args, **kwargs):
+        value = original(*args, **kwargs)
+        for field in ("freshness", "subject", "calendar", "price_basis"):
+            value[field]["future_private_price"] = {"close": 123.45}
+        value["calendar"]["quality"]["future_private_price"] = {"close": 123.45}
+        value["source_bodies"]["future_private_price"] = {"sha256": "private", "bytes": 100}
+        return value
+    monkeypatch.setattr(store, "disclose_retained_source_bar_metadata", extended)
+    code, payload = _run(root, argv)
+    assert code == 0
+    assert b"future_private_price" not in payload and b"123.45" not in payload
+
+
+def test_known_metadata_leaf_cannot_expand_into_private_structure(pinned, monkeypatch):
+    root, _, argv = pinned
+    original = store.disclose_retained_source_bar_metadata
+    def wrong_shape(*args, **kwargs):
+        value = original(*args, **kwargs)
+        value["calendar"]["quality"]["flags"] = [{"close": 123.45}]
+        return value
+    monkeypatch.setattr(store, "disclose_retained_source_bar_metadata", wrong_shape)
+    code, payload = _run(root, argv)
+    assert code == 1 and json.loads(payload)["failure"] == "inspection_failed"
+    assert b"123.45" not in payload

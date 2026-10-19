@@ -28,7 +28,6 @@ registry is created: this reads authorized preparatory metadata only.
 from __future__ import annotations
 
 import argparse
-import copy
 import json
 import os
 import resource
@@ -47,6 +46,7 @@ from engine.neuralweb import (  # noqa: E402
     market_memory_price_metadata_use as use,
 )
 from engine.neuralweb import market_memory_technical_store as store  # noqa: E402
+from engine.neuralweb import market_memory_technical_observation as obs  # noqa: E402
 
 INSPECTION_SCHEMA = "market_memory.price_metadata_coverage_inspection.v1"
 FAILURE_SCHEMA = "market_memory.price_metadata_coverage_inspection_failure.v1"
@@ -62,13 +62,57 @@ _CPU_LIMIT_HARD_SECONDS = 32
 _WALL_LIMIT_SECONDS = 60
 
 _FEATURE_REF_FIELDS = ("snapshot_id", "sha256", "bytes")
+_FRESHNESS_SHAPE = {
+    "policy": str, "observed_utc_date": str, "manifest_last_modified": str,
+    "manifest_age_seconds": int, "manifest_max_age_seconds": int,
+    "latest_completed_session": str, "previous_completed_session": str,
+    "latest_completed_via": str, "latest_completed_not_before": str,
+    "accepted_session": str, "session_lag": int, "accepted_via": str,
+}
+_SUBJECT_SHAPE = {key: str for key in (
+    "symbol", "canonical_key", "subject_id", "instrument_key", "instrument_id",
+    "identity_version", "mic", "currency",
+)}
+_CALENDAR_SHAPE = {
+    **{key: str for key in (
+        "canonical_key", "calendar_id", "market_session", "rules_version", "coverage",
+    )},
+    "quality": {"status": str, "flags": [str], "staleness_seconds": int, "imputed": bool},
+}
+_PRICE_BASIS_SHAPE = {
+    **{key: str for key in (
+        "basis", "source_product", "source_contract_role", "source_contract_sha256",
+        "source_session_scope", "corporate_action_status",
+    )},
+    **{key: bool for key in (
+        "basis_authenticated_by_shape", "regular_session_close_authenticated",
+        "xnys_calendar_dates_only", "raw_unadjusted", "split_adjusted",
+        "dividend_adjusted", "other_corporate_action_adjusted", "economic_return",
+        "split_detection",
+    )},
+}
+_SOURCE_BODY_ROLES = (
+    "publish_manifest", "spy_daily_parquet", "canary_identity_config",
+    "xnys_calendar_module", "massive_entitlement_record", "technical_price_basis_contract",
+)
+
+
+def _metadata_projection(value: object, shape: object) -> Any:
+    """Project explicit metadata leaves; future nested owner fields stay private."""
+    if type(shape) is dict and type(value) is dict:
+        return {key: _metadata_projection(value[key], child) for key, child in shape.items()}
+    if type(shape) is list and type(value) is list:
+        return [_metadata_projection(item, shape[0]) for item in value]
+    if type(shape) is type and type(value) is shape:
+        return value
+    raise ValueError("retained metadata output shape differs")
 
 
 class _ProductionEnvironmentError(Exception):
     """The invocation is not the exact installed administrator production main."""
 
 
-class _WallClockExceeded(Exception):
+class _WallClockExceeded(BaseException):
     """The one-shot inspection exceeded its wall-clock bound."""
 
 
@@ -88,6 +132,10 @@ def _failure_payload(reason: str) -> bytes:
 
 
 def _verify_production_environment() -> None:
+    # Module mode/imported callers are not the supported administrator entry.
+    # In particular, argv[0] alone cannot distinguish python -m from a script.
+    if __spec__ is not None or __package__ not in (None, ""):
+        raise _ProductionEnvironmentError("direct script invocation required")
     if sys.platform != "linux":
         raise _ProductionEnvironmentError("non-Linux production main")
     if os.geteuid() != 0:
@@ -99,6 +147,17 @@ def _verify_production_environment() -> None:
         raise _ProductionEnvironmentError("missing invocation context")
     if Path(os.path.realpath(sys.argv[0])) != INSTALLED_SCRIPT_PATH:
         raise _ProductionEnvironmentError("invocation path is not the installed script")
+    modules = {
+        "price_metadata_use_policy": use,
+        "technical_store": store,
+        "technical_observation": obs,
+        "technical_pit_kernel": pit,
+    }
+    for role, module in modules.items():
+        expected = use.INSTALLED_REPOSITORY_ROOT / use._CLOSURE_CODE_MODULE_PATHS[role]
+        origin = getattr(module, "__file__", None)
+        if type(origin) is not str or Path(origin).resolve() != expected:
+            raise _ProductionEnvironmentError("loaded module differs from installed source")
 
 
 def _apply_production_bounds() -> None:
@@ -163,15 +222,16 @@ def _whitelisted_output(
         "bar_sessions": list(value["bar_sessions"]),
         "first_observed_at": value["first_observed_at"],
         "available_at": value["available_at"],
-        "freshness": copy.deepcopy(value["freshness"]),
-        "subject": copy.deepcopy(value["subject"]),
-        "calendar": copy.deepcopy(value["calendar"]),
-        "price_basis": copy.deepcopy(value["price_basis"]),
+        "freshness": _metadata_projection(value["freshness"], _FRESHNESS_SHAPE),
+        "subject": _metadata_projection(value["subject"], _SUBJECT_SHAPE),
+        "calendar": _metadata_projection(value["calendar"], _CALENDAR_SHAPE),
+        "price_basis": _metadata_projection(value["price_basis"], _PRICE_BASIS_SHAPE),
         "transform_version": value["transform_version"],
         "source_observation_sha256": value["source_observation_sha256"],
         "source_bodies": {
             role: {"sha256": ref["sha256"], "bytes": ref["bytes"]}
-            for role, ref in value["source_bodies"].items()
+            for role, ref in ((role, value["source_bodies"][role])
+                              for role in _SOURCE_BODY_ROLES)
         },
         "feature_ref": {
             key: value["feature_ref"][key] for key in _FEATURE_REF_FIELDS
@@ -287,14 +347,18 @@ def main(argv: list[str] | None = None) -> int:
     try:
         _verify_production_environment()
         _apply_production_bounds()
+        code, payload = _run_inspection(
+            repository_root=use.INSTALLED_REPOSITORY_ROOT,
+            store_root=CANONICAL_STORE_ROOT,
+            argv=sys.argv[1:] if argv is None else list(argv),
+        )
     except _ProductionEnvironmentError:
-        _emit(_failure_payload("environment"))
-        return 1
-    code, payload = _run_inspection(
-        repository_root=use.INSTALLED_REPOSITORY_ROOT,
-        store_root=CANONICAL_STORE_ROOT,
-        argv=sys.argv[1:] if argv is None else list(argv),
-    )
+        code, payload = 1, _failure_payload("environment")
+    except _WallClockExceeded:
+        code, payload = 1, _failure_payload("wall_clock_limit_exceeded")
+    finally:
+        # A deadline must never interrupt the single final write/flush.
+        signal.alarm(0)
     _emit(payload)
     return code
 
