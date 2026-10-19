@@ -4395,6 +4395,8 @@ on:
       - "collectors/tiingo_archive.py"
       - "scripts/tiingo_ingest.py"
       - "scripts/tiingo_materialize.py"
+      - "scripts/tiingo_chart_history.py"
+      - "tests/test_tiingo_chart_history.py"
       - "scripts/tiingo_vendor_cohort.py"
       - "requirements/tiingo.txt"
       - "tests/test_tiingo_archive.py"
