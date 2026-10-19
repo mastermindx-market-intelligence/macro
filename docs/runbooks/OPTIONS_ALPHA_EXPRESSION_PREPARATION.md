@@ -61,3 +61,57 @@ entry/H+60/exit evidence or explicit source unavailability. No historical replay
 claimed as natural prospective proof here.
 
 Source: [ThetaData contract response schema](https://thetadata.net/docs/operations/option_list_contracts.html).
+
+## Optional sealed expression commitment
+
+The expression publication seam keeps the current v2 candidate feed and v1 receipt
+JSON bodies unchanged. It retains a versioned expression manifest in the incumbent
+publisher's existing fsynced transaction and sealed cache. Both existing objects
+commit that manifest's SHA256 in their metadata. It creates no object key, store,
+collector or scheduler. The intended consumer is the same private research owner
+with the original retained manifest; this is publication of its commitment, not
+public distribution of the full private terms observation.
+
+`make_expression_intent` requires the original preparation binding, its candidate,
+an explicit `options.contract_terms_observation/v1` and a new actual decision clock.
+The terms observation supplies exact contract, actual multiplier/deliverable,
+effective interval, source availability/observation clocks and original source
+provenance. It is a required normalized source interface, not proof that a producer
+is authenticated or admitted. There is currently no provisioned terms producer in
+this lane. Missing terms cannot be replaced with policy constants or an analyst
+assertion. The intent stays research-only with every authority false.
+
+The owner can pass validated intents through the existing optional
+`publish_pair(..., expression_intents=[intent])` interface. A new expression requires
+a new canonical feed generation. Reusing an old identical payload cannot attach an
+expression or refresh its clock. Later generations automatically carry original
+intents and their expression-specific first receipt identity/clock. Candidate time
+is never expression time. The actual first receipt object's observed `LastModified`
+establishes the commitment's availability; if its coarse clock precedes the intent
+decision, availability remains unavailable, without clamping or backdating.
+
+`read_expression_pair(..., lock_path=the_existing_publisher_lock)` reads the existing
+journal/cache under the existing lock and verifies the exact retained manifest
+against both objects' GET/HEAD metadata and ETags. `resolve_intent_availability(pair, id)`
+returns the exact resolved intent bytes, their hash and the commitment publication
+time for this private owner, or a named unavailable reason. A manifest passed to
+legacy `read_pair` alone does not establish owner readback. The result explicitly
+keeps `public_consumer_available=false`; this seam does not distribute the expression
+bytes to a public consumer. Missing retained state remains unavailable. Source
+admission, activation, capture eligibility and training eligibility stay false.
+A legacy `read_pair` still reads the same v2/v1 bodies without the private manifest.
+
+The optional path uses a versioned local publisher state so an old binary on the
+same host rejects rather than ignores an expression transaction. Upgrade the single
+incumbent writer before enabling this option; no concurrent old writer is supported.
+Missing original retained state, changed intent/history, partial commitments,
+metadata/ETag races, same-body receipt rewrites and unknown foreign generations
+refuse writes. The private reader refuses a pending transaction; only original
+publisher recovery can settle its effect. Recovery consumes
+only the original durable transaction. Provider metadata is not covered by an ETag;
+the protocol separately checks both commitments and retains the original manifest,
+while requiring a new payload generation for new intents. It does not claim protection
+against an arbitrary storage administrator forging a complete source history.
+
+This change does not call the daily publisher, activate a policy, query quotes or
+change campaign outcome persistence. The original correction/review boundary remains.

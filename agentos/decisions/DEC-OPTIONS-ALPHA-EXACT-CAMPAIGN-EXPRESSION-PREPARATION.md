@@ -56,3 +56,20 @@ enter a later admitted lane. Preparations and historical rows cannot gain eligib
 through later observation. Actual contract terms and a versioned binding under the
 incumbent outcome owner remain necessary before the unchanged OA3 evaluator can consume
 natural entry/H+60/exit evidence.
+
+The next publication seam preserves the existing v2 feed/v1 receipt bodies. The
+incumbent publisher retains an explicit-terms research intent manifest in its
+existing fsynced transaction/sealed cache and commits the manifest digest in both
+objects' metadata. Its private reader requires the original manifest plus sealed
+provider readback. Each expression has its own first-publication identity, so a
+later intent cannot borrow the candidate's earlier publication time. A new intent
+requires a new canonical feed generation; absent history is never reconstructed.
+The full intent is privately retained, while the remote pair publishes its
+commitment. The private owner resolves the exact intent and canonical hash only
+through its sealed reader; caller-attached bytes alone cannot establish availability.
+The result keeps public_consumer_available false. This does not claim full public
+distribution or source admission.
+The optional transaction uses versioned local state and requires the upgraded
+single incumbent writer. Availability of the commitment grants no activation,
+capture, option-return, ranking, sizing or trading authority. Campaign outcome
+persistence and the original controlled-correction review remain separate.
