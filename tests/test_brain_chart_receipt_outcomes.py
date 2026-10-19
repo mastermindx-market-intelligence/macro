@@ -205,3 +205,13 @@ def test_compact_context_never_truncates_into_a_different_symbol():
     assert gw._compact_chart_state_for_receipt(rec)["symbol"] == symbol
     rec["session"]["symbol"] = "X" * 65
     assert "symbol" not in gw._compact_chart_state_for_receipt(rec)
+
+
+@pytest.mark.parametrize("name", ["native_parameters", "builtin_parameters"])
+def test_parameter_schema_budget_omission_remains_explicit(name):
+    session = record()["session"]
+    session["mirror_coverage"] = coverage(omitted_fields=["capabilities." + name])
+    out = gw._qualified_chart_mirror_coverage(session)
+    assert out["partial"] is True
+    assert out["omitted_fields"] == ["capabilities." + name]
+    assert out.get("reason") != "invalid_mirror_coverage"

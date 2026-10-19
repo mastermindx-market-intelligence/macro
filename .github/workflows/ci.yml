@@ -3948,6 +3948,7 @@ on:
       - "tests/test_brain_chart_receipt_outcomes.py"
       - "tests/test_brain_chart_widget.py"
       - "tests/fixtures/chart_native_drawing_tools_v1.json"
+      - "tests/fixtures/chart_builtin_parameters_v1.json"
       - "tests/test_brain_native_evidence_boundary.py"
       - "tests/test_brain_pane_contexts.py"
       - "tests/test_brain_presentation.py"

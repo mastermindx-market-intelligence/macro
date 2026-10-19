@@ -1,0 +1,129 @@
+{
+  "schema": "chart.builtin_parameters.v1",
+  "authority": "configuration_description_only",
+  "scope": "active_builtin_studies",
+  "status": "complete",
+  "semantics": {
+    "parameters": "merge_existing",
+    "numeric_step": "ui_increment_not_constraint",
+    "instance_edits": "existing_attached_ids_only",
+    "missing_schema": "enable_then_read_chart_state"
+  },
+  "instances": [
+    {
+      "name": "ema",
+      "type": "ema"
+    },
+    {
+      "name": "rsi",
+      "type": "rsi"
+    },
+    {
+      "name": "rsi__aipair01",
+      "type": "rsi"
+    }
+  ],
+  "types": [
+    {
+      "name": "ema",
+      "label": "Moving Averages",
+      "additional_parameters": false,
+      "parameters": {
+        "ma1On": {
+          "type": "boolean",
+          "default": true
+        },
+        "ma1Len": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 500
+        },
+        "ma2On": {
+          "type": "boolean",
+          "default": true
+        },
+        "ma2Len": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 500
+        },
+        "ma3On": {
+          "type": "boolean",
+          "default": true
+        },
+        "ma3Len": {
+          "type": "number",
+          "default": 200,
+          "minimum": 1,
+          "maximum": 500
+        },
+        "ma1Col": {
+          "type": "string",
+          "default": "#e8a33d",
+          "format": "hex_or_rgb_color"
+        },
+        "ma2Col": {
+          "type": "string",
+          "default": "#4d82ff",
+          "format": "hex_or_rgb_color"
+        },
+        "ma3Col": {
+          "type": "string",
+          "default": "rgba(214,218,227,0.5)",
+          "format": "hex_or_rgb_color"
+        },
+        "width": {
+          "type": "number",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 4
+        }
+      },
+      "unsupported_parameters": []
+    },
+    {
+      "name": "rsi",
+      "label": "RSI",
+      "additional_parameters": false,
+      "parameters": {
+        "length": {
+          "type": "number",
+          "default": 14,
+          "minimum": 2,
+          "maximum": 100
+        },
+        "obLevel": {
+          "type": "number",
+          "default": 70,
+          "minimum": 50,
+          "maximum": 100
+        },
+        "osLevel": {
+          "type": "number",
+          "default": 30,
+          "minimum": 0,
+          "maximum": 50
+        },
+        "showLevels": {
+          "type": "boolean",
+          "default": true
+        },
+        "col": {
+          "type": "string",
+          "default": "#4d82ff",
+          "format": "hex_or_rgb_color"
+        },
+        "width": {
+          "type": "number",
+          "default": 1.2,
+          "minimum": 1,
+          "maximum": 4
+        }
+      },
+      "unsupported_parameters": []
+    }
+  ],
+  "omitted_types": []
+}

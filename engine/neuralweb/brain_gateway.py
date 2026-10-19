@@ -783,7 +783,10 @@ def _chart_command_tool_schemas() -> list[dict]:
                             "chart.set_indicators defaults to replacement: {indicators:[{name,params?}]}. "
                             "For a supported non-destructive edit use {mode:'patch',indicators:[{name,params?}],remove?:[name]}; "
                             "unmentioned studies/settings survive. Use patch ONLY when read_chart_state capabilities.indicator_edit "
-                            "advertises it. Native parameter keys and typed values come from capabilities.native_parameters; "
+                            "advertises it. Built-in keys/types come from capabilities.builtin_parameters.types; "
+                            "use its instances.name for an existing study. Native keys/types come from capabilities.native_parameters. "
+                            "Never invent period aliases. If a study is absent, attach without params, await application, "
+                            "then read_chart_state before configuring its advertised fields. "
                             "When indicator_edit.visibility advertises it, show:[name] reveals an attached study and hide:[name] hides it "
                             "without losing settings. Enable a study with indicators:[{name,params?}] plus show:[name]; "
                             "visibility-only patches use indicators:[]. Unmentioned visibility stays unchanged. "
@@ -887,7 +890,7 @@ def _chart_command_tool_schemas() -> list[dict]:
                 "indicators, visible range, the chart's CAPABILITIES (which timeframes and indicators "
                 "it supports), and existing drawings. Choose indicators and timeframes ONLY from the "
                 "reported capabilities. study_context describes configured native module identities, NOT computed values, "
-                "output health or trading edge. native_parameters describes settings; indicator_edit describes safe patch support. "
+                "output health or trading edge. native_parameters and builtin_parameters describe settings; indicator_edit describes safe patch support. "
                 "session.presentation is a server-qualified read-only view of how the chart is rendered: chart type, price-scale "
                 "mode/side/inversion, replay/day-trade/extended-hours state, key visibility toggles, visual-intelligence toggles and "
                 "up to four comparison overlays. It is presentation evidence only and grants no control authority. "
@@ -3881,7 +3884,7 @@ def _qualified_chart_mirror_coverage(session: dict) -> dict | None:
             or not isinstance(raw.get("partial"), bool)):
         return invalid
     omitted = raw.get("omitted_fields")
-    allowed = {"pane_contexts", "presentation", "price_window", "native_observations", "data_readout", "capabilities.native_parameters"}
+    allowed = {"pane_contexts", "presentation", "price_window", "native_observations", "data_readout", "capabilities.native_parameters", "capabilities.builtin_parameters"}
     if (not isinstance(omitted, list) or len(omitted) > len(allowed)
             or any(not isinstance(key, str) or key not in allowed for key in omitted)
             or len(set(omitted)) != len(omitted)):
@@ -6960,6 +6963,8 @@ READING THE CHART BEFORE YOU DRAW:
 - For indicator edits, prefer chart.set_indicators with mode:"patch" when indicator_edit
   advertises patch support. It preserves unrelated studies/settings; remove names only when asked.
   A client without patch support must not receive that payload as a silent full replacement.
+- Use builtin_parameters for built-in keys and existing instance IDs; never invent period aliases.
+  If absent, attach without params, await application, then re-read before configuring fields.
 - Enable means attach AND show: use indicators:[{name,params?}] plus show:[name] when visibility
   is advertised. A study already attached may be hidden. Check session.indicator_visibility.
   To hide without removing settings use hide:[name] with indicators:[]; do not equate hidden with absent.

@@ -1,7 +1,7 @@
 ---
 id: protocol
 kind: protocol
-version: 14
+version: 15
 title: Chart reading protocol
 always: true
 priority: 100
@@ -23,7 +23,7 @@ THE READING PROTOCOL (every chart read):
 
 7) RECONCILE. Separate location, direction, trigger, invalidation, next obstacle and room. Price-derived indicators are correlated, not independent votes; distance alone is not setup quality. Levels need same-basis chart_digest, native price geometry or user drawings. Use measure_line when applicable; disclose weak/invalid results. Extended geometry does not prove future support/resistance. Live Entry Radar, TOI and Evaluation retain their signal/promotion meanings.
 
-8) REQUESTED CONTROLS ONLY. Prefer advertised additive chart.set_indicators patches, preserving unrelated studies/scripts/settings. Enable means attach AND show using supported show:[name]; verify indicator_visibility. Hidden studies retain settings; hide:[name] with indicators:[] hides without removal. Re-read after symbol/timeframe/settings/viewport changes. Selective ai.clear ids requires its exact capability; never omit ids as a clear-all fallback. ai.undo/ai.clear does not restore indicators. Every effectful v2 command requires the host's exact target and all_effectful_v2 capability. Separate dependent tool rounds. Only a matched chart.command_application.v1 predecessor/successor with a still-current successor advances the target; manual chart/pane/settings/selection drift never permits retargeting.
+8) REQUESTED CONTROLS ONLY. Prefer advertised additive chart.set_indicators patches, preserving unrelated studies/scripts/settings. Enable means attach AND show using supported show:[name]; verify indicator_visibility. Use builtin_parameters types and existing instance IDs for canonical fields; never invent period aliases. If absent, attach without params, await application, then re-read before configuring. Hidden studies retain settings; hide:[name] with indicators:[] hides without removal. Re-read after symbol/timeframe/settings/viewport changes. Selective ai.clear ids requires its exact capability; never omit ids as a clear-all fallback. ai.undo/ai.clear does not restore indicators. Every effectful v2 command requires the host's exact target and all_effectful_v2 capability. Separate dependent tool rounds. Only a matched chart.command_application.v1 predecessor/successor with a still-current successor advances the target; manual chart/pane/settings/selection drift never permits retargeting.
 
 9) COMPOSE ANALYSIS. Advanced/showcase requests need complementary constructions, usually 4-8 across at least three useful tool families when evidence supports them; a lone level or Fibonacci is insufficient. emit_chart_plan follows receiver drawing_tools contracts, loaded timestamps and semantic anchors. When configuration is needed, configure in a separate round, await the applied successor and re-read before dependent drawings. Submit a drawings-only plan. All children share the exact target and turn cap with other plans/singles. Use short labels and interior text anchors with room for text. Patterns are interpretations, not calibrated odds. Inspect every child receipt: the ordered queue is not atomic. Explain evidence/capability limits if fewer constructions are justified. The upper-left AI layer lists constructions/elements for visibility/removal.
 

@@ -47,7 +47,7 @@ def chart(tmp_path, monkeypatch):
     origin = "plan-" + uuid4().hex[:16]
     session = {
         "symbol": "NVDA", "tf": "D", "pane_id": 1,
-        "indicators": [{"name": "rsi", "params": {"period": 21}}, {"name": "ema"}],
+        "indicators": [{"name": "rsi", "params": {"length": 21}}, {"name": "ema"}],
         "indicator_visibility": {"schema": "chart.indicator_visibility.v1", "hidden": ["rsi"]},
         "drawings": [],
         "capabilities": {
@@ -553,3 +553,26 @@ def test_applied_indicator_successor_refreshes_stream_provider_guidance_before_r
     assert len(wires) == 5
     assert wires[0]["target"]["context_revision"] == 7
     assert all(wire["target"]["context_revision"] == 8 for wire in wires[1:])
+
+
+def test_builtin_receiver_settings_reach_the_next_provider_request(chart, monkeypatch):
+    # Exact projection exported from Terminal f3a09fd0 chartIndicatorParams.ts;
+    # a protocol specimen, not a Python indicator registry or a pixel claim.
+    packet = json.loads((Path(__file__).parent / "fixtures/chart_builtin_parameters_v1.json").read_text())
+    chart["session"]["capabilities"]["builtin_parameters"] = copy.deepcopy(packet)
+    gw.put_chart_state(USER, "terminal", chart["session"], origin_id=chart["origin"], context_revision=7)
+    client, _ = run_model(chart, monkeypatch, [
+        [block("read_chart_state", {}, "read-settings")],
+        [SimpleNamespace(type="text", text="The canonical RSI setting is length.")],
+    ])
+    observed = result_for(client, "read-settings")
+    assert observed["session"]["capabilities"]["builtin_parameters"] == packet
+    rsi = next(row for row in packet["types"] if row["name"] == "rsi")
+    assert rsi["parameters"]["length"] == {"type": "number", "default": 14, "minimum": 2, "maximum": 100}
+    assert "len" not in rsi["parameters"]
+    assert {"name": "rsi__aipair01", "type": "rsi"} in packet["instances"]
+    tools = client.calls[-1]["tools"]
+    command = next(tool for tool in tools if tool["name"] == "emit_chart_command")
+    help_text = command["input_schema"]["properties"]["args"]["description"]
+    assert "builtin_parameters.types" in help_text and "instances.name" in help_text
+    assert "await application" in help_text
