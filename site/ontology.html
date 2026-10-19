@@ -58,7 +58,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css?v=2e861147">
 <link rel="stylesheet" href="ontology.css?v=61b69acc">
-<link rel="stylesheet" href="ontology-company.css?v=85c2a09d">
+<link rel="stylesheet" href="ontology-company.css?v=493b80ac">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 <style>
@@ -367,6 +367,18 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   </div>
 
 
+  <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
+    <h2 id="ox-portfolio-title"><span class="l-en">Your Portfolio in this path</span><span class="l-zh">此路径中的投资组合</span></h2>
+    <p class="ox-note"><span class="l-en">Compare your saved open positions with dated owner screen membership. Your holdings stay private; this view never edits your Portfolio.</span><span class="l-zh">将已保存的未平仓持仓与来源筛选的历史成员名单对照。持仓保持私有；此视图不会修改投资组合。</span></p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-portfolio-read disabled><span class="l-en">Read my Portfolio</span><span class="l-zh">读取我的投资组合</span></button>
+      <button class="ox-cta secondary" type="button" data-portfolio-clear><span class="l-en">Clear reading</span><span class="l-zh">清除读数</span></button>
+    </div>
+    <div data-portfolio-result aria-live="polite" aria-busy="false">
+      <p class="ox-note"><span class="l-en">Load a current path reading before reading your Portfolio.</span><span class="l-zh">请先加载当前路径读数，再读取投资组合。</span></p>
+    </div>
+  </section>
+
   <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
     <h2 id="ox-company-title"><span class="l-en">Company research</span><span class="l-zh">公司研究</span></h2>
     <p class="ox-note"><span class="l-en">Inspect source-announced plans. Selecting a company does not establish a connection to the WTI path above.</span><span class="l-zh">查看来源披露的计划。选择公司并不确立其与上方 WTI 路径的联系。</span></p>
@@ -398,7 +410,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <script src="supabase.js?v=8596965f" defer></script>
 <script src="theme.js?v=46939917" defer></script>
-<script src="ontology.js?v=dfd9a50d" defer></script>
+<script src="portfolio_state.js?v=846cea2c" defer></script>
+<script src="watchstore.js?v=912a8704" defer></script>
+<script src="ontology.js?v=8179a246" defer></script>
+<script type="module" src="ontology-portfolio.js?v=76b59fcd"></script>
 <script type="module" src="ontology-company.js?v=0f93164d"></script>
 </body>
 </html>

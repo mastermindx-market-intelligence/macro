@@ -1720,8 +1720,9 @@
     var controller = new AbortController();
     var timer, rejectStopped;
     var stopped = new Promise(function (_resolve, reject) { rejectStopped = reject; });
-    var external = options.signal;
     var listeners = [];
+    // A setup failure can happen before the race subscribes. Always own this rejection.
+    void stopped.catch(function () {});
     function refusal(reason) { var e = new Error('PRIVATE_PORTFOLIO_UNAVAILABLE'); e.reason = reason; return e; }
     function stop(reason) {
       if (!active) return;
@@ -1756,8 +1757,10 @@
       canonical();
       var session = answer && !answer.error && answer.data && answer.data.session;
       if (!session || !session.user || session.user.id !== ownerId ||
-          typeof session.access_token !== 'string' || !session.access_token ||
-          (token && session.access_token !== token)) throw refusal('identity-changed');
+          typeof session.access_token !== 'string' || !session.access_token) throw refusal('identity-changed');
+      // A changed session is conservatively discarded, even for the same user.
+      // The caller may explicitly read again; this is not an account-switch claim.
+      if (token && session.access_token !== token) throw refusal('session-changed');
       return session.access_token;
     }
     async function read() {
@@ -1806,22 +1809,29 @@
       check();
       return result('ready', rows, null);
     }
-    listen(window, 'mdx-auth', function () { stop('identity-changed'); });
-    listen(window, 'pagehide', function () { stop('cancelled'); });
-    if (external) {
-      if (external.aborted) stop('cancelled');
-      else listen(external, 'abort', function () { stop('cancelled'); });
-    }
-    timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
-    return Promise.race([read(), stopped]).catch(function (e) {
-      var allowed = ['signed-out', 'identity-changed', 'client-unavailable', 'read-timeout',
-        'cancelled', 'cloud-unavailable', 'incomplete-book', 'invalid-book'];
+    return Promise.resolve().then(function () {
+      if (!Number.isFinite(deadline)) throw refusal('read-timeout');
+      var external = options.signal;
+      if (external && (typeof external.aborted !== 'boolean' ||
+          typeof external.addEventListener !== 'function' ||
+          typeof external.removeEventListener !== 'function')) throw refusal('invalid-options');
+      listen(window, 'mdx-auth', function () { stop('session-changed'); });
+      listen(window, 'pagehide', function () { stop('cancelled'); });
+      if (external) {
+        if (external.aborted) stop('cancelled');
+        else listen(external, 'abort', function () { stop('cancelled'); });
+      }
+      timer = setTimeout(function () { stop('read-timeout'); }, PF_CLOUD_DEADLINE_MS);
+      return Promise.race([read(), stopped]);
+    }).catch(function (e) {
+      var allowed = ['signed-out', 'identity-changed', 'session-changed', 'client-unavailable', 'read-timeout',
+        'cancelled', 'cloud-unavailable', 'incomplete-book', 'invalid-book', 'invalid-options'];
       return result('error', null, allowed.includes(e && e.reason) ? e.reason : 'cloud-unavailable');
     }).finally(function () {
       active = false;
       controller.abort();
       clearTimeout(timer);
-      listeners.forEach(function (remove) { remove(); });
+      listeners.forEach(function (remove) { try { remove(); } catch (_) { /* best effort */ } });
     });
   }
 

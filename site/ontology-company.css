@@ -23,3 +23,9 @@ html[data-theme="light"] .ox-company{background:var(--panel);box-shadow:var(--ca
 @media(max-width:600px){.ox-company{padding:var(--space-4,16px)}
   .ox-company-field{grid-template-columns:1fr;gap:var(--space-1,4px)}
   .ox-company-form .ox-cta{flex:1 1 auto;justify-content:center}}
+
+/* Reuse the inspector's two art directions for private membership rows. */
+.ox-portfolio-rows{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:var(--space-3,12px)}
+.ox-portfolio-row{min-width:0;overflow-wrap:anywhere}
+.ox-portfolio-row .ox-note{margin:var(--space-2,8px) 0 0}
+.ox-company button:disabled{opacity:.55;cursor:default}

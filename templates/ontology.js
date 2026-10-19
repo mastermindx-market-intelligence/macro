@@ -27,6 +27,7 @@
   var legDetail = null;
   var readingEpoch = 0;
   var activeRequest = null;
+  var portfolioReading = null;
   var canonicalOwner = null;
   try { canonicalOwner = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); }
   catch (e) { canonicalOwner = null; }
@@ -36,6 +37,9 @@
     readingEpoch += 1;
     if (activeRequest) activeRequest.abort();
     activeRequest = null;
+    portfolioReading = null;
+    var portfolio = document.getElementById("ox-portfolio");
+    if (portfolio) portfolio.dispatchEvent(new CustomEvent("ontology-source-changed"));
     selectedPathRef = null;
     returnFocusRef = null;
     returnScrollX = returnScrollY = null;
@@ -1381,6 +1385,12 @@
     return d;
   }
 
+  var portfolioRoot = document.getElementById("ox-portfolio");
+  function deliverPortfolioReading() {
+    if (portfolioRoot && portfolioReading) portfolioRoot.dispatchEvent(new CustomEvent("ontology-reading", { detail: portfolioReading }));
+  }
+  if (portfolioRoot) portfolioRoot.addEventListener("ontology-consumer-ready", deliverPortfolioReading);
+
   function render(snapshot) {
     root.textContent = "";
 
@@ -1472,6 +1482,14 @@
       if (epoch !== readingEpoch) return;
       if (!sameOwner) { signedOutGate(); return; }
       render(snapshot);
+      portfolioReading = {
+        chain: snapshot.source.chain, source_manifest_hash: snapshot.source.source_manifest_hash,
+        asof: snapshot.company_exposure && snapshot.company_exposure.asof,
+        identity_sha256: snapshot.company_exposure && snapshot.company_exposure.identity_source && snapshot.company_exposure.identity_source.sha256 || null,
+        owner_id: auth.identity.id,
+        channels: (snapshot.exposure_screens || []).map(function (s) { return {id:s.id, label:s.label}; })
+      };
+      deliverPortfolioReading();
       focusFromHash();
     } catch (error) {
       if (epoch === readingEpoch) gateForFailure("request_failed");

@@ -1291,3 +1291,29 @@ def test_portfolio_readonly_true_empty_book_is_distinct_from_unknown():
     out = _readonly('response={data:[],count:0,error:null}; WS.portfolio.readOnly().then(result=>OUT(result));')
     assert out['state'] == 'ready'
     assert out['rows'] == []
+
+
+@needs_node
+@pytest.mark.parametrize('options', ["{signal:{aborted:false}}", "{get signal(){throw Error('secret');}}",
+    "{signal:{aborted:false,addEventListener(){throw Error('secret');},removeEventListener(){}}}"])
+def test_portfolio_readonly_setup_failure_is_owned_and_cleans_listeners(options):
+    out = _readonly("""
+    (async()=>{const errors=[];process.on('unhandledRejection',e=>errors.push(String(e)));
+      const before=Object.fromEntries(Object.entries(listeners).map(([k,v])=>[k,v.length]));
+      const result=await WS.portfolio.readOnly(OPTIONS);fire('pagehide');fire('mdx-auth');
+      await new Promise(r=>setTimeout(r,0));
+      OUT({result,errors,calls,before,after:Object.fromEntries(Object.entries(listeners).map(([k,v])=>[k,v.length]))});})();
+    """.replace('OPTIONS',options))
+    assert out['result']['state']=='error' and out['result']['rows'] is None
+    assert out['errors']==[] and out['calls']['query']==0
+    assert all(n==out['before'].get(k,0) for k,n in out['after'].items())
+
+
+@needs_node
+def test_portfolio_readonly_same_owner_rotation_is_session_change_not_account_change():
+    out = _readonly("""
+    sessionHook=async()=>({data:{session:{user:{id:uid},access_token:calls.session===1?token:'rotated'}}});
+    WS.portfolio.readOnly().then(result=>OUT(result));
+    """)
+    assert out['state']=='error' and out['rows'] is None
+    assert out['warning']=='session-changed'

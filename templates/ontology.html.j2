@@ -63,6 +63,19 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   </div>
 
 
+  <section id="ox-portfolio" class="ox-company" aria-labelledby="ox-portfolio-title">
+    <h2 id="ox-portfolio-title">{{ t('Your Portfolio in this path', '此路径中的投资组合') }}</h2>
+    <p class="ox-note">{{ t('Compare your saved open positions with dated owner screen membership. Your holdings stay private; this view never edits your Portfolio.',
+      '将已保存的未平仓持仓与来源筛选的历史成员名单对照。持仓保持私有；此视图不会修改投资组合。') }}</p>
+    <div class="ox-company-form">
+      <button class="ox-cta" type="button" data-portfolio-read disabled>{{ t('Read my Portfolio', '读取我的投资组合') }}</button>
+      <button class="ox-cta secondary" type="button" data-portfolio-clear>{{ t('Clear reading', '清除读数') }}</button>
+    </div>
+    <div data-portfolio-result aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Load a current path reading before reading your Portfolio.', '请先加载当前路径读数，再读取投资组合。') }}</p>
+    </div>
+  </section>
+
   <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
     <h2 id="ox-company-title">{{ t('Company research', '公司研究') }}</h2>
     <p class="ox-note">{{ t(
@@ -109,7 +122,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <script src="{{ nav_prefix|default('') }}supabase.js" defer></script>
 <script src="{{ nav_prefix|default('') }}theme.js" defer></script>
+<script src="{{ nav_prefix|default('') }}portfolio_state.js" defer></script>
+<script src="{{ nav_prefix|default('') }}watchstore.js" defer></script>
 <script src="{{ nav_prefix|default('') }}ontology.js" defer></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-portfolio.js"></script>
 <script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
 </body>
 </html>

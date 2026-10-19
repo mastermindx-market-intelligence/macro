@@ -1,0 +1,236 @@
+{
+  "generated_at": "2026-10-19T07:50:43.171980+00:00",
+  "scope": "Fully intercepted synthetic holdings and identities on actual emitted Macro shell; no production holdings, write, market data or source-body request.",
+  "cells": [
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-dark-en-ready.png",
+      "sha256": "c6e8b8790e425a446eefa1364a204853b6966d8f6262321ba95920e40394ada4",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-dark-en-unknown_identity.png",
+      "sha256": "738c3e4142197cf6810a66fe30ccea34128ff001871a1519f887b2512743b247",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-dark-zh-ready.png",
+      "sha256": "e5a7b7fc6662b0a71cb2918160be606c6e6780d0a8a1c8d339e6c5ba49364d9c",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-dark-zh-unknown_identity.png",
+      "sha256": "d760e04bdf3313a3e069c2899311e80de706c15a32d28c01cc2d989a5d29a29f",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-light-en-ready.png",
+      "sha256": "50d9754e5d1bb3988164557cc919ccc43b13e3b9bed560a1e6d39e94dd4371d0",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-light-en-unknown_identity.png",
+      "sha256": "79eebebd0359f63ec29cf9a27c03f603d20111bc221e7458d00652226d4a4331",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-light-zh-ready.png",
+      "sha256": "67992887f76d15552d0d1fc83357bb6d2c605911ab2b1456821f358b6d6bc8ca",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/1440-light-zh-unknown_identity.png",
+      "sha256": "a97c7b0d68559b6b053dd7c076c9ee45c4cf384d02a358fac9794b4649bd653d",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-dark-en-ready.png",
+      "sha256": "4d6b63de427387a6fda7d43a503e5ea2c9b3c7e6efceba2e221de39c7f3e49e1",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "en",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-dark-en-unknown_identity.png",
+      "sha256": "3ebbc0a6f0e806091e214bde9665e484c0ef2cdafb8241ea127dc5efe38dcc53",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-dark-zh-ready.png",
+      "sha256": "e2d1e513170081812cc45a11a9b78528e504f97a7df12b8b5abc9742bcba819c",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "dark",
+      "locale": "zh",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-dark-zh-unknown_identity.png",
+      "sha256": "7e2cd164d592e515a50260d61b6fac4e6d1090accc56afcb448a4928c965baac",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-light-en-ready.png",
+      "sha256": "8fb00af41a04c74a84940f1aed6aabb9e05a5f9c04b82f2c58ee94bd07e49cbf",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "en",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-light-en-unknown_identity.png",
+      "sha256": "49c0977d90bb8e77c4d9457aaa95d1172d997c2503d1b8c0738d56846237808d",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "ready",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-light-zh-ready.png",
+      "sha256": "bb416e469f150ffe0604084d5c58c1f9501d086472ef61a36a85f321312d76b3",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    },
+    {
+      "viewport": [
+        390,
+        1000
+      ],
+      "theme": "light",
+      "locale": "zh",
+      "state": "unknown_identity",
+      "file": "mockups/evidence/ontology-portfolio-20261019/synthetic/390-light-zh-unknown_identity.png",
+      "sha256": "7038c31696f5f5281eff553e06a6bd1b678e2eef466a82f3dc05ca47af4005f5",
+      "cloud_reads": 1,
+      "private_membership_requests": 1,
+      "console_errors": []
+    }
+  ],
+  "source_sha256": {
+    "templates/ontology-portfolio.js": "76b59fcd0713bc568919a453d60a343815b7a30c52cbec164ec51557700ff242",
+    "templates/ontology.js": "8179a246d842cb54f0998d49187506f65e4aa8bb36047180dc42d1eef23b1942",
+    "templates/watchstore.js": "912a870425c75c82c19e0015793903328847ecf5b705cf6979aa1a13d407db2a",
+    "templates/ontology-company.css": "493b80ac377166fef512d9b7770ea782ef479296aebe03ddac9adc2341df584f"
+  }
+}
