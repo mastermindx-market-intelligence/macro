@@ -1768,3 +1768,11 @@ def test_x2_native_unresolved_is_unknown_not_a_false_observation(x2_inputs, monk
     monkeypatch.setattr(txi,'eval_node',unavailable)
     root = _x2_run(x2_inputs)['root_evaluation']
     assert root['status'] == 'UNAVAILABLE' and root['confirmed'] is None
+
+
+def test_x2_request_time_freshness_does_not_mint_new_snapshot_identity(x2_inputs):
+    first=_x2_run(x2_inputs)
+    x2_inputs[0]['source']['freshness']={'source_age_seconds':999999}
+    second=_x2_run(x2_inputs)
+    assert first['assumption_id']==second['assumption_id']
+    assert first['scenario_eval_id']==second['scenario_eval_id']

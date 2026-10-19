@@ -1,10 +1,10 @@
-"""Authenticated, read-only API for the F04-X1 ontology explorer.
+"""Authenticated source reads and ephemeral F04 ontology evaluations.
 
 `/ontology.html` is a public, discoverable shell that contains no current value.
-Every current value reaches the researcher through this one route, behind the
+Current reads and explicit private scenario requests use this router behind the
 existing authority — `app.main.require_user` then
 `app.paywall.enforce_site_full(always=True)` — and nothing else. There is no
-second identity path and no second entitlement check here; minting either is how
+second identity path or entitlement authority here; minting either is how
 a paywall quietly stops being one.
 
 `always=True` is deliberate: this surface fails closed in every environment
@@ -24,6 +24,8 @@ the harm this product exists to prevent.
 """
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import os
 import re
@@ -36,6 +38,10 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from starlette.concurrency import run_in_threadpool
+
+from engine.ontology_scenario import ScenarioInputError, parse_assumption
+from engine.ontology_scenario_runtime import ScenarioSnapshotChanged, evaluate_current_scenario
 
 from engine.ontology_explorer import (
     DEFAULT_CHAIN,
@@ -56,6 +62,10 @@ _PRIVATE_HEADERS = {
     "X-Robots-Tag": "noindex, noarchive",
 }
 
+_PRIVATE_POST_PATHS = frozenset({'/api/ontology/explorer/scenario/v1',
+                                 '/api/ontology/explorer/portfolio/v1'})
+_POST_HEADERS = {**_PRIVATE_HEADERS, 'Vary': 'Authorization, Cookie'}
+
 _CHAIN_PARAM_RE = re.compile(r"[a-z0-9][a-z0-9_]{0,80}")
 
 #: PRODUCT ADMISSION, not syntax. The composer is chain-generic on purpose — it
@@ -72,17 +82,19 @@ class _PrivateOntologyRoute(APIRoute):
         original = super().get_route_handler()
 
         async def private_handler(request: Request) -> Response:
+            headers_for_request = _POST_HEADERS if request.url.path in _PRIVATE_POST_PATHS else _PRIVATE_HEADERS
             try:
                 response = await original(request)
             except RequestValidationError as exc:
                 return JSONResponse(
-                    {"detail": jsonable_encoder(exc.errors())},
+                    {'detail': {'schema': ERROR_SCHEMA_ID, 'code':'invalid_request'}}
+                    if request.url.path in _PRIVATE_POST_PATHS else {'detail': jsonable_encoder(exc.errors())},
                     status_code=422,
-                    headers=_PRIVATE_HEADERS,
+                    headers=headers_for_request,
                 )
             except HTTPException as exc:
                 headers = dict(exc.headers or {})
-                headers.update(_PRIVATE_HEADERS)
+                headers.update(headers_for_request)
                 raise HTTPException(status_code=exc.status_code, detail=exc.detail,
                                     headers=headers) from exc
             except Exception:  # noqa: BLE001 - see below
@@ -91,12 +103,15 @@ class _PrivateOntologyRoute(APIRoute):
                 # app.main's no-store middleware, and the 500 goes out with none of the
                 # private header set. Measured on the real app, not just a bare one.
                 # The exception string never travels: that is where internal paths leak.
-                log.exception("ontology explorer failed unexpectedly")
+                if request.url.path in _PRIVATE_POST_PATHS:
+                    log.error('ontology private request failed unexpectedly')
+                else:
+                    log.exception('ontology explorer failed unexpectedly')
                 return JSONResponse(
                     {"detail": {"schema": ERROR_SCHEMA_ID, "code": "internal_error",
                                 "reason": "unhandled"}},
-                    status_code=500, headers=_PRIVATE_HEADERS)
-            response.headers.update(_PRIVATE_HEADERS)
+                    status_code=500, headers=headers_for_request)
+            response.headers.update(headers_for_request)
             return response
 
         return private_handler
@@ -176,7 +191,7 @@ def read_snapshot(
 # route class above is entered, so neither could ever be stamped by it. Both are
 # registered here instead: HEAD reuses the read path (the body is dropped by the
 # protocol, the headers are not), and every other verb gets an explicit, headered
-# 405. Both are hidden from the schema so the documented surface stays GET-only.
+# 405. Both are hidden from the schema so this snapshot path stays GET-only.
 router.add_api_route("/v1", read_snapshot, methods=["HEAD"], include_in_schema=False)
 
 
@@ -195,3 +210,80 @@ def _method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Respon
                 "reason": "read_only_route"},
         headers={**_PRIVATE_HEADERS, "Allow": "GET, HEAD"},
     )
+
+
+# Explicit, ephemeral evaluation is POSTed privately; the GET snapshot contract
+# stays tenant-neutral. Shared with X4 so neither feature invents another parser.
+def _post_error(status: int, code: str) -> HTTPException:
+    return HTTPException(status, detail={'schema':ERROR_SCHEMA_ID,'code':code},
+                         headers=_POST_HEADERS)
+
+
+async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict:
+    if request.query_params: raise _post_error(400, 'query_parameters_forbidden')
+    if request.headers.get('content-type','').split(';',1)[0].strip().lower() != 'application/json':
+        raise _post_error(415, 'json_required')
+    if request.headers.get('content-encoding','identity').lower() != 'identity':
+        raise _post_error(415, 'content_encoding_forbidden')
+    length = request.headers.get('content-length')
+    if length is not None:
+        if not re.fullmatch(r'[0-9]+',length): raise _post_error(400, 'invalid_length')
+        if len(length) > 10 or int(length) > max_bytes: raise _post_error(413, 'body_too_large')
+    async def bounded():
+        raw = bytearray()
+        async for chunk in request.stream():
+            if len(chunk) > max_bytes - len(raw): raise _post_error(413, 'body_too_large')
+            raw.extend(chunk)
+        return bytes(raw)
+    try:
+        raw = await asyncio.wait_for(bounded(), timeout=3.0)
+    except TimeoutError:
+        raise _post_error(408, 'body_deadline_exceeded') from None
+    def unique(pairs):
+        result = {}
+        for key,value in pairs:
+            if key in result: raise ValueError('duplicate parameter')
+            result[key] = value
+        return result
+    try:
+        payload = json.loads(raw,object_pairs_hook=unique)
+        if not isinstance(payload,dict): raise ValueError('object required')
+    except (TypeError,ValueError,UnicodeError,RecursionError):
+        raise _post_error(400,'invalid_json_object') from None
+    return payload
+
+
+@router.post('/scenario/v1')
+async def evaluate_private_scenario(request: Request,
+                                    _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    payload = await _private_post_body(request)
+    if set(payload) != {'schema','source_manifest_hash','assumption'} or payload.get('schema') != 'ontology_scenario_request.v1':
+        raise _post_error(400,'invalid_scenario_request')
+    manifest = payload.get('source_manifest_hash')
+    if not isinstance(manifest,str) or not re.fullmatch(r'sha256:[0-9a-f]{64}',manifest):
+        raise _post_error(400,'invalid_source_identity')
+    try:
+        assumption = parse_assumption(json.dumps(payload['assumption']).encode())
+    except (ScenarioInputError,TypeError,ValueError,RecursionError):
+        raise _post_error(400,'invalid_assumption') from None
+    try:
+        result = await run_in_threadpool(evaluate_current_scenario,_repo_root(),assumption,manifest)
+    except ScenarioSnapshotChanged:
+        raise _post_error(409,'source_changed') from None
+    except (SourceUnavailable,SourceIncoherent,OSError):
+        raise _post_error(503,'source_unavailable') from None
+    except ScenarioInputError:
+        raise _post_error(400,'invalid_assumption') from None
+    except Exception:
+        # No exception message/traceback: owner failures can contain private
+        # inputs. The code is observable; the request/exception is never logged.
+        log.error('ontology scenario failed unexpectedly')
+        raise _post_error(500,'internal_error') from None
+    return JSONResponse(result,headers=_POST_HEADERS)
+
+
+@router.api_route('/scenario/v1',methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'],include_in_schema=False)
+def _scenario_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
+    error = _post_error(405,'method_not_allowed')
+    error.headers['Allow'] = 'POST'
+    raise error

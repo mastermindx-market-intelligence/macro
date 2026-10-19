@@ -117,6 +117,14 @@ class _MemorySeries:
         return self._series.copy(deep=True)
 
 
+def _snapshot_identity(snapshot: dict) -> str:
+    # Freshness ages are request-time diagnostics, not a new owner generation.
+    source = snapshot.get('source', {})
+    return _hash({'schema': snapshot.get('schema'), 'source': {
+        key: source.get(key) for key in ['chain', 'rev', 'asof', 'built',
+                                       'composer_method', 'source_manifest_hash']}})
+
+
 def _unavailable(reason: str) -> dict:
     return dict(status='UNAVAILABLE', method_class='UNAVAILABLE', confirmed=None, reason=reason)
 
@@ -155,7 +163,8 @@ def _owner_tuple(baseline: SeriesBaseline) -> tuple[dict, pd.Series]:
 
 
 def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
-                      baseline: SeriesBaseline, evaluated_at: str, created_at: str | None = None) -> dict:
+                      baseline: SeriesBaseline | None, evaluated_at: str, created_at: str | None = None,
+                      owner_refusal: dict | None = None) -> dict:
     """Return a private derived result; caller retains it only for this reading.
 
     The snapshot, chain and SeriesBaseline are trusted native-owner inputs, NEVER
@@ -174,12 +183,13 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
     except (OSError, TypeError):
         method_versions = [METHOD, 'TXI_METHOD_BYTES_UNAVAILABLE']
         method_available = False
-    snapshot_id = _hash(snapshot)
+    snapshot_id = _snapshot_identity(snapshot)
     assumption_id = _hash(dict(assumption=normalized, snapshot_id=snapshot_id))
     root = _unavailable('EPHEMERAL_REPLAY_UNAVAILABLE')
     owner_receipt = None
     try:
         if not method_available: raise ValueError('method bytes unavailable')
+        if baseline is None: raise ValueError('native owner inputs unavailable')
         owner_receipt, history = _owner_tuple(baseline)
         src = snapshot['source']
         if snapshot.get('schema') != 'ontology_explorer_snapshot.v1': raise ValueError('snapshot schema')
@@ -236,6 +246,9 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
             root['horizon'] = dict(label='60d', unit='owner_sessions', count=60)
     except (KeyError, TypeError, ValueError, AttributeError, IndexError, OverflowError, txi.ChainSchemaError):
         root = _unavailable('EPHEMERAL_REPLAY_UNAVAILABLE')
+        if baseline is None and owner_refusal:
+            root.update({key:owner_refusal[key] for key in ['reason','missing_owner_inputs','adapter_method']
+                         if key in owner_refusal})
     hops = [dict(from_node=h.get('from'), to_node=h.get('to'), method_class='HYPOTHESIS_MECHANISM',
                  value=None, reason='DOWNSTREAM_NOT_ASSUMED') for h in chain.get('hops', [])]
     logical = dict(assumption_id=assumption_id, snapshot_id=snapshot_id, chain_hash=_hash(chain),

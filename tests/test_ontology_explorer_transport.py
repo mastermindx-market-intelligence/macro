@@ -168,8 +168,8 @@ def test_error_bodies_carry_no_owner_reading(monkeypatch, tmp_path):
 def test_the_router_serves_no_write_verbs(monkeypatch, tmp_path):
     with _client(monkeypatch, tmp_path) as client:
         paths = client.app.openapi()["paths"]
-    for methods in paths.values():
-        assert set(methods) <= {"get"}, "the explorer is read-only"
+    assert set(paths[ROUTE]) == {'get'}, 'the snapshot remains read-only'
+    assert set(paths['/api/ontology/explorer/scenario/v1']) == {'post'}
 
 
 def test_a_get_does_not_mutate_the_owner_artifacts(monkeypatch, tmp_path):
@@ -324,3 +324,200 @@ def test_the_admitted_chain_is_the_wti_path_only():
     from app.ontology_explorer import ACCEPTED_CHAINS, DEFAULT_CHAIN
     assert ACCEPTED_CHAINS == {"oil_inflation_duration_derate"}
     assert DEFAULT_CHAIN in ACCEPTED_CHAINS
+
+
+SCENARIO_ROUTE = '/api/ontology/explorer/scenario/v1'
+
+
+def _scenario_payload(snapshot):
+    return {'schema':'ontology_scenario_request.v1',
+            'source_manifest_hash':snapshot['source']['source_manifest_hash'],
+            'assumption':{'schema':'ontology_scenario_assumption.v1','node_ref':'yahoo:CL=F',
+                'shock_definition':'terminal_change_over_horizon','magnitude':30,'unit':'percent',
+                'horizon':'60d','path_shape':'linear_sessions','origin_class':'supply',
+                'baseline_effective_at':snapshot['source']['asof'],
+                'baseline_knowledge_cutoff':snapshot['source']['built']}}
+
+
+def test_x2_post_runs_only_after_auth_and_returns_private_native_refusal(monkeypatch, tmp_path):
+    # Default loader must explain actual native gaps, never fabricate a calendar.
+    from engine import ontology_scenario_runtime as runtime
+    monkeypatch.setattr(runtime,'DEFAULT_CHAIN',fx.SLUG)
+    with _client(monkeypatch,tmp_path) as client:
+        payload = _scenario_payload(client.get(ROUTE).json())
+        response = client.post(SCENARIO_ROUTE,json=payload)
+    assert response.status_code == 200
+    _assert_scenario_private(response)
+    assert response.json()['root_evaluation']['reason'] == 'WTI_FUTURES_CALENDAR_UNAVAILABLE'
+    assert response.json()['combined_estimate'] is None
+
+
+def _assert_scenario_private(response):
+    for key,value in REQUIRED_PRIVATE_HEADERS.items():
+        if key != 'vary': assert response.headers.get(key) == value
+    assert {'authorization','cookie'} <= {s.strip().lower() for s in response.headers['vary'].split(',')}
+
+
+@pytest.mark.parametrize('authed,entitled,status',[(False,True,401),(True,False,403)])
+def test_x2_auth_precedes_body_and_source_access(monkeypatch,tmp_path,authed,entitled,status):
+    api = _api()
+    def forbidden(*args,**kwargs): raise AssertionError('owner read before entitlement')
+    with _client(monkeypatch,tmp_path,authed=authed,entitled=entitled) as client:
+        monkeypatch.setattr(api,'evaluate_current_scenario',forbidden)
+        response=client.post(SCENARIO_ROUTE,content=b'private malformed assumption')
+    assert response.status_code==status
+    _assert_scenario_private(response)
+
+
+@pytest.mark.parametrize('body,headers,status',[
+    (b'{}',{'content-type':'text/plain'},415),
+    (b'{}',{'content-type':'application/json','content-encoding':'gzip'},415),
+    (b'{}',{'content-type':'application/json','content-length':'9000'},413),
+    (b'{}',{'content-type':'application/json','content-length':'invalid'},400),
+    (b'x'*4097,{'content-type':'application/json'},413),
+    (b'{"schema":"a","schema":"b"}',{'content-type':'application/json'},400),
+    (b'{"private":"DO_NOT_ECHO"}',{'content-type':'application/json'},400),
+])
+def test_x2_bounded_parsing_never_echoes_private_input(monkeypatch,tmp_path,body,headers,status,caplog):
+    with _client(monkeypatch,tmp_path) as client:
+        response=client.post(SCENARIO_ROUTE,content=body,headers=headers)
+    assert response.status_code==status
+    _assert_scenario_private(response)
+    assert 'DO_NOT_ECHO' not in response.text and 'DO_NOT_ECHO' not in caplog.text
+
+
+def test_x2_post_rejects_source_change_and_query_parameters(monkeypatch,tmp_path):
+    from engine import ontology_scenario_runtime as runtime
+    monkeypatch.setattr(runtime,'DEFAULT_CHAIN',fx.SLUG)
+    with _client(monkeypatch,tmp_path) as client:
+        payload=_scenario_payload(client.get(ROUTE).json())
+        payload['source_manifest_hash']='sha256:'+'0'*64
+        response=client.post(SCENARIO_ROUTE,json=payload)
+        query=client.post(SCENARIO_ROUTE+'?magnitude=30',json=payload)
+    assert response.status_code==409 and response.json()['detail']['code']=='source_changed'
+    assert query.status_code==400
+    _assert_scenario_private(response); _assert_scenario_private(query)
+
+
+def test_x2_unexpected_error_does_not_log_assumption_or_exception(monkeypatch,tmp_path,caplog):
+    api=_api()
+    with _client(monkeypatch,tmp_path) as client:
+        payload=_scenario_payload(client.get(ROUTE).json())
+        def explode(*args,**kwargs): raise ValueError('PRIVATE_SOURCE_AND_ASSUMPTION')
+        monkeypatch.setattr(api,'evaluate_current_scenario',explode)
+        response=client.post(SCENARIO_ROUTE,json=payload)
+    assert response.status_code==500
+    _assert_scenario_private(response)
+    assert 'PRIVATE_SOURCE_AND_ASSUMPTION' not in response.text+caplog.text
+
+
+@pytest.mark.parametrize('method',['get','head','put','patch','delete','options'])
+def test_x2_other_verbs_cannot_run_evaluation(monkeypatch,tmp_path,method):
+    with _client(monkeypatch,tmp_path) as client:
+        response=getattr(client,method)(SCENARIO_ROUTE)
+    assert response.status_code==405
+    assert response.headers['allow']=='POST'
+    _assert_scenario_private(response)
+
+
+from tests.test_ontology_explorer_contract import x2_inputs
+
+
+def _qualified_scenario_client(monkeypatch,tmp_path,x2_inputs):
+    from dataclasses import replace
+    from engine import ontology_scenario_runtime as runtime
+    snapshot,chain,baseline,assumption=x2_inputs
+    ids=list(chain['nodes'])
+    mapping=dict(zip(['n1','n2','n3','n4'],ids))
+    state=fx.chain_state(slug=chain['chain'])
+    state.update(asof=baseline.effective_at,built=baseline.knowledge_cutoff)
+    for node in state['chains'][0]['nodes']: node['id']=mapping[node['id']]
+    for hop in state['chains'][0]['hops']:
+        hop['from']=mapping[hop['from']];hop['to']=mapping[hop['to']]
+    root=fx.build_root(tmp_path,yaml_doc=chain,state_doc=state,slug=chain['chain'])
+    def qualified(root,snapshot,assumption):
+        return replace(baseline,source_manifest_hash=snapshot['source']['source_manifest_hash'])
+    monkeypatch.setattr(runtime,'_load_native_baseline',qualified)
+    return _client(monkeypatch,tmp_path,root=root,chain=chain['chain']),root
+
+
+def test_x2_http_handoff_evaluates_qualified_synthetic_owner_inputs_without_writes(monkeypatch,tmp_path,x2_inputs):
+    client,root=_qualified_scenario_client(monkeypatch,tmp_path,x2_inputs)
+    before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    with client:
+        payload=_scenario_payload(client.get(ROUTE).json())
+        first=client.post(SCENARIO_ROUTE,json=payload)
+        second=client.post(SCENARIO_ROUTE,json=payload)
+    assert first.status_code==second.status_code==200
+    assert first.json()['root_evaluation']['status']=='ROOT_THRESHOLD_MET'
+    assert first.json()['scenario_eval_id']==second.json()['scenario_eval_id']
+    assert first.json()['combined_estimate'] is None
+    assert all(v==0 for v in first.json()['side_effect_receipt'].values())
+    assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    _assert_scenario_private(first)
+
+
+def test_x2_post_detects_owner_mutation_after_evaluation(monkeypatch,tmp_path,x2_inputs):
+    from engine import ontology_scenario_runtime as runtime
+    client,root=_qualified_scenario_client(monkeypatch,tmp_path,x2_inputs)
+    original=runtime._load_native_baseline
+    def changing(*args):
+        baseline=original(*args)
+        target=root/'data/transmission/chain_state.json'
+        target.write_bytes(target.read_bytes()+b'\n')
+        return baseline
+    monkeypatch.setattr(runtime,'_load_native_baseline',changing)
+    with client:
+        response=client.post(SCENARIO_ROUTE,json=_scenario_payload(client.get(ROUTE).json()))
+    assert response.status_code==503
+    assert 'assumption' not in response.text and 'receipts' not in response.text
+    _assert_scenario_private(response)
+
+
+def test_x2_nested_duplicate_assumption_is_rejected(monkeypatch,tmp_path):
+    with _client(monkeypatch,tmp_path) as client:
+        raw=json.dumps(_scenario_payload(client.get(ROUTE).json()))
+        raw=raw.replace('"magnitude": 30','"magnitude": 30, "magnitude": 20')
+        response=client.post(SCENARIO_ROUTE,content=raw,headers={'content-type':'application/json'})
+    assert response.status_code==400
+    _assert_scenario_private(response)
+
+
+def test_x2_validation_dependency_cannot_echo_private_inputs(monkeypatch,tmp_path):
+    from fastapi.exceptions import RequestValidationError
+    api=_api()
+    with _client(monkeypatch,tmp_path) as client:
+        def bad_dependency():
+            raise RequestValidationError([{'type':'value_error','loc':('body',),
+                                          'input':'PRIVATE_VALIDATION_INPUT','msg':'PRIVATE_VALIDATION_MESSAGE'}])
+        client.app.dependency_overrides[api.require_site_full_user]=bad_dependency
+        response=client.post(SCENARIO_ROUTE,content=b'{}',headers={'content-type':'application/json'})
+    assert response.status_code==422
+    assert 'PRIVATE_VALIDATION' not in response.text
+    _assert_scenario_private(response)
+
+
+@pytest.mark.parametrize('declared',[None,'2'])
+def test_x2_stream_bound_applies_without_honest_content_length(monkeypatch,tmp_path,declared):
+    headers={'content-type':'application/json'}
+    if declared is not None: headers['content-length']=declared
+    with _client(monkeypatch,tmp_path) as client:
+        response=client.post(SCENARIO_ROUTE,content=iter([b'x'*2050,b'x'*2050]),headers=headers)
+    assert response.status_code==413
+    if declared is None: assert 'content-length' not in response.request.headers
+    _assert_scenario_private(response)
+
+
+def test_x2_body_wait_has_a_real_deadline():
+    import asyncio
+    from starlette.requests import Request
+    api=_api()
+    async def exercise():
+        async def silent(): await asyncio.Event().wait()
+        request=Request({'type':'http','method':'POST','path':SCENARIO_ROUTE,'query_string':b'',
+                         'headers':[(b'content-type',b'application/json')]},receive=silent)
+        with pytest.raises(HTTPException) as error:
+            await api._private_post_body(request)
+        assert error.value.status_code==408
+        assert error.value.detail['code']=='body_deadline_exceeded'
+    asyncio.run(exercise())
