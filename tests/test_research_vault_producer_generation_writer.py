@@ -732,3 +732,113 @@ def test_fenced_store_retains_qualified_receipt_reader_window(monkeypatch):
     injected = r2_store.R2Store("fixture", client=object())
     session.store = injected
     assert ingest._receipt_read_workers(writer.FencedProducerStore(injected, session), 4) == 1
+
+
+def _seed_discovery_record(store, doc, tmp_path):
+    from engine.research_vault import fulltext
+    text = 'bodyprefix ' + 'alpha ' * 11000 + ' bodytailwitness'
+    digest = 'c' * 64
+    p = tmp_path / 'discovery-source.sqlite'
+    conn = corpus.open_db(p)
+    corpus.upsert(conn, doc['items'][0], text,
+                  facts={'content_sha256': digest, 'text_layer': 'full'})
+    conn.close()
+    store.put_bytes(contract.CORPUS_KEY, p.read_bytes())
+    store.put_bytes(fulltext_store.receipt_key(RID), json.dumps({
+        'id': RID, 'pdf_key': 'research_inbox/seeded.pdf',
+        'content_sha256': digest}).encode())
+    record = fulltext.build_extracted_text(report_id=RID, source_pdf_sha256=digest,
+        text=text, extractor_name=fulltext_store.EXTRACTOR_NAME,
+        extractor_version=fulltext_store.EXTRACTOR_VERSION,
+        page_count=1, text_layer_state='full')
+    store.put_bytes(fulltext_store.derivative_key(RID, digest),
+                    fulltext_store.encode_record(record))
+    return text, digest
+
+
+def test_actual_generation_publishes_discoverable_full_body_before_complete(seeded, tmp_path, monkeypatch):
+    from engine.research_vault import fulltext_index
+    store, doc = seeded
+    text, _ = _seed_discovery_record(store, doc, tmp_path)
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', lambda *a, **k: {'aborted': None})
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        generation_identity=IDENTITY)
+    assert result.get('error') is None, result
+    assert result['generation_complete'] is True
+    p = tmp_path / 'published-read.sqlite'
+    p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    conn = corpus.open_db(p)
+    try:
+        assert [row['id'] for row in corpus.search(conn, 'bodytailwitness')] == [RID]
+        assert conn.execute('SELECT body FROM documents WHERE doc_id=?', (RID,)).fetchone()[0] == text
+        actual = json.loads(store.get_bytes(catalog.CATALOG_KEY))
+        assert fulltext_index.discovery_coverage(conn, actual, {RID}) == 'FULL_TEXT'
+    finally:
+        conn.close()
+
+
+def test_actual_generation_refuses_pdf_revision_change_after_body_publication(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_discovery_record(store, doc, tmp_path)
+    def changed_after_corpus(*args, **kwargs):
+        store.put_bytes(fulltext_store.receipt_key(RID), json.dumps({
+            'id': RID, 'content_sha256': 'd' * 64}).encode())
+        return {'aborted': None}
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', changed_after_corpus)
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        generation_identity=IDENTITY)
+    assert result['generation_complete'] is False
+    assert result['error'] == 'generation_completion_failed'
+    assert 'fulltext source cut changed' in result['generation_error']
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))['producer_generation']['state'] == 'BUILDING'
+
+
+def test_actual_generation_staging_read_failure_does_not_publish_candidate_body(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _, digest = _seed_discovery_record(store, doc, tmp_path)
+    before = store.get_bytes(contract.CORPUS_KEY)
+    real = store.get_bytes_strict_bounded
+    reads = 0
+    def failing_stage(key, bound):
+        nonlocal reads
+        if key == fulltext_store.derivative_key(RID, digest):
+            reads += 1
+            if reads == 2:  # after successful BEGIN census, during body stage
+                raise OSError('synthetic staging read failed')
+        return real(key, bound)
+    monkeypatch.setattr(store, 'get_bytes_strict_bounded', failing_stage)
+    with pytest.raises(OSError, match='synthetic staging read failed'):
+        ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                   generation_identity=IDENTITY)
+    assert store.get_bytes(contract.CORPUS_KEY) == before
+    assert json.loads(store.get_bytes(catalog.CATALOG_KEY))['producer_generation']['state'] == 'BUILDING'
+
+
+def test_actual_generation_planned_new_receipt_keeps_native_prefix_until_next_derivative(seeded, tmp_path, monkeypatch):
+    store, doc = seeded
+    _seed_real_corpus(store, tmp_path)
+    rid, digest = 'new-planned-receipt', 'e' * 64
+    item = {'id': rid, 'title': 'New pending receipt', 'institution': 'Desk',
+            'published_at': NOW.isoformat(), 'summary_points': []}
+    text = 'newnativeprefix ' + 'alpha ' * 11000 + ' nextgenerationtail'
+    monkeypatch.setattr(ingest, '_list_inbox_pdfs', lambda _: ['research_inbox/new.pdf'])
+    def new_row(_store, conn, _key, **kwargs):
+        facts = {'content_sha256': digest, 'text_layer': 'full'}
+        corpus.upsert(conn, item, text, facts=facts)
+        return {'status': 'ingested', 'item': item, 'title_source': 'sidecar', 'facts': facts}
+    monkeypatch.setattr(ingest, '_ingest_one', new_row)
+    monkeypatch.setattr(fulltext_writer, 'materialize_pending', lambda *a, **k: {'aborted': None})
+    assert store.get_bytes(fulltext_store.receipt_key(rid)) is None
+    result = ingest.run(store, tmp_path / 'working.sqlite', now=NOW,
+                        checkpoint_every=0, generation_identity=IDENTITY)
+    assert result.get('error') is None, result
+    assert result['generation_complete'] is True
+    assert fulltext_store.parse_receipt_digest(store.get_bytes(fulltext_store.receipt_key(rid)), rid) == digest
+    p = tmp_path / 'published-read.sqlite';p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    conn = corpus.open_db(p)
+    try:
+        assert [row['id'] for row in corpus.search(conn, 'newnativeprefix')] == [rid]
+        assert corpus.search(conn, 'nextgenerationtail') == []
+        assert conn.execute('SELECT fulltext_binding FROM documents WHERE doc_id=?', (rid,)).fetchone()[0] is None
+    finally:
+        conn.close()

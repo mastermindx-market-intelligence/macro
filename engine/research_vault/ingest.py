@@ -1543,6 +1543,23 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
         # not an event.
         summary["coverage"] = catalog_mod.coverage(cat)
 
+        # Identified generation runs compose discovery in the SAME corpus image
+        # after all native upserts and before its final publication journal cut.
+        # Derivatives created by the later bounded materializer join the next
+        # image; they cannot retroactively upgrade this published body snapshot.
+        if generation_session is not None:
+            from engine.research_vault import fulltext_index, fulltext_publication
+            from engine.research_vault.producer_generation_writer import record_fulltext_source_cut
+            catalog_mod.prepare_publication(cat, now=now)
+            _fulltext_t = time.monotonic()
+            staged = fulltext_publication.stage_from_store(
+                conn, cat, store, pending_receipts,
+                max_rows=fulltext_index.MAX_ROWS,
+                max_body_bytes=fulltext_index.MAX_BODY_BYTES)
+            record_fulltext_source_cut(conn, cat, staged["source_digests"])
+            summary["fulltext_discovery"] = staged["counts"]
+            timing_s["fulltext_discovery_s"] = time.monotonic() - _fulltext_t
+
         # Catalog: a dry run serializes only (nothing is published anywhere). The
         # real publish happens AFTER the corpus, below, once the connection is
         # closed — see the final-publish block.

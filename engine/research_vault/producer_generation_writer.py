@@ -27,6 +27,54 @@ from engine.research_vault import producer_generation as contract
 # append other operations between that intent and its acknowledgement records.
 CATALOG_VERSION_MAX_BYTES = 4096
 POST_EFFECT_EVIDENCE_BYTES = 64 * 1024
+FULLTEXT_SOURCE_CUT_KEY = "producer_fulltext_source_cut"
+
+
+def record_fulltext_source_cut(conn, document, sources):
+    """Retain this explicit staged cut in the same private corpus transaction."""
+    ids = contract.admitted_cohort_from_catalog(document)
+    if (type(sources) is not dict or set(sources) != set(ids)
+            or any(value is not None and (type(value) is not str or len(value) != 64
+                or any(c not in "0123456789abcdef" for c in value))
+                for value in sources.values())):
+        raise GenerationWriteUnavailable("invalid fulltext source cut")
+    conn.execute("INSERT INTO meta(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (FULLTEXT_SOURCE_CUT_KEY, json.dumps({
+            "schema": "research_vault.producer_fulltext_source_cut.v1",
+            "catalog_payload_sha256": contract.compute_catalog_payload_digest(document),
+            "sources": sources}, sort_keys=True, separators=(",", ":"))))
+
+
+def _validate_fulltext_source_cut(blob, document, members):
+    """Check the staged PDF cut again before COMPLETE, including continuation.
+
+    The original publication journal already binds these exact corpus bytes.
+    Keeping the cut in that image preserves the same check when the original
+    parent resumes a wholly unissued completion tail; no new journal protocol
+    or replay authority is introduced. Older prefix-only images have no cut.
+    """
+    if not blob.startswith(b"SQLite format 3\x00"):
+        return  # Existing pre-composition callers may publish opaque fixtures.
+    import sqlite3
+    conn = sqlite3.connect(":memory:")
+    try:
+        conn.deserialize(blob)
+        conn.execute("PRAGMA trusted_schema=OFF")
+        conn.execute("PRAGMA query_only=ON")
+        if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='meta'").fetchone() is None:
+            return
+        row = conn.execute("SELECT value FROM meta WHERE key=?", (FULLTEXT_SOURCE_CUT_KEY,)).fetchone()
+        if row is None:
+            return
+        cut = json.loads(row[0])
+        expected = {m["report_id"]: m["source_pdf_sha256"] for m in members}
+        if (type(cut) is not dict or set(cut) != {"schema", "catalog_payload_sha256", "sources"}
+                or cut["schema"] != "research_vault.producer_fulltext_source_cut.v1"
+                or cut["catalog_payload_sha256"] != contract.compute_catalog_payload_digest(document)
+                or type(cut["sources"]) is not dict or cut["sources"] != expected):
+            raise GenerationWriteUnavailable("fulltext source cut changed before COMPLETE")
+    finally:
+        conn.close()
 
 
 class GenerationWriteUnavailable(RuntimeError):
@@ -379,6 +427,7 @@ class ProducerGenerationSession:
         if corpus is None:
             self._fail("current corpus absent")
         members = _census(self.store, document)
+        _validate_fulltext_source_cut(corpus, document, members)
         record = copy.deepcopy(self.record)
         record.update(state=contract.GENERATION_STATE_COMPLETE,
                       completed_at=int(now.timestamp()), corpus_sha256=_sha(corpus),

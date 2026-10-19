@@ -164,3 +164,35 @@ def test_full_admitted_corpus_leaves_budget_for_required_checks(original, monkey
     monkeypatch.setattr(continuation, "inspect_live_settled_publication", scaled_live)
     result = invoke(path, digest, store)
     assert json.loads(result["catalog_bytes"])[contract.GENERATION_FIELD]["state"] == "COMPLETE"
+
+
+@pytest.mark.parametrize('changed', [False, True])
+def test_original_continuation_checks_published_fulltext_source_cut(original, tmp_path, monkeypatch, changed):
+    from engine.research_vault import corpus
+    from engine.research_vault.producer_generation_writer import FULLTEXT_SOURCE_CUT_KEY
+    document = {'schema': catalog.SCHEMA, 'generated_at': NOW.isoformat(), 'count': 2,
+        'institutions': ['Desk'], 'items': [
+            {'id': rid, 'title': 'Synthetic ' + rid, 'institution': 'Desk'}
+            for rid in ('report-a', 'report-b')]}
+    sources = {rid: hashlib.sha256(rid.encode()).hexdigest() for rid in ('report-a', 'report-b')}
+    if changed:
+        sources['report-a'] = 'f' * 64
+    p = tmp_path / 'staged.sqlite';conn = corpus.open_db(p)
+    conn.execute('INSERT INTO meta(key,value) VALUES(?,?)', (FULLTEXT_SOURCE_CUT_KEY,
+        json.dumps({'schema': 'research_vault.producer_fulltext_source_cut.v1',
+                    'catalog_payload_sha256': contract.compute_catalog_payload_digest(document),
+                    'sources': sources})))
+    conn.commit();conn.close()
+    path, digest, _, _, store = original.fixture(issued=2, promote=True, corpus_bytes=p.read_bytes())
+    before = path.read_bytes()
+    calls, _ = count_writes(monkeypatch, store)
+    if changed:
+        with pytest.raises(OriginalContinuationUnavailable):
+            invoke(path, digest, store)
+        assert calls == []
+        assert json.loads(store.get_bytes(catalog.CATALOG_KEY))[contract.GENERATION_FIELD]['state'] == 'BUILDING'
+    else:
+        result = invoke(path, digest, store)
+        assert json.loads(result['catalog_bytes'])[contract.GENERATION_FIELD]['state'] == 'COMPLETE'
+        assert [call[0] for call in calls] == [catalog.CATALOG_KEY]
+    assert path.read_bytes() == before

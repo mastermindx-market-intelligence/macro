@@ -41,6 +41,11 @@ on:
         required: false
         default: false
         type: boolean
+      qualify_discovery_only:
+        description: "Read-only full-body resource check on this runner; no ingestion, generation or publication"
+        required: false
+        default: false
+        type: boolean
       publish_forensics:
         description: "Build and publish the private Filing Forensics launch state"
         required: false
@@ -89,9 +94,14 @@ jobs:
       - name: admit one explicit producer mode
         env:
           MATERIALIZE_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize_only }}
+          QUALIFICATION_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_discovery_only }}
           PUBLISH_FORENSICS: ${{ inputs.publish_forensics }}
           BOOTSTRAP_FORENSICS: ${{ inputs.bootstrap_forensics_sources }}
         run: |
+          if [ "$QUALIFICATION_ONLY" = "true" ] && { [ "$MATERIALIZE_ONLY" = "true" ] || [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ] || [ "${{ inputs.run_census }}" = "true" ]; }; then
+            echo "::error::qualify_discovery_only cannot be combined with publication, materialization or post-ingest census modes"
+            exit 1
+          fi
           if [ "$MATERIALIZE_ONLY" = "true" ] && { [ "$PUBLISH_FORENSICS" = "true" ] || [ "$BOOTSTRAP_FORENSICS" = "true" ]; }; then
             echo "::error::materialize_only cannot be combined with forensics publication or bootstrap"
             exit 1
@@ -120,7 +130,7 @@ jobs:
             exit 1
           fi
       - name: bootstrap Filing Forensics private state
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_forensics }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_forensics && !inputs.qualify_discovery_only }}
         # Manual launch/recovery hook. The normal refresh owner is daily.yml.
         # This deliberately runs the SEC source spine BEFORE the broad state build:
         # a fresh runner must restore its verified raw/archive snapshot, acquire its
@@ -178,6 +188,7 @@ jobs:
           python -m scripts.build_fundamental_forensics --publish-private
       - name: research vault ingest (hourly)
         id: ingest
+        if: ${{ !inputs.qualify_discovery_only }}
         # `set +e` + exit 0 keeps the SALVAGE step below reachable — it must run
         # even when the plane failed, so whatever WAS published still reaches git.
         # The captured rc is re-emitted by the final step, which is what actually
@@ -196,6 +207,11 @@ jobs:
           fi
           echo "rc=$?" >> "$GITHUB_OUTPUT"
           exit 0
+      - name: read-only full-body resource qualification
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_discovery_only }}
+        run: |
+          python -m engine.research_vault.fulltext_qualification \
+            --scratch-root /Volumes/Mastermind/runtime/research-producer/retention
       # Salvage-push the repo snapshots regardless of the ingest step's rc
       # (never-raise: the CLI exits 0 even on internal error). Commit ONLY the
       # catalog + first-pages-excerpt snapshots (both are what the nightly render
@@ -203,7 +219,7 @@ jobs:
       # payload is deterministic + timestamp-free, so an hour with no new/changed
       # reports produces no diff and no commit.
       - name: commit catalog snapshot (salvage-push)
-        if: ${{ always() && !inputs.materialize_only }}
+        if: ${{ always() && !inputs.materialize_only && !inputs.qualify_discovery_only }}
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
           git config user.name "dashboard-bot"
@@ -231,7 +247,7 @@ jobs:
       # producer verdict (MINOR 5).
       - name: grade Research Vault source-content freshness
         id: source_freshness
-        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        if: ${{ always() && steps.checkout.outcome == 'success' && !inputs.qualify_discovery_only }}
         env:
           RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS: ${{ vars.RESEARCH_VAULT_SOURCE_MAX_AGE_HOURS }}
           RESEARCH_VAULT_SOURCE_OUTAGE_ACK: ${{ vars.RESEARCH_VAULT_SOURCE_OUTAGE_ACK }}
@@ -252,11 +268,11 @@ jobs:
       # the failure step so a census is still taken on an hour whose ingest failed
       # — that is exactly the hour whose id sets an operator wants to see.
       - name: research vault id-set census (read-only)
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census && !inputs.qualify_discovery_only }}
         run: |
           python -m scripts.research_vault_census --json "$RUNNER_TEMP/rv_census.json"
       - name: upload census report
-        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census }}
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.run_census && !inputs.qualify_discovery_only }}
         uses: actions/upload-artifact@v4
         with:
           name: research-vault-census
@@ -268,7 +284,7 @@ jobs:
       # healthy-looking timestamp-only commit. The typed guard has already applied
       # any stale-only acknowledgement; every nonzero rc here remains fatal.
       - name: fail the lane if ingest or source freshness failed
-        if: always()
+        if: ${{ always() && !inputs.qualify_discovery_only }}
         run: |
           ingest_rc="${{ steps.ingest.outputs.rc }}"
           source_rc="${{ steps.source_freshness.outputs.rc }}"
