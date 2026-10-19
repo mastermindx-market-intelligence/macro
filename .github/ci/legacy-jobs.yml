@@ -17714,7 +17714,9 @@ jobs:
 
   research-vault:
     if: ${{ false }}
-    gate: data
+    gate: code
+    # Hermetic LocalStore/source contracts must execute on the PR head.
+    # Keep one canonical test list; mutable data health is a separate concern.
     # RV W1 ingestion spine: the sidecar contract normalization + every fallback
     # (missing/blank/bad-JSON, never-drop), catalog upsert ordering + institutions
     # rollup, corpus FTS5 build + a BODY-only search (proves body is searchable) +
