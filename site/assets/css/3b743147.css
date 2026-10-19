@@ -182,7 +182,7 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
 .sh-bar .bar{height:10px;border-radius:3px}
 @media(max-width:620px){
   .sh-row{grid-template-columns:minmax(0,1fr) auto}
-  .sh-sum{grid-column:1;justify-self:start;margin-top:2px}
+  .sh-sum{grid-column:1;justify-self:start;margin-top:2px;white-space:normal}
 }
 
 /* ── TIER SECTION — position, name and size distinguish a tier. Never a hue:

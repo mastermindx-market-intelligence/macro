@@ -17,7 +17,7 @@
       if(next===ownerId&&briefcase)return;
       ownerId=next;selectedView='';briefcase=null;
       if(typeof api.clearPrivatePresentation==='function')api.clearPrivatePresentation();
-      if(ownerId){try{briefcase=root.createGovernmentRevenueBriefcase({storage:root.localStorage,ownerId:ownerId})}catch(error){briefcase=null}}
+      if(ownerId){try{briefcase=root.createGovernmentRevenueBriefcase({storage:root.localStorage,ownerId:ownerId,resolveEventIds:api.getMatchingEventIds})}catch(error){briefcase=null}}
       bind();render();
     }
 
@@ -150,8 +150,9 @@
     function reconcile(announce){
       if(!briefcase||!api.isWorkspaceReady())return null;
       var result=briefcase.reconcile(api.getWorkspace(),{complete:true,bundle_matched:true});
-      if(!result.reconciled)return result;
+      if(!result.reconciled){render(tr('Local alert check unavailable. Existing baselines and receipts were preserved.','本地提醒检查暂不可用。已保留现有基线和凭证。'),true);return result;}
       var copy=result.alerts.length?result.alerts.length+tr(' new local alert receipts.',' 条新的本地提醒凭证。'):result.withheld_alert_ids.length?tr('Award-change alert baseline withheld: the official award rail is unavailable.','授标变化提醒基线已暂停：官方授标链路不可用。'):announce?tr('Local alert baseline checked against the complete governed workspace.','已根据完整受治理工作区检查本地提醒基线。'):null;
+      if(result.rebaselined_alert_ids&&result.rebaselined_alert_ids.length)copy=(copy?copy+' ':'')+tr('Saved alert windows updated to match the page. Existing records were baselined without new alerts.','已更新保存的提醒窗口以匹配页面。现有记录已纳入基线，未生成新提醒。');
       if(!result.persisted)copy=(copy?copy+' ':'')+tr('Alert changes are available only in this tab; browser storage is unavailable.','提醒变化仅在此标签页可用；浏览器存储不可用。');
       render(copy,!result.persisted||!!result.withheld_alert_ids.length);return result;
     }
@@ -162,6 +163,7 @@
       try{
         var changed=alert?briefcase.updateAlert(alert.id,{enabled:!alert.enabled}):briefcase.createAlert({view_id:selectedView,type:get('alertType').value});
         var result=reconcile(true);
+        if(!changed.persisted&&result&&!result.reconciled)render(tr('Alert changes are available only in this tab; browser storage is unavailable. The local alert check could not complete.','提醒变化仅在此标签页可用；浏览器存储不可用。本地提醒检查未能完成。'),true);
         if(!result)render(changed.persisted?tr('Local alert saved. Its first baseline will be established after the complete workspace loads.','本地提醒已保存。完整工作区加载后将建立首次基线。'):tr('Alert changes are available only in this tab; browser storage is unavailable.','提醒变化仅在此标签页可用；浏览器存储不可用。'),!changed.persisted);
       }catch(error){status(tr('This local alert could not be changed.','无法更改此本地提醒。'),true)}
     }
