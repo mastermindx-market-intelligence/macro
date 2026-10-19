@@ -85,6 +85,9 @@ from typing import Any
 from xml.etree import ElementTree as ET
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+# Direct script invocation puts scripts/ at sys.path[0]; pin the repo root ahead
+# of it so the engine and app imports inside the command tree resolve here.
+sys.path.insert(0, str(REPO_ROOT))
 QUERY_PATH = "/api/forensics/v1/financial/query"
 REVISIONS_PATH = "/api/forensics/v1/financial/revisions"
 PQ_TEMPLATE_PATH = REPO_ROOT / "contracts" / "excel" / "fif_financial_query.pq"
@@ -1275,11 +1278,6 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    # Direct script invocation (python3 scripts/fif_excel_refresh_harness.py)
-    # does not put the repo root on sys.path; the engine and app imports
-    # inside the command tree need it.
-    if str(REPO_ROOT) not in sys.path:
-        sys.path.insert(0, str(REPO_ROOT))
     args = _parser().parse_args(argv)
     if args.command == "cases":
         print(cases_table())
