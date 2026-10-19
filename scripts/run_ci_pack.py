@@ -418,6 +418,12 @@ OBSERVED_COMMAND_SECONDS = {
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
     "ci-control-plane-contracts": 1400,
+    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
+    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
+    # These calibrate balancing only; install/checkout/queue are excluded.
+    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
+    "fif-kernel-guards": 1630,
+    "earnings-economic-dossier": 1070,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
@@ -3393,6 +3399,15 @@ def _prepare_provided_actions(
         )
 
     git_env = _trusted_git_environment(root)
+    # Recheck this exact repository/tree before fetching: a later consumer must
+    # not re-shallow history already established by an earlier consumer.
+    if _tested_tree_ancestry_ready(root, git_env, tested_tree_sha):
+        print(
+            "::notice title=run-ci-pack::exact tested-tree ancestry already "
+            "complete; retaining local history",
+            flush=True,
+        )
+        return
     exact_fetch_failed = False
     for index, depth in enumerate(_EXACT_TESTED_TREE_DEPTHS):
         try:
