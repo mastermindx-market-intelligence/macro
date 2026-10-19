@@ -73,10 +73,10 @@ def _output_shape(identity: dict[str, str]) -> dict[str, Any]:
     }
 
 
-def build_prompt(document: dict[str, Any], markdown: str) -> tuple[str, str]:
+def build_prompt(document: dict[str, Any], markdown: str, *, source_record=None, layout_scope=None) -> tuple[str, str]:
     """Build the deterministic private v3 prompt; no copy-only fallback."""
     body = str(markdown or "")
-    system, user, _ = build_selector_prompt(_identity(document, body), body)
+    system, user, _ = build_selector_prompt(_identity(document, body), body, source_record=source_record, layout_scope=layout_scope)
     return system, user
 
 
@@ -211,6 +211,8 @@ def analyze_document(
     model_id: str,
     max_tokens: int = 6000,
     call: Callable[..., tuple[str, str, str]] | None = None,
+    source_record=None,
+    layout_scope=None,
 ) -> dict[str, Any]:
     """Select original source slices under v3 and ground one frozen RIO."""
     requested_model = str(model_id or "").strip()
@@ -218,7 +220,7 @@ def analyze_document(
         raise ValueError("model_id is required")
     return _analyze_document_selector_v3(
         document, str(markdown or ""), model_id=requested_model,
-        max_tokens=max_tokens, call=call,
+        max_tokens=max_tokens, call=call, source_record=source_record, layout_scope=layout_scope,
     )
 
 
@@ -229,6 +231,8 @@ def _analyze_document_selector_v3(
     model_id: str,
     max_tokens: int,
     call: Callable[..., tuple[str, str, str]] | None,
+    source_record=None,
+    layout_scope=None,
 ) -> dict[str, Any]:
     """Private selector-v3 edge: the model selects IDs; the system writes claim text.
 
@@ -247,7 +251,7 @@ def _analyze_document_selector_v3(
             identity = _identity(document, body)
         except (ValueError, TypeError, AttributeError) as exc:
             raise SelectionUnavailable("IDENTITY_UNAVAILABLE", "document identity is unavailable") from exc
-        system, user, catalog = build_selector_prompt(identity, body, _work_budget=work_budget)
+        system, user, catalog = build_selector_prompt(identity, body, _work_budget=work_budget, source_record=source_record, layout_scope=layout_scope)
     except SelectionUnavailable as exc:
         return {
             "state": "selection_unavailable", "rio": None,
@@ -298,7 +302,7 @@ def _analyze_document_selector_v3(
             "error_code": "SERVING_PROVENANCE_MISSING", **base,
         }
     try:
-        parsed = parse_selector_output(raw, identity, body, _work_budget=work_budget)
+        parsed = parse_selector_output(raw, identity, body, _work_budget=work_budget, source_record=source_record, layout_scope=layout_scope)
         rio = _ground_rio(parsed["rio"], body)
         if len(json.dumps(rio, ensure_ascii=False).encode("utf-8")) > MAX_FINAL_RIO_BYTES:
             raise ValueError("final rio exceeds the 128KiB persistence bound")

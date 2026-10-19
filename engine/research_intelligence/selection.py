@@ -36,6 +36,7 @@ MAX_FINAL_RIO_BYTES = 128 * 1024
 MAX_SELECTOR_OUTPUT_BYTES = 262144
 MAX_VERIFIER_WORK_BYTES = 128 * 1024 * 1024
 SOURCE_CONTEXT_SCHEMA = "mastermind.research_intelligence.source_context.v3"
+LAYOUT_CONTEXT_SCHEMA = "mastermind.research_intelligence.source_context.layout.v1"
 _ALLOWED_TOP_LEVEL_KEYS = frozenset({"selector", "document", "catalog_sha256", "selections", "analysis"})
 _ALLOWED_SELECTION_KEYS = frozenset({"evidence_id", "numbers", "entities", "horizon", "explicit"})
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
@@ -85,7 +86,7 @@ def _evidence_id(content_sha256: str, unit_text: str) -> str:
     return "q3-" + hashlib.sha256(binding.encode("utf-8")).hexdigest()
 
 
-def build_selection_catalog(identity: dict[str, Any], body: str, *, _work_budget=None) -> dict[str, Any]:
+def build_selection_catalog(identity: dict[str, Any], body: str, *, _work_budget=None, source_record=None, layout_scope=None) -> dict[str, Any]:
     """Rebuild the admitted-unit catalog from the actual body.
 
     Deterministic: the same body and identity always produce the same catalog,
@@ -143,11 +144,30 @@ def build_selection_catalog(identity: dict[str, Any], body: str, *, _work_budget
             "EMPTY_SELECTION_CATALOG",
             "no admissible quote unit exists for this body",
         )
+    layout_binding = None
+    if source_record is not None or layout_scope is not None:
+        from engine.research_vault.source_layout import eligible_evidence_ids
+        try:
+            eligibility = eligible_evidence_ids(source_record, {
+                "document": {"id": identity["id"], "content_sha256": content_sha256},
+                "units": units,
+            }, layout_scope)
+        except (ValueError, TypeError, KeyError, AttributeError) as exc:
+            raise SelectionUnavailable("SOURCE_LAYOUT_INVALID", "layout cannot be rebound to this source") from exc
+        allowed = set(eligibility["allowed_evidence_ids"])
+        units = [unit for unit in units if unit["evidence_id"] in allowed]
+        counts["omitted_layout"] = eligibility["omitted_layout"]
+        counts["admitted_units"] = len(units)
+        layout_binding = eligibility["binding"]
+        if not units:
+            raise SelectionUnavailable("EMPTY_SELECTION_CATALOG", "no uniquely block-contained quote unit exists")
     core = {
         "catalog_version": SELECTOR_VERSION,
         "document": {"id": identity["id"], "content_sha256": content_sha256},
         "units": units,
     }
+    if layout_binding is not None:
+        core["source_layout"] = layout_binding
     catalog_json = json.dumps(core, ensure_ascii=False, sort_keys=True)
     catalog = dict(core)
     catalog["catalog_sha256"] = _sha(catalog_json)
@@ -181,11 +201,13 @@ def source_context_receipt(catalog: dict[str, Any]) -> dict[str, Any]:
     """Closed catalog consistency facts; no claim of exhaustive source coverage."""
     meta = catalog["metadata"]
     return {
-        "schema": SOURCE_CONTEXT_SCHEMA, "catalog_version": SELECTOR_VERSION,
+        "schema": LAYOUT_CONTEXT_SCHEMA if "source_layout" in catalog else SOURCE_CONTEXT_SCHEMA,
+        "catalog_version": SELECTOR_VERSION,
+        **({"source_layout": dict(catalog["source_layout"])} if "source_layout" in catalog else {}),
         "content_sha256": catalog["document"]["content_sha256"],
         "catalog_sha256": catalog["catalog_sha256"], "coverage": "PARTIAL_SOURCE_CONTEXT",
         "exhaustive_source_coverage": False, **meta,
-        "verifier_admitted_units": meta["admitted_units"] + meta["duplicate_units"],
+        "verifier_admitted_units": meta["admitted_units"] + meta["duplicate_units"] + meta.get("omitted_layout", 0),
         "required_analysis_verifier_work_bytes": 2 * meta["verifier_work_bytes"],
         "limits": _context_limits(),
     }
@@ -200,11 +222,24 @@ _CONTEXT_FIELDS = frozenset({
 })
 
 
-def validate_source_context_receipt(value: Any, *, expected_content_sha256: str) -> dict[str, Any]:
+def validate_source_context_receipt(value: Any, *, expected_content_sha256: str, expected_document_id: str | None = None) -> dict[str, Any]:
     """Validate stored consistency facts without asserting fresh-body verification."""
-    if type(value) is not dict or set(value) != _CONTEXT_FIELDS:
+    layout = type(value) is dict and value.get("schema") == LAYOUT_CONTEXT_SCHEMA
+    fields = _CONTEXT_FIELDS | {"source_layout", "omitted_layout"} if layout else _CONTEXT_FIELDS
+    if type(value) is not dict or set(value) != fields:
         raise ValueError("source-context fields are invalid")
-    if (value["schema"] != SOURCE_CONTEXT_SCHEMA or value["catalog_version"] != SELECTOR_VERSION
+    if layout:
+        from engine.research_vault import fulltext
+        binding = value["source_layout"]
+        if (type(binding) is not dict or set(binding) != {"schema", "report_id", "source_pdf_sha256", "content_sha256", "extractor_version", "layout_sha256", "scope_sha256"}
+                or binding["schema"] != "research_vault.pdf_block_scope.v1"
+                or type(binding["report_id"]) is not str or not binding["report_id"]
+                or (expected_document_id is not None and binding["report_id"] != expected_document_id)
+                or binding["content_sha256"] != expected_content_sha256
+                or binding["extractor_version"] != fulltext.EXTRACTOR_VERSION_READING_ORDER_V2
+                or any(type(binding[k]) is not str or not _SHA256_RE.fullmatch(binding[k]) for k in ("source_pdf_sha256", "content_sha256", "layout_sha256", "scope_sha256"))):
+            raise ValueError("source-context layout binding invalid")
+    if (value["schema"] != (LAYOUT_CONTEXT_SCHEMA if layout else SOURCE_CONTEXT_SCHEMA) or value["catalog_version"] != SELECTOR_VERSION
             or value["coverage"] != "PARTIAL_SOURCE_CONTEXT" or value["exhaustive_source_coverage"] is not False
             or value["content_sha256"] != expected_content_sha256):
         raise ValueError("source-context identity or coverage is invalid")
@@ -220,6 +255,8 @@ def validate_source_context_receipt(value: Any, *, expected_content_sha256: str)
         "catalog_bytes", "catalog_units", "body_bytes", "verifier_work_bytes",
         "verifier_admitted_units", "required_analysis_verifier_work_bytes",
     )}
+    if layout:
+        counts["omitted_layout"] = value["omitted_layout"]
     if any(type(v) is not int or v < 0 for v in counts.values()):
         raise ValueError("source-context counts are invalid")
     if (not 0 < counts["body_bytes"] <= MAX_BODY_BYTES
@@ -227,8 +264,8 @@ def validate_source_context_receipt(value: Any, *, expected_content_sha256: str)
             or not 0 < counts["admitted_units"] == counts["catalog_units"] <= MAX_CATALOG_UNITS
             or not 0 < counts["proposed_units"] <= MAX_BODY_BYTES
             or counts["proposed_units"] != sum(counts[k] for k in (
-                "admitted_units", "duplicate_units", "omitted_overlong", "omitted_unverifiable"))
-            or counts["verifier_admitted_units"] != counts["admitted_units"] + counts["duplicate_units"]
+                "admitted_units", "duplicate_units", "omitted_overlong", "omitted_unverifiable")) + counts.get("omitted_layout", 0)
+            or counts["verifier_admitted_units"] != counts["admitted_units"] + counts["duplicate_units"] + counts.get("omitted_layout", 0)
             or counts["verifier_work_bytes"] != (counts["proposed_units"] - counts["omitted_overlong"] - counts["duplicate_units"]) * counts["body_bytes"]
             or counts["required_analysis_verifier_work_bytes"] != 2 * counts["verifier_work_bytes"]
             or counts["required_analysis_verifier_work_bytes"] > MAX_VERIFIER_WORK_BYTES):
@@ -260,9 +297,9 @@ def _selector_output_shape(identity: dict[str, Any], catalog: dict[str, Any]) ->
     }
 
 
-def build_selector_prompt(identity: dict[str, Any], body: str, *, _work_budget=None) -> tuple[str, str, dict[str, Any]]:
+def build_selector_prompt(identity: dict[str, Any], body: str, *, _work_budget=None, source_record=None, layout_scope=None) -> tuple[str, str, dict[str, Any]]:
     """Build one frozen, identity- and catalog-bound selector prompt."""
-    catalog = build_selection_catalog(identity, body, _work_budget=_work_budget)
+    catalog = build_selection_catalog(identity, body, _work_budget=_work_budget, source_record=source_record, layout_scope=layout_scope)
     context = source_context_receipt(catalog)
     # Parsing rebinds through the canonical verifier a second time. Reserve that
     # work before any provider call, using the same budget during extraction.
@@ -272,6 +309,8 @@ def build_selector_prompt(identity: dict[str, Any], body: str, *, _work_budget=N
         key: catalog[key]
         for key in ("catalog_version", "document", "units", "catalog_sha256")
     }
+    if "source_layout" in catalog:
+        prompt_catalog["source_layout"] = catalog["source_layout"]
     user = (
         "DOCUMENT IDENTITY:\n" + json.dumps(identity, ensure_ascii=False)
         + "\n\nOUTPUT SHAPE:\n" + json.dumps(
@@ -446,6 +485,8 @@ def parse_selector_output(
     body: str,
     *,
     _work_budget=None,
+    source_record=None,
+    layout_scope=None,
 ) -> dict[str, Any]:
     """Strictly parse one selector payload against a catalog rebound to the body.
 
@@ -480,7 +521,7 @@ def parse_selector_output(
     echoed = obj["catalog_sha256"]
     if not isinstance(echoed, str) or not _SHA256_RE.fullmatch(echoed):
         raise ValueError("catalog_sha256 must be lowercase SHA-256 hex")
-    catalog = build_selection_catalog(identity, body, _work_budget=_work_budget)
+    catalog = build_selection_catalog(identity, body, _work_budget=_work_budget, source_record=source_record, layout_scope=layout_scope)
     if echoed != catalog["catalog_sha256"]:
         raise ValueError("catalog_sha256 does not match the body-bound selection catalog")
     selections = obj["selections"]
