@@ -446,3 +446,352 @@ def test_recovery_helper_replays_only_the_fsynced_pending_bytes(tmp_path, monkey
     assert (
         recover_pending_pair(client=s, bucket="b", lock_path=lock, now=_clock()) is None
     )
+
+
+# Optional expression commitments retain the original v2/v1 JSON bodies.
+class MetadataS3(FakeS3):
+    def __init__(self):
+        super().__init__()
+        self.metadata = {}
+
+    def get_object(self, **args):
+        result = super().get_object(**args)
+        result['Metadata'] = copy.deepcopy(self.metadata.get(args['Key'], {}))
+        return result
+
+    def head_object(self, **args):
+        result = super().head_object(**args)
+        result['Metadata'] = copy.deepcopy(self.metadata.get(args['Key'], {}))
+        return result
+
+    def put_object(self, **args):
+        key, old = args['Key'], self.o.get(args['Key'])
+        try:
+            return super().put_object(**args)
+        finally:
+            if self.o.get(key) != old:
+                self.metadata[key] = copy.deepcopy(args.get('Metadata', {}))
+
+
+def _expression_intent(rows, source_root, *, decision='2026-08-13T14:32:01Z'):
+    from engine import options_signal_campaign as campaigns
+    from engine.options_alpha_expression_formation import prepare_expression_sources
+    from engine.options_alpha_expression_intent import make_expression_intent
+    snapshot = campaigns.load_ledger(source_root / campaigns.CAMPAIGNS_PATH,
+                                     campaigns.CAMPAIGNS_PATH)
+    preparation = prepare_expression_sources(
+        rows[0]['payload'], campaigns=snapshot,
+        source_observed_at='2026-08-13T14:31:00Z',
+        campaigns_observed_at='2026-08-13T14:31:01Z',
+        selection_started_at='2026-08-13T14:32:00Z',
+        decision_at='2026-08-13T14:32:01Z')['records'][0]
+    terms = dict(schema='options.contract_terms_observation/v1',
+                 contract=copy.deepcopy(preparation['binding']['contract']),
+                 multiplier=100, standard_deliverable=True,
+                 deliverable_description='synthetic observed 100 shares; not actual source admission',
+                 effective_from='2026-08-13T13:30:00Z', effective_until='2026-08-21T20:00:00Z',
+                 source_available_at='2026-08-13T14:29:00Z',
+                 source_observed_at='2026-08-13T14:29:01Z', source_id='synthetic-source-fixture',
+                 raw_source_sha256='a' * 64, raw_source_bytes=123)
+    return make_expression_intent(candidate=rows[0]['feed']['formed_candidates'][0],
+                                  preparation_record=preparation, terms_observation=terms,
+                                  decision_at=decision)
+
+
+def _publish_expression(s, root, row, intents=None):
+    return publish_pair(client=s, bucket='b', feed=copy.deepcopy(row['feed']),
+                        payload=row['payload'], lock_path=root / 'lock',
+                        now=_clock(), expression_intents=intents)
+
+
+def _read_expression(s, root):
+    return publisher.read_expression_pair(s, 'b', lock_path=root / 'lock')
+
+
+def test_expression_commitment_has_real_availability_and_legacy_wire_compatibility(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    from engine.options_alpha_candidate_feed import validate_publication_receipt_binding
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = MetadataS3()
+    assert _publish_expression(s, tmp_path, rows[0], [intent]) == 'published'
+    legacy = read_pair(s, 'b')
+    assert legacy.feed == rows[0]['feed'] and legacy.payload == rows[0]['payload']
+    assert legacy.feed['schema'] == 'options.alpha_candidate_feed/v2'
+    assert legacy.receipt['schema'] == 'options.alpha_candidate_feed_publication_receipt/v1'
+    validate_publication_receipt_binding(feed=legacy.feed, payload=legacy.payload,
+                                       receipt=legacy.receipt,
+                                       receipt_published_at=legacy.receipt_last_modified)
+    assert legacy.expression_manifest is None  # v2 readers need not load private terms
+    missing = expressions.resolve_intent_availability(legacy, intent['expression_id'])
+    assert missing['available_at'] is None and not missing['capture_eligible']
+    assert missing['intent'] is None and missing['public_consumer_available'] is False
+    pair = _read_expression(s, tmp_path)
+    available = expressions.resolve_intent_availability(pair, intent['expression_id'])
+    assert available['status'] == 'available'
+    assert available['available_at'] == pair.receipt_last_modified
+    assert available['commitment_published_at'] == pair.receipt_last_modified
+    assert available['intent'] == intent
+    assert available['intent_bytes_sha256'] == expressions.digest(intent)
+    assert available['consumer_expression_bytes_resolved'] is True
+    assert available['public_consumer_available'] is False
+    attached_only = read_pair(s, 'b', expression_manifest=pair.expression_manifest)
+    unresolved = expressions.resolve_intent_availability(attached_only, intent['expression_id'])
+    assert unresolved['reason'] == 'ORIGINAL_CONSUMER_EXPRESSION_BYTES_UNRESOLVED'
+    assert unresolved['available_at'] is None and unresolved['intent'] is None
+    assert unresolved['public_consumer_available'] is False
+    assert available['available_at'] != pair.receipt['payload_r2_confirmed_at']
+    assert all(value is False for value in available['authority'].values())
+    assert not available['capture_eligible'] and not available['training_eligible']
+    assert set(s.o) == {PAYLOAD_KEY, RECEIPT_KEY}
+    assert s.metadata[PAYLOAD_KEY][expressions.METADATA_KEY] == pair.expression_manifest_sha256
+    assert s.metadata[RECEIPT_KEY][expressions.METADATA_KEY] == pair.expression_manifest_sha256
+
+
+def test_late_expression_has_own_first_publication_and_successors_preserve_it(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    _publish_expression(s, tmp_path, rows[0])
+    candidate_time = read_pair(s, 'b').receipt_last_modified
+    intent = _expression_intent(rows, tmp_path / 'source', decision='2026-08-14T00:00:03Z')
+    _publish_expression(s, tmp_path, rows[1], [intent])
+    first = _read_expression(s, tmp_path)
+    actual = expressions.resolve_intent_availability(first, intent['expression_id'])
+    assert actual['available_at'] != candidate_time
+    assert actual['available_at'] == first.receipt_last_modified
+    for row in rows[2:]:
+        assert _publish_expression(s, tmp_path, row) == 'published'
+        later = _read_expression(s, tmp_path)
+        carried = expressions.resolve_intent_availability(later, intent['expression_id'])
+        assert carried['available_at'] == actual['available_at']
+        assert carried['first_receipt_id'] == first.receipt['receipt_id']
+        cid = intent['candidate_id']
+        assert later.receipt['candidates'][cid]['first_consumer_published_at'] == candidate_time
+
+
+def test_new_expression_cannot_reuse_same_feed_generation_or_refresh_noop_time(tmp_path, monkeypatch):
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    _publish_expression(s, tmp_path, rows[0])
+    intent = _expression_intent(rows, tmp_path / 'source')
+    before = copy.deepcopy((s.o, s.metadata, s.puts))
+    with pytest.raises(PublicationError, match='new canonical feed generation'):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    assert (s.o, s.metadata, s.puts) == before
+    _publish_expression(s, tmp_path, rows[1], [intent])
+    before = copy.deepcopy((s.o, s.metadata, s.puts))
+    assert _publish_expression(s, tmp_path, rows[1], [intent]) == 'noop'
+    assert (s.o, s.metadata, s.puts) == before
+
+
+@pytest.mark.parametrize('key', [PAYLOAD_KEY, RECEIPT_KEY])
+@pytest.mark.parametrize('when', ['before', 'after'])
+def test_expression_transaction_recovers_original_manifest_without_new_intent(tmp_path, monkeypatch, key, when):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = MetadataS3()
+    _publish_expression(s, tmp_path, rows[0])
+    setattr(s, 'fail_before' if when == 'before' else 'fail', key)
+    with pytest.raises(PublicationError):
+        _publish_expression(s, tmp_path, rows[1], [intent])
+    journal_path = tmp_path / 'lock.transaction.json'
+    journal = publisher._load(journal_path)
+    assert journal['schema'] == publisher.EXPRESSION_JOURNAL_SCHEMA
+    assert journal['expression_manifest']['expressions'][intent['expression_id']]['intent'] == intent
+    assert recover_pending_pair(client=s, bucket='b', lock_path=tmp_path / 'lock', now=lambda: '2026-08-14T01:00:00Z') in {'published', 'noop'}
+    assert not journal_path.exists()
+    pair = _read_expression(s, tmp_path)
+    assert expressions.resolve_intent_availability(pair, intent['expression_id'])['status'] == 'available'
+    assert len(s.puts) == 4  # two original plus two successor effects, no duplicate writes
+
+
+def test_expression_publication_requires_original_retained_manifest_on_new_host(tmp_path, monkeypatch):
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = MetadataS3()
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    (tmp_path / 'lock.sealed.json').unlink()
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='original retained expression manifest'):
+        _read_expression(s, tmp_path)
+    with pytest.raises(PublicationError, match='original retained expression manifest'):
+        _publish_expression(s, tmp_path, rows[1], [intent])
+    assert len(s.puts) == puts
+
+
+@pytest.mark.parametrize('where', [PAYLOAD_KEY, RECEIPT_KEY])
+def test_expression_metadata_mismatch_refuses_read_and_publication(tmp_path, monkeypatch, where):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    s.metadata[where][expressions.METADATA_KEY] = 'f' * 64
+    before = len(s.puts)
+    with pytest.raises(PublicationError, match='partial/unsealed'):
+        read_pair(s, 'b')
+    with pytest.raises(PublicationError):
+        _publish_expression(s, tmp_path, rows[1])
+    assert len(s.puts) == before
+
+
+def test_expression_clock_uncertainty_never_borrows_or_clamps_candidate_clock(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source', decision='2026-08-14T00:00:02.500000Z')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    pair = _read_expression(s, tmp_path)
+    observed = expressions.resolve_intent_availability(pair, intent['expression_id'])
+    assert observed['status'] == 'unavailable' and observed['available_at'] is None
+    assert observed['reason'] == 'EXTERNAL_PUBLICATION_CLOCK_PRECEDES_INTENT'
+    assert pair.receipt_last_modified == '2026-08-14T00:00:02Z'
+
+
+def test_expression_manifest_tampering_or_downgrade_never_replays(tmp_path, monkeypatch):
+    import json
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    cache_path = tmp_path / 'lock.sealed.json'
+    cache = json.loads(cache_path.read_bytes())
+    cache['schema'] = publisher.JOURNAL_SCHEMA
+    cache_path.write_bytes(publisher.canonical_bytes(cache))
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='versioned local state'):
+        _publish_expression(s, tmp_path, rows[1])
+    assert len(s.puts) == puts
+
+
+def test_expression_get_head_metadata_race_is_unsealed(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    original = s.head_object
+
+    def racing_head(**args):
+        result = original(**args)
+        if args['Key'] == PAYLOAD_KEY:
+            result['Metadata'][expressions.METADATA_KEY] = 'f' * 64
+        return result
+
+    monkeypatch.setattr(s, 'head_object', racing_head)
+    with pytest.raises(PublicationError, match='readback raced'):
+        _read_expression(s, tmp_path)
+
+
+def test_coherent_foreign_commitment_or_lost_commitment_cannot_replace_retained_history(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    puts = len(s.puts)
+    for key in (PAYLOAD_KEY, RECEIPT_KEY):
+        s.metadata[key][expressions.METADATA_KEY] = 'f' * 64
+    with pytest.raises(PublicationError, match='original retained'):
+        _publish_expression(s, tmp_path, rows[1])
+    for key in (PAYLOAD_KEY, RECEIPT_KEY):
+        del s.metadata[key][expressions.METADATA_KEY]
+    with pytest.raises(PublicationError, match='lost expression history'):
+        _publish_expression(s, tmp_path, rows[1])
+    assert len(s.puts) == puts
+
+
+def test_pending_manifest_cannot_be_substituted_after_provider_effect(tmp_path, monkeypatch):
+    import json
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0])
+    s.fail = RECEIPT_KEY
+    with pytest.raises(PublicationError):
+        _publish_expression(s, tmp_path, rows[1], [intent])
+    journal_path = tmp_path / 'lock.transaction.json'
+    original = journal_path.read_bytes()
+    altered = json.loads(original)
+    altered['expression_manifest']['expressions'][intent['expression_id']]['first_consumer_published_at'] = '2026-08-13T14:30:00Z'
+    journal_path.write_bytes(publisher.canonical_bytes(altered))
+    puts = len(s.puts)
+    with pytest.raises(PublicationError):
+        recover_pending_pair(client=s, bucket='b', lock_path=tmp_path / 'lock', now=lambda: '2026-08-14T01:00:00Z')
+    assert len(s.puts) == puts and journal_path.exists()
+    journal_path.write_bytes(original)  # restore the actual retained original, no new operation
+    assert recover_pending_pair(client=s, bucket='b', lock_path=tmp_path / 'lock', now=lambda: '2026-08-14T01:00:00Z') == 'noop'
+
+
+def test_terms_and_future_decision_errors_are_rejected_before_publication(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_publication as expressions
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = MetadataS3()
+    bad = copy.deepcopy(intent)
+    bad['terms_observation']['multiplier'] = True
+    bad['expression_id'] = 'oaexprintent_' + expressions.digest({k: v for k, v in bad.items() if k != 'expression_id'})
+    with pytest.raises(PublicationError, match='intent input invalid'):
+        _publish_expression(s, tmp_path, rows[0], [bad])
+    future = _expression_intent(rows, tmp_path / 'source', decision='2026-08-15T14:32:01Z')
+    with pytest.raises(PublicationError, match='not yet observable'):
+        _publish_expression(s, tmp_path, rows[0], [future])
+    assert not s.puts and not (tmp_path / 'lock.transaction.json').exists()
+
+
+def test_same_body_receipt_rewrite_cannot_refresh_first_expression_publication(tmp_path, monkeypatch):
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    _publish_expression(s, tmp_path, rows[0], [intent])
+    body, etag, original_time = s.o[RECEIPT_KEY]
+    # S3 ETags cover the body; a metadata/same-body overwrite can retain it.
+    s.o[RECEIPT_KEY] = (body, etag, original_time + timedelta(minutes=1))
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='sealed generation changed'):
+        _read_expression(s, tmp_path)
+    with pytest.raises(PublicationError, match='sealed generation changed'):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    assert len(s.puts) == puts
+
+
+def test_expression_reader_does_not_reconcile_a_pending_provider_effect(tmp_path, monkeypatch):
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s.fail = RECEIPT_KEY
+    with pytest.raises(PublicationError):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='original recovery'):
+        _read_expression(s, tmp_path)
+    assert (tmp_path / 'lock.transaction.json').exists() and len(s.puts) == puts
+
+
+@pytest.mark.parametrize('state_file', ['lock.sealed.json', 'lock.transaction.json'])
+def test_versioned_expression_state_cannot_silently_lose_its_manifest(tmp_path, monkeypatch, state_file):
+    import json
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    s = MetadataS3()
+    intent = _expression_intent(rows, tmp_path / 'source')
+    if state_file.endswith('transaction.json'):
+        s.fail = RECEIPT_KEY
+        with pytest.raises(PublicationError):
+            _publish_expression(s, tmp_path, rows[0], [intent])
+    else:
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    path = tmp_path / state_file
+    state = json.loads(path.read_bytes())
+    body = state.get('sealed', state)
+    del body['expression_manifest']
+    # Removing commitment metadata too must not downgrade a v2 local state.
+    body.pop('expression_manifest_sha256', None)
+    path.write_bytes(publisher.canonical_bytes(state))
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='requires original manifest'):
+        _read_expression(s, tmp_path)
+    with pytest.raises(PublicationError, match='requires original manifest'):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    assert len(s.puts) == puts

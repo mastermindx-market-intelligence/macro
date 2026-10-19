@@ -3945,6 +3945,22 @@ jobs:
       # composer + transitive engine closure
       - "engine/__init__.py"
       - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_alpha_expression_formation.py"
+      - "engine/options_alpha_expression_intent.py"
+      - "engine/options_alpha_expression_publication.py"
+      - "tests/test_options_alpha_expression_intent.py"
+      - "engine/options_alpha_expression_identity.py"
+      - "engine/options_alpha_exact_option_outcome.py"
+      - "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json"
+      - "research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md"
+      - "research/options_estate/options_alpha_exact_option_outcome_policy_v1.json"
+      - "agentos/decisions/DEC-OPTIONS-ALPHA-EXACT-CAMPAIGN-EXPRESSION-PREPARATION.md"
+      - "engine/options_nbbo_cohort.py"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
+      - "research/options_estate/options_alpha_expression_selection_policy_v1.json"
+      - "docs/runbooks/OPTIONS_ALPHA_EXPRESSION_PREPARATION.md"
+      - "scripts/prepare_options_alpha_expression.py"
+      - "tests/test_options_alpha_expression_identity.py"
       - "engine/options_signal_campaign.py"
       - "engine/options_signal_episode.py"
       - "engine/options_signal_episode_contract.py"
@@ -4024,6 +4040,8 @@ jobs:
         run: >-
           PYTHONPATH=tests:scripts python -m pytest
           tests/test_options_alpha_candidate_feed.py
+          tests/test_options_alpha_expression_identity.py
+          tests/test_options_alpha_expression_intent.py
           tests/test_publish_options_alpha_candidate_r2.py
           tests/test_build_options_alpha_candidate_feed.py
           tests/test_options_alpha_candidate_outcome_enrichment.py -q
