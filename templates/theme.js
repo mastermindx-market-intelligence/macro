@@ -446,6 +446,9 @@
   document.addEventListener('click', function (e) {
     if (!mmTerminalOn() || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    // In particular, the overlay's "Open separately" link must escape this router.
+    var browsingTarget = a && a.getAttribute('target');
+    if (browsingTarget && browsingTarget.toLowerCase() !== '_self') return;
     var target = terminalTarget(a);
     if (!target) return;
     e.preventDefault(); e.stopPropagation();
