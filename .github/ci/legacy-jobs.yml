@@ -17739,11 +17739,10 @@ jobs:
         # until a call), so the test stays hermetic. This install line had exactly
         # one member, so extending it costs no extra ci-pack venv.
         run: pip install pytest jinja2 pyyaml pypdf boto3
-      # F3/F5-M share LocalStore and seeded-PDF fixtures. One invocation runs both
-      # suites with the ingestion/page tests while preserving their full inferred
-      # dependency ownership. No extra interpreter is needed.
-      - name: research vault typing, ingestion-spine and page unit tests (F3/F5-M)
-        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py -q
+      # One installed environment owns generation, ingestion, intelligence,
+      # retrieval and page contracts; retain both source families in this job.
+      - name: research vault generation, ingestion, intelligence, retrieval and page tests
+        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault_reading_order_v2.py tests/test_research_vault_source_layout.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py tests/test_research_intelligence_comparison.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_intelligence_selection.py tests/test_research_intelligence_selection_contract.py tests/test_research_intelligence_selector_semantics.py tests/test_research_vault_evaluation_runner.py -q
 
 
   research-vault-source-lineage:
@@ -24689,6 +24688,7 @@ jobs:
       - "lib/global_regime_fragment.py"
       - "lib/help_directory.py"
       - "lib/hk_calendar.py"
+      - "lib/intl_eod_publication.py"
       - "lib/intl_compare_mount.py"
       - "lib/intl_compare_view.py"
       - "lib/intl_eod_publication.py"
