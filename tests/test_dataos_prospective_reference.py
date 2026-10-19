@@ -833,3 +833,75 @@ def test_r25_fork_cannot_inherit_parent_reentrancy(tmp_path):
          str(tmp_path / "reference")],
         cwd=b.ROOT, capture_output=True, text=True, timeout=30, env=env)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def _r25_inject_cleanup_errors(monkeypatch, failures):
+    import errno
+    import fcntl
+    import os
+
+    real_flock, real_close = fcntl.flock, os.close
+    held = {"fd": None}
+    errors = {name: OSError(errno.EIO, "injected " + name + " failure")
+              for name in failures}
+
+    def flock(fd, operation):
+        if operation & fcntl.LOCK_EX and held["fd"] is None:
+            held["fd"] = fd
+        if fd == held["fd"] and operation == fcntl.LOCK_UN and "unlock" in errors:
+            raise errors["unlock"]
+        return real_flock(fd, operation)
+
+    def close(fd):
+        real_close(fd)
+        # Model an error reported after closing. Never retry a possibly reused fd.
+        if fd == held["fd"] and "close" in errors:
+            raise errors["close"]
+
+    monkeypatch.setattr(fcntl, "flock", flock)
+    monkeypatch.setattr(os, "close", close)
+    return errors
+
+
+@pytest.mark.parametrize("failures", [("unlock",), ("close",), ("unlock", "close")])
+def test_r25_cleanup_error_keeps_original_builder_exception(tmp_path, monkeypatch, failures):
+    import errno
+    out = tmp_path / "reference"
+    original = OSError(errno.ENOSPC, "injected builder disk-full failure")
+    with monkeypatch.context() as patch:
+        errors = _r25_inject_cleanup_errors(patch, failures)
+        with pytest.raises(OSError) as caught:
+            with b._reference_writer_scope(out):
+                raise original
+    assert caught.value is original
+    notes = "\n".join(getattr(original, "__notes__", ()))
+    assert all(str(error) in notes for error in errors.values())
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+@pytest.mark.parametrize("failures", [("unlock",), ("close",), ("unlock", "close")])
+def test_r25_cleanup_error_without_builder_failure_is_reported(tmp_path, monkeypatch, failures):
+    out = tmp_path / "reference"
+    with monkeypatch.context() as patch:
+        errors = _r25_inject_cleanup_errors(patch, failures)
+        with pytest.raises(OSError) as caught:
+            with b._reference_writer_scope(out):
+                pass
+    assert caught.value is errors[failures[0]]
+    if len(failures) > 1:
+        assert str(errors[failures[1]]) in "\n".join(caught.value.__notes__)
+    assert _r25_probe_other_process(out) == "ACQUIRED"
+
+
+def test_r25_unrelated_outer_exception_does_not_hide_cleanup_failure(tmp_path, monkeypatch):
+    # An exception handled by the caller is not a failure of this writer scope.
+    # Looking at sys.exception() in finally would conflate those two cases.
+    try:
+        raise LookupError("already being handled by caller")
+    except LookupError:
+        with monkeypatch.context() as patch:
+            errors = _r25_inject_cleanup_errors(patch, ("unlock",))
+            with pytest.raises(OSError) as caught:
+                with b._reference_writer_scope(tmp_path / "reference"):
+                    pass
+    assert caught.value is errors["unlock"]

@@ -206,10 +206,11 @@ _REFUSAL_KINDS = (
 
 # ── A03.01 precondition: the staged order mirrors the real producer ───────────
 def test_a03_01_build_writes_receipt_after_every_parquet() -> None:
-    """Source-order pin on the real ``build``: inside the ``if not dry_run:``
-    block there are exactly five ``_write_parquet(`` calls and the receipt
-    ``write_text`` comes after every one — the order StagedBuild mirrors."""
-    src = inspect.getsource(BUILD.build)
+    """Pin the real build body inside the R25 writer wrapper: within its
+    ``if not dry_run:`` block there are exactly five ``_write_parquet(`` calls
+    and receipt ``write_text`` comes after every one — the order StagedBuild mirrors.
+    """
+    src = inspect.getsource(BUILD._build_reference_unlocked)
     assert "if not dry_run:" in src
     block = src.split("if not dry_run:", 1)[1]
     writes = [m.start() for m in re.finditer(r"_write_parquet\(", block)]
@@ -517,10 +518,11 @@ def test_a03_03_generic_failure_does_not_touch_the_streak_sidecar(
 
 # ── A03.04 — one writer ───────────────────────────────────────────────────────
 def test_a03_04_only_the_owner_seam_writes_the_receipt() -> None:
-    """Across the producer module, exactly ``build``, ``_restore_artifacts``
-    and ``run_nightly_refresh`` both name the receipt and write it — the writer
-    census behind 'no independent writer or transport replays an effect'. Every
-    recovery in this suite is driven through ``run_nightly_refresh`` only."""
+    """The build/nightly bodies and rollback helper are the exact receipt
+    writers. R25 wraps the same bodies in the public entry points; extraction
+    must not expand this closed writer census. Every recovery in this suite is
+    driven through ``run_nightly_refresh`` only.
+    """
     writers = set()
     for name, func in inspect.getmembers(BUILD, inspect.isfunction):
         if func.__module__ != BUILD.__name__:
@@ -528,7 +530,9 @@ def test_a03_04_only_the_owner_seam_writes_the_receipt() -> None:
         source = inspect.getsource(func)
         if "RECEIPT_NAME" in source and ("write_text" in source or "write_bytes" in source):
             writers.add(name)
-    assert writers == {"build", "_restore_artifacts", "run_nightly_refresh"}
+    assert writers == {
+        "_build_reference_unlocked", "_restore_artifacts", "_run_nightly_reference_unlocked",
+    }
 
 
 # ── Census pins (executable) ──────────────────────────────────────────────────

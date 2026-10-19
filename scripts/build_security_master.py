@@ -3313,6 +3313,7 @@ def _reference_writer_scope(out_dir: Path):
         return
     fd = None
     acquired = False
+    primary_error: BaseException | None = None
     try:
         if out_dir.is_symlink():
             raise IdentityError("reference writer target is a symlink")
@@ -3334,9 +3335,15 @@ def _reference_writer_scope(out_dir: Path):
         yield
     except OSError as exc:
         if acquired:
+            primary_error = exc
             raise  # Preserve the original builder/rollback exception contract.
-        raise IdentityError("reference writer target unavailable") from exc
+        primary_error = IdentityError("reference writer target unavailable")
+        raise primary_error from exc
+    except BaseException as exc:
+        primary_error = exc
+        raise
     finally:
+        cleanup_errors: list[OSError] = []
         try:
             if acquired:
                 if previous is None:
@@ -3345,10 +3352,28 @@ def _reference_writer_scope(out_dir: Path):
                     active[key] = previous
                 # A forked child must never unlock the parent's open description.
                 if os.getpid() == owner_pid:
-                    fcntl.flock(fd, fcntl.LOCK_UN)
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_UN)
+                    except OSError as exc:
+                        cleanup_errors.append(exc)
         finally:
             if fd is not None:
-                os.close(fd)
+                try:
+                    os.close(fd)
+                except OSError as exc:
+                    # Do not retry close: the descriptor may already be released.
+                    cleanup_errors.append(exc)
+        if cleanup_errors:
+            # Preserve this scope's original failure, including its errno and
+            # identity. An exception already handled by our caller is unrelated.
+            if primary_error is not None:
+                for error in cleanup_errors:
+                    primary_error.add_note(f"reference writer cleanup: {error}")
+            else:
+                first, *additional = cleanup_errors
+                for error in additional:
+                    first.add_note(f"additional reference writer cleanup: {error}")
+                raise first
 
 
 def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
