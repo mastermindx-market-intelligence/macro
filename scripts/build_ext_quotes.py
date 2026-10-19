@@ -311,7 +311,9 @@ def _r2_client():
             config=cfg,
         )
     except Exception as exc:  # noqa: BLE001
-        log.warning("ext_quotes: R2 client build failed: %s", exc)
+        if _r2_access_denied(exc):
+            raise R2PublicationDenied("R2 denied client initialization") from None
+        log.warning("ext_quotes: R2 client build failed (%s)", type(exc).__name__)
         return None
 
 
@@ -329,7 +331,8 @@ def _r2_access_denied(error: Exception) -> bool:
     detail = response.get("Error", {})
     status = metadata.get("HTTPStatusCode") if isinstance(metadata, dict) else None
     code = detail.get("Code") if isinstance(detail, dict) else None
-    return status in (401, 403) or code in (
+    return (type(status) is int and status in (401, 403)) or code in (
+        "401", "403", "Forbidden", "Unauthorized", "AccessForbidden",
         "AccessDenied", "AccessDeniedException", "AllAccessDisabled",
         "InvalidAccessKeyId", "SignatureDoesNotMatch", "InvalidToken",
         "ExpiredToken", "TokenRefreshRequired", "AccountProblem",
@@ -337,7 +340,11 @@ def _r2_access_denied(error: Exception) -> bool:
 
 
 def _publish_r2(payload_json: str) -> bool:
-    """Publish only the approved BOATS allowlist to the existing relay key."""
+    """Publish only the approved BOATS allowlist to the existing relay key.
+
+    Raises R2PublicationDenied on a structured access refusal. Callers must
+    stop further storage attempts for this invocation; other failures return False.
+    """
     try:
         payload_json = json.dumps(public_boats_payload(json.loads(payload_json)),
                                   separators=(",", ":"), allow_nan=False)
@@ -597,7 +604,8 @@ def publish_boats_stream(*, max_seconds: int = 600, max_messages: int = 20000,
     reducer = BoatsLastTrade(symbols or DEFAULT_SYMBOLS, str(uuid.uuid4()))
     last_publish = -math.inf
     publication = {"requested": publish, "attempted": 0, "succeeded": 0,
-                   "failed": 0, "final_invalidation_delivered": None}
+                   "failed": 0, "final_invalidation_delivered": None,
+                   "access_denied": False}
     publication_denied = False
 
     def emit(force=False):
@@ -744,7 +752,10 @@ def build_ext_quotes(
         return payload
 
     if publish:
-        _publish_r2(payload_json)
+        try:
+            _publish_r2(payload_json)
+        except R2PublicationDenied:
+            log.warning("ext_quotes: R2 access denied; cycle publication stopped")
     else:
         # Dry-run: write to /tmp for inspection.
         out = Path("/tmp/ext_quotes_debug.json")
