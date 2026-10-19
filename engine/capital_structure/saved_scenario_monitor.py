@@ -73,18 +73,21 @@ from engine.capital_structure.scenario_composition import (
     compose_scenario,
 )
 from engine.capital_structure.scenario_inputs import (
+    BUNDLE_FAMILIES,
     CAPACITY_INPUTS_FILENAME,
     ScenarioInputsError,
     ScenarioInputsUnavailable,
     assemble_scenario_inputs,
 )
+from engine.capital_structure.capacity import CapacityInputError
+from engine.capital_structure.funding import FundingInputError
 from engine.capital_structure.saved_scenarios import (
     RESTORE_NOTES,
     RESTORE_OUTCOMES,
     RestoreOutcome,
     SavedScenario,
     classify_restore,
-    financing_scenario_from_record,
+    restore_anchor,
 )
 from engine.capital_structure.saved_scenario_store import (
     read_all_service_side,
@@ -364,6 +367,10 @@ def _pack_binds(bundle: Mapping[str, Any], pack: Any) -> bool:
     )
 
 
+class _ScenarioRefused(Exception):
+    """The served engine refuses the restore anchor (the route's 409/422)."""
+
+
 def _recompose(
     saved: SavedScenario,
     *,
@@ -371,12 +378,31 @@ def _recompose(
     inputs_doc: Mapping[str, Any],
     pack: Any,
 ) -> tuple[Any, Any, Any]:
-    """``(state, assembled, result)`` for one saved row against the served
-    generation — the SAME ``assemble_scenario_inputs`` + S0 composer the
-    evaluate route runs, offline.  Raises exactly what the route's error
-    table refuses."""
+    """``(state, scenario, result)`` for one saved row against the served
+    generation — the SAME anchor (:func:`restore_anchor`, which rebases a
+    ``current``/``scenario`` save to the served as_of and keeps a
+    ``then_known`` save verbatim), ``assemble_scenario_inputs`` and S0
+    composer the restore route runs, offline.
+
+    Raises :class:`ContractViolation` when the saved body no longer
+    reconstructs (the route's rejected restore), :class:`ScenarioInputsError`
+    for a bundle conflict (the route's inputs 409) and
+    :class:`_ScenarioRefused` for every other refusal of the anchor (the
+    route's composition 409 or as_of/capacity/funding 422)."""
     state = state_from_record(_issuer_state_record(bundle, saved.issuer_id))
-    scenario = financing_scenario_from_record(saved.scenario)
+    served_as_of = str(state.request.as_of)
+    scenario = restore_anchor(saved, served_as_of)
+    then_known = str(saved.view.get("mode") or "") == "then_known"
+    if not then_known and scenario.as_of != served_as_of:
+        raise _ScenarioRefused("scenario_as_of_mismatch")
+    # A then_known anchor keeps its own cutoff as_of.  The route re-derives the
+    # then-known state at that cutoff (its as_of IS the cutoff), so its as_of
+    # check passes and the inputs bundle decides: after a nightly the bundle
+    # as_of has moved and assembly raises ScenarioInputsError (inputs
+    # unavailable), exactly as below.  Offline the monitor holds no verified
+    # projection generation to re-derive the then-known state, so when the
+    # bundle as_of still equals the cutoff it composes against the served
+    # state at that same as_of: the one documented approximation.
     assembled = assemble_scenario_inputs(
         inputs_doc,
         saved.issuer_id,
@@ -385,16 +411,19 @@ def _recompose(
     )
     if isinstance(assembled, ScenarioInputsUnavailable):
         return state, scenario, assembled
-    result = compose_scenario(
-        state,
-        assembled.instruments,
-        assembled.basis,
-        assembled.financials,
-        assembled.commitments,
-        scenario,
-        assembled.rules,
-        pack=pack,
-    )
+    try:
+        result = compose_scenario(
+            state,
+            assembled.instruments,
+            assembled.basis,
+            assembled.financials,
+            assembled.commitments,
+            scenario,
+            assembled.rules,
+            pack=pack,
+        )
+    except (ScenarioCompositionError, CapacityInputError, FundingInputError) as exc:
+        raise _ScenarioRefused(str(exc)) from exc
     return state, scenario, result
 
 
@@ -469,11 +498,44 @@ def _restore_outcome_for(
             changes=None,
         )
     try:
-        _state, _scenario, outcome = _recompose(
+        state, scenario, outcome = _recompose(
             saved, bundle=bundle, inputs_doc=inputs_doc, pack=pack
         )
-    except (ScenarioInputsError, ScenarioCompositionError, ValueError, TypeError) as exc:
-        del exc
+    except ScenarioInputsError as exc:
+        # a bundle conflict (another as_of after a nightly, an unknown issuer):
+        # every family unavailable with the engine's own message, as the route.
+        return classify_restore(
+            saved,
+            state_generation_id=state_generation_id,
+            inputs_generation_id=inputs_generation_id,
+            current_result=None,
+            unavailable=ScenarioInputsUnavailable(
+                {
+                    family: {"support": "unavailable", "reason_codes": [str(exc)]}
+                    for family in BUNDLE_FAMILIES
+                },
+                (),
+            ),
+            state_unavailable=False,
+            scenario_rejected=False,
+            changes=changeset,
+        )
+    except _ScenarioRefused:
+        return classify_restore(
+            saved,
+            state_generation_id=state_generation_id,
+            inputs_generation_id=inputs_generation_id,
+            current_result=None,
+            unavailable=None,
+            state_unavailable=False,
+            scenario_rejected=False,
+            scenario_refused=True,
+            changes=changeset,
+        )
+    except (ContractViolation, ValueError, TypeError):
+        # ScenarioInputsError subclasses ContractViolation, so this clause
+        # comes after it: the saved body no longer reconstructs under the
+        # served contract — the rejected restore.
         return _rejected()
     if isinstance(outcome, ScenarioInputsUnavailable):
         return classify_restore(
@@ -495,6 +557,8 @@ def _restore_outcome_for(
         state_unavailable=False,
         scenario_rejected=False,
         changes=changeset,
+        current_scenario_id=scenario.scenario_id,
+        current_as_of=str(state.request.as_of),
     )
 
 

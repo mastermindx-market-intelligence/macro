@@ -37,6 +37,7 @@ from engine.capital_structure.rule_applicability import (
 )
 from engine.capital_structure.scenario_composition import compose_scenario
 from engine.capital_structure.scenario_inputs import (
+    BUNDLE_FAMILIES,
     ScenarioInputsUnavailable,
     assemble_scenario_inputs,
 )
@@ -44,6 +45,7 @@ from engine.capital_structure.saved_scenarios import (
     RESTORE_OUTCOMES,
     SavedScenario,
     result_digest_of,
+    result_substance_digest_of,
 )
 from engine.capital_structure import saved_scenario_monitor as monitor
 from engine.capital_structure import saved_scenario_store as store
@@ -328,6 +330,7 @@ def _make_saved(
         inputs_generation_id=inputs_generation_id,
         result_id=result["result_id"],
         result_digest=result_digest_of(result),
+        result_substance_digest=result_substance_digest_of(result),
         rule_pack_digest=result["capacity_envelope"]["rule_pack_digest"],
         saved_at=SAVED_AT,
     )
@@ -882,3 +885,68 @@ def test_u2_monitor_dedupes_against_outbox_and_writes_outcome_only_on_ok(
     written = _store.written()
     assert written[fixture_rows.new_events.saved_id] == ("new_events", served_gen)
     assert written[fixture_rows.correction.saved_id] == (None, None)
+
+
+# ---------------------------------------------------------------------------
+# U2-2 r1 parity — the monitor classifies exactly as the restore route does
+# (DEC:CS-V2-U2-RESTORE-REBASES-AS-OF)
+# ---------------------------------------------------------------------------
+_EARLIER_AS_OF = "2026-10-13T00:00:00Z"
+
+
+def _saved_at_earlier_as_of(world: _World, pack, *, view: dict[str, Any]) -> tuple[SavedScenario, Any]:
+    """One honest composition at the served as_of, saved with its scenario
+    anchored one day earlier — the shape every save takes after a nightly
+    moves the served as_of."""
+    result, scenario = _compose(world.current, world.inputs_current, ISSUER_ONE, pack, "2.70")
+    earlier = dataclasses.replace(scenario, as_of=_EARLIER_AS_OF)
+    assert earlier.scenario_id != scenario.scenario_id
+    saved = _make_saved(
+        issuer_id=ISSUER_ONE,
+        state_generation_id=world.current["generation_id"],
+        inputs_generation_id=world.inputs_current["generation_id"],
+        result=result,
+        scenario=earlier,
+    )
+    return dataclasses.replace(saved, view=view), scenario
+
+
+def test_u2_monitor_rebases_a_scenario_anchor_to_the_served_as_of(world: _World, pack):
+    """A ``scenario`` save re-runs its assumptions AT the served as_of, as the
+    route's restore_anchor does: a re-run (S′ recomputed), never a rejection."""
+    saved, served_scenario = _saved_at_earlier_as_of(
+        world, pack, view={"mode": "scenario", "cutoff": None}
+    )
+    outcome = monitor._restore_outcome_for(
+        saved,
+        bundle=world.current,
+        inputs_doc=world.inputs_current,
+        pack=pack,
+        changeset=None,
+    )
+    assert outcome.outcome == "no_change", outcome
+    assert outcome.scenario_id_before == saved.scenario_id
+    assert outcome.scenario_id_after == served_scenario.scenario_id
+    assert outcome.scenario_id_after != saved.scenario_id
+    assert outcome.to_as_of == AS_OF
+
+
+def test_u2_monitor_then_known_anchor_off_the_bundle_as_of_is_inputs_unavailable(
+    world: _World, pack
+):
+    """A ``then_known`` anchor keeps its cutoff as_of; the served inputs bundle
+    is bound to another as_of, so — exactly as the route's 409 — every bundle
+    family is unavailable, never a refusal or a recomposed number."""
+    saved, _served = _saved_at_earlier_as_of(
+        world, pack, view={"mode": "then_known", "cutoff": _EARLIER_AS_OF}
+    )
+    outcome = monitor._restore_outcome_for(
+        saved,
+        bundle=world.current,
+        inputs_doc=world.inputs_current,
+        pack=pack,
+        changeset=None,
+    )
+    assert outcome.outcome == "inputs_unavailable", outcome
+    assert sorted(outcome.unavailable_components) == sorted(BUNDLE_FAMILIES)
+    assert outcome.result_id_after is None
