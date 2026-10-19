@@ -21,16 +21,18 @@ import re
 import threading
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import Any, Mapping, NamedTuple
 from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response
+from fastapi.responses import JSONResponse
 
 from engine.capital_structure.capacity import CapacityInputError
 from engine.capital_structure.funding import FundingInputError
 from engine.capital_structure.issuer_state_contracts import (
     AUTHORITY,
     PROJECTION_COMPATIBILITY,
+    VIEW_MODES,
     ActionSelection,
     ContractViolation,
     EvidenceRef,
@@ -65,6 +67,31 @@ from engine.capital_structure.scenario_inputs import (
     assemble_scenario_inputs,
     validate_capacity_inputs_bundle,
 )
+from engine.capital_structure.saved_scenarios import (
+    RESTORE_NOTES,
+    RestoreOutcome,
+    SavedScenario,
+    classify_restore,
+    result_digest_of,
+)
+from engine.capital_structure.saved_scenario_store import (
+    READ_OK,
+    READ_OK_ZERO,
+    READ_UNAVAILABLE,
+)
+from engine.capital_structure import saved_scenario_store as store
+from engine.capital_structure.scenario_export import (
+    ScenarioExportError,
+    export_filename,
+    export_scenario_envelope,
+)
+from engine.capital_structure.state_changes import (
+    CHANGE_KINDS,
+    STATE_CHANGES_SCHEMA,
+    StateChange,
+    StateChangeSet,
+    changes_for_issuer,
+)
 from engine.capital_structure.state_bundle import (
     STATE_BUNDLE_SCHEMA,
     coverage_for,
@@ -77,6 +104,7 @@ from engine.capital_structure.state_bundle import (
 from engine.capital_structure.verified_projection_generation import (
     read_verified_projection_generation,
 )
+from engine.fundamental_forensics.query_exports import EXPORT_FORMATS
 
 
 router = APIRouter()
@@ -84,6 +112,9 @@ router = APIRouter()
 REPO = Path(os.environ.get("MACRO_REPO") or Path(__file__).resolve().parents[1])
 PROJECTION_PATH = REPO / "data" / "capital_structure" / "projection.json"
 STATE_PATH = REPO / "data" / "capital_structure" / "state_bundle.json"
+#: U2-2: the derived change ledger the nightly publishes next to the bundle it
+#: diffs into (SPEC_U2 §1.1); the change desk serves it, never recomputes it.
+STATE_CHANGES_PATH = REPO / "data" / "capital_structure" / "state_changes.json"
 
 _TICKER_RE = re.compile(r"^[A-Z][A-Z0-9.-]{0,9}$")
 _BARE_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -102,6 +133,14 @@ _STATE_CACHE: dict[str, Any] = {
     "payload": None,
 }
 _INPUTS_CACHE: dict[str, Any] = {
+    "path": None,
+    "mtime_ns": None,
+    "size": None,
+    "payload": None,
+}
+#: U2-2: the published change ledger, cached stat-exact like the other artifacts.
+#: It is a published artifact, never user data, and a failed read is never cached.
+_CHANGES_CACHE: dict[str, Any] = {
     "path": None,
     "mtime_ns": None,
     "size": None,
@@ -136,6 +175,21 @@ _MAX_SCENARIO_BODY_BYTES = 32 * 1024
 _MAX_SCENARIO_ACTIONS = 16
 _MAX_SCENARIO_LABEL_CHARS = 120
 _RECOMMENDATION_WORDS = ("recommend", "should buy", "should sell", "should raise", "target price", "score")
+#: U2-2 (SPEC_U2 §1 "U2-2"): every refusal below is verbatim from the frozen
+#: spec, or the house-style typed 503 for a published artifact that is absent
+#: or unreadable (the ledger has no other named message, so absence refuses
+#: closed like the state bundle does).
+_CHANGE_LEDGER_UNAVAILABLE = "change ledger unavailable"
+_CHANGE_LEDGER_NOT_BOUND = "change ledger does not bind served state"
+_CHANGE_LEDGER_DOES_NOT_COVER_SINCE = "change_ledger_does_not_cover_since"
+_SAVED_SCENARIO_NOT_FOUND = "saved scenario not found"
+_STORE_UNAVAILABLE = "saved_scenarios_store_unavailable"
+_NOTHING_TO_EXPORT = "nothing to export: {outcome}"
+_METHOD_NOT_ALLOWED = "method not allowed"
+#: The exact top-level body a save accepts: the scenario, the view anchor the
+#: row stores, and the display label.  Anything else is an unknown field.
+_SAVE_BODY_FIELDS = frozenset({"scenario", "view", "label"})
+_SAVED_VIEW_KEYS = frozenset({"mode", "cutoff"})
 #: The exact top-level body a ``FinancingScenario`` is built from.  Anything
 #: else — including a client-supplied ``scenario_id`` — is an unknown field.
 _SCENARIO_BODY_FIELDS = frozenset(
@@ -211,6 +265,12 @@ def _reset_inputs_cache() -> None:
     """Test seam for the published capacity inputs bundle."""
     with _LOCK:
         _INPUTS_CACHE.update(path=None, mtime_ns=None, size=None, payload=None)
+
+
+def _reset_changes_cache() -> None:
+    """Test seam for the published change ledger."""
+    with _LOCK:
+        _CHANGES_CACHE.update(path=None, mtime_ns=None, size=None, payload=None)
 
 
 def _records(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -350,6 +410,72 @@ def _load_inputs() -> dict[str, Any]:
             payload=value,
         )
         return value
+
+
+def _changeset_from_record(value: Any) -> StateChangeSet:
+    """Rebuild the published ledger through the contract constructors only.
+
+    The producer writes ``StateChangeSet.as_record()``; every record is
+    reconstructed as a :class:`StateChange` and the set re-validates itself, so
+    a tampered or foreign artifact is a :class:`ContractViolation` — never a
+    partially trusted desk.
+    """
+    if not isinstance(value, Mapping) or value.get("schema") != STATE_CHANGES_SCHEMA:
+        raise ContractViolation("state_changes: schema mismatch")
+    changes = tuple(
+        StateChange(
+            kind=row["kind"],
+            reason=row["reason"],
+            issuer_id=row["issuer_id"],
+            subject=row["subject"],
+            before=row["before"],
+            after=row["after"],
+            evidence=row["evidence"],
+            from_generation_id=row["from_generation_id"],
+            to_generation_id=row["to_generation_id"],
+        )
+        for row in value.get("changes") or ()
+    )
+    return StateChangeSet(
+        from_generation_id=value.get("from_generation_id"),
+        to_generation_id=value["to_generation_id"],
+        from_as_of=value.get("from_as_of"),
+        to_as_of=value["to_as_of"],
+        baseline=bool(value.get("baseline")),
+        changes=changes,
+        generated_at=value["generated_at"],
+    )
+
+
+def _load_changes() -> StateChangeSet:
+    """Read one validated published change ledger; anything else fails closed."""
+    try:
+        stat = STATE_CHANGES_PATH.stat()
+    except OSError as exc:
+        raise _unavailable(_CHANGE_LEDGER_UNAVAILABLE) from exc
+
+    with _LOCK:
+        if (
+            _CHANGES_CACHE["payload"] is not None
+            and _CHANGES_CACHE["path"] == str(STATE_CHANGES_PATH)
+            and _CHANGES_CACHE["mtime_ns"] == stat.st_mtime_ns
+            and _CHANGES_CACHE["size"] == stat.st_size
+        ):
+            return _CHANGES_CACHE["payload"]
+
+        try:
+            value = json.loads(STATE_CHANGES_PATH.read_text(encoding="utf-8"))
+            changeset = _changeset_from_record(value)
+        except Exception as exc:  # noqa: BLE001 — a published ledger is all-or-nothing
+            raise _unavailable(_CHANGE_LEDGER_UNAVAILABLE) from exc
+
+        _CHANGES_CACHE.update(
+            path=str(STATE_CHANGES_PATH),
+            mtime_ns=stat.st_mtime_ns,
+            size=stat.st_size,
+            payload=changeset,
+        )
+        return changeset
 
 
 def _generation_key() -> tuple[tuple[str, int, int], ...]:
@@ -1211,34 +1337,13 @@ def issuer_state_view(
     }
 
 
-@router.post("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/evaluate")
-async def issuer_scenario_evaluate(
-    issuer_id: str,
-    request: Request,
-    response: Response,
-    mode: str | None = Query(default=None),
-    cutoff: str | None = Query(default=None),
-    clock: str | None = Query(default=None),
-    _user: dict = Depends(require_site_full_user),
-) -> dict[str, Any]:
-    """Compose one financing scenario over the served state and inputs, or refuse.
+def _admit_scenario_body(raw: bytes) -> dict[str, Any]:
+    """The evaluate body boundary, shared by every scenario-consuming route.
 
-    SPEC_U1B §4.  The route is the only place the product reaches the joint
-    model, and it never persists or caches a scenario: entitlement first, then
-    the served state generation and the published capacity inputs bundle, then
-    the body — built into a ``FinancingScenario`` through the contract
-    constructors only, under strict size and field limits.  A family the
-    bundle cannot bind is a typed 409 that names every unavailable family; the
-    composition itself is S0's, returned unchanged with the request's view
-    identity and the context-only authority receipt.
+    Size limit, JSON object, advisory scan, unknown fields and per-field
+    limits — the U1B-2 table verbatim, so save, restore and export refuse a
+    body exactly as the evaluate route does.
     """
-    _private(response)
-    resolved = _state_view(issuer_id, mode, cutoff, clock)
-    state_bundle = resolved.bundle
-    inputs_record = _load_inputs()
-    state = state_from_record(resolved.state_record)
-
-    raw = await request.body()
     if len(raw) > _MAX_SCENARIO_BODY_BYTES:
         raise _private_error(413, "request body too large")
     try:
@@ -1260,7 +1365,31 @@ async def issuer_scenario_evaluate(
     action_rows = body.get("actions")
     if isinstance(action_rows, list) and len(action_rows) > _MAX_SCENARIO_ACTIONS:
         raise _private_error(422, "too many actions")
+    return body
 
+
+def _evaluate_internals(
+    issuer_id: str,
+    mode: str | None,
+    cutoff: str | None,
+    clock: str | None,
+    raw: bytes,
+) -> dict[str, Any]:
+
+    """The evaluate route's whole body — U1B-2 §4, unchanged, now shared.
+
+    SPEC_U2 §1 "U2-2": save, restore and export run THIS function, so an
+    unavailable result is never saved, restored or exported.  The order is the
+    route's original law: the served state generation, the published inputs
+    bundle, then the body, then composition.  Every refusal is the route's own
+    typed error, propagated unchanged.
+    """
+    resolved = _state_view(issuer_id, mode, cutoff, clock)
+    state_bundle = resolved.bundle
+    inputs_record = _load_inputs()
+    state = state_from_record(resolved.state_record)
+
+    body = _admit_scenario_body(raw)
     try:
         scenario = _scenario_from_body(body)
     except ContractViolation as exc:
@@ -1322,6 +1451,43 @@ async def issuer_scenario_evaluate(
         "compatibility": dict(PROJECTION_COMPATIBILITY),
         "authority": dict(AUTHORITY),
     }
+
+
+def _scenario_record_of(raw: bytes) -> dict[str, Any]:
+    """The constructed scenario's published record for an admitted body.
+
+    Deterministic re-derivation through the same constructors the internals
+    used: after a successful evaluate this cannot refuse, and the record —
+    with its server-minted schema and scenario_id — is what a saved row and
+    every export carry.
+    """
+    return _scenario_from_body(_admit_scenario_body(raw)).as_record()
+
+
+@router.post("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/evaluate")
+async def issuer_scenario_evaluate(
+    issuer_id: str,
+    request: Request,
+    response: Response,
+    mode: str | None = Query(default=None),
+    cutoff: str | None = Query(default=None),
+    clock: str | None = Query(default=None),
+    _user: dict = Depends(require_site_full_user),
+) -> dict[str, Any]:
+    """Compose one financing scenario over the served state and inputs, or refuse.
+
+    SPEC_U1B §4.  The route is the only place the product reaches the joint
+    model, and it never persists or caches a scenario: entitlement first, then
+    the served state generation and the published capacity inputs bundle, then
+    the body — built into a ``FinancingScenario`` through the contract
+    constructors only, under strict size and field limits.  A family the
+    bundle cannot bind is a typed 409 that names every unavailable family; the
+    composition itself is S0's, returned unchanged with the request's view
+    identity and the context-only authority receipt.
+    """
+    _private(response)
+    raw = await request.body()
+    return _evaluate_internals(issuer_id, mode, cutoff, clock, raw)
 
 
 @router.get("/api/capital-structure/v1/issuers/{issuer_id}/state/registration")
@@ -1479,6 +1645,623 @@ def issuer_evidence_span(
     else:
         body["excerpt_status"] = "not_retained"
     return body
+
+
+# ---------------------------------------------------------------------------
+# U2-2 — the change desk, saved scenarios, restore and exact export (SPEC_U2)
+# ---------------------------------------------------------------------------
+
+
+def _caller_id(user: Mapping[str, Any]) -> str:
+    """The entitled user's id — the only identity a saved row may carry.
+
+    Read from the entitlement dependency alone; a ``user_id`` in a body is
+    never looked at.
+    """
+    user_id = str(user.get("id") or "")
+    if not user_id:
+        raise _unavailable("authenticated user has no identity")
+    return user_id
+
+
+def _stored_record(row: Mapping[str, Any]) -> dict[str, Any]:
+    """One store row's saved record.
+
+    PostgREST delivers the ``record`` column as a jsonb object; the fake test
+    transport delivers the same bytes as text.  Both forms are admitted, and a
+    record that is neither — or text that does not parse — is the store being
+    in doubt: the typed 503, never a partial answer.
+    """
+    raw = row.get("record")
+    if isinstance(raw, str):
+        try:
+            value = json.loads(raw)
+        except ValueError as exc:
+            raise _unavailable(_STORE_UNAVAILABLE) from exc
+    else:
+        value = raw
+    if not isinstance(value, dict):
+        raise _unavailable(_STORE_UNAVAILABLE)
+    return value
+
+
+def _saved_from_record(record: Mapping[str, Any]) -> SavedScenario:
+    """A stored record as a ``SavedScenario``, contract-checked on the way.
+
+    ``schema`` and ``saved_id`` are the server's mint; every other field must
+    reconstruct under the served contract version.  A row that no longer does
+    is the typed ``scenario_rejected`` restore outcome — never a partial
+    answer.
+    """
+    body = {
+        str(key): value for key, value in record.items() if str(key) not in ("schema", "saved_id")
+    }
+    return SavedScenario(**body)
+
+
+def _public_of_record(record: Mapping[str, Any]) -> dict[str, Any]:
+    """A stored record minus its ``user_id`` — the most a response may carry."""
+    return {str(key): value for key, value in record.items() if str(key) != "user_id"}
+
+
+def _served_generations() -> tuple[str | None, str | None]:
+    """The served state and inputs generation ids, ``None`` where the published
+    artifact does not answer (each read is independently typed)."""
+    try:
+        state_generation_id = str(_load_state()["generation_id"])
+    except HTTPException:
+        state_generation_id = None
+    try:
+        inputs_generation_id = str(_load_inputs()["generation_id"])
+    except HTTPException:
+        inputs_generation_id = None
+    return state_generation_id, inputs_generation_id
+
+
+def _usable_ledger(
+    saved_state_generation_id: Any, served_generation_id: str | None
+) -> StateChangeSet | None:
+    """The retained ledger, but ONLY when it spans exactly saved→served.
+
+    A ledger between other generations classifies nothing honestly, and an
+    absent or unreadable one is context the restore answers without — never a
+    refusal of the caller's own row.
+    """
+    if not saved_state_generation_id or served_generation_id is None:
+        return None
+    try:
+        changeset = _load_changes()
+    except HTTPException:
+        return None
+    if changeset.from_generation_id != saved_state_generation_id:
+        return None
+    if changeset.to_generation_id != served_generation_id:
+        return None
+    return changeset
+
+
+def _restore_view_params(view: Mapping[str, Any]) -> tuple[str | None, str | None]:
+    """The evaluate parameters a stored view anchor re-runs under.
+
+    A ``scenario`` or ``current`` anchor re-runs on the served current facts;
+    a ``then_known`` anchor re-runs at its own cutoff (normalized at save
+    time).  The evaluate internals' own error table still refuses an anchor
+    the served generation cannot honour.
+    """
+    mode = str(view.get("mode") or "")
+    cutoff = view.get("cutoff")
+    if mode == "then_known":
+        return "then_known", (None if cutoff is None else str(cutoff))
+    return None, None
+
+
+def _restore_outcome_from_refusal(
+    saved: SavedScenario,
+    exc: HTTPException,
+    state_generation_id: str | None,
+    inputs_generation_id: str | None,
+    changeset: StateChangeSet | None,
+) -> RestoreOutcome:
+    """Map an evaluate refusal to the typed restore outcome it names.
+
+    SPEC_U2 §1 "U2-2": on a restore an evaluate error becomes the typed
+    outcome, never a number and never a propagated error for the caller's own
+    row — the inputs-family 409 is ``inputs_unavailable``, a U1a 503 condition
+    is ``source_outage``, and any other refusal (an as_of that no longer
+    binds, an issuer that left coverage, a composition the served rules
+    refuse) is the saved scenario failing to produce its answer under the
+    served generation: ``scenario_rejected``.
+    """
+    detail = exc.detail
+    if exc.status_code == 409 and isinstance(detail, Mapping) and detail.get("code") == "scenario_inputs_unavailable":
+        unavailable = ScenarioInputsUnavailable(
+            dict(detail.get("components") or {}),
+            tuple(detail.get("available") or ()),
+        )
+        return classify_restore(
+            saved,
+            state_generation_id=state_generation_id,
+            inputs_generation_id=inputs_generation_id,
+            current_result=None,
+            unavailable=unavailable,
+            state_unavailable=False,
+            scenario_rejected=False,
+            changes=changeset,
+        )
+    if exc.status_code == 503:
+        return classify_restore(
+            saved,
+            state_generation_id=None,
+            inputs_generation_id=None,
+            current_result=None,
+            unavailable=None,
+            state_unavailable=True,
+            scenario_rejected=False,
+            changes=None,
+        )
+    return classify_restore(
+        saved,
+        state_generation_id=state_generation_id,
+        inputs_generation_id=inputs_generation_id,
+        current_result=None,
+        unavailable=None,
+        state_unavailable=False,
+        scenario_rejected=True,
+        changes=changeset,
+    )
+
+
+def _restore_body(
+    saved_public: dict[str, Any],
+    current: dict[str, Any] | None,
+    outcome: RestoreOutcome,
+    issuer_changes: tuple[StateChange, ...],
+) -> dict[str, Any]:
+    """The one restore response shape, on the happy path and on every outcome."""
+    return {
+        "saved": saved_public,
+        "current": current,
+        "unavailable": (
+            {"components": list(outcome.unavailable_components)}
+            if outcome.outcome == "inputs_unavailable"
+            else None
+        ),
+        "restore": outcome.as_record(),
+        "changes": [change.as_record() for change in issuer_changes],
+    }
+
+
+def _rejected_restore(record: Mapping[str, Any], issuer_id: str, served_generation_id: str | None) -> dict[str, Any]:
+    """The typed answer for a row that no longer reconstructs.
+
+    Mirrors the classifier's first precedence row for a body the served
+    contract version refuses — the one case where no ``SavedScenario`` exists
+    to classify with, so the outcome carries the row's own stored identity.
+    """
+    result_id_before = str(record.get("result_id") or "")
+    if not result_id_before:
+        # A row without even its result identity is store corruption, not an
+        # outcome the closed vocabulary can name.
+        raise _unavailable(_STORE_UNAVAILABLE)
+    _state_generation_id, inputs_generation_id = _served_generations()
+    changeset = _usable_ledger(record.get("state_generation_id"), served_generation_id)
+    issuer_changes = changes_for_issuer(changeset, issuer_id)
+    outcome = RestoreOutcome(
+        outcome="scenario_rejected",
+        from_generation_id=(
+            None if record.get("state_generation_id") is None else str(record["state_generation_id"])
+        ),
+        to_generation_id=served_generation_id,
+        from_inputs_generation_id=(
+            None if record.get("inputs_generation_id") is None else str(record["inputs_generation_id"])
+        ),
+        to_inputs_generation_id=inputs_generation_id,
+        result_id_before=result_id_before,
+        result_id_after=None,
+        result_identical=None,
+        changes_n=len(issuer_changes),
+        change_kinds=tuple(sorted({change.kind for change in issuer_changes})),
+        unavailable_components=(),
+        note=RESTORE_NOTES["scenario_rejected"],
+    )
+    return _restore_body(_public_of_record(record), None, outcome, issuer_changes)
+
+
+class _Restored(NamedTuple):
+    """The restore response plus the envelope an export route may flatten."""
+
+    body: dict[str, Any]
+    export_envelope: dict[str, Any] | None
+
+
+def _restore_answer(user_id: str, issuer_id: str, saved_id: str) -> _Restored:
+    """Restore one saved exact answer against the served generation.
+
+    The row is read through the store adapter (which owns the partition), the
+    route re-checks it, and the evaluate internals re-run the saved scenario
+    and view against the served generation — the SAME function, so a restore
+    never recomposes differently from the live route.  Every outcome of the
+    re-run is typed and 200; another user's or an absent ``saved_id`` is 404,
+    never 403.
+    """
+    result = store.read_one(user_id, saved_id)
+    if result.state == READ_UNAVAILABLE:
+        raise _unavailable(_STORE_UNAVAILABLE)
+    if result.state != READ_OK or not result.rows:
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+    row = result.rows[0]
+    if str(row.get("user_id") or "") != user_id:
+        # Defense in depth on the adapter's partition: not the caller's row
+        # is an absent one, with nothing to distinguish.
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+    record = _stored_record(row)
+    if str(record.get("issuer_id") or "") != issuer_id:
+        # A row is restorable only under its own issuer's path.
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+
+    state_generation_id, inputs_generation_id = _served_generations()
+    try:
+        saved = _saved_from_record(record)
+    except ContractViolation:
+        return _Restored(_rejected_restore(record, issuer_id, state_generation_id), None)
+
+    changeset = _usable_ledger(saved.state_generation_id, state_generation_id)
+    issuer_changes = changes_for_issuer(changeset, saved.issuer_id)
+    scenario_body = json.dumps(
+        {
+            str(key): value
+            for key, value in saved.scenario.items()
+            if str(key) not in ("schema", "scenario_id")
+        }
+    ).encode("utf-8")
+    mode, cutoff = _restore_view_params(saved.view)
+    try:
+        envelope = _evaluate_internals(saved.issuer_id, mode, cutoff, "system", scenario_body)
+    except HTTPException as exc:
+        outcome = _restore_outcome_from_refusal(
+            saved, exc, state_generation_id, inputs_generation_id, changeset
+        )
+        return _Restored(
+            _restore_body(saved.public_record(), None, outcome, issuer_changes),
+            None,
+        )
+    outcome = classify_restore(
+        saved,
+        state_generation_id=state_generation_id,
+        inputs_generation_id=inputs_generation_id,
+        current_result=envelope["result"],
+        unavailable=None,
+        state_unavailable=False,
+        scenario_rejected=False,
+        changes=changeset,
+    )
+    export_envelope = {
+        "view": envelope["view"],
+        "inputs": envelope["inputs"],
+        "result": envelope["result"],
+        "scenario": dict(saved.scenario),
+        "issuer_id": saved.issuer_id,
+        "inputs_generation_id": inputs_generation_id,
+    }
+    current = {
+        "view": envelope["view"],
+        "inputs": envelope["inputs"],
+        "result": envelope["result"],
+    }
+    return _Restored(
+        _restore_body(saved.public_record(), current, outcome, issuer_changes),
+        export_envelope,
+    )
+
+
+@router.get("/api/capital-structure/v1/issuers/{issuer_id}/changes")
+def issuer_changes(
+    issuer_id: str,
+    response: Response,
+    since: str | None = Query(default=None, min_length=1, max_length=128),
+    _user: dict = Depends(require_site_full_user),
+) -> dict[str, Any]:
+    """One issuer's typed change desk over the retained generation pair.
+
+    SPEC_U2 §1 "U2-2".  The desk serves the published ledger the nightly
+    derived — never a recomputation — bound to the served state generation,
+    and states honestly that only one generation of changes is retained.
+    """
+    _private(response)
+    bundle = _load_state()
+    _state_record(bundle, issuer_id)
+    changeset = _load_changes()
+    if str(changeset.to_generation_id) != str(bundle["generation_id"]):
+        raise _unavailable(_CHANGE_LEDGER_NOT_BOUND)
+    if since is not None and since != changeset.from_generation_id:
+        raise _private_error(409, _CHANGE_LEDGER_DOES_NOT_COVER_SINCE)
+    issuer_changes = changes_for_issuer(changeset, issuer_id)
+    counts = {kind: 0 for kind in CHANGE_KINDS}
+    for change in issuer_changes:
+        counts[change.kind] += 1
+    return {
+        "from_generation_id": changeset.from_generation_id,
+        "to_generation_id": changeset.to_generation_id,
+        "baseline": changeset.baseline,
+        "changes": [change.as_record() for change in issuer_changes],
+        "counts": counts,
+    }
+
+
+@router.post("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved")
+async def issuer_scenario_save(
+    issuer_id: str,
+    request: Request,
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Evaluate, then save the exact answer for the entitled user.
+
+    SPEC_U2 §1 "U2-2".  The evaluate internals run first and their refusals
+    propagate unchanged, so an unavailable result is never saved.  The saved
+    view is the anchor the row stores (exactly ``mode`` and ``cutoff``), the
+    user's id comes from the dependency alone, and the only write on this
+    host is the one adapter call.
+    """
+    _private(response)
+    user_id = _caller_id(_user)
+    raw = await request.body()
+    if len(raw) > _MAX_SCENARIO_BODY_BYTES:
+        raise _private_error(413, "request body too large")
+    try:
+        body = json.loads(raw)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise _private_error(422, "request body is not valid JSON") from exc
+    if not isinstance(body, dict):
+        raise _private_error(422, "request body must be a JSON object")
+    advisory = _body_advisory(body)
+    if advisory is not None:
+        raise _private_error(422, f"request carries advisory vocabulary: {advisory!r}")
+    unknown = next((str(key) for key in sorted(body) if str(key) not in _SAVE_BODY_FIELDS), None)
+    if unknown is not None:
+        raise _private_error(422, f"unknown field: {unknown}")
+    scenario_row = body.get("scenario")
+    if not isinstance(scenario_row, dict):
+        raise _private_error(422, "scenario: an object is required")
+    view_row = body.get("view")
+    if not isinstance(view_row, dict):
+        raise _private_error(422, "view: an object is required")
+    unexpected_view = next(
+        (str(key) for key in sorted(view_row) if str(key) not in _SAVED_VIEW_KEYS), None
+    )
+    if unexpected_view is not None:
+        raise _private_error(422, f"unknown field: {unexpected_view}")
+    mode = view_row.get("mode")
+    if not isinstance(mode, str) or mode not in VIEW_MODES:
+        raise _private_error(422, f"view.mode: {mode!r} is not a view mode")
+    raw_cutoff = view_row.get("cutoff")
+    if raw_cutoff is not None and not isinstance(raw_cutoff, str):
+        raise _private_error(422, "view.cutoff: a string or null is required")
+    normalized_cutoff = None if raw_cutoff is None else _normalize_instant(raw_cutoff, "cutoff")
+    label = body.get("label")
+    if label is None:
+        label = ""
+    if not isinstance(label, str):
+        raise _private_error(422, "label: a string or null is required")
+    if len(label) > _MAX_SCENARIO_LABEL_CHARS:
+        raise _private_error(422, "label too long")
+
+    scenario_raw = json.dumps(scenario_row).encode("utf-8")
+    eval_mode, eval_cutoff = (
+        ("then_known", normalized_cutoff) if mode == "then_known" else (None, normalized_cutoff)
+    )
+    envelope = _evaluate_internals(issuer_id, eval_mode, eval_cutoff, "system", scenario_raw)
+    scenario_record = _scenario_record_of(scenario_raw)
+    served_state = _load_state()
+    served_inputs = _load_inputs()
+    result = envelope["result"]
+    try:
+        saved = SavedScenario(
+            user_id=user_id,
+            issuer_id=issuer_id,
+            label=label,
+            view={"mode": mode, "cutoff": normalized_cutoff},
+            scenario=scenario_record,
+            state_generation_id=str(served_state["generation_id"]),
+            inputs_generation_id=str(served_inputs["generation_id"]),
+            result_id=str(result["result_id"]),
+            result_digest=result_digest_of(result),
+            rule_pack_digest=str(result["capacity_envelope"]["rule_pack_digest"]),
+            saved_at=_utc_stamp(datetime.now(timezone.utc)),
+        )
+    except ContractViolation as exc:
+        raise _private_error(422, {"contract_error": str(exc)}) from exc
+    write = store.upsert(saved)
+    if write.state != "ok":
+        raise _unavailable(_STORE_UNAVAILABLE)
+    return JSONResponse(
+        {"saved": saved.public_record(), "restore": None},
+        status_code=201,
+        headers=_PRIVATE_HEADERS,
+    )
+
+
+@router.get("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved")
+def issuer_scenario_saved_list(
+    issuer_id: str,
+    response: Response,
+    after: str | None = Query(default=None, min_length=1, max_length=128),
+    limit: int = Query(default=25, ge=1, le=100),
+    _user: dict = Depends(require_site_full_user),
+) -> dict[str, Any]:
+    """The caller's saved scenarios, newest first, one keyset page.
+
+    The adapter owns the partition and the ``after`` keyset exclusion; the
+    route re-checks the user of every row it serves and slices the page.
+    """
+    _private(response)
+    user_id = _caller_id(_user)
+    result = store.read_for_user(user_id, after_id=after, limit=limit + 1)
+    if result.state == READ_UNAVAILABLE:
+        raise _unavailable(_STORE_UNAVAILABLE)
+    if result.error_class == "partition_violation":
+        # The adapter caught the store serving another user's row: the typed
+        # unavailable response, never the rows.
+        raise _unavailable(_STORE_UNAVAILABLE)
+    rows = list(result.rows or [])
+    page = rows[:limit]
+    items = []
+    for row in page:
+        if str(row.get("user_id") or "") != user_id:
+            continue  # defense in depth: never serve another user's row
+        try:
+            items.append(_saved_from_record(_stored_record(row)).public_record())
+        except ContractViolation as exc:
+            # A row the contract refuses is the store being in doubt; refuse
+            # the whole page rather than serve a partial one.
+            raise _unavailable(_STORE_UNAVAILABLE) from exc
+    next_after = str(page[-1]["saved_id"]) if page and len(rows) > len(page) else None
+    return {"items": items, "next_after": next_after}
+
+
+@router.get("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved/{saved_id}")
+async def issuer_scenario_restore(
+    issuer_id: str,
+    saved_id: str,
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> dict[str, Any]:
+    """Restore one saved exact answer against the served generation.
+
+    SPEC_U2 §1 "U2-2".  Always 200 with a typed ``restore.outcome`` when the
+    row is the caller's — a correction, new events, no change, a source
+    outage, unavailable inputs and a body that no longer reconstructs are
+    named, never averaged into a number or an error.
+    """
+    _private(response)
+    return _restore_answer(_caller_id(_user), issuer_id, saved_id).body
+
+
+@router.delete("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved/{saved_id}")
+def issuer_scenario_delete(
+    issuer_id: str,
+    saved_id: str,
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Remove one of the caller's saved scenarios, scoped to both keys."""
+    _private(response)
+    user_id = _caller_id(_user)
+    result = store.read_one(user_id, saved_id)
+    if result.state == READ_UNAVAILABLE:
+        raise _unavailable(_STORE_UNAVAILABLE)
+    if result.state != READ_OK or not result.rows:
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+    row = result.rows[0]
+    if str(row.get("user_id") or "") != user_id:
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+    if str(_stored_record(row).get("issuer_id") or "") != issuer_id:
+        raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
+    write = store.delete(user_id, saved_id)
+    if write.state != "ok":
+        raise _unavailable(_STORE_UNAVAILABLE)
+    return Response(status_code=204, headers=_PRIVATE_HEADERS)
+
+
+def _attachment(envelope: Mapping[str, Any], fmt: str) -> Response:
+    """The one export response: deterministic bytes, exact filename, exact hash."""
+    try:
+        export = export_scenario_envelope(envelope, fmt)
+        filename = export_filename(envelope, fmt)
+    except ScenarioExportError as exc:
+        raise _private_error(503, str(exc)) from None
+    return Response(
+        content=export.payload,
+        media_type=export.media_type,
+        headers={
+            **_PRIVATE_HEADERS,
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "X-Content-SHA256": export.sha256,
+        },
+    )
+
+
+@router.get(
+    "/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved/{saved_id}/export.{fmt}"
+)
+async def issuer_scenario_saved_export(
+    issuer_id: str,
+    saved_id: str,
+    fmt: str,
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """The restored answer's exact bytes as a private attachment (SPEC_U2 §1.4)."""
+    _private(response)
+    if fmt not in EXPORT_FORMATS:
+        raise _private_error(404, f"unsupported export format: {fmt}")
+    restored = _restore_answer(_caller_id(_user), issuer_id, saved_id)
+    if restored.export_envelope is None:
+        raise _private_error(
+            409,
+            _NOTHING_TO_EXPORT.format(outcome=restored.body["restore"]["outcome"]),
+        )
+    return _attachment(restored.export_envelope, fmt)
+
+
+@router.post(
+    "/api/capital-structure/v1/issuers/{issuer_id}/scenarios/evaluate/export.{fmt}"
+)
+async def issuer_scenario_evaluate_export(
+    issuer_id: str,
+    fmt: str,
+    request: Request,
+    response: Response,
+    mode: str | None = Query(default=None),
+    cutoff: str | None = Query(default=None),
+    clock: str | None = Query(default=None),
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """The fresh evaluate answer's exact bytes as a private attachment.
+
+    SPEC_U2 §1 "U2-2".  Same admission and error table as the evaluate route;
+    the envelope states ``issuer_id`` and ``inputs_generation_id`` explicitly
+    and embeds the evaluated scenario record, exactly as the serializer reads
+    them.
+    """
+    _private(response)
+    if fmt not in EXPORT_FORMATS:
+        raise _private_error(404, f"unsupported export format: {fmt}")
+    raw = await request.body()
+    envelope = _evaluate_internals(issuer_id, mode, cutoff, clock, raw)
+    export_envelope = {
+        **envelope,
+        "scenario": _scenario_record_of(raw),
+        "issuer_id": issuer_id,
+        "inputs_generation_id": str(_load_inputs()["generation_id"]),
+    }
+    return _attachment(export_envelope, fmt)
+
+
+@router.api_route(
+    "/api/capital-structure/v1/issuers/{issuer_id}/scenarios/saved/{saved_id}/export.{fmt}",
+    methods=["POST", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def issuer_scenario_saved_export_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, _METHOD_NOT_ALLOWED)
+
+
+@router.api_route(
+    "/api/capital-structure/v1/issuers/{issuer_id}/scenarios/evaluate/export.{fmt}",
+    methods=["GET", "PUT", "PATCH", "DELETE", "HEAD"],
+)
+def issuer_scenario_evaluate_export_method_not_allowed(
+    response: Response,
+    _user: dict = Depends(require_site_full_user),
+) -> None:
+    """Auth first, then a private 405. Starlette's default 405 has no no-store policy."""
+    del response
+    raise _private_error(405, _METHOD_NOT_ALLOWED)
 
 
 __all__ = ["router", "require_site_full_user"]
