@@ -1,8 +1,8 @@
 {
   "contract": "government_program_theme_assignment_review.v1",
   "schema_version": "1.2.0",
-  "reviewed_at": "2026-10-16T01:03:39.509029+00:00",
-  "reviewer": "assigned-principal:01a13300:exact-Space-source-and-additive-PAC3-coverage-review; 01a13300 parent review of six current stale broad-basket reference fingerprints only",
+  "reviewed_at": "2026-10-16T03:43:44.005832+00:00",
+  "reviewer": "assigned-principal:01a13300:exact-Space-source-and-additive-PAC3-coverage-review; 01a13300 parent review of six current stale broad-basket reference fingerprints only; 01a13300 parent review of native Norway26-82 munitions next-stage condition only",
   "owners": {
     "fms": {
       "owner_kind": "fms",
@@ -174,9 +174,15 @@
         ]
       },
       "next_event": {
-        "reason_code": "owner_reference_absent",
-        "references": [],
-        "state": "source_unavailable"
+        "state": "partial",
+        "reason_code": "condition_not_scheduled_date",
+        "references": [
+          {
+            "owner_key": "fms",
+            "pointer": "/cases/63/advancement_condition",
+            "row_id": "fms:transmittal:26-82"
+          }
+        ]
       }
     },
     "space": {
@@ -534,6 +540,7 @@
     "shipbuilding/market_context/0": "085bc6df4835cd112ad11cc05deb9536d849c5a1035b1558a4a43c9535d8c1de",
     "shipbuilding/next_event/0": "6ff559836265aec5c5c0084fd7b03b4b371b2295b0a618f2b6e9e6bc2f08abfe",
     "munitions_replenishment/contrary_case/0": "f5f78ae262a02c32bddbd9031169123ebde9cbccc8d82e17ba117de2f91b28dd",
-    "space/economics/6": "f9936c8985c58a97010f0b78cdd6904437a34470fac8c285d69d4dba575cbb1d"
+    "space/economics/6": "f9936c8985c58a97010f0b78cdd6904437a34470fac8c285d69d4dba575cbb1d",
+    "munitions_replenishment/next_event/0": "1437a7c484265623893b83e1301a5b5e5c1e7df41b4f41d4f777408fdf0b0e08"
   }
 }
