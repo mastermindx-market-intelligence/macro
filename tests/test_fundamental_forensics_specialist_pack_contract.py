@@ -568,6 +568,37 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK09": {
+        "digest": "7e816d8242b277d5bfb4cfe089c3384a9033adcb6124d0c9a65ad0a93e21b3fa",
+        "fields": (
+            "icfr_management_conclusion",
+            "disclosure_controls_effective",
+            "material_weakness_present",
+            "icfr_change_in_period",
+            "auditor_firm",
+            "auditor_opinion_fs",
+            "auditor_opinion_icfr",
+            "critical_audit_matters",
+            "going_concern_substantial_doubt",
+            "going_concern_management_plan",
+            "remediation_span",
+        ),
+        "required": (),
+        "checks": (
+            "management_vs_auditor_icfr",
+            "going_concern_vs_opinion",
+            "cam_present_on_10k",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_dependency",
+            "filer_category_unbound",
+        ),
+        "pack_specific_codes": (
+            "filer_category_unbound",
+        ),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
