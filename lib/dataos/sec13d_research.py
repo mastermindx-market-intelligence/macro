@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import asdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 import hashlib
 import json
 import os
@@ -51,11 +51,11 @@ def _read(root, name, maximum):
     if Path(name).name != name or name in {".", ".."}:
         raise RetainedResearchRefusal("retained filename required")
     try:
-        fd = os.open(Path(root) / name, os.O_RDONLY | os.O_NOFOLLOW)
+        fd = os.open(Path(root) / name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
         with os.fdopen(fd, "rb") as stream:
             before = os.fstat(stream.fileno())
             if not stat.S_ISREG(before.st_mode) or not 0 < before.st_size <= maximum:
-                raise RetainedResearchRefusal("retained file outside read bound")
+                raise RetainedResearchRefusal("retained regular file outside read bound")
             raw = stream.read(maximum + 1)
             after = os.fstat(stream.fileno())
         if len(raw) != before.st_size or (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
@@ -126,6 +126,12 @@ def _master_input(root, repository, record):
             raise RetainedResearchRefusal("native master size mismatch")
         if git("cat-file", "blob", identity) != raw:
             raise RetainedResearchRefusal("retained master differs from pinned native blob")
+        # Repository dates are mutable: reject a contradiction, not attest a clock.
+        committed = int(git("log", "-1", "--format=%ct", commit).strip())
+        if datetime.fromtimestamp(committed, timezone.utc) > _clock(record["retained_at"]):
+            raise RetainedResearchRefusal("native master commit follows claimed retention")
+    except RetainedResearchRefusal:
+        raise
     except (subprocess.SubprocessError, OSError, ValueError) as exc:
         raise RetainedResearchRefusal("pinned native master unavailable or inconsistent") from exc
     return raw

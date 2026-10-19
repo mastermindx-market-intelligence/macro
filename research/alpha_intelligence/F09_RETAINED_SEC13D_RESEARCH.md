@@ -76,3 +76,5 @@ registration/master binding and retained research boundary suites. Fixture
 acquisition records exercise mechanics; the release proof separately invokes
 this native consumer against the principal's actual retained objects and pinned
 master with their original clocks. No fixture result is production authentication.
+
+The native master pin also rejects a commit date later than its claimed retention. Repository dates are mutable, so this detects an internal contradiction and does not authenticate the clock. Non-regular bundle entries, including FIFOs, are opened without blocking and refused before a read; native master size, blob and chronology refusals retain their specific reason.

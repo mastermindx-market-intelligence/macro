@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 import pytest
 
@@ -22,7 +23,8 @@ def bundle(tmp_path):
     subprocess.run(["git", "init", "--bare", str(repo)], check=True, capture_output=True)
     def git(*args, data=None):
         env = {**os.environ, "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.test",
-               "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@example.test"}
+               "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@example.test",
+               "GIT_AUTHOR_DATE": "2026-10-19T19:59:59Z", "GIT_COMMITTER_DATE": "2026-10-19T19:59:59Z"}
         return subprocess.check_output(["git", "-C", str(repo), *args], input=data, env=env).decode().strip()
     data = inputs()
     blob = git("hash-object", "-w", "--stdin", data=data["master_raw"])
@@ -120,7 +122,7 @@ def test_tampered_retained_object_refuses(bundle, name):
 def test_rehashed_master_still_must_match_the_pinned_native_git_object(bundle):
     path = bundle[0] / "security_master.parquet"; path.write_bytes(path.read_bytes() + b" ")
     change_record(bundle, "master-source.json", sha256=hashlib.sha256(path.read_bytes()).hexdigest())
-    with pytest.raises(ValueError, match="native master"):
+    with pytest.raises(ValueError, match="^native master size mismatch$"):
         read(bundle)
 
 
@@ -173,3 +175,44 @@ def test_command_line_invokes_the_actual_local_read(bundle, capsys):
     out = json.loads(capsys.readouterr().out)
     assert out["assertions"]["accession"] == "0001104659-26-053223"
     assert out["persistence"] == "none"
+
+
+@pytest.mark.parametrize("committed, refused", [
+    ("2026-10-19T20:00:00Z", False),
+    ("2026-10-25T00:00:00Z", True),
+])
+def test_native_commit_cannot_postdate_its_claimed_retention(bundle, committed, refused):
+    record = json.loads((bundle[0] / "master-source.json").read_text())
+    tree = subprocess.check_output(["git", "-C", str(bundle[1]), "rev-parse", record["commit"] + "^{tree}"], text=True).strip()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.test",
+           "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@example.test",
+           "GIT_AUTHOR_DATE": committed, "GIT_COMMITTER_DATE": committed}
+    commit = subprocess.check_output(["git", "-C", str(bundle[1]), "commit-tree", tree],
+                                     input=b"Dated fixture snapshot\n", env=env).decode().strip()
+    change_record(bundle, "master-source.json", commit=commit)
+    if refused:
+        with pytest.raises(ValueError, match="^native master commit follows claimed retention$"):
+            read(bundle)
+    else:
+        assert read(bundle)["security_binding"]["canonical_security_id"] == "SEC:US-XNAS-LCID"
+
+
+def test_same_size_rehashed_master_reports_the_specific_blob_mismatch(bundle):
+    path = bundle[0] / "security_master.parquet"
+    raw = path.read_bytes(); changed = bytes([raw[0] ^ 1]) + raw[1:]
+    path.write_bytes(changed)
+    change_record(bundle, "master-source.json", sha256=hashlib.sha256(changed).hexdigest())
+    with pytest.raises(ValueError, match="^retained master differs from pinned native blob$"):
+        read(bundle)
+
+
+@pytest.mark.parametrize("name", ["acquisition.json", "registration.xml"])
+def test_fifo_refuses_without_blocking_the_native_cli(bundle, name):
+    path = bundle[0] / name; path.unlink(); os.mkfifo(path)
+    result = subprocess.run([sys.executable, "-m", "lib.dataos.sec13d_research",
+        "--bundle-root", str(bundle[0]), "--repository", str(bundle[1]),
+        "--decision-cutoff", CUTOFF, "--security-on", ON],
+        capture_output=True, text=True, timeout=5)
+    assert result.returncode == 2
+    assert result.stdout == ""
+    assert "regular file" in result.stderr
