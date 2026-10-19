@@ -104,4 +104,3 @@ def load(reader, pin, stored, *, cutoff=CUTOFF, policy=None):
         reader, pin, subject_id=stored.packet["subject"]["subject_id"],
         query_cutoff=cutoff, policy=Policy() if policy is None else policy,
     )
-
