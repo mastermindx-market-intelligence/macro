@@ -11,6 +11,7 @@ the golden provider is proven absent from the process.
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from datetime import date
 from decimal import Decimal
@@ -35,12 +36,14 @@ _MODULES_BEFORE: set = set()
 
 # Five synthetic members (contract order is load-bearing: tables follow it).
 #   AAA/BBB/CCC  admitted (sic pinned, generation with trees)
+#   CCC          bank SIC: its not-applicable set is exactly the shipped
+#                catalog's bank class closure (G0-b), never a ticker key
 #   DDD          sic pinned but NO generation      -> production_dataset_absent
 #   EEE          generation but NO pinned sic      -> issuer_sic_unavailable
 MEMBERS: tuple[tuple[str, str, str | None], ...] = (
     ("AAA", "0000000001", "3571"),
     ("BBB", "0000000002", "7372"),
-    ("CCC", "0000000003", "3500"),
+    ("CCC", "0000000003", "6199"),
     ("DDD", "0000000004", "6022"),
     ("EEE", "0000000005", None),
 )
@@ -48,8 +51,11 @@ ADMITTED = tuple(entry for entry in MEMBERS if entry[0] in {"AAA", "BBB", "CCC"}
 PERIOD_END = "2026-06-30"
 REVENUE = {"AAA": "101", "BBB": "202", "CCC": "303", "EEE": "404"}
 NET_INCOME = {"AAA": "11", "BBB": "22", "CCC": "33", "EEE": "44"}
-# AAA's ni is not applicable per the contract's field-denominator map.
-NOT_APPLICABLE = {"AAA": {"ni": "synthetic class exclusion"}}
+# gross_profit is the one cohort metric inside the shipped bank class
+# closure, so the bank-SIC member is not applicable for it and only it —
+# the class-realistic replacement for the retired ticker-keyed
+# field-denominator overlay.
+GROSS_PROFIT = {"AAA": "61", "BBB": "122", "CCC": "244", "EEE": "488"}
 
 
 def _issuer_id(ticker: str) -> str:
@@ -81,7 +87,7 @@ def _write_root(root: Path, *, members: tuple = MEMBERS, master_rows: list | Non
             "cik": cik,
             "fiscal_year_end": "--06-30",
             "identity_binding_state": "synthetic",
-            "issuer_class": "industrial",
+            "issuer_class": issuer_class_for_sic(sic) if sic is not None else "unknown",
             "legal_name": ticker,
             "accessions": [{
                 "accession": f"0000000-26-00000{ticker[-1]}",
@@ -99,19 +105,34 @@ def _write_root(root: Path, *, members: tuple = MEMBERS, master_rows: list | Non
         "contract_id": CONTRACT_ID,
         "issuers": issuers,
         "field_denominator": {
-            "metric_ids": ["revenue", "ni"],
-            "not_applicable": NOT_APPLICABLE,
+            "metric_ids": ["revenue", "ni", "gross_profit"],
         },
     }
     path = root / bff.COVERAGE_CONTRACT_RELATIVE
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(contract, indent=1), encoding="utf-8")
 
+    # The projection derives every class exclusion from the shipped governed
+    # registry (G0-b), so each synthetic root stages the REAL catalog bytes —
+    # plus the two companion files the loader requires — never a stub: the
+    # bank closure exercised below is the shipped one.
+    metric_root = ROOT / "config" / "fundamental_forensics" / "metrics" / "v1"
+    staged_root = root / "config" / "fundamental_forensics" / "metrics" / "v1"
+    (staged_root / "mappings").mkdir(parents=True, exist_ok=True)
+    (staged_root / "formulas").mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(metric_root / "metric_catalog.yaml", staged_root / "metric_catalog.yaml")
+    shutil.copyfile(metric_root / "mappings" / "core.yaml", staged_root / "mappings" / "core.yaml")
+    shutil.copyfile(metric_root / "formulas" / "core.yaml", staged_root / "formulas" / "core.yaml")
+
 
 def _member_tree(ticker: str) -> dict:
     """One precomputed statement tree: revenue + ni cells for the member."""
     rows = []
-    for metric_id, value in (("revenue", REVENUE[ticker]), ("ni", NET_INCOME[ticker])):
+    for metric_id, value in (
+        ("revenue", REVENUE[ticker]),
+        ("ni", NET_INCOME[ticker]),
+        ("gross_profit", GROSS_PROFIT[ticker]),
+    ):
         rows.append({
             "order": len(rows),
             "depth": 0,
@@ -187,7 +208,10 @@ def _install_store(monkeypatch, *, generations: dict[str, _FakeGeneration] | Non
 
 def _expected_observations() -> dict[str, dict[str, MetricObservation]]:
     observations: dict[str, dict[str, MetricObservation]] = {}
-    for ticker, _, _ in ADMITTED:
+    for ticker, _, sic in ADMITTED:
+        # the bank-class member is not applicable for exactly the shipped
+        # catalog's bank closure (gross_profit here); no ticker key exists
+        bank = issuer_class_for_sic(sic) == "bank"
         observations[_issuer_id(ticker)] = {
             "revenue": MetricObservation(
                 value=Decimal(REVENUE[ticker]),
@@ -199,8 +223,13 @@ def _expected_observations() -> dict[str, dict[str, MetricObservation]]:
                 value=Decimal(NET_INCOME[ticker]),
                 period_end=date.fromisoformat(PERIOD_END),
                 period_basis="duration",
-                # the contract's field-denominator map excludes AAA's ni
-                applicable=ticker not in NOT_APPLICABLE or "ni" not in NOT_APPLICABLE[ticker],
+                applicable=True,
+            ),
+            "gross_profit": MetricObservation(
+                value=Decimal(GROSS_PROFIT[ticker]),
+                period_end=date.fromisoformat(PERIOD_END),
+                period_basis="duration",
+                applicable=not bank,
             ),
         }
     return observations
@@ -277,7 +306,7 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
             cohort_id=f"{CONTRACT_ID}:{anchor_id}",
             anchor_issuer_id=anchor_id,
             members=expected_members,
-            metric_ids=("revenue", "ni"),
+            metric_ids=("revenue", "ni", "gross_profit"),
         )
         expected = build_cohort_table(definition, expected_observations).to_dict()
         actual = next(t for t in tables if t["anchor_issuer_id"] == anchor_id)
@@ -300,15 +329,20 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
                 assert str(Decimal(row["value"])) == row["value"]  # canonical text, not a float
     _walk_for_floats(state["payload"])
 
-    # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue; ni loses AAA
-    # to the contract's class exclusion, leaving two rows under min_n)
+    # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue and ni;
+    # gross_profit loses the bank-SIC member to the shipped catalog's bank
+    # class closure, leaving two rows under min_n)
     revenue_emission = next(
         e for t in tables for e in t["emissions"] if e["metric_id"] == "revenue"
     )
     assert revenue_emission["emission_state"] == "ranked"
     assert revenue_emission["ranks"] is not None
     ni_emission = next(e for t in tables for e in t["emissions"] if e["metric_id"] == "ni")
-    assert ni_emission["emission_state"] == "below_min_n"
+    assert ni_emission["emission_state"] == "ranked"
+    gross_profit_emission = next(
+        e for t in tables for e in t["emissions"] if e["metric_id"] == "gross_profit"
+    )
+    assert gross_profit_emission["emission_state"] == "below_min_n"
     assert any(
         exclusion["code"] == "A35-B1"
         for t in tables for exclusion in t["exclusions"]

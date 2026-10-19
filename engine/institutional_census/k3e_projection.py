@@ -11,6 +11,7 @@ and purpose-specific source-use evidence are supplied by their existing owners.
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from engine.institutional_census.catalog import (
     Institutional13FCatalogError,
@@ -58,6 +59,7 @@ def _base() -> dict:
         "generation": None,
         "filing": None,
         "holding": None,
+        "reporting_structure": None,
         "interpretation": {
             "class": "DELAYED_REPORTED_HOLDING_CONTEXT",
             "is_current_ownership": False,
@@ -87,6 +89,46 @@ def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
         "current_generation_id": generation.current_generation_id,
         "superseded": generation.superseded,
     }
+
+
+def _reporting_structure(
+    generation: PublishedCatalogGeneration, filing: Mapping[str, object]
+) -> dict:
+    """Preserve filing directions and source ordinals, never economic ownership.
+
+    OTHERMANAGER reports who reports for the filer; OTHERMANAGER2 reports whose
+    holdings the filer includes. Neither identifies a vehicle, strategy or the
+    economic scope of the selected holding. The verified catalog remains the
+    authority for these accession-bound rows and their canonical ordering.
+    """
+    accession = filing.get("accession")
+    rows = [
+        row for row in generation.manager_relationships
+        if row.get("accession") == accession
+    ]
+    structure = {
+        "accession": accession,
+        "report_type": filing.get("report_type"),
+        "form13f_file_number": filing.get("form13f_file_number"),
+        "other_manager_count": filing.get("other_manager_count"),
+        "reported_by_manager": [],
+        "included_manager": [],
+        "limitations": [
+            "REPORTING_STRUCTURE_NOT_ECONOMIC_VEHICLE_OR_STRATEGY",
+            "REPORTED_MANAGER_COUNT_NOT_ECONOMIC_AFFILIATE_COUNT",
+        ],
+    }
+    directions = {
+        ("reported_by_manager", "OTHERMANAGER"),
+        ("included_manager", "OTHERMANAGER2"),
+    }
+    for row in rows:
+        kind = row.get("relationship_kind")
+        if (kind, row.get("source_table")) in directions:
+            structure[kind].append(dict(row))
+        elif "UNCLASSIFIED_REPORTING_RELATIONSHIPS_PRESENT" not in structure["limitations"]:
+            structure["limitations"].append("UNCLASSIFIED_REPORTING_RELATIONSHIPS_PRESENT")
+    return structure
 
 
 def project_reported_holding(
@@ -262,6 +304,7 @@ def project_reported_holding(
         "investment_discretion": holding.get("investment_discretion"),
         "limitations": limitations,
     }
+    out["reporting_structure"] = _reporting_structure(generation, filing)
     out["valid"] = True
     out["state"] = "AVAILABLE_UNQUALIFIED"
     return out
