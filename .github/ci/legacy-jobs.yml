@@ -32657,6 +32657,13 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/sec_filing_identity.py
       - lib/dataos/sec_cusip_binding.py
+      - lib/dataos/sec_schedule13d.py
+      - lib/dataos/sec13d_research.py
+      - lib/evidence_foundation.py
+      - tests/fixtures/sec_schedule13d/**
+      - tests/test_sec_schedule13d.py
+      - tests/test_dataos_sec13d_cusip.py
+      - tests/test_sec13d_research.py
       - tests/test_sec_filing_identity.py
       - tests/test_dataos_sec_cusip.py
       # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
@@ -32722,11 +32729,12 @@ jobs:
       - name: install deps
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
-        run: pip install pytest pyyaml pandas pyarrow
+        run: pip install pytest pyyaml pandas pyarrow jsonschema
       - name: retained SEC filing CUSIP identity and cutoff contracts (hermetic)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py -q -rs
+          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py
+          tests/test_sec_schedule13d.py tests/test_dataos_sec13d_cusip.py tests/test_sec13d_research.py -q -rs
       - name: basket composition read binds membership, identity and price to one request (U04)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
