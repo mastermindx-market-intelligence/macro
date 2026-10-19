@@ -800,7 +800,7 @@ def test_actual_generation_staging_cache_read_failure_does_not_publish_candidate
     before = store.get_bytes(contract.CORPUS_KEY)
     real = CorpusReadCache._entry
     def failing_stage(self, rid, **kwargs):
-        if self.conn is None and not kwargs.get('receipt_only'):
+        if self.sealed and not kwargs.get('receipt_only'):
             raise OSError('synthetic staging cache read failed')
         return real(self, rid, **kwargs)
     monkeypatch.setattr(CorpusReadCache, '_entry', failing_stage)

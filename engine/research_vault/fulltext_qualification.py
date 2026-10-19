@@ -102,6 +102,7 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
               'limits': ['read-only candidate composition; not a production generation',
                          'excludes inbox intake, processed-index, extraction and mutable publication time']}
     phase = 'restore'
+    cache = None
     try:
         selected = store.get_bytes_strict_bounded_versioned(catalog.CATALOG_KEY, contract.CATALOG_MAX_BYTES)
         if selected is None:
@@ -122,16 +123,13 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
             cache = CorpusReadCache(p, doc)
             phase = 'begin_census'
             t = clock()
-            try:
-                initial = cache.inherited_members(doc, doc.get(contract.GENERATION_FIELD), store,
-                    producer_commit=os.environ.get('GITHUB_SHA'))
-                result['starting_cut_inherited'] = initial is not None
-                if initial is None:
-                    cache.reset()
-                    initial = _census(store, doc, read_cache=cache)
-                cache.seal(initial)
-            finally:
-                cache.close()
+            initial = cache.inherited_members(doc, doc.get(contract.GENERATION_FIELD), store,
+                producer_commit=os.environ.get('GITHUB_SHA'))
+            result['starting_cut_inherited'] = initial is not None
+            if initial is None:
+                cache.reset()
+                initial = _census(store, doc, read_cache=cache)
+            cache.seal(initial)
             result['phase_seconds']['begin_census'] = clock() - t
             result['sealed_cache_corpus_bytes'] = p.stat().st_size
             result['initial_classifications'] = dict(Counter(row['layer'] for row in initial))
@@ -145,8 +143,15 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
                     receipt_digests=staged['receipt_digests'], record_digests=staged['record_digests'])
                 conn.commit()
                 result['phase_seconds']['full_body_stage'] = clock() - t
+                result['uncompacted_corpus_bytes'] = p.stat().st_size
+                phase = 'image_compaction'
+                t = clock()
+                from engine.research_vault.fulltext_index import compact_for_publication
+                compact_for_publication(conn)
+                result['phase_seconds']['image_compaction'] = clock() - t
             finally:
                 conn.close()
+                cache.close()
             result['staged_counts'] = staged['counts']
             result['final_corpus_bytes'] = p.stat().st_size
             phase = 'complete_census'
@@ -175,6 +180,10 @@ def run(store, *, scratch_root, max_seconds=750, clock=time.monotonic):
             # Numeric SQLite diagnostics contain neither SQL nor licensed values.
             result['sqlite_errorcode'] = getattr(exc, 'sqlite_errorcode', None)
             result['sqlite_errorname'] = getattr(exc, 'sqlite_errorname', None)
+    finally:
+        if cache is not None:
+            cache.close()
+    result['input_cache_storage'] = 'private_process_memory'
     result['elapsed_seconds'] = clock() - started
     if (result['state'] == 'READONLY_RESOURCE_CHECK_PASSED'
             and result['elapsed_seconds'] > max_seconds):

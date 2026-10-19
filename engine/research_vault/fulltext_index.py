@@ -152,6 +152,19 @@ def stage(conn, document, *, record_loader: Callable, source_digest_reader: Call
         raise
 
 
+def compact_for_publication(conn):
+    """Compact one already committed native image without changing its content.
+
+    The publisher owns this explicit boundary. Ordinary staging retains its
+    caller's transaction; compaction must never commit it implicitly.
+    """
+    if conn.in_transaction:
+        raise ValueError('commit staged image before compaction')
+    conn.execute("INSERT INTO documents_fts(documents_fts) VALUES('optimize')")
+    conn.commit()
+    conn.execute('VACUUM')
+
+
 def discovery_coverage(conn, document, visible_ids):
     """Inspect bounded producer metadata only; never load a report or resweep R2.
 

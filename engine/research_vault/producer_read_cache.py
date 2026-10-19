@@ -1,9 +1,10 @@
-"""Bounded read reuse inside the incumbent private corpus, never authority.
+"""Bounded per-run input reuse in private process memory, never authority.
 
-A restored image must match the preceding COMPLETE before its cached starting
-cut can be inherited. COMPLETE always performs a fresh Store census. Raw cache
-hashes and the corpus-retained source cut protect both ordinary completion and
-its existing original-parent continuation; no retry or replay API lives here.
+Only the canonical corpus/FTS image is published. Each run captures a fresh
+starting census and keeps its compressed bytes in a separate in-memory SQLite
+connection; no source payload cache grows the reader's image. COMPLETE always
+performs a second fresh Store census. The image-retained source cut still binds
+ordinary completion and the existing original-parent continuation.
 """
 from __future__ import annotations
 
@@ -58,31 +59,17 @@ class CorpusReadCache:
                 h.update(part)
         self.original_sha256 = h.hexdigest()
         self.lock = threading.RLock()
-        self.conn = sqlite3.connect(self.path, check_same_thread=False)
+        self.conn = sqlite3.connect(':memory:', check_same_thread=False)
         self.conn.enable_load_extension(False)
         self.conn.execute('PRAGMA trusted_schema=OFF')
-        existing = self.conn.execute('SELECT type,sql FROM sqlite_master WHERE name=?', (TABLE,)).fetchone()
-        if existing is not None and (existing[0] != 'table'
-                or 'VIRTUAL TABLE' in (existing[1] or '').upper()
-                or self.conn.execute("SELECT 1 FROM sqlite_master WHERE type='trigger' AND tbl_name=?", (TABLE,)).fetchone()):
-            self.close()
-            raise ValueError('unsupported cache schema')
-        self.existed = existing is not None
-        self.conn.execute(f'''CREATE TABLE IF NOT EXISTS {TABLE} (
+        self.conn.execute(f'''CREATE TABLE {TABLE} (
             report_id TEXT PRIMARY KEY, receipt BLOB, receipt_sha256 TEXT,
             receipt_size INTEGER NOT NULL, record BLOB, record_sha256 TEXT,
             record_size INTEGER NOT NULL)''')
         self.sizes = {}
-        for rid, a, b in self.conn.execute(f'SELECT report_id,receipt_size,record_size FROM {TABLE}'):
-            if (not corpus.valid_doc_id(rid) or len(self.sizes) >= fulltext_index.MAX_ROWS
-                    or type(a) is not int or not 0 <= a <= fulltext_store.RECEIPT_MAX_BYTES
-                    or type(b) is not int or not 0 <= b <= fulltext_store.FULLTEXT_MAX_BYTES):
-                raise ValueError('invalid cache dimensions')
-            self.sizes[rid] = a + b
-        self.total = sum(self.sizes.values())
+        self.total = 0
         self.members = {}
-        if self.total > MAX_RAW_BYTES:
-            raise ValueError('cache raw byte bound exceeded')
+        self.sealed = False
 
     def reset(self):
         with self.lock:
@@ -115,27 +102,24 @@ class CorpusReadCache:
         if rid not in self.ids:
             raise ValueError('capture outside original cohort')
         with self.lock:
+            if self.sealed:
+                raise ValueError('sealed starting inputs are immutable')
             self._store(self.conn, rid, receipt, record)
 
-    def _entry(self, rid, *, receipt_only=False, connection=None):
-        borrowed = connection if connection is not None else self.conn
-        own = borrowed is not None
-        conn = borrowed if own else sqlite3.connect(self.path.resolve().as_uri() + '?mode=ro', uri=True)
-        try:
-            with self.lock:
-                record_fields = 'NULL,NULL,0' if receipt_only else 'substr(record,1,?),record_sha256,record_size'
-                sql = f'''SELECT substr(receipt,1,?),receipt_sha256,receipt_size,
-                    {record_fields} FROM {TABLE} WHERE report_id=?'''
-                args = (MAX_COMPRESSED + 1, rid) if receipt_only else (MAX_COMPRESSED + 1, MAX_COMPRESSED + 1, rid)
-                row = conn.execute(sql, args).fetchone()
-            if row is None:
-                return None
-            receipt = _unpack(row[0], row[1], row[2], fulltext_store.RECEIPT_MAX_BYTES)
-            record = _unpack(row[3], row[4], row[5], fulltext_store.FULLTEXT_MAX_BYTES)
-            return receipt, record
-        finally:
-            if not own:
-                conn.close()
+    def _entry(self, rid, *, receipt_only=False):
+        if self.conn is None:
+            raise ValueError('closed input cache')
+        with self.lock:
+            record_fields = 'NULL,NULL,0' if receipt_only else 'substr(record,1,?),record_sha256,record_size'
+            sql = f'''SELECT substr(receipt,1,?),receipt_sha256,receipt_size,
+                {record_fields} FROM {TABLE} WHERE report_id=?'''
+            args = (MAX_COMPRESSED + 1, rid) if receipt_only else (MAX_COMPRESSED + 1, MAX_COMPRESSED + 1, rid)
+            row = self.conn.execute(sql, args).fetchone()
+        if row is None:
+            return None
+        receipt = _unpack(row[0], row[1], row[2], fulltext_store.RECEIPT_MAX_BYTES)
+        record = _unpack(row[3], row[4], row[5], fulltext_store.FULLTEXT_MAX_BYTES)
+        return receipt, record
 
     def inherited_members(self, document, prior, store, *, producer_commit=None):
         if prior is None:
@@ -146,27 +130,9 @@ class CorpusReadCache:
                 or prior['catalog_payload_sha256'] != contract.compute_catalog_payload_digest(document)
                 or {m['report_id'] for m in prior['members']} != self.ids):
             raise ValueError('previous completed cut does not bind restored corpus')
-        if not self.existed or prior['producer_source_commit'] != producer_commit:
-            return None
-        for member in prior['members']:
-            rid = member['report_id'];entry = self._entry(rid)
-            if entry is None or _sha(entry[0]) != member['receipt_sha256']:
-                return None  # Unsupported old cache; a fresh census is required.
-            receipt, record = entry
-            if _sha(record) != member['derivative_record_sha256']:
-                # The preceding materializer may have created this immutable
-                # derivative after its corpus image was published. Fetch only
-                # that missing payload, and require its COMPLETE-bound hash.
-                source = member['source_pdf_sha256']
-                if source is None or member['derivative_record_sha256'] is None:
-                    return None
-                record = store.get_bytes_strict_bounded(
-                    fulltext_store.derivative_key(rid, source), fulltext_store.FULLTEXT_MAX_BYTES)
-                if (type(record) is not bytes or len(record) > fulltext_store.FULLTEXT_MAX_BYTES
-                        or _sha(record) != member['derivative_record_sha256']):
-                    return None
-                self.capture(rid, receipt, record)
-        return copy.deepcopy(prior['members'])
+        # Historical publication identity remains required, but source inputs
+        # are not persisted. A new run always takes a fresh starting census.
+        return None
 
     def seal(self, members):
         if {m['report_id'] for m in members} != self.ids:
@@ -178,9 +144,9 @@ class CorpusReadCache:
             raise ValueError('cache does not bind the measured starting cut')
         self.members = {m['report_id']: copy.deepcopy(m) for m in members}
         self.conn.commit()
-        self.conn.close();self.conn = None
-        # Cache growth is already known here. Refuse before BEGIN can replace
-        # the predecessor with an image the native publisher cannot accept.
+        self.sealed = True
+        # Memory-only capture must not permit an already oversized native image
+        # to replace the predecessor. Later staged growth is checked before PUT.
         if self.path.stat().st_size > contract.CORPUS_MAX_BYTES:
             raise ValueError('sealed cache corpus outside producer image bound')
 
@@ -205,26 +171,17 @@ class CorpusReadCache:
         ids = fulltext_index._cohort(document)
         overrides = _pending(ids, own_receipts)
         sources, receipt_hashes, candidate_hashes = {}, {}, {}
-        own_entries = set()
 
         def load(rid):
-            # The active writer can spill its page cache and acquire an
-            # exclusive rollback-journal lock. Read through that same transaction
-            # so a second connection cannot deadlock against our own writes.
-            entry = self._entry(rid, connection=conn) if rid in self.ids else None
+            # This immutable cache has its own memory database. The native
+            # image writer's rollback-journal spill cannot lock these reads.
+            entry = self._entry(rid) if rid in self.ids else None
             receipt, raw = (None, None) if entry is None else entry
             member = self.members.get(rid)
             key = fulltext_store.receipt_key(rid)
             if member is not None:
-                allowed_receipts = {member['receipt_sha256']}
-                if key in overrides:
-                    allowed_receipts.add(_sha(overrides[key]))
-                cached_source = fulltext_store.parse_receipt_digest(receipt, rid) if receipt is not None else None
-                expected_record = member['derivative_record_sha256']
-                if (key in overrides and _sha(receipt) == _sha(overrides[key])
-                        and cached_source != member['source_pdf_sha256']):
-                    expected_record = None  # a confirmed own correction at an earlier checkpoint
-                if _sha(receipt) not in allowed_receipts or _sha(raw) != expected_record:
+                if (_sha(receipt) != member['receipt_sha256']
+                        or _sha(raw) != member['derivative_record_sha256']):
                     raise ValueError('cached bytes changed after starting cut')
             if key in overrides:
                 old_digest = fulltext_store.parse_receipt_digest(receipt, rid) if receipt is not None else None
@@ -232,7 +189,6 @@ class CorpusReadCache:
                 new_digest = fulltext_store.parse_receipt_digest(receipt, rid)
                 if new_digest != old_digest:
                     raw = None
-                own_entries.add(rid)
             digest = fulltext_store.parse_receipt_digest(receipt, rid) if receipt is not None else None
             sources[rid] = digest;receipt_hashes[rid] = _sha(receipt)
             # Exact raw hashes bind the canonical validation already performed
@@ -256,20 +212,6 @@ class CorpusReadCache:
             used = {rid: candidate_hashes[rid] for rid, binding in conn.execute(
                 'SELECT doc_id,fulltext_binding FROM documents WHERE doc_id IN (SELECT value FROM json_each(?))',
                 (json.dumps(ids),)) if binding is not None and rid in candidate_hashes}
-            # The cache mirrors only the current admitted cohort. Retired rows
-            # must not consume its row/byte budget in the next generation.
-            conn.execute(f'DELETE FROM {TABLE} WHERE report_id NOT IN (SELECT value FROM json_each(?))',
-                         (json.dumps(ids),))
-            self.sizes = {rid: size for rid, size in self.sizes.items() if rid in sources}
-            self.total = sum(self.sizes.values())
-            for rid in own_entries:
-                entry = self._entry(rid, connection=conn) if rid in self.ids else None
-                old_receipt, record = (None, None) if entry is None else entry
-                receipt = overrides[fulltext_store.receipt_key(rid)]
-                old_digest = fulltext_store.parse_receipt_digest(old_receipt, rid) if old_receipt is not None else None
-                if fulltext_store.parse_receipt_digest(receipt, rid) != old_digest:
-                    record = None
-                self._store(conn, rid, receipt, record)
             conn.execute('RELEASE SAVEPOINT rv_cached_fulltext_stage')
             return {'counts': counts, 'source_digests': sources,
                     'receipt_digests': receipt_hashes, 'record_digests': used}

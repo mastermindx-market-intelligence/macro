@@ -54,14 +54,14 @@ def test_cold_generation_reads_each_member_only_in_begin_and_final_censuses(read
     assert result['fulltext_discovery']['full'] == 1
 
 
-def test_warm_generation_reuses_only_its_source_bound_completed_starting_cut(ready, tmp_path, monkeypatch):
+def test_every_generation_takes_fresh_starting_and_final_censuses(ready, tmp_path, monkeypatch):
     store, _ = ready
     assert run(store, tmp_path, 'cold').get('error') is None
     seen = member_reads(store, monkeypatch)
     result = run(store, tmp_path, 'warm', 10)
     assert result.get('error') is None, result
     assert result['generation_complete'] is True
-    assert len(seen) == 2  # the final fresh census is never skipped
+    assert len(seen) == 4  # inputs are private per-run memory, never a published payload cache
     p = tmp_path / 'published.sqlite';p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
     conn = corpus.open_db(p)
     assert corpus.search(conn, 'bodytailwitness')[0]['id'] == RID
@@ -150,13 +150,18 @@ def test_later_derivative_gets_only_one_payload_fetch_before_warm_begin(ready, t
     second = run(store, tmp_path, 'payload-catchup', 10)
     assert second.get('error') is None, second
     assert second['fulltext_discovery']['full'] == 1
-    assert seen.count(key) == 2  # one missing cached payload + final fresh census
-    assert seen.count(fulltext_store.receipt_key(RID)) == 1
+    assert seen.count(key) == 2  # fresh starting and final censuses see the late record
+    assert seen.count(fulltext_store.receipt_key(RID)) == 2
 
 
 def test_growing_image_bound_refuses_before_corpus_write_without_journal(ready, tmp_path, monkeypatch):
     store, _ = ready
     original = store.get_bytes(contract.CORPUS_KEY)
+    text = 'bodyprefix ' + 'alpha ' * 11000 + ' bodytailwitness ' + 'extracanonicalbody ' * 20000
+    record = fulltext.build_extracted_text(report_id=RID, source_pdf_sha256='c' * 64,
+        text=text, extractor_name=fulltext_store.EXTRACTOR_NAME,
+        extractor_version=fulltext_store.EXTRACTOR_VERSION, page_count=1, text_layer_state='full')
+    store.put_bytes(fulltext_store.derivative_key(RID, 'c' * 64), fulltext_store.encode_record(record))
     monkeypatch.setattr(contract, 'CORPUS_MAX_BYTES', len(original) + 16384)
     store.events.clear()
     with pytest.raises(writer.GenerationWriteUnavailable, match='corpus outside'):
@@ -212,13 +217,20 @@ def test_checkpoint_image_has_its_own_current_bound_source_cut(ready, tmp_path, 
     assert len(checked) == 2  # both checkpoint and final images are independently bound
 
 
-def test_sealed_cache_image_bound_refuses_before_begin_cas(ready, tmp_path, monkeypatch):
+def test_native_image_growth_during_starting_census_refuses_before_begin_cas(ready, tmp_path, monkeypatch):
     store, _ = ready
     original_catalog = store.get_bytes(catalog.CATALOG_KEY)
     original_corpus = store.get_bytes(contract.CORPUS_KEY)
     monkeypatch.setattr(contract, 'CORPUS_MAX_BYTES', len(original_corpus) + 1)
+    actual = writer._census
+    def grow_private_image(*args, **kwargs):
+        members = actual(*args, **kwargs)
+        with kwargs['read_cache'].path.open('ab') as stream:
+            stream.write(b'\0' * 8192)
+        return members
+    monkeypatch.setattr(writer, '_census', grow_private_image)
     store.events.clear()
-    result = run(store, tmp_path, 'sealed-image-growth')
+    result = run(store, tmp_path, 'native-image-growth')
     assert result['error'] == 'generation_start_failed'
     assert 'sealed cache corpus outside' in result['generation_error']
     assert store.events == []
@@ -242,12 +254,13 @@ def test_cache_cohort_turnover_prunes_retired_rows_and_reopens(ready, tmp_path, 
                             max_rows=1, max_body_bytes=1000000)
     conn.commit()
     assert staged['source_digests'] == {new_item['id']: 'f' * 64}
-    assert [row[0] for row in conn.execute('SELECT report_id FROM producer_read_cache')] == [new_item['id']]
-    conn.close()
+    assert conn.execute("SELECT 1 FROM sqlite_master WHERE name='producer_read_cache'").fetchone() is None
+    conn.close();snapshot.close()
     reopened = cache.CorpusReadCache(p, replacement)
     try:
+        assert reopened.sizes == {} and reopened.total == 0
+        reopened.seal(writer._census(store, replacement, read_cache=reopened))
         assert set(reopened.sizes) == {new_item['id']}
-        assert reopened.total == len(raw)
     finally:reopened.close()
 
 
@@ -268,3 +281,40 @@ def test_fullbody_stage_reads_cache_under_writer_cache_spill(ready, tmp_path):
         assert corpus.search(conn, 'bodytailwitness')[0]['id'] == RID
     finally:
         conn.close()
+
+
+
+def test_sealed_input_cache_does_not_change_native_image(ready, tmp_path):
+    store, doc = ready
+    original = store.get_bytes(contract.CORPUS_KEY)
+    p = tmp_path / 'native-unchanged.sqlite';p.write_bytes(original)
+    snapshot = cache.CorpusReadCache(p, doc)
+    try:
+        snapshot.seal(writer._census(store, doc, read_cache=snapshot))
+        assert snapshot.total > 60000
+        assert p.read_bytes() == original
+    finally:snapshot.close()
+
+
+def test_compaction_preserves_document_bytes_postings_and_transaction_boundary(ready, tmp_path):
+    from engine.research_vault import fulltext_index
+    store, doc = ready
+    p = tmp_path / 'compact.sqlite';p.write_bytes(store.get_bytes(contract.CORPUS_KEY))
+    snapshot = cache.CorpusReadCache(p, doc)
+    snapshot.seal(writer._census(store, doc, read_cache=snapshot))
+    conn = corpus.open_db(p)
+    try:
+        staged = snapshot.stage(conn, doc, [], max_rows=10000, max_body_bytes=256 * 1024 * 1024)
+        writer.record_fulltext_source_cut(conn, doc, staged['source_digests'],
+            receipt_digests=staged['receipt_digests'], record_digests=staged['record_digests'])
+        before = [tuple(row) for row in conn.execute('SELECT * FROM documents ORDER BY rowid')]
+        with pytest.raises(ValueError, match='commit staged'):
+            fulltext_index.compact_for_publication(conn)
+        assert conn.in_transaction
+        conn.commit()
+        fulltext_index.compact_for_publication(conn)
+        assert [tuple(row) for row in conn.execute('SELECT * FROM documents ORDER BY rowid')] == before
+        assert corpus.search(conn, 'bodytailwitness')[0]['id'] == RID
+        assert conn.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
+        writer._validate_fulltext_source_cut(p.read_bytes(), doc, list(snapshot.members.values()))
+    finally:conn.close();snapshot.close()

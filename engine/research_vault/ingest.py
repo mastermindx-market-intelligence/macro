@@ -1442,7 +1442,12 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                 summary["generation_error"] = type(exc).__name__ + ": " + str(exc)
                 return summary
 
-    conn = corpus_mod.open_db(corpus_path)
+    try:
+        conn = corpus_mod.open_db(corpus_path)
+    except BaseException:
+        if read_cache is not None:
+            read_cache.close()
+        raise
     pending_receipts: list = []  # (key, body) — flushed only after a publish
     try:
         # Display fields already published can only be healed on load (receipted
@@ -1559,6 +1564,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                         conn, cat, generation_session, read_cache, pending_receipts, now)
                     timing_s['fulltext_discovery_s'] = timing_s.get('fulltext_discovery_s', 0) + time.monotonic() - _fulltext_t
                 conn.commit()
+                if generation_session is not None:
+                    from engine.research_vault.fulltext_index import compact_for_publication
+                    compact_for_publication(conn)
                 publication_kwargs = {}
                 if generation_session is not None:
                     catalog_mod.prepare_publication(cat, now=now)
@@ -1649,6 +1657,9 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
             summary["catalog_bytes"] = catalog_mod.serialize(cat, now=now)
         else:
             conn.commit()
+            if generation_session is not None:
+                from engine.research_vault.fulltext_index import compact_for_publication
+                compact_for_publication(conn)
 
         # Flag rather than silently ship: these reports are published under a
         # cleaned-up FILENAME because their headline could not be found on page 1
@@ -1663,6 +1674,8 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
                   f"{names}{more}")
     finally:
         conn.close()
+        if read_cache is not None:
+            read_cache.close()
 
     # Final publish (real runs only), after the connection is closed.
     #
