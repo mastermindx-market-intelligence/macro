@@ -272,6 +272,34 @@ def test_empty_held_file_and_persistent_hold_count(tmp_path, lake, private_root)
     assert result['eligible_symbols'] == 2 and result['requests'] == 0
 
 
+@pytest.mark.parametrize("orphan", [".receipt-interrupted", ".receipt-linked"])
+def test_interrupted_hold_temporary_does_not_block_later_session(tmp_path, lake, orphan):
+    cfg = setup_run(tmp_path, lake)
+    area = lake.root / "run-receipts"
+    area.mkdir(mode=0o700)
+    holds = area / "boats-live-history-held"
+    holds.mkdir(mode=0o700)
+    temporary = holds / orphan
+    temporary.write_bytes(b'{"symbol":"AMD","http_status":404}\n')
+    if orphan == ".receipt-linked":
+        live.os.link(temporary, holds / "AMD.json")
+    result = run_test(cfg, lake, lambda request: {"interests": []})
+    assert result["requests"] == 0
+    assert result["eligible_symbols"] == (1 if orphan == ".receipt-linked" else 2)
+    assert temporary.read_bytes() == b'{"symbol":"AMD","http_status":404}\n'
+
+
+def test_non_temporary_invalid_hold_still_refuses_before_start(tmp_path, lake):
+    cfg = setup_run(tmp_path, lake)
+    holds = lake.root / "run-receipts" / "boats-live-history-held"
+    holds.parent.mkdir(mode=0o700)
+    holds.mkdir(mode=0o700)
+    (holds / "invalid-name").write_text("{}")
+    with pytest.raises(live.RefreshStopped, match="invalid persistent hold identity"):
+        run_test(cfg, lake, lambda request: {"interests": []})
+    assert not (holds.parent / "boats-live-history-start-2026-10-20.json").exists()
+
+
 def test_invalid_interest_does_not_hide_valid_demand(private_root):
     (private_root/'requests'/'BAD.json').write_text('{')
     (private_root/'requests'/'AMD.json').write_text(json.dumps(interest()))
@@ -331,7 +359,7 @@ def test_immutable_receipt_never_replaces_and_failed_publish_leaves_no_final(tmp
     assert not (tmp_path/'new.json').exists()
 
 
-@pytest.mark.parametrize('failure',['timeout','nonzero','oversized','malformed','unversioned','signal'])
+@pytest.mark.parametrize('failure',['timeout','nonzero','oversized','malformed','unversioned','signal','nan','infinity'])
 def test_ssh_bridge_publication_failure_is_unknown_without_retry(tmp_path,monkeypatch,failure):
     calls=[]
     def execute(*a,**k):
@@ -339,7 +367,9 @@ def test_ssh_bridge_publication_failure_is_unknown_without_retry(tmp_path,monkey
         if failure=='timeout':raise live.subprocess.TimeoutExpired(a[0],45)
         if failure=='signal':raise live.RefreshStopped('signal 15')
         from types import SimpleNamespace
-        raw={'oversized':b'x'*(256*1024+1),'malformed':b'{','unversioned':b'{}'}.get(failure,b'{}')
+        raw={'oversized':b'x'*(256*1024+1),'malformed':b'{','unversioned':b'{}',
+             'nan':json.dumps({'protocol':bridge_module.PROTOCOL,'value':float('nan')}).encode(),
+             'infinity':json.dumps({'protocol':bridge_module.PROTOCOL,'value':float('inf')}).encode()}.get(failure,b'{}')
         return SimpleNamespace(returncode=1 if failure=='nonzero' else 0,stdout=raw)
     monkeypatch.setattr(live.subprocess,'run',execute)
     bridge=live.SSHBridge('root@example.test',tmp_path/'key','/private/bridge.py','/private/live')

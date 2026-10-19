@@ -67,6 +67,10 @@ class DeliveryUnknown(RefreshStopped):
     """The exact SSH write could have happened; no replay or replacement."""
 
 
+def reject_nonfinite_json(value: str):
+    raise ValueError("non-finite private bridge JSON: " + value)
+
+
 def write_once(path: Path, document: dict) -> None:
     raw = (json.dumps(document, separators=(",", ":"), allow_nan=False) + "\n").encode()
     fd, temporary = tempfile.mkstemp(prefix=".receipt-", dir=path.parent)
@@ -129,7 +133,7 @@ class SSHBridge:
                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=45, check=False)
             if result.returncode or len(result.stdout) > 256 * 1024:
                 raise RefreshStopped("private SSH bridge did not return a bounded successful result")
-            parsed = json.loads(result.stdout)
+            parsed = json.loads(result.stdout, parse_constant=reject_nonfinite_json)
             if not isinstance(parsed, dict) or parsed.get("protocol") != PROTOCOL:
                 raise RefreshStopped("private bridge returned a malformed result")
             return parsed
@@ -237,6 +241,10 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
             for index, entry in enumerate(entries):
                 if index >= 20000:
                     raise RefreshStopped("persistent hold bound exceeded")
+                if entry.name.startswith("."):
+                    # A crash may retain write_once's private temporary. It is
+                    # never a published hold; keep it for reconciliation.
+                    continue
                 symbol = entry.name.removesuffix(".json")
                 if entry.name != symbol+".json" or not SYMBOL.fullmatch(symbol):
                     raise RefreshStopped("invalid persistent hold identity")
@@ -349,6 +357,7 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
             result["cause_type"] = type(exc.__cause__).__name__ if exc.__cause__ is not None else None
             raise
         finally:
+            result["eligible_symbols"] = len(covered - excluded - retained)
             result["finished_at_utc"] = now().isoformat()
             try:
                 write_once(area / f"boats-live-history-final-{session}.json", result)
