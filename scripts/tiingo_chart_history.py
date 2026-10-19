@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -129,7 +130,8 @@ def main(argv=None):
     target = args.output.resolve()
     if "public" in target.parts or "site" in target.parts:
         p.error("output must be a private delivery candidate")
-    with args.output.open("x", encoding="utf8") as fp:
+    descriptor = os.open(args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf8") as fp:
         json.dump(result, fp, separators=(",", ":"), allow_nan=False)
         fp.write("\n")
     print(json.dumps({"schema": SCHEMA, "symbol": args.symbol, "bars": len(result["bars"]),
