@@ -35,11 +35,11 @@ def registry(status=DatasetStatus.PRODUCED):
                         inputs=(gmi.L0_ID,), **kw)))
 
 
-def eight_year_parts():
+def eight_year_parts(*, world_2017="3"):
     """Published synthetic fixtures merged into the 8x9=72-response scope."""
     skeleton, sources, receipts, by_year = None, {}, {}, {}
     for year in bea.YEARS:
-        raw_lineage, year_sources, year_receipts = fixture(year=year)
+        raw_lineage, year_sources, year_receipts = fixture(year=year, world=world_2017 if year == 2017 else "3")
         lineage = json.loads(raw_lineage)
         skeleton = skeleton or lineage
         sources.update(year_sources)
@@ -210,3 +210,54 @@ MUTATIONS = (
 @pytest.mark.parametrize("name,mutated,reason", MUTATIONS)
 def test_mutated_payloads_fail_closed(harness, name, mutated, reason):
     assert_unavailable(harness.read(mutated(harness.rows)), reason)
+
+
+def test_linked_native_source_correction_reaches_candidate_reader_without_publication():
+    """A linked genuine synthetic producer correction retains one consistent generation."""
+    original = bind(eight_year_parts(), years=bea.YEARS)
+    corrected = bind(eight_year_parts(world_2017="4"), years=bea.YEARS,
+                     predecessor=original)
+    earlier, revised = original.manifest, corrected.manifest
+    assert earlier["candidate_revision_seq"] == 0
+    assert revised["candidate_revision_seq"] == 1
+    assert revised["supersedes_candidate_generation"] == original.generation_id
+    assert corrected.generation_id != original.generation_id
+    assert earlier["may_publish"] is revised["may_publish"] is False
+
+    view = bea.candidate_industry_jsonl(corrected, INDUSTRY)
+    raw_rows = [json.loads(line) for line in view.jsonl_bytes.splitlines()]
+    assert len(raw_rows) == 1112 and all(
+        row["candidate_revision_seq"] == 1
+        and row["native_revision_seq"] is None
+        and row["native_ingested_at"] is None
+        and row["may_publish"] is False
+        and row["dataos_native_admitted"] is False
+        for row in raw_rows
+    )
+    # Test-only stand-in for a future real Data OS owner admission; no store/auth.
+    rows = [{**row, "native_ingested_at": NATIVE_UTC,
+             "native_revision_seq": 1, "dataos_native_admitted": True,
+             "may_publish": True} for row in raw_rows]
+    payload = encode_rows(rows)
+    common = dict(
+        registry=registry(), industry_code_exact=INDUSTRY,
+        owner_bound_jsonl=payload, owner_expected_sha256=digest(payload),
+        owner_native_ingested_at=NATIVE_UTC, owner_native_revision_seq=1)
+    packet = gmi.current_industry_candidate(
+        **common, owner_generation_id=corrected.generation_id)
+    assert packet["status"] == "CANDIDATE_NOT_PUBLISHED"
+    assert packet["may_publish"] is packet["may_rank"] is packet["may_trade"] is False
+    assert packet["historical_pit_eligible"] is False
+    assert packet["source_generation_id"] == corrected.generation_id
+    assert packet["annual_descriptive"][0]["world_import_million_USD"] == 4
+    assert packet["annual_descriptive"][0]["region_rounding_difference_million_USD"] == 1
+    assert packet["annual_descriptive"][1]["world_import_million_USD"] == 3
+    assert_unavailable(gmi.current_industry_candidate(
+        **common, owner_generation_id=original.generation_id),
+        "SOURCE_PROVENANCE_OR_AUTHORITY_INVALID")
+    stale = encode_rows(mutate(rows, 0, native_revision_seq=0))
+    assert_unavailable(gmi.current_industry_candidate(
+        **{**common, "owner_bound_jsonl": stale,
+           "owner_expected_sha256": digest(stale)},
+        owner_generation_id=corrected.generation_id),
+        "SOURCE_PROVENANCE_OR_AUTHORITY_INVALID")
