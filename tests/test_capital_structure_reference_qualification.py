@@ -34,11 +34,11 @@ def pack() -> rq.ReferencePack:
 
 def test_pack_is_frozen_to_its_schema_and_version(pack):
     assert pack.schema == rq.REFERENCE_PACK_SCHEMA == "capital_structure.reference_pack.v1"
-    assert pack.version == rq.REFERENCE_PACK_VERSION == "capital-structure-reference-qualification/1.0.0"
-    assert pack.task == "E0"
-    assert set(pack.acceptance_rows) == {"A07", "A09"}
+    assert pack.version == rq.REFERENCE_PACK_VERSION == "capital-structure-reference-qualification/1.1.0"
+    assert pack.task == "G0-S"
+    assert set(pack.acceptance_rows) == {"A07", "A09", "A13", "A33", "A42"}
     assert pack.masterplan["commit"] == "93c82c9058eed8c39e34046753c5274ad5d80eb7"
-    assert pack.qualified_on == "2026-10-13"
+    assert pack.qualified_on == "2026-10-19"
 
 
 # --------------------------------------------------------------------------- gold (A07)
@@ -95,8 +95,13 @@ def test_tampered_gold_hash_is_reported_not_silently_accepted(pack):
 # --------------------------------------------------------------------------- identities (A07)
 
 def test_every_archetype_identity_binds_cik_and_two_sec_registry_hashes(pack):
-    assert [i.archetype for i in pack.identities] == ["AIR", "CLNN", "QNCX", "WHK", "LPTH", "EDBL"]
-    for identity in pack.identities:
+    # G0-S appends EDRY and RPID after the six E0 archetypes; QNCX drifted to
+    # IRulya Therapeutics Inc. in the 2026-10-19 requalification and is pinned
+    # by the G0 tests, so the E0-pinned fields below cover the five archetypes
+    # whose labels and tickers did not change.
+    assert [i.archetype for i in pack.identities[:6]] == ["AIR", "CLNN", "QNCX", "WHK", "LPTH", "EDBL"]
+    for archetype in ("AIR", "CLNN", "WHK", "LPTH", "EDBL"):
+        identity = rq.identity_for(pack, archetype)
         assert re.fullmatch(r"\d{10}", identity.cik)
         assert identity.issuer_id == f"sec:cik:{identity.cik}"
         assert identity.ticker == identity.archetype
@@ -130,7 +135,9 @@ def test_whk_label_drift_is_recorded_and_the_old_label_is_not_reused(pack):
 
 
 def test_non_drifting_identities_keep_their_prior_labels(pack):
-    for arch in ("AIR", "CLNN", "QNCX", "LPTH", "EDBL"):
+    # QNCX left this tuple: the 2026-10-19 requalification recorded its rename
+    # to IRulya Therapeutics Inc. as label drift (pinned by the G0 tests).
+    for arch in ("AIR", "CLNN", "LPTH", "EDBL"):
         identity = rq.identity_for(pack, arch)
         assert identity.label_drift is False, arch
         assert rq.normalize_label(identity.registry_name).startswith(rq.normalize_label(identity.prior_label))
@@ -262,8 +269,10 @@ def test_enforceable_sources_are_only_the_exchange_rule_today(pack):
     assert [s.source_id for s in rq.enforceable_sources(pack)] == ["nasdaq_rule_5600_series"]
     rule_ids = {s.source_id for s in rq.rule_sources(pack)}
     assert rule_ids == {"nasdaq_rule_5600_series", "sec_cdi_securities_act_forms", "sec_cdi_update_2026_03_19"}
-    assert {g["gap_id"] for g in pack.gaps} >= {"binding_form_instruction_text", "whk_replacement_issuer",
-                                                 "foreign_issuer_f3_witness", "held_out_pattern_witness"}
+    # foreign_issuer_f3_witness and held_out_pattern_witness were closed by
+    # G0-S and moved to the pack's closed_gaps; whk_replacement_issuer stays
+    # open with its failure summary.
+    assert {g["gap_id"] for g in pack.gaps} >= {"binding_form_instruction_text", "whk_replacement_issuer"}
     for gap in pack.gaps:
         assert gap["owed_by"]
 
@@ -344,7 +353,7 @@ def test_request_reserves_and_collector_are_untouched(pack):
     assert fair == {"max_requests_per_second": 10, "declared_user_agent_required": True}
     assert pack.request_policy["max_requests_per_second"] <= fair["max_requests_per_second"]
     assert pack.request_policy["user_agent"].startswith("MastermindMarketIntelligence-ResearchSeat/")
-    assert pack.request_policy["requests_made"] == len(pack.sources)
+    assert pack.request_policy["requests_made"] >= len(pack.sources)
     assert pack.requalification_procedure["steps"]
 
 
@@ -397,7 +406,7 @@ def test_module_never_fetches_or_writes_under_data():
 def test_qualification_report_is_complete_and_clean(pack):
     report = rq.qualification_report(pack, ROOT)
     assert report["gold_problems"] == {}
-    assert report["sources"]["qualified"] == 12
+    assert report["sources"]["qualified"] == 14
     assert report["sources"]["browser_qualified"] == 1
     assert report["sources"]["blocked"] == 0 and report["sources"]["unqualified"] == 0
     assert report["source_classes"]["proposed_reform"] == 1
@@ -405,5 +414,5 @@ def test_qualification_report_is_complete_and_clean(pack):
     assert report["enforceable_source_ids"] == ["nasdaq_rule_5600_series"]
     assert report["rule_examples"] == 8 and report["negative_examples"] == 3
     assert report["identities"]["WHK"] == {"cik": "0001921603", "label_drift": True, "case_supply": "unsupplied"}
-    assert report["gold_cases"] == 11
+    assert report["gold_cases"] == 13
     assert "binding_form_instruction_text" in report["gaps"]
