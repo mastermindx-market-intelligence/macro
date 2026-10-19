@@ -890,3 +890,52 @@ def test_deeply_nested_manifest_is_a_sanitized_input_error(tmp_path: Path) -> No
     manifest = tmp_path / 'manifest.json'
     manifest.write_bytes(b'{"expression":' + b'[' * 1500 + b'0' + b']' * 1500 + b'}')
     _assert_rejected(_run_cli(manifest, cwd=tmp_path), tmp_path)
+
+
+# ─── ROOT pin precedence over a hostile PYTHONPATH ───────────────────────────
+
+
+def test_root_pin_beats_hostile_pythonpath_decoy_engine(tmp_path: Path) -> None:
+    """A foreign ``engine`` package placed earlier on PYTHONPATH must not
+    hijack the adapter's imports.  The decoy plus the real repository root
+    are BOTH on PYTHONPATH, so the real root is already somewhere on
+    sys.path: only the unconditional ``sys.path.insert(0, REPO_ROOT)`` pin
+    moves it ahead of the decoy, while the conditional "insert only when
+    absent" pin leaves the decoy first and loses."""
+
+    decoy_root = tmp_path / "decoy"
+    (decoy_root / "engine").mkdir(parents=True)
+    (decoy_root / "engine" / "__init__.py").write_text(
+        "raise SystemExit('HIJACKED')\n", encoding="utf-8"
+    )
+    manifest = _synthetic_handoff(tmp_path / "handoff")
+
+    env = dict(os.environ)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    env["PYTHONPATH"] = os.pathsep.join([str(decoy_root), str(REPO_ROOT)])
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT_PATH), "--input", str(manifest)],
+        cwd=str(tmp_path),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=180,
+    )
+
+    assert proc.returncode == cli.EXIT_OK, (
+        f"exit {proc.returncode}; stderr: {proc.stderr!r}"
+    )
+    assert "HIJACKED" not in proc.stdout and "HIJACKED" not in proc.stderr
+    assert proc.stderr == ""
+    lines = proc.stdout.splitlines()
+    assert len(lines) == 1 and proc.stdout.endswith("\n")
+    parsed = json.loads(lines[0])
+    assert parsed["status"] == oa3.STATUS_COMPLETE
+    _assert_complete_json(
+        parsed,
+        entry_bytes=(tmp_path / "handoff" / "entry_quotes.json").read_bytes(),
+        exit_bytes=(tmp_path / "handoff" / "exit_quotes.json").read_bytes(),
+        expression_bytes=(tmp_path / "handoff" / "expression.json").read_bytes(),
+        digest=_handoff_digest(tmp_path / "handoff"),
+    )

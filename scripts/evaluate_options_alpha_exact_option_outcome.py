@@ -85,11 +85,13 @@ from typing import Any, NoReturn
 # ─── ROOT bootstrap ──────────────────────────────────────────────────────────
 # The script ships as a standalone file under ``scripts/`` and must import
 # the incumbent engine from the repository root regardless of the caller's
-# working directory.
+# working directory.  The insert is unconditional: even when REPO_ROOT is
+# already present further down sys.path (for example as a caller-supplied
+# PYTHONPATH entry), it must be moved to the front so a foreign ``engine``
+# package earlier on the path cannot shadow the incumbent one.
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT))
 
 from engine import options_alpha_exact_option_outcome as oa3  # noqa: E402
 from engine import options_nbbo_cohort as cohort  # noqa: E402
