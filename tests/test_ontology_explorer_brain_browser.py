@@ -1120,3 +1120,30 @@ def test_gap_view_withholds_foreign_generations_and_reinterpreted_conditions(bro
         assert gap.get_attribute('data-gap-state')=='source_unavailable'
         assert gap.locator('button, details').count()==0 and not errors
     finally:ctx.close()
+
+
+@pytest.mark.parametrize("width,language", [(1440,"en"),(1440,"zh"),(390,"en"),(390,"zh")])
+def test_research_continuation_uses_existing_theme_owner_and_abstains(browser,synthetic_snapshot,width,language):
+    context,page=_open(browser,synthetic_snapshot,width=width,height=900)
+    try:
+        page.evaluate("lang=>document.documentElement.dataset.lang=lang",language)
+        disclosure=page.locator('#ox-research-reading')
+        disclosure.locator('summary').click()
+        text=disclosure.inner_text()
+        assert ('Calibrated opportunity estimates are unavailable' if language=='en' else '经校准的机会估计尚不可用') in text
+        assert ('dates are separate' if language=='en' else '日期与本路径读数分开') in text
+        link=disclosure.locator('a')
+        assert link.get_attribute('href')=='state_of_themes.html#research-reading-order'
+        assert page.evaluate('window.__fetchCount')==1
+        assert page.evaluate('[localStorage.length,sessionStorage.length]')==[0,0]
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        # The actual emitted landing is used; this test creates no new theme population.
+        landing=(ROOT/'site/state_of_themes.html').read_text()
+        assert landing.count('id="research-reading-order"')==1
+        assert 'id="research-reading-order"' in (ROOT/'templates/state_of_themes.html.j2').read_text()
+        page.route('http://ontology.test/state_of_themes.html',lambda route: route.fulfill(status=200,content_type='text/html',body=landing))
+        page.route('**/*',lambda route: route.fallback() if route.request.url.split('#')[0]=='http://ontology.test/state_of_themes.html' else route.fulfill(status=204))
+        link.click()
+        page.wait_for_url('**/state_of_themes.html#research-reading-order')
+        assert page.locator('#research-reading-order').count()==1
+    finally:context.close()

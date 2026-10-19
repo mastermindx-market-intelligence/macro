@@ -828,6 +828,26 @@
     return p;
   }
 
+  function researchReadingLink() {
+    var d = detail("Compare theme evidence", "比较主题证据");
+    d.classList.add("ox-detail--flush");
+    d.id = "ox-research-reading";
+    var a = el("a", "ox-action");
+    a.href = "state_of_themes.html#research-reading-order";
+    a.appendChild(say("Open the theme reading order", "打开主题阅读顺序"));
+    d.appendChild(a);
+    var basis = el("p", "ox-note");
+    basis.appendChild(say("The Theme Tracker orders its own recorded evidence by date, then daily count and name. Its dates are separate from this path's reading.",
+      "主题追踪页按自身证据的记录日期、当日条数和名称排序。其日期与本路径读数分开。"));
+    d.appendChild(basis);
+    var held = el("p", "ox-note");
+    held.setAttribute("data-opportunity-abstention", "uncalibrated");
+    held.appendChild(say("Calibrated opportunity estimates are unavailable. This reading order does not establish impact, direction, confidence or what is already priced in.",
+      "经校准的机会估计尚不可用。此阅读顺序不说明影响幅度、方向、把握程度或价格已消化程度。"));
+    d.appendChild(held);
+    return d;
+  }
+
   function renderNextAction(snapshot) {
     var action = snapshot.next_action;
     var box = card("Next", "下一步", "watch");
@@ -854,6 +874,7 @@
         "将展开下方的逐环节读数。"));
       box.appendChild(hint);
       box.appendChild(transmissionLink(snapshot));
+      box.appendChild(researchReadingLink());
       return box;
     }
 
@@ -866,6 +887,7 @@
       + "publish, not only this one.",
       "传导链总览页面涵盖所有者发布的全部路径，而不仅是本条。"));
     box.appendChild(note);
+    box.appendChild(researchReadingLink());
     return box;
   }
 
