@@ -57,20 +57,20 @@ def test_real_pipeline_and_empty_response_keep_original_receipts(lake):
 
 @pytest.mark.parametrize("date", ["2026-10-19T02:00:00Z", "2026-10-20T02:02:00Z", "2026-10-20T08:00:00Z"])
 def test_wrong_session_future_and_closed_bars_refuse(lake, date):
-    with pytest.raises((archive_module.TiingoArchiveError, ValueError)):
+    with pytest.raises((archive_module.TiingoArchiveError, live.SymbolDataInvalid, ValueError)):
         snapshot(lake, rows=[{"date": date, "open": 10, "high": 12, "low": 9, "close": 11, "volume": 13}])
 
 
 def test_private_bridge_reads_only_bounded_regular_interest(private_root, tmp_path):
     target = private_root / "requests" / "AMD.json"
     target.write_text(json.dumps(interest()))
-    assert bridge_module.exchange(private_root, {"operation": "read"}) == {"interests": [interest()]}
+    assert bridge_module.exchange(private_root, {"operation": "read"})["interests"] == [interest()]
     target.unlink()
     other = tmp_path / "other.json"
     other.write_text(json.dumps(interest()))
     target.symlink_to(other)
-    with pytest.raises(OSError):
-        bridge_module.exchange(private_root, {"operation": "read"})
+    result = bridge_module.exchange(private_root, {"operation": "read"})
+    assert result["interests"] == [] and result["rejected"] == 1
 
 
 def test_bridge_atomic_replace_refuses_older_and_conflicting_vintage(lake, private_root):
@@ -242,20 +242,132 @@ def test_cycle_cap_keeps_the_rest_of_the_demand_for_next_cycle(tmp_path, lake, p
     assert called[24:30] == symbols[24:]
 
 
-def test_key_failure_still_keeps_permanent_start_and_final(tmp_path, lake):
+def test_key_failure_before_any_effect_does_not_claim_session(tmp_path, lake):
     cfg = setup_run(tmp_path, lake)
     def no_key(): raise OSError("fixture key unavailable")
     with pytest.raises(OSError):
         live.run(cfg, lambda _req: pytest.fail("bridge called"), now=lambda: NOW,
                  archive_factory=lambda _root: lake, key_reader=no_key)
-    assert (lake.root / "run-receipts/boats-live-history-start-2026-10-20.json").exists()
-    result = json.loads((lake.root / "run-receipts/boats-live-history-final-2026-10-20.json").read_text())
-    assert result["reason"] == "stopped" and result["requests"] == 0
+    assert not (lake.root / "run-receipts/boats-live-history-start-2026-10-20.json").exists()
+    assert not (lake.root / "run-receipts/boats-live-history-final-2026-10-20.json").exists()
 
 
 def test_bridge_capacity_and_snapshot_bound(private_root):
     for i in range(257):
         sym = f"Z{i:03d}"
         (private_root / "requests" / f"{sym}.json").write_text(json.dumps(interest(sym)))
-    with pytest.raises(ValueError, match="too many"):
-        bridge_module.exchange(private_root, {"operation": "read"})
+    result = bridge_module.exchange(private_root, {"operation": "read"})
+    assert len(result["interests"]) == 256 and result["truncated"] is True
+
+
+def test_empty_held_file_and_persistent_hold_count(tmp_path, lake, private_root):
+    cfg = setup_run(tmp_path, lake)
+    cfg.held.write_text('')
+    area = lake.root/'run-receipts'
+    area.mkdir(mode=0o700)
+    holds = area/'boats-live-history-held'
+    holds.mkdir(mode=0o700)
+    live.write_once(holds/'AMD.json', {'symbol':'AMD', 'http_status':404})
+    result = run_test(cfg, lake, lambda req: {'interests':[]})
+    assert result['eligible_symbols'] == 2 and result['requests'] == 0
+
+
+def test_invalid_interest_does_not_hide_valid_demand(private_root):
+    (private_root/'requests'/'BAD.json').write_text('{')
+    (private_root/'requests'/'AMD.json').write_text(json.dumps(interest()))
+    result = bridge_module.exchange(private_root, {'operation':'read'})
+    assert result['interests'] == [interest()] and result['rejected'] == 1
+
+
+def test_semantically_unchanged_snapshot_ack_binds_input(lake, private_root):
+    doc = snapshot(lake)
+    target = private_root/'bars'/'AMD.json'
+    target.write_text(json.dumps(doc, sort_keys=True, indent=2))
+    old = target.read_bytes()
+    ack = bridge_module.exchange(private_root, {'operation':'publish','snapshot':doc})
+    expected = (json.dumps(doc, separators=(',',':'))+'\n').encode()
+    assert ack['status'] == 'unchanged' and ack['sha256'] == hashlib.sha256(expected).hexdigest()
+    assert ack['stored_sha256'] == hashlib.sha256(old).hexdigest()
+    assert target.read_bytes() == old
+
+
+def test_newer_retained_is_not_counted_as_delivery(tmp_path, lake):
+    cfg = setup_run(tmp_path, lake)
+    def bridge(req):
+        return {'interests':[interest()]} if req['operation']=='read' else {
+            'symbol':'AMD','status':'newer_retained','sha256':'a'*64}
+    result = run_test(cfg,lake,bridge)
+    assert result['newer_retained'] == 1 and result['requests'] == 1 and result['delivered'] == 0
+
+
+def test_invalid_symbol_data_is_metered_and_held_after_raw_storage(tmp_path, lake, private_root):
+    cfg = setup_run(tmp_path,lake)
+    bad = [{'date':'2026-10-20T02:00:00Z','open':10,'high':9,'low':8,'close':11,'volume':13}]
+    raw = json.dumps(bad).encode()
+    calls=[]
+    def capture(symbol,*args):
+        calls.append(symbol)
+        if symbol=='AMD':
+            return live.capture_snapshot(symbol,'2026-10-20',lake,'fixture',
+                fetch=lambda *a,**k:(raw,'application/json'),check_mount=False)
+        return snapshot(lake,symbol=symbol),100
+    def bridge(req):
+        return {'interests':[interest(),interest('NVDA')]} if req['operation']=='read' else bridge_module.exchange(private_root,req)
+    result=run_test(cfg,lake,bridge,capture=capture)
+    assert calls == ['AMD','NVDA','NVDA'] and result['raw_bytes'] == len(raw)+200
+    assert result['held']==['AMD'] and result['delivered']==2
+    invalid=list((lake.root/'run-receipts'/'boats-live-history-2026-10-20').glob('*-invalid.json'))
+    assert len(invalid)==1 and json.loads(invalid[0].read_text())['retry_authorized'] is False
+    assert len(list((lake.root/'receipts'/'boats-bars').rglob('*.json')))==2
+
+
+def test_immutable_receipt_never_replaces_and_failed_publish_leaves_no_final(tmp_path,monkeypatch):
+    path=tmp_path/'receipt.json'
+    live.write_once(path,{'first':1})
+    with pytest.raises(FileExistsError):live.write_once(path,{'second':2})
+    assert json.loads(path.read_text())=={'first':1}
+    monkeypatch.setattr(live.os,'link',lambda *a,**k:(_ for _ in ()).throw(OSError('fixture link failure')))
+    with pytest.raises(OSError):live.write_once(tmp_path/'new.json',{'x':1})
+    assert not (tmp_path/'new.json').exists()
+
+
+@pytest.mark.parametrize('failure',['timeout','nonzero','oversized','malformed','unversioned','signal'])
+def test_ssh_bridge_publication_failure_is_unknown_without_retry(tmp_path,monkeypatch,failure):
+    calls=[]
+    def execute(*a,**k):
+        calls.append(a)
+        if failure=='timeout':raise live.subprocess.TimeoutExpired(a[0],45)
+        if failure=='signal':raise live.RefreshStopped('signal 15')
+        from types import SimpleNamespace
+        raw={'oversized':b'x'*(256*1024+1),'malformed':b'{','unversioned':b'{}'}.get(failure,b'{}')
+        return SimpleNamespace(returncode=1 if failure=='nonzero' else 0,stdout=raw)
+    monkeypatch.setattr(live.subprocess,'run',execute)
+    bridge=live.SSHBridge('root@example.test',tmp_path/'key','/private/bridge.py','/private/live')
+    with pytest.raises(live.DeliveryUnknown):bridge({'operation':'publish','snapshot':{}})
+    assert len(calls)==1
+    with pytest.raises(live.RefreshStopped):bridge({'operation':'read'})
+    assert len(calls)==2
+
+
+def test_bad_ack_is_saved_before_unknown_result(tmp_path,lake):
+    cfg=setup_run(tmp_path,lake)
+    def bridge(req):return {'interests':[interest()]} if req['operation']=='read' else {'status':'bad'}
+    with pytest.raises(live.DeliveryUnknown):run_test(cfg,lake,bridge)
+    files=list((lake.root/'run-receipts'/'boats-live-history-2026-10-20').glob('*-delivery.json'))
+    assert len(files)==1 and json.loads(files[0].read_text())=={'status':'bad'}
+
+
+@pytest.mark.parametrize("change", [
+    lambda d: d["history"]["bars"][0].__setitem__(2, 1),
+    lambda d: d["history"]["bars"][0].__setitem__(5, -1),
+    lambda d: d["history"]["bars"][0].__setitem__(0, 1792461601),
+    lambda d: d["history"]["bar_receipt_ids"][0].__setitem__(0, "a"*64),
+    lambda d: d["history"].__setitem__("complete", True),
+    lambda d: d["history"]["receipts"][0].__setitem__("request_path", "/boats/AMD/prices?resampleFreq=1min"),
+])
+def test_bridge_validates_full_snapshot_before_mutation(lake, private_root, change):
+    doc = snapshot(lake)
+    change(doc)
+    with pytest.raises(ValueError):
+        bridge_module.exchange(private_root, {"operation":"publish", "snapshot":doc})
+    assert not (private_root/"bars"/"AMD.json").exists()

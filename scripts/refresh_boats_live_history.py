@@ -23,6 +23,7 @@ import signal
 import subprocess
 import sys
 import time
+import tempfile
 from typing import Callable
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -34,9 +35,9 @@ from collectors.tiingo_archive import (
 from scripts.build_ext_quotes import boats_session_date
 from scripts.boats_history_bridge import (
     INTEREST_SCHEMA, MAX_INTERESTS, MAX_SNAPSHOT, SNAPSHOT_SCHEMA, SYMBOL,
-    read_regular, stamp, validate_interest, validate_snapshot,
+    read_regular, stamp, validate_interest, validate_snapshot, private_directory, PROTOCOL,
 )
-from scripts.tiingo_chart_history import build_chart_history
+from scripts.tiingo_chart_history import build_chart_history, TiingoViewRefusal
 from scripts.tiingo_materialize import materialize_one
 
 RESERVE = 40 * 1024**3
@@ -54,28 +55,39 @@ class RefreshStopped(RuntimeError):
     pass
 
 
+class SymbolDataInvalid(RefreshStopped):
+    """Recognized vendor-data failure after immutable raw storage; no retry."""
+    def __init__(self, reason: str, raw_bytes: int, receipt_id: str):
+        super().__init__(reason)
+        self.raw_bytes, self.receipt_id = raw_bytes, receipt_id
+
+
 class DeliveryUnknown(RefreshStopped):
     """The exact SSH write could have happened; no replay or replacement."""
 
 
 def write_once(path: Path, document: dict) -> None:
     raw = (json.dumps(document, separators=(",", ":"), allow_nan=False) + "\n").encode()
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
-    with os.fdopen(fd, "wb") as fp:
-        fp.write(raw)
-        fp.flush()
-        os.fsync(fp.fileno())
-    fd = os.open(path.parent, os.O_RDONLY)
+    fd, temporary = tempfile.mkstemp(prefix=".receipt-", dir=path.parent)
     try:
-        os.fsync(fd)
+        with os.fdopen(fd, "wb") as fp:
+            fp.write(raw)
+            fp.flush()
+            os.fsync(fp.fileno())
+        os.link(temporary, path, follow_symlinks=False)  # atomic and never overwrites
+        directory = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     finally:
-        os.close(fd)
+        os.unlink(temporary)
 
 
-def symbols_from(path: Path) -> set[str]:
+def symbols_from(path: Path, *, allow_empty: bool = False) -> set[str]:
     raw = read_regular(path, 1_000_000).decode("utf8")
     symbols = {line.strip() for line in raw.splitlines() if line.strip() and not line.lstrip().startswith("#")}
-    if not 1 <= len(symbols) <= 20_000 or any(not SYMBOL.fullmatch(s) for s in symbols):
+    if not (0 if allow_empty else 1) <= len(symbols) <= 20_000 or any(not SYMBOL.fullmatch(s) for s in symbols):
         raise ValueError("invalid bounded coverage/hold file")
     return symbols
 
@@ -116,10 +128,10 @@ class SSHBridge:
             if result.returncode or len(result.stdout) > 256 * 1024:
                 raise RefreshStopped("private SSH bridge did not return a bounded successful result")
             parsed = json.loads(result.stdout)
-            if not isinstance(parsed, dict):
+            if not isinstance(parsed, dict) or parsed.get("protocol") != PROTOCOL:
                 raise RefreshStopped("private bridge returned a malformed result")
             return parsed
-        except (OSError, ValueError, subprocess.TimeoutExpired, RefreshStopped) as exc:
+        except (OSError, ValueError, subprocess.TimeoutExpired, RefreshStopped, KeyboardInterrupt) as exc:
             if write:
                 raise DeliveryUnknown("private snapshot write requires same-carrier reconciliation") from exc
             raise RefreshStopped("private interest read failed; no alternate carrier") from exc
@@ -155,16 +167,24 @@ def capture_snapshot(symbol: str, session: str, archive: Archive, key: str,
                    "request_path": route}], "bars": [], "bar_receipt_ids": []}
     else:
         ref = (day, saved["receipt_id"])
-        history = build_chart_history(symbol, [ref], root=archive.root,
-                                      check_mount=check_mount,
-                                      receipt_paths={ref: receipt_path})
+        try:
+            history = build_chart_history(symbol, [ref], root=archive.root,
+                                          check_mount=check_mount,
+                                          receipt_paths={ref: receipt_path})
+        except TiingoViewRefusal as exc:
+            if str(exc) not in {"missing or non-finite vendor OHLCV", "invalid vendor OHLCV range",
+                    "bar lacks source timezone", "bar is not a bounded UTC minute boundary",
+                    "BOATS bar outside overnight wall-clock window", "inconsistent vendor OHLC",
+                    "duplicate timestamp within source partition"}:
+                raise  # custody, raw lineage and storage refusals remain terminal
+            raise SymbolDataInvalid(str(exc), len(raw), saved["receipt_id"]) from exc
     observed = stamp(saved["observed_at_utc"])
     if boats_session_date(observed) != session:
         raise TiingoArchiveError("capture completed outside its active overnight session")
     for bar in history["bars"]:
         instant = datetime.fromtimestamp(bar[0], timezone.utc)
         if boats_session_date(instant) != session or instant > observed:
-            raise TiingoArchiveError("provider bar lies outside the captured session or in the future")
+            raise SymbolDataInvalid("provider bar lies outside the captured session or in the future", len(raw), saved["receipt_id"])
     snapshot = {"schema": SNAPSHOT_SCHEMA, "session_date": session,
                 "captured_at_utc": saved["observed_at_utc"], "history": history}
     validate_snapshot(snapshot)
@@ -177,7 +197,7 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
         monotonic: Callable = time.monotonic, sleep: Callable = time.sleep,
         archive_factory: Callable = lambda root: Archive(root, free_floor=RESERVE),
         key_reader: Callable = read_key, capture: Callable = capture_snapshot) -> dict:
-    covered, excluded = symbols_from(config.symbols), symbols_from(config.held)
+    covered, excluded = symbols_from(config.symbols), symbols_from(config.held, allow_empty=True)
     started, started_mono = now(), monotonic()
     session = boats_session_date(started)
     result = {"schema": SCHEMA, "session_date": session, "mode": "capture" if config.capture else "plan",
@@ -197,17 +217,39 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
     lock = os.open(area / "boats-live-history.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        private_directory(area)
         start_path = area / f"boats-live-history-start-{session}.json"
-        write_once(start_path, result)
-        run_area = area / f"boats-live-history-{session}"
-        run_area.mkdir(mode=0o700)
+        if start_path.exists():
+            raise FileExistsError("session already started; reconcile original operation")
         holds = area / "boats-live-history-held"
         holds.mkdir(mode=0o700, exist_ok=True)
         if holds.is_symlink() or not holds.resolve().is_relative_to(area):
             raise RefreshStopped("hold area escapes run receipts")
-        last, recent = {}, deque()
+        private_directory(holds)
+        with os.scandir(holds) as entries:
+            for index, entry in enumerate(entries):
+                if index >= 20000:
+                    raise RefreshStopped("persistent hold bound exceeded")
+                symbol = entry.name.removesuffix(".json")
+                if entry.name != symbol+".json" or not SYMBOL.fullmatch(symbol):
+                    raise RefreshStopped("invalid persistent hold identity")
+                held = json.loads(read_regular(Path(entry.path), 4096))
+                if not isinstance(held, dict) or held.get("symbol") != symbol or held.get("http_status") != 404:
+                    raise RefreshStopped("invalid persistent hold receipt")
+                excluded.add(symbol)
+        result["eligible_symbols"] = len(covered - excluded)
+        key = key_reader()
+        initial = bridge({"operation":"read"}) if config.max_bytes >= MAX_RESPONSE else None
+        if initial is not None and (not isinstance(initial, dict) or not isinstance(initial.get("interests"), list)
+                                    or len(initial["interests"]) > MAX_INTERESTS):
+            raise RefreshStopped("invalid preflight interest response")
+        write_once(start_path, result)
+        run_area = area / f"boats-live-history-{session}"
+        run_area.mkdir(mode=0o700)
+        last, recent, retained = {}, deque(), set()
+        result["newer_retained"] = 0
+        failure = None
         try:
-            key = key_reader()
             while True:
                 tick, wall = monotonic(), now()
                 elapsed = tick - started_mono
@@ -222,18 +264,20 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
                 if result["requests"] >= config.max_requests or result["raw_bytes"] + MAX_RESPONSE > config.max_bytes:
                     result["reason"] = "capture_budget"
                     break
-                response = bridge({"operation": "read"})
+                response = initial if initial is not None else bridge({"operation": "read"})
+                initial = None
                 rows = response.get("interests")
                 if not isinstance(rows, list) or len(rows) > MAX_INTERESTS:
                     raise RefreshStopped("invalid interest response")
                 eligible = set()
+                admitted = covered - excluded - retained
                 for row in rows:
                     if not isinstance(row, dict):
                         raise RefreshStopped("malformed interest row")
                     symbol = row.get("symbol", "")
                     validate_interest(row, symbol)
                     age = (wall - stamp(row["requested_at_utc"])).total_seconds()
-                    if (symbol in covered - excluded and row["session_date"] == session and 0 <= age <= 120
+                    if (symbol in admitted and row["session_date"] == session and 0 <= age <= 120
                             and tick - last.get(symbol, -float("inf")) >= INTERVAL
                             and not (holds / f"{symbol}.json").exists()):
                         eligible.add(symbol)
@@ -254,6 +298,16 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
                     write_once(run_area / f"{seq:05d}-{symbol}-attempt.json", {"symbol": symbol, "at": now().isoformat()})
                     try:
                         snapshot, size = capture(symbol, session, archive, key)
+                    except SymbolDataInvalid as exc:
+                        if type(exc.raw_bytes) is not int or not 0 <= exc.raw_bytes <= MAX_RESPONSE:
+                            raise RefreshStopped("invalid failed-capture byte count") from exc
+                        result["raw_bytes"] += exc.raw_bytes
+                        retained.add(symbol)
+                        result["held"].append(symbol)
+                        write_once(run_area / f"{seq:05d}-{symbol}-invalid.json",
+                            {"symbol":symbol, "reason":str(exc), "raw_bytes":exc.raw_bytes,
+                             "receipt_id":exc.receipt_id, "retry_authorized":False})
+                        continue
                     except TiingoArchiveError as exc:
                         if str(exc) == "Tiingo HTTP 404; source not admitted":
                             excluded.add(symbol)
@@ -268,22 +322,33 @@ def run(config: Config, bridge: Callable, *, now: Callable = lambda: datetime.no
                     require_space(archive.root, floor=archive.free_floor)
                     write_once(run_area / f"{seq:05d}-{symbol}-snapshot.json", snapshot)
                     delivered = bridge({"operation": "publish", "snapshot": snapshot})
+                    write_once(run_area / f"{seq:05d}-{symbol}-delivery.json", delivered)
                     expected_sha = hashlib.sha256((json.dumps(snapshot, separators=(",", ":"), allow_nan=False) + "\n").encode()).hexdigest()
                     if (delivered.get("symbol") != symbol or delivered.get("status") not in {"published", "unchanged", "newer_retained"}
                             or not isinstance(delivered.get("sha256"), str) or len(delivered["sha256"]) != 64
                             or any(c not in "0123456789abcdef" for c in delivered["sha256"])
                             or (delivered["status"] != "newer_retained" and delivered["sha256"] != expected_sha)):
                         raise DeliveryUnknown("snapshot write returned no qualified acknowledgment")
-                    write_once(run_area / f"{seq:05d}-{symbol}-delivery.json", delivered)
-                    result["delivered"] += 1
+                    if delivered["status"] == "newer_retained":
+                        result["newer_retained"] += 1
+                        retained.add(symbol)
+                    else:
+                        result["delivered"] += 1
                 sleep(max(0.1, min(INTERVAL - (monotonic() - tick), config.max_seconds - (monotonic() - started_mono))))
         except BaseException as exc:
+            failure = exc
             result["reason"] = "effect_unknown" if isinstance(exc, DeliveryUnknown) else "stopped"
             result["error_type"] = type(exc).__name__
+            result["cause_type"] = type(exc.__cause__).__name__ if exc.__cause__ is not None else None
             raise
         finally:
             result["finished_at_utc"] = now().isoformat()
-            write_once(area / f"boats-live-history-final-{session}.json", result)
+            try:
+                write_once(area / f"boats-live-history-final-{session}.json", result)
+            except Exception as final_error:
+                if failure is None:
+                    raise
+                failure.add_note("Final receipt could not be saved: " + type(final_error).__name__)
         return result
     finally:
         os.close(lock)
@@ -313,7 +378,7 @@ def main(argv=None) -> int:
     try:
         result = run(cfg, bridge)
         print(json.dumps(result, separators=(",", ":")))
-        return 0 if result["reason"] in {"plan", "window_closed"} else 5
+        return 0 if result["reason"] in {"plan", "window_closed", "seconds_budget", "capture_budget"} else 5
     finally:
         for sig, handler in previous.items():
             signal.signal(sig, handler)
