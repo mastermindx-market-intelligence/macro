@@ -205,7 +205,12 @@
           "field_rate",
           "band",
           "failed_fields",
-          "withheld_fields"
+          "withheld_fields",
+          "na_not_presented",
+          "na_class",
+          "present_qualified",
+          "present_composed",
+          "complete_strict"
         ],
         "properties": {
           "cik": {
@@ -246,6 +251,25 @@
               "type": "string",
               "minLength": 1
             }
+          },
+          "na_not_presented": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "na_class": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "present_qualified": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "present_composed": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "complete_strict": {
+            "type": "boolean"
           }
         }
       }
@@ -401,7 +425,13 @@
         "stale",
         "failed_extraction",
         "incomparable",
-        "rate"
+        "rate",
+        "present_strict",
+        "present_qualified",
+        "present_composed",
+        "na_kernel",
+        "na_not_presented",
+        "na_class"
       ],
       "properties": {
         "present": {
@@ -436,6 +466,30 @@
           "type": ["number", "null"],
           "minimum": 0,
           "maximum": 1
+        },
+        "present_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "present_qualified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "present_composed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_kernel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_not_presented": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "na_class": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },
@@ -529,7 +583,10 @@
         "shortfall",
         "fields",
         "bands",
-        "failing_reasons"
+        "failing_reasons",
+        "complete_strict",
+        "qualifier_policies",
+        "derivation_policies"
       ],
       "properties": {
         "target": {
@@ -559,6 +616,16 @@
         },
         "failing_reasons": {
           "$ref": "#/$defs/count_map"
+        },
+        "complete_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qualifier_policies": {
+          "$ref": "#/$defs/count_map"
+        },
+        "derivation_policies": {
+          "$ref": "#/$defs/count_map"
         }
       }
     },
@@ -574,6 +641,10 @@
         "fields",
         "bands",
         "failing_reasons",
+        "complete_strict",
+        "qualifier_policies",
+        "derivation_policies",
+        "component_labelled",
         "components"
       ],
       "properties": {
@@ -604,6 +675,20 @@
         },
         "failing_reasons": {
           "$ref": "#/$defs/count_map"
+        },
+        "complete_strict": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qualifier_policies": {
+          "$ref": "#/$defs/count_map"
+        },
+        "derivation_policies": {
+          "$ref": "#/$defs/count_map"
+        },
+        "component_labelled": {
+          "type": "integer",
+          "minimum": 0
         },
         "components": {
           "type": "object",

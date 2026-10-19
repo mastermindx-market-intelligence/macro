@@ -1007,6 +1007,8 @@ PRINT_PREFIXES = (
     "core fields:    ",
     "deep bands:     ",
     "core bands:     ",
+    "deep labels:    ",
+    "core labels:    ",
     "incomplete:     ",
     "exclusions:     ",
     "acceptance:     ",
@@ -1059,8 +1061,8 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert lines[0].startswith("C2 coverage  cutoff=2026-10-18T00:00:00Z")
     assert lines[1].startswith("deep issuers:   250 / 250")
     assert lines[2].startswith("core issuers:   1000 / 1000")
-    assert lines[8] == "exclusions:     none"
-    assert lines[9] == (
+    assert lines[10] == "exclusions:     none"
+    assert lines[11] == (
         "acceptance:     eligible=false  "
         "blockers=census_identity_mismatch,freeze_ref_missing,"
         "manifest_draft,manifest_unattested"
@@ -1121,7 +1123,7 @@ def test_render_print_block_shape() -> None:
     report = run_proof(build_manifest(members, draft=False, attested=True))
     block = render_print(report)
     lines = block.splitlines()
-    assert len(lines) == 10
+    assert len(lines) == 12
     assert lines[0] == (
         "C2 coverage  cutoff=2026-10-18T00:00:00Z  "
         "source_generation=census-test  "
@@ -1131,7 +1133,23 @@ def test_render_print_block_shape() -> None:
     assert lines[2] == "core issuers:   3 / 3     (members=3)"
     assert lines[3] == "deep fields:    48 / 48   (deep members x A1,A2,I1,I2; N/A excluded; withheld=0)"
     assert lines[4] == "core fields:    36 / 36   (core members x A1,I1; N/A excluded; withheld=0)"
-    assert lines[9] == "acceptance:     eligible=true  blockers=none"
+    assert lines[5] == (
+        "deep bands:     complete=2 complete_strict=2 high=0 partial=0 low=0 "
+        "no_applicable_fields=0"
+    )
+    assert lines[6] == (
+        "core bands:     complete=3 complete_strict=3 high=0 partial=0 low=0 "
+        "no_applicable_fields=0"
+    )
+    assert lines[7] == (
+        "deep labels:    present_strict=48 present_qualified=0 present_composed=0 "
+        "na_kernel=0 na_not_presented=0 na_class=0"
+    )
+    assert lines[8] == (
+        "core labels:    present_strict=36 present_qualified=0 present_composed=0 "
+        "na_kernel=0 na_not_presented=0 na_class=0"
+    )
+    assert lines[11] == "acceptance:     eligible=true  blockers=none"
 
 
 def test_cli_threads_alias_roles_into_load_manifest(tmp_path: Path) -> None:
@@ -2076,3 +2094,332 @@ def test_coverage_proof_source_is_pure_and_literal_free() -> None:
     assert re.search(r"[0-9]{10}", source) is None
     for ticker in ("AAPL", "MSFT", "NVDA", "AIR", "ABT"):
         assert ticker not in source
+
+
+# ---------------------------------------------------------------------------
+# 20. Seat ruling BLOCKER-1 (2026-10-19): na_basis / qualifier / derivation
+#     labels and the complete_strict band
+# ---------------------------------------------------------------------------
+
+# A wider synthetic direct-metric set so one core-only issuer's core scope
+# holds 24 cells: (10 direct + 2 formula) x A1, I1.
+WIDE_DIRECT_IDS = tuple(f"wide{number:02d}" for number in range(1, 11))
+WIDE_METRICS = tuple(sorted(WIDE_DIRECT_IDS + FORMULA_IDS))
+WIDE_LABEL_KEYS = ("na_basis", "qualifier", "qualifier_policy", "derivation", "derivation_policy")
+QUALIFIER_POLICY = "fif.coverage_writer.cover_date_as_of/1.0.0"
+DERIVATION_POLICY = "fif.coverage_writer.subtotal_composition/1.0.0"
+
+
+def qualified(**extra) -> dict:
+    return {"qualifier": "cover_date_as_of", "qualifier_policy": QUALIFIER_POLICY, **extra}
+
+
+def composed(**extra) -> dict:
+    return {"derivation": "subtotal_composition", "derivation_policy": DERIVATION_POLICY, **extra}
+
+
+def wide_manifest(
+    statuses: dict[tuple[str, str], str], labels: dict[tuple[str, str], dict]
+) -> tuple[dict, str]:
+    """One core-only issuer over WIDE_METRICS; ``(period, metric_id)`` keys."""
+    cik = format(1, "010d")
+    member = issuer(cik, f"Z{1:04d}", "core")
+    cells = [
+        cell(
+            cik,
+            period,
+            f"metric:{metric_id}",
+            statuses.get((period, metric_id), "present"),
+            **labels.get((period, metric_id), {}),
+        )
+        for period in CORE_PERIODS
+        for metric_id in WIDE_METRICS
+    ]
+    member["present_cells"] = sum(1 for item in cells if item["status"] == "present")
+    member["na_cells"] = sum(1 for item in cells if item["status"] == "not_applicable")
+    member["core_pass"] = all(item["status"] in ("present", "not_applicable") for item in cells)
+    manifest = {
+        "schema": MANIFEST_SCHEMA,
+        "draft": True,
+        "attested": False,
+        "basis": "census_precheck_companyfacts",
+        "cutoff_at": "2026-10-18T00:00:00Z",
+        "source_generation_id": "census-test",
+        "recorded_at": "2026-10-18T20:50:47Z",
+        "cells": cells,
+        "issuers": [member],
+    }
+    return manifest, cik
+
+
+def run_wide(manifest: dict) -> dict:
+    return prove_coverage(
+        manifest_bytes(manifest),
+        small_thresholds_for(manifest),
+        WIDE_DIRECT_IDS,
+        FORMULA_IDS,
+        proved_at=PROVED_AT,
+    )
+
+
+def strip_labels(manifest: dict) -> dict:
+    stripped = copy.deepcopy(manifest)
+    for item in stripped["cells"]:
+        for key in WIDE_LABEL_KEYS:
+            item.pop(key, None)
+    return stripped
+
+
+def cell_key(item: dict) -> tuple[str, str, str]:
+    return item["cik"], item["period_id"], item["field_id"]
+
+
+def ruling_case_manifest(*, labelled: bool = True) -> tuple[dict, str]:
+    """7 not_applicable + 8 present-qualified cells over the wide core scope."""
+    direct_keys = [(period, metric_id) for period in CORE_PERIODS for metric_id in WIDE_DIRECT_IDS]
+    na_keys, qualified_keys = direct_keys[:7], direct_keys[7:15]
+    statuses = {key: "not_applicable" for key in na_keys}
+    labels: dict[tuple[str, str], dict] = {}
+    if labelled:
+        labels.update({key: {"na_basis": "not_presented_item"} for key in na_keys})
+        labels.update({key: qualified() for key in qualified_keys})
+    return wide_manifest(statuses, labels)
+
+
+def composed_case_manifest() -> tuple[dict, str]:
+    """One composed cell and one cell carrying both present labels."""
+    first, second = (CORE_PERIODS[0], WIDE_DIRECT_IDS[0]), (CORE_PERIODS[1], WIDE_DIRECT_IDS[1])
+    return wide_manifest({}, {first: composed(), second: {**qualified(), **composed()}})
+
+
+def deep_component_case_manifest() -> tuple[dict, list[dict]]:
+    """Deep member one: a qualified component; deep member two: a not-presented N/A pack."""
+    members = standard_members()
+    first_deep, second_deep = members[0]["cik"], members[1]["cik"]
+    pack_key = (second_deep, "*", f"specialist:{PACKS[0]}")
+    manifest = build_manifest(members, statuses={pack_key: "not_applicable"})
+    statement_key = (first_deep, "A1", f"statement:{STATEMENTS[0]}")
+    for item in manifest["cells"]:
+        if cell_key(item) == statement_key:
+            item.update(qualified())
+        if cell_key(item) == pack_key:
+            item["na_basis"] = "not_presented_item"
+    return manifest, members
+
+
+def test_blocker1_ruling_case_is_complete_but_not_strict() -> None:
+    manifest, cik = ruling_case_manifest()
+    report = run_wide(manifest)
+    core = report["tiers"]["core"]
+    entry = entry_for(report, cik)
+    assert entry["band"] == "complete"
+    assert core["bands"]["complete"] == 1
+    assert core["complete_strict"] == 0
+    assert entry["complete_strict"] is False
+    assert entry["na_not_presented"] == 7
+    assert entry["present_qualified"] == 8
+    assert entry["na_class"] == 0
+    assert entry["present_composed"] == 0
+    assert core["fields"]["na_not_presented"] == 7
+    assert core["fields"]["present_qualified"] == 8
+    assert core["fields"]["present_strict"] == 9
+    assert core["fields"]["present"] == 17
+    assert core["fields"]["applicable"] == 17
+    assert core["qualifier_policies"] == {QUALIFIER_POLICY: 8}
+    assert core["derivation_policies"] == {}
+
+    # Labels are reporting only: the same manifest stripped of them passes,
+    # bands and counts exactly as before.
+    stripped = run_wide(strip_labels(manifest))
+    assert entry["core_pass"] is True
+    assert entry["core_pass"] == entry_for(stripped, cik)["core_pass"]
+    assert core["pass"] == stripped["tiers"]["core"]["pass"]
+    assert core["bands"] == stripped["tiers"]["core"]["bands"]
+    for key in ("present", "applicable", "not_applicable", "withheld", "rate"):
+        assert core["fields"][key] == stripped["tiers"]["core"]["fields"][key]
+    assert report["acceptance_blockers"] == stripped["acceptance_blockers"]
+
+    block = render_print(report)
+    assert "complete=1 complete_strict=0" in block
+    assert (
+        "core labels:    present_strict=9 present_qualified=8 present_composed=0 "
+        "na_kernel=0 na_not_presented=7 na_class=0"
+    ) in block.splitlines()
+
+
+def test_blocker1_kernel_na_and_unqualified_cells_are_strict() -> None:
+    manifest, cik = ruling_case_manifest(labelled=False)
+    report = run_wide(manifest)
+    core = report["tiers"]["core"]
+    entry = entry_for(report, cik)
+    assert core["bands"]["complete"] == 1
+    assert core["complete_strict"] == 1
+    assert entry["complete_strict"] is True
+    assert core["fields"]["na_kernel"] == 7
+    assert core["fields"]["na_not_presented"] == 0
+    assert core["fields"]["present_strict"] == 17
+    # An explicit "kernel" basis and a JSON null both read as the kernel's own.
+    for basis in ("kernel", None):
+        relabelled = copy.deepcopy(manifest)
+        for item in relabelled["cells"]:
+            if item["status"] == "not_applicable":
+                item["na_basis"] = basis
+        again = run_wide(relabelled)
+        assert again["tiers"]["core"]["complete_strict"] == 1
+        assert again["tiers"]["core"]["fields"]["na_kernel"] == 7
+
+
+def test_blocker1_composed_and_double_labelled_cells() -> None:
+    first = (CORE_PERIODS[0], WIDE_DIRECT_IDS[0])
+    only_composed, cik = wide_manifest({}, {first: composed()})
+    report = run_wide(only_composed)
+    core = report["tiers"]["core"]
+    assert core["fields"]["present_composed"] == 1
+    assert core["bands"]["complete"] == 1
+    assert core["complete_strict"] == 0
+    assert entry_for(report, cik)["present_composed"] == 1
+    assert core["derivation_policies"] == {DERIVATION_POLICY: 1}
+
+    both, cik = composed_case_manifest()
+    report = run_wide(both)
+    fields = report["tiers"]["core"]["fields"]
+    assert fields["present"] == 24
+    assert fields["present_composed"] == 2
+    assert fields["present_qualified"] == 1
+    assert fields["present_strict"] == 22
+    assert report["tiers"]["core"]["complete_strict"] == 0
+    assert report["tiers"]["core"]["qualifier_policies"] == {QUALIFIER_POLICY: 1}
+    assert report["tiers"]["core"]["derivation_policies"] == {DERIVATION_POLICY: 2}
+
+
+def test_blocker1_label_refusals_carry_their_codes() -> None:
+    core_cik = standard_members()[2]["cik"]
+    na_key = (core_cik, "I1", "metric:beta")
+    present_key = (core_cik, "A1", "metric:alpha")
+
+    def labelled(key: tuple[str, str, str], **labels) -> dict:
+        manifest = build_manifest(standard_members(), statuses={na_key: "not_applicable"})
+        for item in manifest["cells"]:
+            if cell_key(item) == key:
+                item.update(labels)
+        return manifest
+
+    cases = [
+        (present_key, {"na_basis": "kernel"}, "na_basis_on_applicable_cell"),
+        (na_key, {"na_basis": "inferred"}, "na_basis_vocabulary"),
+        (na_key, {"na_basis": ["kernel"]}, "na_basis_vocabulary"),
+        (na_key, qualified(), "label_on_non_present_cell"),
+        (na_key, composed(), "label_on_non_present_cell"),
+        (present_key, {"qualifier": "", "qualifier_policy": QUALIFIER_POLICY}, "qualifier_shape"),
+        (present_key, {"qualifier": "cover_date_as_of"}, "qualifier_policy_missing"),
+        (
+            present_key,
+            {"qualifier": "cover_date_as_of", "qualifier_policy": "unversioned"},
+            "qualifier_policy_missing",
+        ),
+        (present_key, {"qualifier_policy": QUALIFIER_POLICY}, "qualifier_policy_without_qualifier"),
+        (present_key, {"derivation": 7, "derivation_policy": DERIVATION_POLICY}, "derivation_shape"),
+        (present_key, {"derivation": "subtotal_composition"}, "derivation_policy_missing"),
+        (
+            present_key,
+            {"derivation_policy": DERIVATION_POLICY},
+            "derivation_policy_without_derivation",
+        ),
+    ]
+    codes = set()
+    for key, labels, code in cases:
+        refuse(labelled(key, **labels), code)
+        codes.add(code)
+    assert len(codes) == 9
+
+    # JSON null is an absent label on any status; unknown extra keys stay unread.
+    nulls = {key: None for key in WIDE_LABEL_KEYS}
+    clean = labelled(present_key, as_of="2026-01-31", **nulls)
+    for item in clean["cells"]:
+        if cell_key(item) == na_key:
+            item.update(nulls)
+    report = run_proof(clean)
+    assert report["tiers"]["core"]["complete_strict"] == report["tiers"]["core"]["bands"]["complete"]
+
+
+def test_blocker1_deep_component_labels_break_deep_strictness_only() -> None:
+    manifest, members = deep_component_case_manifest()
+    report = run_proof(manifest)
+    unlabelled = run_proof(strip_labels(manifest))
+    deep = report["tiers"]["deep"]
+    assert deep["component_labelled"] == 2
+    assert deep["bands"]["complete"] == 2
+    assert deep["complete_strict"] == 0
+    assert deep["pass"] == unlabelled["tiers"]["deep"]["pass"] == 2
+    assert unlabelled["tiers"]["deep"]["complete_strict"] == 2
+    assert unlabelled["tiers"]["deep"]["component_labelled"] == 0
+    for member in members[:2]:
+        entry = entry_for(report, member["cik"])
+        assert entry["deep_pass"] is True
+        assert entry["complete_strict"] is False
+    # Component labels sit outside every metric scope: core strictness and
+    # the metric label counts are untouched.
+    assert report["tiers"]["core"]["complete_strict"] == 3
+    assert deep["fields"]["present_qualified"] == 0
+    assert deep["fields"]["na_not_presented"] == 0
+
+
+def _assert_label_invariants(report: dict) -> None:
+    for tier in ("core", "deep"):
+        block = report["tiers"][tier]
+        fields = block["fields"]
+        assert fields["present_strict"] <= fields["present"]
+        assert fields["na_kernel"] + fields["na_not_presented"] + fields["na_class"] == (
+            fields["not_applicable"]
+        )
+        assert block["complete_strict"] <= block["bands"]["complete"]
+        assert sum(block["qualifier_policies"].values()) == fields["present_qualified"]
+        assert sum(block["derivation_policies"].values()) == fields["present_composed"]
+
+
+def test_blocker1_invariants_on_the_mixed_fixture() -> None:
+    # The mixed fixture of the contract-conformance test, keyed by member.
+    members = standard_members()
+    first_deep, second_deep, core_only = (member["cik"] for member in members)
+    statuses = {
+        (first_deep, "A1", "metric:alpha"): "slot_absent",
+        (core_only, "I1", "metric:beta"): "not_applicable",
+        (core_only, "A1", "metric:phi"): "absent",
+    }
+    manifest = build_manifest(members, statuses=statuses)
+    report = run_proof(manifest)
+    _assert_label_invariants(report)
+    for tier in ("core", "deep"):
+        fields = report["tiers"][tier]["fields"]
+        # No labels: every present cell is strict, every N/A the kernel's own.
+        assert fields["present_strict"] == fields["present"]
+        assert fields["na_kernel"] == fields["not_applicable"]
+
+    labelled = copy.deepcopy(manifest)
+    for item in labelled["cells"]:
+        if cell_key(item) == (core_only, "I1", "metric:beta"):
+            item["na_basis"] = "class_policy"
+        if cell_key(item) == (second_deep, "I2", "metric:gamma"):
+            item.update(qualified())
+    report = run_proof(labelled)
+    _assert_label_invariants(report)
+    core_fields = report["tiers"]["core"]["fields"]
+    deep_fields = report["tiers"]["deep"]["fields"]
+    assert core_fields["na_class"] == 1
+    assert deep_fields["present_qualified"] == 1
+    # I2 sits outside the core periods: the core scope never sees that cell.
+    assert core_fields["present_qualified"] == 0
+    for tier in ("core", "deep"):
+        fields = report["tiers"][tier]["fields"]
+        assert (
+            fields["present_strict"] + fields["present_qualified"] + fields["present_composed"]
+            == fields["present"]
+        )
+
+
+def test_blocker1_reports_conform_to_contract() -> None:
+    jsonschema = pytest.importorskip("jsonschema")
+    contract = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+    jsonschema.validate(run_wide(ruling_case_manifest()[0]), contract)
+    jsonschema.validate(run_wide(composed_case_manifest()[0]), contract)
+    jsonschema.validate(run_proof(deep_component_case_manifest()[0]), contract)

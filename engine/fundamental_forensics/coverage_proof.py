@@ -79,6 +79,28 @@ must carry the proof — and a manifest that declares its own
 ``manifest_draft_sha256_prefix`` must declare the thresholds' pin exactly, a
 difference being the ``manifest_draft_sha256_prefix_declared`` census
 identity mismatch.
+
+Seat ruling BLOCKER-1 (2026-10-19) makes the proof say how much of a
+``complete`` band rests on labelled cells.  Census writers stamp three cell
+labels, checked with the rest of the cell: ``na_basis`` on a
+``not_applicable`` cell (``kernel`` — the kernel's own N/A, and the reading
+of an absent basis — ``not_presented_item`` or ``class_policy``), and
+``qualifier`` or ``derivation`` on a ``present`` cell, each carried by a
+versioned ``qualifier_policy`` / ``derivation_policy`` (``<id>/<version>``).
+A label on the wrong status, an unknown basis, an empty label or a missing
+policy is refused with its own typed code; a JSON null is an absent label.
+Over each tier's metric scope the proof counts ``present_strict``,
+``present_qualified``, ``present_composed``, ``na_kernel``,
+``na_not_presented`` and ``na_class`` (a cell with both present labels
+counts in both labelled counts, never in strict), plus, for the deep tier,
+``component_labelled`` over the deep component cells.  An issuer is
+``complete_strict`` for a tier when its band is ``complete`` and it has no
+qualified, composed, not-presented or class-policy cell (and, for deep, no
+labelled component).  ``complete_strict`` is reported per tier and per
+issuer and printed beside ``complete``.  It is reporting only: a labelled
+present cell is present exactly as before, an N/A of any basis leaves the
+applicable denominator exactly as before, and pass, target, band, rate,
+failed fields and every acceptance blocker are unchanged.
 """
 from __future__ import annotations
 
@@ -122,6 +144,37 @@ REASON_ORPHAN_WINDOWLESS = "windowless_period_on_windowed_family"
 REASON_ORPHAN_DEEP_COMPONENT = "deep_component_not_deep_member"
 NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
 COMPLETE_BAND = "complete"
+
+# Seat ruling BLOCKER-1 (2026-10-19): the N/A bases a census writer may stamp
+# and the count each lands in.  An absent ``na_basis`` is the kernel's own
+# N/A (legacy manifests carry none).
+NA_BASIS_KERNEL = "kernel"
+NA_BASIS_NOT_PRESENTED = "not_presented_item"
+NA_BASIS_CLASS = "class_policy"
+_NA_BASIS_COUNT_KEYS: Mapping[str, str] = {
+    NA_BASIS_KERNEL: "na_kernel",
+    NA_BASIS_NOT_PRESENTED: "na_not_presented",
+    NA_BASIS_CLASS: "na_class",
+}
+# Present-cell labels and the versioned policy key each one requires.
+_PRESENT_LABELS = (("qualifier", "qualifier_policy"), ("derivation", "derivation_policy"))
+_LABEL_COUNT_KEYS = (
+    "present_strict",
+    "present_qualified",
+    "present_composed",
+    "na_kernel",
+    "na_not_presented",
+    "na_class",
+)
+# The labelled counts that keep an otherwise complete issuer out of
+# ``complete_strict``.
+_NON_STRICT_COUNT_KEYS = (
+    "present_qualified",
+    "present_composed",
+    "na_not_presented",
+    "na_class",
+)
+_POLICY_ID = re.compile(r"^\S+/\S+$")
 
 # The repository root a ``freeze_ref`` is declared against.  Deriving it from
 # this module's location keeps the check a pure tree lookup: no network, no
@@ -713,6 +766,7 @@ def _check_cell_shape(
                 f"{reason!r}; a present cell may carry no reason or "
                 f"'present'",
             )
+    _check_cell_labels(cell, status, position)
     source_generation_id = cell.get("source_generation_id")
     if not isinstance(source_generation_id, str) or not source_generation_id:
         raise shape(
@@ -720,6 +774,57 @@ def _check_cell_shape(
             "without it"
         )
     return cik, period_id, field_id, aliased
+
+
+def _check_cell_labels(cell: Mapping[str, Any], status: str, position: int) -> None:
+    """Check the seat-ruling BLOCKER-1 labels on one cell.
+
+    A key whose value is JSON null is an absent label.  ``na_basis`` belongs
+    only to a ``not_applicable`` cell; ``qualifier`` and ``derivation`` only
+    to a ``present`` cell, each with its versioned policy.  Every other extra
+    key stays accepted and unread.
+    """
+    na_basis = cell.get("na_basis")
+    if na_basis is not None:
+        if status != "not_applicable":
+            raise CoverageProofError(
+                "na_basis_on_applicable_cell",
+                f"cells[{position}] has status {status!r} but carries na_basis "
+                f"{na_basis!r}; only a not_applicable cell may carry one",
+            )
+        if not isinstance(na_basis, str) or na_basis not in _NA_BASIS_COUNT_KEYS:
+            raise CoverageProofError(
+                "na_basis_vocabulary",
+                f"cells[{position}] has an unsupported na_basis {na_basis!r}; "
+                f"allowed: {', '.join(_NA_BASIS_COUNT_KEYS)}",
+            )
+    for label, policy_key in _PRESENT_LABELS:
+        value = cell.get(label)
+        policy = cell.get(policy_key)
+        if value is None:
+            if policy is not None:
+                raise CoverageProofError(
+                    f"{policy_key}_without_{label}",
+                    f"cells[{position}] carries {policy_key} {policy!r} but no {label}",
+                )
+            continue
+        if status != "present":
+            raise CoverageProofError(
+                "label_on_non_present_cell",
+                f"cells[{position}] has status {status!r} but carries {label} "
+                f"{value!r}; only a present cell may carry one",
+            )
+        if not isinstance(value, str) or not value:
+            raise CoverageProofError(
+                f"{label}_shape",
+                f"cells[{position}] {label} must be a non-empty string; got {value!r}",
+            )
+        if not isinstance(policy, str) or not _POLICY_ID.fullmatch(policy):
+            raise CoverageProofError(
+                f"{policy_key}_missing",
+                f"cells[{position}] carries {label} {value!r} without a versioned "
+                f"{policy_key} (<policy id>/<version>); got {policy!r}",
+            )
 
 
 def _index_cells(
@@ -1018,6 +1123,9 @@ def prove_coverage(
         stale = failed_extraction = incomparable = 0
         failed: list[str] = []
         withheld_fields: list[str] = []
+        # Seat ruling BLOCKER-1: label counts over exactly these scope cells.
+        labels = {key: 0 for key in _LABEL_COUNT_KEYS}
+        policies: dict[str, dict[str, int]] = {"qualifier": {}, "derivation": {}}
         for period in periods:
             for metric_id in all_metrics:
                 field_id = f"metric:{metric_id}"
@@ -1029,8 +1137,23 @@ def prove_coverage(
                     reason = _absent_reason(cell) if state != STATE_PRESENT else ""
                 if state == STATE_PRESENT:
                     present += 1
+                    labelled = False
+                    for label, policy_key in _PRESENT_LABELS:
+                        if cell.get(label) is None:
+                            continue
+                        labelled = True
+                        count_key = (
+                            "present_qualified" if label == "qualifier" else "present_composed"
+                        )
+                        labels[count_key] += 1
+                        policy = cell[policy_key]
+                        policies[label][policy] = policies[label].get(policy, 0) + 1
+                    if not labelled:
+                        labels["present_strict"] += 1
                 elif state == STATE_NOT_APPLICABLE:
                     not_applicable += 1
+                    basis = cell.get("na_basis")
+                    labels[_NA_BASIS_COUNT_KEYS[NA_BASIS_KERNEL if basis is None else basis]] += 1
                 elif state == STATE_STALE:
                     stale += 1
                     failed.append(_field_label(period, field_id, reason))
@@ -1069,7 +1192,13 @@ def prove_coverage(
             "rate": rate,
             "failed": failed,
             "withheld_fields": withheld_fields,
+            **labels,
+            "qualifier_policies": policies["qualifier"],
+            "derivation_policies": policies["derivation"],
         }
+
+    def scope_unlabelled(scope: Mapping[str, Any]) -> bool:
+        return not any(scope[key] for key in _NON_STRICT_COUNT_KEYS)
 
     deep = thresholds.tiers["deep"]
     deep_component_specs: list[tuple[str, str, bool]] = []
@@ -1085,9 +1214,14 @@ def prove_coverage(
     if deep["require_journey"]:
         deep_component_specs.append((WILDCARD_PERIOD, "journey", False))
 
-    def deep_components(cik: str) -> tuple[dict[str, dict[str, int]], list[str]]:
+    def deep_components(
+        cik: str,
+    ) -> tuple[dict[str, dict[str, int]], list[str], int]:
         counts: dict[str, dict[str, int]] = {}
         failed: list[str] = []
+        # Seat ruling BLOCKER-1: component cells carrying a present label or a
+        # non-kernel N/A basis.
+        labelled = 0
         for period, field_id, allows_not_applicable in deep_component_specs:
             bucket = counts.setdefault(
                 field_id, {key: 0 for key in _COMPONENT_BUCKET_KEYS}
@@ -1097,6 +1231,11 @@ def prove_coverage(
                 bucket["missing"] += 1
                 failed.append(_field_label(period, field_id, REASON_CELL_MISSING))
                 continue
+            if (
+                any(cell.get(label) is not None for label, _ in _PRESENT_LABELS)
+                or cell.get("na_basis") not in (None, NA_BASIS_KERNEL)
+            ):
+                labelled += 1
             state = _STATUS_STATES[cell["status"]]
             bucket[state] += 1
             if state == STATE_PRESENT:
@@ -1104,7 +1243,7 @@ def prove_coverage(
             if state == STATE_NOT_APPLICABLE and allows_not_applicable:
                 continue
             failed.append(_field_label(period, field_id, _absent_reason(cell)))
-        return counts, failed
+        return counts, failed, labelled
 
     band_names = list(thresholds.band_names) + [NO_APPLICABLE_FIELDS_BAND]
 
@@ -1122,6 +1261,8 @@ def prove_coverage(
         # list is empty; a ``no_applicable_fields`` band never passes.
         core_band = thresholds.band_for_rate(core_scope["rate"])
         core_pass = not core_scope["failed"] and core_band == COMPLETE_BAND
+        # Seat ruling BLOCKER-1: complete with no labelled scope cell.
+        core_strict = core_band == COMPLETE_BAND and scope_unlabelled(core_scope)
         entry: dict[str, Any] = {
             "cik": cik,
             "ticker": issuer.get("ticker") if isinstance(issuer.get("ticker"), str) else "",
@@ -1130,11 +1271,17 @@ def prove_coverage(
         }
         if is_deep:
             deep_scope = metric_scope(cik, deep_periods)
-            component_counts, component_failed = deep_components(cik)
+            component_counts, component_failed, component_labelled = deep_components(cik)
             deep_labels = deep_scope["failed"] + component_failed
             deep_band = thresholds.band_for_rate(deep_scope["rate"])
             deep_pass = not deep_labels and deep_band == COMPLETE_BAND
+            deep_strict = (
+                deep_band == COMPLETE_BAND
+                and scope_unlabelled(deep_scope)
+                and component_labelled == 0
+            )
             own = deep_scope
+            own_strict = deep_strict
             entry["deep_pass"] = deep_pass
             entry["field_rate"] = own["rate"]
             entry["band"] = deep_band
@@ -1150,8 +1297,13 @@ def prove_coverage(
                 "components": component_counts,
                 "core_pass": core_pass,
                 "deep_pass": deep_pass,
+                "core_strict": core_strict,
+                "deep_strict": deep_strict,
+                "component_labelled": component_labelled,
             }
         else:
+            own = core_scope
+            own_strict = core_strict
             entry["deep_pass"] = None
             entry["field_rate"] = core_scope["rate"]
             entry["band"] = core_band
@@ -1165,7 +1317,17 @@ def prove_coverage(
                 "components": {},
                 "core_pass": core_pass,
                 "deep_pass": None,
+                "core_strict": core_strict,
+                "deep_strict": None,
+                "component_labelled": 0,
             }
+        # Seat ruling BLOCKER-1: over the entry's own scope (the same scope
+        # as its ``band``).
+        entry["na_not_presented"] = own["na_not_presented"]
+        entry["na_class"] = own["na_class"]
+        entry["present_qualified"] = own["present_qualified"]
+        entry["present_composed"] = own["present_composed"]
+        entry["complete_strict"] = own_strict
         issuer_entries.append(entry)
 
     def tier_block(cik_list: list[str], target: int, *, use_deep: bool) -> dict[str, Any]:
@@ -1178,9 +1340,16 @@ def prove_coverage(
             "failed_extraction": 0,
             "incomparable": 0,
         }
+        fields.update({key: 0 for key in _LABEL_COUNT_KEYS})
         bands = empty_bands()
         failing_reasons: dict[str, int] = {}
         components: dict[str, dict[str, int]] = {}
+        policies: dict[str, dict[str, int]] = {
+            "qualifier_policies": {},
+            "derivation_policies": {},
+        }
+        complete_strict = 0
+        component_labelled = 0
         pass_count = 0
         incomplete: list[str] = []
         for cik in cik_list:
@@ -1189,6 +1358,13 @@ def prove_coverage(
             for key in fields:
                 fields[key] += scope[key]
             bands[thresholds.band_for_rate(scope["rate"])] += 1
+            if proof["deep_strict"] if use_deep else proof["core_strict"]:
+                complete_strict += 1
+            if use_deep:
+                component_labelled += proof["component_labelled"]
+            for policy_key, merged in policies.items():
+                for policy, count in scope[policy_key].items():
+                    merged[policy] = merged.get(policy, 0) + count
             tier_pass = proof["deep_pass"] if use_deep else proof["core_pass"]
             if tier_pass:
                 pass_count += 1
@@ -1211,6 +1387,23 @@ def prove_coverage(
                 "incomplete issuer list must equal members minus pass: "
                 f"{len(incomplete)} != {members_count} - {pass_count}"
             )
+        # Seat ruling BLOCKER-1 invariants: labels partition, never inflate.
+        if fields["present_strict"] > fields["present"]:
+            raise AssertionError(
+                "present_strict must not exceed present: "
+                f"{fields['present_strict']} > {fields['present']}"
+            )
+        na_total = fields["na_kernel"] + fields["na_not_presented"] + fields["na_class"]
+        if na_total != fields["not_applicable"]:
+            raise AssertionError(
+                "N/A bases must sum to not_applicable: "
+                f"{na_total} != {fields['not_applicable']}"
+            )
+        if complete_strict > bands[COMPLETE_BAND]:
+            raise AssertionError(
+                "complete_strict must not exceed the complete band: "
+                f"{complete_strict} > {bands[COMPLETE_BAND]}"
+            )
         rate = (fields["present"] / fields["applicable"]) if fields["applicable"] else None
         block = {
             "target": target,
@@ -1227,11 +1420,16 @@ def prove_coverage(
                 "failed_extraction": fields["failed_extraction"],
                 "incomparable": fields["incomparable"],
                 "rate": rate,
+                **{key: fields[key] for key in _LABEL_COUNT_KEYS},
             },
             "bands": bands,
             "failing_reasons": dict(sorted(failing_reasons.items())),
+            "complete_strict": complete_strict,
+            "qualifier_policies": dict(sorted(policies["qualifier_policies"].items())),
+            "derivation_policies": dict(sorted(policies["derivation_policies"].items())),
         }
         if use_deep:
+            block["component_labelled"] = component_labelled
             block["components"] = {
                 field_id: dict(sorted(bucket.items()))
                 for field_id, bucket in sorted(components.items())
@@ -1477,6 +1675,10 @@ def prove_coverage(
 # ---------------------------------------------------------------------------
 
 
+def _labels_text(fields: Mapping[str, Any]) -> str:
+    return " ".join(f"{key}={fields[key]}" for key in _LABEL_COUNT_KEYS)
+
+
 def render_print(report: Mapping[str, Any]) -> str:
     """Render the fixed C2 census-parity print block from a proof report."""
     tiers = report["tiers"]
@@ -1506,12 +1708,16 @@ def render_print(report: Mapping[str, Any]) -> str:
         f"(deep members x A1,A2,I1,I2; N/A excluded; withheld={deep_fields['withheld']})",
         f"core fields:    {core_fields['present']} / {core_fields['applicable']}   "
         f"(core members x A1,I1; N/A excluded; withheld={core_fields['withheld']})",
-        f"deep bands:     complete={deep_bands['complete']} high={deep_bands['high']} "
+        f"deep bands:     complete={deep_bands['complete']} "
+        f"complete_strict={deep['complete_strict']} high={deep_bands['high']} "
         f"partial={deep_bands['partial']} low={deep_bands['low']} "
         f"no_applicable_fields={deep_bands['no_applicable_fields']}",
-        f"core bands:     complete={core_bands['complete']} high={core_bands['high']} "
+        f"core bands:     complete={core_bands['complete']} "
+        f"complete_strict={core['complete_strict']} high={core_bands['high']} "
         f"partial={core_bands['partial']} low={core_bands['low']} "
         f"no_applicable_fields={core_bands['no_applicable_fields']}",
+        "deep labels:    " + _labels_text(deep_fields),
+        "core labels:    " + _labels_text(core_fields),
         f"incomplete:     deep={len(incomplete['deep'])} core={len(incomplete['core'])}   "
         f"(every one listed in the report)",
         f"exclusions:     {exclusions_text}",
