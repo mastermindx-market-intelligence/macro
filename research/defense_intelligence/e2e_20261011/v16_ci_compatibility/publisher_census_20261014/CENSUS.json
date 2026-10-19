@@ -1,0 +1,2730 @@
+{
+  "schema": "defense.readonly_publisher_census.v1",
+  "started_at": "2026-10-14T13:50:41.063470+00:00",
+  "baseline_source_qualified": true,
+  "scan_created_after": "2026-10-10T17:26:49Z",
+  "mode": "read-only inventory, no synthetic Actions identity, no preflight checkpoint, no publication or dispatch",
+  "conclusion": "inventory_complete",
+  "records": [
+    {
+      "run_id": 38550373792,
+      "run_attempt": 1,
+      "job_id": 115806585138,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-14T10:33:17Z",
+      "created_at": "2026-10-14T10:33:13Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T10:33:19Z",
+          "completed_at": "2026-10-14T10:33:21Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T10:33:21Z",
+          "completed_at": "2026-10-14T10:33:33Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T10:33:33Z",
+          "completed_at": "2026-10-14T10:33:34Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T10:33:34Z",
+          "completed_at": "2026-10-14T10:33:35Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T10:33:35Z",
+          "completed_at": "2026-10-14T10:33:36Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T10:33:36Z",
+          "completed_at": "2026-10-14T10:33:36Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T10:33:36Z",
+          "completed_at": "2026-10-14T10:33:37Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-14T10:33:37Z",
+          "completed_at": "2026-10-14T10:33:37Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-14T10:33:37Z",
+          "completed_at": "2026-10-14T10:33:37Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-14T10:33:37Z",
+          "completed_at": "2026-10-14T10:33:37Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-14T10:33:37Z",
+          "completed_at": "2026-10-14T10:33:37Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-14T10:33:37Z",
+          "completed_at": "2026-10-14T10:33:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-14T10:33:38Z",
+          "completed_at": "2026-10-14T10:33:41Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "9ab95cb622c6f4027dc680eda265fe4284fb8884",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38516074489,
+      "run_attempt": 1,
+      "job_id": 115695057462,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-14T05:20:14Z",
+      "created_at": "2026-10-14T05:20:11Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T05:20:16Z",
+          "completed_at": "2026-10-14T05:20:19Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T05:20:19Z",
+          "completed_at": "2026-10-14T05:20:25Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T05:20:25Z",
+          "completed_at": "2026-10-14T05:20:26Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T05:20:26Z",
+          "completed_at": "2026-10-14T05:20:26Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T05:20:26Z",
+          "completed_at": "2026-10-14T05:20:27Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T05:20:27Z",
+          "completed_at": "2026-10-14T05:20:27Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T05:20:27Z",
+          "completed_at": "2026-10-14T05:20:28Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-14T05:20:28Z",
+          "completed_at": "2026-10-14T05:20:28Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-14T05:20:28Z",
+          "completed_at": "2026-10-14T05:20:28Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-14T05:20:28Z",
+          "completed_at": "2026-10-14T05:20:28Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-14T05:20:28Z",
+          "completed_at": "2026-10-14T05:20:28Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-14T05:20:28Z",
+          "completed_at": "2026-10-14T05:20:29Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-14T05:20:29Z",
+          "completed_at": "2026-10-14T05:20:30Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "1816da2f46babe6e6a47c5fb7b6e7060bff86b34",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38490926141,
+      "run_attempt": 1,
+      "job_id": 115615651993,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-14T00:34:16Z",
+      "created_at": "2026-10-14T00:34:14Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-14T00:34:17Z",
+          "completed_at": "2026-10-14T00:34:18Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-14T00:34:18Z",
+          "completed_at": "2026-10-14T00:34:52Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-14T00:34:52Z",
+          "completed_at": "2026-10-14T00:34:53Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-14T00:34:53Z",
+          "completed_at": "2026-10-14T00:34:53Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-14T00:34:53Z",
+          "completed_at": "2026-10-14T00:34:54Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-14T00:34:54Z",
+          "completed_at": "2026-10-14T00:44:19Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-14T00:44:19Z",
+          "completed_at": "2026-10-14T00:44:20Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-14T00:44:20Z",
+          "completed_at": "2026-10-14T00:44:20Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-14T00:44:20Z",
+          "completed_at": "2026-10-14T00:44:20Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-14T00:44:20Z",
+          "completed_at": "2026-10-14T00:44:20Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-14T00:44:20Z",
+          "completed_at": "2026-10-14T00:44:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-14T00:44:20Z",
+          "completed_at": "2026-10-14T00:44:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-14T00:44:21Z",
+          "completed_at": "2026-10-14T00:44:24Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "ee3b1907497c4d5179d76626777b007e0da93d18",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38471067088,
+      "run_attempt": 1,
+      "job_id": 115549972764,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-13T21:35:21Z",
+      "created_at": "2026-10-13T21:30:03Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T21:35:23Z",
+          "completed_at": "2026-10-13T21:35:24Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T21:35:24Z",
+          "completed_at": "2026-10-13T21:35:29Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T21:35:29Z",
+          "completed_at": "2026-10-13T21:35:30Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T21:35:30Z",
+          "completed_at": "2026-10-13T21:35:30Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T21:35:30Z",
+          "completed_at": "2026-10-13T21:35:31Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T21:35:31Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:32Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T21:35:32Z",
+          "completed_at": "2026-10-13T21:35:33Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T21:35:33Z",
+          "completed_at": "2026-10-13T21:35:34Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "ce1da9761ae0cfcdd2cf2c7ae5a641b260bc1092",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38430053602,
+      "run_attempt": 1,
+      "job_id": 115409560154,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-13T16:23:10Z",
+      "created_at": "2026-10-13T16:23:07Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T16:23:11Z",
+          "completed_at": "2026-10-13T16:23:12Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T16:23:12Z",
+          "completed_at": "2026-10-13T16:23:18Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T16:23:18Z",
+          "completed_at": "2026-10-13T16:23:19Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T16:23:19Z",
+          "completed_at": "2026-10-13T16:23:20Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T16:23:20Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:21Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T16:23:21Z",
+          "completed_at": "2026-10-13T16:23:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T16:23:22Z",
+          "completed_at": "2026-10-13T16:23:23Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "7b30b8580e01c0f9e4ea77f5c692fabc442e8194",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38368851360,
+      "run_attempt": 1,
+      "job_id": 115200518250,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-13T08:22:49Z",
+      "created_at": "2026-10-13T08:22:46Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T08:22:52Z",
+          "completed_at": "2026-10-13T08:22:53Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T08:22:53Z",
+          "completed_at": "2026-10-13T08:23:00Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T08:23:00Z",
+          "completed_at": "2026-10-13T08:23:01Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T08:23:01Z",
+          "completed_at": "2026-10-13T08:23:02Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T08:23:02Z",
+          "completed_at": "2026-10-13T08:23:03Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T08:23:03Z",
+          "completed_at": "2026-10-13T08:23:04Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T08:23:04Z",
+          "completed_at": "2026-10-13T08:23:05Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-13T08:23:05Z",
+          "completed_at": "2026-10-13T08:23:05Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-13T08:23:05Z",
+          "completed_at": "2026-10-13T08:23:05Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-13T08:23:05Z",
+          "completed_at": "2026-10-13T08:23:05Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T08:23:05Z",
+          "completed_at": "2026-10-13T08:23:05Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T08:23:05Z",
+          "completed_at": "2026-10-13T08:23:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T08:23:08Z",
+          "completed_at": "2026-10-13T08:23:10Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "8ecc9d70f9d8d42653c2999238a443deba45a712",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38349255222,
+      "run_attempt": 1,
+      "job_id": 115137648386,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-13T05:00:53Z",
+      "created_at": "2026-10-13T05:00:51Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T05:00:55Z",
+          "completed_at": "2026-10-13T05:00:57Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T05:00:57Z",
+          "completed_at": "2026-10-13T05:01:05Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T05:01:05Z",
+          "completed_at": "2026-10-13T05:01:06Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T05:01:06Z",
+          "completed_at": "2026-10-13T05:01:06Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-13T05:01:06Z",
+          "completed_at": "2026-10-13T05:01:06Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-10-13T05:01:06Z",
+          "completed_at": "2026-10-13T05:01:06Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T05:01:06Z",
+          "completed_at": "2026-10-13T05:01:08Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T05:01:08Z",
+          "completed_at": "2026-10-13T05:01:08Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-13T05:01:08Z",
+          "completed_at": "2026-10-13T05:03:43Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10,
+          "started_at": "2026-10-13T05:03:43Z",
+          "completed_at": "2026-10-13T05:12:44Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T05:12:44Z",
+          "completed_at": "2026-10-13T05:12:44Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T05:12:44Z",
+          "completed_at": "2026-10-13T05:12:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T05:12:45Z",
+          "completed_at": "2026-10-13T05:12:49Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "cdbd22ccb77c98ac016763278f168a94a0b2736b",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38331330830,
+      "run_attempt": 1,
+      "job_id": 115081492887,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-13T01:16:28Z",
+      "created_at": "2026-10-13T01:16:22Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T01:16:30Z",
+          "completed_at": "2026-10-13T01:16:31Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T01:16:31Z",
+          "completed_at": "2026-10-13T01:17:00Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T01:17:00Z",
+          "completed_at": "2026-10-13T01:17:01Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T01:17:01Z",
+          "completed_at": "2026-10-13T01:17:01Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-13T01:17:01Z",
+          "completed_at": "2026-10-13T01:17:02Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-13T01:17:02Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:49Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T01:28:49Z",
+          "completed_at": "2026-10-13T01:28:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T01:28:50Z",
+          "completed_at": "2026-10-13T01:28:54Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "0e0db1210ca67a281ecf9256045a0f978abe24a7",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38294367506,
+      "run_attempt": 1,
+      "job_id": 114961791054,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-12T18:57:14Z",
+      "created_at": "2026-10-12T18:57:11Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-12T18:57:15Z",
+          "completed_at": "2026-10-12T18:57:16Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-12T18:57:16Z",
+          "completed_at": "2026-10-12T18:57:32Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-12T18:57:32Z",
+          "completed_at": "2026-10-12T18:57:32Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-12T18:57:32Z",
+          "completed_at": "2026-10-12T18:57:33Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-12T18:57:33Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:34Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-12T18:57:34Z",
+          "completed_at": "2026-10-12T18:57:35Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-12T18:57:35Z",
+          "completed_at": "2026-10-12T18:57:35Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "d85d494f3e336114ce2852b073280c2000a9b6c9",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38227522483,
+      "run_attempt": 1,
+      "job_id": 114738581482,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-12T09:04:29Z",
+      "created_at": "2026-10-12T09:04:21Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-12T09:04:30Z",
+          "completed_at": "2026-10-12T09:04:31Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-12T09:04:31Z",
+          "completed_at": "2026-10-12T09:04:59Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-12T09:04:59Z",
+          "completed_at": "2026-10-12T09:05:00Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-12T09:05:00Z",
+          "completed_at": "2026-10-12T09:05:00Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-12T09:05:00Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:02Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-12T09:05:02Z",
+          "completed_at": "2026-10-12T09:05:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-12T09:05:03Z",
+          "completed_at": "2026-10-12T09:05:05Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "7a5d590e11186986f7cdf975fe11746b6c4ee60f",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38192933592,
+      "run_attempt": 1,
+      "job_id": 114629377229,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-12T01:42:36Z",
+      "created_at": "2026-10-12T01:42:34Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-12T01:42:38Z",
+          "completed_at": "2026-10-12T01:42:39Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-12T01:42:39Z",
+          "completed_at": "2026-10-12T01:42:45Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-12T01:42:45Z",
+          "completed_at": "2026-10-12T01:42:46Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-12T01:42:46Z",
+          "completed_at": "2026-10-12T01:42:46Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-12T01:42:46Z",
+          "completed_at": "2026-10-12T01:42:48Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-12T01:42:48Z",
+          "completed_at": "2026-10-12T01:58:15Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-12T01:58:15Z",
+          "completed_at": "2026-10-12T01:58:16Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-12T01:58:16Z",
+          "completed_at": "2026-10-12T01:58:16Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-12T01:58:16Z",
+          "completed_at": "2026-10-12T01:58:16Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-12T01:58:16Z",
+          "completed_at": "2026-10-12T01:58:16Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-12T01:58:16Z",
+          "completed_at": "2026-10-12T01:58:16Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-12T01:58:16Z",
+          "completed_at": "2026-10-12T01:58:17Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-12T01:58:17Z",
+          "completed_at": "2026-10-12T01:58:21Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "6361f5e0e071dfc050c503e225afe8a4897f0e8d",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38180298788,
+      "run_attempt": 1,
+      "job_id": 114591241102,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-11T22:24:33Z",
+      "created_at": "2026-10-11T22:24:30Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T22:24:35Z",
+          "completed_at": "2026-10-11T22:24:37Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T22:24:37Z",
+          "completed_at": "2026-10-11T22:24:58Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T22:24:58Z",
+          "completed_at": "2026-10-11T22:24:59Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T22:24:59Z",
+          "completed_at": "2026-10-11T22:24:59Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T22:24:59Z",
+          "completed_at": "2026-10-11T22:25:00Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T22:25:00Z",
+          "completed_at": "2026-10-11T22:25:00Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T22:25:00Z",
+          "completed_at": "2026-10-11T22:25:01Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-11T22:25:01Z",
+          "completed_at": "2026-10-11T22:25:01Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-11T22:25:01Z",
+          "completed_at": "2026-10-11T22:25:01Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-11T22:25:01Z",
+          "completed_at": "2026-10-11T22:25:01Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T22:25:01Z",
+          "completed_at": "2026-10-11T22:25:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T22:25:01Z",
+          "completed_at": "2026-10-11T22:25:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T22:25:02Z",
+          "completed_at": "2026-10-11T22:25:03Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "fd17b4b4735ceac13a1dc0b1f56683274de73384",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38163704708,
+      "run_attempt": 1,
+      "job_id": 114541756152,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-11T18:28:25Z",
+      "created_at": "2026-10-11T18:24:52Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T18:28:27Z",
+          "completed_at": "2026-10-11T18:28:29Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T18:28:29Z",
+          "completed_at": "2026-10-11T18:28:35Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T18:28:35Z",
+          "completed_at": "2026-10-11T18:28:36Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T18:28:36Z",
+          "completed_at": "2026-10-11T18:28:36Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T18:28:36Z",
+          "completed_at": "2026-10-11T18:28:37Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T18:28:37Z",
+          "completed_at": "2026-10-11T18:28:37Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T18:28:37Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T18:28:38Z",
+          "completed_at": "2026-10-11T18:28:39Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "8156a0b38c398386b16e2a7ed6a71129706e6430",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38143195502,
+      "run_attempt": 1,
+      "job_id": 114481079826,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-11T13:27:33Z",
+      "created_at": "2026-10-11T13:26:44Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T13:27:34Z",
+          "completed_at": "2026-10-11T13:27:35Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T13:27:35Z",
+          "completed_at": "2026-10-11T13:27:40Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T13:27:40Z",
+          "completed_at": "2026-10-11T13:27:40Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T13:27:40Z",
+          "completed_at": "2026-10-11T13:27:41Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T13:27:41Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:42Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T13:27:42Z",
+          "completed_at": "2026-10-11T13:27:44Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T13:27:44Z",
+          "completed_at": "2026-10-11T13:27:45Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "c2fd1cb74d5753a95862f63dc8c1ec2977779814",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38117841159,
+      "run_attempt": 1,
+      "job_id": 114406242052,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-11T06:22:24Z",
+      "created_at": "2026-10-11T06:22:21Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T06:22:25Z",
+          "completed_at": "2026-10-11T06:22:26Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T06:22:26Z",
+          "completed_at": "2026-10-11T06:22:32Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T06:22:32Z",
+          "completed_at": "2026-10-11T06:22:33Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T06:22:33Z",
+          "completed_at": "2026-10-11T06:22:33Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T06:22:33Z",
+          "completed_at": "2026-10-11T06:22:34Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T06:22:34Z",
+          "completed_at": "2026-10-11T06:22:34Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T06:22:34Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:35Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T06:22:35Z",
+          "completed_at": "2026-10-11T06:22:36Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "bd951f24d98fd582f33b6c346f9748f8634034fd",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38097614025,
+      "run_attempt": 1,
+      "job_id": 114346690581,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-11T00:12:06Z",
+      "created_at": "2026-10-11T00:12:03Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T00:12:07Z",
+          "completed_at": "2026-10-11T00:12:09Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T00:12:09Z",
+          "completed_at": "2026-10-11T00:12:14Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T00:12:14Z",
+          "completed_at": "2026-10-11T00:12:14Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T00:12:14Z",
+          "completed_at": "2026-10-11T00:12:14Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-11T00:12:14Z",
+          "completed_at": "2026-10-11T00:12:15Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-11T00:12:15Z",
+          "completed_at": "2026-10-11T00:24:11Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T00:24:11Z",
+          "completed_at": "2026-10-11T00:24:12Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-11T00:24:12Z",
+          "completed_at": "2026-10-11T00:24:12Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-11T00:24:12Z",
+          "completed_at": "2026-10-11T00:24:12Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-11T00:24:12Z",
+          "completed_at": "2026-10-11T00:24:12Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T00:24:12Z",
+          "completed_at": "2026-10-11T00:24:12Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T00:24:12Z",
+          "completed_at": "2026-10-11T00:24:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T00:24:14Z",
+          "completed_at": "2026-10-11T00:24:15Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "390c07483597a2fad78c02e0ff64839975c007d3",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38084637558,
+      "run_attempt": 1,
+      "job_id": 114308497826,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-10T20:40:09Z",
+      "created_at": "2026-10-10T20:40:07Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-10T20:40:10Z",
+          "completed_at": "2026-10-10T20:40:12Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-10T20:40:12Z",
+          "completed_at": "2026-10-10T20:40:16Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-10T20:40:16Z",
+          "completed_at": "2026-10-10T20:40:17Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-10T20:40:17Z",
+          "completed_at": "2026-10-10T20:40:17Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-10T20:40:17Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:18Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-10T20:40:18Z",
+          "completed_at": "2026-10-10T20:40:19Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-10T20:40:19Z",
+          "completed_at": "2026-10-10T20:40:19Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "8954eabe836f1cec6aeb35a65f1902b33fb6233c",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38071767533,
+      "run_attempt": 1,
+      "job_id": 114270439235,
+      "workflow_path": ".github/workflows/government-revenue-live.yml",
+      "started_at": "2026-10-10T17:26:52Z",
+      "created_at": "2026-10-10T17:26:49Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-10T17:26:53Z",
+          "completed_at": "2026-10-10T17:26:54Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-10T17:26:54Z",
+          "completed_at": "2026-10-10T17:26:59Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-10T17:26:59Z",
+          "completed_at": "2026-10-10T17:26:59Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-10T17:26:59Z",
+          "completed_at": "2026-10-10T17:27:00Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-10T17:27:00Z",
+          "completed_at": "2026-10-10T17:27:00Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-10T17:27:00Z",
+          "completed_at": "2026-10-10T17:27:00Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-10T17:27:00Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 8,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:01Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-10T17:27:01Z",
+          "completed_at": "2026-10-10T17:27:02Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "refresh",
+      "workflow_head_sha": "91b9d5604b46adf7fd601eed38c2e3dc790010a5",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38498969461,
+      "run_attempt": 1,
+      "job_id": 115641140813,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-14T02:02:55Z",
+      "created_at": "2026-10-14T02:02:49Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "da8705698a9ea9cea7c2da02124f184e8031c104",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38495183073,
+      "run_attempt": 1,
+      "job_id": 115696593472,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-14T05:25:36Z",
+      "created_at": "2026-10-14T01:20:28Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "3cf087f62e36f0da6d868a351c4a3922cebf9ef5",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38342984890,
+      "run_attempt": 1,
+      "job_id": 115117944474,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-13T03:42:43Z",
+      "created_at": "2026-10-13T03:42:36Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "a8e054ce5d7d44e48ff552841dc93d3c0ec87149",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38340204231,
+      "run_attempt": 1,
+      "job_id": 115123830511,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-13T04:06:43Z",
+      "created_at": "2026-10-13T03:07:30Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "f216ce8c067cde6e932f40b4baa4a1c1d02f83a2",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38335616740,
+      "run_attempt": 1,
+      "job_id": 115123824207,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-13T04:06:41Z",
+      "created_at": "2026-10-13T02:10:23Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "ff11a33f0c09547273a16656ba14969d2f22063c",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38196229068,
+      "run_attempt": 1,
+      "job_id": 114639379130,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-12T02:33:12Z",
+      "created_at": "2026-10-12T02:33:06Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "611f88003639aea7272ec30b1b4e7120020e23ea",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38192634426,
+      "run_attempt": 1,
+      "job_id": 114679265920,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-12T05:43:11Z",
+      "created_at": "2026-10-12T01:37:56Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "6361f5e0e071dfc050c503e225afe8a4897f0e8d",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38103820170,
+      "run_attempt": 1,
+      "job_id": 114365032798,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-11T02:02:12Z",
+      "created_at": "2026-10-11T02:02:04Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "f5321bb68ca43310d72a58f8c4f583e3abbee1ca",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38100953149,
+      "run_attempt": 1,
+      "job_id": 114376720325,
+      "workflow_path": ".github/workflows/daily.yml",
+      "started_at": "2026-10-11T03:14:27Z",
+      "created_at": "2026-10-11T01:10:48Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "government_revenue_projection",
+      "workflow_head_sha": "41c2fd7beeb81be2f4048c1d01dcc26bf3746ba6",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38441558179,
+      "run_attempt": 1,
+      "job_id": 115450545382,
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "started_at": "2026-10-13T17:50:59Z",
+      "created_at": "2026-10-13T17:47:56Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-13T17:51:01Z",
+          "completed_at": "2026-10-13T17:51:02Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-13T17:51:02Z",
+          "completed_at": "2026-10-13T17:51:06Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-13T17:51:06Z",
+          "completed_at": "2026-10-13T17:51:06Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-13T17:51:06Z",
+          "completed_at": "2026-10-13T17:51:07Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-13T17:51:07Z",
+          "completed_at": "2026-10-13T17:51:07Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-10-13T17:51:07Z",
+          "completed_at": "2026-10-13T17:51:07Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-13T17:51:07Z",
+          "completed_at": "2026-10-13T17:51:07Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-13T17:51:07Z",
+          "completed_at": "2026-10-13T17:51:08Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-13T17:51:08Z",
+          "completed_at": "2026-10-13T17:53:39Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10,
+          "started_at": "2026-10-13T17:53:39Z",
+          "completed_at": "2026-10-13T18:08:19Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-13T18:08:19Z",
+          "completed_at": "2026-10-13T18:08:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-13T18:08:19Z",
+          "completed_at": "2026-10-13T18:08:21Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-13T18:08:21Z",
+          "completed_at": "2026-10-13T18:08:27Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "publish / refresh",
+      "workflow_head_sha": "9424deaae27fe7737bed7c69feb3f53fa48345e9",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38301316428,
+      "run_attempt": 1,
+      "job_id": 114985613116,
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "started_at": "2026-10-12T20:02:28Z",
+      "created_at": "2026-10-12T19:59:52Z",
+      "steps": [],
+      "publisher_never_started": true,
+      "publisher_job_name": "publish",
+      "workflow_head_sha": "ee0f2e62e667837510229621330e9ac6c4066b0b",
+      "publisher_job_status": "completed"
+    },
+    {
+      "run_id": 38155385453,
+      "run_attempt": 1,
+      "job_id": 114518399318,
+      "workflow_path": ".github/workflows/fms-acquire.yml",
+      "started_at": "2026-10-11T16:31:11Z",
+      "created_at": "2026-10-11T16:25:15Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-11T16:31:12Z",
+          "completed_at": "2026-10-11T16:31:13Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-11T16:31:13Z",
+          "completed_at": "2026-10-11T16:31:16Z"
+        },
+        {
+          "name": "python 3.12 (Homebrew venv \u2014 self-hosted runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-11T16:31:16Z",
+          "completed_at": "2026-10-11T16:31:17Z"
+        },
+        {
+          "name": "Run pip install -r requirements.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-11T16:31:17Z",
+          "completed_at": "2026-10-11T16:31:17Z"
+        },
+        {
+          "name": "fingerprint committed SAM evidence",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 5,
+          "started_at": "2026-10-11T16:31:17Z",
+          "completed_at": "2026-10-11T16:31:17Z"
+        },
+        {
+          "name": "collect SAM opportunity evidence (last-good gated)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-10-11T16:31:17Z",
+          "completed_at": "2026-10-11T16:31:17Z"
+        },
+        {
+          "name": "gate publication on complete health or material evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-11T16:31:17Z",
+          "completed_at": "2026-10-11T16:31:18Z"
+        },
+        {
+          "name": "stage reviewed source guards",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-11T16:31:18Z",
+          "completed_at": "2026-10-11T16:31:18Z"
+        },
+        {
+          "name": "build Government Revenue projection",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-11T16:31:18Z",
+          "completed_at": "2026-10-11T16:33:35Z"
+        },
+        {
+          "name": "prove the candidate projection before publishing it",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 10,
+          "started_at": "2026-10-11T16:33:35Z",
+          "completed_at": "2026-10-11T16:41:52Z"
+        },
+        {
+          "name": "commit complete evidence projection",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-10-11T16:41:52Z",
+          "completed_at": "2026-10-11T16:41:52Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-10-11T16:41:52Z",
+          "completed_at": "2026-10-11T16:41:53Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-11T16:41:53Z",
+          "completed_at": "2026-10-11T16:41:54Z"
+        }
+      ],
+      "publisher_never_started": false,
+      "publisher_job_name": "publish / refresh",
+      "workflow_head_sha": "f6ab52870283d0b1f782a6b0978a81b672864285",
+      "publisher_job_status": "completed"
+    }
+  ],
+  "pending_created_at": [
+    "2026-10-14T12:10:47Z",
+    "2026-08-12T01:20:47Z",
+    "2026-08-12T00:44:09Z",
+    "2026-08-12T00:24:29Z",
+    "2026-08-11T22:36:00Z"
+  ],
+  "finished_at": "2026-10-14T13:51:21.960075+00:00",
+  "requests": [
+    {
+      "path": "actions/workflows/government-revenue-live.yml/runs?per_page=100&page=1&created=%3E%3D2026-10-10T17%3A26%3A49Z",
+      "file": "000.json.gz",
+      "body_sha256": "237a0da0d2bbc346334e59a2f1d88c9a746f10b250b41497983b60e21d188dcf"
+    },
+    {
+      "path": "actions/workflows/government-revenue-live.yml/runs?per_page=100&page=1&status=queued",
+      "file": "001.json.gz",
+      "body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "actions/workflows/government-revenue-live.yml/runs?per_page=100&page=1&status=in_progress",
+      "file": "002.json.gz",
+      "body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "actions/runs/38550373792/attempts/1/jobs?per_page=100",
+      "file": "003.json.gz",
+      "body_sha256": "e40b883cf0800db3555fa6429c95a3685fdba772991ec8bde5c3192652b5c9e9"
+    },
+    {
+      "path": "actions/runs/38516074489/attempts/1/jobs?per_page=100",
+      "file": "004.json.gz",
+      "body_sha256": "069f124e084add222f04a12870f3e716a2b57b5a7c6d74ffd40f9f6f8f5684e7"
+    },
+    {
+      "path": "actions/runs/38490926141/attempts/1/jobs?per_page=100",
+      "file": "005.json.gz",
+      "body_sha256": "3624a1389377bdf37f0b1a335b23419c279af18928d4f0e91dfbcfae9ce597d3"
+    },
+    {
+      "path": "actions/runs/38471067088/attempts/1/jobs?per_page=100",
+      "file": "006.json.gz",
+      "body_sha256": "fe5fdc75624ec6518cca902edba4381c719cf51a2e95dc3f85270df6bc1e0467"
+    },
+    {
+      "path": "actions/runs/38430053602/attempts/1/jobs?per_page=100",
+      "file": "007.json.gz",
+      "body_sha256": "c58d1f19d40f8e7f4f01ad0eaaf6f8dfdae530e7c2e9af2cbc9392430dd24415"
+    },
+    {
+      "path": "actions/runs/38368851360/attempts/1/jobs?per_page=100",
+      "file": "008.json.gz",
+      "body_sha256": "4dba5ba05b065a6b6e0c895d97d58399bd95907dd3c0fab0763fcc75edbb86fb"
+    },
+    {
+      "path": "actions/runs/38349255222/attempts/1/jobs?per_page=100",
+      "file": "009.json.gz",
+      "body_sha256": "a29e8066edd69042265464e4ac2954068618d17ce9fd344076603d03e1a62b46"
+    },
+    {
+      "path": "actions/runs/38331330830/attempts/1/jobs?per_page=100",
+      "file": "010.json.gz",
+      "body_sha256": "9950116361b24581c9833ad35edb7ea2f6aedbe50f945f82771eea611d9431cb"
+    },
+    {
+      "path": "actions/runs/38294367506/attempts/1/jobs?per_page=100",
+      "file": "011.json.gz",
+      "body_sha256": "c7ae3662ca8cce66f4dd9417c5440cfca8565bb998dbdd26bf06c149c38be994"
+    },
+    {
+      "path": "actions/runs/38227522483/attempts/1/jobs?per_page=100",
+      "file": "012.json.gz",
+      "body_sha256": "5d2fca021f004a09c1286807b2d5609a080eb8bea3bd2af930e64dc7802bda4b"
+    },
+    {
+      "path": "actions/runs/38192933592/attempts/1/jobs?per_page=100",
+      "file": "013.json.gz",
+      "body_sha256": "68a0157ec2784e9a78aff4839715a3ff056e94a372724047404780db990f6142"
+    },
+    {
+      "path": "actions/runs/38180298788/attempts/1/jobs?per_page=100",
+      "file": "014.json.gz",
+      "body_sha256": "4f38570afe93d6aaedd4ee9183ebc743cec594c67a760331f6dcbd65a41b5c12"
+    },
+    {
+      "path": "actions/runs/38163704708/attempts/1/jobs?per_page=100",
+      "file": "015.json.gz",
+      "body_sha256": "50ccd3549ef434be88a9fcb25e101fcf9e1fc246a0be2960eee26a49a5e221f1"
+    },
+    {
+      "path": "actions/runs/38143195502/attempts/1/jobs?per_page=100",
+      "file": "016.json.gz",
+      "body_sha256": "c46f45ab8b9e4df31c9f18cdeb211c4da21e0ecdfb4d63dd0f282d2938c5443e"
+    },
+    {
+      "path": "actions/runs/38117841159/attempts/1/jobs?per_page=100",
+      "file": "017.json.gz",
+      "body_sha256": "0404f0d10f747c867c0e1cdf3be000d10d4bd4b00f58968f80de66a1b08f9c6e"
+    },
+    {
+      "path": "actions/runs/38097614025/attempts/1/jobs?per_page=100",
+      "file": "018.json.gz",
+      "body_sha256": "e6e910ea639cda8a93c6da6e710bc03c4bfef5b8d7a445bd6163ff0e2b892a85"
+    },
+    {
+      "path": "actions/runs/38084637558/attempts/1/jobs?per_page=100",
+      "file": "019.json.gz",
+      "body_sha256": "dbfcb1c10f0bac83c961804778dbf62322c597db458ba62261eca7f023ef2a54"
+    },
+    {
+      "path": "actions/runs/38071767533/attempts/1/jobs?per_page=100",
+      "file": "020.json.gz",
+      "body_sha256": "549b2c93cf3576d0a871096765863c52d4616b7d3a4a3d6af7a7c14ddda675b3"
+    },
+    {
+      "path": "actions/workflows/daily.yml/runs?per_page=100&page=1&created=%3E%3D2026-10-10T17%3A26%3A49Z",
+      "file": "021.json.gz",
+      "body_sha256": "aa5c48b4e9ce6c8902abb25da86da164efef4659b0dbf98bcb84f4e9dee882ea"
+    },
+    {
+      "path": "actions/workflows/daily.yml/runs?per_page=100&page=1&status=queued",
+      "file": "022.json.gz",
+      "body_sha256": "a0576cbbc54b7baa1cf32641e27e3579671fa3a6fd1260fc51c91e3ef5e09b35"
+    },
+    {
+      "path": "actions/workflows/daily.yml/runs?per_page=100&page=1&status=in_progress",
+      "file": "023.json.gz",
+      "body_sha256": "2483557a42261fc42cef72e912e2fb6e341a007c9372f4db07b8e980eae4d12e"
+    },
+    {
+      "path": "actions/runs/38561881516/attempts/1/jobs?per_page=100",
+      "file": "024.json.gz",
+      "body_sha256": "cad6abc5eb98923f7b0ccebd1ce16f4f5e7f09da5176f6420e8d38fc0b30c3f8"
+    },
+    {
+      "path": "actions/runs/38498969461/attempts/1/jobs?per_page=100",
+      "file": "025.json.gz",
+      "body_sha256": "96e229c3f4f2f3a621adf9bb90c28b306cfd535d5e959d68c5631bdc38514f04"
+    },
+    {
+      "path": "actions/runs/38495183073/attempts/1/jobs?per_page=100",
+      "file": "026.json.gz",
+      "body_sha256": "1d546101c8e53e22944da04c6167e1b3b5ef043efbc029a2b6ccaf09b1fae8ca"
+    },
+    {
+      "path": "actions/runs/38342984890/attempts/1/jobs?per_page=100",
+      "file": "027.json.gz",
+      "body_sha256": "27e27830dd1ca5147434e9cf5169b0328075c3332a30f1595df1bf4584c7b62d"
+    },
+    {
+      "path": "actions/runs/38340204231/attempts/1/jobs?per_page=100",
+      "file": "028.json.gz",
+      "body_sha256": "aca85487b72bed48eb949fbae52704d94a518228ec749ecbc8b06f2cb6e6d411"
+    },
+    {
+      "path": "actions/runs/38335616740/attempts/1/jobs?per_page=100",
+      "file": "029.json.gz",
+      "body_sha256": "a6bda1698787b66cf69e2173dcd1fd090883980b64cd0ca5a201e8be68c271a0"
+    },
+    {
+      "path": "actions/runs/38196229068/attempts/1/jobs?per_page=100",
+      "file": "030.json.gz",
+      "body_sha256": "9934f60fdc0041d333066a8fb633fa7f45b88c0acebac2ad0f70e36d4ae1bf73"
+    },
+    {
+      "path": "actions/runs/38192634426/attempts/1/jobs?per_page=100",
+      "file": "031.json.gz",
+      "body_sha256": "816d7e24e9aed3c59cc3d3f86aa03270e58b7eb5581bfa2b63c125db71a395b7"
+    },
+    {
+      "path": "actions/runs/38103820170/attempts/1/jobs?per_page=100",
+      "file": "032.json.gz",
+      "body_sha256": "f525f79a3edfc913955b1a6d2299e2f928a2dc994602ae91fb41568261e9e940"
+    },
+    {
+      "path": "actions/runs/38100953149/attempts/1/jobs?per_page=100",
+      "file": "033.json.gz",
+      "body_sha256": "7e3b886f7a3d144a3641b09bb250b04fb9cc90f4dcfc00e9b63ec5011733d195"
+    },
+    {
+      "path": "actions/runs/31553295271/attempts/1/jobs?per_page=100",
+      "file": "034.json.gz",
+      "body_sha256": "b512fdf501ffbdb48c1ff8a334798223dc87ae5ec6e009140ec9c2633b967b7f"
+    },
+    {
+      "path": "actions/runs/31551232668/attempts/1/jobs?per_page=100",
+      "file": "035.json.gz",
+      "body_sha256": "b512fdf501ffbdb48c1ff8a334798223dc87ae5ec6e009140ec9c2633b967b7f"
+    },
+    {
+      "path": "actions/runs/31550077044/attempts/1/jobs?per_page=100",
+      "file": "036.json.gz",
+      "body_sha256": "b512fdf501ffbdb48c1ff8a334798223dc87ae5ec6e009140ec9c2633b967b7f"
+    },
+    {
+      "path": "actions/runs/31543112462/attempts/1/jobs?per_page=100",
+      "file": "037.json.gz",
+      "body_sha256": "b512fdf501ffbdb48c1ff8a334798223dc87ae5ec6e009140ec9c2633b967b7f"
+    },
+    {
+      "path": "actions/workflows/fms-acquire.yml/runs?per_page=100&page=1&created=%3E%3D2026-10-10T17%3A26%3A49Z",
+      "file": "038.json.gz",
+      "body_sha256": "0400f82bcb1aa0b0f455bd13ab114b5f2415793135420f1c97447f1d34facafe"
+    },
+    {
+      "path": "actions/workflows/fms-acquire.yml/runs?per_page=100&page=1&status=queued",
+      "file": "039.json.gz",
+      "body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "actions/workflows/fms-acquire.yml/runs?per_page=100&page=1&status=in_progress",
+      "file": "040.json.gz",
+      "body_sha256": "a2790a384d7d281e7395679000c35d27768d89dbd7052f725b8f4688beb59915"
+    },
+    {
+      "path": "actions/runs/38441558179/attempts/1/jobs?per_page=100",
+      "file": "041.json.gz",
+      "body_sha256": "0f6466d7e7c4fea7d0810a0407b1075b203a4a8e27d88cfe7af9f2d120b810ce"
+    },
+    {
+      "path": "actions/runs/38301316428/attempts/1/jobs?per_page=100",
+      "file": "042.json.gz",
+      "body_sha256": "5c28544e45b462f73ebdb404a1e3104fbfd1b91810ed35024b4f09d33a9764b5"
+    },
+    {
+      "path": "actions/runs/38155385453/attempts/1/jobs?per_page=100",
+      "file": "043.json.gz",
+      "body_sha256": "ac03b5301af4d0ea84bd6af83f5ca6879c05b4c4b39d5f024924ef4f882427b9"
+    }
+  ]
+}

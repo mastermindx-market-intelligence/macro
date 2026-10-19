@@ -1394,3 +1394,4 @@
 {"session": "2026-10-14", "symbol": "VRSK", "state": "UPTURN_WATCH", "k": 2, "legs": {"d_macd": true, "d3_confluence": true, "w_macd": "approaching", "w2_macd": false}, "baskets": ["us_sector_industrials"], "hysteresis_sessions_held": 0}
 {"session": "2026-10-14", "symbol": "VRSN", "state": "UPTURN_WATCH", "k": 2, "legs": {"d_macd": true, "d3_confluence": false, "w_macd": "cross", "w2_macd": false}, "baskets": ["us_sector_tech"], "hysteresis_sessions_held": 0}
 {"session": "2026-10-14", "symbol": "WRB", "state": "UPTURN_WATCH", "k": 2, "legs": {"d_macd": false, "d3_confluence": false, "w_macd": "cross", "w2_macd": true}, "baskets": ["insurance", "us_sector_financials"], "hysteresis_sessions_held": 0}
+{"session": "2026-10-15", "symbol": "XLC", "state": "UPTURN_WATCH", "k": 2, "legs": {"d_macd": true, "d3_confluence": true, "w_macd": "none", "w2_macd": false}, "baskets": ["spdr_sector"], "hysteresis_sessions_held": 0}
