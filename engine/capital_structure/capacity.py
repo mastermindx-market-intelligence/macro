@@ -535,8 +535,21 @@ def _read_records(state: CapitalState, cutoff: datetime) -> _StateRead:
             if schema == REGISTRATION_PATH_SCHEMA:
                 available = _utc(_nested(body, "origin", "mastermind_available_at"))
             elif schema == DOCUMENT_TERM_SCHEMA:
-                available = _utc(_nested(body, "point_in_time", "source_available_at")) or _utc(
-                    _nested(body, "filing", "accepted_at")
+                # A document-term row is then-known at the LATER of its own
+                # materialization instant and its source availability; the
+                # filing clock is only a fallback when neither is present.
+                record_stamps = [
+                    stamp
+                    for stamp in (
+                        _utc(_nested(body, "point_in_time", "available_at")),
+                        _utc(_nested(body, "point_in_time", "source_available_at")),
+                    )
+                    if stamp is not None
+                ]
+                available = (
+                    max(record_stamps)
+                    if record_stamps
+                    else _utc(_nested(body, "filing", "accepted_at"))
                 )
             elif schema in SHARE_COUNT_SCHEMAS:
                 available = _available_instant(body)
@@ -1550,10 +1563,6 @@ class _Builder:
         latest = max(rows, key=lambda item: (item[0].available, item[1]))
         accession = latest[1]
         group = [item for item in rows if item[1] == accession]
-        refs = _unique_refs(
-            [ref for item in group for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))]
-        )
-        available = max(item[0].available for item in group)
         contradicted = any(
             _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
         )
@@ -1565,12 +1574,37 @@ class _Builder:
                 blockers=(f"fee_table_contradicted:{accession}",),
                 status="contradicted",
             )
-        if len(group) > 1:
+        # SPEC_C2 §5: the filing's own "Total Offering Amounts" row is the
+        # registered amount.  When the latest accession carries exactly one
+        # such total-scoped row, its value -- with its provenance and span
+        # evidence -- wins over the per-security rows, which are never summed.
+        # Two total rows (agreeing or not) cannot pick an amount, and with no
+        # total row the single security-row rule is unchanged.
+        total_rows = [
+            item
+            for item in group
+            if _text(_nested(item[0].body, "term", "scope")) == "registration_fee_table_total"
+        ]
+        if len(total_rows) == 1:
+            chosen = total_rows
+        elif len(total_rows) > 1:
+            chosen = []
+        else:
+            chosen = list(group)
+        if not chosen or len(chosen) > 1:
             return missing(
                 f"{len(group)} fee-table rows in {accession} disagree about the registered amount",
                 blockers=(f"fee_table_multi_row:{accession}",),
             )
-        value = _decimal_or_none(_nested(group[0][0].body, "normalized", "value"))
+        refs = _unique_refs(
+            [
+                ref
+                for item in chosen
+                for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))
+            ]
+        )
+        available = max(item[0].available for item in chosen)
+        value = _decimal_or_none(_nested(chosen[0][0].body, "normalized", "value"))
         if value is None or value < 0:
             return missing(
                 f"the fee-table value of {accession} is not a nonnegative decimal",

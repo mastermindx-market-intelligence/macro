@@ -1720,3 +1720,103 @@ def test_c10_unread_schemas_are_listed_and_never_used() -> None:
     assert strip_identity(with_noise.envelope.as_record()) == strip_identity(
         baseline.envelope.as_record()
     )
+
+
+# ---------------------------------------------------------------------------
+# §5 total-scoped fee rows — the filing's own "Total Offering Amounts" row is
+# the registered amount; per-security rows never decide and never sum.
+# ---------------------------------------------------------------------------
+
+
+def total_fee_row(
+    accession: str,
+    value: str | None,
+    *,
+    available_at: str,
+    observation_id: str,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    row = fee_row(
+        accession, value, available_at=available_at, observation_id=observation_id, **kwargs
+    )
+    row["term"] = {
+        "name": c1.FEE_TABLE_TERM_NAME, "scope": "registration_fee_table_total",
+    }
+    return row
+
+
+def test_c10_total_offering_row_is_the_registered_amount_with_span_evidence() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total"))
+    # Extra per-security rows of the same accession are never summed and never
+    # trip the multi-row blocker while exactly one total row decides.
+    reg.append(fee_row(ACC_A, "12000000", available_at=stamp, observation_id="doc:sec-a"))
+    reg.append(fee_row(ACC_A, "13000000", available_at=stamp, observation_id="doc:sec-b"))
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "25000000"
+    assert f"fee_table_multi_row:{ACC_A}" not in evaluation.envelope.blockers
+    # Provenance and evidence come from the total row itself.
+    evidence = json.dumps(registered)
+    assert "doc:total" in evidence
+    assert "doc:sec-a" not in evidence
+    assert "doc:sec-b" not in evidence
+    assert evaluation.envelope.aggregate_bound.value == "25000000.00"
+
+
+def test_c10_two_disagreeing_total_rows_leave_the_amount_unknown() -> None:
+    stamp = f"{shift(SALE, 30)}T21:00:00Z"
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(total_fee_row(ACC_A, "25000000", available_at=stamp, observation_id="doc:total-1"))
+    reg.append(total_fee_row(ACC_A, "30000000", available_at=stamp, observation_id="doc:total-2"))
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "unknown"
+    assert registered["value"] is None
+    assert f"fee_table_multi_row:{ACC_A}" in evaluation.envelope.blockers
+    assert evaluation.envelope.aggregate_bound.status == "unknown"
+
+
+def test_c10_fee_row_available_at_after_the_cutoff_is_excluded_despite_earlier_source() -> None:
+    cutoff = f"{SALE}T00:00:00Z"
+    poisoned = {
+        **total_fee_row(
+            ACC_A, "99000000", available_at=cutoff, observation_id="doc:poisoned",
+        ),
+        "point_in_time": {
+            "source_available_at": f"{shift(SALE, 40)}T21:00:00Z",
+            "available_at": f"{shift(SALE, -1)}T21:00:00Z",
+        },
+    }
+    reg, shares = standard_registration(registered="20000000", float_value="300000000")
+    reg.append(poisoned)
+    evaluation, _, _ = evaluate(
+        registration=reg,
+        share_basis=shares,
+        resolutions=[
+            usd(f"shelf_usage:{PATH_A}", "0"),
+            usd(f"continuing_offering:{PATH_A}", "0"),
+        ],
+    )
+    # The row's own available_at is after the cutoff, so it is excluded and
+    # counted even though source_available_at precedes the cutoff.
+    assert evaluation.inputs["excluded_after_as_of"] == {c1.DOCUMENT_TERM_SCHEMA: 1}
+    registered = evaluation.inputs["registration_paths"][0]["registered_amount"]
+    assert registered["status"] == "known"
+    assert registered["value"] == "20000000"
