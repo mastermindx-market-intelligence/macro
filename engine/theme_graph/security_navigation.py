@@ -110,7 +110,7 @@ _RESOLUTION_DISPLAY_FIELDS = (
 
 
 def compose_security_hierarchy(store_view, identity_rows, *, identity_kind: str,
-                               identity_id: str, asof, knowledge_cutoff=None) -> dict:
+                               identity_id: str, asof, knowledge_cutoff=None, source_policy=None) -> dict:
     """Exact owner identity → existing house display paths; never raw neighborhoods.
 
     Rights remain the incumbent default resolver. No injected permissive resolver,
@@ -134,7 +134,6 @@ def compose_security_hierarchy(store_view, identity_rows, *, identity_kind: str,
         identity_owner="gmi.identity_resolution/v1", historical_identity_claim=False,
         knowledge_cutoff_applies_to="GRAPH_PATHS_ONLY", bindings=[],
         availability={"state": "IDENTITY_OWNER_UNAVAILABLE" if not rows else "NO_GRAPH_BINDING"},
-        etf_tracking={"status": "unavailable", "reason": "ETF_DISPLAY_BINDING_NOT_COMPOSED"},
         limitations=list(LIMITATIONS))
     nodes = _records(store_view.read_nodes())
     edges = _records(store_view.read_edges())
@@ -197,4 +196,134 @@ def compose_security_hierarchy(store_view, identity_rows, *, identity_kind: str,
         available = sum(bool(b["paths"]) for b in result["bindings"])
         result["availability"] = {"state": "AVAILABLE" if available == len(matches)
             else "PARTIAL" if available else "NO_QUALIFIED_HOUSE_PATH"}
+    result["etf_tracking"] = compose_etf_tracking(view, result["bindings"], evidence,
+        asof=effective, knowledge_cutoff=cutoff, source_policy=source_policy)
+    return result
+
+
+ETF_DISPLAY_SCHEMA = "gmi.theme_etf_tracking_display/v1"
+
+
+def compose_etf_tracking(store_view, bindings, evidence_rows, *, asof,
+                         knowledge_cutoff, source_policy=None) -> dict:
+    """House TRACKS references on already-qualified selected-company baskets.
+
+    Permission belongs to each tracking relationship's dated source evidence,
+    never to an ``etf:`` prefix. Symbols are verbatim native node references, not
+    security identities, fund names, holdings or a claim that this company is held.
+    ``source_policy`` is the captured registry document bound by the HTTP composer;
+    native callers otherwise read the existing current registry, without its cache.
+    """
+    import yaml
+    from engine.theme_graph import identity, rights
+    from engine.theme_graph.ontology import (
+        _clock_instant, _collapse_relevant_edges, _has_time_grain, _is_null,
+        _json_object, _nodes_as_known, _parse_date, _string_list, _visible_by_instant,
+    )
+    from engine.theme_graph.store import RETIRED_LIKE_STATUSES
+
+    result = dict(schema=ETF_DISPLAY_SCHEMA, status="unavailable",
+        reason="NO_QUALIFIED_ETF_TRACKING_REFERENCE", references=[], exhaustive=False,
+        meaning="curated_tracking_reference_not_holdings", authority_ceiling="display_only",
+        security_identity={"status": "unavailable", "reason": "ETF_SECURITY_IDENTITY_NOT_BOUND"},
+        holdings={"status": "unavailable", "asof": None}, weights=None, performance=None,
+        authority={key: False for key in ("can_rank", "can_gate", "can_size", "can_trade",
+            "can_originate", "can_escalate")})
+    effective = _parse_date(asof, "asof")
+    cutoff = (_clock_instant(knowledge_cutoff, "knowledge_cutoff")
+              if _has_time_grain(knowledge_cutoff) else _parse_date(knowledge_cutoff, "knowledge_cutoff"))
+
+    def known(value, field):
+        if _is_null(value):
+            return False
+        return (_visible_by_instant(value, field, cutoff) if isinstance(cutoff, dt.datetime)
+                else _clock_instant(value, field).date() <= cutoff)
+
+    try:
+        policy = (source_policy if source_policy is not None else
+                  yaml.safe_load(rights.registry_path().read_bytes()))
+        house = policy["families"]["mastermind_curated"]
+        if (not isinstance(house, dict) or house.get("rights_class") not in rights.EMISSION_OK
+                or house.get("auth_class") != "house"):
+            result["reason"] = "HOUSE_DISPLAY_PERMISSION_UNAVAILABLE"
+            return result
+    except (OSError, TypeError, KeyError, yaml.YAMLError):
+        result["reason"] = "HOUSE_DISPLAY_PERMISSION_UNAVAILABLE"
+        return result
+
+    targets = {}
+    for binding in bindings:
+        resolution = binding["resolution"]
+        for path in binding["paths"]:
+            for hop in path["via"]:
+                n = hop["node"]
+                if (hop["type"] == "MEMBER_OF" and n["kind"] == "basket"
+                        and rights.family_for_node_id(n["node_id"]) == "mastermind_curated"
+                        and n["rights"]["public_display_allowed"] is True):
+                    key = (resolution["node_id"], resolution["security_id"], n["node_id"])
+                    targets[key] = None
+    if not targets:
+        return result
+    nodes = _records(store_view.read_nodes())
+    counts = Counter(n.get("node_id") for n in nodes)
+    visible = _nodes_as_known(nodes, _records(store_view.read_node_lifecycle()),
+                              asof=effective, knowledge_cutoff=cutoff)
+    evidence = {e.get("evidence_id"): e for e in _records(evidence_rows)}
+    if len(evidence) != len(_records(evidence_rows)):
+        raise ValueError("duplicate graph evidence")
+    by_basket = {}
+    for edge in _records(store_view.read_edges()):
+        if edge.get("type") == "TRACKS":
+            by_basket.setdefault(edge.get("dst"), []).append(edge)
+    live_by_basket = {}
+    for basket_id in sorted({key[2] for key in targets}):
+        live_by_basket[basket_id], _ = _collapse_relevant_edges(
+            by_basket.get(basket_id, []), node_id=basket_id, asof=effective, knowledge_cutoff=cutoff)
+    for binding_node, security_id, basket_id in sorted(targets):
+        for edge in sorted(live_by_basket[basket_id], key=lambda e: e["edge_id"]):
+            etf = visible.get(edge["src"])
+            try:
+                # Keep native graph clocks and reconstruction honesty. Missing or
+                # malformed clocks withhold this reference, never receive defaults.
+                if (not etf or counts[edge["src"]] != 1 or etf.get("kind") != "etf"
+                        or etf.get("status") in RETIRED_LIKE_STATUSES
+                        or not known(etf.get("computed_at"), "computed_at")
+                        or not known(edge.get("computed_at"), "computed_at")
+                        or not known(edge.get("evidence_time"), "evidence_time")
+                        or edge.get("source_class") != "curated"
+                        or edge.get("confidence_basis") != "membership_doc.v1"
+                        or edge.get("era") not in {"observed", "reconstruction"}
+                        or edge.get("date_provenance") not in {"seed_constant", "curated_changelog"}):
+                    continue
+                symbol = (_json_object(etf.get("external_ids")) or {}).get("symbol")
+                if (not isinstance(symbol, str) or not symbol or symbol != edge["src"].removeprefix("etf:")
+                        or identity.etf_node_id(symbol) != edge["src"]):
+                    continue
+                refs = _string_list(edge.get("evidence_refs"))
+                if not refs or len(refs) > 32 or len(set(refs)) != len(refs):
+                    continue
+                receipts = []
+                for eid in sorted(refs):
+                    e = evidence.get(eid)
+                    if (not e or e.get("licensing_display_ok") is not True
+                            or rights.family_for_source_ref(e.get("source_ref")) != "mastermind_curated"
+                            or not known(e.get("published_at"), "published_at")
+                            or not known(e.get("computed_at"), "computed_at")):
+                        break
+                    receipts.append({key: e[key] for key in ("evidence_id", "published_at", "computed_at")})
+                else:
+                    result["references"].append(dict(binding_node_id=binding_node, selected_security_id=security_id,
+                        basket_node_id=basket_id, etf_node_id=edge["src"], symbol=symbol,
+                        relationship="TRACKS", edge_id=edge["edge_id"],
+                        clocks={key: edge.get(key) for key in ("valid_from", "valid_to", "evidence_time", "belief_time", "computed_at")},
+                        era=edge["era"], date_provenance=edge["date_provenance"], evidence=receipts,
+                        relationship_rights=dict(family="mastermind_curated", rights_class=house["rights_class"],
+                            public_display_allowed=True)))
+                    if len(result["references"]) > 128:
+                        result.update(status="unavailable", reason="ETF_REFERENCE_BOUND_EXCEEDED", references=[])
+                        return result
+            except (ValueError, TypeError, KeyError):
+                continue
+    if result["references"]:
+        result.update(status="available", reason=None)
     return result

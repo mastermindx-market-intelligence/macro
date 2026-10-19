@@ -843,3 +843,27 @@ def test_theme_uses_existing_product_admission_and_response_ceiling(monkeypatch,
         assert response.status_code == 503
         assert response.json()['detail']['code'] == 'response_too_large'
         assert response.headers['vary'] == 'Authorization, Cookie'
+
+
+def test_theme_http_binds_tracking_references_to_selected_source_and_private_route(monkeypatch, tmp_path):
+    import pyarrow as arrow
+    import pyarrow.parquet as parquet
+    from tests.test_theme_graph_hierarchy_paths import _selected_etf_view
+    root = _theme_owner_root(tmp_path)
+    view = _selected_etf_view()
+    for name, rows in [('nodes',view._nodes),('edges',view._edges),('evidence',view._evidence)]:
+        parquet.write_table(arrow.Table.from_pylist(rows), root / 'data/theme_graph' / (name+'.parquet'))
+    before = {str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    with _client(monkeypatch, tmp_path, root=root) as client:
+        request = _theme_body(client)
+        response = client.post(THEME_ROUTE,json=request)
+    assert response.status_code == 200, response.text
+    assert response.headers['cache-control'] == 'private, no-store'
+    assert response.headers['vary'] == 'Authorization, Cookie'
+    value = response.json()
+    assert value['selection']['identity_id'] == request['identity_id']
+    assert value['source']['source_manifest_hash'] == request['source_manifest_hash']
+    assert value['theme_map']['etf_tracking']['references'][0]['selected_security_id'] == request['identity_id']
+    assert len(value['source']['reads']) == 6
+    assert value['theme_map']['etf_tracking']['holdings']['asof'] is None
+    assert before == {str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}

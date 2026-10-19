@@ -115,7 +115,7 @@ def compose_theme_continuation(root: Path | str, payload: dict, *, now: datetime
             read_evidence=lambda: frames['evidence'])
         result = security_navigation.compose_security_hierarchy(view, identities,
             identity_kind=payload['identity_kind'], identity_id=payload['identity_id'],
-            asof=effective, knowledge_cutoff=cutoff)
+            asof=effective, knowledge_cutoff=cutoff, source_policy=policy)
     except (OSError, ValueError, TypeError, KeyError, RecursionError):
         raise explorer.SourceUnavailable('theme_owner_unavailable') from None
     receipts = [{'path': rel, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}

@@ -906,3 +906,158 @@ def test_selected_house_refuses_unqualified_edge_evidence(mutation):
     result = _selected_hierarchy(view=view)
     assert result['bindings'][0]['paths'] == []
     assert 'private' not in json.dumps(result)
+
+
+# ETF009 remains a graph-native TRACKS reference, never a Data OS ETF join.
+def _selected_etf_view(*, second=False):
+    view = _selected_house_view(second=second)
+    view._nodes.append(_blank_node(node_id='etf:AAAETF', kind='etf',
+        provenance='membership_doc:baskets', market_scope='us',
+        external_ids=json.dumps({'symbol': 'AAAETF'})))
+    view._edges.append(_edge('tracks', 'TRACKS', 'etf:AAAETF', 'basket:baskets:solar',
+        evidence_refs=['ev:tracking'], confidence_basis='membership_doc.v1', date_provenance='seed_constant'))
+    view._evidence.append({**{c: None for c in store.EVIDENCE_COLUMNS},
+        'evidence_id': 'ev:tracking', 'kind': 'operator_curation',
+        'source_ref': 'data/baskets/membership.json', 'published_at': '2024-01-01',
+        'computed_at': STAMP, 'licensing_display_ok': True})
+    return view
+
+
+def test_selected_etf_keeps_native_reference_clocks_and_no_fund_claim():
+    from engine.theme_graph import rights
+    view = _selected_etf_view()
+    out = _selected_hierarchy(view=view)['etf_tracking']
+    assert out['schema'] == 'gmi.theme_etf_tracking_display/v1'
+    assert out['status'] == 'available' and out['exhaustive'] is False
+    assert len(out['references']) == 1
+    ref = out['references'][0]
+    assert ref['binding_node_id'] == 'co:us:AAA'
+    assert ref['selected_security_id'] == 'SEC:US-XNAS-AAA'
+    assert ref['basket_node_id'] == 'basket:baskets:solar'
+    assert ref['etf_node_id'] == 'etf:AAAETF' and ref['symbol'] == 'AAAETF'
+    assert ref['clocks'] == {k: view._edges[-1][k] for k in
+        ('valid_from', 'valid_to', 'evidence_time', 'belief_time', 'computed_at')}
+    assert ref['era'] == 'reconstruction' and ref['date_provenance'] == 'seed_constant'
+    assert ref['evidence'] == [{'evidence_id': 'ev:tracking', 'published_at': '2024-01-01', 'computed_at': STAMP}]
+    assert out['security_identity']['status'] == 'unavailable'
+    assert out['holdings'] == {'status': 'unavailable', 'asof': None}
+    assert out['weights'] is None and out['performance'] is None
+    assert not any(out['authority'].values())
+    assert rights.family_for_node_id('etf:AAAETF') is None
+    encoded = json.dumps(out)
+    assert 'name_en' not in encoded and 'source_ref' not in encoded and 'PRIVATE' not in encoded
+
+
+@pytest.mark.parametrize('mutation', ['vendor', 'unmapped', 'missing', 'snapshot_false',
+    'undated', 'future_published', 'future_computed', 'missing_computed', 'mixed_vendor', 'duplicate_ref'])
+def test_selected_etf_requires_each_current_house_dated_evidence(mutation):
+    view = _selected_etf_view()
+    evidence = view._evidence[-1]
+    if mutation == 'vendor': evidence['source_ref'] = 'data/baskets_china_ths/private'
+    elif mutation == 'unmapped': evidence['source_ref'] = 'unknown/private'
+    elif mutation == 'missing': view._evidence.pop()
+    elif mutation == 'snapshot_false': evidence['licensing_display_ok'] = False
+    elif mutation == 'undated': evidence['published_at'] = None
+    elif mutation == 'future_published': evidence['published_at'] = '2025-01-01'
+    elif mutation == 'future_computed': evidence['computed_at'] = '2025-01-01T00:00:00Z'
+    elif mutation == 'missing_computed': evidence['computed_at'] = None
+    elif mutation == 'mixed_vendor':
+        view._evidence.append({**evidence, 'evidence_id': 'private', 'source_ref': 'finviz_themes/private'})
+        view._edges[-1]['evidence_refs'].append('private')
+    else: view._edges[-1]['evidence_refs'].append('ev:tracking')
+    out = _selected_hierarchy(view=view)
+    assert out['bindings'][0]['paths']  # unrelated qualified company reading survives
+    assert out['etf_tracking']['status'] == 'unavailable'
+    assert out['etf_tracking']['references'] == []
+    assert 'private' not in json.dumps(out['etf_tracking']).lower()
+
+
+@pytest.mark.parametrize('mutation', ['closed', 'future_belief', 'future_effective', 'missing_symbol',
+    'symbol_mismatch', 'retired', 'future_node', 'duplicate_node', 'wrong_kind', 'missing_edge_clock',
+    'future_edge_clock', 'unknown_era', 'unknown_date_basis', 'other_basket', 'reverse_tracks', 'not_tracks'])
+def test_selected_etf_requires_native_visible_identity_and_selected_basket(mutation):
+    view = _selected_etf_view()
+    edge, etf = view._edges[-1], view._nodes[-1]
+    if mutation == 'closed': edge['valid_to'] = ASOF
+    elif mutation == 'future_belief': edge['belief_time'] = '2025-01-01'
+    elif mutation == 'future_effective': edge['valid_from'] = '2025-01-01'
+    elif mutation == 'missing_symbol': etf['external_ids'] = '{}'
+    elif mutation == 'symbol_mismatch': etf['external_ids'] = json.dumps({'symbol': 'OTHER'})
+    elif mutation == 'retired': etf['status'] = 'retired'
+    elif mutation == 'future_node': etf['computed_at'] = '2025-01-01T00:00:00Z'
+    elif mutation == 'duplicate_node': view._nodes.append(copy.deepcopy(etf))
+    elif mutation == 'wrong_kind': etf['kind'] = 'company'
+    elif mutation == 'missing_edge_clock': edge['computed_at'] = None
+    elif mutation == 'future_edge_clock': edge['computed_at'] = '2025-01-01T00:00:00Z'
+    elif mutation == 'unknown_era': edge['era'] = None
+    elif mutation == 'unknown_date_basis': edge['date_provenance'] = None
+    elif mutation == 'other_basket': edge['dst'] = 'basket:baskets:unselected'
+    elif mutation == 'reverse_tracks': edge['src'], edge['dst'] = edge['dst'], edge['src']
+    else: edge['type'] = 'RELATED'
+    assert _selected_hierarchy(view=view)['etf_tracking']['references'] == []
+
+
+@pytest.mark.parametrize('rights_class,auth', [('internal_only','house'),('unresolved','house'),
+    ('direct_display_ok','licensed'),('unknown','house')])
+def test_selected_etf_current_policy_revocation_overrides_true_mint_flag(rights_class,auth):
+    out = _selected_hierarchy(view=_selected_etf_view(), source_policy={
+        'families': {'mastermind_curated': {'rights_class': rights_class, 'auth_class': auth}}})
+    assert out['etf_tracking']['reason'] == 'HOUSE_DISPLAY_PERMISSION_UNAVAILABLE'
+    assert out['etf_tracking']['references'] == []
+
+
+def test_selected_etf_policy_is_read_fresh_not_native_memoized(tmp_path, monkeypatch):
+    from engine.theme_graph import rights
+    registry = tmp_path / 'policy.yml'
+    monkeypatch.setattr(rights, 'registry_path', lambda: registry)
+    registry.write_text('families: {mastermind_curated: {rights_class: direct_display_ok, auth_class: house}}')
+    # Warm the incumbent native cache, then revoke the actual current bytes.
+    assert rights.emission_allowed('mastermind_curated')
+    registry.write_text('families: {mastermind_curated: {rights_class: internal_only, auth_class: house}}')
+    try:
+        assert _selected_hierarchy(view=_selected_etf_view())['etf_tracking']['references'] == []
+    finally:
+        rights._load.cache_clear()
+
+
+def test_selected_etf_issuer_keeps_share_class_associations():
+    out = _selected_hierarchy(view=_selected_etf_view(second=True),
+        rows=[_selected_security_row(),_selected_security_row('co:us:AAB','SEC:US-XNAS-AAB')],
+        identity_kind='issuer',identity_id='ISS:US-XNAS-AAA')['etf_tracking']
+    assert {(r['binding_node_id'],r['selected_security_id']) for r in out['references']} == {
+        ('co:us:AAA','SEC:US-XNAS-AAA'),('co:us:AAB','SEC:US-XNAS-AAB')}
+
+
+def test_selected_etf_latest_known_withdrawal_and_future_withdrawal():
+    view = _selected_etf_view()
+    closed = {**view._edges[-1], 'belief_time': '2024-05-01', 'valid_to': ASOF,
+        'computed_at': '2024-05-01T00:00:00Z'}
+    view._edges.append(closed)
+    assert _selected_hierarchy(view=view)['etf_tracking']['references'] == []
+    closed['belief_time'] = '2025-01-01'
+    assert len(_selected_hierarchy(view=view)['etf_tracking']['references']) == 1
+
+
+def test_selected_etf_date_only_belief_keeps_native_intraday_conservatism():
+    view = _selected_etf_view()
+    view._edges[-1]['belief_time'] = ASOF
+    assert _selected_hierarchy(view=view, knowledge_cutoff=ASOF+'T12:00:00Z')['etf_tracking']['references'] == []
+    assert len(_selected_hierarchy(view=view, knowledge_cutoff='2024-06-02T00:00:00Z')['etf_tracking']['references']) == 1
+
+
+def test_selected_etf_reference_bound_withholds_instead_of_partial_coverage():
+    view = _selected_etf_view()
+    for i in range(129):
+        symbol = 'FUND'+str(i)
+        view._nodes.append({**view._nodes[-1], 'node_id':'etf:'+symbol, 'external_ids':json.dumps({'symbol':symbol})})
+        view._edges.append({**view._edges[-1], 'edge_id':'tracks:'+str(i), 'src':'etf:'+symbol})
+    out = _selected_hierarchy(view=view)['etf_tracking']
+    assert out['reason'] == 'ETF_REFERENCE_BOUND_EXCEEDED' and out['references'] == []
+
+
+@pytest.mark.parametrize('house', [None, True, 'unreviewed'])
+def test_selected_etf_unreadable_current_policy_is_typed_unavailable(house):
+    result = _selected_hierarchy(view=_selected_etf_view(),
+        source_policy={'families': {'mastermind_curated': house}})
+    assert result['etf_tracking']['reason'] == 'HOUSE_DISPLAY_PERMISSION_UNAVAILABLE'
+    assert result['etf_tracking']['references'] == []
