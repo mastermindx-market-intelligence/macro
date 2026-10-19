@@ -442,6 +442,7 @@ def _stmt_row(metric_id: str, end: str, value: str, *, statement_type: str) -> d
             "cells": [{
                 "period": {"kind": "duration", "start": "2026-01-01", "end": end},
                 "value": value,
+                "unit": "USD",
             }],
         }],
     }

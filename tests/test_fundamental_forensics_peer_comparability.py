@@ -573,13 +573,15 @@ def _row(metric_id: str, cells: list[dict]) -> dict:
 
 
 def test_tree_metric_observations_carries_start_unit_and_keeps_latest_end() -> None:
-    metric_ids = ("revenue", "noinfo", "badstart", "emptyunit")
+    metric_ids = ("revenue", "noinfo", "badstart", "nounit", "emptyunit", "nokind")
     generation = _FakeGeneration({
         "acc-1": _tree([
             _row("revenue", [_cell("101")]),
-            _row("noinfo", [_cell("55", start=None, unit=None)]),
+            _row("noinfo", [_cell("55", start=None)]),
             _row("badstart", [_cell("66", start="not-a-date")]),
+            _row("nounit", [_cell("56", unit=None)]),
             _row("emptyunit", [_cell("77", unit="")]),
+            _row("nokind", [_cell("78", kind="")]),
         ]),
         # a later period_end wins the latest-selection exactly as before
         "acc-2": _tree([
@@ -595,16 +597,25 @@ def test_tree_metric_observations_carries_start_unit_and_keeps_latest_end() -> N
     assert latest["revenue"].period_start == date(2026, 7, 1)
     assert latest["revenue"].unit == "USD"
     assert latest["revenue"].period_basis == "duration"
-    # metric_version is never invented by the builder
+    # metric_version is never invented: without the member registry's
+    # versions (``metric_versions``) every observation carries None
     assert all(obs.metric_version is None for obs in latest.values())
     # a start that is not text contributes nothing (None, never a guess)
     assert latest["noinfo"].period_start is None
-    assert latest["noinfo"].unit is None
     # an unparsable start skips the cell, exactly like an unparsable end
     assert "badstart" not in latest
-    # an empty unit string is normalized to None
-    assert latest["emptyunit"].unit is None
-    assert latest["emptyunit"].period_start == date(2026, 4, 1)
+    # A35: a cell of unknown unit or period kind is not comparable, so it
+    # contributes nothing rather than slipping past the anchor's controls
+    assert "nounit" not in latest
+    assert "emptyunit" not in latest
+    assert "nokind" not in latest
+    stamped = bff._tree_metric_observations(
+        generation, ["acc-1", "acc-2"], metric_ids, {}, "TST",
+        metric_versions={"revenue": "1.0.0"},
+    )
+    assert stamped is not None
+    assert stamped["revenue"].metric_version == "1.0.0"
+    assert stamped["noinfo"].metric_version is None
 
 
 # ── (6) same-end ties: deterministic pick, then alignment to the anchor ──────

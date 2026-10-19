@@ -10,6 +10,7 @@ the golden provider is proven absent from the process.
 """
 from __future__ import annotations
 
+import copy
 import json
 import shutil
 import sys
@@ -21,13 +22,17 @@ import pandas as pd
 
 import scripts.build_fundamental_forensics as bff
 from engine.fundamental_forensics.detectors import issuer_class_for_sic
+from engine.fundamental_forensics.metric_registry import _content_digest
 from engine.fundamental_forensics.peer_cohort import (
     CohortDefinition,
     CohortMember,
     MetricObservation,
     build_cohort_table,
 )
-from engine.fundamental_forensics.production_datasets import ProductionDatasetError
+from engine.fundamental_forensics.production_datasets import (
+    ProductionDatasetError,
+    snapshot_core_registry_payload,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 GEN_AT = "2026-10-12T00:00:00+00:00"
@@ -496,3 +501,116 @@ def test_state_peer_cohort_aligns_a_same_end_tie_to_each_anchor(
     assert revenue_value("BBB", "BBB") == "202"
     assert revenue_value("CCC", "BBB") == "202"
     assert revenue_codes("CCC", "BBB") == set()
+
+
+def _registry_role_bytes(*, revenue_version: str | None = None) -> bytes:
+    """The shipped registry snapshot as a generation's registry role payload."""
+    payload = copy.deepcopy(snapshot_core_registry_payload(ROOT))
+    if revenue_version is not None:
+        entry = next(
+            m for m in payload["catalog"]["metrics"] if m["metric_id"] == "revenue"
+        )
+        entry["rule"] = {**entry["rule"], "version": revenue_version}
+        # a real re-versioned catalog re-pins its own content digest
+        payload["catalog"]["content_sha256"] = _content_digest(payload["catalog"])
+    return json.dumps(payload, sort_keys=True).encode("utf-8")
+
+
+def _cohort_codes(cohort: dict, anchor: str, member: str, metric_id: str) -> set[str]:
+    table = next(
+        t for t in cohort["tables"] if t["anchor_issuer_id"] == _issuer_id(anchor)
+    )
+    return {
+        x["code"] for x in table["exclusions"]
+        if x["metric_id"] == metric_id and x["issuer_id"] == _issuer_id(member)
+    }
+
+
+def test_generation_metric_versions_reads_each_member_registry() -> None:
+    """A35-V1 input: the version comes from the member's pinned registry role."""
+    metric_ids = ("revenue", "net_income_loss", "no_such_metric")
+    assert bff._generation_metric_versions(_FakeGeneration({}), metric_ids) == {}
+    broken = _FakeGeneration({})
+    broken.role_payloads = {"registry_json": b"{not json"}
+    assert bff._generation_metric_versions(broken, metric_ids) == {}
+    malformed = _FakeGeneration({})
+    malformed.role_payloads = {"registry_json": b'{"catalog": {}}'}
+    assert bff._generation_metric_versions(malformed, metric_ids) == {}
+
+    generation = _FakeGeneration({})
+    generation.role_payloads = {"registry_json": _registry_role_bytes()}
+    cache: dict = {}
+    versions = bff._generation_metric_versions(generation, metric_ids, cache)
+    assert versions == {"revenue": "1.0.0", "net_income_loss": "1.0.0"}
+    assert bff._generation_metric_versions(generation, metric_ids, cache) is versions
+
+    bumped = _FakeGeneration({})
+    bumped.role_payloads = {"registry_json": _registry_role_bytes(revenue_version="1.0.1")}
+    assert bff._generation_metric_versions(bumped, metric_ids, cache) == {
+        "revenue": "1.0.1",
+        "net_income_loss": "1.0.0",
+    }
+
+
+def test_state_peer_cohort_excludes_a_peer_whose_metric_version_differs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A35-V1 fires through the composer, not only in the kernel.
+
+    BBB's generation pins a registry whose revenue rule is 1.0.1 while every
+    other member pins 1.0.0: revenue is excluded both ways across that line,
+    and ni (same version everywhere) is untouched.
+    """
+    generations = {}
+    for ticker in ("AAA", "BBB", "CCC", "EEE"):
+        generation = _FakeGeneration({f"0000000-26-00000{ticker[-1]}": _member_tree(ticker)})
+        generation.role_payloads = {
+            "registry_json": _registry_role_bytes(
+                revenue_version="1.0.1" if ticker == "BBB" else None
+            )
+        }
+        generations[_issuer_id(ticker)] = generation
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+
+    assert "A35-V1" in _cohort_codes(cohort, "AAA", "BBB", "revenue")
+    assert "A35-V1" in _cohort_codes(cohort, "BBB", "AAA", "revenue")
+    assert "A35-V1" in _cohort_codes(cohort, "BBB", "CCC", "revenue")
+    assert _cohort_codes(cohort, "AAA", "CCC", "revenue") == set()
+    assert _cohort_codes(cohort, "AAA", "BBB", "ni") == set()
+
+
+def test_state_peer_cohort_drops_cells_without_a_unit_or_period_kind(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A35-K1/U1 input: an observation of unknown basis or unit is not comparable.
+
+    BBB's revenue cell states no unit and CCC's ni cell no period kind; each
+    contributes nothing, so the member reports a missing observation rather
+    than slipping past the anchor's unit and basis controls.
+    """
+    trees = {ticker: _member_tree(ticker) for ticker in ("AAA", "BBB", "CCC", "EEE")}
+    for ticker, metric_id, mutate in (
+        ("BBB", "revenue", lambda cell: {**cell, "unit": None}),
+        ("CCC", "ni", lambda cell: {**cell, "period": {**cell["period"], "kind": None}}),
+    ):
+        row = next(
+            r for r in trees[ticker]["statements"][0]["rows"]
+            if r["standardized_metric_id"] == metric_id
+        )
+        row["cells"] = [mutate(cell) for cell in row["cells"]]
+    generations = {
+        _issuer_id(ticker): _FakeGeneration({f"0000000-26-00000{ticker[-1]}": tree})
+        for ticker, tree in trees.items()
+    }
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+
+    assert "A35-X1" in _cohort_codes(cohort, "AAA", "BBB", "revenue")
+    assert "A35-X1" in _cohort_codes(cohort, "AAA", "CCC", "ni")
+    assert _cohort_codes(cohort, "AAA", "BBB", "ni") == set()
+    assert _cohort_codes(cohort, "AAA", "CCC", "revenue") == set()

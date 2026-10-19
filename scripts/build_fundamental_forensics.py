@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import gzip
+import hashlib
 import json
 import logging
 import math
@@ -73,6 +74,7 @@ from engine.fundamental_forensics.production_datasets import (  # noqa: E402
     ProductionDatasetError,
     build_production_dataset_store,
     load_latest_generation,
+    registry_from_payload,
 )
 
 log = logging.getLogger("build_fundamental_forensics")
@@ -883,6 +885,44 @@ def _cohort_policy_defaults() -> dict[str, Any]:
     }
 
 
+def _generation_metric_versions(
+    generation: Any,
+    metric_ids: tuple[str, ...],
+    cache: dict[str, dict[str, str]] | None = None,
+) -> dict[str, str]:
+    """The rule version of each metric in the member generation's pinned registry.
+
+    A generation whose registry role is absent, undecodable or cannot be
+    rebuilt yields no versions: its observations then carry
+    ``metric_version=None``, which the cohort's A35-V1 check excludes against
+    any versioned anchor. ``cache`` is keyed by the role payload digest, so
+    members published under one registry snapshot rebuild it once.
+    """
+    payloads = getattr(generation, "role_payloads", None)
+    raw = payloads.get("registry_json") if isinstance(payloads, Mapping) else None
+    if not isinstance(raw, (bytes, bytearray)):
+        return {}
+    digest = hashlib.sha256(bytes(raw)).hexdigest()
+    if cache is not None and digest in cache:
+        return cache[digest]
+    versions: dict[str, str] = {}
+    try:
+        registry = registry_from_payload(json.loads(bytes(raw).decode("utf-8")))
+    except (UnicodeDecodeError, json.JSONDecodeError, ProductionDatasetError):
+        registry = None
+    if registry is not None:
+        for metric_id in metric_ids:
+            try:
+                version = registry.metric(metric_id).version
+            except KeyError:
+                continue
+            if isinstance(version, str) and version:
+                versions[metric_id] = version
+    if cache is not None:
+        cache[digest] = versions
+    return versions
+
+
 def _tree_metric_observations(
     generation: Any,
     accessions: list[str],
@@ -890,6 +930,7 @@ def _tree_metric_observations(
     excluded_metrics: frozenset[str],
     accession_periods: Mapping[str, str],
     same_end: dict[str, tuple[MetricObservation, ...]] | None = None,
+    metric_versions: Mapping[str, str] | None = None,
 ) -> dict[str, MetricObservation] | None:
     """Project the latest available cell per metric from the precomputed trees.
 
@@ -897,6 +938,11 @@ def _tree_metric_observations(
     dataset-absent case. A cell whose value is not canonical text contributes
     nothing (the cohort table then reports that member×metric as a missing
     observation); no value is converted, scaled, rounded, or floated here.
+    A cell without a stated period kind or unit contributes nothing either:
+    the cohort's A35-K1/U1 controls compare against the anchor's basis and
+    unit, so an observation with neither known is not comparable (A35).
+    ``metric_versions`` (``_generation_metric_versions``) stamps each
+    observation with the member registry's rule version for A35-V1.
     ``excluded_metrics`` is the member's class-derived not-applicable closure
     (G0-b), intersected with the field denominator by the caller.
 
@@ -953,20 +999,23 @@ def _tree_metric_observations(
                         value = Decimal(value_text)
                     except (ValueError, InvalidOperation):
                         continue
+                    period_kind = period.get("kind")
+                    cell_unit = cell.get("unit")
+                    if not (isinstance(period_kind, str) and period_kind):
+                        continue
+                    if not (isinstance(cell_unit, str) and cell_unit):
+                        continue
                     incumbent_end = latest_end.get(metric_id)
                     if incumbent_end is not None and end_date < incumbent_end:
                         continue
-                    cell_unit = cell.get("unit")
                     observation = MetricObservation(
                         value=value,
                         period_end=end_date,
-                        period_basis=str(period.get("kind") or ""),
+                        period_basis=period_kind,
                         applicable=metric_id not in excluded_metrics,
                         period_start=start_date,
-                        unit=cell_unit
-                        if isinstance(cell_unit, str) and cell_unit
-                        else None,
-                        metric_version=None,
+                        unit=cell_unit,
+                        metric_version=(metric_versions or {}).get(metric_id),
                     )
                     if incumbent_end is None or end_date > incumbent_end:
                         latest_end[metric_id] = end_date
@@ -1102,6 +1151,7 @@ def _compose_peer_cohort(
             ))
         return None, PEER_COHORT_REASON_DATASET_ABSENT
 
+    registry_versions: dict[str, dict[str, str]] = {}
     for member in members:
         issuer_id, join_reason = issuer_master.join(member["cik10"])
         if issuer_id is None:
@@ -1135,6 +1185,9 @@ def _compose_peer_cohort(
         observations = _tree_metric_observations(
             generation, member["accessions"], metric_ids, excluded_metrics,
             member.get("accession_periods") or {}, same_end=same_end,
+            metric_versions=_generation_metric_versions(
+                generation, metric_ids, registry_versions
+            ),
         )
         if observations is None:
             exclusions.append(_member_exclusion(
