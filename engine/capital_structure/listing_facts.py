@@ -181,6 +181,10 @@ class ListingFact:
             _require(isinstance(item, EvidenceRef), "listing.evidence: EvidenceRef required")
         _iso_utc_instant(self.available_at, "listing.available_at")
         _iso_day(self.as_of, "listing.as_of")
+        _require(
+            self.available_at[:10] >= self.as_of,
+            f"listing.available_at {self.available_at} precedes the day it describes, {self.as_of}",
+        )
 
     def as_record(self) -> dict[str, Any]:
         return {
@@ -274,15 +278,36 @@ def _fpi_of(filings: Any, as_of: str) -> tuple[bool | str, str | None]:
     return "unknown", REASON_FPI_FORMS_DISAGREE
 
 
+#: A Rule 5635 reference, capturing its sub-paragraph letter when one is named.
+_RULE_5635 = re.compile(r"5635(?:\s*\(([a-z])\))?")
+#: A negation inside a clause.
+_NEGATION = re.compile(r"\b(not|no|never|neither|nor)\b")
+
+
 def _normalized_16g(text: str) -> str:
     """Casefolded, hyphen and no-break-space normalized, whitespace-collapsed."""
-    return " ".join(text.replace(" ", " ").replace("-", " ").casefold().split())
+    for dash in ("\u2010", "\u2011", "-"):
+        text = text.replace(dash, " ")
+    return " ".join(text.replace("\u00a0", " ").casefold().split())
+
+
+def _names_5635d(letters: Sequence[str]) -> bool:
+    """Whether Rule 5635 references reach 5635(d): the whole rule or ``(d)``."""
+    return any(letter in ("", "d") for letter in letters)
 
 
 def _practice_of(
     fpi: bool | str, item_16g: Any, as_of: str
 ) -> tuple[str, str | None]:
-    """Rule 3: the Rule 5635 home-country practice election."""
+    """Rule 3: the Rule 5635(d) home-country practice election.
+
+    The Item 16G text is read clause by clause (split on ``.`` and ``;``).  A
+    clause naming home country practice elects it for 5635(d) when it also
+    names Rule 5635 as a whole or 5635(d), and is not negated.  A negated
+    election, or a home-country-practice clause that names no rule while the
+    text names 5635(d) elsewhere, is inconclusive.  A then-current Item 16G is
+    one filed inside the same 24-month window as the FPI determination.
+    """
     if fpi is False:
         return "not_elected", None
     if fpi == "unknown":
@@ -292,19 +317,33 @@ def _practice_of(
     _require(isinstance(item_16g, Mapping), "item_16g: a mapping or null is required")
     filed = item_16g.get("filed")
     _require(isinstance(filed, str) and bool(_ISO_DATE.match(filed)), "item_16g: an ISO filed date is required")
-    if filed > as_of:
+    if filed > as_of or filed < _months_before(as_of, FPI_LOOKBACK_MONTHS):
         return "unknown", REASON_ITEM_16G_MISSING
     text = item_16g.get("text")
     complete = item_16g.get("complete")
     _require(isinstance(text, str) and isinstance(complete, bool), "item_16g: text and complete are required")
     normalized = _normalized_16g(text)
-    names_rule = "5635" in normalized
-    names_practice = "home country practice" in normalized
-    if names_rule and names_practice:
-        return "elected", None
-    if complete and not names_rule:
-        return "not_elected", None
-    return "unknown", REASON_ITEM_16G_INCONCLUSIVE
+    text_names_5635d = _names_5635d(_RULE_5635.findall(normalized))
+    elected = ambiguous = cross = False
+    for clause in re.split(r"[.;]", normalized):
+        if "home country practice" not in clause:
+            continue
+        letters = _RULE_5635.findall(clause)
+        negated = bool(_NEGATION.search(clause))
+        if _names_5635d(letters):
+            if negated:
+                ambiguous = True
+            else:
+                elected = True
+        elif not letters and not negated and text_names_5635d:
+            cross = True
+    if ambiguous or cross:
+        return "unknown", REASON_ITEM_16G_INCONCLUSIVE
+    if elected:
+        return ("elected", None) if complete else ("unknown", REASON_ITEM_16G_INCONCLUSIVE)
+    if not complete:
+        return "unknown", REASON_ITEM_16G_INCONCLUSIVE
+    return "not_elected", None
 
 
 def build_listing_fact(

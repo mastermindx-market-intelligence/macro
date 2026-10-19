@@ -325,6 +325,59 @@ def test_g0e_builder_home_country_practice_rules() -> None:
     assert "item_16g_inconclusive" in incomplete.reasons
 
 
+def test_g0e_item_16g_reads_each_clause() -> None:
+    fpi_world = ({"form": "20-F", "filed": C1.shift(SALE, 30)},)
+
+    def read(text: str, complete: bool = True) -> ListingFact:
+        return build(filings=fpi_world, item_16g={"text": text, "complete": complete, "filed": C1.shift(SALE, 10)})
+
+    # Home country practice for another sub-paragraph is no 5635(d) election.
+    other = read("Item 16G. We follow home country practice in lieu of Rule 5635(c); we comply with Rule 5635(d).")
+    assert other.home_country_practice_5635 == "not_elected"
+    # A negated practice clause beside a compliance statement elects nothing.
+    complying = "We do not follow home country practice; we comply with Nasdaq Rule 5635 in full."
+    assert read(complying).home_country_practice_5635 == "not_elected"
+    partial = read(complying, complete=False)
+    assert partial.home_country_practice_5635 == "unknown"
+    assert "item_16g_inconclusive" in partial.reasons
+    # 5635(d) by sub-paragraph elects like the whole rule.
+    by_letter = read("We follow home country practice in lieu of Nasdaq Rule 5635(d).")
+    assert by_letter.home_country_practice_5635 == "elected"
+    # A negated clause that names 5635(d) is inconclusive, never an election.
+    negated = read("We do not follow home country practice in lieu of Rule 5635(d).")
+    assert negated.home_country_practice_5635 == "unknown"
+    assert "item_16g_inconclusive" in negated.reasons
+    # Practice in one sentence and the rule in another are not joined.
+    split = read("We follow home country practice for shareholder approvals. See Nasdaq Rule 5635.")
+    assert split.home_country_practice_5635 == "unknown"
+    assert "item_16g_inconclusive" in split.reasons
+    # An election in an incomplete disclosure is inconclusive.
+    cut = read("We follow home country practice in lieu of Rule 5635.", complete=False)
+    assert cut.home_country_practice_5635 == "unknown"
+    assert "item_16g_inconclusive" in cut.reasons
+    # A non-breaking hyphen normalizes like a hyphen.
+    assert read("We follow home\u2011country practice in lieu of Rule 5635.").home_country_practice_5635 == "elected"
+
+
+def test_g0e_item_16g_older_than_the_fpi_window_is_missing() -> None:
+    fpi_world = ({"form": "20-F", "filed": C1.shift(SALE, 30)},)
+    text = "Item 16G. The Company follows home country practice in lieu of Rule 5635."
+    # The window is the FPI determination's: 24 calendar months ending on as_of.
+    stale = build(filings=fpi_world, item_16g={"text": text, "complete": True, "filed": "2024-10-13"})
+    assert stale.home_country_practice_5635 == "unknown"
+    assert "item_16g_missing" in stale.reasons
+    first_day = build(filings=fpi_world, item_16g={"text": text, "complete": True, "filed": "2024-10-14"})
+    assert first_day.home_country_practice_5635 == "elected"
+
+
+def test_g0e_listing_fact_refuses_a_day_after_its_availability() -> None:
+    with pytest.raises(ic.ContractViolation, match="precedes the day it describes"):
+        build(as_of=C1.shift(SALE, -1), available_at=f"{C1.shift(SALE, 1)}T00:00:00Z")
+    # Available on the day it describes, or later, is admissible.
+    assert build(as_of=SALE, available_at=f"{SALE}T00:00:00Z").as_of == SALE
+    assert build(as_of=C1.shift(SALE, 1), available_at=AS_OF).as_of == C1.shift(SALE, 1)
+
+
 def test_g0e_builder_validates_available_at() -> None:
     with pytest.raises(Exception):
         build(available_at="2026-10-14 00:00:00")
@@ -552,6 +605,38 @@ def test_g0e_fpi_election_unknown_is_conditional() -> None:
         assert "nasdaq_5635_applies_unless_home_country_practice_elected" in route.conditions
         assert route.status != "eligible"
     assert evaluation.inputs["nasdaq"]["home_country_practice_5635"] == "unknown"
+
+
+def test_g0e_listing_describing_a_later_day_is_ignored() -> None:
+    kwargs = dict(
+        registration=C1.standard_registration()[0],
+        share_basis=C1.standard_registration()[1],
+        other=C1.NASDAQ_ASSUMPTIONS,
+    )
+    plain = _run(**kwargs)
+    later = observed_nasdaq()
+    # A record that bypassed the constructor can still describe a day after the
+    # cutoff while claiming an availability on or before it; capacity excludes
+    # it on its own.
+    object.__setattr__(later, "as_of", C1.shift(SALE, -1))
+    evaluation = _run(**kwargs, listing=later)
+    assert evaluation.inputs["listing_excluded_after_as_of"] is True
+    assert _pools(evaluation).keys() == _pools(plain).keys()
+    assert {rid: r.status for rid, r in _routes(evaluation).items()} == {
+        rid: r.status for rid, r in _routes(plain).items()
+    }
+
+
+def test_g0e_election_without_evidence_keeps_the_pool() -> None:
+    evaluation = _two_shelf_run(listing=observed_nasdaq(evidence=()))
+    pools = _pools(evaluation)
+    assert NASDAQ_POOL in pools
+    for route_id in pools[NASDAQ_POOL].shared_by:
+        route = _routes(evaluation)[route_id]
+        assert "nasdaq_5635_applies_unless_home_country_practice_evidenced" in route.conditions
+        assert route.status != "eligible"
+    assert evaluation.inputs["nasdaq"].get("reason") != "home_country_practice_elected"
+    assert "nasdaq.5615.a.3" not in _consulted_rules(evaluation)
 
 
 def _run_at(sale: str, listing: ListingFact, pack: Any = C1.PACK):
@@ -814,6 +899,26 @@ def test_g0e_compose_scenario_passes_the_listing() -> None:
     capacity_inputs = composed.capacity.inputs
     assert capacity_inputs["listing"] == fact.as_record()
     assert capacity_inputs["nasdaq"]["reason"] == "home_country_practice_elected"
+
+
+def test_g0e_compose_scenario_forwards_the_listing() -> None:
+    kwargs = dict(C2.a21_kwargs())
+    other = tuple(kwargs.pop("other", ()))
+    state, scenario, built_rules = C1.build(other=other + tuple(S0.FUNDING_ASSUMPTIONS), **kwargs)
+    scenario = dataclasses_replace(scenario, fee_rate=S0.FEE_RATE)
+    financials = F.financials(F.cash(str(S0.OPENING_CASH), measured="2026-06-30"))
+    commitments = F.covenants(
+        F.covenant("cov-min-1", str(S0.LIQUIDITY_FLOOR), available_at=S0.COVENANT_AVAILABLE)
+    )
+    args = (state, SS.instrument_set(), SS.basis(), financials, commitments, scenario, built_rules)
+    listing = observed_nasdaq(exchanges=["NYSE"])
+    composed = sc.compose_scenario(*args, pack=C1.PACK, listing=listing)
+    explained = sc.explain_scenario(*args, pack=C1.PACK, listing=listing)
+    assert composed.as_record() == explained.result.as_record()
+    unknowns = [item.unknown_id for item in composed.capacity_envelope.unknowns]
+    assert any(uid.startswith("listing_venue_conflict:") for uid in unknowns)
+    plain = sc.explain_scenario(*args, pack=C1.PACK).result.as_record()
+    assert sc.compose_scenario(*args, pack=C1.PACK).as_record() == plain
 
 
 # ---------------------------------------------------------------------------

@@ -253,6 +253,7 @@ jobs:
       - "engine/capital_structure/instrument_candidates.py"
       - "engine/capital_structure/instrument_resolution.py"
       - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
       - "engine/capital_structure/projection.py"
       - "engine/capital_structure/reference_qualification.py"
       - "engine/capital_structure/registration_integration.py"
@@ -1863,6 +1864,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # 2026-10-18 scope: exclusive closure: the static import closure of the three test
       # files (curated_exclusive_closure_findings), listed literally so no glob widens
       # the job onto the packing-probe paths.
@@ -3491,6 +3493,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8640,6 +8643,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -20781,6 +20785,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - engine/neuralweb/market_memory_brain_citations.py
@@ -29024,6 +29029,7 @@ jobs:
       - "engine/capital_structure/variable_terms.py"
       - "engine/capital_structure/verified_projection_generation.py"
       - "scripts/compile_capital_structure_events.py"
+      - "engine/capital_structure/listing_facts.py"
       # R15: the existing phase1 tests now reach both native 30m pivot families.
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
@@ -31853,6 +31859,7 @@ jobs:
       - "engine/capital_structure/instrument_candidates.py"
       - "engine/capital_structure/instrument_resolution.py"
       - "engine/capital_structure/issuer_state_contracts.py"
+      - "engine/capital_structure/listing_facts.py"
       - "engine/capital_structure/reference_qualification.py"
       - "engine/capital_structure/registration_integration.py"
       - "engine/capital_structure/registration_lifecycle.py"

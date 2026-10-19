@@ -875,13 +875,20 @@ class _Builder:
         self.transactions = transactions
         #: SPEC_G0 §2.2: the listing enters as an additive keyword.  A then-known
         #: view later than the state cutoff is not yet known: it is treated as
-        #: None, and the digest records the exclusion instead of the fact.
+        #: None, and the digest records the exclusion instead of the fact.  The
+        #: view is later when it became available after the cutoff, or when it
+        #: describes a day after the cutoff's own day (it was derived from
+        #: filings the state could not yet see).
         self.listing_supplied = listing
         self.listing_excluded_after_as_of = False
         self.listing: ListingFact | None = listing
         if listing is not None:
             available = _utc(listing.available_at)
-            if available is None or available > cutoff:
+            if (
+                available is None
+                or available > cutoff
+                or listing.as_of > cutoff.date().isoformat()
+            ):
                 self.listing_excluded_after_as_of = True
                 self.listing = None
         #: SPEC_C2X §3: the effective resolution the ledger decides for a usage key
@@ -2643,6 +2650,8 @@ class _Builder:
             self.path_conditions[path.path_id].add(
                 "nasdaq_aggregation_of_related_transactions_not_evaluated"
             )
+        # SPEC_G0 §2.2: G0-E never removes an existing condition, so an exempted
+        # route keeps the Rule 5635(d) citation and its aggregation condition.
         if self._nasdaq_5615_pool_inapplicable(active_paths):
             return
         price = self.scenario.price
@@ -2797,6 +2806,14 @@ class _Builder:
                 )
             return False
         if listing.home_country_practice_5635 != "elected":
+            return False
+        if not listing.evidence:
+            # An election asserted without its Item 16G evidence decides nothing:
+            # the pool stays and every sharing route is conditioned on it.
+            for path in active_paths:
+                self.path_conditions[path.path_id].add(
+                    "nasdaq_5635_applies_unless_home_country_practice_evidenced"
+                )
             return False
         if NASDAQ_5615_RULE_ID not in self.pack.rules:
             for path in active_paths:

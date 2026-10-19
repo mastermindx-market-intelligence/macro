@@ -1254,14 +1254,15 @@ def compose_scenario(
     rules: RulePack,
     *,
     pack: Any = None,
+    listing: ListingFact | None = None,
 ) -> ScenarioResult:
     """The composed :class:`ScenarioResult` for one scenario on one issuer state.
 
-    The signature is frozen at exactly the ``INTERFACE_OWNERSHIP`` parameters
-    (masterplan §9, pinned by the issuer-state-contracts interface test), so the
-    SPEC_G0 Rev 2.2 ``listing`` pass-through rides :func:`explain_scenario`
-    until the seat's integration step widens the frozen interface.
+    The signature is exactly the ``INTERFACE_OWNERSHIP`` parameters (masterplan
+    §9, pinned by the issuer-state-contracts interface test).  ``listing`` is the
+    optional then-known listing fact (SPEC_G0 §2.4); with no listing the result
+    is byte-identical to the result before G0.
     """
     return explain_scenario(
-        state, instruments, basis, financials, commitments, scenario, rules, pack=pack
+        state, instruments, basis, financials, commitments, scenario, rules, pack=pack, listing=listing
     ).result
