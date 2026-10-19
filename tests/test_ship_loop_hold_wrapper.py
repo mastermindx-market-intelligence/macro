@@ -624,8 +624,17 @@ def test_stop_hook_routes_through_wrapper_but_keeps_original_guard_as_delegate()
         for entry in settings["hooks"]["Stop"]
         for hook in entry["hooks"]
     ]
-    assert len(stop_hooks) == 1
-    stop = stop_hooks[0]
+    assert len(stop_hooks) == 2
+    enforcement = [hook for hook in stop_hooks if "scripts/ship_loop_hold_wrapper.py" in hook["command"]]
+    assert len(enforcement) == 1
+    stop = enforcement[0]
+    advisory = [hook for hook in stop_hooks if hook is not stop]
+    assert advisory == [{
+        "type": "command",
+        "command": 'python3 "$CLAUDE_PROJECT_DIR/scripts/agentos.py" ship-report --hook || true',
+        "timeout": 10,
+        "statusMessage": "Checking the advisory Agent OS handoff reminder",
+    }]
     assert "scripts/ship_loop_hold_wrapper.py" in stop["command"]
     assert ".claude/hooks/ship_loop_guard.py" in stop["command"]
     # The delegate's pathological git-status budget fits below the 540s wall main

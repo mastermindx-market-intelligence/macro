@@ -29,6 +29,7 @@ log = logging.getLogger(__name__)
 class HkBreadthAdapter(BreadthAdapter):
     name = "hk_breadth"
     group = "hk_breadth"
+    session_calendar = "HK"  # observation dates follow the cash/Connect session
 
     def __init__(self) -> None:
         self.cfg = config.load()["hk"]["breadth"]

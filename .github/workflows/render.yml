@@ -143,6 +143,7 @@ on:
       - "scripts/build_foresight.py"
       - "scripts/build_fundamental_forensics.py"
       - "scripts/build_finance_intelligence_page.py"
+      - "scripts/build_consumer_cyclical_plnt_page.py"
       - "scripts/build_forex.py"
       - "scripts/build_gex_board.py"
       - "scripts/build_hk.py"
@@ -207,6 +208,7 @@ on:
       # builder must be able to start the render that ships it.
       - "scripts/build_winner_health_page.py"
       - "scripts/build_state_of_themes.py"
+      - "scripts/build_theme_tree_page.py"
       - "scripts/build_stock_library.py"
       - "scripts/build_ticker_pages.py"
       - "scripts/build_strategies.py"

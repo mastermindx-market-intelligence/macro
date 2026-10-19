@@ -94,6 +94,7 @@ import copy
 import json
 import os
 import tempfile
+import time
 from dataclasses import dataclass, field, fields, replace
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -123,6 +124,14 @@ SCHEMA_JOURNAL = "entry_radar.journal/v1"
 #: Kill switches.  The env var is the operator's stand-down without a unit edit;
 #: the file is the stand-down for a host with no way to change the environment.
 KILL_ENV = "ENTRY_RADAR_LIVE_DISABLED"
+
+from engine.entry_radar import catalyst_edgar_live as cel
+
+CATALYST_LIVE_ENV = cel.CATALYST_LIVE_ENV
+
+
+def _catalyst_live_enabled(environ: Mapping[str, str]) -> bool:
+    return str(environ.get(CATALYST_LIVE_ENV, "")).strip() == "1"
 KILL_FILE = "KILL"
 
 #: Minutes past the exchange close during which a pass still evaluates.  The
@@ -1185,6 +1194,16 @@ class PassResult:
     committed: bool
     exit_code: int
     names: tuple[NameResult, ...] = ()
+    #: Wall-clock seconds per evaluator stage (``setup_s``/``loop_s``/``eval_s``/
+    #: ``eval_c3_s``/``apply_s``/``merge_s``/``health_s``/``spool_commit_s``/
+    #: ``journal_s``/``payload_s``/``total_s``) plus ``names_n``/``c3_names_n``.
+    #: A RECEIPT FOR THE UNIT LOG, NEVER PAYLOAD CONTENT: the served shape is
+    #: pinned (LIV-7) and a wall-clock is not content.  Empty on every refusal
+    #: path, which never enters the evaluator.  Measured 2026-10-06 on the VPS:
+    #: in-window passes ran 479-504 s against ``TimeoutStartSec`` 570 s and the
+    #: journal carried no stage timing at all, so the slow stage could not be
+    #: named — three passes died to the timeout before anyone could say why.
+    timings: dict[str, Any] = field(default_factory=dict)
 
 
 def _authority_block() -> dict[str, bool]:
@@ -1281,6 +1300,210 @@ def _loaded_quote_count(quotes: Mapping[str, Any] | None,
     return sum(1 for ticker in tickers if isinstance(book.get(ticker), Mapping))
 
 
+_CATALYST_COVERAGE_PHRASES: dict[str, str] = {
+    "blocking_event_observed": "earnings filing in window",
+    "event_classification_unknown": "filing seen, kind unknown",
+    "event_aftermath_observed": "earnings aftermath",
+    "soft_event_observed": "soft event in window",
+    "no_blocking_event_observed": "no earnings filing in window",
+}
+
+
+def _episode_catalyst_payload(ctx: Any) -> dict[str, Any]:
+    refs = (
+        set(ctx.blocking_evidence_refs)
+        | set(ctx.soft_evidence_refs)
+        | set(ctx.unknown_evidence_refs)
+        | set(ctx.aftermath_evidence_refs)
+    )
+    clocks = [c for c in ctx.evidence_clocks if c.evidence_ref in refs]
+    fresh_until = min(r.fresh_until for r in ctx.source_reads)
+    relevant_until = (
+        max(c.relevant_until for c in clocks) if clocks else fresh_until
+    )
+    return {
+        "radar_episode_schema": ll.SCHEMA_LIVE_EPISODE,
+        "radar_episode_id": ctx.radar_episode_id,
+        "fresh_until": _iso(fresh_until),
+        "relevant_until": _iso(relevant_until),
+        "coverage": _CATALYST_COVERAGE_PHRASES[ctx.context_state],
+        "context_state": ctx.context_state,
+        "catalyst_schema": ctx.schema,
+    }
+
+
+def _attach_catalyst(
+    episode_rows: list[dict[str, Any]] | None,
+    *,
+    now: datetime,
+    health: dict[str, Any] | None,
+    environ: Mapping[str, str] | None = None,
+    clock: Callable[[], datetime] | None = None,
+    live_reader: Callable[..., Any] | None = None,
+    store_reader: Callable[..., Any] | None = None,
+) -> None:
+    rc: dict[str, Any] = {
+        "attached_count": 0,
+        "rows_considered": len(episode_rows or []),
+        "source_status": None,
+        "source_asof": None,
+        "source_usable": False,
+        "refusals": {},
+        "reader_error": None,
+        "episode_errors": 0,
+        "states": {},
+        "error": None,
+        "live_enabled": False,
+        "live": None,
+        "source_modes": {"live": 0, "store": 0, "none": 0},
+        "decision_at": None,
+    }
+    if isinstance(health, dict):
+        health["catalyst"] = rc
+    rows = episode_rows
+    if not rows:
+        return
+    from engine.entry_radar import catalyst_context as cc  # noqa: PLC0415
+    from engine.entry_radar import catalyst_edgar_store as ces  # noqa: PLC0415
+
+    if environ is None:
+        environ = os.environ
+    if clock is None:
+        clock = lambda: datetime.now(timezone.utc)
+    if live_reader is None:
+        live_reader = cel.read_edgar_item_202_live
+    if store_reader is None:
+        store_reader = ces.read_edgar_item_202_for_tickers
+
+    tickers = sorted({str(r.get("ticker") or "") for r in rows} - {""})
+    enabled = _catalyst_live_enabled(environ)
+    rc["live_enabled"] = enabled
+    live = None
+    if enabled:
+        try:
+            live = live_reader(tickers=tickers, now=now, clock=clock)
+            rc["live"] = {
+                "attempted": live.attempted,
+                "fetched_ok": live.fetched_ok,
+                "budget_exhausted": live.budget_exhausted,
+                "elapsed_s": live.elapsed_seconds,
+                "error": live.error,
+                "refusals": dict(live.refusals),
+                "last_observed_at": (
+                    _iso(live.last_observed_at) if live.last_observed_at else None
+                ),
+            }
+        except Exception as exc:
+            live = None
+            rc["live"] = {
+                "attempted": 0,
+                "fetched_ok": 0,
+                "budget_exhausted": 0,
+                "elapsed_s": None,
+                "error": repr(exc)[:300],
+                "refusals": {},
+                "last_observed_at": None,
+            }
+    decision_at = (
+        max(now, live.last_observed_at)
+        if live is not None and live.last_observed_at is not None
+        else now
+    )
+    generated_at = decision_at
+    rc["decision_at"] = _iso(decision_at)
+    try:
+        store = store_reader(
+            tickers=tickers,
+            decision_at=decision_at,
+            generated_at=generated_at,
+        )
+    except Exception as exc:
+        rc["error"] = repr(exc)[:300]
+        return
+    rc["reader_error"] = store.error
+    rc["refusals"] = dict(store.refusals)
+    used_by_ticker: dict[str, Any] = {}
+    try:
+        for row in rows:
+            ticker = str(row.get("ticker") or "")
+            live_read = (
+                live.reads_by_ticker.get(ticker) if live is not None else None
+            )
+            if live_read is not None and live_read.status == "ok":
+                src = live_read
+                ev = live.evidence_by_ticker.get(ticker, ())
+                mode = "live"
+            else:
+                store_read = store.reads_by_ticker.get(ticker)
+                if store_read is None:
+                    rc["source_modes"]["none"] += 1
+                    rc["episode_errors"] += 1
+                    continue
+                src = store_read
+                ev = store.evidence_by_ticker.get(ticker, ())
+                mode = "store"
+            rc["source_modes"][mode] += 1
+            used_by_ticker[ticker] = src
+            try:
+                ctx = cc.assess_catalyst_context_for_live_episode(
+                    episode=row,
+                    decision_at=decision_at,
+                    generated_at=generated_at,
+                    required_sources=(ces.EDGAR_STORE_SOURCE_ID,),
+                    source_reads=(src,),
+                    evidence=ev,
+                )
+            except cc.CatalystContextError:
+                rc["episode_errors"] += 1
+                continue
+            rc["states"][ctx.context_state] = (
+                rc["states"].get(ctx.context_state, 0) + 1
+            )
+            if ctx.context_state in _CATALYST_COVERAGE_PHRASES:
+                row["catalyst"] = _episode_catalyst_payload(ctx)
+                rc["attached_count"] += 1
+    except Exception as exc:
+        rc["error"] = repr(exc)[:300]
+        return
+    used_reads = list(used_by_ticker.values())
+    if not used_reads:
+        rc["source_status"] = None
+        rc["source_asof"] = None
+        rc["source_usable"] = False
+    else:
+        if all(r.status == "ok" for r in used_reads):
+            rc["source_status"] = "ok"
+        elif all(r.status == "unavailable" for r in used_reads):
+            rc["source_status"] = "unavailable"
+        else:
+            rc["source_status"] = "mixed"
+        rc["source_usable"] = any(r.usable_at(decision_at) for r in used_reads)
+        ok_asofs = [
+            r.source_asof for r in used_reads if r.status == "ok" and r.source_asof
+        ]
+        rc["source_asof"] = _iso(max(ok_asofs)) if ok_asofs else None
+
+
+def _episode_rows(ledger: ll.LiveEpisodeLedger | None, session: date | None,
+                  ) -> list[dict[str, Any]] | None:
+    """Episode owner-schema rows for the live payload (product spec §3.3)."""
+    if ledger is None:
+        return None
+    session_iso = session.isoformat() if session is not None else None
+    selected: list[ll.LiveEpisode] = []
+    for episode in ledger.episodes:
+        if not episode.terminal:
+            selected.append(episode)
+            continue
+        if session_iso is None:
+            continue
+        elapsed = ll.sessions_elapsed(episode.market_session, session_iso,
+                                      market="US")
+        if elapsed is not None and elapsed <= 1:
+            selected.append(episode)
+    return ll.iter_episode_dicts(selected)
+
+
 def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
                      session: date | None, pack: lp.LivePack | None,
                      tickers: Sequence[str], state_dir: Path | None,
@@ -1319,6 +1542,11 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
         "content": {"last_transition_at": None, "events_total": 0,
                     "ledger_hash": _ledger_hash(ledger)},
     }
+    episode_rows = _episode_rows(ledger, session)
+    if episode_rows is not None:
+        health["episodes_count"] = len(episode_rows)
+        health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
+        _attach_catalyst(episode_rows, now=now, health=health)
     payload = {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),
@@ -1334,6 +1562,8 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
         "research_priority": _empty_priority_board(
             computed_at=_iso(now), cycle_state=state, reason="cycle_refused"),
     }
+    if episode_rows is not None:
+        payload["episodes"] = episode_rows
     return payload, health
 
 
@@ -1485,6 +1715,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     the same protection: it constructs ``LiveEpisode`` records whose validation
     raises, and it sat OUTSIDE the try entirely.
     """
+    t_start = time.perf_counter()
     book = (quotes or {}).get("quotes") if isinstance(quotes, Mapping) else None
     book = book if isinstance(book, Mapping) else {}
     budget = quote_budget(quotes, slack_min=cfg.quote_slack_min)
@@ -1503,6 +1734,12 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
                    "refused": []}
     stale_quotes = 0
     covered = 0
+    # Stage wall-clocks for :attr:`PassResult.timings` — the loop is split into
+    # the engine call (C3 names apart, since they alone touch the vendor) and
+    # the ledger apply; everything else a name costs is the loop remainder.
+    timing: dict[str, Any] = {"eval_s": 0.0, "eval_c3_s": 0.0, "apply_s": 0.0}
+    t_setup = time.perf_counter()
+    timing["setup_s"] = t_setup - t_start
 
     for ticker in sorted(probe):
         # THE PROTECTED REGION IS THE WHOLE NAME, not the engine call alone.
@@ -1559,18 +1796,22 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             else:
                 basis_stats["unchecked_n"] += 1
 
+            t_name = time.perf_counter()
             result = _evaluate_name(
                 ticker=ticker, now=now, session=session, session_iso=session_iso,
                 pack=pack, pack_name=pack_name, daily=daily, quote=quote,
                 audit=audit, journal=journal, ledger=ledger, cfg=cfg,
                 intraday_reader=(intraday_reader if ticker in c3_names else None),
                 c3_deferred=(ticker in c3_deferred), c3_stats=c3_stats)
+            t_eval = time.perf_counter()
+            timing["eval_c3_s" if ticker in c3_names else "eval_s"] += t_eval - t_name
             delta = None
             if result.runs:
                 delta = ledger.apply_run(
                     ticker=ticker, as_of_session=session_iso,
                     runs=list(result.runs), pass_id=cfg.pass_id,
                     context={"pack_as_of": pack.as_of, "pack_hash": pack.pack_hash})
+                timing["apply_s"] += time.perf_counter() - t_eval
         except Exception as exc:  # noqa: BLE001 — one name, never the pass
             results.append(NameResult(
                 ticker=ticker, state="unavailable",
@@ -1581,15 +1822,21 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
         if delta is not None:
             deltas.append(delta)
 
+    t_loop = time.perf_counter()
+    timing["loop_s"] = t_loop - t_setup
     delta = ll.merge_deltas(deltas, as_of_session=session_iso, pass_id=cfg.pass_id) \
         if deltas else ll.PendingDelta(ticker="*", as_of_session=session_iso,
                                        pass_id=cfg.pass_id)
+    t_merge = time.perf_counter()
+    timing["merge_s"] = t_merge - t_loop
 
     health = _health(now=now, session=session, pack=pack, quotes=quotes,
                      results=results, ledger=ledger, state_dir=state_dir, cfg=cfg,
                      c3_stats=c3_stats, basis_stats=basis_stats,
                      stale_quotes=stale_quotes, covered=covered, probe=probe,
                      delta=delta)
+    t_health = time.perf_counter()
+    timing["health_s"] = t_health - t_merge
 
     # STEP 8 — spool BEFORE commit.  A failure withholds the transitions from
     # both the ledger and the payload; the next pass re-derives and retries, and
@@ -1609,6 +1856,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             spool_key, committed, spool_error = None, False, str(exc)
     health["inputs"]["spool"] = {"ok": committed if not delta.empty else None,
                                  "key": spool_key, "error": spool_error}
+    t_spool = time.perf_counter()
+    timing["spool_commit_s"] = t_spool - t_health
     if not committed:
         health["state"] = "degraded"
         if "spool_failed" not in health["reasons"]:
@@ -1619,6 +1868,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
             record = journal.read(session_iso, result.ticker)
             if record is not None:
                 journal.flush(record)
+    t_journal = time.perf_counter()
+    timing["journal_s"] = t_journal - t_spool
 
     # The content-advance signal is re-read AFTER the commit, so it describes the
     # ledger the payload actually reports.  Taken before, it would be the PREVIOUS
@@ -1626,13 +1877,19 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     # lags content by one tick is worse than none, because it looks like it works.
     health["content"]["ledger_hash"] = _ledger_hash(ledger)
     payload = _payload(now=now, session=session, pack=pack, results=results,
-                       delta=delta, committed=committed, health=health)
+                       delta=delta, committed=committed, health=health,
+                       ledger=ledger)
+    t_payload = time.perf_counter()
+    timing["payload_s"] = t_payload - t_journal
     if not dry_run:
         _write_heartbeat(state_dir, _beat_from(health, now=now, session=session))
+    timing["total_s"] = time.perf_counter() - t_start
+    timing["names_n"] = len(probe)
+    timing["c3_names_n"] = len(c3_names)
     exit_code = 4 if not committed else 0
     return PassResult(payload=payload, health=health, delta=delta,
                       spool_key=spool_key, committed=committed,
-                      exit_code=exit_code, names=tuple(results))
+                      exit_code=exit_code, names=tuple(results), timings=timing)
 
 
 def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: str,
@@ -2397,7 +2654,8 @@ def _priority_lookup(board: Mapping[str, Any]
 
 def _payload(*, now: datetime, session: date, pack: lp.LivePack,
              results: Sequence[NameResult], delta: ll.PendingDelta,
-             committed: bool, health: Mapping[str, Any]) -> dict[str, Any]:
+             committed: bool, health: Mapping[str, Any],
+             ledger: ll.LiveEpisodeLedger) -> dict[str, Any]:
     """``live/entry_radar.json``.  Mechanical copy only — nothing is composed.
 
     A name with ANY non-PROBING lane gets full per-lane detail; a pure-probing
@@ -2413,6 +2671,16 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
                                      results=results, health=health)
     lookup = _priority_lookup(board)
     rows = [_payload_row(r, lookup.get(r.ticker, ())) for r in results]
+    episode_rows = _episode_rows(ledger, session)
+    assert episode_rows is not None
+    if isinstance(health, dict):
+        health["episodes_count"] = len(episode_rows)
+        health["episodes_schema"] = ll.SCHEMA_LIVE_EPISODE
+    _attach_catalyst(
+        episode_rows,
+        now=now,
+        health=health if isinstance(health, dict) else None,
+    )
     return {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),
@@ -2422,6 +2690,7 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
                  "spec_hashes": dict(pack.spec_hashes)},
         "authority": _authority_block(),
         "names": rows,
+        "episodes": episode_rows,
         "transitions": [copy.deepcopy(t) for t in delta.transitions] if committed else [],
         "events": [copy.deepcopy(e) for e in delta.events] if committed else [],
         "suppressed": [dict(s) for r in results for s in r.suppressed],

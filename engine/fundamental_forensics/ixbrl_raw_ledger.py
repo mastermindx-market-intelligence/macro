@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from types import MappingProxyType
@@ -17,6 +17,7 @@ from typing import Any, Mapping, Sequence
 from collectors.sec_filing_parser import SecFilingParseError, parse_sec_filing_document
 
 from .financial_intelligence_packet import load_core_registry
+from .lineage_evidence import LineageEvidenceReceipt, derive_confirmation_receipts
 from .query import FilingMetadata
 from .query_service import (
     CanonicalEntityBinding,
@@ -44,6 +45,14 @@ from .statement_service import _bind_data_os_issuer
 
 _GOLDEN_ENTITY_ID = "ISS:US-XNAS-AAPL"
 _GOLDEN_LISTING_KEY = "US-XNAS-AAPL"
+# FIF-3A4 system clock. This is the "immutable lineage-evidence receipt
+# recording" component of the accepted §8 floor: the date this repository first
+# carried the runtime confirmation rule and its receipts. It is a committed
+# constant, never ``now()``, so a replay at any historical ``recorded_at``
+# reproduces exactly one answer. Every query whose ``recorded_at`` precedes it
+# behaves exactly as accepted FIF-3A3, including the unlinked-vintage refusal.
+FIF3A4_LINEAGE_AVAILABLE_AT = datetime(2026, 9, 20, tzinfo=timezone.utc)
+
 GOLDEN_AAPL_QUERY_ACCESSIONS: tuple[str, ...] = (
     "0000320193-25-000079",
     "0000320193-26-000020",
@@ -442,6 +451,35 @@ def convert_parsed_filings(
     return ledger, metadata, report
 
 
+def original_concept_namespace_uris(
+    packages: Sequence[GoldenFilingPackage],
+) -> dict[tuple[str, str], str]:
+    """Map ``(accession, parser fact_id)`` to the original Clark namespace URI.
+
+    ``canonicalize_clark_qname`` deliberately collapses
+    ``{http://fasb.org/us-gaap/2025}Assets`` to ``us-gaap:Assets``, so the
+    canonical ledger cannot answer "which taxonomy *year* tagged this fact".
+    FIF-3A4 guard 11 needs exactly that, so it is read back from the source
+    package at lineage-receipt mint time and attested on the immutable receipt.
+    """
+    mapping: dict[tuple[str, str], str] = {}
+    for package in packages:
+        accession = str(package.manifest["accession"])
+        primary = package.manifest["primary_document"]
+        try:
+            parsed = parse_sec_filing_document(package.members[primary], document_name=primary)
+        except SecFilingParseError as exc:
+            raise IxbrlRawLedgerError("golden AAPL primary document cannot be parsed") from exc
+        for fact in parsed.get("facts") or []:
+            if not isinstance(fact, Mapping):
+                continue
+            fact_id = fact.get("fact_id")
+            parts = _clark_parts(fact.get("concept_qname") or "")
+            if fact_id and parts is not None:
+                mapping[(accession, str(fact_id))] = parts[0]
+    return mapping
+
+
 def parse_and_convert_golden_packages(
     packages: Sequence[GoldenFilingPackage],
 ) -> tuple[RawFactLedger, dict[str, FilingMetadata], ConversionReport]:
@@ -459,8 +497,19 @@ def parse_and_convert_golden_packages(
 class GoldenAaplFinancialQueryProvider:
     """Serves governed query over the committed AAPL golden filing set only."""
 
-    def __init__(self, repo_root: Path | None = None) -> None:
+    def __init__(
+        self,
+        repo_root: Path | None = None,
+        *,
+        lineage_evidence_available_at: datetime | None = None,
+    ) -> None:
         self.repo_root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[2]
+        # FIF-3A4: absent is the accepted FIF-3A3 delivery and keeps the golden
+        # response byte-identical. Supplying a system clock opts this provider
+        # into minting cutoff-visible cross-filing confirmation receipts from
+        # the same committed packages. GOLDEN_AAPL_QUERY_ACCESSIONS is
+        # unchanged, and no occurrence is converted into a revision.
+        self.lineage_evidence_available_at = lineage_evidence_available_at
         self._dataset: FinancialQueryDataset | None = None
         self._report: ConversionReport | None = None
 
@@ -484,6 +533,13 @@ class GoldenAaplFinancialQueryProvider:
                 for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
             ]
             ledger, filing_metadata, report = parse_and_convert_golden_packages(packages)
+            lineage_evidence: tuple[LineageEvidenceReceipt, ...] = ()
+            if self.lineage_evidence_available_at is not None:
+                lineage_evidence = derive_confirmation_receipts(
+                    ledger.events,
+                    system_available_at=self.lineage_evidence_available_at,
+                    original_taxonomy_uris=original_concept_namespace_uris(packages),
+                )
             ticker = _GOLDEN_LISTING_KEY.rsplit("-", 1)[-1]
             dataset = FinancialQueryDataset(
                 binding=CanonicalEntityBinding(
@@ -496,6 +552,7 @@ class GoldenAaplFinancialQueryProvider:
                 filing_metadata=filing_metadata,
                 registry=load_core_registry(self.repo_root),
                 delivery=dict(_AAPL_DELIVERY),
+                lineage_evidence=lineage_evidence,
             )
         except FinancialQueryAdmissionError:
             raise
@@ -510,6 +567,7 @@ class GoldenAaplFinancialQueryProvider:
 
 __all__ = [
     "ConversionReport",
+    "FIF3A4_LINEAGE_AVAILABLE_AT",
     "FilingConversionReceipt",
     "GOLDEN_AAPL_QUERY_ACCESSIONS",
     "GoldenAaplFinancialQueryProvider",
@@ -517,5 +575,6 @@ __all__ = [
     "canonicalize_clark_qname",
     "convert_parsed_filing",
     "convert_parsed_filings",
+    "original_concept_namespace_uris",
     "parse_and_convert_golden_packages",
 ]

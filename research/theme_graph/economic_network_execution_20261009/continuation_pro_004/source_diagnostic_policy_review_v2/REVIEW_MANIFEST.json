@@ -1,0 +1,62 @@
+{
+  "STOP": true,
+  "files": [
+    {
+      "bytes": 2827,
+      "path": "AUTHOR_SYNTHETIC_REPLAY.json",
+      "sha256": "6f2b8e7f5ca4dfdf6595286711601dde00e47e53229187f332e0cf5c598f3281"
+    },
+    {
+      "bytes": 0,
+      "path": "AUTHOR_SYNTHETIC_REPLAY.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 23737,
+      "path": "CORRECTIVE_METHOD_REVIEW.md",
+      "sha256": "8cafe4d8208d224d3ebf49b2f5db88785cc7543f48788ba5d1d347cff95945b8"
+    },
+    {
+      "bytes": 2655,
+      "path": "EXECUTION_RECEIPT.json",
+      "sha256": "a135cf3e1d9ab9ce27088c5377496300e95695631e03642f5057c5b4a397b9de"
+    },
+    {
+      "bytes": 6613,
+      "path": "FINDINGS.json",
+      "sha256": "268c16cdc118fef8f3cf2955e07e81da6f12b2b4ee5aee5a8398c8966e94e142"
+    },
+    {
+      "bytes": 5380,
+      "path": "INDEPENDENT_METHOD_CHECKS.json",
+      "sha256": "3756543a1e925f1be7abc3b9c5efe44529a927770e7f638180ad2b11771b491d"
+    },
+    {
+      "bytes": 10874,
+      "path": "INDEPENDENT_METHOD_CHECKS.py",
+      "sha256": "8cdcb4984e6eb2b0c4f32b8357b25edd549d8dc134aee58412a02b6d6246e521"
+    },
+    {
+      "bytes": 0,
+      "path": "INDEPENDENT_METHOD_CHECKS.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "frozen_at_utc": "2026-10-09T12:04:50.848987+00:00",
+  "future_principal_numeric_sidecar_reviewed": false,
+  "manifest_self_excluded": true,
+  "member_bytes_excluding_manifest": 52086,
+  "member_count_excluding_manifest": 8,
+  "native_app_Git_store_provider_or_acquisition_effects": false,
+  "new_primary_source_retrieval_or_real_cohort": false,
+  "reviewer": "/root/native_adoption_frontier",
+  "schema": "research.gmi.wp02.independent_corrective_method_review_manifest/v2",
+  "source_contract_review_is_not_authentication_or_admission": true,
+  "source_file_count": 10,
+  "source_memo_sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29",
+  "source_package_and_36_prior_files_unchanged_at_freeze": true,
+  "source_package_manifest_sha256": "c1788fdb703bee9e519c8f162af39be79fccd97b453d4b36746352fb2068d042",
+  "source_policy_sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522",
+  "source_total_bytes": 183753,
+  "verdict": "R1_R2_RESOLVED_ONE_P2_NUMERIC_DOMAIN_CLARIFICATION_PENDING"
+}

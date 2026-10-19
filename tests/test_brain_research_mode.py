@@ -2432,4 +2432,3 @@ def test_r7_a_kept_html_blank_is_one_paragraph_break():
     """m2 (NEW, cosmetic): a kept HTML-made blank next to a real one left a triple newline."""
     raw = "G.<br>\n\nSources: Desk read\n\nRisks\n- Oil shock"
     assert gw._research_strip_model_trailer(raw, R7_CORPUS) == "G.\n\nRisks\n- Oil shock"
-

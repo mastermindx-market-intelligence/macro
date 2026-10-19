@@ -85,6 +85,7 @@ import logging
 import os
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -319,6 +320,24 @@ def _reader(state: Path | None):
         return None
 
 
+def _print_timings(stages: dict[str, float], evaluator: dict[str, Any],
+                   total_s: float) -> None:
+    """ONE journal line of stage wall-clocks, printed after the receipt.
+
+    The unit runs under ``TimeoutStartSec`` and the journal is the only
+    instrument the VPS has: measured 2026-10-06, in-window passes ran 479-504 s
+    against a 570 s limit and nothing said which stage.  ``stages`` are the
+    script's own (loads, the pass call, save, publish); ``evaluator`` is
+    :attr:`live_eval.PassResult.timings`, empty on a refusal.  Never part of the
+    served payload.
+    """
+    parts = [f"{key}={value:.1f}" for key, value in stages.items()]
+    parts += [f"pass.{key}={value:.1f}" if isinstance(value, float)
+              else f"pass.{key}={value}" for key, value in evaluator.items()]
+    print(f"entry-radar-live timings total_s={total_s:.1f} " + " ".join(parts),
+          flush=True)
+
+
 def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
         state_override: str | None = None, live_override: str | None = None,
         spool_dir: str | None = None) -> int:
@@ -339,16 +358,29 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
 
     pack: Any = None
     quotes: Any = None
+    stages: dict[str, float] = {}
+    t_run = time.perf_counter()
     try:
+        t_stage = time.perf_counter()
         pack = LP.load_pack(state) if state is not None else None
+        stages["load_pack_s"] = time.perf_counter() - t_stage
+        t_stage = time.perf_counter()
         ledger = LL.LiveEpisodeLedger.load(state)
+        stages["load_ledger_s"] = time.perf_counter() - t_stage
+        t_stage = time.perf_counter()
         quotes = load_quotes(root)
+        stages["load_quotes_s"] = time.perf_counter() - t_stage
         spool = None if dry_run else LL.EventSpool()
+        t_stage = time.perf_counter()
+        reader = _reader(state)
+        stages["reader_s"] = time.perf_counter() - t_stage
 
+        t_stage = time.perf_counter()
         result = LE.run_pass(now=stamp, pack=pack, quotes=quotes, ledger=ledger,
                              state_dir=state, spool=spool,
-                             intraday_reader=_reader(state),
+                             intraday_reader=reader,
                              unspooled_ok=dry_run, dry_run=dry_run)
+        stages["run_pass_s"] = time.perf_counter() - t_stage
     except Exception as exc:  # noqa: BLE001 — the ``failed`` receipt's producer
         # NEVER SILENT, AND NEVER A STALE ARTIFACT LEFT STANDING.  A pass that
         # raised used to exit 0 with nothing written, so the served copy kept its
@@ -367,6 +399,7 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
             publish(out_dir / PAYLOAD_NAME, payload)
         else:
             print(json.dumps({"health": health}, indent=2, default=str), flush=True)
+        _print_timings(stages, {}, time.perf_counter() - t_run)
         return 6
 
     health = result.health
@@ -415,10 +448,16 @@ def run(root: Path, *, now: datetime | None = None, dry_run: bool = False,
                           "transitions": result.payload.get("transitions"),
                           "events": result.payload.get("events")},
                          indent=2, default=str), flush=True)
+        _print_timings(stages, getattr(result, "timings", {}), time.perf_counter() - t_run)
         return 0
 
+    t_stage = time.perf_counter()
     ledger.save()
+    stages["ledger_save_s"] = time.perf_counter() - t_stage
+    t_stage = time.perf_counter()
     published = publish(out_dir / PAYLOAD_NAME, result.payload)
+    stages["publish_s"] = time.perf_counter() - t_stage
+    _print_timings(stages, getattr(result, "timings", {}), time.perf_counter() - t_run)
     if not published:
         # A DOCUMENTED REHEARSAL IS NOT A FAILURE.  ``ENTRY_RADAR_NO_PUBLISH`` is
         # the switch that makes ``publish`` refuse on purpose (script docstring),

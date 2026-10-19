@@ -1,0 +1,529 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/fundamental_forensics_pack_quality_report.v1.schema.json",
+  "title": "Fundamental forensics per-pack quality report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pack_id",
+    "pack_name",
+    "protocol_id",
+    "split_roots",
+    "quality_label",
+    "cells",
+    "metrics",
+    "false_positives",
+    "failed_families",
+    "language_gate",
+    "numerator_denominator_note",
+    "aapl_golden_used_as_held_out",
+    "builders_read_held_out"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fundamental_forensics.pack_quality_report/v1"
+    },
+    "pack_id": {
+      "enum": [
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12"
+      ]
+    },
+    "pack_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "protocol_id": {
+      "const": "fif-q0-quality-protocol/v1"
+    },
+    "head_commit": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 40
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evaluator_role": {
+      "enum": [
+        "independent_q1"
+      ]
+    },
+    "quality_label": {
+      "enum": [
+        "calibration",
+        "display_tier",
+        "held_out_measured",
+        "accepted",
+        "unavailable_research_only",
+        "blocked_pack",
+        "typed_absence",
+        "underpowered"
+      ]
+    },
+    "split_roots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gold",
+        "held_out"
+      ],
+      "properties": {
+        "gold": {
+          "type": "string",
+          "pattern": "^tests/fixtures/fundamental_forensics/"
+        },
+        "held_out": {
+          "type": "string",
+          "pattern": "^tests/fixtures/fundamental_forensics_held_out/"
+        }
+      }
+    },
+    "builders_read_held_out": {
+      "const": false
+    },
+    "aapl_golden_used_as_held_out": {
+      "const": false
+    },
+    "language_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guarded_token_count",
+        "hyphen_guarded_count"
+      ],
+      "properties": {
+        "guarded_token_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "hyphen_guarded_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/cell"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extraction",
+        "findings",
+        "refusal"
+      ],
+      "properties": {
+        "extraction": {
+          "$ref": "#/$defs/rate_block"
+        },
+        "findings": {
+          "$ref": "#/$defs/rate_block"
+        },
+        "refusal": {
+          "$ref": "#/$defs/rate_block"
+        }
+      }
+    },
+    "false_positives": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/false_positive"
+      }
+    },
+    "failed_families": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/failed_family"
+      }
+    },
+    "numerator_denominator_note": {
+      "type": "string",
+      "const": "Every rate is numerator/denominator with exclusions listed; truthful refusal is excluded from positive coverage."
+    }
+  },
+  "$defs": {
+    "frac": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "numerator",
+        "denominator",
+        "exclusions"
+      ],
+      "properties": {
+        "numerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "denominator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "wilson95": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "rate_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "precision",
+        "recall",
+        "abstention"
+      ],
+      "properties": {
+        "precision": {
+          "$ref": "#/$defs/frac"
+        },
+        "recall": {
+          "$ref": "#/$defs/frac"
+        },
+        "abstention": {
+          "$ref": "#/$defs/frac"
+        },
+        "source_fidelity_error": {
+          "$ref": "#/$defs/frac"
+        },
+        "false_positive_rate": {
+          "$ref": "#/$defs/frac"
+        }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "form_type",
+        "fiscal_year",
+        "section_family",
+        "polarity",
+        "format_class",
+        "split",
+        "n_labeled",
+        "n_predicted",
+        "n_excluded",
+        "exclusion_reasons"
+      ],
+      "properties": {
+        "issuer": {
+          "enum": [
+            "AAPL",
+            "SNOW",
+            "CAT",
+            "BAC",
+            "GOOGL"
+          ]
+        },
+        "form_type": {
+          "enum": [
+            "10-K",
+            "10-Q",
+            "DEF 14A",
+            "8-K",
+            "10-K/A"
+          ]
+        },
+        "fiscal_year": {
+          "type": "string"
+        },
+        "section_family": {
+          "type": "string"
+        },
+        "polarity": {
+          "enum": [
+            "positive",
+            "negative"
+          ]
+        },
+        "format_class": {
+          "enum": [
+            "ixbrl_inline",
+            "unseen_amendment",
+            "unseen_exhibit",
+            "unseen_proxy"
+          ]
+        },
+        "split": {
+          "enum": [
+            "gold",
+            "held_out"
+          ]
+        },
+        "n_labeled": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_predicted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "n_excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exclusion_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "meets_minimum_n": {
+          "type": "boolean"
+        }
+      }
+    },
+    "predicted_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "value_text",
+        "span_ref",
+        "finding_id"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "value_text": {
+          "type": "string"
+        },
+        "span_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "finding_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "label_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label_class",
+        "reason"
+      ],
+      "properties": {
+        "label_class": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "false_positive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fp_id",
+        "pack_id",
+        "issuer",
+        "form_type",
+        "accession",
+        "section_family",
+        "split",
+        "predicted",
+        "label",
+        "error_class",
+        "alternative_explanation",
+        "display_copy_used",
+        "guarded_token_present"
+      ],
+      "properties": {
+        "fp_id": {
+          "type": "string"
+        },
+        "pack_id": {
+          "type": "string"
+        },
+        "issuer": {
+          "enum": [
+            "AAPL",
+            "SNOW",
+            "CAT",
+            "BAC",
+            "GOOGL"
+          ]
+        },
+        "form_type": {
+          "enum": [
+            "10-K",
+            "10-Q",
+            "DEF 14A",
+            "8-K",
+            "10-K/A"
+          ]
+        },
+        "accession": {
+          "type": "string"
+        },
+        "section_family": {
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "gold",
+            "held_out"
+          ]
+        },
+        "predicted": {
+          "$ref": "#/$defs/predicted_claim"
+        },
+        "label": {
+          "$ref": "#/$defs/label_ref"
+        },
+        "error_class": {
+          "enum": [
+            "invented_extraction",
+            "wrong_span",
+            "wrong_period",
+            "wrong_unit",
+            "detector_leakage",
+            "ticker_patch_suspected"
+          ]
+        },
+        "alternative_explanation": {
+          "type": "string"
+        },
+        "display_copy_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "guarded_token_present": {
+          "const": false
+        }
+      }
+    },
+    "failed_family": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pack_id",
+        "section_family",
+        "disposition",
+        "blocks",
+        "does_not_block",
+        "relabel_forbidden"
+      ],
+      "properties": {
+        "pack_id": {
+          "type": "string"
+        },
+        "section_family": {
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "unavailable_research_only",
+            "blocked_pack"
+          ]
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "does_not_block": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "numerator_denominator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "precision": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "recall": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "abstention": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "source_fidelity_error": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "false_positive_rate": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "relabel_forbidden": {
+          "const": true
+        },
+        "reopen_requires": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

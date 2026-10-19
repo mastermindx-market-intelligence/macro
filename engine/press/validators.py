@@ -12,6 +12,8 @@ a source list that arrived empty) read as a pass.
 
 The suite, in report order:
 
+  markup_safety        static allowed HTML fragment; no executable, hidden,
+                       malformed or ambiguous markup
   fact_anchor          every number and every attributed quote in the draft
                        appears in the planner's source facts
   claim_scope          canonical earnings prose attributes each substantive
@@ -60,6 +62,7 @@ import html as _html
 import json
 import logging
 import re
+from html.parser import HTMLParser
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -90,7 +93,9 @@ _NUM_RE = re.compile(
     r"(?P<cur>[$€£¥])?\s*"
     r"(?P<int>\d{1,3}(?:,\d{3})+|\d+)"
     r"(?:\.(?P<frac>\d+))?"
-    r"\s*(?P<suffix>%|bps|bn|tn|trn|[kKmMbBtT](?![a-zA-Z]))?",
+    r"\s*(?:,?\s*(?i:expressed\s+in)\s+)?"
+    r"(?P<suffix>%|(?i:thousands?|millions?|billions?|trillions?|bps|bn|tn|trn)"
+    r"(?![a-zA-Z])|[kKmMbBtT](?![a-zA-Z]))?",
 )
 
 # Quoted spans.  Straight and typographic double quotes.  Single quotes are NOT
@@ -258,16 +263,17 @@ class Num:
     """One numeric literal lifted out of prose."""
 
     __slots__ = ("raw", "value", "decimals", "is_pct", "has_currency",
-                 "has_suffix", "is_bare_int")
+                 "has_suffix", "is_bare_int", "magnitude")
 
     def __init__(self, raw: str, value: float, decimals: int, is_pct: bool,
-                 has_currency: bool, has_suffix: bool):
+                 has_currency: bool, has_suffix: bool, magnitude: float = 1):
         self.raw = raw
         self.value = value
         self.decimals = decimals
         self.is_pct = is_pct
         self.has_currency = has_currency
         self.has_suffix = has_suffix
+        self.magnitude = magnitude
         self.is_bare_int = (decimals == 0 and not is_pct and not has_currency
                             and not has_suffix)
 
@@ -289,6 +295,9 @@ def extract_numbers(text: str) -> list[Num]:
         except ValueError:
             continue
         suffix = (m.group("suffix") or "")
+        scale_name = suffix.lower()
+        if scale_name.endswith("ions") or scale_name == "thousands":
+            scale_name = scale_name.removesuffix("s")
         out.append(Num(
             raw=m.group(0).strip(),
             value=value,
@@ -296,6 +305,9 @@ def extract_numbers(text: str) -> list[Num]:
             is_pct=(suffix == "%"),
             has_currency=bool(m.group("cur")),
             has_suffix=bool(suffix and suffix != "%"),
+            magnitude={"k": 1e3, "thousand": 1e3, "m": 1e6, "million": 1e6,
+                       "b": 1e9, "bn": 1e9, "billion": 1e9, "t": 1e12,
+                       "tn": 1e12, "trn": 1e12, "trillion": 1e12}.get(scale_name, 1),
         ))
     return out
 
@@ -397,6 +409,36 @@ def source_number_pool(slot: dict) -> tuple[list[float], str]:
     return vals, "\n".join(texts)
 
 
+def _fact_quantity_pool(slot: dict) -> list[Num]:
+    """Keep explicit source scales for anchoring without changing receipt credit.
+
+    Legacy facts often repeat a scaled text's coefficient in ``values``. That
+    duplicate must not also grant permission to drop the scale in the draft.
+    Bare values with no scaled counterpart retain the existing metric contract.
+    """
+    result: list[Num] = []
+    for fact in slot.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        text_nums = extract_quantities(str(fact.get("text") or ""))
+        result.extend(text_nums)
+        for value in fact.get("values") or []:
+            try:
+                number = float(str(value).replace(",", "").strip().rstrip("%"))
+            except (TypeError, ValueError):
+                continue
+            if any(n.magnitude != 1 and n.value == number for n in text_nums):
+                continue
+            result.append(Num(str(value), number, 0, False, False, False))
+    return result
+
+
+def _quantity_anchors(number: Num, sources: list[Num]) -> bool:
+    target = abs(number.value * number.magnitude)
+    tolerance = 0.5 * 10.0 ** -number.decimals * number.magnitude + 1e-9
+    return any(abs(target - abs(n.value * n.magnitude)) <= tolerance for n in sources)
+
+
 def fact_tier_index(slot: dict) -> list[tuple[float, str]]:
     """[(value, tier)] over every number the planner supplied, tier-tagged."""
     idx: list[tuple[float, str]] = []
@@ -431,21 +473,136 @@ def _body(draft: dict) -> str:
     return str(draft.get("body_html") or "")
 
 
-def _prose_html(draft: dict, cfg: dict) -> str:
-    """Body with the byline and footer furniture removed.
+_ARTICLE_TAGS = frozenset({"p", "h2", "h3", "h4", "ul", "ol", "li",
+                           "a", "strong", "em", "blockquote", "br"})
+_ARTICLE_BLOCKS = frozenset({"p", "h2", "h3", "h4", "li", "blockquote"})
+_ARTICLE_START = re.compile(
+    r"""<[A-Za-z][A-Za-z0-9]*(?:\s+[A-Za-z][A-Za-z0-9_-]*\s*=\s*"""
+    r"""(?:"[^"]*"|'[^']*'|[^\s"'=<>\x60]+))*\s*/?>\Z"""
+)
 
-    Those two blocks are REQUIRED boilerplate; scoring them as paraphrase or
-    counting them toward our-value would measure the template, not the piece.
+
+class _ArticleFragment(HTMLParser):
+    """Recognize a conservative static fragment; never repair or sanitize it.
+
+    HTMLParser is not a browser sanitizer. A closed grammar, allowed tags and
+    attributes, and balanced explicit endings avoid depending on browser error
+    recovery. Escaped text stays text, while raw malformed markup is refused.
+    """
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.stack: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in _ARTICLE_TAGS or not _ARTICLE_START.fullmatch(self.get_starttag_text()):
+            raise ValueError("unsupported or malformed article tag")
+        names = [name for name, _ in attrs]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate article attribute")
+        allowed = ({"href"} if tag == "a" else set())
+        if tag in _ARTICLE_BLOCKS:
+            allowed.add("data-claim-ids")
+        if tag == "p":
+            allowed.add("class")
+        for name, value in attrs:
+            if name not in allowed or value is None:
+                raise ValueError("unsupported article attribute")
+            if name == "class" and value not in {"press-byline", "press-footer"}:
+                raise ValueError("unsupported article class")
+            if name == "data-claim-ids" and not re.fullmatch(r"[A-Za-z0-9_.:\-]+(?: [A-Za-z0-9_.:\-]+)*", value):
+                raise ValueError("malformed claim identifiers")
+            if name == "href":
+                from urllib.parse import urlsplit
+                if any(c.isspace() or ord(c) < 32 or ord(c) == 127 or c == "\\" for c in value):
+                    raise ValueError("ambiguous article URL")
+                uri = urlsplit(value)
+                if not ((value.startswith("https://") and uri.netloc and not uri.username and not uri.password)
+                        or (value.startswith("/") and not value.startswith("//") and not uri.netloc)):
+                    raise ValueError("article URL must be HTTPS or a root-relative path")
+        if tag == "a" and ("href" not in names or "a" in self.stack):
+            raise ValueError("article anchor needs one URL and cannot nest")
+        if tag != "br":
+            self.stack.append(tag)
+
+    def handle_startendtag(self, tag, attrs):
+        if tag != "br":
+            raise ValueError("only br may be self-closing")
+        self.handle_starttag(tag, attrs)
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            raise ValueError("unbalanced article markup")
+        self.stack.pop()
+
+    def handle_data(self, data):
+        if "<" in data:
+            raise ValueError("unparsed article markup; escape literal angle brackets")
+
+    def handle_comment(self, data):
+        raise ValueError("article comments are not permitted")
+
+    def handle_decl(self, decl):
+        raise ValueError("article declarations are not permitted")
+
+    def unknown_decl(self, data):
+        raise ValueError("article declarations are not permitted")
+
+    def handle_pi(self, data):
+        raise ValueError("article processing instructions are not permitted")
+
+
+def check_markup_safety(draft: dict, slot: dict, cfg: dict) -> dict:
+    body = _body(draft)
+    try:
+        if any(ord(c) < 32 and c not in "\n\r\t" for c in body):
+            raise ValueError("article contains control characters")
+        for ending in re.findall(r"</[^>]*>", body):
+            if not re.fullmatch(r"</[A-Za-z][A-Za-z0-9]*\s*>", ending):
+                raise ValueError("malformed closing tag")
+        parser = _ArticleFragment()
+        parser.feed(body)
+        if parser.rawdata:
+            raise ValueError("incomplete article markup or character reference")
+        parser.close()
+        if parser.stack:
+            raise ValueError("unclosed article tag")
+    except (ValueError, AssertionError) as exc:
+        return _row("markup_safety", False, str(exc))
+    return _row("markup_safety", True, "static article fragment with allowed tags and attributes")
+
+
+def _prose_html(draft: dict, cfg: dict) -> str:
+    """Exclude at most one genuine configured byline/footer, never classed prose.
+
+    A class is mutable markup, not proof that its contents are boilerplate.
+    Unrecognized or repeated blocks stay visible to every prose validator.
     """
     v = _v(cfg)
-    body = _body(draft)
-    for cls in (str(v.get("byline_class") or "press-byline"),
-                str(v.get("footer_class") or "press-footer")):
-        body = re.sub(
-            rf"<(\w+)\b[^>]*class=\"[^\"]*\b{re.escape(cls)}\b[^\"]*\"[^>]*>.*?</\1>",
-            " ", body, flags=re.IGNORECASE | re.DOTALL,
-        )
-    return body
+    def normal(text):
+        return re.sub(r"\s+", " ", strip_tags(text)).strip().casefold()
+    bylines = {normal(d.get("byline", "")) for d in (cfg.get("desks") or {}).values()
+               if isinstance(d, dict) and d.get("byline")}
+    known = {
+        str(v.get("byline_class") or "press-byline"): bylines,
+        str(v.get("footer_class") or "press-footer"): {normal(v.get("footer_required_text") or
+            "Educational content — not investment advice. Markets involve risk.")},
+    }
+    removed: set[str] = set()
+
+    def furniture(match):
+        block = match.group(0)
+        opening = block[:block.index(">") + 1]
+        attr = re.search(r"""\bclass\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""",
+                         opening, re.IGNORECASE)
+        cls = next((x for x in attr.groups() if x is not None), "") if attr else ""
+        if cls in known and cls not in removed and normal(block) in known[cls]:
+            removed.add(cls)
+            return " "
+        return block
+
+    return re.sub(r"<p\b[^>]*>.*?</p\s*>", furniture, _body(draft),
+                  flags=re.IGNORECASE | re.DOTALL)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -458,6 +615,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
     v = _v(cfg)
     generic_max = int(v.get("generic_integer_max") or 12)
     pool, source_text = source_number_pool(slot)
+    quantities = _fact_quantity_pool(slot)
     prose = strip_tags(_prose_html(draft, cfg))
 
     unanchored: list[str] = []
@@ -474,7 +632,7 @@ def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
         if num.is_bare_int and 1900 <= num.value <= 2100 and str(int(num.value)) in source_text:
             continue
         checked += 1
-        if not _anchors(num, pool):
+        if not _quantity_anchors(num, quantities):
             unanchored.append(num.raw)
 
     # Attributed quotes must be findable in the sources too — a fabricated
@@ -772,10 +930,14 @@ def _anchored_values(text: str, pool: list[float], generic_max: int) -> list[flo
             continue
         if nm.is_bare_int and 1900 <= nm.value <= 2100:
             continue
-        for s in pool:
-            if _anchors(nm, [s]) and s not in hits:
-                hits.append(s)
-                break
+        # Resolve the anchor before deduplication. Skipping already-used values
+        # here lets repeated prose consume nearby unused values in the rounding
+        # window, so saying "14" twice can claim both 14 and 14.46 as receipts.
+        matches = [s for s in pool if _anchors(nm, [s])]
+        if matches:
+            source = min(matches, key=lambda s: (abs(abs(nm.value) - abs(s)), s))
+            if source not in hits:
+                hits.append(source)
     return hits
 
 
@@ -1021,8 +1183,6 @@ def check_ai_tells(draft: dict, slot: dict, cfg: dict) -> dict:
 
 
 _HREF_RE = re.compile(r'href="([^"]+)"', re.IGNORECASE)
-_SITE_HOSTS = ("https://www.mastermind-x.com", "https://mastermind-x.com",
-               "http://www.mastermind-x.com", "http://mastermind-x.com")
 
 
 def _norm_ws(text: str) -> str:
@@ -1031,14 +1191,36 @@ def _norm_ws(text: str) -> str:
 
 def _internal_path(href: str) -> str | None:
     """Root-relative path for an internal link; None for an external one."""
+    from urllib.parse import urlsplit  # noqa: PLC0415
+
     h = str(href or "").strip()
-    if h.startswith("#") or h.startswith("mailto:") or h.startswith("tel:"):
+    if "\\" in h:
+        # Browsers normalize backslashes as URL separators; urlsplit does not.
+        # Reject the ambiguous spelling before it can pose as an external host.
+        return "/" + h
+    if h.startswith("#") or h.lower().startswith(("mailto:", "tel:")):
         return None
-    for host in _SITE_HOSTS:
-        if h.startswith(host):
-            return "/" + h[len(host):].lstrip("/")
     if h.startswith("//") or "://" in h:
-        return None                      # genuinely external
+        try:
+            parsed = urlsplit(h)
+            host = (parsed.hostname or "").lower().rstrip(".")
+        except ValueError:
+            return "/" + h               # malformed URL fails the internal gate
+        if not host:
+            # HTTP(S) with extra slashes may gain an authority in a browser.
+            # A missing parsed authority must fail closed, never be external.
+            return "/" + h
+        if host not in ("www.mastermind-x.com", "mastermind-x.com"):
+            return None                  # genuinely external
+        # Classify by the parsed host, preserving the path's exact spelling.
+        # Protocol-relative, case variants and userinfo cannot pose as external
+        # URLs; the dossier gate below still rejects noncanonical stock forms.
+        path = parsed.path or "/"
+        if parsed.query:
+            path += "?" + parsed.query
+        if parsed.fragment:
+            path += "#" + parsed.fragment
+        return path
     if h.startswith("/"):
         return h
     return "/" + h
@@ -1110,29 +1292,60 @@ def check_link_allowlist(draft: dict, slot: dict, cfg: dict) -> dict:
     All three answer 302 to /?signin=1.  The validator was actively FORCING
     every public article to cite a login wall — the reader clicks the citation
     and lands on a signin form.  Only prefixes verified public logged-out are
-    allowed (config/press.yml `public_link_prefixes`; today /research/ and
-    /blog/, both confirmed 200).
+    allowed (config/press.yml `public_link_prefixes`). Stock dossiers also
+    require the planner's exact canonical path in `slot.allowed_links`: a
+    public route family does not prove that a named company page exists.
 
     External links are untouched: an external source is what the piece is
     citing, and the allowlist is about OUR estate.
     """
+    from urllib.parse import unquote  # noqa: PLC0415
+
     prefixes = [str(p) for p in (cfg.get("public_link_prefixes") or [])]
-    body = _prose_html(draft, cfg)
+    stock_paths = set()
+    for url in slot.get("allowed_links") or []:
+        match = re.fullmatch(
+            r"https://www\.mastermind-x\.com(/stocks/[A-Z0-9][A-Z0-9.-]*\.html)",
+            str(url),
+        )
+        if match:
+            stock_paths.add(match.group(1))
+    # Every anchor renders, including anchors inside byline/footer furniture.
+    body = _body(draft)
     offenders: list[str] = []
     checked = 0
-    for href in _HREF_RE.findall(body):
-        path = _internal_path(href)
+    # HTML permits all three quoting forms; none may bypass the dossier gate.
+    hrefs = re.findall(
+        r'''(?<![\w-])href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))''',
+        body, flags=re.IGNORECASE,
+    )
+    for parts in hrefs:
+        href = next((part for part in parts if part), "")
+        if not href:
+            continue
+        decoded_href = _html.unescape(href)
+        path = _internal_path(decoded_href)
         if path is None:
             continue                     # external link — not our estate
         checked += 1
-        if not any(path.startswith(p) for p in prefixes):
+        decoded_path = unquote(path).split("?", 1)[0].split("#", 1)[0]
+        malformed = (
+            "\\" in decoded_path
+            or any(part in (".", "..") for part in decoded_path.split("/"))
+            or any(ord(char) < 32 for char in decoded_path)
+        )
+        stock_unadmitted = path.startswith("/stocks/") and (
+            path not in stock_paths
+            or decoded_href not in (path, f"https://www.mastermind-x.com{path}")
+        )
+        if malformed or stock_unadmitted or not any(path.startswith(p) for p in prefixes):
             offenders.append(href)
 
     ok = not offenders
     return _row("link_allowlist", ok,
                 f"{checked} internal link(s), all public" if ok else
-                f"internal link(s) outside the public allowlist {prefixes} — "
-                f"these are regwall-gated and send the reader to a signin form: "
+                f"internal link(s) outside the public allowlist {prefixes}, "
+                f"unplanned stock dossiers, or malformed paths: "
                 f"{offenders}",
                 internal_links=checked, offenders=offenders, prefixes=prefixes)
 
@@ -1307,7 +1520,7 @@ def recent_own_posts(root=None, *, as_of=None, window_days: int = 30) -> list[di
 
 
 def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") -> list[dict]:
-    """[{slug, text}] for drafts sitting in staging (excluding `exclude_id`).
+    """Staged text and prose blocks, excluding `exclude_id`.
 
     WHY THIS EXISTS: the 10-article evidence gate accrues across staged drafts
     that have not been emitted yet.  A radar that only read content/seo/blog/
@@ -1335,7 +1548,8 @@ def staged_peers(root=None, cfg: dict | None = None, *, exclude_id: str = "") ->
         if not isinstance(d, dict) or not d.get("body_html"):
             continue
         out.append({"slug": f"staged:{obj.get('slug') or obj.get('id')}",
-                    "text": strip_tags(d["body_html"])})
+                    "text": strip_tags(d["body_html"]),
+                    "prose_blocks": [b["text"] for b in blocks(_prose_html(d, cfg or {}))]})
     return out
 
 
@@ -1365,6 +1579,17 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
             if j > worst:
                 worst, worst_slug, worst_block = j, peer["slug"], blk["text"][:120]
 
+    # Windowing is asymmetric when the new block is much longer than an
+    # existing staged block. Check the reverse direction before accepting the
+    # new draft, so a later sibling cannot invalidate an earlier passing one.
+    # Use the same furniture/quotation exclusions as the peer's own replay.
+    candidate_tokens = words(strip_tags(_body(draft)))
+    for peer in peers:
+        for text in peer.get("prose_blocks", []):
+            j = window_jaccard(words(strip_quotes(text)), candidate_tokens, n)
+            if j > worst:
+                worst, worst_slug, worst_block = j, peer["slug"], text[:120]
+
     ok = worst <= threshold
     return _row("self_similarity", ok,
                 (f"max overlap with our last {window} days + staged siblings is "
@@ -1381,6 +1606,7 @@ def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict
 
 # (name, callable, takes_root) — order is report order.
 _SUITE = (
+    ("markup_safety", check_markup_safety, False),
     ("fact_anchor", check_fact_anchor, False),
     ("claim_scope", check_claim_scope, False),
     ("close_paraphrase", check_close_paraphrase, False),

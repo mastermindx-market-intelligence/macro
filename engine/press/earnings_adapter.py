@@ -6,6 +6,10 @@ creating a parallel article path.
 """
 from __future__ import annotations
 
+from pathlib import Path
+import os
+import re
+import subprocess
 from typing import Any, Mapping
 
 from engine.earnings_narrative.contracts import ContractError, safe_ticker, transcript_id
@@ -17,6 +21,71 @@ from engine.earnings_narrative.story import (
     validate_correction_against_prior,
     validate_story_against_digest,
 )
+
+
+DOSSIER_LINK_SCHEMA = "earnings.dossier_link/v1"
+_DOSSIER_KEYS = frozenset({"schema", "ticker", "url", "source_commit", "source_blob_oid"})
+_GIT_OID = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+
+
+def validate_dossier_link(binding: object, *, ticker: str) -> dict[str, Any]:
+    """Replay a frozen construction receipt, without consulting today's site."""
+    symbol = safe_ticker(ticker)
+    if not isinstance(binding, Mapping) or set(binding) != _DOSSIER_KEYS:
+        raise ContractError("earnings dossier link fields mismatch")
+    if (
+        binding.get("schema") != DOSSIER_LINK_SCHEMA
+        or binding.get("ticker") != symbol
+        or binding.get("url") != f"https://www.mastermind-x.com/stocks/{symbol}.html"
+    ):
+        raise ContractError("earnings dossier link is not the canonical event ticker destination")
+    for field in ("source_commit", "source_blob_oid"):
+        value = binding.get(field)
+        if not isinstance(value, str) or not _GIT_OID.fullmatch(value):
+            raise ContractError(f"earnings dossier link {field} must be a Git object id")
+    return dict(binding)
+
+
+def build_dossier_link(ticker: str, *, root: Path) -> dict[str, Any]:
+    """Freeze one existing committed dossier; never accept a caller URL.
+
+    The Git receipt records availability at construction, not deployment,
+    article rights or an approval. Historical packet replay keeps this snapshot.
+    """
+    from lib.pages import rendered_ticker_pages
+
+    symbol = safe_ticker(ticker)
+    repo = Path(root).resolve()
+    if symbol not in rendered_ticker_pages(repo / "site"):
+        raise ContractError("earnings dossier destination is not rendered")
+    path = f"site/stocks/{symbol}.html"
+    git_env = {**os.environ, "GIT_NO_LAZY_FETCH": "1"}
+    try:
+        commit = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "--verify", "HEAD"],
+            check=True, capture_output=True, text=True, env=git_env, timeout=10,
+        ).stdout.strip()
+        entry = subprocess.run(
+            ["git", "-C", str(repo), "ls-tree", commit, "--", path],
+            check=True, capture_output=True, text=True, env=git_env, timeout=10,
+        ).stdout.strip()
+        metadata, actual_path = entry.split("\t")
+        mode, kind, blob = metadata.split()
+        if actual_path != path or kind != "blob" or mode not in {"100644", "100755"}:
+            raise ValueError("dossier is not a committed regular page")
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        raise ContractError("earnings dossier destination has no committed page receipt") from exc
+    return validate_dossier_link({
+        "schema": DOSSIER_LINK_SCHEMA, "ticker": symbol,
+        "url": f"https://www.mastermind-x.com/stocks/{symbol}.html",
+        "source_commit": commit, "source_blob_oid": blob,
+    }, ticker=symbol)
+
+
+def assert_dossier_link_current(binding: object, *, ticker: str, root: Path) -> None:
+    """Check current route availability at consumption, not ancestor replay."""
+    validate_dossier_link(binding, ticker=ticker)
+    build_dossier_link(ticker, root=root)
 
 
 def _stable_source_ref(event: Mapping[str, Any]) -> str:
@@ -47,6 +116,7 @@ def story_to_press_slot(
     *,
     chronicle_context: Mapping[str, Any] | None = None,
     prior_story: object | None = None,
+    dossier_link: object | None = None,
 ) -> dict[str, Any]:
     """Return an exact Press slot for a Tier-A/B source-ready story.
 
@@ -69,6 +139,7 @@ def story_to_press_slot(
     tier = str(promotion["tier"])
     required_receipts = article_receipt_floor(tier)
     event = story["event"]
+    link = validate_dossier_link(dossier_link, ticker=event["ticker"]) if dossier_link is not None else None
     source = story["source"]
     source_ref = _stable_source_ref(event)
     receipt = f"sha256:{source['body_sha256']}"
@@ -142,7 +213,7 @@ def story_to_press_slot(
         "min_words": min_words,
         "max_words": max_words,
         "min_anchored_receipts": required_receipts,
-        "allowed_links": [],
+        "allowed_links": [link["url"]] if link is not None else [],
         "story": {
             "kind": "earnings_call",
             "title_hint": title_hint,

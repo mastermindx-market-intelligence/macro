@@ -1,0 +1,13 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "[Reading 4 new lines (total: 4 lines)]\n\n{\"stage\": \"EXECUTING_REVIEWED_OWNER_BOOTSTRAP\", \"script_path\": \"/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-owner-bootstrap-runner-001.py\", \"script_bytes\": 29119, \"script_sha256\": \"92298f53a839bea81b16556ff71277f461d44f732df88a044a990785c620f0a3\", \"bytecode_disabled\": true}\n{\"stage\": \"OWNER_BOOTSTRAP_CHILD_STARTED\", \"child_pid\": 28310, \"action_script_sha256\": \"264535ec562043a18e4bc75c92fbbe9b5cba12428422b2a9677e89c0f769f699\", \"raw_child_output\": \"PRIVATE_ONLY\"}\n{\"stage\": \"OWNER_BOOTSTRAP_COMPLETE\", \"status\": \"OWNER_BOOTSTRAP_AND_ACTUAL_CHILD_RESULT_RECONCILED\", \"outer_exit_code\": 0, \"child_exit_code\": 0, \"receipt_path\": \"/Users/chriswong/Library/Caches/Mastermind/economic-network-20261009/native-nvda-owner-bootstrap-001.json\", \"receipt_bytes\": 4261, \"receipt_sha256\": \"6ea1031084e6948ee284222201158227ec5cc111874e08ebcd9d6a2b00d56040\", \"result\": {\"status\": \"CAPTURE_STORE_READ_REPEAT_VERIFIED\", \"stage\": \"SAME_ARTIFACT_REPEAT\", \"producer_call_count\": 1, \"provider_request_attempts_recorded\": 1, \"source_status\": \"complete\", \"source_failure_kind\": null, \"retained_row_count\": 1, \"F\": {\"precision\": \"exact decimal strings for native integer nanoseconds\", \"producer_completed_utc_ns\": \"1791562616998504000\", \"producer_started_utc_ns\": \"1791562616274811000\", \"public_by_K\": \"UNPROVED\"}, \"same_artifact_repeat_calls\": 1, \"source_store_exists\": true, \"row_summary\": {\"all_retained_rows_requested_vendor_token\": true, \"candidate_comparison_status\": \"EVALUATED_ON_RETAINED_ROWS\", \"candidate_issuer_profile_match\": true, \"comparison_definition_sha256\": \"7cd0ee632314baf4ac57489dbd58e5fe26675323a6840ef5bb6740885111a25b\", \"comparison_source_case_sha256\": \"c0fdd60f75ae4a741d77f452c6859938b75825c9e6fba9384942427f511ae5b9\", \"nonempty_actual_rows\": true, \"profile_id\": \"issuer_terms_and_june_window/v1\", \"public_review_limit\": \"If evaluated, the private comparison is executed by the principal under the bound script; actual candidate_comparison_status records whether evaluation occurred. Row bytes are not independently read by the public reviewer.\", \"retained_row_count\": 1, \"vendor_execution_date_semantics\": \"UNRECONCILED\"}}}\n\n✅ Process completed with exit code 0 (runtime: 11.78s)"
+    },
+    {
+      "type": "text",
+      "text": "\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    }
+  ],
+  "isError": false
+}
