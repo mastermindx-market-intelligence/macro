@@ -2965,6 +2965,31 @@ def test_plan_is_deterministic() -> None:
     assert any(first.pack_jobs)
 
 
+def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Calibration changes the attested assignment, never the work it proves."""
+    calibrated = _full_plan()
+    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+    heuristic = _full_plan()
+
+    assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.pack_count == heuristic.pack_count == 12
+    assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
+    assert calibrated.pack_jobs != heuristic.pack_jobs
+    assert calibrated.plan_sha256 != heuristic.plan_sha256
+    before = {job.logical_job_id: job for job in heuristic.semantic_jobs}
+    for job in calibrated.semantic_jobs:
+        assert job.job_exec_sha256 == before[job.logical_job_id].job_exec_sha256
+        assert job.steps == before[job.logical_job_id].steps
+    flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
+    assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
+    assert set(flattened) == set(calibrated.eligible_job_ids)
+    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
+
+
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
     """The hash is what makes twelve independent derivations one decision."""
     plan = _full_plan()

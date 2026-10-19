@@ -57,7 +57,7 @@ def validate_declaration(value: object, body: bytes, *, role: str, registration:
     """Validate declared bindings/intervals, never the provenance's veracity."""
     if role not in SCHEMAS:
         raise control.E0ControlError("temporal_domain_role_required")
-    declared, canonical = control._snapshot(value)
+    declared, canonical = control._domain_snapshot(value)
     if next(_validator(role).iter_errors(declared), None) is not None:
         raise control.E0ControlError("temporal_domain_schema_violation")
     if canonical != body:
