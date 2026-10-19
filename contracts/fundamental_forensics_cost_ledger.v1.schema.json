@@ -37,10 +37,11 @@
     "totals": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["one_time", "per_month"],
+      "required": ["one_time", "per_month", "query_window"],
       "properties": {
         "one_time": {"$ref": "#/$defs/period_totals"},
-        "per_month": {"$ref": "#/$defs/period_totals"}
+        "per_month": {"$ref": "#/$defs/period_totals"},
+        "query_window": {"$ref": "#/$defs/period_totals"}
       }
     },
     "denominators": {
@@ -142,8 +143,8 @@
       "additionalProperties": false,
       "required": [
         "quantity_value", "quantity_unit", "quantity_status", "usd_per_unit",
-        "rate_status", "rate_verified", "basis_period", "cost_usd", "cost_status",
-        "incomplete_reason", "notes", "counts"
+        "rate_status", "rate_verified", "basis_period", "rate_basis_period",
+        "cost_usd", "cost_status", "incomplete_reason", "notes", "counts"
       ],
       "properties": {
         "quantity_value": {"type": ["null", "number"]},
@@ -152,7 +153,8 @@
         "usd_per_unit": {"type": ["null", "number"], "minimum": 0},
         "rate_status": {"enum": ["declared_rate", "unmeasured"]},
         "rate_verified": {"type": "boolean"},
-        "basis_period": {"enum": ["one_time", "per_month"]},
+        "basis_period": {"enum": ["one_time", "per_month", "query_window"]},
+        "rate_basis_period": {"enum": ["one_time", "per_month"]},
         "cost_usd": {"type": ["null", "number"]},
         "cost_status": {
           "enum": ["measured", "declared", "declared_unverified", "incomplete"]
@@ -165,6 +167,8 @@
                 "inference_rows_uncosted",
                 "inference_rows_absent",
                 "inference_filter_empty",
+                "usage_lines_undecodable",
+                "inference_rows_outside_window_only",
                 "storage_lower_bound",
                 "burden_ledger_empty"
               ]
@@ -202,10 +206,24 @@
     "per_unit": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["one_time_usd", "per_month_usd", "complete", "reason"],
+      "required": [
+        "one_time_usd", "per_month_usd", "query_window_usd", "components",
+        "basis", "complete", "reason"
+      ],
       "properties": {
         "one_time_usd": {"type": ["null", "number"]},
         "per_month_usd": {"type": ["null", "number"]},
+        "query_window_usd": {"type": ["null", "number"]},
+        "components": {
+          "type": "array",
+          "items": {
+            "enum": ["source", "licence", "storage", "parse", "inference", "review"]
+          }
+        },
+        "basis": {
+          "type": "array",
+          "items": {"enum": ["one_time", "per_month", "query_window"]}
+        },
         "complete": {"type": "boolean"},
         "reason": {
           "oneOf": [

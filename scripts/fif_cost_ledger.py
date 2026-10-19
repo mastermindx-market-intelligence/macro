@@ -172,7 +172,8 @@ def _cmd_build(args: argparse.Namespace) -> int:
         print(
             "fif-cost-ledger: ledger is not complete "
             f"(one_time incomplete: {ledger['totals']['one_time']['incomplete_components']}; "
-            f"per_month incomplete: {ledger['totals']['per_month']['incomplete_components']})",
+            f"per_month incomplete: {ledger['totals']['per_month']['incomplete_components']}; "
+            f"query_window incomplete: {ledger['totals']['query_window']['incomplete_components']})",
             file=sys.stderr,
         )
         return 5

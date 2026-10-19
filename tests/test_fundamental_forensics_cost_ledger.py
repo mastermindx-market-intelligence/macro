@@ -379,20 +379,24 @@ _ROW_FILTER = {"stage_prefixes": ["fif"], "lane_prefixes": ["fundamental_forensi
 
 
 def test_inference_matches_stage_or_lane_prefix() -> None:
+    # No undecodable line here: since r3 an undecodable line demotes the
+    # whole quantity (usage_lines_undecodable), so the prefix-matching sum
+    # is pinned on a fully decodable set.
     lines = [
         json.dumps({"stage": "fif_capture", "lane": "other", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
         json.dumps({"stage": "other", "lane": "fundamental_forensics_v1", "est_cost_usd": 2.25, "ts": "2026-10-02T00:00:00Z"}),
         json.dumps({"stage": "FIF_REVIEW", "lane": "x", "est_cost_usd": 4.0, "ts": "2026-10-03T00:00:00Z"}),
         json.dumps({"stage": "altdata_brain", "lane": "unknown", "est_cost_usd": 9.0, "ts": "2026-10-04T00:00:00Z"}),
-        "{not json",
     ]
     quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
     assert quantity.value == pytest.approx(7.75)
     assert quantity.status == MEASURED
-    assert quantity.counts["rows_read"] == 5
+    assert quantity.counts["rows_read"] == 4
     assert quantity.counts["rows_matched"] == 3
-    assert quantity.counts["rows_undecodable"] == 1
+    assert quantity.counts["rows_in_window"] == 3
+    assert quantity.counts["rows_undecodable"] == 0
     assert quantity.counts["rows_uncosted"] == 0
+    assert quantity.counts["declared_window"] is None
     assert quantity.counts["window"] == {
         "min": "2026-10-01T00:00:00Z",
         "max": "2026-10-03T00:00:00Z",
@@ -412,7 +416,7 @@ def test_inference_zero_matches_is_unmeasured_absent() -> None:
     assert component["cost_usd"] is None
     assert component["cost_status"] == "incomplete"
     assert component["incomplete_reason"] == "inference_rows_absent"
-    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
 
 
 def test_inference_uncosted_row_is_unmeasured_uncosted() -> None:
@@ -432,7 +436,7 @@ def test_inference_uncosted_row_is_unmeasured_uncosted() -> None:
     assert component["cost_usd"] is None
     assert component["cost_status"] == "incomplete"
     assert component["incomplete_reason"] == "inference_rows_uncosted"
-    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
 
 
 def test_inference_empty_filter_is_unmeasured_filter_empty() -> None:
@@ -450,7 +454,7 @@ def test_inference_empty_filter_is_unmeasured_filter_empty() -> None:
     component = ledger["components"]["inference"]
     assert component["cost_status"] == "incomplete"
     assert component["incomplete_reason"] == "inference_filter_empty"
-    assert "inference" in ledger["totals"]["one_time"]["incomplete_components"]
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
 
 
 def test_inference_fully_costed_rows_stay_measured() -> None:
@@ -505,11 +509,124 @@ def test_inference_rows_outside_window_excluded_and_counted() -> None:
     assert quantity.value == pytest.approx(1.5)
     assert quantity.status == MEASURED
     assert quantity.counts["rows_matched"] == 4
+    assert quantity.counts["rows_in_window"] == 1
     assert quantity.counts["inference_rows_outside_window"] == 3
+    assert quantity.counts["inference_rows_untimed"] == 1
+    assert quantity.counts["rows_uncosted"] == 0
+    assert quantity.counts["declared_window"] == {
+        "start": "2026-10-01T00:00:00Z",
+        "end": "2026-10-02T00:00:00Z",
+    }
     assert quantity.counts["window"] == {
         "min": "2026-10-01T12:00:00Z",
         "max": "2026-10-01T12:00:00Z",
     }
+
+
+def test_mixed_in_and_outside_window_rows_sum_only_in_window() -> None:
+    # A mixed set is measured, with only the in-window sum — and a row that
+    # is outside the window and uncosted never counts as an uncosted row,
+    # because rows_uncosted covers in-window rows only.
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": None, "ts": "2026-09-30T23:59:59Z"}),
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T12:00:00Z"}),
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 7.0, "ts": "2026-10-02T00:00:00Z"}),
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER, window=_QUERIES_WINDOW)
+    assert quantity.status == MEASURED
+    assert quantity.value == pytest.approx(1.5)
+    assert quantity.counts["rows_matched"] == 3
+    assert quantity.counts["rows_in_window"] == 1
+    assert quantity.counts["rows_uncosted"] == 0
+    assert quantity.counts["inference_rows_outside_window"] == 2
+
+
+def test_all_rows_outside_window_is_unmeasured_outside_window_only() -> None:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-09-30T23:59:59Z"}),
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 7.0, "ts": "2026-10-02T00:00:00Z"}),
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER, window=_QUERIES_WINDOW)
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert quantity.notes == ("inference_rows_outside_window_only",)
+    assert quantity.counts["rows_matched"] == 2
+    assert quantity.counts["rows_in_window"] == 0
+    assert quantity.counts["inference_rows_outside_window"] == 2
+    assert quantity.counts["inference_rows_untimed"] == 0
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": quantity},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    component = ledger["components"]["inference"]
+    assert component["cost_status"] == "incomplete"
+    assert component["cost_usd"] is None
+    assert component["incomplete_reason"] == "inference_rows_outside_window_only"
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
+
+
+def test_all_rows_untimed_under_window_is_unmeasured_outside_window_only() -> None:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0}),
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "yesterday"}),
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER, window=_QUERIES_WINDOW)
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert quantity.notes == ("inference_rows_outside_window_only",)
+    assert quantity.counts["rows_matched"] == 2
+    assert quantity.counts["rows_in_window"] == 0
+    assert quantity.counts["inference_rows_outside_window"] == 2
+    assert quantity.counts["inference_rows_untimed"] == 2
+
+
+def test_inverted_window_refused_in_usage_reader() -> None:
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-10-01T12:00:00Z"})]
+    for inverted in (
+        {"start": "2026-10-02T00:00:00Z", "end": "2026-10-01T00:00:00Z"},  # start > end
+        {"start": "2026-10-01T00:00:00Z", "end": "2026-10-01T00:00:00Z"},  # start == end
+    ):
+        with pytest.raises(CostLedgerError) as excinfo:
+            inference_quantity_from_usage(lines, _ROW_FILTER, window=inverted)
+        assert excinfo.value.code == "window_inverted", inverted
+
+
+def test_inverted_window_refused_in_denominators_check() -> None:
+    denominators = _denominators(
+        queries={
+            "value": 10,
+            "source": "coverage proof",
+            "window": {"start": "2026-10-02T00:00:00Z", "end": "2026-10-01T00:00:00Z"},
+        }
+    )
+    with pytest.raises(CostLedgerError) as excinfo:
+        _build_ledger(denominators=denominators)
+    assert excinfo.value.code == "window_inverted"
+
+
+def test_probe_base_reported_all_outside_inference_as_measured_zero() -> None:
+    # Probe for the reviewed BASE defect (r3 R1): rows outside the window
+    # still counted as matched, so an all-outside set returned measured 0.0.
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-09-01T00:00:00Z"})]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER, window=_QUERIES_WINDOW)
+    assert quantity.status == UNMEASURED
+    assert quantity.value is None
+    assert quantity.notes == ("inference_rows_outside_window_only",)
+
+
+def test_probe_base_accepted_an_inverted_window_as_measured_zero() -> None:
+    # Probe for the reviewed BASE defect (r3 R1): an inverted window was not
+    # refused, and matched no row, so the reader returned measured 0.0.
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-10-01T12:00:00Z"})]
+    with pytest.raises(CostLedgerError) as excinfo:
+        inference_quantity_from_usage(
+            lines,
+            _ROW_FILTER,
+            window={"start": "2026-10-02T00:00:00Z", "end": "2026-10-01T00:00:00Z"},
+        )
+    assert excinfo.value.code == "window_inverted"
 
 
 def test_missing_queries_window_refuses_cost_per_query() -> None:
@@ -531,7 +648,156 @@ def test_declared_queries_window_lets_cost_per_query_compute() -> None:
     ledger = _build_ledger(denominators=denominators)
     entry = ledger["per_unit"]["queries"]
     assert entry["reason"] != "queries_window_absent"
-    assert entry["one_time_usd"] == pytest.approx(0.25)
+    # Only the windowed inference total is per-query (r3 R4).
+    assert entry["query_window_usd"] == pytest.approx(0.25)
+    assert entry["one_time_usd"] is None
+    assert entry["per_month_usd"] is None
+
+
+# ── 4c. inference window must equal the queries window (r3 R2) ───────────────
+
+
+def _windowed_inference(window: dict, cost: float = 1.5) -> Quantity:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": cost, "ts": "2026-10-01T12:00:00Z"})
+    ]
+    return inference_quantity_from_usage(lines, _ROW_FILTER, window=window)
+
+
+def test_inference_window_mismatch_with_queries_window_refused() -> None:
+    inference = _windowed_inference(_QUERIES_WINDOW)
+    denominators = _denominators(
+        queries={
+            "value": 10,
+            "source": "coverage proof",
+            "window": {"start": "2026-10-01T00:00:00Z", "end": "2026-10-03T00:00:00Z"},
+        }
+    )
+    with pytest.raises(CostLedgerError) as excinfo:
+        _build_ledger(
+            quantities={**_base_quantities(), "inference": inference},
+            denominators=denominators,
+        )
+    assert excinfo.value.code == "inference_window_mismatch"
+
+
+def test_inference_window_declared_but_queries_window_absent_refused() -> None:
+    inference = _windowed_inference(_QUERIES_WINDOW)
+    with pytest.raises(CostLedgerError) as excinfo:
+        _build_ledger(quantities={**_base_quantities(), "inference": inference})
+    assert excinfo.value.code == "inference_window_mismatch"
+
+
+def test_queries_window_declared_but_inference_window_absent_refused() -> None:
+    lines = [json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5})]
+    inference = inference_quantity_from_usage(lines, _ROW_FILTER)
+    assert inference.counts["declared_window"] is None
+    denominators = _denominators(
+        queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+    )
+    with pytest.raises(CostLedgerError) as excinfo:
+        _build_ledger(
+            quantities={**_base_quantities(), "inference": inference},
+            denominators=denominators,
+        )
+    assert excinfo.value.code == "inference_window_mismatch"
+
+
+def test_matching_window_in_offset_notation_accepted() -> None:
+    inference = _windowed_inference(
+        {"start": "2026-10-01T00:00:00Z", "end": "2026-10-02T00:00:00Z"}
+    )
+    assert inference.counts["declared_window"] == {
+        "start": "2026-10-01T00:00:00Z",
+        "end": "2026-10-02T00:00:00Z",
+    }
+    denominators = _denominators(
+        queries={
+            "value": 10,
+            "source": "coverage proof",
+            "window": {
+                "start": "2026-10-01T00:00:00+00:00",
+                "end": "2026-10-02T00:00:00+00:00",
+            },
+        }
+    )
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=denominators,
+    )
+    assert ledger["per_unit"]["queries"]["query_window_usd"] == pytest.approx(0.15)
+
+
+def test_non_utc_window_notation_normalised_for_comparison() -> None:
+    inference = _windowed_inference(
+        {"start": "2026-10-01T02:00:00+02:00", "end": "2026-10-02T00:00:00Z"}
+    )
+    assert inference.counts["declared_window"] == {
+        "start": "2026-10-01T00:00:00Z",
+        "end": "2026-10-02T00:00:00Z",
+    }
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert ledger["per_unit"]["queries"]["query_window_usd"] == pytest.approx(0.15)
+
+
+# ── 4d. undecodable usage lines demote the inference total (r3 R3) ───────────
+
+
+def test_undecodable_usage_line_demotes_inference_to_unmeasured() -> None:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
+        "{not json",
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert quantity.notes == ("usage_lines_undecodable",)
+    assert quantity.counts["rows_undecodable"] == 1
+    assert quantity.counts["rows_matched"] == 1
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": quantity})
+    component = ledger["components"]["inference"]
+    assert component["cost_status"] == "incomplete"
+    assert component["cost_usd"] is None
+    assert component["incomplete_reason"] == "usage_lines_undecodable"
+    assert "inference" in ledger["totals"]["query_window"]["incomplete_components"]
+
+
+def test_non_object_usage_line_demotes_inference_to_unmeasured() -> None:
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
+        "[1]",
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
+    assert quantity.value is None
+    assert quantity.status == UNMEASURED
+    assert quantity.notes == ("usage_lines_undecodable",)
+    assert quantity.counts["rows_undecodable"] == 1
+
+
+def test_undecodable_reason_leads_over_absent_rows() -> None:
+    # Precedence: an undecodable line outranks zero matching rows, because
+    # the undecodable line could itself have been a matching row.
+    quantity = inference_quantity_from_usage(["{not json"], _ROW_FILTER)
+    assert quantity.notes == ("usage_lines_undecodable",)
+    assert quantity.counts["rows_matched"] == 0
+
+
+def test_probe_base_reported_undecodable_usage_as_measured() -> None:
+    # Probe for the reviewed BASE defect (r3 R3): undecodable lines did not
+    # demote the status, so a ledger holding one still reported a measured
+    # total (the reviewer's probe read 7.0 measured).
+    lines = [
+        json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5, "ts": "2026-10-01T00:00:00Z"}),
+        "{not json",
+    ]
+    quantity = inference_quantity_from_usage(lines, _ROW_FILTER)
+    assert quantity.status == UNMEASURED
+    assert quantity.value is None
 
 
 # ── 5. operator-burden ledger ────────────────────────────────────────────────
@@ -844,12 +1110,97 @@ def test_per_unit_positive_denominator_with_incomplete_components() -> None:
     )
     ledger = _build_ledger(denominators=denominators)
     entry = ledger["per_unit"]["qualified_filings"]
-    # one_time known_usd = source 0 + licence 0 + inference 2.5 = 2.5 (parse and
-    # review unmeasured), so the quotient prints but is never a full cost.
-    assert entry["one_time_usd"] == pytest.approx(0.25)
+    # one_time holds only source+licence+parse+review (r3 R4): their known
+    # costs are the declared 0.0 rates, parse and review stay unmeasured, so
+    # the quotient prints but is never a full cost.
+    assert entry["one_time_usd"] == pytest.approx(0.0)
     assert entry["per_month_usd"] == pytest.approx(0.003)
+    assert entry["query_window_usd"] is None
     assert entry["complete"] is False
     assert entry["reason"] == "components_incomplete"
+
+
+# ── 7b. windowed inference is its own basis group (r3 R4) ────────────────────
+
+
+def test_totals_carry_three_basis_groups() -> None:
+    ledger = _build_ledger()
+    assert set(ledger["totals"]) == {"one_time", "per_month", "query_window"}
+    # Inference (2.5 measured, verified declared rate) is a query_window
+    # member only; one_time keeps source+licence+parse+review.
+    assert ledger["totals"]["query_window"]["known_usd"] == pytest.approx(2.5)
+    assert ledger["totals"]["query_window"]["complete"] is True
+    assert ledger["totals"]["one_time"]["known_usd"] == pytest.approx(0.0)
+    inference = ledger["components"]["inference"]
+    assert inference["basis_period"] == "query_window"
+    assert inference["rate_basis_period"] == "one_time"
+    for component in ("source", "licence", "parse", "review", "storage"):
+        entry = ledger["components"][component]
+        assert entry["rate_basis_period"] == entry["basis_period"], component
+    assert ledger["components"]["storage"]["basis_period"] == "per_month"
+    assert ledger["components"]["source"]["basis_period"] == "one_time"
+
+
+def test_per_issuer_quotient_excludes_measured_inference() -> None:
+    denominators = _denominators(
+        qualified_issuers_deep={"value": 10, "source": "coverage proof"}
+    )
+    ledger = _build_ledger(denominators=denominators)
+    entry = ledger["per_unit"]["qualified_issuers_deep"]
+    # The one_time + per_month numerator is the declared 0.0 source and
+    # licence rates plus per-month storage; a measured inference cost of 2.5
+    # never leaks into the quotient.
+    assert entry["one_time_usd"] == pytest.approx(0.0)
+    assert entry["per_month_usd"] == pytest.approx(0.003)
+    assert entry["query_window_usd"] is None
+    assert entry["basis"] == ["one_time", "per_month"]
+    assert entry["components"] == ["licence", "parse", "review", "source", "storage"]
+    assert "inference" not in entry["components"]
+
+
+def test_per_query_quotient_is_window_total_over_queries() -> None:
+    inference = _windowed_inference(_QUERIES_WINDOW)  # 1.5 in window
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    entry = ledger["per_unit"]["queries"]
+    assert entry["query_window_usd"] == pytest.approx(0.15)
+    assert entry["one_time_usd"] is None
+    assert entry["per_month_usd"] is None
+    assert entry["basis"] == ["query_window"]
+    assert entry["components"] == ["inference"]
+    assert entry["complete"] is True
+    assert entry["reason"] is None
+
+
+def test_top_level_complete_false_when_only_query_window_incomplete(
+    tmp_path: Path,
+) -> None:
+    doc = _rates_doc()
+    for entry in doc["rates"]:
+        if entry["component"] in ("parse", "review"):
+            entry["status"] = "declared_rate"
+            entry["usd_per_unit"] = 0.0
+    rates = load_rates(_write_rates(tmp_path, doc))
+    quantities = {
+        "source": Quantity(10.0, "get", MEASURED),
+        "licence": Quantity(1000.0, "issuer", MEASURED),
+        "storage": Quantity(2.0, "gb", MEASURED),
+        "parse": Quantity(60.0, "cpu_second", MEASURED),
+        "inference": Quantity(
+            None, "usd", UNMEASURED, notes=("inference_rows_absent",)
+        ),
+        "review": Quantity(30.0, "minute", MEASURED),
+    }
+    ledger = _build_ledger(quantities=quantities, rates=rates)
+    assert ledger["totals"]["one_time"]["complete"] is True
+    assert ledger["totals"]["per_month"]["complete"] is True
+    assert ledger["totals"]["query_window"]["complete"] is False
+    assert ledger["totals"]["query_window"]["incomplete_components"] == ["inference"]
+    assert ledger["complete"] is False
 
 
 # ── 8. render ────────────────────────────────────────────────────────────────
@@ -872,6 +1223,9 @@ def test_render_print_never_prints_zero_for_unmeasured() -> None:
     assert "cost_usd=0.000000" in lines["source"]
     assert "denominator=UNMEASURED" in text
     assert "minutes_total=UNMEASURED" in text
+    # The query_window basis group prints its own total and quotient column.
+    assert "total query_window:" in text
+    assert "query_window_usd=" in text
 
 
 # ── 9. contract ──────────────────────────────────────────────────────────────
@@ -890,6 +1244,44 @@ def test_ledger_conforms_to_contract() -> None:
     assert errors == []
     minimal = _build_ledger()
     assert list(validator.iter_errors(minimal)) == []
+
+
+def test_windowed_and_undecodable_ledgers_conform_to_contract() -> None:
+    validator = Draft202012Validator(json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
+    windowed = _build_ledger(
+        quantities={**_base_quantities(), "inference": _windowed_inference(_QUERIES_WINDOW)},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert list(validator.iter_errors(windowed)) == []
+    undecodable = _build_ledger(
+        quantities={
+            **_base_quantities(),
+            "inference": inference_quantity_from_usage(
+                [
+                    json.dumps({"stage": "fif_capture", "est_cost_usd": 1.5}),
+                    "{not json",
+                ],
+                _ROW_FILTER,
+            ),
+        }
+    )
+    assert list(validator.iter_errors(undecodable)) == []
+    outside_only = _build_ledger(
+        quantities={
+            **_base_quantities(),
+            "inference": inference_quantity_from_usage(
+                [json.dumps({"stage": "fif_capture", "est_cost_usd": 5.0, "ts": "2026-09-01T00:00:00Z"})],
+                _ROW_FILTER,
+                window=_QUERIES_WINDOW,
+            ),
+        },
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert list(validator.iter_errors(outside_only)) == []
 
 
 # ── 10. CLI ──────────────────────────────────────────────────────────────────
@@ -962,6 +1354,80 @@ def test_cli_refusal_exits_two(tmp_path: Path) -> None:
     )
     assert result.returncode == 2
     assert not (tmp_path / "x.json").exists()
+
+
+def test_cli_consistent_windows_exit_zero(tmp_path: Path) -> None:
+    usage = tmp_path / "usage.jsonl"
+    usage.write_text(
+        json.dumps(
+            {"stage": "fif_capture", "lane": "x", "est_cost_usd": 2.0, "ts": "2026-10-01T06:00:00Z"}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    denominators = tmp_path / "denominators.json"
+    denominators.write_text(
+        json.dumps(
+            _denominators(
+                queries={"value": 4, "source": "coverage proof", "window": _QUERIES_WINDOW}
+            )
+        ),
+        encoding="utf-8",
+    )
+    out = tmp_path / "ledger.json"
+    result = _run_cli(
+        "build",
+        "--rates", str(RATES_PATH),
+        "--built-at", "2026-10-19T00:00:00Z",
+        "--ai-usage", str(usage),
+        "--denominators", str(denominators),
+        "--out", str(out),
+        "--print",
+    )
+    # The CLI passes the queries window into the inference read, so a
+    # consistent input must not trip inference_window_mismatch.
+    assert result.returncode == 0, result.stderr
+    assert "total query_window:" in result.stderr
+    assert "query_window_usd=" in result.stderr
+    ledger = json.loads(out.read_text(encoding="utf-8"))
+    assert ledger["per_unit"]["queries"]["query_window_usd"] == pytest.approx(0.5)
+    assert ledger["per_unit"]["queries"]["one_time_usd"] is None
+
+
+def test_cli_inverted_window_exits_two(tmp_path: Path) -> None:
+    # The CLI threads the queries window into the inference read, so its own
+    # inputs can never mismatch; the CostLedgerError -> exit 2 mapping is
+    # pinned here through the window refusal the CLI can reach.
+    usage = tmp_path / "usage.jsonl"
+    usage.write_text(
+        json.dumps(
+            {"stage": "fif_capture", "lane": "x", "est_cost_usd": 2.0, "ts": "2026-10-01T06:00:00Z"}
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    denominators = tmp_path / "denominators.json"
+    denominators.write_text(
+        json.dumps(
+            _denominators(
+                queries={
+                    "value": 4,
+                    "source": "coverage proof",
+                    "window": {"start": "2026-10-02T00:00:00Z", "end": "2026-10-01T00:00:00Z"},
+                }
+            )
+        ),
+        encoding="utf-8",
+    )
+    result = _run_cli(
+        "build",
+        "--rates", str(RATES_PATH),
+        "--built-at", "2026-10-19T00:00:00Z",
+        "--ai-usage", str(usage),
+        "--denominators", str(denominators),
+    )
+    assert result.returncode == 2
+    assert "window_inverted" in result.stderr
 
 
 def test_cli_require_complete_exits_five(tmp_path: Path) -> None:

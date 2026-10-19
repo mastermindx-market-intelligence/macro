@@ -13,9 +13,15 @@ carry ``complete`` plus ``incomplete_components``, the per-unit quotients
 carry ``complete`` plus a ``reason``, and ``render_print`` prints the tokens
 ``UNMEASURED`` / ``INCOMPLETE`` instead of any blank or zero.  A component
 kept in ``incomplete_components`` carries a typed ``incomplete_reason`` —
-e.g. ``inference_rows_uncosted``, ``storage_lower_bound``,
+e.g. ``inference_rows_uncosted``, ``usage_lines_undecodable``,
+``inference_rows_outside_window_only``, ``storage_lower_bound``,
 ``burden_ledger_empty`` — and cost-per-query is refused outright when the
-queries counting window is absent (``queries_window_absent``).
+queries counting window is absent (``queries_window_absent``).  Windowed
+inference cost forms its own ``query_window`` basis group and is never mixed
+into the one-time / per-month quotients; the inference read must have used
+the same window the queries denominator declares
+(``inference_window_mismatch``), and a window whose start does not precede
+its end is refused (``window_inverted``).
 
 Purity
 ------
@@ -35,7 +41,7 @@ import math
 import os
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Iterable, Mapping
 
 RATES_SCHEMA = "fundamental_forensics.cost_rates/v1"
@@ -411,6 +417,8 @@ def _window_bounds(window: Any) -> tuple[datetime, datetime] | None:
     A window that is absent, not an object, missing a bound, or carrying an
     unparseable bound is not a declared window (``None``): rows are then not
     filtered and cost-per-query is refused with ``queries_window_absent``.
+    A window whose start does not strictly precede its end is a typed
+    refusal (``window_inverted``) — it declares no interval at all.
     """
     if not isinstance(window, dict):
         return None
@@ -418,7 +426,24 @@ def _window_bounds(window: Any) -> tuple[datetime, datetime] | None:
     end = _parse_instant(window.get("end"))
     if start is None or end is None:
         return None
+    if start >= end:
+        raise CostLedgerError(
+            "window_inverted", "window start must strictly precede its end"
+        )
     return start, end
+
+
+def _utc_text(moment: datetime) -> str:
+    """ISO-8601 UTC text with a trailing ``Z``."""
+    return moment.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _normalized_window(window: Any) -> dict | None:
+    """A declared window as UTC ``Z`` text, or ``None`` when not declared."""
+    bounds = _window_bounds(window)
+    if bounds is None:
+        return None
+    return {"start": _utc_text(bounds[0]), "end": _utc_text(bounds[1])}
 
 
 def inference_quantity_from_usage(
@@ -431,14 +456,17 @@ def inference_quantity_from_usage(
     When a queries counting window is declared the matched rows are tied to
     the same half-open ``[start, end)`` interval: rows outside it — including
     matched rows whose ``ts`` cannot be placed — are excluded from the sum and
-    counted as ``inference_rows_outside_window``, never silently included.
+    counted as ``inference_rows_outside_window`` (untimed rows also in
+    ``inference_rows_untimed``), never silently included.  The window the
+    reader applied is recorded, normalised to UTC, as ``declared_window`` so
+    the ledger build can prove it equals the queries counting window.
 
-    The honesty rule: matched rows whose cost is missing or undecodable, zero
-    matching rows, or an empty or absent filter all make the quantity
-    ``unmeasured`` with a typed reason (``inference_rows_uncosted``,
-    ``inference_rows_absent``, ``inference_filter_empty``) — the value is
+    The honesty rule: an empty or absent filter, an undecodable usage line
+    (it could have been a matching row), zero matching rows, matched rows
+    that all fall outside the window, or in-window rows whose cost is missing
+    all make the quantity ``unmeasured`` with a typed reason — the value is
     ``None``, never a measured or estimated zero.  Only a set in which every
-    matched row decodes with a cost is ``measured``.
+    matched row sits in the window and decodes with a cost is ``measured``.
     """
     if row_filter is None:
         row_filter = {}
@@ -451,11 +479,14 @@ def inference_quantity_from_usage(
         prefix.lower() for prefix in (row_filter.get("lane_prefixes") or []) if prefix
     ]
     bounds = _window_bounds(window)
+    declared_window = _normalized_window(window)
     rows_read = 0
     rows_matched = 0
+    rows_in_window = 0
     rows_undecodable = 0
     rows_uncosted = 0
     rows_outside_window = 0
+    rows_untimed = 0
     total = 0.0
     stamps: list[str] = []
     for line in lines:
@@ -484,9 +515,17 @@ def inference_quantity_from_usage(
         rows_matched += 1
         raw_ts = row.get("ts")
         moment = _parse_instant(raw_ts)
-        if bounds is not None and (moment is None or not bounds[0] <= moment < bounds[1]):
-            rows_outside_window += 1
-            continue
+        if bounds is not None:
+            if moment is None:
+                # A matched row that cannot be placed in time is never
+                # included: it is outside the window and untimed.
+                rows_outside_window += 1
+                rows_untimed += 1
+                continue
+            if not bounds[0] <= moment < bounds[1]:
+                rows_outside_window += 1
+                continue
+        rows_in_window += 1
         if isinstance(raw_ts, str) and raw_ts:
             stamps.append(raw_ts)
         cost = row.get("est_cost_usd")
@@ -495,10 +534,16 @@ def inference_quantity_from_usage(
         else:
             total += float(cost)
     window_summary = {"min": min(stamps), "max": max(stamps)} if stamps else None
+    # Reason precedence, first match wins: filter, undecodable lines, absent
+    # rows, outside-window-only rows, uncosted in-window rows, else measured.
     if not stage_prefixes and not lane_prefixes:
         status, value, notes = UNMEASURED, None, ("inference_filter_empty",)
+    elif rows_undecodable:
+        status, value, notes = UNMEASURED, None, ("usage_lines_undecodable",)
     elif rows_matched == 0:
         status, value, notes = UNMEASURED, None, ("inference_rows_absent",)
+    elif rows_in_window == 0:
+        status, value, notes = UNMEASURED, None, ("inference_rows_outside_window_only",)
     elif rows_uncosted:
         status, value, notes = UNMEASURED, None, ("inference_rows_uncosted",)
     else:
@@ -506,9 +551,12 @@ def inference_quantity_from_usage(
     counts = {
         "rows_read": rows_read,
         "rows_matched": rows_matched,
+        "rows_in_window": rows_in_window,
         "rows_undecodable": rows_undecodable,
         "rows_uncosted": rows_uncosted,
         "inference_rows_outside_window": rows_outside_window,
+        "inference_rows_untimed": rows_untimed,
+        "declared_window": declared_window,
         "window": window_summary,
     }
     return Quantity(value, "usd", status, notes, counts)
@@ -702,6 +750,9 @@ def _check_denominators(denominators: Any) -> dict:
             "source": entry["source"],
         }
         if key == "queries":
+            # An inverted queries counting window is refused here as well as
+            # in the usage reader: both surfaces must reject it.
+            _window_bounds(entry.get("window"))
             checked[key]["window"] = entry.get("window")
     return checked
 
@@ -772,10 +823,17 @@ def _design_comparison(quantities: Mapping[str, Quantity]) -> dict | None:
 
 
 # Typed reasons a component stays in incomplete_components even when its
-# cost_status alone would not say so (F1/F3/F4 review rulings, 2026-10-19).
+# cost_status alone would not say so (F1/F3/F4 r2 rulings, 2026-10-19; R1/R3
+# r3 rulings the same day).
 _COMPONENT_REASON_NOTES = {
     "inference": frozenset(
-        {"inference_rows_uncosted", "inference_rows_absent", "inference_filter_empty"}
+        {
+            "inference_rows_uncosted",
+            "inference_rows_absent",
+            "inference_filter_empty",
+            "usage_lines_undecodable",
+            "inference_rows_outside_window_only",
+        }
     ),
     "review": frozenset({"burden_ledger_empty"}),
 }
@@ -821,6 +879,24 @@ def build_cost_ledger(
             )
     checked_denominators = _check_denominators(denominators)
 
+    # The inference rows must have been read against the same window the
+    # queries denominator declares: a windowed cost divided by a differently
+    # windowed count is not a quotient.  One side declared and the other not
+    # is the same refusal.  (A quantity that carries no ``declared_window``
+    # claim — not produced by the usage reader — is not compared.)
+    inference_counts = quantities["inference"].counts
+    if isinstance(inference_counts, dict) and "declared_window" in inference_counts:
+        inference_window = _normalized_window(inference_counts.get("declared_window"))
+        queries_window = _normalized_window(
+            checked_denominators["queries"].get("window")
+        )
+        if inference_window != queries_window:
+            raise CostLedgerError(
+                "inference_window_mismatch",
+                f"inference rows were read with window {inference_window} "
+                f"but the queries denominator declares {queries_window}",
+            )
+
     components_out: dict[str, dict] = {}
     for component in COMPONENTS:
         quantity = quantities[component]
@@ -838,6 +914,11 @@ def build_cost_ledger(
             cost_status = "measured"
         else:
             cost_status = "declared"
+        rate_basis = rate["basis_period"]
+        # Windowed inference is never mixed into the one-time / per-month
+        # quotients: it forms its own ``query_window`` basis group, while
+        # ``rate_basis_period`` still echoes the rate's own declared basis.
+        basis_period = "query_window" if component == "inference" else rate_basis
         components_out[component] = {
             "quantity_value": quantity.value,
             "quantity_unit": quantity.unit,
@@ -845,7 +926,8 @@ def build_cost_ledger(
             "usd_per_unit": rate["usd_per_unit"],
             "rate_status": rate["status"],
             "rate_verified": rate["verified"],
-            "basis_period": rate["basis_period"],
+            "basis_period": basis_period,
+            "rate_basis_period": rate_basis,
             "cost_usd": cost_usd,
             "cost_status": cost_status,
             "incomplete_reason": _incomplete_reason(component, quantity),
@@ -853,7 +935,11 @@ def build_cost_ledger(
             "counts": quantity.counts,
         }
 
-    periods: dict[str, list[tuple[str, dict]]] = {"one_time": [], "per_month": []}
+    periods: dict[str, list[tuple[str, dict]]] = {
+        "one_time": [],
+        "per_month": [],
+        "query_window": [],
+    }
     for component in COMPONENTS:
         periods[components_out[component]["basis_period"]].append(
             (component, components_out[component])
@@ -872,7 +958,9 @@ def build_cost_ledger(
             "complete": not incomplete,
             "incomplete_components": incomplete,
         }
-    complete = totals["one_time"]["complete"] and totals["per_month"]["complete"]
+    complete = all(
+        totals[period]["complete"] for period in ("one_time", "per_month", "query_window")
+    )
 
     queries_window_declared = (
         _window_bounds(checked_denominators["queries"].get("window")) is not None
@@ -880,11 +968,25 @@ def build_cost_ledger(
     per_unit: dict[str, dict] = {}
     for key in _DENOMINATOR_KEYS:
         denominator = checked_denominators[key]["value"]
-        both_complete = totals["one_time"]["complete"] and totals["per_month"]["complete"]
+        if key == "queries":
+            # Cost-per-query divides only the windowed inference total; the
+            # one-time and per-month costs are never per-query.
+            basis_groups = ("query_window",)
+        else:
+            # Per-filing and per-issuer quotients divide the one-time and
+            # per-month totals only; inference is never in their numerator.
+            basis_groups = ("one_time", "per_month")
+        numerator_components = sorted(
+            component for period in basis_groups for component, _ in periods[period]
+        )
+        groups_complete = all(totals[period]["complete"] for period in basis_groups)
         entry = {
             "one_time_usd": None,
             "per_month_usd": None,
-            "complete": both_complete,
+            "query_window_usd": None,
+            "components": numerator_components,
+            "basis": list(basis_groups),
+            "complete": False,
             "reason": None,
         }
         if key == "queries" and not queries_window_declared:
@@ -897,12 +999,14 @@ def build_cost_ledger(
         elif denominator == 0:
             entry["reason"] = "denominator_zero"
         else:
-            for period in ("one_time", "per_month"):
+            for period in basis_groups:
                 known = totals[period]["known_usd"]
                 if known is not None:
                     entry[f"{period}_usd"] = known / denominator
-            if not both_complete:
+            if not groups_complete:
                 entry["reason"] = "components_incomplete"
+        # A refused quotient is never complete, whatever its numerator.
+        entry["complete"] = groups_complete and entry["reason"] is None
         per_unit[key] = entry
 
     ledger = {
@@ -958,7 +1062,7 @@ def render_print(ledger: Mapping[str, Any]) -> str:
             f" qty={_fmt(entry['quantity_value'])} {entry['quantity_unit']}"
             f" notes=[{notes}] reason={reason}"
         )
-    for period in ("one_time", "per_month"):
+    for period in ("one_time", "per_month", "query_window"):
         period_totals = ledger["totals"][period]
         known = _fmt_quotient(period_totals["known_usd"], period_totals["complete"])
         incomplete = ",".join(period_totals["incomplete_components"])
@@ -975,6 +1079,7 @@ def render_print(ledger: Mapping[str, Any]) -> str:
             f"per_unit {key}: denominator={denominator_text}"
             f" one_time_usd={_fmt_quotient(entry['one_time_usd'], ledger['totals']['one_time']['complete'])}"
             f" per_month_usd={_fmt_quotient(entry['per_month_usd'], ledger['totals']['per_month']['complete'])}"
+            f" query_window_usd={_fmt_quotient(entry['query_window_usd'], ledger['totals']['query_window']['complete'])}"
             f" complete={entry['complete']} reason={reason}"
         )
     burden = ledger["operator_burden"]
