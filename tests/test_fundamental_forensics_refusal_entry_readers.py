@@ -67,8 +67,7 @@ def test_bff_tree_row_reader_ignores_refusal_entry_rows() -> None:
         generation,
         [accession],
         ("total_assets", "revenue"),
-        {},
-        "TST",
+        frozenset(),
         periods,
     )
     assert out is not None
