@@ -289,31 +289,6 @@ def _request(**overrides) -> PilotRequest:
     return PilotRequest(**fields)
 
 
-# --- STRUCTURAL owner_semantics fixture --------------------------------------
-#
-# The ONE structural fixture used by this suite: a SHAPE-VALID owner_semantics
-# payload -- every field this adapter itself reads is present, well-typed,
-# and internally consistent. Sol review 5099850302 (2026-09-03) established
-# that shape-validity is NECESSARY but never SUFFICIENT: this fixture (used
-# as-is, or with one field mutated to be internally contradictory) can no
-# longer reach a semantic positive under ANY mutation, because
-# _CANONICAL_OWNER_VERIFIERS is empty by construction -- there is nothing in
-# this repository that could verify ANY payload, however well-shaped, is
-# TRUE. Its only remaining use is to prove the shape gate still accepts a
-# well-formed payload's SHAPE while the (now-mandatory) owner-verification
-# stage still refuses it -- see test_owner_semantics_contradiction_cannot_
-# prove_a_positive and the other Sol-review hostile regressions below. It is
-# NOT evidence that any production owner (Data OS / K2-B) can supply these
-# values today -- see test_no_repo_producer_supplies_owner_manager_
-# vehicle_epochs and DEC-K2C-SECURITY-BINDING-IS-OWNER-NATIVE-CUSIP. Every
-# ID here is deliberately NOT filer/CIK-derived (a "structural_test_owner"
-# stem, not "filer_<CIK>"), so it can never be mistaken for the repaired
-# defect it exists to rule out. ``dataos_security_id`` is
-# "SEC:US-XNAS-STRUCTURALTEST" -- a syntactically well-formed SEC: security
-# identity under lib.dataos.identity's own grammar (a real MIC, an
-# alphanumeric code), NOT a claim that this listing exists on any real
-# venue; it exists only to satisfy the shape gate's grammar check (R1,
-# 2026-09-03) without being mistaken for a real security.
 
 
 def _structural_owner_semantics(
@@ -363,22 +338,7 @@ def _structural_owner_semantics(
 
 
 def test_happy_path_two_period_read_compiles(tmp_path: Path) -> None:
-    """Repaired truth (K2-C semantic-owner repair, 2026-09-03; blocker+MAJOR
-    repair per Sol review 5099850302, 2026-09-03).
-
-    A clean two-period world with SOLE discretion and NO owner-supplied
-    security/manager/vehicle binding can no longer reach a semantic
-    positive -- only the owner-unresolved terminal receipt. This test's
-    original adverse intent (prove the full read pipeline assembles a
-    correct, byte-bounded, persistence-honest receipt) is preserved; its
-    original oracle (``state == POSITIVE_STATE``) is now exactly the
-    defect this repair exists to kill. There is no positive-path oracle
-    left anywhere in this suite: the owner-verifier registry
-    (``_CANONICAL_OWNER_VERIFIERS``) is empty by construction, so
-    ``POSITIVE_STATE`` is unreachable regardless of what ``owner_semantics``
-    a caller supplies -- see test_no_canonical_owner_verifier_is_registered
-    and the hostile regressions below.
-    """
+    """A complete raw read remains unresolved until native owner verification exists."""
     store = _build_world(tmp_path)
     receipt = run_pilot(store, _request())
 
@@ -413,7 +373,7 @@ def test_happy_path_two_period_read_compiles(tmp_path: Path) -> None:
         "provenance": None,
         # (Sol review 5099850302 repair) owner_semantics was never supplied
         # at all here -- the shape gate's first check (not even a Mapping)
-        # is what refused it, not the empty verifier registry.
+        # is what refused it, not the missing canonical owner verifier.
         "reason": adapter_module.OWNER_SEMANTICS_MALFORMED,
     }
     assert receipt["receipt_id"].startswith("i13fpilot_")
@@ -437,8 +397,8 @@ def test_determinism_same_inputs_are_byte_identical(tmp_path: Path) -> None:
     # Determinism also holds when a shape-valid owner_semantics is supplied
     # (Sol review 5099850302 repair supersedes the old "owner-resolved path"
     # framing -- the shape-valid structural fixture is STILL refused, by the
-    # empty verifier registry, so this now proves determinism of the
-    # unresolved-by-registry-absence branch): identical store + request +
+    # missing canonical owner verifier, so this now proves determinism of the
+    # owner-unresolved branch): identical store + request +
     # owner_semantics -> byte-identical receipt and receipt_id. Fresh dicts
     # each call rule out identity reuse.
     first_shaped = run_pilot(store, _request(), owner_semantics=_structural_owner_semantics())
@@ -885,24 +845,7 @@ def test_source_receipt_mismatch_is_hard_refusal(tmp_path: Path) -> None:
     assert "raw_sha256" in receipt["refusal"]["detail"]
 
 
-# --- (o)/(p) REMOVED (Sol review 5099850302 repair, 2026-09-03) ------------
-#
-# ``test_non_sole_discretion_compiles_non_positive_via_the_compiler`` and
-# ``test_compiled_output_is_uninjectable_and_matches_independent_recompute``
-# both reached the K2-B compiler through ``run_pilot(..., owner_semantics=
-# _structural_owner_semantics())`` and asserted on ``receipt["compiled"]``.
-# That path is now unreachable by construction (``_CANONICAL_OWNER_
-# VERIFIERS`` is empty) -- run_pilot never returns a non-None ``compiled``
-# for ANY caller-supplied owner_semantics, so both tests' premises are gone,
-# not merely their oracle. ``build_recipe``/``validate_recipe``/
-# ``compile_recipe`` remain directly callable (see the module docstring --
-# "the structure a future owner wires into"); the STRUCTURAL fixture that
-# used to prove they compose correctly through ``run_pilot`` is retired
-# along with them, per the commission's "remove the positive-reaching
-# structural-fixture test(s)" instruction. PilotRequest's own field surface
-# (no override/compiled channel) is still asserted independently in
-# test_no_repo_producer_supplies_owner_manager_vehicle_epochs and the
-# ``_verify_owner_semantics`` signature checks below.
+# Pure builder/compiler coverage follows below; pilot admission stays refused.
 
 
 # --- extra: malformed cusip grammar (named in section 5.3, not lettered) ---
@@ -1231,7 +1174,7 @@ def test_cik_is_not_manager_complex_identity(tmp_path: Path) -> None:
     """No mcx_filer_<CIK> / mce_filer_<CIK> / veh_filer_<CIK> / vie_filer_<CIK>
     synthetic resolved identity can support a positive, whether no
     ``owner_semantics`` is supplied at all or a shape-valid one is supplied
-    and refused by the empty owner-verifier registry (Sol review 5099850302
+    and refused by the empty native owner verification (Sol review 5099850302
     repair -- both are now the SAME receipt family:
     ``OWNER_SEMANTICS_UNRESOLVED_STATE``, differing only in ``reason``).
     """
@@ -1433,20 +1376,6 @@ def test_partial_owner_epoch_is_refused_not_raised(tmp_path: Path) -> None:
     assert receipt["owner_semantics"]["manager_vehicle"]["resolved"] is False
 
 
-# ==============================================================================
-# K2-C blocker + MAJOR repair (Sol review 5099850302, 2026-09-03) -- new
-# hostile regressions. Every payload below is SHAPE-VALID under every check
-# _verify_owner_semantics performs (sentinel resolution, SEC: grammar,
-# epoch resolution_state, required epoch fields, status/resolution_state
-# contradiction) -- proven reproducible bugs on head 339a5c3c39e0, where a
-# shape-only validator either wrongly reached POSITIVE_STATE or let an
-# uncaught InstitutionalIntelligenceError escape run_pilot from
-# validate_recipe() AFTER build_recipe() had already run. None of these
-# tests pass because of a NEW bespoke conflict check -- see the module
-# docstring "Owner VERIFICATION gate": the empty _CANONICAL_OWNER_VERIFIERS
-# registry refuses ALL of them, well-shaped or not, because nothing in this
-# repository can verify any payload is TRUE.
-# ==============================================================================
 
 
 def test_parseable_but_wrong_sec_identity_cannot_prove_a_positive(tmp_path: Path) -> None:
@@ -1474,8 +1403,7 @@ def test_parseable_but_wrong_sec_identity_cannot_prove_a_positive(tmp_path: Path
     assert receipt["recipe"] is None
     assert receipt["compiled"] is None
     # Every shape check passed (well-formed SEC: id, non-empty provenance,
-    # two resolved epochs) -- what refused it is the empty owner-verifier
-    # registry, not a lucky shape check. This is the architectural point.
+    # two resolved epochs) -- it remains refused because no native owner verifier is implemented.
     assert receipt["owner_semantics"]["reason"] == OWNER_VERIFIER_ABSENT
     assert receipt["owner_semantics"]["provenance"] is None
 
@@ -1588,8 +1516,8 @@ def test_owner_semantics_contradiction_cannot_prove_a_positive(tmp_path: Path, m
     from ``validate_recipe`` AFTER ``build_recipe`` had already run (proven
     by direct reproduction against that head; see the worker packet
     evidence). The repair does not add a bespoke check for any one of
-    these -- see the module docstring: with the owner-verifier registry
-    empty by construction, ``build_recipe``/``compile_recipe`` are
+    these -- see the module docstring: with native owner verification
+    unimplemented, ``build_recipe``/``compile_recipe`` are
     unreachable for ANY payload, contradictory or not, so no
     partial/contradictory epoch can ever reach construction (finding 2),
     and nothing can raise validate_recipe's errors after it.
@@ -1604,16 +1532,11 @@ def test_owner_semantics_contradiction_cannot_prove_a_positive(tmp_path: Path, m
     assert receipt["owner_semantics"]["reason"] == OWNER_VERIFIER_ABSENT
 
 
-def test_no_canonical_owner_verifier_is_registered() -> None:
-    """S1 (frozen spec): the owner-blocked discriminator. Records the
-    current owner-primitive gap -- K2-C has NOT populated this registry,
-    and per its own comment, never may: only the owning programs (Data OS /
-    Stock Identity for the security axis, Institutional Intelligence / K2-B
-    for manager/vehicle) may, in their own waves. This is NOT a production
-    positive; it is what keeps the positive path unreachable by
-    construction while it stays empty.
-    """
-    assert adapter_module._CANONICAL_OWNER_VERIFIERS == ()
+def test_no_canonical_owner_verifier_registry_or_override_exists() -> None:
+    assert not hasattr(adapter_module, '_CANONICAL_OWNER_VERIFIERS')
+    assert adapter_module._verify_owner_semantics(
+        _structural_owner_semantics(), cusip=CUSIP, cutoff=DEFAULT_CUTOFF
+    ) == (None, OWNER_VERIFIER_ABSENT)
 
 
 def test_varying_provenance_no_longer_distinguishes_unresolved_receipts(tmp_path: Path) -> None:
@@ -1703,13 +1626,7 @@ def test_no_repo_producer_supplies_owner_manager_vehicle_epochs() -> None:
 
 
 def test_authority_stays_false_on_every_path(tmp_path: Path) -> None:
-    """(Sol review 5099850302 repair) ``recipe``/``compiled`` are always
-    ``None`` now -- the owner-verifier registry is empty by construction --
-    so there is no ``recipe["authority"]``/``compiled["authority"]`` left to
-    check independently; the top-level ``authority`` envelope is the only
-    surface, and it stays all-false whether or not owner_semantics is
-    supplied.
-    """
+    """Runtime refusal envelopes retain all authority axes false."""
     store = _build_world(tmp_path)
     all_false = {
         "can_rank": False, "can_gate": False, "can_size": False,
@@ -1726,3 +1643,90 @@ def test_authority_stays_false_on_every_path(tmp_path: Path) -> None:
     assert shape_valid_but_unverified_receipt["authority"] == all_false
     assert shape_valid_but_unverified_receipt["recipe"] is None
     assert shape_valid_but_unverified_receipt["compiled"] is None
+
+
+# Compiler behavior is tested directly with SYNTHETIC semantic inputs. These
+# are never installed into an owner verifier and never admit the live pilot.
+def _pure_builder_inputs(store, request, semantics):
+    prev = resolve_generation(store, report_period=PERIOD_PREV, cutoff=request.cutoff)
+    now = resolve_generation(store, report_period=PERIOD_NOW, cutoff=request.cutoff)
+    captured = []
+    for generation, period in ((prev, PERIOD_PREV), (now, PERIOD_NOW)):
+        filing = adapter_module.select_effective_filing(generation, filer_cik=FILER_CIK,
+            report_period=period, cutoff=request.cutoff)
+        row, quantity = adapter_module.select_security_row(generation,
+            accession=str(filing['accession']), cusip=CUSIP)
+        raw, _ = adapter_module.cross_check_raw_receipt(store, filer_cik=FILER_CIK, filing_row=filing)
+        raw_ref = adapter_module._raw_receipt_reference(receipt=raw)
+        catalog_ref = adapter_module._catalog_generation_reference(generation=generation)
+        binding = adapter_module._period_binding(catalog_ref=catalog_ref, raw_ref=raw_ref,
+            generation=generation, filing_row=filing, row=row)
+        captured.append((generation, filing, quantity, raw_ref, catalog_ref, binding))
+    a, b = captured
+    kwargs = dict(filer_cik=FILER_CIK, cusip=CUSIP, previous_binding=a[5], current_binding=b[5],
+        current_raw_reference_id=b[3]['reference_id'], manager_complex_epoch=semantics['manager_complex_epoch'],
+        vehicle_epoch=semantics['vehicle_epoch'], security=semantics['security'], q_prev=a[2], q_now=b[2],
+        denominator=adapter_module._manager_denominator(generation=b[0], filing_row=b[1]))
+    return kwargs, [a[3], a[4], b[3], b[4]]
+
+
+def _assemble_pure_recipe(kwargs, references):
+    from lib import institutional_intelligence as compiler
+    recipe = build_recipe(**kwargs)
+    recipe['evidence_refs'] = references
+    recipe['recipe_id'] = compiler.compute_recipe_id(recipe)
+    compiler.validate(recipe)
+    return recipe
+
+
+def test_pure_compiler_independent_recompute_and_override_refusal(tmp_path):
+    """Restore the lost recomputation/uninjectability oracle at its real seam."""
+    import dataclasses
+    from copy import deepcopy
+    from lib import institutional_intelligence as compiler
+    store, request = _build_world(tmp_path), _request()
+    semantics = _structural_owner_semantics()  # synthetic, NOT an owner binding
+    kwargs, references = _pure_builder_inputs(store, request, semantics)
+    recipe = _assemble_pure_recipe(kwargs, references)
+    cutoff = request.cutoff.isoformat().replace('+00:00', 'Z')
+    compiled = compiler.compile_recipe(recipe, as_of=cutoff)
+    # Independent assembly over fresh native reads, then native compiler. No
+    # receipt's compiled field is a source for either calculation.
+    fresh_kwargs, fresh_refs = _pure_builder_inputs(store, request, deepcopy(semantics))
+    assert compiler.compile_recipe(_assemble_pure_recipe(fresh_kwargs, fresh_refs), as_of=cutoff) == compiled
+    assert compiled['events'][0]['state'] == 'MANAGER_RESEARCH_INTENT_ELIGIBLE_CONTEXT'
+    assert not any(compiled['authority'].values())
+    assert {field.name for field in dataclasses.fields(PilotRequest)} == {
+        'filer_cik', 'cusip', 'report_period_prev', 'report_period_now',
+        'cutoff', 'generation_id_prev', 'generation_id_now'}
+    with pytest.raises(TypeError):
+        build_recipe(**kwargs, compiled={'events': [{'state': 'FORGED'}]})
+    with pytest.raises(TypeError):
+        compiler.compile_recipe(recipe, as_of=cutoff, compiled={'events': []})
+    forged = deepcopy(recipe)
+    forged['compiled'] = {'events': [{'state': 'FORGED'}]}
+    with pytest.raises(compiler.InstitutionalIntelligenceError):
+        compiler.compile_recipe(forged, as_of=cutoff)
+    # The same structurally valid fixture still cannot become a runtime result.
+    refused = run_pilot(store, request, owner_semantics=semantics)
+    assert refused['state'] == OWNER_SEMANTICS_UNRESOLVED_STATE
+    assert refused['compiled'] is None and refused['recipe'] is None
+
+
+def test_pure_non_discretionary_compiler_outcome_is_preserved(tmp_path):
+    """An explicit synthetic class is distinct from inferred SOLE semantics."""
+    from lib import institutional_intelligence as compiler
+    store, request = _build_world(tmp_path, investment_discretion='SOLE'), _request()
+    semantics = _structural_owner_semantics(decision_mode='unknown', vehicle_class='options_income_overlay')
+    kwargs, references = _pure_builder_inputs(store, request, semantics)
+    recipe = _assemble_pure_recipe(kwargs, references)
+    assert recipe['vehicle_epochs'][0]['vehicle_class'] == 'options_income_overlay'
+    assert recipe['observations'][0]['measure']['kind'] == 'unavailable'
+    cutoff = request.cutoff.isoformat().replace('+00:00', 'Z')
+    compiled = compiler.compile_recipe(recipe, as_of=cutoff)
+    assert compiled['events'][0]['state'] == 'MANAGER_INTENT_INELIGIBLE_OR_INSUFFICIENT'
+    assert compiler.compile_recipe(recipe, as_of=cutoff) == compiled
+    refused = run_pilot(store, request, owner_semantics=semantics)
+    assert refused['state'] == OWNER_SEMANTICS_UNRESOLVED_STATE and refused['compiled'] is None
+    assert refused['periods']['current']['row']['ssh_prn_amt'] == '140'
+    assert refused['periods']['previous']['row']['ssh_prn_amt'] == '100'

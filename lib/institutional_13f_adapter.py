@@ -1,88 +1,18 @@
-"""K2-C read-only institutional 13F owner-read adapter (pilot).
+"""Read-only K2-C composition over native 13F catalog and K1 evidence.
 
-Composes EXISTING owner primitives only:
+Source: existing repair #6789 ee4172dd; conservative integration only.
+A CUSIP owner row is not a canonical SEC binding, and SOLE position authority
+is not manager/vehicle identity, class or decision mode. Current canonical
+owners do not provide both verified semantic bindings. Successful raw reads
+therefore return PILOT_OWNER_SEMANTICS_UNRESOLVED before recipe construction.
+Shape-valid caller mappings cannot supply that missing authority or appear as
+verified provenance. No verifier registry, override or positive runtime path
+is introduced. Store exceptions and existing typed acquisition refusals retain
+their original behavior; no read is retried and nothing is persisted.
 
-* ``engine.institutional_census.catalog`` / ``.storage`` / ``.models`` for the
-  canonical institutional 13F evidence plane (catalog generations, filings,
-  holdings rows, raw evidence receipts).
-* ``lib.evidence_foundation`` for K1 ``EvidenceRef`` construction/validation.
-* ``lib.institutional_intelligence`` (K2-B) for manager-research-intent
-  recipe compilation.
-
-This module adds zero owner code, no persistence, no schedule, and no
-score/rank/gate/authority.  Every missing/ambiguous/rights/clock defect is a
-*typed receipt state*, never a numeric zero and never a silently-swallowed
-exception.  A genuine store outage or digest failure is an owner exception
-and always propagates untouched -- it is never mistaken for typed absence,
-and this module never retries any read.
-
-**Owner-semantics law (post K2-C semantic-owner repair, 2026-09-03).** A
-semantic positive (``PILOT_COMPILED``) requires BOTH of two owner-proven
-seams for the same receipt: (1) the CUSIP is bound to one exact admitted
-``SEC:`` security identity, and (2) the filer/vehicle context is bound to
-truthful manager-complex/vehicle epochs -- including resolution state,
-vehicle class and decision mode.  This module owns NEITHER seam.  A caller
-supplies both, atomically, through the single keyword-only
-``run_pilot(..., owner_semantics=...)`` channel; nothing else in this module
-may originate that truth.  In particular: a 13F row's own
-``investment_discretion`` field describes voting/investment AUTHORITY over
-one reported position, never a vehicle's trading style, and is reported
-verbatim in the per-period row blocks but feeds NO semantics anywhere; and a
-filer CIK is a filer identifier, never a resolved manager-complex identity
--- this module mints no ``mcx_*``/``mce_*``/``veh_*``/``vie_*`` identity of
-its own.  Validation of a supplied ``owner_semantics`` payload is strict and
-fail-closed: anything missing, empty, wrong-typed, unresolved (the security
-seam's own unresolved sentinel is never accepted as proof of resolution),
-not a well-formed ``SEC:`` identity under the owner's own grammar,
-structurally partial (missing any of the specific fields this adapter
-itself reads out of an epoch -- never the full K2-B epoch schema, which the
-K2-B compiler enforces once a recipe reaches it), or internally
-self-contradictory (``status=="unresolved"`` alongside
-``resolution_state=="resolved"``) makes the WHOLE payload unresolved (never
-partially trusted), and the receipt then carries
-``state=PILOT_OWNER_SEMANTICS_UNRESOLVED`` with no K2-B recipe ever
-constructed -- refusing BEFORE construction rather than laundering
-missingness through a placeholder vehicle class.  No current repository
-producer supplies a lawful ``owner_semantics`` payload (see
-``tests/test_institutional_13f_adapter_contract.py::
-test_no_repo_producer_supplies_owner_manager_vehicle_epochs``); the CLI has
-no flag for it either, by design (frozen spec point 8) -- a human-supplied
-override would be exactly the back door this repair exists to close.
-
-**Owner VERIFICATION gate (Sol review 5099850302 repair, 2026-09-03).** The
-paragraph above describes SHAPE validation -- necessary, but proven
-insufficient by adversarial review: a payload can satisfy every shape check
-while still being wrong (a parseable ``SEC:`` identity that names the WRONG
-security for the requested CUSIP; a vehicle epoch that links a
-``manager_complex_id`` the manager epoch never claimed; a
-``vehicle_class``/``decision_mode`` combination K2-B's own compiler would
-reject), because no shape check can know the TRUTH of a caller's mapping --
-only whether it is well-formed.  A shape-valid payload must therefore also
-be bound to this exact request (cusip, cutoff, security id, epochs,
-provenance) by a canonical owner verifier drawn from
-``_CANONICAL_OWNER_VERIFIERS``.  That registry is EMPTY BY CONSTRUCTION: no
-canonical CUSIP->SEC resolver and no canonical manager/vehicle epoch
-producer exists anywhere in this repository today, and K2-C may never
-populate it itself -- only the owning programs may, in their own waves (see
-the registry's own comment, below).  Consequently ``build_recipe``/
-``compile_recipe`` remain in this module as the structure a future owner
-wires into, but **the positive path is unreachable by construction**: no
-caller-supplied ``owner_semantics``, however well-formed, can ever pass
-verification while the registry stays empty, so :func:`run_pilot` always
-takes the typed pre-recipe ``PILOT_OWNER_SEMANTICS_UNRESOLVED`` branch, and
-the ``POSITIVE_STATE``/``NON_POSITIVE_STATE`` branch below it is dead code
-today -- present only for the owner who eventually populates the registry.
-Two review findings fall out of this for free, not from a bespoke check: no
-partial or self-contradictory epoch can ever reach ``build_recipe`` (nothing
-can raise ``validate_recipe``'s own errors AFTER construction, because
-construction itself is unreachable), and no caller-authored provenance is
-ever admitted onto a receipt (the unresolved receipt's
-``owner_semantics.provenance`` is always ``null``, and the receipt instead
-carries the exact shape/verification ``reason`` it refused for -- see
-:func:`run_pilot`).
-
-See ``research/alpha_intelligence/K2C_INSTITUTIONAL_ADAPTER_PILOT_2026-08-27.md``
-for the frozen design this module implements.
+build_recipe is a pure assembler for explicit owner inputs. Unit fixtures may
+exercise that seam and the existing K2-B compiler without claiming that a real
+owner currently supplies those inputs or enabling run_pilot to compile them.
 """
 from __future__ import annotations
 
@@ -129,7 +59,7 @@ from lib.institutional_intelligence import (
 
 
 SCHEMA = "institutional_intelligence.owner_read_receipt/v1"
-ADAPTER_VERSION = "1.0.0"
+ADAPTER_VERSION = "1.0.1"
 RECEIPT_ID_PREFIX = "i13fpilot_"
 
 # --- Typed refusal reasons (closed set; see design doc section 5) -----------
@@ -157,23 +87,8 @@ SECURITY_BINDING_UNRESOLVED = "unresolved_no_authoritative_cusip_plane"
 MANAGER_VEHICLE_BINDING_UNRESOLVED = "unresolved_no_canonical_manager_vehicle_owner"
 OWNER_SEMANTICS_UNRESOLVED_STATE = "PILOT_OWNER_SEMANTICS_UNRESOLVED"
 
-# --- Owner VERIFICATION gate (Sol review 5099850302 repair, 2026-09-03) -----
-# Canonical owner verifiers that could admit an owner_semantics payload as
-# PROOF. EMPTY by construction: no canonical owner exists today (see the
-# operation's BLOCKED OWNER_PRIMITIVE_REQUIRED return). K2-C may NEVER
-# populate this -- only the owning programs may, in their own waves:
-#   * security axis  -> Data OS / Stock Identity
-#   * manager/vehicle -> Institutional Intelligence (K2-B)
-# While this is empty, no caller-supplied mapping can unlock recipe
-# construction, because there is nothing that could verify it.
-#
-# A future verifier is called as
-# ``verifier(owner_semantics=..., cusip=..., cutoff=..., security=...,
-# manager_complex_epoch=..., vehicle_epoch=..., provenance=...) ->
-# Mapping[str, Any] | None`` -- returning the payload (or an owner-corrected
-# equivalent) only when it genuinely proves the binding for THIS request,
-# else ``None`` so the next registered verifier (if any) gets a turn.
-_CANONICAL_OWNER_VERIFIERS: tuple = ()
+# No canonical owner verifier is implemented. An extension registry would not
+# create the missing CUSIP/epoch evidence, so this adapter provides none.
 OWNER_VERIFIER_ABSENT = "no_canonical_owner_verifier"
 
 # --- Owner-semantics SHAPE reasons (Sol review 5099850302 repair) ----------
@@ -719,65 +634,10 @@ def _epoch_status_contradicts_resolved(epoch: Mapping[str, Any]) -> bool:
 def _verify_owner_semantics(
     owner_semantics: Any, *, cusip: str, cutoff: datetime
 ) -> tuple[Mapping[str, Any] | None, str]:
-    """Strictly, atomically VERIFY one ``owner_semantics`` payload against
-    this request's exact ``cusip``/``cutoff``. Returns ``(payload, "")`` only
-    when a canonical owner verifier proves the binding; otherwise
-    ``(None, reason)``, where ``reason`` names exactly what refused it.
+    """Diagnose unverified input shape; never admit caller owner assertions.
 
-    Stage 1 -- SHAPE (necessary, never sufficient on its own). Every check
-    the pre-repair ``_validate_owner_semantics`` performed stays, unchanged,
-    each now returning its OWN reason:
-
-    * ``provenance``: a mapping with non-empty string ``owner`` and
-      non-empty string ``reference_id`` (``OWNER_SEMANTICS_PROVENANCE_INVALID``);
-    * ``security``: a mapping with non-empty string ``dataos_security_id``
-      and non-empty string ``dataos_resolution``
-      (``OWNER_SEMANTICS_SECURITY_INVALID``), where ADDITIONALLY (a)
-      ``dataos_resolution`` is not the typed unresolved sentinel
-      (``SECURITY_BINDING_UNRESOLVED`` -- the schema's own "not proven"
-      value is never proof of resolution --
-      ``OWNER_SEMANTICS_SECURITY_UNRESOLVED_SENTINEL``) and (b)
-      ``dataos_security_id`` parses under the canonical Data OS grammar
-      (``lib.dataos.identity.parse_id``) AND denotes a ``SEC:`` security
-      identity specifically (``OWNER_SEMANTICS_SECURITY_NOT_OWNER_GRAMMAR`` --
-      an ``ISS:`` issuer id, a bare listing key, or any other
-      instrument-class id is not a security binding);
-    * ``manager_complex_epoch`` / ``vehicle_epoch``: each a mapping whose own
-      ``resolution_state`` is ``"resolved"``, whose ``status`` does not
-      contradict that (see :func:`_epoch_status_contradicts_resolved`), and
-      which carries non-empty string values for every key this adapter
-      itself reads out of it -- never the full K2-B schema
-      (``OWNER_SEMANTICS_MANAGER_EPOCH_INVALID`` /
-      ``OWNER_SEMANTICS_VEHICLE_EPOCH_INVALID``).
-
-    Any single shape defect anywhere -- missing, empty, wrong-typed,
-    unresolved, structurally partial, or internally self-contradictory --
-    refuses the WHOLE payload (never partially trusted), with no exception
-    and no default ever filled in for a missing field.
-
-    Stage 2 -- OWNER VERIFICATION (the repair). Shape checks alone were
-    proven insufficient by adversarial review: a payload can satisfy every
-    one of them while still being wrong (a parseable ``SEC:`` identity that
-    names the WRONG security for ``cusip``; a vehicle epoch linking a
-    ``manager_complex_id`` the manager epoch never claimed; a
-    ``vehicle_class``/``decision_mode`` combination K2-B's own compiler
-    would reject) -- none of Stage 1's checks can know the TRUTH of the
-    mapping, only whether it is well-formed. A shape-valid payload is
-    therefore handed to every verifier in ``_CANONICAL_OWNER_VERIFIERS`` in
-    order; the first one that proves the binding for this exact
-    cusip/cutoff/security id/epochs/provenance wins. That registry is EMPTY
-    BY CONSTRUCTION, so a shape-valid payload always falls through to
-    ``(None, OWNER_VERIFIER_ABSENT)`` -- there is nothing that could verify
-    it, so nothing can unlock recipe construction, no matter how
-    well-formed the payload looks. This is what makes the positive path
-    unreachable BY CONSTRUCTION rather than by convention.
-
-    This is the ONLY function in the module that may treat
-    ``owner_semantics`` as authoritative. It never resolves, mints,
-    derives, or maps a security identity itself -- Stage 1 only asks the
-    Data OS identity owner whether a string a caller already supplied is
-    even a well-formed identity of its own, and Stage 2 defers entirely to
-    a registered owner verifier that does not exist today.
+    No native verifier exists for this request's CUSIP/cutoff and both owner
+    axes. Even perfectly formed input returns no_canonical_owner_verifier.
     """
     if not isinstance(owner_semantics, Mapping):
         return None, OWNER_SEMANTICS_MALFORMED
@@ -832,22 +692,8 @@ def _verify_owner_semantics(
     if not _epoch_string_fields_present(vehicle_epoch, _VEHICLE_EPOCH_REQUIRED_KEYS):
         return None, OWNER_SEMANTICS_VEHICLE_EPOCH_INVALID
 
-    # Stage 2: shape-valid. Nothing in this repository can verify it against
-    # ground truth today -- see _CANONICAL_OWNER_VERIFIERS. This loop is
-    # structurally live (a future owner populates the registry, not this
-    # module), but with an empty registry it never executes its body.
-    for verifier in _CANONICAL_OWNER_VERIFIERS:
-        verified = verifier(
-            owner_semantics=owner_semantics,
-            cusip=cusip,
-            cutoff=cutoff,
-            security=security,
-            manager_complex_epoch=manager_complex_epoch,
-            vehicle_epoch=vehicle_epoch,
-            provenance=provenance,
-        )
-        if verified is not None:
-            return verified, ""
+    # Parsing is not owner verification. Source-qualified native adapters for
+    # both axes are still missing; no callback or caller override can grant them.
     return None, OWNER_VERIFIER_ABSENT
 
 
@@ -916,27 +762,13 @@ def build_recipe(
     q_now: int,
     denominator: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Assemble one fully-specified K2-B manager-intent recipe from owner facts.
+    """Pure recipe assembly from explicit inputs, with no identity admission.
 
-    Every field here is either a deterministic function of owner-READ 13F
-    data (catalog/raw evidence references, holdings rows) or is carried
-    VERBATIM from the owner-SUPPLIED ``manager_complex_epoch``/
-    ``vehicle_epoch``/``security`` mappings -- the validated
-    ``owner_semantics`` seam :func:`run_pilot` gates on before this function
-    is ever called.  This function mints NO identity of its own: it no
-    longer derives ANY manager-complex/vehicle identifier string from
-    ``filer_cik`` (the prior, now-deleted defect keyed those identifiers
-    directly off the filer CIK, laundering a filer identifier into a
-    resolved manager-complex identity), and it no longer stamps
-    ``resolution_state``/``status`` itself -- those come only from the
-    owner-supplied epochs, verbatim.  ``filer_cik`` is accepted for
-    call-site symmetry with the rest of this adapter's owner-read pipeline
-    but is no longer used to construct identity of any kind.  There is
-    still no parameter through which a caller could inject a *compiled*
-    result -- the only inputs are the owner-derived bindings/epochs and the
-    two share quantities, and :func:`run_pilot` always calls this with
-    values it either computed itself from the store or received, already
-    strictly validated, through the one ``owner_semantics`` seam.
+    No fields are minted from filer CIK or investment discretion. This function
+    does not establish that supplied epochs/security are true. The runtime pilot
+    cannot reach it until actual canonical owner composition is implemented.
+    Synthetic tests may call it directly, then use the existing K2-B validator
+    and compiler; such fixtures establish only builder/compiler behavior.
     """
     del filer_cik  # retained for call-site symmetry; never used to mint identity.
     complex_id = str(manager_complex_epoch["manager_complex_id"])
@@ -1138,33 +970,11 @@ def _refusal_receipt(request: PilotRequest, refusal: PilotRefusal) -> dict[str, 
 def run_pilot(
     store: Any, request: PilotRequest, *, owner_semantics: Mapping[str, Any] | None = None
 ) -> dict[str, Any]:
-    """Execute one deterministic, read-only, two-period owner-read pilot.
+    """Read two native periods; refuse semantics lacking owner verification.
 
-    Returns a canonical-JSON receipt, one of three families:
-
-    * a lawful typed refusal (missing, ambiguous, not-yet-knowable, or
-      non-increasing report periods) -- unaffected by ``owner_semantics``,
-      since these are checked before any owner-semantics binding is even
-      inspected;
-    * ``PILOT_OWNER_SEMANTICS_UNRESOLVED`` -- the full two-period owner read
-      succeeded, but ``owner_semantics`` was not supplied, failed strict
-      shape checks, or -- the repair -- failed owner VERIFICATION (see
-      :func:`_verify_owner_semantics`).  No K2-B recipe is ever constructed
-      on this path (``recipe``/``compiled`` are ``None``), and no
-      caller-authored ``provenance`` is ever echoed onto the receipt; the
-      receipt instead names the exact ``reason`` it refused for;
-    * a compiled receipt embedding the K2-B compiler's own output verbatim
-      -- ``PILOT_COMPILED`` when the compiler itself reached
-      ``MANAGER_RESEARCH_INTENT_ELIGIBLE_CONTEXT``, else
-      ``PILOT_COMPILED_NON_POSITIVE`` -- reached ONLY when
-      :func:`_verify_owner_semantics` returns a VERIFIED payload, which
-      (Sol review 5099850302 repair) requires a canonical owner verifier
-      from ``_CANONICAL_OWNER_VERIFIERS``.  That registry is EMPTY BY
-      CONSTRUCTION today, so this branch is UNREACHABLE by construction --
-      see the module docstring.
-
-    A genuine owner exception (store outage, digest mismatch, corrupt
-    object) is never caught here and always propagates.
+    Acquisition defects keep their existing typed receipts. A complete owner
+    read returns unresolved with raw period facts and no recipe/compiled value.
+    Genuine store exceptions propagate; no owner read is retried.
     """
     cutoff = request.cutoff
     if request.report_period_prev >= request.report_period_now:
@@ -1265,120 +1075,28 @@ def run_pilot(
         "denominators": denominators_block,
     }
 
-    # --- The owner-semantics gate (frozen spec point 4; Sol review 5099850302
-    # repair) --------------------------------------------------------------
-    # BEFORE any recipe construction: a semantic positive requires a
-    # canonical owner VERIFIER (never a caller's own say-so) to prove both
-    # the security owner seam and the manager/vehicle owner seam for this
-    # exact request. Verification is atomic and fail-closed (see
-    # _verify_owner_semantics) -- there is no partial-trust state. With
-    # _CANONICAL_OWNER_VERIFIERS empty by construction, this branch is
-    # ALWAYS taken today: the caller-authored provenance is NEVER echoed
-    # onto this receipt (laundering an unverified claim through the receipt
-    # is exactly the back door this repair exists to close), and the exact
-    # refusal reason -- a shape defect, or OWNER_VERIFIER_ABSENT for a
-    # shape-valid payload nothing could verify -- is named instead.
-    verified_owner_semantics, refusal_reason = _verify_owner_semantics(
-        owner_semantics, cusip=request.cusip, cutoff=cutoff
-    )
-    if verified_owner_semantics is None:
-        body = {
-            **common_fields,
-            "state": OWNER_SEMANTICS_UNRESOLVED_STATE,
-            "compiled_observation_state": None,
-            "security_binding": {
-                "key_type": "cusip",
-                "cusip": request.cusip,
-                "dataos_security_id": None,
-                "dataos_resolution": SECURITY_BINDING_UNRESOLVED,
-            },
-            "measure": {"state": "not_compiled", "reason": "owner_semantics_unresolved"},
-            "recipe": None,
-            "compiled": None,
-            "owner_semantics": {
-                "security": {"resolved": False, "resolution": SECURITY_BINDING_UNRESOLVED},
-                "manager_vehicle": {"resolved": False, "resolution": MANAGER_VEHICLE_BINDING_UNRESOLVED},
-                "provenance": None,
-                "reason": refusal_reason,
-            },
-        }
-        return _finalize(body)
-
-    # UNREACHABLE TODAY: _CANONICAL_OWNER_VERIFIERS is empty by construction
-    # (see its own comment), so _verify_owner_semantics can never return a
-    # non-None payload above, and control never reaches this line. Left in
-    # place, structurally, as what a future owner wires a real verifier
-    # into -- see the module docstring "Owner VERIFICATION gate".
-    security = verified_owner_semantics["security"]
-    manager_complex_epoch = verified_owner_semantics["manager_complex_epoch"]
-    vehicle_epoch = verified_owner_semantics["vehicle_epoch"]
-
-    recipe = build_recipe(
-        filer_cik=request.filer_cik,
-        cusip=request.cusip,
-        previous_binding=previous_binding,
-        current_binding=current_binding,
-        current_raw_reference_id=raw_ref_now["reference_id"],
-        manager_complex_epoch=manager_complex_epoch,
-        vehicle_epoch=vehicle_epoch,
-        security=security,
-        q_prev=q_prev,
-        q_now=q_now,
-        denominator=denominators_block["current"],
-    )
-    recipe["evidence_refs"] = [raw_ref_prev, catalog_ref_prev, raw_ref_now, catalog_ref_now]
-    recipe["recipe_id"] = compute_recipe_id(recipe)
-    validate_recipe(recipe)
-    cutoff_iso = cutoff.isoformat().replace("+00:00", "Z")
-    compiled = compile_recipe(recipe, as_of=cutoff_iso)
-    observation_receipt = next(
-        event for event in compiled["events"] if event["observation_id"] == "obs_owner_read_pilot"
-    )
-    is_eligible = observation_receipt["state"] == "MANAGER_RESEARCH_INTENT_ELIGIBLE_CONTEXT"
-    # The recipe's own observation measure kind (set in build_recipe from the
-    # owner-supplied vehicle epoch's decision_mode) is the single source of
-    # truth for whether a discretionary-attributable q_prev/q_now delta was
-    # ever submitted to the compiler -- never re-derived from is_eligible,
-    # which answers a different question (whether the compiler accepted it).
-    measure_was_submitted = recipe["observations"][0]["measure"]["kind"] == "reported_share_change"
-    top_measure: dict[str, Any] = (
-        {"q_prev": q_prev, "q_now": q_now, "unit": "shares"}
-        if measure_was_submitted
-        else {"state": "not_compiled", "reason": "non_discretionary_vehicle"}
-    )
-
-    provenance = verified_owner_semantics["provenance"]
+    # No canonical owner operation verifies either semantic axis. Shape checks
+    # only diagnose why an input is unverified; their return cannot unlock a
+    # recipe/compiler path. Untrusted provenance and identities are never echoed.
+    _, refusal_reason = _verify_owner_semantics(owner_semantics, cusip=request.cusip, cutoff=cutoff)
     body = {
         **common_fields,
-        "state": POSITIVE_STATE if is_eligible else NON_POSITIVE_STATE,
-        "compiled_observation_state": observation_receipt["state"],
+        "state": OWNER_SEMANTICS_UNRESOLVED_STATE,
+        "compiled_observation_state": None,
         "security_binding": {
             "key_type": "cusip",
             "cusip": request.cusip,
-            "dataos_security_id": str(security["dataos_security_id"]),
-            "dataos_resolution": str(security["dataos_resolution"]),
+            "dataos_security_id": None,
+            "dataos_resolution": SECURITY_BINDING_UNRESOLVED,
         },
-        "measure": top_measure,
-        "recipe": recipe,
-        "compiled": compiled,
-        # (R3 repair 2026-09-03) The owner_semantics receipt block used to be
-        # emitted ONLY on the unresolved path, where provenance is always
-        # None -- the validated provenance.owner/reference_id were silently
-        # discarded on every reached-a-recipe path, so two receipts proven
-        # by two DIFFERENT owners could be byte-identical. Emitted here too,
-        # verbatim, so provenance survives onto whichever state (POSITIVE or
-        # NON_POSITIVE) this path reaches.
+        "measure": {"state": "not_compiled", "reason": "owner_semantics_unresolved"},
+        "recipe": None,
+        "compiled": None,
         "owner_semantics": {
-            "security": {
-                "resolved": True,
-                "resolution": str(security["dataos_resolution"]),
-            },
-            "manager_vehicle": {"resolved": True, "resolution": "resolved"},
-            "provenance": {
-                "owner": str(provenance["owner"]),
-                "reference_id": str(provenance["reference_id"]),
-            },
-            "reason": None,
+            "security": {"resolved": False, "resolution": SECURITY_BINDING_UNRESOLVED},
+            "manager_vehicle": {"resolved": False, "resolution": MANAGER_VEHICLE_BINDING_UNRESOLVED},
+            "provenance": None,
+            "reason": refusal_reason,
         },
     }
     return _finalize(body)

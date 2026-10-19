@@ -557,3 +557,9 @@ implemented.
 This is a worker RESULT only — the commissioning session owns push, PR, hosted
 CI/fences, review, and the final `REVIEW_RETURN` acceptance call per the
 commission's explicit routing.
+
+## Current integration, 2026-10-19
+
+The currently commissioned MarketOntology A principal resumed the same operation and original #6789 carrier. Current protected `b303c4b32d4d16401050b25d41131b49501720e5` merged normally; no original history was rewritten. The bounded Sol return `5497f9d2feb0e401456651f4ebf46aee8f31898e` removes the empty registry/dead runtime positive branch and restores compiler-oracle coverage at the pure builder seam. §8.6 of the pilot design records current behavior and limits; earlier descriptions and review failures here are history, not present positive admission.
+
+Verified source checks: `python3 -m pytest tests/test_institutional_13f_adapter_contract.py -q` (62 passing, with the two final oracles separately consumed) and the existing native institutional-intelligence contract suite (71 passing). AST inspection confirms no builder/compiler call exists in `run_pilot`; source/acquisition bindings are conserved. Integration remains on the original PR, with hosted CI and native release still required. The work establishes truthful refusal only, not a verified owner generation, calibrated opportunity or production delivery.

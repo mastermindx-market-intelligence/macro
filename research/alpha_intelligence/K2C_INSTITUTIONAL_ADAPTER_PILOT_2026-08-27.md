@@ -5,6 +5,8 @@
 **Pickup main:** `13b9660f3188ed9915e750515c1502cfd33c9bf1` · collision census clean (no K2-C PR/branch).
 **State:** design frozen 2026-08-27; proof receipts appended in §7 when they exist.
 
+**Current source clarification (2026-10-19):** §8.6 supersedes the empty-registry extension described in §8.5. The release correction prevents semantic false positives; it does not satisfy the positive-owner acceptance gates below.
+
 ## 0. Acceptance gates (not done unless)
 
 - One K2-C carrier; RED-first falsifiers for every case in the commission's
@@ -748,3 +750,11 @@ repair: `PARTIAL / NOT SOL-ACCEPTED` for a real positive, with the
 false-positive/escaped-exception defects this §8.5 repairs now closed by
 construction rather than by a longer checklist.
 
+
+## 8.6 Current conservative source integration — 2026-10-19
+
+Adapter `1.0.1` removes the empty verifier registry and the unreachable positive runtime branch. `run_pilot` never calls the recipe builder or compiler. A complete two-period native read returns `PILOT_OWNER_SEMANTICS_UNRESOLVED`, unresolved security and manager/vehicle axes, and null recipe, compiled output and caller provenance. Existing acquisition refusals and owner exceptions are preserved. Neither `SOLE` nor a filer CIK supplies vehicle semantics or resolved epochs. No override, new registry, owner read retry or production operation is added.
+
+The pure `build_recipe` seam still accepts explicit inputs for K2-B compiler tests. Synthetic, explicitly declared epochs exercise independent recomputation, forged-output rejection and the non-discretionary compiler outcome; the same fixtures remain refused by `run_pilot`. These restore the meaningful compiler oracles without reopening an unverified runtime positive. Verification: 62 adapter tests (including two restored oracles) and 71 native compiler contract tests passed on source `5497f9d2feb0e401456651f4ebf46aee8f31898e`. Current protected integration preserves those source dependencies. Hosted checks still decide the release.
+
+Acceptance here is limited to truthful refusal and removal of false positives. A semantic-positive K2-C generation still requires native, PIT-aware CUSIP-to-exact-SEC identity and truthful manager/vehicle epoch evidence, followed by the real two-period positive/refusal proof. Caller-shaped mappings, this source repair and green CI do not provide those operations or evidence. Earlier failed reviews and receipts above remain historical evidence.
