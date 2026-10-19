@@ -1104,6 +1104,25 @@ def test_hero_zh_heating_count_is_every_heating_theme():
     assert "SYN Heat 0" in en and "SYN Heat 1" in en, f"en lost a named theme: {en!r}"
     assert "SYN Heat 2" not in en, f"en named more than two heating themes: {en!r}"
 
+
+def test_hero_hot_names_are_escaped():
+    """A heating theme name is producer data: the hot branch must autoescape it."""
+    themes = [dict(_HERO_ROW, theme="syn_w0", name="SYN Watching", stage="WATCH")]
+    heating = [dict(_HERO_HEATING[0], name="<script>x</script>", theme="syn_evil")]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": heating})
+    assert "&lt;script&gt;" in en, f"hot branch lost the escaped theme name: {en!r}"
+    assert "<script>" not in div, f"hero rendered a raw heating theme name: {div!r}"
+
+
+def test_hero_else_branch_parity():
+    """No early theme and nothing heating => both halves carry the full quiet verdict."""
+    themes = [dict(_HERO_ROW, theme="syn_w0", name="SYN Watching", stage="WATCH")]
+    div, en, zh = _fx_verdict_spans(themes, {"heating_up": []})
+    assert "Nothing is early right now" in en, f"quiet branch lost its en claim: {en!r}"
+    assert "Watch, don" in en, f"quiet branch lost its en caveat: {en!r}"
+    assert "当前没有早期主题" in zh, f"quiet branch lost its zh claim: {zh!r}"
+    assert "观望，勿追。" in zh, f"quiet branch lost its zh caveat: {zh!r}"
+
 # ── W5a: fingerprint sub-object passthrough (2026-08-04 health coherence) ────
 # The health surface counts t1_fingerprint liveness from CASCADE rows
 # (foresight_health._assess_t1_fingerprint reads t["fingerprint"]["n_legs_live"]);
