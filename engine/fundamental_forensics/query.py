@@ -4290,7 +4290,16 @@ class BitemporalMetricQueryEngine:
         filing_metadata: Mapping[str, FilingMetadata | Mapping[str, Any]] | None = None,
         bounds: QueryBounds | None = None,
         lineage_evidence: Iterable[LineageEvidenceReceipt] = (),
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None = None,
     ) -> None:
+        # FIF A01/A11: the original Clark namespace per (accession,
+        # source_occurrence_key), read from the source filings by the same
+        # helper the mint path uses.  When supplied, a lineage receipt's
+        # attested taxonomy URI pair must equal the source's, so a forgery
+        # that swaps both URIs to another approved namespace (with a
+        # recomputed receipt_id) fails closed.  Absent keeps the receipt's
+        # policy-gated attestation as the only URI evidence.
+        self._source_taxonomy_uris = self._freeze_source_taxonomy_uris(source_taxonomy_uris)
         if isinstance(ledger, RawFactLedger):
             self.ledger = ledger
         else:
@@ -4372,6 +4381,63 @@ class BitemporalMetricQueryEngine:
         self._effective_root_cache: dict[
             tuple[str, datetime, datetime], Mapping[str, str]
         ] = {}
+
+    @staticmethod
+    def _freeze_source_taxonomy_uris(
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None,
+    ) -> Mapping[tuple[str, str], str] | None:
+        if source_taxonomy_uris is None:
+            return None
+        if not isinstance(source_taxonomy_uris, Mapping):
+            raise LineageEvidenceError("source_taxonomy_uris must be a mapping")
+        frozen: dict[tuple[str, str], str] = {}
+        for key, uri in source_taxonomy_uris.items():
+            if (
+                not isinstance(key, tuple)
+                or len(key) != 2
+                or not all(isinstance(part, str) for part in key)
+                or not isinstance(uri, str)
+            ):
+                raise LineageEvidenceError(
+                    "source_taxonomy_uris maps (accession, source_occurrence_key) to a URI"
+                )
+            frozen[key] = uri
+        return MappingProxyType(frozen)
+
+    def _taxonomy_uris_match_source(
+        self,
+        parent_representative: RawFactOccurrence,
+        child_representative: RawFactOccurrence,
+        evidence: Mapping[str, Any],
+    ) -> bool:
+        """Whether the receipt's URI pair is the source's own namespace pair.
+
+        Without a source map the receipt's policy-gated attestation is the
+        only URI evidence and this is vacuously true.  With one, both
+        representatives must have a source namespace, those must agree (the
+        guard-11 rule the mint applied), and the receipt must carry exactly
+        that namespace on both sides.
+        """
+        if self._source_taxonomy_uris is None:
+            return True
+        parent_uri = self._source_taxonomy_uris.get(
+            (
+                parent_representative.source.accession,
+                parent_representative.source_occurrence_key or "",
+            )
+        )
+        child_uri = self._source_taxonomy_uris.get(
+            (
+                child_representative.source.accession,
+                child_representative.source_occurrence_key or "",
+            )
+        )
+        if not parent_uri or parent_uri != child_uri:
+            return False
+        return (
+            evidence.get("parent_taxonomy_uri") == parent_uri
+            and evidence.get("child_taxonomy_uri") == child_uri
+        )
 
     @staticmethod
     def _normalize_entities(
@@ -5437,6 +5503,18 @@ class BitemporalMetricQueryEngine:
                     f"mints ({envelope_refusal})"
                 )
             evidence = receipt.positive_evidence or {}
+            # FIF A01/A11: with a source namespace map, the attested URI
+            # pair must be the source's, keyed exactly as the mint keyed it
+            # (the canonical representative of each full group).
+            if not self._taxonomy_uris_match_source(
+                _canonical_duplicate_representative(parent_group),
+                _canonical_duplicate_representative(child_group),
+                evidence,
+            ):
+                raise LineageEvidenceError(
+                    "lineage evidence taxonomy namespace is not the source's "
+                    f"({REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE})"
+                )
             # FIF T1: bind the WHOLE payload, not just the edge.  A receipt
             # digest only proves internal self-consistency, so a forged
             # bundle with a correctly recomputed receipt_id must still equal
@@ -5702,6 +5780,12 @@ class BitemporalMetricQueryEngine:
         if parent_representative.occurrence_id != receipt.parent_occurrence_id:
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if representative.occurrence_id != receipt.child_occurrence_id:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # FIF A01/A11: a policy-approved URI pair is still only an
+        # attestation; with a source namespace map it must be the source's.
+        if not self._taxonomy_uris_match_source(
+            parent_representative, representative, evidence
+        ):
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
         if evidence.get("concept_qname") != representative.concept_qname:
             return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
