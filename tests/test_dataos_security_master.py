@@ -1217,8 +1217,13 @@ def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataF
                 if obs.get("status") == "BOUND"
             }
             for row in probe["owner_refusals"]:
-                if bound.get(row["listing_key"], "") > row.get("snapshot_date", "9999"):
-                    assert row["listing_key"] in set(active["listing_key"])
+                observed_on = bound.get(row["listing_key"], "")
+                if observed_on > row.get("snapshot_date", "9999"):
+                    minted = active[active["listing_key"] == row["listing_key"]]
+                    assert len(minted) == 1
+                    # The mint must come from that observation, not an
+                    # earlier ordinary path.
+                    assert str(minted.iloc[0]["ingested_at"])[:10] >= observed_on
                     continue
                 assert row["listing_key"] not in set(active["listing_key"])
                 if "lost_rows" in row:

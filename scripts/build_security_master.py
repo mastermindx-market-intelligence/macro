@@ -511,11 +511,13 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
         old="DOMO",
         new="HUCK",
         on=date(2026, 9, 24),
-        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so the
-        # renamed key re-derives the committed US-XNAS-DOMO exactly (no supersession
-        # entry needed, same as EQR->VMRK). `yahoo` + `membership` dated exactly as
-        # PSKY's are; `store`/`yahoo_fetch` stay at the committed DOMO rows until a
-        # #4622-protocol store-key migration moves them (out of scope here).
+        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so no
+        # supersession entry is needed (same as EQR->VMRK). `yahoo` + `membership`
+        # dated exactly as PSKY's are; `store`/`yahoo_fetch` stay at the committed
+        # DOMO rows until a #4622-protocol store-key migration moves them (out of
+        # scope here). Until then the committed build still reports US-XNAS-DOMO
+        # in resolved_not_rederivable and HUCK in listing_continuity: this event
+        # dates and attributes the rename, it does not by itself clear those rows.
         vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
         evidence=(
             "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 "
