@@ -1207,7 +1207,6 @@ def test_a_malformed_node_collection_is_a_typed_source_failure(tmp_path):
     assert "malformed_nodes" in str(excinfo.value)
 
 
-<<<<<<< HEAD
 # Additive TXI membership: exact source bytes and dated identity, all synthetic.
 def _exposure_root(tmp_path):
     state = fx.chain_state(state="arming")
@@ -1561,7 +1560,8 @@ def test_stale_reverse_alias_mismatch_never_links():
     assert companies["n_linked"] == 0
     assert {"symbol": "SYNA", "reason": "stale_alias"} in companies["unlinked"]
     assert companies["identity_unavailable"] is False
-=======
+
+
 # X2 is ephemeral composition over the native TXI grammar, separate from X1.
 @pytest.fixture
 def x2_inputs():
@@ -1745,4 +1745,3 @@ def test_x2_does_not_reject_irrelevant_negative_native_history(x2_inputs):
     snapshot, chain, baseline, assumption = x2_inputs
     values = baseline.series.copy(); values.iloc[0] = -1.0
     assert _x2_run((snapshot, chain, replace(baseline, series=values), assumption))['root_evaluation']['confirmed'] is True
->>>>>>> 37ea28d6df7e (Compose ephemeral WTI counterfactual through native TXI evaluator)
