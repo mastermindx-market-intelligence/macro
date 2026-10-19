@@ -12211,6 +12211,9 @@ jobs:
     paths:
       - "engine/research_factory/market_memory_e0_*.py"
       - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_outcome_use.py"
+      - "config/market_memory_retained_outcome_use.v2.json"
+      - "tests/test_market_memory_outcome_use.py"
       - "tests/test_market_memory_e0_*.py"
       - "scripts/inspect_market_memory_e0_control.py"
       - "tests/test_inspect_market_memory_e0_control.py"
@@ -12270,6 +12273,7 @@ jobs:
           tests/test_market_memory_e0_selected_task_inputs.py
           tests/test_market_memory_e0_selected_condition.py
           tests/test_market_memory_e0_source_identity.py
+          tests/test_market_memory_outcome_use.py
           tests/test_inspect_market_memory_e0_control.py
           -q
 
@@ -30576,6 +30580,7 @@ jobs:
       - "engine/neuralweb/market_memory.py"
       - "engine/neuralweb/market_memory_contextual_observation_store.py"
       - "engine/neuralweb/market_memory_episode_outcomes.py"
+      - "engine/neuralweb/market_memory_outcome_inspection.py"
       - "engine/neuralweb/market_memory_episode_comparison.py"
       - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
       - "contracts/market_memory/e0_interval_split.v1.schema.json"
@@ -30965,6 +30970,8 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_outcomes.py"
+      - "tests/test_market_memory_outcome_inspection.py"
+      - "tests/test_market_memory_outcome_api.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_fitted_normalization.py"
       - "tests/test_market_memory_fitted_distance.py"
@@ -31096,6 +31103,8 @@ jobs:
           tests/test_market_memory_exact_index.py
           tests/test_market_memory_episode_features.py
           tests/test_market_memory_episode_outcomes.py
+          tests/test_market_memory_outcome_inspection.py
+          tests/test_market_memory_outcome_api.py
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py

@@ -75,6 +75,25 @@ body.mm-page .mm-retained .mmr-source-heading.is-open{font-weight:800}
 body.mm-page .mm-retained .mmr-outcomes{margin:var(--sp-4,16px) 0 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel2);padding:var(--sp-3,12px)}
 body.mm-page .mm-retained .mmr-outcomes h3{margin:0 0 var(--sp-1,4px)}
 body.mm-page .mm-retained .mmr-outcomes p{font-size:var(--fs-sm,12.5px);line-height:1.5;margin:0;color:var(--muted)}
+/* Paper U2: one unchanged match order, with observation and evidence separated.
+ * Dark uses luminance depth; light gives the clock surface a white material. */
+body.mm-page .mm-retained .mmr-outcome-inspector>.mmr-action{margin-bottom:var(--sp-5,20px)}
+body.mm-page .mm-retained .mmr-outcome-clocks{margin:var(--sp-5,20px) 0;padding:var(--sp-4,16px);background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-ctl,8px)}
+body.mm-page .mm-retained .mmr-outcome-clocks .mmr-coverage{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-4,16px);margin:0}
+body.mm-page .mm-retained .mmr-outcome-clocks .mmr-coverage>div{border:0;padding-bottom:0}
+body.mm-page .mm-retained .mmr-outcome-lenses{display:flex;flex-wrap:wrap;gap:var(--sp-2,8px)}
+body.mm-page .mm-retained .mmr-outcome-lenses [aria-pressed="true"]{background:var(--panel);color:var(--text);font-weight:700}
+body.mm-page .mm-retained .mmr-outcome-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-4,16px);padding:var(--sp-5,20px) 0;border-bottom:1px solid var(--line);align-items:start}
+body.mm-page .mm-retained .mmr-outcome-case .mmr-eyebrow{display:block}
+body.mm-page .mm-retained .mmr-outcome-case .mmr-note{margin-bottom:0;overflow-wrap:anywhere}
+body.mm-page .mm-retained .mmr-outcome-reading .mmr-status{display:table}
+body.mm-page .mm-retained .mmr-outcome-ratio{display:block;font-size:var(--fs-num-lg,22px);font-weight:700;overflow-wrap:anywhere}
+body.mm-page .mm-retained .mmr-outcome-evidence{grid-column:1/-1;border-top:0;margin:0}
+body.mm-page .mm-retained .mmr-outcome-evidence .mmr-coverage{margin:0}
+body.mm-page .mm-retained .mmr-outcome-evidence code{overflow-wrap:anywhere}
+body.mm-page .mm-retained .mmr-outcome-qualification{margin-top:var(--sp-5,20px)}
+html[data-theme="light"] body.mm-page .mm-retained .mmr-outcome-clocks{background:var(--panel);box-shadow:var(--card-shadow,none)}
+html[data-theme="light"] body.mm-page .mm-retained .mmr-outcome-lenses [aria-pressed="true"]{background:var(--panel2);box-shadow:none}
 body.mm-page .mm-retained .mmr-state{padding:var(--sp-4,16px);border:1px solid var(--line);border-radius:var(--r-ctl,8px);margin:var(--sp-3,12px) 0;background:var(--panel2)}
 body.mm-page .mm-retained .mmr-state strong,body.mm-page .mm-retained .mmr-state span{display:block}
 body.mm-page .mm-retained .mmr-state strong{font-size:var(--fs-md,15px)}
@@ -120,7 +139,12 @@ body.mm-page .mm-retained .mmr-case>.mmr-action{grid-column:2;grid-row:1}
 body.mm-page .mm-retained .mmr-case-diff{grid-column:1/-1;grid-row:2}
 body.mm-page .mm-retained .mmr-case-distance{grid-column:1/-1;grid-row:3}
 body.mm-page .mm-retained .mmr-source-panel{scroll-margin-top:96px}
+body.mm-page .mm-retained .mmr-outcome-clocks .mmr-coverage,body.mm-page .mm-retained .mmr-outcome-row{grid-template-columns:minmax(0,1fr)}
+body.mm-page .mm-retained .mmr-outcome-row{gap:var(--sp-3,12px)}
 }
 @media(prefers-reduced-motion:reduce){
 body.mm-page .mm-retained *,body.mm-page .mm-retained *::before,body.mm-page .mm-retained *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+body.mm-page .mm-retained.is-outcome-inspection .mmr-columns{grid-template-columns:minmax(0,1fr)}
+body.mm-page .mm-retained.is-outcome-inspection .mmr-source-panel{display:none}

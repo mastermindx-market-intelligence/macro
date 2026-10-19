@@ -13,7 +13,8 @@
   var MAP = {
     mode: 'mm_mode', query: 'mm_query', subject: 'mm_subject', gen: 'mm_gen',
     gen_sha: 'mm_gen_sha', cutoff: 'mm_cutoff', method: 'mm_method', context: 'mm_context',
-    sourceField: 'mm_source_field', sourceContext: 'mm_source_context', outcomeLens: 'mm_outcome', catalogOffset: 'mm_catalog_offset', ticker: 'ticker',
+    sourceField: 'mm_source_field', sourceContext: 'mm_source_context', outcomeLens: 'mm_outcome', outcomeCutoff: 'mm_outcome_cutoff', outcomeUse: 'mm_outcome_use',
+    outcomeRetrieval: 'mm_outcome_retrieval', outcomeSelection: 'mm_outcome_selection', catalogOffset: 'mm_catalog_offset', ticker: 'ticker',
     issuerInput: 'mm_issuer_input', language: 'mm_lang', view: 'view'
   };
   var NAMES = Object.keys(MAP);

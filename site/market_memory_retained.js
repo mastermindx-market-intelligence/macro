@@ -19,7 +19,8 @@
   var NUMERIC_FIELDS = { growth_score: true, inflation_score: true };
   var OUTCOME_LENSES = ['then_known', 'later_observed'];
   var URL_KEYS = ['mm_mode', 'mm_query', 'mm_subject', 'mm_gen', 'mm_gen_sha', 'mm_cutoff',
-    'mm_method', 'mm_context', 'mm_source_field', 'mm_source_context', 'mm_outcome', 'mm_catalog_offset'];
+    'mm_method', 'mm_context', 'mm_source_field', 'mm_source_context', 'mm_outcome', 'mm_outcome_cutoff',
+    'mm_outcome_use', 'mm_outcome_retrieval', 'mm_outcome_selection', 'mm_catalog_offset'];
   var MODE_LABELS = {
     saved: ['Saved output', '原始输出'],
     historical: ['Historical comparison', '历史比较'],
@@ -54,7 +55,8 @@
     selected: null,         /* normalized catalog entry the user explicitly chose */
     committed: null,        /* last committed payload { kind, intent, data } */
     sourceCase: null,       /* committed source inspection { contextId, data } */
-    outcomeLens: null,      /* 'then_known' | 'later_observed' (UI reserved until L0) */
+    outcomeLens: null,      /* Explicit lens; evidence remains bound to the original comparison. */
+    outcomeEpoch: 0, outcomeAbort: null, outcome: null, outcomeView: false, outcomeStatus: null,
     sourceField: null,
     sourceContext: null,
     abort: null,
@@ -325,7 +327,9 @@
     if (!coverage.ok || body.denominator.returned !== neighbors.length
         || !Number.isSafeInteger(body.denominator.eligible_representatives) || body.denominator.eligible_representatives < neighbors.length
         || (body.status !== 'MATCHES') !== (neighbors.length === 0)) throw ContractError('compare_accounting');
+    if (body.retrieval_id !== 'mmretainedretrieval_' + requireSha(body.selection_sha256, 'selection_digest')) throw ContractError('retrieval_identity');
     return { status: body.status, mode: body.mode, owner: body.owner, methodSpec: method, neighbors: neighbors,
+      retrievalId: body.retrieval_id, selectionSha256: body.selection_sha256,
       denominator: body.denominator, exclusionCounts: body.exclusion_counts, coverage: coverage,
       sourceCards: cards, selectedState: queryCard.state, missingEvidence: asArray(body.missing_evidence), stateDifferences: asArray(body.state_differences) };
   }
@@ -482,6 +486,19 @@
       if (OUTCOME_LENSES.indexOf(params.mm_outcome) === -1) return { ok: false, reason: 'url_outcome_lens' };
       intent.outcomeLens = params.mm_outcome;
     }
+    var outcomeFields = { mm_outcome_cutoff: 'outcomeCutoff', mm_outcome_use: 'outcomeUse',
+      mm_outcome_retrieval: 'outcomeRetrieval', mm_outcome_selection: 'outcomeSelection' };
+    for (var outcomeKey in outcomeFields) {
+      if (!Object.prototype.hasOwnProperty.call(params, outcomeKey)) continue;
+      var outcomeValue = params[outcomeKey];
+      var valid = outcomeKey === 'mm_outcome_cutoff' ? isUtc(outcomeValue)
+        : outcomeKey === 'mm_outcome_selection' ? SHA256_RE.test(outcomeValue)
+          : (outcomeKey === 'mm_outcome_use' ? /^mmoutcomeuse_[0-9a-f]{64}$/ : /^mmretainedretrieval_[0-9a-f]{64}$/).test(outcomeValue);
+      if (!valid) return { ok: false, reason: 'url_outcome_binding' };
+      intent[outcomeFields[outcomeKey]] = outcomeValue;
+    }
+    var hasOutcomePin = Object.keys(outcomeFields).some(function (key) { return Object.prototype.hasOwnProperty.call(params, key); });
+    if (hasOutcomePin && (!intent.outcomeLens || !intent.outcomeCutoff || !intent.outcomeRetrieval || !intent.outcomeSelection)) return { ok: false, reason: 'url_outcome_incomplete' };
     if (Object.prototype.hasOwnProperty.call(params, 'mm_catalog_offset')) {
       if (!/^(0|[1-9][0-9]{0,2})$/.test(params.mm_catalog_offset) || Number(params.mm_catalog_offset) > 255) return { ok: false, reason: 'url_catalog_offset' };
       intent.catalogOffset = params.mm_catalog_offset;
@@ -493,7 +510,8 @@
   function writeUrlIntent(intent) {
     if (!window.MarketMemoryIntent) return false;
     var patch = { mode: null, query: null, subject: null, gen: null, gen_sha: null, cutoff: null,
-      method: null, context: null, sourceField: null, sourceContext: null, outcomeLens: null, catalogOffset: null };
+      method: null, context: null, sourceField: null, sourceContext: null, outcomeLens: null, outcomeCutoff: null, outcomeUse: null,
+      outcomeRetrieval: null, outcomeSelection: null, catalogOffset: null };
     Object.keys(intent || {}).forEach(function (name) { patch[name === 'genSha' ? 'gen_sha' : name] = intent[name]; });
     var result = window.MarketMemoryIntent.replace(patch);
     if (!result.ok) { renderTypedUnavailable('missing_exact_capture', result.reason); return false; }
@@ -557,6 +575,7 @@
   }
   function apiFetch(path, params, kind) {
     var dispatchSlot = { epoch: state.epoch, authEpoch: state.authEpoch };
+    var dispatchedOutcomeEpoch = state.outcomeEpoch;
     var query = '';
     var keys = Object.keys(params || {});
     keys.sort();
@@ -564,7 +583,7 @@
       return encodeURIComponent(key) + '=' + encodeURIComponent(String(params[key]));
     }).join('&');
     if (query) query = '?' + query;
-    var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : 'abort');
+    var storeKey = kind === 'catalog' ? 'catalogAbort' : (kind === 'playback' ? 'sourceAbort' : (kind === 'outcome' ? 'outcomeAbort' : 'abort'));
     var controller = null;
     var timer = null;
     var expired = false;
@@ -572,7 +591,7 @@
       if (timer !== null) { clearTimeout(timer); timer = null; }
     }
     var request = withAuth({ Accept: 'application/json' }).then(function (headers) {
-      if (commitGate(dispatchSlot, state)) { var stale = new Error('superseded'); stale.name = 'AbortError'; throw stale; }
+      if (commitGate(dispatchSlot, state) || (kind === 'outcome' && dispatchedOutcomeEpoch !== state.outcomeEpoch)) { var stale = new Error('superseded'); stale.name = 'AbortError'; throw stale; }
       /* A session that resolved after the deadline must not dispatch. */
       if (expired) throw deadlineError();
       /* Main-result requests and source-inspection requests get separate
@@ -638,6 +657,7 @@
     state.epoch += 1;
     state.notice = null;
     state.committed = null; state.sourceCase = null;
+    clearOutcome();
     if (state.catalogAbort) { try { state.catalogAbort.abort(); } catch (error) { /* settled */ } }
     state.catalogAbort = null;
     if (state.abort) { try { state.abort.abort(); } catch (error) { /* already gone */ } }
@@ -822,10 +842,13 @@
       method: extras.method || (state.catalog ? defaultMethodId(state.mode) : null),
       context: entry.contextId,
       cutoff: extras.cutoff || defaultCutoffFor(entry),
-      outcomeLens: extras.outcomeLens || state.outcomeLens,
+      outcomeLens: extras.outcomeLens || null,
+      outcomeCutoff: extras.outcomeCutoff || null, outcomeUse: extras.outcomeUse || null,
+      outcomeRetrieval: extras.outcomeRetrieval || null, outcomeSelection: extras.outcomeSelection || null,
       catalogOffset: entry.catalogOffset || '0'
     };
     state.intent = intent;
+    state.outcomeLens = intent.outcomeLens || null;
     writeUrlIntent(publishableIntent(intent));
     renderCatalogDependentControls();
     if (state.mode === 'saved') return runSaved(intent);
@@ -847,7 +870,9 @@
   function publishableIntent(intent) {
     return { mode: intent.mode, context: intent.context, cutoff: intent.cutoff, query: intent.query,
       subject: intent.subject, gen: intent.gen, genSha: intent.genSha, method: intent.method,
-      sourceField: state.sourceField, sourceContext: state.sourceContext, outcomeLens: intent.outcomeLens, catalogOffset: intent.catalogOffset };
+      sourceField: state.sourceField, sourceContext: state.sourceContext, outcomeLens: intent.outcomeLens,
+      outcomeCutoff: intent.outcomeCutoff, outcomeUse: intent.outcomeUse, outcomeRetrieval: intent.outcomeRetrieval,
+      outcomeSelection: intent.outcomeSelection, catalogOffset: intent.catalogOffset };
   }
 
   /* Saved output mode: exact operational PIT playback only. No retained
@@ -905,15 +930,128 @@
         return renderTypedUnavailable('compare_binding', contract.contractCode);
       }
       state.committed = { kind: 'compare', intent: intent, data: compare };
+      state.outcomeLens = intent.outcomeLens || null;
       if (state.sourceContext) {
         if (!compare.sourceCards[state.sourceContext]) return renderTypedUnavailable('missing_exact_capture', 'source_context_not_in_selected_comparison');
         state.sourceCase = { contextId: state.sourceContext, data: compare.sourceCards[state.sourceContext] };
       }
       renderCommitted();
+      if (intent.outcomeLens) runOutcome(intent.outcomeLens, true);
     }).catch(function (error) {
       if (commitGate(intentSlot, state)) return;
       renderRequestFailure(error, { retry: function () { runCompare(intent); } });
     });
+  }
+
+  function clearOutcome() {
+    state.outcomeEpoch += 1;
+    if (state.outcomeAbort) { try { state.outcomeAbort.abort(); } catch (error) { /* settled */ } }
+    state.outcomeAbort = null; state.outcome = null; state.outcomeView = false; state.outcomeStatus = null;
+    if (ui.root) ui.root.classList.remove('is-outcome-inspection');
+  }
+  function clearOutcomeIntent() {
+    state.outcomeLens = null;
+    if (state.intent) ['outcomeLens', 'outcomeCutoff', 'outcomeUse', 'outcomeRetrieval', 'outcomeSelection']
+      .forEach(function (key) { state.intent[key] = null; });
+  }
+  function normalizeOutcomeResponse(payload, comparison, request) {
+    var body = requireObject(payload, 'outcome_response');
+    if (Object.keys(body).sort().join(',') !== 'attachment,available,descriptor,retrieval_id,schema,selection_sha256,status'
+        || body.schema !== 'market_memory.outcome_inspection_response.v1'
+        || body.retrieval_id !== comparison.retrievalId || body.selection_sha256 !== comparison.selectionSha256) throw ContractError('outcome_response_binding');
+    if (body.available === false && body.status === 'NOT_CONFIGURED' && body.descriptor === null && body.attachment === null) {
+      if (request.outcomeUse) throw ContractError('original_outcome_use_unavailable');
+      return null;
+    }
+    if (body.available !== true || body.status !== 'AVAILABLE') throw ContractError('outcome_availability');
+    var descriptor = requireObject(body.descriptor, 'outcome_descriptor');
+    if (Object.keys(descriptor).sort().join(',') !== 'definition_sha256,lens,observation_generation_ref,operational_admission,outcome_cutoff,outcome_use_identity,query_cutoff,retrieval_id,schema,selection_sha256'
+        || descriptor.schema !== 'market_memory.registered_outcome_use.v2' || descriptor.operational_admission !== false
+        || descriptor.retrieval_id !== comparison.retrievalId || descriptor.selection_sha256 !== comparison.selectionSha256
+        || descriptor.query_cutoff !== request.cutoff || descriptor.outcome_cutoff !== request.outcomeCutoff
+        || descriptor.lens !== request.outcomeLens || !/^mmoutcomeuse_[0-9a-f]{64}$/.test(descriptor.outcome_use_identity)
+        || (request.outcomeUse && descriptor.outcome_use_identity !== request.outcomeUse)
+        || (descriptor.lens === 'then_known' && descriptor.observation_generation_ref !== null)) throw ContractError('outcome_descriptor_binding');
+    var expected = { retrievalId: comparison.retrievalId, selectionSha256: comparison.selectionSha256,
+      queryCutoff: request.cutoff, outcomeCutoff: request.outcomeCutoff, lens: request.outcomeLens,
+      definitionSha256: requireSha(descriptor.definition_sha256, 'outcome_definition'),
+      neighbors: comparison.neighbors.map(function (row) {
+        return { contextId: row.contextId, captureId: row.sourceCard.captureId,
+          packetSha256: row.sourceCard.packetSha256, comparisonId: row.comparisonId, distanceQ18: row.distanceQ18 };
+      }) };
+    if (!window.MarketMemoryOutcomeContract || !window.MarketMemoryOutcomeView) throw ContractError('outcome_module_unavailable');
+    window.MarketMemoryOutcomeContract.normalizeOutcomeAttachment(body.attachment, expected);
+    return { raw: JSON.parse(JSON.stringify(body.attachment)), expected: expected, useIdentity: descriptor.outcome_use_identity };
+  }
+  function runOutcome(lens, restoring) {
+    if (OUTCOME_LENSES.indexOf(lens) === -1 || state.authBlocked || !state.committed || state.committed.kind !== 'compare') return;
+    var comparison = state.committed.data, intent = currentIntent();
+    var cutoff = restoring && intent.outcomeCutoff ? intent.outcomeCutoff
+      : lens === 'then_known' ? intent.cutoff : state.catalog && state.catalog.requestClock.referenceCutoffUtc;
+    clearOutcome(); state.outcomeView = true; state.outcomeLens = lens;
+    if (!isUtc(cutoff) || (intent.outcomeRetrieval && intent.outcomeRetrieval !== comparison.retrievalId)
+        || (intent.outcomeSelection && intent.outcomeSelection !== comparison.selectionSha256)) {
+      state.outcomeStatus = 'unavailable'; renderOutcome(); return;
+    }
+    var request = Object.assign({}, intent, { outcomeLens: lens, outcomeCutoff: cutoff,
+      outcomeRetrieval: comparison.retrievalId, outcomeSelection: comparison.selectionSha256 });
+    state.intent = request;
+    if (!writeUrlIntent(publishableIntent(request))) return;
+    var slot = { epoch: state.epoch, authEpoch: state.authEpoch }, outcomeEpoch = state.outcomeEpoch;
+    function stale() { return commitGate(slot, state) || outcomeEpoch !== state.outcomeEpoch || state.authBlocked; }
+    state.outcomeStatus = 'loading'; renderOutcome();
+    var params = { query_id: request.query, subject_id: request.subject, generation_id: request.gen,
+      generation_sha256: request.genSha, method_spec_id: request.method, query_cutoff: request.cutoff,
+      limit: COMPARE_LIMIT, retrieval_id: comparison.retrievalId, selection_sha256: comparison.selectionSha256,
+      lens: lens, outcome_cutoff: cutoff };
+    if (request.outcomeUse) params.outcome_use_identity = request.outcomeUse;
+    apiFetch('/macro/retained/outcomes', params, 'outcome').then(function (result) {
+      if (stale()) return;
+      var outcome;
+      try { outcome = normalizeOutcomeResponse(result.payload, comparison, request); }
+      catch (error) { state.outcomeStatus = 'unavailable'; renderOutcome(); return; }
+      if (stale()) return;
+      state.outcome = outcome; state.outcomeStatus = outcome ? 'available' : 'not_configured';
+      if (outcome) {
+        state.intent.outcomeUse = outcome.useIdentity;
+        if (!writeUrlIntent(publishableIntent(currentIntent()))) { clearOutcome(); return; }
+      }
+      renderOutcome();
+    }).catch(function (error) {
+      if (stale()) return;
+      if (error.status === 401 || error.status === 402 || error.status === 403) {
+        clearOutcome();
+        if (error.status === 401) { authRedact(); return; }
+        return renderRequestFailure(error);
+      }
+      state.outcome = null; state.outcomeStatus = 'unavailable'; renderOutcome();
+    });
+  }
+  function renderOutcome() {
+    if (!state.committed || state.committed.kind !== 'compare' || state.authBlocked) return;
+    ui.root.classList.add('is-outcome-inspection');
+    ui.sourceBody.innerHTML = ''; closeSourcePanel();
+    if (state.outcome && state.outcomeStatus === 'available') {
+      var labels = state.committed.data.neighbors.map(function (row) {
+        return { contextId: row.contextId, label: clockLabel(row.sourceCard.eventTime) };
+      });
+      ui.resultBody.innerHTML = window.MarketMemoryOutcomeView.render(state.outcome.raw,
+        state.outcome.expected, labels, isZh() ? 'zh' : 'en');
+      ui.status.textContent = copy('Subsequent observations loaded', '后续观察已加载');
+      return;
+    }
+    var loading = state.outcomeStatus === 'loading', missing = state.outcomeStatus === 'not_configured';
+    var heading = loading ? copy('Checking registered observations', '正在核对注册观察')
+      : missing ? copy('No outcome study is attached', '尚未关联结果研究') : copy('Exact observations are unavailable', '确切观察暂不可用');
+    ui.status.textContent = heading;
+    ui.resultBody.innerHTML = '<section class="mmr-outcome-inspector" data-mmr-outcome-state="' + esc(state.outcomeStatus) + '">'
+      + '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="outcome-back">'
+      + esc(copy('Back to comparison', '返回比较')) + '</button><h2>' + esc(heading) + '</h2><p class="mmr-note">'
+      + esc(loading ? copy('The original cases and their order remain fixed.', '原始案例及其顺序保持不变。')
+        : missing ? copy('These cases retain their original readings. No later observations have been admitted for this comparison.', '这些案例保留原始解读。此比较尚未准入后续观察记录。')
+          : copy('The requested comparison, cutoff and source use must still match. No replacement or estimated outcome is shown.', '所请求的比较、截至时间及来源用途必须仍然匹配；此处不展示替代或估计结果。'))
+      + '</p>' + (!loading && !missing ? '<button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="outcome-retry">'
+        + esc(copy('Try this exact request again', '重试此确切请求')) + '</button>' : '') + '</section>';
   }
 
   /* Per-case exact source inspection: opens that case's own capture. */
@@ -1204,6 +1342,7 @@
       ? copy('Saved output loaded', '原始输出已加载')
       : copy('Comparison loaded', '比较已加载');
     if (state.committed.kind === 'saved') renderSaved();
+    else if (state.outcomeView) renderOutcome();
     else renderCompare();
     renderCutoffControl();
     renderSelectedClock();
@@ -1249,6 +1388,12 @@
   }
 
   function outcomeBlock() {
+    if (state.committed && state.committed.kind === 'compare' && state.committed.data.neighbors.length) {
+      return '<div class="mmr-outcomes"><h3>' + esc(copy('Subsequent observations', '后续观察')) + '</h3><p>'
+        + esc(copy('Check which registered observations are available for these exact cases.', '查看这些确切案例可用的注册观察记录。'))
+        + '</p><button type="button" class="gbtn gbtn-quiet mmr-action" data-mmr-action="outcome-open">'
+        + esc(copy('Inspect subsequent observations', '核对后续观察')) + '</button></div>';
+    }
     var lens = state.outcomeLens;
     var heading = lens === 'later_observed'
       ? copy('Later outcomes · observed lens', '后续结果 · 事后视角')
@@ -1540,6 +1685,7 @@
     if (!state.catalog) { writeUrlIntent(publishableIntent(currentIntent())); return; }
     if (!state.selected) { writeUrlIntent(publishableIntent(currentIntent())); renderCatalogPrompt(); return; }
     if (changed || !state.committed) {
+      clearOutcomeIntent();
       state.intent.method = defaultMethodId(mode);
       state.intent.cutoff = defaultCutoffFor(state.selected);
       writeUrlIntent(publishableIntent(currentIntent()));
@@ -1660,6 +1806,15 @@
         event.preventDefault();
         window.MDXAuth.open('signin');
       }
+      return;
+    }
+    if (action === 'outcome-open') { runOutcome('later_observed', false); return; }
+    if (action === 'outcome-lens') { runOutcome(target.getAttribute('data-mmr-lens'), false); return; }
+    if (action === 'outcome-retry') { runOutcome(state.outcomeLens, true); return; }
+    if (action === 'outcome-back') {
+      clearOutcome(); clearOutcomeIntent();
+      writeUrlIntent(publishableIntent(currentIntent()));
+      if (state.committed) renderCommitted();
       return;
     }
     if (action === 'retry') { runCurrentIntent(); return; }

@@ -197,7 +197,9 @@ def _ast_digest(node):
 
 ORIGINAL_AST = {
     'operational_playback_catalog': '8184ee9f2de3d5c57495bd78dd8424ef26f5c2171e53ac718f82c8332fbb018d',
-    'retained_macro_for_user': '26f2f39c90ce7d53998e88a4c41c2b2b4cace30acdb5d6df81e67e4f30176302',
+    # U2 adds an explicitly requested outcome consumer inside the same owner
+    # limits; original compare behavior is exercised by retained_consumer.
+    'retained_macro_for_user': '02d6a4aa345cf57a0fd6730f0a1a1b78a265262aaabbc0790e76125897caee92',
     'retained_catalog_for_user': '553c88cc52a3e6c725de5f42a1c3294040b8c1463b694904599143d9ed0e1382',
     'retained_saved_for_user': 'ee67f3f9dd582c9aaf0b135fc6e1f02ef47e16bb6c4343e0750e248482e18fb1',
 }
@@ -237,7 +239,7 @@ class StripObserver(ast.NodeTransformer):
 
 
 @pytest.mark.parametrize('name,digest', ORIGINAL_AST.items())
-def test_routes_preserve_exact_original_authorization_limits_and_payloads(name, digest):
+def test_diagnostics_preserve_pinned_authorization_limits_and_payloads(name, digest):
     node = ast.parse(inspect.getsource(getattr(api, name))).body[0]
     actual = StripObserver().visit(node)
     assert _ast_digest(actual) == digest
