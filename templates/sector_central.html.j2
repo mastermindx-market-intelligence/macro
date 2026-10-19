@@ -3288,19 +3288,32 @@ function renderInternals(){
     ['mkt-breadth-sub','mkt-ad-sub','mkt-hilo-sub','mkt-above-sub'].forEach(id=>rvxSet(id,note));
     return;
   }
+  const goodCount=v=>typeof v==='number'&&Number.isInteger(v)&&v>=0;
+  const goodPct=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100;
+  const resetMetric=(id,sub,bar)=>{
+    const el=document.getElementById(id);if(el)el.textContent='—';
+    rvxSet(sub,zh?'未测':'Not measured');
+    if(bar){const el=document.getElementById(bar);if(el)el.style.width='0%';}
+  };
+  const adMeasured=goodCount(mc.adv)&&goodCount(mc.dec);
   const vmap={narrow:[zh?'狭窄':'Narrow','var(--down)'],broad:[zh?'广泛':'Broad','var(--up)'],mixed:[zh?'中性':'Mixed','var(--warn)']};
-  const vv=vmap[mc.verdict]||null;
+  const verdictQualified=adMeasured&&mc.dec>0&&goodPct(mc.pct_above_50);
+  const vv=verdictQualified?(vmap[mc.verdict]||null):null;
   const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv?vv[0]:'—'; be.style.color=vv?vv[1]:'var(--muted)';}
-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):mc.verdict==='mixed'?(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'):(zh?'尚无可靠的广度判断':'No measured breadth verdict'));
-  if(mc.adv!=null&&mc.dec!=null){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
-    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):'—'));
-    rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, (mc.ad_ratio||0)>=1?'var(--up)':'var(--warn)'); }
-  if(mc.nh!=null){ rvxSet('mkt-hilo', '<span class="rvx-up">'+mc.nh+'</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">'+mc.nl+'</span>');
+  rvxSet('mkt-breadth-sub',(zh?'标普500样本 — ':'S&P 500 sampled — ')+(vv?(mc.verdict==='broad'?(zh?'广泛参与':'Broad participation'):mc.verdict==='narrow'?(zh?'狭窄参与':'Narrow participation'):(zh?'中性参与':'Mixed participation')):(zh?'尚无可靠的广度判断':'No measured breadth verdict')));
+  if(adMeasured){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
+    const adRatio=mc.dec>0?mc.adv/mc.dec:null;
+    rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(adRatio!=null?adRatio.toFixed(2):'—'));
+    rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, adRatio!=null&&adRatio>=1?'var(--up)':'var(--warn)'); }
+  else resetMetric('mkt-ad','mkt-ad-sub','mkt-ad-bar');
+  if(goodCount(mc.nh)&&goodCount(mc.nl)){ rvxSet('mkt-hilo', '<span class="rvx-up">'+mc.nh+'</span><span class="rvx-mut" style="font-size:13px"> / </span><span class="rvx-dn">'+mc.nl+'</span>');
     rvxSet('mkt-hilo-sub', (mc.nh>=mc.nl)?(zh?'新高多于新低':'more highs than lows'):(zh?'新低多于新高':'more lows than highs'));
-    rvxBar('mkt-hilo-bar', mc.nh/(((mc.nh||0)+(mc.nl||0))||1)*100, (mc.nh>=mc.nl)?'var(--up)':'var(--down)'); }
-  if(mc.pct_above_200!=null){ rvxSet('mkt-above', Math.round(mc.pct_above_200)+'<span style="font-size:13px">%</span>');
+    rvxBar('mkt-hilo-bar', mc.nh/((mc.nh+mc.nl)||1)*100, (mc.nh>=mc.nl)?'var(--up)':'var(--down)'); }
+  else resetMetric('mkt-hilo','mkt-hilo-sub','mkt-hilo-bar');
+  if(goodPct(mc.pct_above_200)){ rvxSet('mkt-above', Math.round(mc.pct_above_200)+'<span style="font-size:13px">%</span>');
     rvxSet('mkt-above-sub', mc.pct_above_200>=60?(zh?'健康多数':'healthy majority'):mc.pct_above_200>=40?(zh?'中性':'mixed'):(zh?'偏弱':'weak'));
     rvxBar('mkt-above-bar', mc.pct_above_200, mc.pct_above_200>=60?'var(--up)':mc.pct_above_200>=40?'var(--warn)':'var(--down)'); }
+  else resetMetric('mkt-above','mkt-above-sub','mkt-above-bar');
 }
 
 function boot(){
