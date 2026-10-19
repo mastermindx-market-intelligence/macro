@@ -300,15 +300,15 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
                 assert str(Decimal(row["value"])) == row["value"]  # canonical text, not a float
     _walk_for_floats(state["payload"])
 
-    # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue; ni loses AAA
-    # to the contract's class exclusion, leaving two rows under min_n)
+    # ranked vs anchor-unavailable both appear (AAA/BBB/CCC rank revenue; the
+    # first table's ni has no usable anchor — AAA's ni is not applicable)
     revenue_emission = next(
         e for t in tables for e in t["emissions"] if e["metric_id"] == "revenue"
     )
     assert revenue_emission["emission_state"] == "ranked"
     assert revenue_emission["ranks"] is not None
     ni_emission = next(e for t in tables for e in t["emissions"] if e["metric_id"] == "ni")
-    assert ni_emission["emission_state"] == "below_min_n"
+    assert ni_emission["emission_state"] == "anchor_unavailable"
     assert any(
         exclusion["code"] == "A35-B1"
         for t in tables for exclusion in t["exclusions"]
