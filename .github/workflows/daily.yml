@@ -1345,6 +1345,28 @@ jobs:
         # Fatal like the projection — a bundle that does not bind the served
         # projection must not ride this checkpoint (DEC-CS-V2-STATE-BUNDLE-U1).
         run: python -m scripts.build_capital_structure_state
+      - name: compile capital-structure instrument candidate terms (best-effort; refusal recorded, never fatal)
+        # The candidate-term compiler reads document_term_observations.parquet plus the
+        # source manifests through the collector-owned source stores — today the main
+        # reason an issuer's instruments family is unavailable is that this compiler is
+        # simply never invoked nightly (DSC:CS-INSTRUMENT-AND-LIFECYCLE-COMPILERS-NOT-
+        # NIGHTLY). A refusal is a NORMAL night (no admissible source store, no rows),
+        # so the step is continue-on-error and the checkpoint gate below carries its
+        # outcome as a RECORDED term, never a fatal one. It owns no provider path and
+        # writes only under data/capital_structure/.
+        id: cs_candidates
+        continue-on-error: true
+        run: python -m scripts.compile_capital_structure_instrument_candidate_terms
+      - name: build the capital-structure capacity inputs bundle (one generation or nothing)
+        id: cs_inputs
+        # Reads the state bundle published immediately above plus the same verified
+        # generation, and publishes data/capital_structure/capacity_inputs.json: every
+        # family tonight's run can lawfully produce is bound to its generation, and
+        # every family it cannot is a TYPED unavailability with a reason code — never
+        # a default, never a zero. Fatal like the state step: a failed validation
+        # leaves the previous bundle in place, and a bundle that does not bind the
+        # served state generation must not ride this checkpoint (SPEC_U1B §3).
+        run: python -m scripts.build_capital_structure_capacity_inputs
       # Diagnostics only — changes NO behavior. When the compiler above fails, the
       # ledger it rejected is the one artifact that identifies WHY, and today it is
       # unrecoverable: the failure skips every later step, so the post-collect tree
@@ -1380,6 +1402,8 @@ jobs:
             data/capital_structure/ingestion_run.json
             data/capital_structure/health.json
             data/capital_structure/state_bundle.json
+            data/capital_structure/instrument_candidate_terms.parquet
+            data/capital_structure/capacity_inputs.json
           if-no-files-found: warn
           retention-days: 14
       # ── THE CAPITAL-STRUCTURE CHECKPOINT ────────────────────────────────────
@@ -1436,6 +1460,8 @@ jobs:
           && steps.cs_projection.outcome == 'success'
           && steps.cs_health.outcome == 'success'
           && steps.cs_state.outcome == 'success'
+          && (steps.cs_candidates.outcome == 'success' || steps.cs_candidates.outcome == 'failure')
+          && steps.cs_inputs.outcome == 'success'
         id: commitcs
         run: |
           echo "committed=false" >> "$GITHUB_OUTPUT"
