@@ -563,3 +563,33 @@ commission's explicit routing.
 The currently commissioned MarketOntology A principal resumed the same operation and original #6789 carrier. Current protected `b303c4b32d4d16401050b25d41131b49501720e5` merged normally; no original history was rewritten. The bounded Sol return `5497f9d2feb0e401456651f4ebf46aee8f31898e` removes the empty registry/dead runtime positive branch and restores compiler-oracle coverage at the pure builder seam. §8.6 of the pilot design records current behavior and limits; earlier descriptions and review failures here are history, not present positive admission.
 
 Verified source checks: `python3 -m pytest tests/test_institutional_13f_adapter_contract.py -q` (62 passing, with the two final oracles separately consumed) and the existing native institutional-intelligence contract suite (71 passing). AST inspection confirms no builder/compiler call exists in `run_pilot`; source/acquisition bindings are conserved. Integration remains on the original PR, with hosted CI and native release still required. The work establishes truthful refusal only, not a verified owner generation, calibrated opportunity or production delivery.
+
+
+## Source-law reconciliation, 2026-10-19
+
+The original MarketOntology root `01a128b7-bd2b-7a91-891d-39d38f74ad55`
+commissioned the current integration coordinator to publish the already accepted
+source-law decision on the existing PR #6789 carrier. This integration starts at
+published head `501075fc2c26ba04d947e5fd7679d00711d41b2b` and preserves its
+adapter 1.0.1, contract tests and pilot document byte for byte. The separate local
+`9ce6d487562cbc245c804192266af8722994b241` checkout remains intact; only its
+two committed decision-file bytes are carried here.
+
+DEC:K2C-NATIVE-READ-IS-NOT-SEMANTIC-OWNER-PROOF reconciles the semantic-positive
+interpretation of DEC:K2C-SECURITY-BINDING-IS-OWNER-NATIVE-CUSIP. The latter's
+native-identity, source/display-map refusal and reserved alias-space clauses
+remain in force; no whole-record retirement is introduced. This resolves the
+source-law issue identified in review `PRR_kwDOS4LjIs8AAAABMEaeMg` on historical
+head `ee4172dd83ab09c448782a7f4608b0cdef9ebb13`. That review is preserved.
+The current coordinator's integration judgment is not an independent review of
+these executable bytes or a transfer of the historical review.
+
+The published quarantine removes the historical verifier-success branch: the
+runtime pilot never constructs or compiles a recipe, preserves the request's
+original cutoff and native source clocks, and emits no positive authority.
+Canonical security binding and owner-native manager/vehicle semantics remain
+absent. PR #9702's retained-filing CUSIP research helper and #9707's descriptive
+reporting context supply neither missing primitive. No canonical alias publication,
+positive activation, K2-C eligibility, vehicle/strategy inference or K3-E admission
+is authorized by this source-law integration. Hosted checks and normal protected
+merge controls still govern publication; a merge is not a production-positive proof.
