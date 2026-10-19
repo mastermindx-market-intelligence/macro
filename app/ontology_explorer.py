@@ -44,9 +44,6 @@ from engine.ontology_portfolio import (
     MAX_REQUEST_BYTES as MAX_PORTFOLIO_REQUEST_BYTES, PortfolioInputError,
     compose_portfolio_read, parse_request as parse_portfolio_request,
 )
-from engine.ontology_theme import ThemeInputError, compose_theme_continuation, validate_request as validate_theme_request
-from engine.ontology_scenario import ScenarioInputError, parse_assumption
-from engine.ontology_scenario_runtime import ScenarioSnapshotChanged, evaluate_current_scenario
 
 from engine.ontology_explorer import (
     DEFAULT_CHAIN,
@@ -264,6 +261,13 @@ async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict
     return payload
 
 
+def evaluate_current_scenario(*args, **kwargs):
+    # Keep numeric owner dependencies out of API startup. This seam executes
+    # only after the route's existing authentication and entitlement dependency.
+    from engine.ontology_scenario_runtime import evaluate_current_scenario as evaluate
+    return evaluate(*args, **kwargs)
+
+
 @router.post('/scenario/v1')
 async def evaluate_private_scenario(request: Request,
                                     _user: dict = Depends(require_site_full_user)) -> Response:
@@ -273,6 +277,8 @@ async def evaluate_private_scenario(request: Request,
     manifest = payload.get('source_manifest_hash')
     if not isinstance(manifest,str) or not re.fullmatch(r'sha256:[0-9a-f]{64}',manifest):
         raise _post_error(400,'invalid_source_identity')
+    from engine.ontology_scenario import ScenarioInputError, parse_assumption
+    from engine.ontology_scenario_runtime import ScenarioSnapshotChanged
     try:
         assumption = parse_assumption(json.dumps(payload['assumption']).encode())
     except (ScenarioInputError,TypeError,ValueError,RecursionError):
@@ -346,10 +352,16 @@ def _portfolio_method_not_allowed(_user: dict = Depends(require_site_full_user))
     raise error
 
 
+def compose_theme_continuation(*args, **kwargs):
+    from engine.ontology_theme import compose_theme_continuation as compose
+    return compose(*args, **kwargs)
+
+
 @router.post('/theme/v1')
 async def read_private_theme(request: Request,
                              _user: dict = Depends(require_site_full_user)) -> Response:
     payload = await _private_post_body(request)
+    from engine.ontology_theme import ThemeInputError, validate_request as validate_theme_request
     try:
         payload = validate_theme_request(payload)
         if payload['chain'] not in ACCEPTED_CHAINS:

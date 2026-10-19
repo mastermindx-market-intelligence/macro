@@ -2247,7 +2247,7 @@
     }
     // A symbol row must belong to the selected list. Duplicate symbols are
     // legal owner rows (the table has no unique index yet), so every row is
-    // validated first and the dedupe happens only afterwards, in order.
+    // checked first and the dedupe happens only afterwards, in order.
     function symbolRow(row, listId, seen) {
       if (!row || row.watchlist_id !== listId || typeof row.symbol !== 'string' ||
           !row.symbol || row.symbol.length > 64) throw refusal('invalid-symbols');

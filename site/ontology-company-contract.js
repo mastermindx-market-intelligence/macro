@@ -288,7 +288,7 @@ function decodeSourceTiming(value         )                      {
   if (typeof timing.published_at !== 'string') throw new PrivateDecodeError('TIMING');
   const publishedMicroseconds = timingInstantToEpochMicroseconds(timing.published_at);
   if (publishedMicroseconds === null) throw new PrivateDecodeError('TIMING');
-  // The validated instant string's leading ten characters ARE its offset-local
+  // The syntax-checked instant string's leading ten characters ARE its offset-local
   // calendar date; comparing strings is what keeps the original offset intact.
   if (timing.published_at.slice(0, 10) !== timing.published_date) throw new PrivateDecodeError('TIMING');
   if (publishedMicroseconds > knownMicroseconds) throw new PrivateDecodeError('TIMING');

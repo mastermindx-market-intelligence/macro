@@ -156,7 +156,7 @@ def test_explicit_owner_membership_to_private_company_read(browser,synthetic_sna
             assert len(seen)==2
             assert page.locator('#ox-company input').input_value()=='TEST'
             assert '2026-01-01' in membership.inner_text()
-            page.locator('.ox-company-choices button').click()
+            page.locator('#ox-company .ox-company-choices button').click()
             page.get_by_text('SYNTHETIC TEST PRODUCT',exact=True).wait_for()
             assert len(seen)==3
             assert page.url.endswith('/ontology.html')
@@ -166,7 +166,7 @@ def test_explicit_owner_membership_to_private_company_read(browser,synthetic_sna
             assert page.locator('#ox-company input').input_value()==''
         else:
             assert len(seen)==1
-            assert page.locator('.ox-company-choices button').count()==0
+            assert page.locator('#ox-company .ox-company-choices button').count()==0
         assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
         assert errors==[]
     finally:

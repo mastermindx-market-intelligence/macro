@@ -968,3 +968,35 @@ def test_theme_etf_adoption_uses_native_alias_and_rechecks_identity_generation(m
         assert tracking['references'][0]['selected_security_id']=='SEC:US-XNAS-AAA'
         assert len(value['source']['reads'])==11
         assert tracking['holdings']['status']=='unavailable'
+
+
+def test_router_import_and_auth_refusal_do_not_load_numeric_owner_runtime():
+    import subprocess
+    probe = """
+import builtins
+real_import = builtins.__import__
+def guarded(name, *args, **kwargs):
+    if name.split('.', 1)[0] in {'pandas', 'numpy', 'pyarrow', 'jsonschema', 'referencing'}:
+        raise AssertionError('numeric owner loaded before an authorized scenario')
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = guarded
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
+from app import ontology_explorer as api
+app = FastAPI()
+app.include_router(api.router)
+def refuse():
+    raise HTTPException(401, 'authentication required')
+app.dependency_overrides[api.require_site_full_user] = refuse
+with TestClient(app) as client:
+    for path in ['/api/ontology/explorer/v1', '/api/ontology/explorer/scenario/v1', '/api/ontology/explorer/theme/v1']:
+        response = client.request('GET' if path == '/api/ontology/explorer/v1' else 'POST', path,
+                                  content=b'private malformed assumption')
+        assert response.status_code == 401
+        assert response.headers['cache-control'] == 'private, no-store'
+        assert 'private malformed assumption' not in response.text
+"""
+    result = subprocess.run([sys.executable, '-c', probe],
+                            cwd=Path(__file__).resolve().parents[1],
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
