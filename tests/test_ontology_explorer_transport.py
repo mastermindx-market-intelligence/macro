@@ -521,3 +521,121 @@ def test_x2_body_wait_has_a_real_deadline():
         assert error.value.status_code==408
         assert error.value.detail['code']=='body_deadline_exceeded'
     asyncio.run(exercise())
+
+
+PORTFOLIO_ROUTE='/api/ontology/explorer/portfolio/v1'
+
+
+def _portfolio_native_client(monkeypatch,tmp_path):
+    import pandas as pd
+    from engine import ontology_explorer as explorer
+    monkeypatch.setattr(explorer,'DEFAULT_CHAIN',fx.SLUG)
+    state=fx.chain_state(state='arming')
+    state['substrate']={'universe':10,'substrate_asof':{'min':'2026-01-01','max':'2026-01-02'}}
+    state['chains'][0]['blast']={'synthetic_screen':{'resolved':True,'n':2,'unevaluable':1,
+        'names':['OLD','REUSED'],'cuts':{},'label':{'en':'Synthetic','zh':'合成'},
+        'note':{'en':'Synthetic membership','zh':'合成成员'}}}
+    root=fx.build_root(tmp_path,state_doc=state)
+    records=[{'vendor':'store','vendor_symbol':symbol,'security_id':sid,'valid_from':start,'valid_to':end}
+             for symbol,sid,start,end in [
+                 ('OLD','SEC:US-XNYS-OLD',None,'2026-02-01'),
+                 ('NEW','SEC:US-XNYS-OLD','2026-02-01',None),
+                 ('REUSED','SEC:US-XNYS-REUSED',None,'2026-02-01'),
+                 ('REUSED','SEC:US-XNYS-REUSED.2','2026-02-01',None)]]
+    target=root/'data/reference/vendor_aliases.parquet';target.parent.mkdir(parents=True)
+    pd.DataFrame(records).to_parquet(target,index=False)
+    return _client(monkeypatch,tmp_path,root=root),root
+
+
+def _portfolio_payload(snapshot):
+    return {'schema':'ontology_portfolio_request.v1','chain':fx.SLUG,
+            'source_manifest_hash':snapshot['source']['source_manifest_hash'],
+            'symbols':['NEW','REUSED','MISSING']}
+
+
+def test_x4_private_http_runs_actual_composer_alias_reader_and_portfolio_join(monkeypatch,tmp_path):
+    client,root=_portfolio_native_client(monkeypatch,tmp_path)
+    before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    with client:
+        snapshot=client.get(ROUTE).json()
+        response=client.post(PORTFOLIO_ROUTE,json=_portfolio_payload(snapshot))
+    assert response.status_code==200,response.text
+    result=response.json()
+    assert result['rows'][0]['state']=='covered'
+    assert result['rows'][0]['security_id']=='SEC:US-XNYS-OLD'
+    assert result['rows'][1]['state']=='not_in_available_screens'
+    assert result['rows'][1]['security_id']=='SEC:US-XNYS-REUSED.2'
+    assert result['rows'][2]['state']=='identity_unresolved'
+    assert result['pnl'] is None and not any(result['authority'].values())
+    assert 'shares' not in response.text and 'notes' not in response.text
+    assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    _assert_scenario_private(response)
+
+
+@pytest.mark.parametrize('authed,entitled,status',[(False,True,401),(True,False,403)])
+def test_x4_auth_precedes_private_body_and_owner_reads(monkeypatch,tmp_path,authed,entitled,status):
+    api=_api()
+    with _client(monkeypatch,tmp_path,authed=authed,entitled=entitled) as client:
+        def forbidden(*args): raise AssertionError('private portfolio read before auth')
+        monkeypatch.setattr(api,'compose_portfolio_read',forbidden)
+        response=client.post(PORTFOLIO_ROUTE,content=b'PRIVATE_INVALID_BODY')
+    assert response.status_code==status
+    _assert_scenario_private(response)
+
+
+@pytest.mark.parametrize('mutation',[lambda r:r.update(shares=[123]),lambda r:r.update(symbols=['NEW','NEW'])])
+def test_x4_domain_rejection_has_no_private_echo(monkeypatch,tmp_path,mutation,caplog):
+    client,_=_portfolio_native_client(monkeypatch,tmp_path)
+    with client:
+        payload=_portfolio_payload(client.get(ROUTE).json());mutation(payload)
+        response=client.post(PORTFOLIO_ROUTE,json=payload)
+    assert response.status_code==400
+    assert 'NEW' not in response.text+caplog.text
+    _assert_scenario_private(response)
+
+
+def test_x4_changed_snapshot_and_response_ceiling_fail_closed(monkeypatch,tmp_path):
+    api=_api();client,_=_portfolio_native_client(monkeypatch,tmp_path)
+    with client:
+        payload=_portfolio_payload(client.get(ROUTE).json())
+        changed={**payload,'source_manifest_hash':'sha256:'+'0'*64}
+        response=client.post(PORTFOLIO_ROUTE,json=changed)
+        monkeypatch.setattr(api,'compose_portfolio_read',lambda *args:{'private':'x'*262145})
+        oversize=client.post(PORTFOLIO_ROUTE,json=payload)
+    assert response.status_code==409
+    assert oversize.status_code==503 and oversize.json()['detail']['code']=='response_too_large'
+    _assert_scenario_private(response);_assert_scenario_private(oversize)
+
+
+@pytest.mark.parametrize('method',['get','head','put','patch','delete','options'])
+def test_x4_no_other_method_reads_private_portfolio(monkeypatch,tmp_path,method):
+    with _client(monkeypatch,tmp_path) as client:
+        response=getattr(client,method)(PORTFOLIO_ROUTE)
+    assert response.status_code==405 and response.headers['allow']=='POST'
+    _assert_scenario_private(response)
+
+
+def test_x4_duplicate_and_stream_request_bounds(monkeypatch,tmp_path):
+    with _client(monkeypatch,tmp_path) as client:
+        duplicate=client.post(PORTFOLIO_ROUTE,content=b'{"symbols":[],"symbols":[]}',headers={'content-type':'application/json'})
+        oversize=client.post(PORTFOLIO_ROUTE,content=iter([b'x'*40000,b'x'*40000]),headers={'content-type':'application/json'})
+    assert duplicate.status_code==400 and oversize.status_code==413
+    _assert_scenario_private(duplicate);_assert_scenario_private(oversize)
+
+
+def test_x4_actual_numeric_nan_validity_is_not_normalized_to_unbounded(monkeypatch,tmp_path):
+    import pyarrow as arrow
+    import pyarrow.parquet as parquet
+    client,root=_portfolio_native_client(monkeypatch,tmp_path)
+    path=root/'data/reference/vendor_aliases.parquet'
+    records=parquet.read_table(path).to_pylist()
+    for row in records:
+        row['valid_from']=float('nan');row['valid_to']=None
+    parquet.write_table(arrow.Table.from_pylist(records),path)
+    with client:
+        snapshot=client.get(ROUTE).json()
+        response=client.post(PORTFOLIO_ROUTE,json=_portfolio_payload(snapshot))
+    assert snapshot['company_exposure']['identity_source']['status']=='unavailable'
+    assert response.status_code==200
+    assert all(row['security_id'] is None and row['state']=='identity_unresolved' for row in response.json()['rows'])
+    _assert_scenario_private(response)

@@ -40,6 +40,10 @@ from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from starlette.concurrency import run_in_threadpool
 
+from engine.ontology_portfolio import (
+    MAX_REQUEST_BYTES as MAX_PORTFOLIO_REQUEST_BYTES, PortfolioInputError,
+    compose_portfolio_read, parse_request as parse_portfolio_request,
+)
 from engine.ontology_scenario import ScenarioInputError, parse_assumption
 from engine.ontology_scenario_runtime import ScenarioSnapshotChanged, evaluate_current_scenario
 
@@ -219,7 +223,7 @@ def _post_error(status: int, code: str) -> HTTPException:
                          headers=_POST_HEADERS)
 
 
-async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict:
+async def _private_post_bytes(request: Request, *, max_bytes: int = 4096) -> bytes:
     if request.query_params: raise _post_error(400, 'query_parameters_forbidden')
     if request.headers.get('content-type','').split(';',1)[0].strip().lower() != 'application/json':
         raise _post_error(415, 'json_required')
@@ -239,6 +243,11 @@ async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict
         raw = await asyncio.wait_for(bounded(), timeout=3.0)
     except TimeoutError:
         raise _post_error(408, 'body_deadline_exceeded') from None
+    return raw
+
+
+async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict:
+    raw = await _private_post_bytes(request, max_bytes=max_bytes)
     def unique(pairs):
         result = {}
         for key,value in pairs:
@@ -255,7 +264,7 @@ async def _private_post_body(request: Request, *, max_bytes: int = 4096) -> dict
 
 @router.post('/scenario/v1')
 async def evaluate_private_scenario(request: Request,
-                                    _user: dict = Depends(require_site_full_user)) -> JSONResponse:
+                                    _user: dict = Depends(require_site_full_user)) -> Response:
     payload = await _private_post_body(request)
     if set(payload) != {'schema','source_manifest_hash','assumption'} or payload.get('schema') != 'ontology_scenario_request.v1':
         raise _post_error(400,'invalid_scenario_request')
@@ -279,11 +288,57 @@ async def evaluate_private_scenario(request: Request,
         # inputs. The code is observable; the request/exception is never logged.
         log.error('ontology scenario failed unexpectedly')
         raise _post_error(500,'internal_error') from None
-    return JSONResponse(result,headers=_POST_HEADERS)
+    return _bounded_post_response(result)
 
 
 @router.api_route('/scenario/v1',methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'],include_in_schema=False)
 def _scenario_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
+    error = _post_error(405,'method_not_allowed')
+    error.headers['Allow'] = 'POST'
+    raise error
+
+
+def _bounded_post_response(result: dict) -> Response:
+    # Stream the encoder into a bounded buffer, never truncate a complete owner
+    # response or allocate an unbounded serialized private book first.
+    body = bytearray()
+    try:
+        pieces = json.JSONEncoder(ensure_ascii=False,allow_nan=False,separators=(',',':')).iterencode(result)
+        for piece in pieces:
+            encoded = piece.encode('utf-8')
+            if len(encoded) > 262144 - len(body): raise _post_error(503,'response_too_large')
+            body.extend(encoded)
+    except HTTPException:
+        raise
+    except (TypeError,ValueError,UnicodeError,RecursionError):
+        raise _post_error(500,'internal_error') from None
+    return Response(content=bytes(body),media_type='application/json',headers=_POST_HEADERS)
+
+
+@router.post('/portfolio/v1')
+async def read_private_portfolio(request: Request,
+                                 _user: dict = Depends(require_site_full_user)) -> Response:
+    raw = await _private_post_bytes(request,max_bytes=MAX_PORTFOLIO_REQUEST_BYTES)
+    try:
+        payload = parse_portfolio_request(raw)
+    except (PortfolioInputError,RecursionError):
+        raise _post_error(400,'invalid_portfolio_request') from None
+    try:
+        result = await run_in_threadpool(compose_portfolio_read,_repo_root(),payload)
+    except PortfolioInputError as exc:
+        if str(exc) == 'snapshot_changed': raise _post_error(409,'source_changed') from None
+        if str(exc) == 'owner_clock_unavailable': raise _post_error(503,'owner_clock_unavailable') from None
+        raise _post_error(400,'invalid_portfolio_request') from None
+    except (SourceUnavailable,SourceIncoherent,OSError):
+        raise _post_error(503,'source_unavailable') from None
+    except Exception:
+        log.error('ontology portfolio failed unexpectedly')
+        raise _post_error(500,'internal_error') from None
+    return _bounded_post_response(result)
+
+
+@router.api_route('/portfolio/v1',methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'],include_in_schema=False)
+def _portfolio_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
     error = _post_error(405,'method_not_allowed')
     error.headers['Allow'] = 'POST'
     raise error

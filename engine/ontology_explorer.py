@@ -301,11 +301,11 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
         digests[_ALIASES_REL] = _digest(alias_raw)
         if len(alias_raw) <= MAX_SOURCE_BYTES:
             try:
-                import pandas as pd
+                import pyarrow.parquet as parquet
                 from lib.dataos.identity import VendorAliasTable
 
                 aliases = VendorAliasTable.from_records(
-                    pd.read_parquet(io.BytesIO(alias_raw)).to_dict("records"))
+                    parquet.read_table(io.BytesIO(alias_raw)).to_pylist())
                 identity_reason = None
             except Exception:
                 identity_reason = "identity_source_unreadable"
