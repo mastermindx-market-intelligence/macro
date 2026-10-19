@@ -496,16 +496,33 @@ def market_concentration(region: str = "us") -> dict:
             return value if np.isfinite(value) else None
         except Exception:  # noqa: BLE001
             return None
-    adv, dec = f("adv"), f("dec")
-    # guard dec>0 explicitly — a falsy-but-negative dec would pass `and dec` and yield a
-    # nonsensical negative advance/decline ratio.
-    ad = round(adv / dec, 2) if (adv is not None and dec is not None and dec > 0) else None
-    out = {"adv": int(adv) if adv is not None else None,
-           "dec": int(dec) if dec is not None else None, "ad_ratio": ad,
-           "pct_above_50": round(f("pct_above_50"), 1) if f("pct_above_50") is not None else None,
-           "pct_above_200": round(f("pct_above_200"), 1) if f("pct_above_200") is not None else None,
-           "nh": int(f("nh")) if f("nh") is not None else None,
-           "nl": int(f("nl")) if f("nl") is not None else None,
+    def count(c):
+        v = f(c)
+        return int(v) if v is not None and v >= 0 and v.is_integer() else None
+
+    def pct(c):
+        v = f(c)
+        return round(v, 1) if v is not None and 0 <= v <= 100 else None
+
+    observed = count("n_members")
+    adv, dec = count("adv"), count("dec")
+    nh, nl = count("nh"), count("nl")
+    # An internally inconsistent source row cannot produce a real market
+    # breadth verdict. Counts may exclude unchanged names, but they cannot
+    # exceed the number of observed constituent closes.
+    if observed is not None:
+        if observed == 0 or (adv is not None and dec is not None and adv + dec > observed):
+            adv, dec = None, None
+        if nh is not None and nh > observed:
+            nh = None
+        if nl is not None and nl > observed:
+            nl = None
+    ad = round(adv / dec, 2) if adv is not None and dec is not None and dec > 0 else None
+    out = {"adv": adv, "dec": dec, "ad_ratio": ad,
+           "observed_members": observed,
+           "pct_above_50": pct("pct_above_50"),
+           "pct_above_200": pct("pct_above_200"),
+           "nh": nh, "nl": nl,
            "source_as_of": source_as_of,
            "source_universe": "sp500_current_constituents" if region == "us" else f"{region}_breadth",
            "directional": False}
