@@ -2525,8 +2525,10 @@ def apply_issuer_correction(
     ``DEFERRED_IDENTITY_EXCEPTION`` and ``EVIDENCE_CONFLICT`` rows stay mint-once —
     never revisited (sole exception: an allowlist-refused EVIDENCE_CONFLICT whose
     issuer_id is still NULL and whose stamped CIK has since been ratified in
-    config/issuer_group_allowlist.yml — see the reopen below): a later run whose seeds are unchanged sees the SAME pending set
-    (only the unstamped + NO_ISSUER_EVIDENCE rows) and, if none of them can change
+    config/issuer_group_allowlist.yml, and no same-CIK conflicted sibling carries a
+    committed issuer_id — see the reopen below): a later run whose seeds are
+    unchanged sees the SAME pending set (the unstamped, NO_ISSUER_EVIDENCE and
+    AMBIGUOUS rows plus any ratified-reopen rows) and, if none of them can change
     outcome, returns byte-stable rows.  A CIK group that later grows to include an
     already-RESOLVED member ADOPTS that member's existing ``issuer_id`` rather than
     re-running the tie-break ("the id is never re-derived because membership grew",
@@ -2589,14 +2591,28 @@ def apply_issuer_correction(
     # its issuer_id is still NULL.  With no committed value there is nothing for
     # mint-once to protect, and the ratification row IS the review the gate asked
     # for.  A conflict that carries a committed issuer_id (FIX 1(b), or a refused
-    # legacy row) stays terminal: reopening it would rewrite an assignment.
+    # legacy row) stays terminal: reopening it would rewrite an assignment.  The
+    # reopen is also ALL-OR-NOTHING per CIK: when any conflicted sibling sharing the
+    # stamped CIK carries a committed issuer_id, NO null member of that CIK reopens —
+    # a partial reopen would tie-break over the null members alone and mint a second
+    # issuer_id for one registrant (the committed sibling is not RESOLVED, so the
+    # adoption index below never sees it).  Such a CIK stays terminal for a human.
+    _committed_conflict_ciks = {
+        r.get("issuer_cik")
+        for r in rows
+        if not r.get("security_state")
+        and r.get("issuer_state") == "EVIDENCE_CONFLICT"
+        and r.get("issuer_id") is not None
+        and r.get("issuer_cik")
+    }
     pending = [
         r for r in rows
         if not r.get("security_state") and (
             r.get("issuer_state") in _REOPENABLE
             or (r.get("issuer_state") == "EVIDENCE_CONFLICT"
                 and r.get("issuer_id") is None
-                and r.get("issuer_cik") in allowed_ciks)
+                and r.get("issuer_cik") in allowed_ciks
+                and r.get("issuer_cik") not in _committed_conflict_ciks)
         )
     ]
     if not pending:

@@ -1140,6 +1140,38 @@ def test_a_conflict_carrying_a_committed_issuer_never_reopens_even_when_ratified
     assert migrations == []
 
 
+def test_a_mixed_refused_group_never_reopens_partially() -> None:
+    """Review finding 2: when one conflicted sibling carries a committed issuer_id, a
+    reopen of only the null members would mint a SECOND issuer_id for one CIK (the
+    committed sibling is not RESOLVED, so adoption never sees it).  All stay put."""
+    cik = "0009999996"
+    rows = [_refused_row("MIXA", cik, "ISS:US-XNAS-MIXA"),
+            _refused_row("MIXB", cik, None), _refused_row("MIXC", cik, None)]
+    before = [dict(r) for r in rows]
+    cik_map = {c: (cik, "X") for c in ("MIXA", "MIXB", "MIXC")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_ratified_reopen_whose_sibling_left_the_map_resolves_alone() -> None:
+    """Review finding 3: a reopened row missing from the weekly map goes to
+    NO_ISSUER_EVIDENCE (CIK cleared); the remaining member resolves as a single-member
+    group, which the allowlist never gates."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, _m = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_state"] == "RESOLVED"
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_state"] == "NO_ISSUER_EVIDENCE"
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_id"] is None
+    assert not by_id["SEC:US-XNAS-CENTA"]["issuer_cik"]
+
+
 # ── V4-D2B1-R1: VMRK duplicate-mint supersession + pending-transition fence ────
 # research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md — the EQR->VMRK rename
 # (SEC EDGAR CIK 0000906107, 8-K accession 0001140361-26-033377, Item 5.03) produced a

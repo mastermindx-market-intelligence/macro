@@ -317,7 +317,9 @@ datasets:
           (issuer_id may be a retained legacy mint, or NULL for an evidence-less new
           row — both aggregation-forbidden) | AMBIGUOUS (current symbol maps to >1
           CIK; reserved, fail-closed) | EVIDENCE_CONFLICT (later evidence disagrees
-          with a committed assignment; recorded, never auto-executed) |
+          with a committed assignment; recorded, never auto-executed — except a
+          NULL-issuer allowlist refusal whose CIK is later ratified, re-examined
+          all-or-nothing per CIK, D2B1 AMENDMENT §7) |
           DEFERRED_IDENTITY_EXCEPTION (named in _receipt.json identity_exceptions —
           GOLD today; B never mints a row — excluded from grouping entirely).
       issuer_cik:

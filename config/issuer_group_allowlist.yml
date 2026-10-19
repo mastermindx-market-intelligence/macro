@@ -18,7 +18,11 @@
 # would-be member EVIDENCE_CONFLICT (evidence stamped: issuer_cik + evidence_snapshot;
 # issuer_id VALUE left UNCHANGED — recorded, never executed, per frozen contract §2),
 # and the builder emits a bare ::warning naming the CIK and the members it would have
-# grouped, so a human can review and add a ratified row here.
+# grouped, so a human can review and add a ratified row here.  Ratifying such a CIK
+# REOPENS its refused rows on the next build (D2B1 AMENDMENT §7): an EVIDENCE_CONFLICT
+# row whose issuer_id is NULL and whose stamped issuer_cik is listed here is re-examined
+# and grouped — all-or-nothing per CIK, never when any conflicted sibling sharing the
+# CIK already carries a committed issuer_id (that dispute stays terminal for a human).
 #
 # WHAT IS NOT GATED.  Adoption of an ALREADY-ESTABLISHED group (mint-once, spec §2 — a
 # later pending security joining a CIK group that already has a committed canonical
