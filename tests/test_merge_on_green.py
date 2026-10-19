@@ -119,17 +119,15 @@ def test_the_workflow_is_event_driven_with_a_ten_minute_recovery_schedule():
     assert workflow_run.get("types") == ["completed"]
 
 
-def test_the_sweep_is_hosted_outside_the_m2_failure_domain():
-    """Keep portable shipping control off every production/render host.
+def test_the_sweep_uses_only_its_documented_dedicated_rollback_route():
+    """Hosted starvation activates the documented route-only rollback.
 
-    W1-A proved current hosted pickup and environment capacity three times, including
-    genuine M2 render overlap. The M2 merge-control registration is rollback-only.
+    Keep the dedicated controller labels exact; no production/render route or
+    runner-setting change is part of this capacity recovery.
     """
     job = _workflow()["jobs"]["sweep"]
     labels = json.dumps(job["runs-on"])
-    assert job["runs-on"] == "ubuntu-latest"
-    assert "self-hosted" not in labels
-    assert "merge-control" not in labels
+    assert job["runs-on"] == ["self-hosted", "macOS", "ARM64", "merge-control"]
     assert "render-linux" not in labels
     assert "render-heavy" not in labels
     assert "macstudio" not in labels
@@ -151,8 +149,8 @@ def test_the_hosted_sweep_keeps_a_minimal_runner_contract():
     )
 
 
-def test_no_production_workflow_routes_to_rollback_only_merge_control():
-    """No literal self-hosted route may match mac-builder-4 after W1-B."""
+def test_only_the_controller_routes_to_its_dedicated_rollback_capacity():
+    """A controller rollback must never route product jobs to mac-builder-4."""
     parsed = yaml.safe_load(DEPLOY_SECRETS_WORKFLOW.read_text(encoding="utf-8"))
     assert parsed["jobs"]["deploy"]["runs-on"] == ["self-hosted", "macstudio-light"]
     controller_labels = {"self-hosted", "macOS", "ARM64", "parked", "merge-control"}
@@ -169,9 +167,9 @@ def test_no_production_workflow_routes_to_rollback_only_merge_control():
             if "self-hosted" not in labels or not labels <= controller_labels:
                 continue
             matching_routes.append((path.name, name, route))
-    assert matching_routes == [], (
-        f"production workflows still route to rollback-only merge-control: {matching_routes}"
-    )
+    assert matching_routes == [
+        ("merge-on-green.yml", "sweep", ["self-hosted", "macOS", "ARM64", "merge-control"])
+    ], f"unexpected jobs route to dedicated merge-control: {matching_routes}"
 
 
 def test_the_workflow_can_actually_merge_and_label():
