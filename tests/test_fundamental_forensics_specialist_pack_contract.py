@@ -750,6 +750,45 @@ _FROZEN_PACKS = {
             "proxy_package_not_supplied",
         ),
     },
+    "PK12": {
+        "digest": "ff02843bd27867a00dbd2b8995850cfcd8b643d2937fd4b847d44a7f94d5a703",
+        "fields": (
+            "cash_and_cash_equivalents",
+            "short_term_investments",
+            "research_and_development_expense",
+            "net_cash_from_operating_activities",
+            "net_cash_from_financing_activities",
+            "equity_financing_proceeds",
+            "atm_or_shelf_span",
+            "going_concern_or_liquidity_span",
+            "cash_runway_quarters",
+        ),
+        "required": (),
+        "checks": (
+            "cash_runway_quarters",
+            "runway_months_annual_fcf_div_12",
+            "rd_to_cash",
+            "financing_disclosed_not_forecast",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "division_by_zero",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+            "issuer_class_unknown",
+            "sic_outside_biotech_codes",
+            "non_positive_burn",
+        ),
+        "pack_specific_codes": (
+            "sic_outside_biotech_codes",
+            "non_positive_burn",
+        ),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
@@ -2104,4 +2143,18 @@ def test_pk10_proxy_package_not_supplied_abstention_accepted() -> None:
     _finish(obj)
     assert obj["coverage"]["disclosure_coverage_state"] == "not_supplied"
     assert obj["fields"] == [] and obj["checks"] == []
+    assert validate_pack_result(obj) == []
+
+
+def test_pk12_outside_biotech_rule_abstention_accepted() -> None:
+    """PK12 keys on its pack-owned SIC rule or the pre-revenue test; outside both it abstains."""
+    obj = _minimal_result("PK12")
+    obj["applicability"] = {
+        "state": "not_applicable",
+        "reason": "sic_outside_biotech_codes",
+        "rule_id": "pack.pk12.applicability/v1",
+        "sic": None,
+        "sic_source": None,
+    }
+    _finish(obj)
     assert validate_pack_result(obj) == []
