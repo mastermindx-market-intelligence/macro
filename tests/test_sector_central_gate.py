@@ -538,20 +538,23 @@ let BASKETS = null, THEME = null;
 function isZh(){return zh;}
 """
     cases = r"""
-function run(server, basket, mc, language=false){
-  currentServer=server;currentBasket=basket;currentTheme=mc;zh=language;nodes={};
+function run(server, basket, mc, language=false, keepNodes=false){
+  currentServer=server;currentBasket=basket;currentTheme=mc;zh=language;if(!keepNodes)nodes={};
   BASKETS={as_of:currentBasket};THEME={market_concentration:currentTheme};
   renderInternals();
   return {
     verdict:nodeFor('mkt-breadth').textContent,
     note:nodeFor('mkt-breadth-sub').innerHTML,
     ad:nodeFor('mkt-ad').innerHTML,
+    hilo:nodeFor('mkt-hilo').innerHTML,
+    hiloBar:nodeFor('mkt-hilo-bar').style.width,
+    aboveBar:nodeFor('mkt-above-bar').style.width,
     breadth200:nodeFor('mkt-above').innerHTML,
     bar:nodeFor('mkt-ad-bar').style.width
   };
 }
 const source={source_as_of:'2026-10-16',source_universe:'sp500_current_constituents',
-  verdict:'broad',adv:200,dec:150,ad_ratio:1.33,nh:11,nl:5,pct_above_200:65.2};
+  verdict:'broad',adv:200,dec:150,ad_ratio:1.33,nh:11,nl:5,pct_above_50:63.0,pct_above_200:65.2};
 const absent=run('2026-10-16','2026-10-16',{});
 const lag=run('2026-10-16','2026-10-16',{...source,source_as_of:'2026-10-14'});
 const badUniverse=run('2026-10-16','2026-10-16',{...source,source_universe:'sp1500'});
@@ -573,6 +576,22 @@ if(emptyVerdict.verdict!=='—'||!emptyVerdict.note.includes('No measured breadt
 }
 if(zhUnknown.verdict!=='—'||!zhUnknown.note.includes('未测')){
   throw Error('Chinese missingness disclosure absent: '+JSON.stringify(zhUnknown));
+}
+// A same-vintage partial refresh must clear the previously displayed numbers,
+// not leave stale colored bars or a literal string "null" in the UI.
+run('2026-10-16','2026-10-16',source);
+const partial=run('2026-10-16','2026-10-16',
+  {...source,adv:null,nl:null,pct_above_200:null},false,true);
+if(partial.ad!=='—'||partial.hilo!=='—'||partial.breadth200!=='—'||
+   partial.bar!=='0%'||partial.hiloBar!=='0%'||partial.aboveBar!=='0%'||
+   partial.verdict!=='—'||!partial.note.includes('No measured breadth verdict')){
+  throw Error('partial measured tape retained stale numeric cards: '+JSON.stringify(partial));
+}
+const invalid=run('2026-10-16','2026-10-16',
+  {...source,adv:-1,nh:-2,pct_above_200:121});
+if(invalid.verdict!=='—'||invalid.ad!=='—'||invalid.hilo!=='—'||
+   invalid.breadth200!=='—'){
+  throw Error('physically invalid source counts qualified: '+JSON.stringify(invalid));
 }
 """
     result = subprocess.run(
