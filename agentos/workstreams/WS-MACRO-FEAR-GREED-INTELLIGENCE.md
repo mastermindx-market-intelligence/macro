@@ -27,10 +27,10 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Qualify the current-head CI-pack-2 SNI sealed-regeneration sidecar repair
-  on original PR 9548, publish one reconciled current-main commit after local
-  contract tests, then restore protected merge-on-green and verify exact-head
-  hosted CI, covering render and served authenticated Risk Radar proof.
+  Publish the corrected SNI injection-safety line-position repair on the
+  existing Fear/Greed PR 9548 after verified A20 tests, rearm native
+  merge-on-green, qualify exact-head GitHub CI and fences, then verify
+  covering site render/VPS and signed-in Risk Radar customer proof.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -289,3 +289,42 @@ current-head hosted CI, renderer and VPS publication, signed-in customer
 Risk Radar acceptance. The separate market-source freshness dependency is
 incumbent QLedger market-isolation PR #9556, still unmerged at last check.
 MISSION_COMPLETE: false.
+
+
+## October 19 2026 00:51 UTC - A20 static guard compatibility repair
+
+Exact tested source head 525a80fcedd9b414b351984d3b20fb40d0d3ae9b:
+- Authority run 39179040638 and fences 39179044554 passed.
+- Hosted CI run 39179044557 had 10 of 12 packs already completed
+  successfully at 00:48Z, with two still active, but pack 2 job
+  117827948246 failed the SNI security policy test
+  test_a20_01_static_no_code_from_data (one failed, 683 passed,
+  318 skipped for that security suite).
+- The failure was purely positional: original unchanged subprocess.run
+  S2 runner and seal-builder calls had A20 known pinned exception keys
+  evaluation/seal_full_check.py:685 and :698, but the earlier scratch
+  lock-inventory function was inserted ahead of them and shifted them to
+  lines 715 and 728. A20 correctly refused unknown subprocess calls.
+- Separate exact-base replay under the pack also failed two XREP05
+  fixtures when its shallow Git snapshot could not read integrated commit
+  5b1cbb31. Do not confuse this missing-history base replay with the
+  static-policy failure in the candidate. Do not change the security
+  exception list, waive CI, or substitute the prior 60 green local checks.
+
+The current bounded repair keeps the SNI scratch-only zero-byte lock
+classification and its anti-vacuity tests, but moves the helper function
+AFTER both accepted S2 subprocess calls. Signature/inventory formatting
+preserves original call-site lines 685 and 698 exactly. The A20 known
+exceptions and scanner are UNCHANGED; no subprocess command or shell
+behavior, ledger writer, sealed data, feature engine or customer UI changed.
+A20 static contract + lock negative control: 2 passed in 3.07s.
+Full SNI injection safety module: 10 passed in 2.26s. Earlier affected
+SNI/Fear-and-Greed suite remains 60 passed in 445.30s, before this
+non-semantic helper relocation.
+
+PR #9548 merge-on-green was disarmed on verified exact head 525a80fc,
+with no merge-refresh-in-flight. Source workspace is still the original
+registered workspace. Next: source commit/push only after scoped checks,
+remote readback, rearm the SAME protected merge workflow, consume fresh
+exact-head full CI and subsequent real-world render/customer-path proof.
+This is not a product feature completion receipt. MISSION_COMPLETE false.

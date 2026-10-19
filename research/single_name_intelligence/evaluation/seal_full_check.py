@@ -48,7 +48,6 @@ import json
 import math
 import os
 import platform
-import stat
 import re
 import subprocess
 import sys
@@ -194,33 +193,6 @@ def rel_files(root: Path) -> set[str]:
     return out
 
 
-# TrialLedger uses a permanent, zero-byte advisory-lock sidecar so its stable
-# inode can safely serialize concurrent writers. A seal regeneration runs in
-# an isolated scratch directory; that infrastructure sidecar is not one of its
-# sealed study artifacts. Never unlink it (which could split a live lock).
-_PRIVATE_TRIAL_LOCK = ".trial_ledger.jsonl.lock"
-
-
-def _regenerated_file_inventory(root: Path) -> set[str]:
-    """Full generated inventory, except a proven zero-byte trial lock sidecar.
-
-    Fail closed on a symlink, directory, or nonempty sidecar; any other extra
-    output remains visible to the full-coverage comparator. Only check_study
-    opts into this view after its private regeneration has returned.
-    """
-    files = rel_files(root)
-    lock = Path(root) / _PRIVATE_TRIAL_LOCK
-    try:
-        metadata = lock.lstat()
-    except FileNotFoundError:
-        return files
-    if not stat.S_ISREG(metadata.st_mode) or metadata.st_size != 0:
-        raise ValueError("unexpected regenerated trial-ledger lock sidecar")
-    if "trial_ledger.jsonl" in files and _PRIVATE_TRIAL_LOCK in files:
-        files.remove(_PRIVATE_TRIAL_LOCK)
-    return files
-
-
 def _is_float_token(tok: str) -> bool:
     return any(c in tok for c in ".eE")
 
@@ -268,8 +240,7 @@ def walk_compare(
     produced_dir: Path,
     exceptions: dict[str, ExceptionFn] | None = None,
     *,
-    ulp_tolerant: bool = False,
-    _regenerated_study: bool = False,
+    ulp_tolerant: bool = False, _regenerated_study: bool = False,
 ) -> list[Diff]:
     """Pure recursive comparator. No git, no subprocess, no network.
 
@@ -286,8 +257,7 @@ def walk_compare(
     committed_dir = Path(committed_dir)
     produced_dir = Path(produced_dir)
     c_files = rel_files(committed_dir)
-    p_files = (_regenerated_file_inventory(produced_dir) if _regenerated_study
-               else rel_files(produced_dir))
+    p_files = _regen_files(produced_dir) if _regenerated_study else rel_files(produced_dir)
     diffs: list[Diff] = []
     for rel in sorted(c_files - p_files):
         diffs.append(Diff(KIND_MISSING, rel))
@@ -738,6 +708,34 @@ def regenerate_s2(repo_root: Path, input_ref: str, out_dir: Path) -> None:
         )
 
 
+# TrialLedger uses a permanent, zero-byte advisory-lock sidecar so its stable
+# inode can safely serialize concurrent writers. A seal regeneration runs in
+# an isolated scratch directory; that infrastructure sidecar is not one of its
+# sealed study artifacts. Never unlink it (which could split a live lock).
+_PRIVATE_TRIAL_LOCK = ".trial_ledger.jsonl.lock"
+
+
+def _regen_files(root: Path) -> set[str]:
+    """Full generated inventory, except a proven zero-byte trial lock sidecar.
+
+    Fail closed on a symlink, directory, or nonempty sidecar; any other extra
+    output remains visible to the full-coverage comparator. Only check_study
+    opts into this view after its private regeneration has returned.
+    """
+    import stat  # Standard-library mode check, limited to a scratch regeneration.
+    files = rel_files(root)
+    lock = Path(root) / _PRIVATE_TRIAL_LOCK
+    try:
+        metadata = lock.lstat()
+    except FileNotFoundError:
+        return files
+    if not stat.S_ISREG(metadata.st_mode) or metadata.st_size != 0:
+        raise ValueError("unexpected regenerated trial-ledger lock sidecar")
+    if "trial_ledger.jsonl" in files and _PRIVATE_TRIAL_LOCK in files:
+        files.remove(_PRIVATE_TRIAL_LOCK)
+    return files
+
+
 def check_study(
     name: str,
     repo_root: Path,
@@ -767,7 +765,7 @@ def check_study(
     diffs = walk_compare(committed, out_dir, exceptions,
                          ulp_tolerant=not strict_bytes, _regenerated_study=True)
     c_files = rel_files(committed)
-    p_files = _regenerated_file_inventory(out_dir)
+    p_files = _regen_files(out_dir)
     compared = c_files | p_files
     exception_rels = set(exceptions)
     identical = 0
