@@ -455,6 +455,44 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK04": {
+        "digest": "ec30f7d1caf67843f6a72ecb93bb391bbd56b75850af49d124f91256dddb3003",
+        "fields": (
+            "revenue",
+            "contract_liability_current",
+            "contract_liability_noncurrent",
+            "contract_liability_rollforward_opening",
+            "contract_liability_rollforward_recognized",
+            "contract_liability_rollforward_additions",
+            "contract_liability_rollforward_closing",
+            "rpo_total",
+            "rpo_percentage_next_12m",
+            "rpo_timing",
+            "revenue_disaggregated",
+            "revenue_policy_text_block",
+        ),
+        "required": (
+            "revenue",
+        ),
+        "checks": (
+            "contract_liability_rollforward",
+            "rpo_vs_deferred_scope",
+            "disaggregation_sums_to_revenue",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+            "issuer_class_unknown",
+            "bank_interest_not_contract_revenue",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
