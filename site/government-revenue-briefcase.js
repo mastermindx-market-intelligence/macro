@@ -11,6 +11,9 @@
 
   var STATE_CONTRACT = 'government_procurement_local_state.v1';
   var EXPORT_CONTRACT = 'government_procurement_export.v1';
+  var SAVED_CUT_CONTRACT = 'government_procurement_saved_cut.v1';
+  var MAX_SAVED_CUT_RECORDS = 100;
+  var MAX_SAVED_CUT_BYTES = 256 * 1024;
   var STORAGE_KEY = 'mastermind.government_revenue.briefcase.v1';
   var FILTER_KEYS = ['mode', 'truth', 'q', 'agency', 'ticker'];
   var VIEW_MODES = ['changes', 'awards', 'opportunities', 'recompetes', 'companies'];
@@ -252,13 +255,17 @@
     var id = text(value.id, 80);
     var name = text(value.name, MAX_NAME_LENGTH);
     if (!id || !name) return null;
-    return {
+    var view = {
       id: id,
       name: name,
       filters: cleanFilters(value.filters),
       created_at: text(value.created_at, 80) || null,
       updated_at: text(value.updated_at, 80) || null
     };
+    // Keep unsupported/corrupt cuts opaque. A rename must not erase original bytes
+    // or silently turn an unavailable historical cut into today's filters.
+    if (Object.prototype.hasOwnProperty.call(value, 'cut')) view.cut = copy(value.cut);
+    return view;
   }
 
   function normalAlert(value, views) {
@@ -489,6 +496,73 @@
     };
   }
 
+  function cutError(code) {
+    var error = new Error(code);
+    error.code = code;
+    return error;
+  }
+
+  function cutBytes(value) {
+    return new TextEncoder().encode(JSON.stringify(value)).length;
+  }
+
+  function sourceDay(value) {
+    return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
+  }
+
+  function sourceClock(value) {
+    return typeof value === 'string' && sourceDay(value.slice(0, 10))
+      && /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.test(value)
+      && Number.isFinite(Date.parse(value));
+  }
+
+  function contextAuthority(value) {
+    return object(value) && value.context_only === true && [
+      'can_rank', 'can_size', 'can_gate', 'can_originate_signal', 'can_add_candidates', 'can_escalate'
+    ].every(function (key) { return value[key] === false; });
+  }
+
+  function normalSavedCut(value, filters) {
+    if (!object(value) || value.contract !== SAVED_CUT_CONTRACT || cutBytes(value) > MAX_SAVED_CUT_BYTES) return null;
+    var payload = value.payload;
+    if (!object(payload) || payload.contract !== EXPORT_CONTRACT || !object(payload.workspace)
+        || !object(payload.query) || !object(payload.query.filters) || !Array.isArray(payload.records)
+        || payload.records.length > MAX_SAVED_CUT_RECORDS || !sourceClock(payload.exported_at)) return null;
+    var meta = payload.workspace;
+    if (!/^government_procurement_workspace\.v[12]$/.test(meta.schema_version || '')
+        || !/^government_procurement_event\.v[12]$/.test(meta.event_contract || '')
+        || typeof meta.bundle_id !== 'string' || !/^grw[12]-[a-f0-9]{24}$/.test(meta.bundle_id)
+        || !sourceDay(meta.as_of) || !sourceClock(meta.known_at)
+        || meta.generated_at != null && !sourceClock(meta.generated_at)) return null;
+    if (!contextAuthority(meta.authority)) return null;
+    var clean = cleanFilters(filters);
+    if (['changes','awards','opportunities','recompetes'].indexOf(clean.mode) < 0
+        || JSON.stringify(cleanFilters(payload.query.filters)) !== JSON.stringify(clean)) return null;
+    var seen = Object.create(null), valid = true;
+    payload.records.forEach(function (record) {
+      if (!object(record) || !contextAuthority(record.authority) || record.contract !== meta.event_contract || typeof record.event_id !== 'string'
+          || record.event_id !== text(record.event_id, MAX_EVENT_ID_LENGTH) || !record.event_id
+          || seen[record.event_id] || !Number.isSafeInteger(record.version) || record.version < 1
+          || typeof record.record_id !== 'string' || !record.record_id || !eventKindForMode(clean.mode, record)) valid = false;
+      if (object(record)) seen[record.event_id] = true;
+    });
+    var selected = value.selected_event_id == null || value.selected_event_id === '' ? null : value.selected_event_id;
+    if (!valid || selected !== null && (typeof selected !== 'string' || !seen[selected])) return null;
+    // Reuse the existing public export allowlist; never retain raw source bodies,
+    // private annotations or a copied caller-supplied authority extension.
+    return {
+      contract: SAVED_CUT_CONTRACT,
+      selected_event_id: selected,
+      payload: {
+        contract: EXPORT_CONTRACT, exported_at: payload.exported_at,
+        workspace: publicWorkspace(meta),
+        query: {filters: clean, result_scope: 'original visible governed workspace cut'},
+        records: payload.records.map(publicEvent)
+      }
+    };
+  }
+
   root.createGovernmentRevenueBriefcase = function (api) {
     api = object(api) ? api : {};
     var storage = api.storage || null;
@@ -547,15 +621,59 @@
       return state.alerts.filter(function (alert) { return alert.id === id; })[0] || null;
     }
 
+    function captureSavedCut(input, filters) {
+      var readiness = object(input.readiness) ? input.readiness : {};
+      if (readiness.complete !== true || readiness.bundle_matched !== true) throw cutError('workspace_not_ready');
+      var workspace = input.workspace;
+      if (!usableWorkspace(workspace)) throw cutError('invalid_workspace');
+      var clean = cleanFilters(filters);
+      if (['changes','awards','opportunities','recompetes'].indexOf(clean.mode) < 0) throw cutError('unsupported_export_mode');
+      // Refuse an oversized original window. Never silently truncate it to fit.
+      var ids = input.visible_event_ids;
+      if (!Array.isArray(ids)) throw cutError('invalid_saved_cut');
+      if (ids.length > MAX_SAVED_CUT_RECORDS) throw cutError('saved_cut_too_large');
+      // The page owns its displayed filter semantics, including issuer tags and
+      // localized search. Preserve that exact ordered membership, not a second predicate.
+      var events = Object.create(null), seen = Object.create(null);
+      workspace.events.forEach(function (row) {
+        if (!object(row) || typeof row.event_id !== 'string' || events[row.event_id]) throw cutError('invalid_saved_cut');
+        events[row.event_id] = row;
+      });
+      var records = ids.map(function (id) {
+        if (typeof id !== 'string' || seen[id] || !events[id]) throw cutError('invalid_saved_cut');
+        seen[id] = true;
+        return publicEvent(events[id]);
+      });
+      var cut = {contract: SAVED_CUT_CONTRACT, selected_event_id: input.selected_event_id == null || input.selected_event_id === '' ? null : input.selected_event_id,
+        payload: {contract: EXPORT_CONTRACT, exported_at: stamp(), workspace: publicWorkspace(workspace),
+          query: {filters: clean, result_scope: 'original visible governed workspace cut'}, records: records}};
+      if (cutBytes(cut) > MAX_SAVED_CUT_BYTES) throw cutError('saved_cut_too_large');
+      cut = normalSavedCut(cut, clean);
+      if (!cut) throw cutError('invalid_saved_cut');
+      return cut;
+    }
+
+    function getSavedCut(id) {
+      var view = viewById(text(id, 80));
+      if (!view) return {ok: false, reason: 'saved_view_not_found'};
+      if (!Object.prototype.hasOwnProperty.call(view, 'cut')) return {ok: false, reason: 'cut_not_captured'};
+      var cut = normalSavedCut(view.cut, view.filters);
+      return cut ? {ok: true, cut: copy(cut)} : {ok: false, reason: 'invalid_saved_cut'};
+    }
+
     function createView(input) {
       input = object(input) ? input : {};
       if (state.saved_views.length >= MAX_VIEWS) throw new Error('saved view limit reached');
       var name = text(input.name, MAX_NAME_LENGTH);
       if (!name) throw new Error('saved view name is required');
+      if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
+      var filters = cleanFilters(input.filters);
+      var cut = Object.prototype.hasOwnProperty.call(input, 'workspace') ? captureSavedCut(input, filters) : null;
       var view = {
-        id: makeId('grv'), name: name, filters: cleanFilters(input.filters),
+        id: makeId('grv'), name: name, filters: filters,
         created_at: stamp(), updated_at: stamp()
       };
+      if (cut) view.cut = cut;
       state.saved_views.push(view);
       return { view: copy(view), persisted: commit() };
     }
@@ -564,12 +682,18 @@
       var view = viewById(text(id, 80));
       input = object(input) ? input : {};
       if (!view) throw new Error('saved view not found');
-      if (Object.prototype.hasOwnProperty.call(input, 'name')) {
-        var name = text(input.name, MAX_NAME_LENGTH);
-        if (!name) throw new Error('saved view name is required');
-        view.name = name;
+      var name = Object.prototype.hasOwnProperty.call(input, 'name') ? text(input.name, MAX_NAME_LENGTH) : view.name;
+      if (!name) throw new Error('saved view name is required');
+      if (object(input.filters) && input.filters.mode != null && VIEW_MODES.indexOf(input.filters.mode) < 0) throw cutError('unsupported_view_mode');
+      var filters = Object.prototype.hasOwnProperty.call(input, 'filters') ? cleanFilters(input.filters) : view.filters;
+      var hasCut = Object.prototype.hasOwnProperty.call(input, 'workspace');
+      if (!hasCut && Object.prototype.hasOwnProperty.call(view, 'cut') && JSON.stringify(filters) !== JSON.stringify(view.filters)) {
+        throw cutError('saved_cut_required');
       }
-      if (Object.prototype.hasOwnProperty.call(input, 'filters')) view.filters = cleanFilters(input.filters);
+      var cut = hasCut ? captureSavedCut(input, filters) : null;
+      // Validate every replacement before touching the existing record.
+      view.name = name; view.filters = filters;
+      if (hasCut) view.cut = cut;
       view.updated_at = stamp();
       return { view: copy(view), persisted: commit() };
     }
@@ -755,6 +879,7 @@
       filter_keys: FILTER_KEYS.slice(),
       alert_types: ALERT_TYPES.slice(),
       listViews: function () { return copy(state.saved_views); },
+      getSavedCut: getSavedCut,
       getView: function (id) { var view = viewById(text(id, 80)); return view ? copy(view) : null; },
       createView: createView,
       updateView: updateView,
