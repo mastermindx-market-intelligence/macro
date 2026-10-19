@@ -238,7 +238,7 @@ waves:
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
   - id: W-THROUGHPUT-20261019
-    title: Measured CI pack throughput and bounded duplicate-traversal trial
+    title: Measured CI throughput and bounded planner/weight trials
     status: in_progress
     note: >
       Chairman's October 19 commission is assigned to Codex session
@@ -250,8 +250,16 @@ waves:
       Existing PR 8126 is already delivered and PR 8094 remains separate.
       Research and limitations: research/ci_pack_throughput_20261019/README.md.
       Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
-      Local candidate verification, hosted proof and natural-traffic improvement
-      remain distinct obligations; no fleet improvement is claimed yet.
+      PR 9722 merged as 7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full
+      hosted proof. First broad trial took 78.1 minutes, including 825 seconds
+      of post-pack queueing; packing-contract group 740.414 seconds versus a
+      historical 847.738-second median is descriptive, not a causal gain.
+      Natural cohort now has 21 verified first-attempt completions, but zero
+      exact baseline coverage matches and 16 pending runs; no causal gain.
+      A twelve-pack replay of all 255 measured job costs supports a bounded
+      FIF/earnings weight calibration: modeled maximum command time
+      2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
+      Source trial and real hosted validation remain in progress.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
