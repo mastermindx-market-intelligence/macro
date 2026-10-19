@@ -17290,7 +17290,19 @@ jobs:
       # here in the SAME commit (a new test file without a path gate is an unwired suite).
       - "engine/global_liquidity_regional_scenarios.py"
       - "engine/global_liquidity_transmission.py"
+      # GLT T09 (W3, 2026-10-19): the measurement-only preregistered component
+      # forecast study imports the T08 outlook + knowledge-time modules above; its
+      # runner imports canon + the trial ledger (scratch ledger only) and the
+      # frozen config, and its suite imports the runner through the scripts
+      # package — the full import closure is wired here in the SAME commit.
+      - "config/global_liquidity_forecast_v1.yml"
+      - "engine/canon.py"
+      - "engine/global_liquidity_forecast.py"
+      - "engine/trial_ledger.py"
+      - "scripts/__init__.py"
+      - "scripts/research_global_liquidity_forecast.py"
       - "tests/test_global_liquidity_accounting.py"
+      - "tests/test_global_liquidity_forecast.py"
       - "tests/test_global_liquidity_knowledge_time.py"
       - "tests/test_global_liquidity_outlook.py"
       - "tests/test_global_liquidity_regional_scenarios.py"
@@ -17304,8 +17316,8 @@ jobs:
           python-version: "3.12"
       - name: install GLT contract test dependencies
         run: pip install pytest pandas numpy pyyaml
-      - name: global liquidity T03–T05 + T08 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, regional scenario map
-        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py -q
+      - name: global liquidity T03–T05 + T08 + T09 + T10 contracts — source manifest, knowledge time, monetary accounting, component outlook, component forecast study, regional scenario map
+        run: python -m pytest tests/test_global_liquidity_accounting.py tests/test_global_liquidity_knowledge_time.py tests/test_global_liquidity_sources_v2.py tests/test_global_liquidity_outlook.py tests/test_global_liquidity_regional_scenarios.py tests/test_global_liquidity_forecast.py -q
 
   ric-d0-fed-path-provenance:
     if: ${{ false }}
