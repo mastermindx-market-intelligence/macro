@@ -213,8 +213,14 @@ def _validate_breadth_measurements(breadth: dict[str, Any], errors: list[str]) -
             errors.append(f"{prefix}: nh exceeds observed_members")
         if nl is not None and nl > observed:
             errors.append(f"{prefix}: nl exceeds observed_members")
-    if dec == 0 and ratio is not None:
-        errors.append(f"{prefix}: ad_ratio is defined while declines are zero")
+    if ratio is not None:
+        if adv is None or dec is None or dec <= 0:
+            errors.append(f"{prefix}: ad_ratio has unmeasured A/D prerequisites")
+        elif abs(ratio - round(adv / dec, 2)) > 1e-9:
+            errors.append(
+                f"{prefix}: ad_ratio {ratio!r} contradicts measured advances "
+                f"and declines (expected {round(adv / dec, 2)!r})"
+            )
     verdict = breadth.get("verdict")
     if verdict is not None:
         if verdict not in ("narrow", "broad", "mixed"):
