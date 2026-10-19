@@ -534,11 +534,13 @@ class GoldenAaplFinancialQueryProvider:
             ]
             ledger, filing_metadata, report = parse_and_convert_golden_packages(packages)
             lineage_evidence: tuple[LineageEvidenceReceipt, ...] = ()
+            source_taxonomy_uris: dict[tuple[str, str], str] | None = None
             if self.lineage_evidence_available_at is not None:
+                source_taxonomy_uris = original_concept_namespace_uris(packages)
                 lineage_evidence = derive_confirmation_receipts(
                     ledger.events,
                     system_available_at=self.lineage_evidence_available_at,
-                    original_taxonomy_uris=original_concept_namespace_uris(packages),
+                    original_taxonomy_uris=source_taxonomy_uris,
                 )
             ticker = _GOLDEN_LISTING_KEY.rsplit("-", 1)[-1]
             dataset = FinancialQueryDataset(
@@ -553,6 +555,7 @@ class GoldenAaplFinancialQueryProvider:
                 registry=load_core_registry(self.repo_root),
                 delivery=dict(_AAPL_DELIVERY),
                 lineage_evidence=lineage_evidence,
+                source_taxonomy_uris=source_taxonomy_uris,
             )
         except FinancialQueryAdmissionError:
             raise
