@@ -455,3 +455,154 @@ def test_u2_restore_result_identity_uses_digest_not_floats(composed: _Composed) 
         changes=None,
     )
     assert outcome.result_identical is True
+
+
+# ---------------------------------------------------------------------------
+# Gates 13-14 — the store adapter (SPEC_U2 §1.3); the transport is faked
+# ---------------------------------------------------------------------------
+
+import io  # noqa: E402
+import pathlib  # noqa: E402
+import json as _json  # noqa: E402
+import re as _re  # noqa: E402
+import urllib.error as _urlerror  # noqa: E402
+
+from engine.alert_delivery_drain import (  # noqa: E402
+    READ_OK,
+    READ_OK_ZERO,
+    READ_UNAVAILABLE,
+)
+from engine.capital_structure import saved_scenario_store as store  # noqa: E402
+
+SOURCE_PATH = (
+    pathlib.Path(__file__).resolve().parents[1]
+    / "engine" / "capital_structure" / "saved_scenario_store.py"
+)
+
+_TABLE_ROW_FIELDS = (
+    "saved_id",
+    "user_id",
+    "issuer_id",
+    "record",
+    "saved_at",
+    "updated_at",
+    "last_outcome",
+    "last_outcome_generation_id",
+)
+
+
+def _row_for(saved: SavedScenario, *, user_id: str | None = None) -> dict[str, Any]:
+    return {
+        "saved_id": saved.saved_id,
+        "user_id": user_id if user_id is not None else saved.user_id,
+        "issuer_id": saved.issuer_id,
+        "record": _json.dumps(saved.as_record(), sort_keys=True),
+        "saved_at": saved.saved_at,
+        "updated_at": saved.saved_at,
+        "last_outcome": None,
+        "last_outcome_generation_id": None,
+    }
+
+
+class _FakePostgREST:
+    """A canned transport: records every (method, path) and answers by path."""
+
+    def __init__(self, rows: list[dict[str, Any]] | None = None, failure: str | None = None) -> None:
+        self.calls: list[tuple[str, str]] = []
+        self.rows = rows or []
+        self.failure = failure
+
+    def __call__(self, method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6) -> Any:
+        self.calls.append((method, path))
+        if self.failure == "http404":
+            raise _urlerror.HTTPError(path, 404, "Not Found", {}, io.BytesIO(b"not found"))
+        if self.failure == "pg42P01":
+            raise _urlerror.HTTPError(
+                path,
+                400,
+                "Bad Request",
+                {},
+                io.BytesIO(_json.dumps({"code": "42P01", "message": "relation does not exist"}).encode()),
+            )
+        if self.failure == "timeout":
+            raise TimeoutError("timed out")
+        return list(self.rows)
+
+
+def test_u2_store_partition_is_enforced_by_the_module(
+    composed: _Composed, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    saved = _make_saved(composed)
+    own_row = _row_for(saved)
+    foreign_row = _row_for(_make_saved(composed, user_id=USER_BETA))
+    fake = _FakePostgREST(rows=[own_row, foreign_row])
+    monkeypatch.setattr(store, "_transport", fake)
+
+    result = store.read_for_user(USER_ALPHA)
+    assert result.state == READ_OK
+    assert [row["saved_id"] for row in (result.rows or [])] == [saved.saved_id]
+    assert all(row["user_id"] == USER_ALPHA for row in result.rows or [])
+    assert result.error_class == "partition_violation"
+    assert len(fake.calls) == 1, "no retry loop: one read, one transport call"
+    for _method, path in fake.calls:
+        assert "user_id=eq." in path
+
+    # read_one is scoped to the owner too, and a foreign id is indistinguishable
+    # from an absent one.
+    fake_one = _FakePostgREST(rows=[own_row])
+    monkeypatch.setattr(store, "_transport", fake_one)
+    found = store.read_one(USER_ALPHA, saved.saved_id)
+    assert found.state == READ_OK
+    assert found.error_class is None
+    assert "user_id=eq." in fake_one.calls[0][1]
+    assert "saved_id=eq." in fake_one.calls[0][1]
+
+    fake_absent = _FakePostgREST(rows=[own_row])
+    monkeypatch.setattr(store, "_transport", fake_absent)
+    zero = store.read_one(USER_BETA, saved.saved_id)
+    assert zero.state == READ_OK_ZERO
+    assert zero.rows == []
+
+    # A foreign row on a single-row read is dropped as the same typed violation.
+    fake_foreign = _FakePostgREST(rows=[foreign_row])
+    monkeypatch.setattr(store, "_transport", fake_foreign)
+    dropped = store.read_one(USER_ALPHA, saved.saved_id)
+    assert dropped.state == READ_OK_ZERO
+    assert dropped.error_class == "partition_violation"
+
+
+@pytest.mark.parametrize("failure", ("http404", "pg42P01", "timeout"))
+def test_u2_store_missing_table_is_typed_unavailable_without_fallback(
+    composed: _Composed, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    saved = _make_saved(composed)
+    fake = _FakePostgREST(failure=failure)
+    monkeypatch.setattr(store, "_transport", fake)
+
+    for read in (
+        lambda: store.read_for_user(USER_ALPHA),
+        lambda: store.read_one(USER_ALPHA, saved.saved_id),
+        lambda: store.read_all_service_side(),
+    ):
+        result = read()
+        assert result.state == READ_UNAVAILABLE, (failure, result)
+        assert result.rows is None
+    writes = [
+        store.upsert(saved),
+        store.delete(USER_ALPHA, saved.saved_id),
+        store.write_outcome(saved.saved_id, "correction", saved.state_generation_id),
+    ]
+    for write in writes:
+        assert write.state == "unavailable", (failure, write)
+        assert isinstance(write.error_class, str) and write.error_class
+    expected_calls = 6
+    assert len(fake.calls) == expected_calls, "one call per operation, never a retry loop"
+
+    # The module never grows a local fallback: no file/sqlite/cache write shape.
+    source = SOURCE_PATH.read_text(encoding="utf-8")
+    assert not _re.search(
+        r"open\(|Path\(.*write|pickle|shelve|sqlite|lru_cache", source, _re.I
+    ), "the store adapter persists nothing locally"
+    for forbidden in ("SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"):
+        assert source.count(forbidden) >= 1
+    assert "print(" not in source, "the adapter never prints credentials or rows"
