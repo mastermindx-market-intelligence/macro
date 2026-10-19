@@ -20,6 +20,233 @@ import pytest
 from engine.ontology_explorer import compose_snapshot
 from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
 
+
+def _scenario_browser(browser, *, qualified=False, mutate=None, status=200):
+    """Actual pure evaluator + synthetic, intercepted private transport only."""
+    from engine.ontology_scenario import evaluate_scenario, parse_assumption
+    from tests.test_ontology_explorer_contract import x2_inputs
+    snapshot, chain, baseline, _ = x2_inputs.__wrapped__()
+    reading = {**snapshot['source'], 'owner_id': 'owner-a', 'composer_method': 'ontology_explorer.v1'}
+    snapshot['source']['composer_method'] = reading['composer_method']
+    ctx = browser.new_context()
+    page = ctx.new_page()
+    seen, errors = [], []
+    shell = '''<!doctype html><html data-lang="en"><body>
+    <section id="ox-scenario"><form data-scenario-form></form><div data-scenario-result></div></section>
+    <script>
+    window.owner='owner-a';window.token='fixture-token';window.callbacks=[];window.calls=0;
+    window.sdk={auth:{getSession:async()=>window.sessionHook?sessionHook():({data:{session:{user:{id:owner},access_token:token}}}),
+      onAuthStateChange:fn=>{callbacks.push(fn);return{data:{subscription:{unsubscribe(){}}}};}}};
+    window.MDXAuth={user:()=>owner?({id:owner}):null,client:async()=>sdk};
+    const nativeFetch=window.fetch;window.fetch=(...args)=>{calls++;return nativeFetch(...args);};
+    </script><script type="module">import * as scenario from '/ontology-scenario.js';window.scenario=scenario;</script>
+    </body></html>'''
+    def route(r):
+        path = r.request.url.split('macro.example')[-1]
+        if path == '/ontology.html': r.fulfill(status=200, content_type='text/html', body=shell)
+        elif path == '/ontology-scenario.js':
+            r.fulfill(status=200, content_type='text/javascript', body=(ROOT/'templates/ontology-scenario.js').read_text())
+        elif path == '/api/ontology/explorer/scenario/v1':
+            payload = json.loads(r.request.post_data); seen.append({'payload': payload, 'url': r.request.url, 'method': r.request.method})
+            assumption = parse_assumption(json.dumps(payload['assumption']).encode())
+            refusal = None
+            if not qualified:
+                from engine.ontology_scenario_runtime import _load_native_baseline, NativeScenarioInputsUnavailable
+                try: _load_native_baseline(ROOT, snapshot, assumption)
+                except NativeScenarioInputsUnavailable as exc:
+                    refusal = {'reason': exc.reason, 'missing_owner_inputs': list(exc.missing)}
+            value = evaluate_scenario(assumption, snapshot=snapshot, chain=chain,
+              baseline=baseline if qualified else None, evaluated_at=baseline.knowledge_cutoff,
+              owner_refusal=refusal)
+            if mutate: value = mutate(value)
+            if status != 200: value = {'detail': {'schema':'ontology_explorer_error.v1','code':'source_changed' if status == 409 else 'source_unavailable'}}
+            r.fulfill(status=status, headers={'Content-Type':'application/json','Cache-Control':'private, no-store','Vary':'Authorization, Cookie'},body=json.dumps(value))
+        else: r.fulfill(status=204)
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.route('**/*', route); page.goto('https://macro.example/ontology.html')
+    page.wait_for_function('!!window.scenario')
+    page.evaluate("r=>document.getElementById('ox-scenario').dispatchEvent(new CustomEvent('ontology-reading',{detail:r}))", reading)
+    page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='idle'")
+    return ctx, page, seen, errors, reading
+
+
+def _scenario_submit(page, magnitude=30, shape='terminal_only'):
+    page.locator('[name=magnitude]').fill(str(magnitude)); page.locator('[name=shape]').select_option(shape)
+    page.locator('[type=submit]').click()
+
+
+@pytest.mark.parametrize('qualified,magnitude,shape,expected', [
+    (False, 30, 'linear_sessions', 'Evaluation unavailable'),
+    (True, 20, 'terminal_only', 'Root threshold is not armed'),
+    (True, 30, 'terminal_only', 'Endpoint condition met; path condition unknown'),
+    (True, 30, 'linear_sessions', 'Assumed root threshold met'),
+    (True, 30, 'step_at_start', 'Root threshold is not armed'),
+])
+def test_x2_browser_explicit_native_threshold_and_truthful_unavailable(browser, qualified, magnitude, shape, expected):
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=qualified)
+    try:
+        assert seen == [] and page.evaluate('calls') == 0
+        _scenario_submit(page, magnitude, shape)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='ready'")
+        output = page.locator('[data-scenario-result]').inner_text()
+        assert expected in output and 'Downstream effects remain unknown' in output
+        assert len(seen) == 1 and seen[0]['method'] == 'POST' and '?' not in seen[0]['url']
+        assert set(seen[0]['payload']) == {'schema', 'source_manifest_hash', 'assumption'}
+        assert page.evaluate('[localStorage.length, sessionStorage.length]') == [0, 0]
+        assert not errors
+        page.locator('[name=magnitude]').fill('31')
+        assert page.locator('[data-scenario-result]').get_attribute('data-state') == 'idle'
+        assert 'Downstream effects' not in page.locator('[data-scenario-result]').inner_text()
+        assert len(seen) == 1
+    finally: ctx.close()
+
+
+@pytest.mark.parametrize('change', [
+    "owner=null;window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:null,event:'SIGNED_OUT'}}));",
+    "owner='owner-b';window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:{id:owner}}}));",
+    "document.querySelector('[name=magnitude]').value='31';document.querySelector('[name=magnitude]').dispatchEvent(new Event('input',{bubbles:true}));",
+    "document.getElementById('ox-scenario').dispatchEvent(new CustomEvent('ontology-source-changed'));",
+    "window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}));",
+    "Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));",
+    "token='changed';callbacks.forEach(fn=>fn('TOKEN_REFRESHED',{user:{id:owner}}));",
+])
+def test_x2_browser_late_response_cannot_publish_after_input_auth_or_lifecycle_change(browser, change):
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=True)
+    try:
+        page.evaluate("""()=>{const original=fetch;fetch=(...a)=>original(...a).then(response=>new Promise(resolve=>window.finishScenario=()=>resolve(response)));}""")
+        _scenario_submit(page)
+        page.wait_for_function('typeof finishScenario === "function"')
+        page.evaluate(change); page.evaluate('finishScenario()')
+        page.evaluate('()=>new Promise(r=>setTimeout(r,20))')
+        assert page.locator('[data-scenario-result]').get_attribute('data-state') != 'ready'
+        assert 'Endpoint condition' not in page.locator('[data-scenario-result]').inner_text()
+        assert len(seen) == 1 and not errors
+    finally: ctx.close()
+
+
+@pytest.mark.parametrize('path,value', [
+    (['schema'], 'wrong'), (['assumption','magnitude'], 999), (['assumption','node_ref'], 'wrong'),
+    (['assumption','path_shape'], 'wrong'), (['assumption','baseline_effective_at'], '1900-01-01'),
+    (['assumption','baseline_knowledge_cutoff'], '1900-01-01T00:00:00Z'),
+    (['authority','can_trade'], True), (['combined_estimate'], 42), (['snapshot_id'], 'sha256:'+'f'*64),
+    (['side_effect_receipt','owner_writes'], 1),
+    (['method_versions'], None),
+])
+def test_x2_browser_refuses_unbound_echo_authority_and_combined_response(browser, path, value):
+    def mutate(reply):
+        cursor = reply
+        for key in path[:-1]: cursor = cursor[key]
+        cursor[path[-1]] = value
+        return reply
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=True, mutate=mutate)
+    try:
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='unavailable'")
+        assert 'Endpoint condition' not in page.locator('[data-scenario-result]').inner_text()
+        assert len(seen) == 1 and not errors
+    finally: ctx.close()
+
+
+def test_x2_browser_source_change_is_closed_and_missed_signout_event_stays_closed(browser):
+    ctx, page, seen, errors, reading = _scenario_browser(browser, status=409)
+    try:
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='changed'")
+        assert page.locator('[name=magnitude]').input_value() == ''
+        assert page.locator('[type=submit]').is_disabled()
+        page.evaluate("window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:null,event:'SIGNED_OUT'}}))")
+        # Canonical event says signed out even if stale SDK and user() still say A.
+        page.evaluate("r=>document.getElementById('ox-scenario').dispatchEvent(new CustomEvent('ontology-reading',{detail:r}))", reading)
+        assert page.locator('[type=submit]').is_disabled() and len(seen) == 1 and not errors
+    finally: ctx.close()
+
+
+def test_x2_browser_final_session_is_checked(browser):
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=True)
+    try:
+        page.evaluate("""()=>{const original=fetch;fetch=async(...a)=>{const r=await original(...a);window.replied=true;return r;};
+          sessionHook=async()=>{if(window.replied)owner=null;return{data:{session:{user:{id:'owner-a'},access_token:token}}};};}""")
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='signed_out'")
+        assert 'Endpoint condition' not in page.locator('[data-scenario-result]').inner_text() and not errors
+        assert page.locator('[name=magnitude]').input_value() == '' and page.locator('[type=submit]').is_disabled()
+    finally: ctx.close()
+
+
+@pytest.mark.parametrize('phase', ['digest', 'body'])
+def test_x2_browser_late_digest_and_body_continuations_remain_private(browser, phase):
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=True)
+    try:
+        if phase == 'digest':
+            page.evaluate("""()=>{const digest=crypto.subtle.digest.bind(crypto.subtle);
+              crypto.subtle.digest=(...a)=>digest(...a).then(value=>new Promise(resolve=>window.finishPrivate=()=>resolve(value)));}""")
+        else:
+            page.evaluate("""()=>{const original=fetch;fetch=async(...a)=>{const r=await original(...a);const reader=r.body.getReader();
+              return{status:r.status,headers:r.headers,redirected:false,body:{getReader:()=>({
+                read:()=>reader.read().then(value=>new Promise(resolve=>window.finishPrivate=()=>resolve(value))),
+                cancel:()=>Promise.resolve(),releaseLock:()=>{}})}};};}""")
+        _scenario_submit(page)
+        page.wait_for_function('typeof finishPrivate === "function"')
+        page.evaluate("owner=null;window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:null,event:'SIGNED_OUT'}}));finishPrivate();")
+        page.evaluate('()=>new Promise(r=>setTimeout(r,20))')
+        assert page.locator('[data-scenario-result]').get_attribute('data-state') != 'ready'
+        assert page.locator('[name=magnitude]').input_value() == '' and not errors
+        assert len(seen) == (0 if phase == 'digest' else 1)
+    finally: ctx.close()
+
+
+def test_x2_browser_response_byte_budget_is_checked(browser):
+    ctx, page, seen, errors, _ = _scenario_browser(browser)
+    try:
+        page.evaluate("""()=>{fetch=async()=>new Response(new Uint8Array(262145),{status:200,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','Vary':'Authorization, Cookie'}});}""")
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='unavailable'")
+        assert not errors
+    finally: ctx.close()
+
+
+def test_x2_browser_node_unit_change_requires_new_input_and_reports_actual_rates_gap(browser):
+    ctx, page, seen, errors, _ = _scenario_browser(browser)
+    try:
+        page.locator('[name=magnitude]').fill('30')
+        page.locator('[name=node]').select_option('transmission:real10y_chg63')
+        assert page.locator('[name=magnitude]').input_value() == ''
+        assert page.locator('[name=shape]').is_disabled()
+        page.locator('[name=magnitude]').fill('50'); page.locator('[type=submit]').click()
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='ready'")
+        assert 'estimation span, sample counts' in page.locator('[data-scenario-result]').inner_text()
+        assumption = seen[0]['payload']['assumption']
+        assert (assumption['unit'], assumption['horizon'], assumption['path_shape']) == ('bp', '63d', 'terminal_only')
+        assert not errors
+    finally: ctx.close()
+
+
+def test_x2_browser_hanging_body_is_cancelled_at_operation_deadline(browser):
+    ctx, page, seen, errors, _ = _scenario_browser(browser)
+    try:
+        page.evaluate("""()=>{const timer=setTimeout;window.setTimeout=(fn,ms,...a)=>timer(fn,ms===15000?20:ms,...a);
+          fetch=async()=>new Response(new ReadableStream({cancel(){window.bodyCancelled=true;}}),{status:200,
+            headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','Vary':'Authorization, Cookie'}});}""")
+        _scenario_submit(page)
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='unavailable'")
+        assert page.evaluate('bodyCancelled') is True and not errors
+    finally: ctx.close()
+
+
+@pytest.mark.parametrize('change,state', [('other', 'signed_out'), ('token', 'idle')])
+def test_x2_browser_sdk_only_account_or_token_change_clears_assumption(browser, change, state):
+    ctx, page, seen, errors, _ = _scenario_browser(browser, qualified=True)
+    try:
+        page.evaluate("""change=>{const original=fetch;fetch=async(...a)=>{const r=await original(...a);window.replied=true;return r;};
+          sessionHook=async()=>({data:{session:{user:{id:window.replied&&change==='other'?'owner-b':'owner-a'},
+            access_token:window.replied&&change==='token'?'rotated':token}}});}""", change)
+        _scenario_submit(page)
+        page.wait_for_function("s=>document.querySelector('[data-scenario-result]').dataset.state===s", arg=state)
+        assert page.locator('[name=magnitude]').input_value() == '' and not errors
+        assert 'Endpoint condition' not in page.locator('[data-scenario-result]').inner_text()
+        assert len(seen) == 1
+    finally: ctx.close()
+
 ROOT = Path(__file__).resolve().parents[1]
 ONTOLOGY_JS = ROOT / "templates" / "ontology.js"
 ONTOLOGY_CSS = ROOT / "templates" / "ontology.css"
