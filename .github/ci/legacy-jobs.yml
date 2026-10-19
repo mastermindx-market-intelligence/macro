@@ -30956,6 +30956,7 @@ jobs:
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_fitted_normalization.py"
+      - "tests/test_market_memory_e0_domains.py"
       - "tests/test_market_memory_exact_index.py"
       - "tests/test_market_memory_episode_features.py"
       - "tests/test_market_memory_episode_retrieval.py"

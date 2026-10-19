@@ -17,7 +17,8 @@
     "eligible_use_from",
     "training_task_ids",
     "source_coverage_ref",
-    "interval_split_ref"
+    "interval_split_ref",
+    "mode"
   ],
   "properties": {
     "schema": {
@@ -192,6 +193,12 @@
           "maximum": 4194304
         }
       }
+    },
+    "mode": {
+      "enum": [
+        "historical_hypothetical",
+        "current_contextual_support"
+      ]
     }
   }
 }

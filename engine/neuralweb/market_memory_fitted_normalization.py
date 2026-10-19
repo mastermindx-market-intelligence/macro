@@ -7,6 +7,7 @@ unchanged. No public runtime caller, live fit, label access or promotion exists.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from fractions import Fraction
 from hashlib import sha256
 import json
@@ -20,6 +21,10 @@ from . import market_memory_exact_index as exact
 _TOKEN = object()
 MAX_ARTIFACT_BYTES = 2 * 1024 * 1024
 _SOURCE_SHA256 = sha256(Path(__file__).read_bytes()).hexdigest()
+
+
+def _construction_clock():
+    return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
 class FittedNormalizationError(ValueError):
@@ -101,6 +106,7 @@ class FittedNormalizerCapability:
     _window: use.TrainingWindowCapability
     _population: cohort.RetainedContextCohortCapability
     _features: tuple
+    _constructed_at: str
     _seal: object
 
     def __init__(self, body, window, population, projections, *, _key=None):
@@ -108,6 +114,67 @@ class FittedNormalizerCapability:
         for k, v in (("_body", body), ("_digest", sha256(body).hexdigest()), ("_window", window),
                      ("_population", population), ("_features", projections), ("_seal", _TOKEN)):
             object.__setattr__(self, k, v)
+        object.__setattr__(self, "_constructed_at", _construction_clock())
+
+
+def _native_partition_qualification(declared, by_capture):
+    """Authenticate original retained metadata before any numeric conversion."""
+    coverage = {row["capture_id"]: row for row in declared["coverage"]}
+    tasks = declared["partition_tasks"]
+    _require(len(coverage) == len(declared["coverage"])
+        and set(coverage) == {task["capture_id"] for task in tasks},
+        "complete_registered_training_coverage_required")
+    development_tasks = [{k: v for k, v in task.items() if k != "disposition"}
+        for task in tasks if task["disposition"] == "development"]
+    _require(development_tasks == declared["tasks"], "exact_native_development_manifest_required")
+    boundaries = declared["chronological_partition"]["boundaries"]
+    embargo = declared["chronological_partition"]["embargo_seconds"]
+    _require(type(embargo) is int and embargo >= 0, "registered_native_partition_required")
+    development, tuning, test = [cohort.utc_instant(boundaries[k]) for k in
+        ("development_end_exclusive", "tuning_end_exclusive", "test_start_inclusive")]
+    _require(development < tuning <= test
+        and development == cohort.utc_instant(declared["binding"]["fit_cutoff"]),
+        "registered_native_partition_required")
+    groups = {}
+    facts = []
+    for task in tasks:
+        _require(task["capture_id"] in by_capture, "registered_training_capture_missing")
+        row, _ = by_capture[task["capture_id"]]
+        source = coverage[task["capture_id"]]
+        _require(all(row[k] == task[k] for k in ("capture_id", "context_id", "query_id"))
+            and source["context_id"] == row["context_id"] and source["query_id"] == row["query_id"]
+            and source["packet_sha256"] == row["packet_sha256"]
+            and source["receipt_sha256"] == row["capture_receipt_sha256"]
+            and source["source_receipt_ids"] == row["source_receipt_ids"],
+            "native_training_source_coverage_mismatch")
+        session = row["source_session"]
+        _require(type(session) is str, "native_training_measurement_session_required")
+        claimed = source["source_measurement_session"]
+        _require(claimed is None or claimed["id"] == session, "native_training_source_session_mismatch")
+        analysis = cohort.utc_instant(task["analysis_cutoff"])
+        available = cohort.utc_instant(source["first_available_for_contextual_analysis"])
+        _require(available <= analysis and all(cohort.utc_instant(t) <= available
+            for t in row["clocks"].values()), "native_training_availability_mismatch")
+        partition = task["disposition"]
+        _require(partition in {"development", "tuning", "test", "excluded", "purged", "embargoed"},
+                 "registered_native_partition_required")
+        if partition in {"development", "tuning", "test"}:
+            _require((partition == "development" and analysis < development)
+                or (partition == "tuning" and development <= analysis < tuning
+                    and analysis >= development + timedelta(seconds=embargo))
+                or (partition == "test" and analysis >= test + timedelta(seconds=embargo)),
+                "native_training_partition_clock_mismatch")
+            groups.setdefault((row["subject_id"], session), set()).add(partition)
+        facts.append({"capture_id": row["capture_id"], "native_measurement_session": session,
+                      "native_clocks": row["clocks"], "registered_available_at": source["first_available_for_contextual_analysis"]})
+    _require(all(len(partitions) == 1 for partitions in groups.values()),
+             "native_session_or_revision_crosses_partitions")
+    return {"audit": declared["training_audit_report"], "qualified_native_facts": facts,
+        "native_identity_session_availability_checked": True,
+        "chronological_partition_and_native_sibling_separation_checked": True,
+        "economic_episode_independence": "not_established",
+        "full_upstream_feature_support": "not_established", "normalization_uses_labels": False,
+        "scientific_holdout_or_purge_verified": False, "operational_study_admission": False}
 
 
 def authenticate_registered_training_sources(window, population, *, policy):
@@ -127,9 +194,9 @@ def authenticate_registered_training_sources(window, population, *, policy):
         and value["owner"]["query_cutoff"] == binding["fit_cutoff"], "registered_fit_source_owner_required")
     projections = cohort.read_cohort_feature_capabilities(population, policy=policy)
     by_capture = {row["capture_id"]: (row, cap) for row, cap in zip(value["rows"], projections, strict=True)}
-    vectors, retained, manifest = [], [], []
+    qualification = _native_partition_qualification(declared, by_capture)
+    retained, manifest, validated = [], [], []
     coverage = {row["capture_id"]: row for row in declared["coverage"]}
-    _require(len(coverage) == len(declared["tasks"]), "complete_registered_training_coverage_required")
     start, cutoff = (cohort.utc_instant(binding[k]) for k in ("training_start_inclusive", "fit_cutoff"))
     for task in declared["tasks"]:
         _require(task["capture_id"] in by_capture, "registered_training_capture_missing")
@@ -147,7 +214,9 @@ def authenticate_registered_training_sources(window, population, *, policy):
             and source["packet_sha256"] == projected["packet_sha256"]
             and source["receipt_sha256"] == projected["capture_receipt_sha256"]
             and source["source_receipt_ids"] == projected["source_receipt_ids"]
-            and source["source_measurement_session"]["id"] == projected["measurement_period"]["value"],
+            and (source["source_measurement_session"] is None
+                 or source["source_measurement_session"]["id"] == projected["measurement_period"]["value"])
+            and row["source_session"] == projected["measurement_period"]["value"],
             "native_training_source_coverage_mismatch")
         available = cohort.utc_instant(source["first_available_for_contextual_analysis"])
         _require(start <= analysis < cutoff and all(cohort.utc_instant(clock) <= analysis
@@ -156,17 +225,20 @@ def authenticate_registered_training_sources(window, population, *, policy):
             "training_feature_after_registered_cutoff")
         _require(all(c["status"] == "observed" for c in projected["coordinates"]),
                  "registered_training_coordinates_unavailable_no_drop")
-        vectors.append([_number(c) for c in projected["coordinates"][:2]])
+        validated.append(projected)
         retained.append(cap)
         manifest.append({"task_id": task["task_id"], "capture_id": projected["capture_id"],
             "context_id": projected["context_id"], "packet_sha256": projected["packet_sha256"],
             "capture_receipt_sha256": projected["capture_receipt_sha256"],
             "feature_sha256": sha256(cap._body).hexdigest(), "clocks": projected["clocks"]})
-    _require(len(vectors) >= 2 and len({r["capture_id"] for r in manifest}) == len(vectors),
+    _require(len(validated) >= 2 and len({r["capture_id"] for r in manifest}) == len(validated),
              "two_distinct_registered_training_captures_required")
+    # All selected identities, clocks and partitions qualify before arithmetic.
+    vectors = [[_number(c) for c in projected["coordinates"][:2]] for projected in validated]
     source_body = _encoded({"schema": "market_memory.registered_training_sources.v2",
         "window_sha256": sha256(window._body).hexdigest(), "subject_id": value["owner"]["subject_id"],
-        "training_manifest": manifest, "vectors": [[_ratio(v) for v in row] for row in vectors]})
+        "training_manifest": manifest, "vectors": [[_ratio(v) for v in row] for row in vectors],
+        "qualification_report": qualification})
     sources = RegisteredTrainingSourcesCapability(source_body, window, population, tuple(retained), _key=_TOKEN)
     disclose_registered_training_sources(sources, policy=policy)
     return sources
@@ -197,7 +269,8 @@ def fit_authenticated_training_sources(sources, *, policy):
         "numeric_convention": "original_binary64_exact_fraction_mean_range_q18_half_even_once.v2",
         "training_window_sha256": sha256(window._body).hexdigest(),
         "binding_id": binding["binding_id"], "fit_cutoff": binding["fit_cutoff"],
-        "eligible_use_from": binding["eligible_use_from"], "source_owner": original,
+        "registered_query_lower_bound": binding["eligible_use_from"], "source_owner": original,
+        "mode": binding["mode"], "qualification_report": source["qualification_report"],
         "subject_id": source["subject_id"],
         "training_manifest": manifest, "training_manifest_sha256": sha256(cohort.canonical(manifest)).hexdigest(),
         "parameters": parameters, "categorical_descriptor": features.fixed_comparison_descriptor()["coordinates"][2:],
@@ -228,7 +301,8 @@ def disclose_fitted_normalizer(capability, *, policy):
         _require(projected["context_id"] == row["context_id"]
             and sha256(cap._body).hexdigest() == row["feature_sha256"], "original_training_feature_changed")
     use.disclose_training_window(capability._window)
-    return value
+    return {**value, "construction": {"constructed_at": capability._constructed_at,
+        "historical_availability_authenticated": False, "included_in_parameter_identity": False}}
 
 
 def build_fitted_exact_index(normalizer, population, *, policy):
@@ -242,8 +316,11 @@ def build_fitted_exact_index(normalizer, population, *, policy):
     manifest = exact.disclose_exact_retained_index(native, policy=policy)
     _require(manifest["owner"]["store_id"] == fitted["source_owner"]["store_id"]
         and manifest["owner"]["subject_id"] == fitted["subject_id"]
-        and cohort.utc_instant(manifest["owner"]["query_cutoff"]) >= cohort.utc_instant(fitted["eligible_use_from"]),
+        and cohort.utc_instant(manifest["owner"]["query_cutoff"]) >= cohort.utc_instant(fitted["registered_query_lower_bound"]),
         "fitted_index_before_registered_eligible_use")
+    _require(fitted["mode"] == "historical_hypothetical"
+        or cohort.utc_instant(manifest["owner"]["query_cutoff"]) >= cohort.utc_instant(normalizer._constructed_at),
+        "current_index_before_actual_normalizer_construction")
     caps = cohort.read_cohort_feature_capabilities(population, policy=policy)
     rows = []
     for row, cap in zip(manifest["inventory"], caps, strict=True):
@@ -258,6 +335,8 @@ def build_fitted_exact_index(normalizer, population, *, policy):
         rows.append({**row, "normalized_coordinates": transformed})
     core = {"schema": "market_memory.fitted_exact_index.v2", "normalizer_id": fitted["normalizer_id"],
         "normalizer_sha256": sha256(normalizer._body).hexdigest(), "baseline_index": manifest,
+        "mode": fitted["mode"], "registered_query_lower_bound": fitted["registered_query_lower_bound"],
+        "eligibility_interpretation": "declared_window_not_historical_transform_availability",
         "rows": rows, "approximate_search": False, "operational_admission": False,
         "historical_index_existence_authenticated": False}
     core["index_id"] = "mmfittedindex_" + sha256(cohort.canonical(core)).hexdigest()
@@ -265,4 +344,5 @@ def build_fitted_exact_index(normalizer, population, *, policy):
     disclose_fitted_normalizer(normalizer, policy=policy)
     exact.disclose_exact_retained_index(native, policy=policy)
     # Detached descriptive manifest, not another authority-bearing capability.
-    return json.loads(body)
+    return {**json.loads(body), "normalizer_construction": fitted["construction"],
+            "construction_envelope_included_in_index_identity": False}
