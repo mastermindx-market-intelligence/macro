@@ -54,6 +54,16 @@ ALL_METRICS = DIRECT_IDS + FORMULA_IDS
 DEEP_PERIODS = ("A1", "A2", "I1", "I2")
 CORE_PERIODS = ("A1", "I1")
 PACKAGE_ROLES = ("primary", "label")
+# The frozen six roles the shipped c2_thresholds_v1 config predeclares; the
+# alias tests exercise manifests and thresholds that cover all of them.
+SIX_PACKAGE_ROLES = (
+    "primary",
+    "schema",
+    "presentation",
+    "calculation",
+    "definition",
+    "label",
+)
 STATEMENTS = ("income_statement",)
 PACKS = ("PK01",)
 
@@ -63,8 +73,8 @@ PACKS = ("PK01",)
 # ---------------------------------------------------------------------------
 
 
-def small_thresholds(**overrides) -> CoverageThresholds:
-    mapping: dict = {
+def small_thresholds_mapping() -> dict:
+    return {
         "schema": THRESHOLDS_SCHEMA,
         "thresholds_id": "test_small_v1",
         "freeze_ref": "tests/test_fundamental_forensics_coverage_proof.py",
@@ -96,7 +106,22 @@ def small_thresholds(**overrides) -> CoverageThresholds:
             {"band": "low", "min_rate": 0.0},
         ],
     }
+
+
+def small_thresholds(**overrides) -> CoverageThresholds:
+    mapping = small_thresholds_mapping()
     mapping.update(overrides)
+    return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
+
+
+def six_role_thresholds() -> CoverageThresholds:
+    """small_thresholds with all six frozen package roles required."""
+    mapping = small_thresholds_mapping()
+    deep = dict(mapping["tiers"]["deep"])
+    deep["required_package_roles"] = list(SIX_PACKAGE_ROLES)
+    tiers = dict(mapping["tiers"])
+    tiers["deep"] = deep
+    mapping["tiers"] = tiers
     return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
 
 
@@ -167,10 +192,12 @@ def standard_members() -> list[dict]:
     ]
 
 
-def deep_component_keys() -> list[tuple[str, str]]:
+def deep_component_keys(
+    package_roles: tuple[str, ...] = PACKAGE_ROLES,
+) -> list[tuple[str, str]]:
     keys: list[tuple[str, str]] = []
     for period in DEEP_PERIODS:
-        for role in PACKAGE_ROLES:
+        for role in package_roles:
             keys.append((period, f"package:{role}"))
         for statement in STATEMENTS:
             keys.append((period, f"statement:{statement}"))
@@ -189,8 +216,10 @@ def build_manifest(
     drop: frozenset[tuple[str, str, str]] = frozenset(),
     statuses: dict[tuple[str, str, str], str] | None = None,
     header: dict | None = None,
+    package_roles: tuple[str, ...] = PACKAGE_ROLES,
 ) -> dict:
     statuses = statuses or {}
+    component_keys = deep_component_keys(package_roles)
     cells: list[dict] = []
     for member in members:
         cik = member["cik"]
@@ -203,7 +232,7 @@ def build_manifest(
                     continue
                 cells.append(cell(cik, period, field_id, statuses.get(key, "present")))
         if member["tier_assigned"] == "deep":
-            for period, field_id in deep_component_keys():
+            for period, field_id in component_keys:
                 key = (cik, period, field_id)
                 if key in drop:
                     continue
@@ -239,7 +268,7 @@ def build_manifest(
         member["na_cells"] = sum(1 for item in owned if item["status"] == "not_applicable")
         member["core_pass"] = scope_pass(cik, CORE_PERIODS)
         member["deep_pass"] = (
-            scope_pass(cik, DEEP_PERIODS, deep_component_keys())
+            scope_pass(cik, DEEP_PERIODS, component_keys)
             if member["tier_assigned"] == "deep"
             else False
         )
@@ -622,9 +651,11 @@ def test_refusals_carry_their_codes(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     )
     refuse(unknown_status, "status_vocabulary")
 
-    # The census draft's dot form is not the declared vocabulary.
+    # A dot form whose role is not one of the thresholds config's
+    # required_package_roles (primary, label here) is not the declared
+    # vocabulary and is still refused.
     dot_form = build_manifest(members)
-    dot_form["cells"].append(cell("0000000003", "A1", "package.primary"))
+    dot_form["cells"].append(cell("0000000003", "A1", "package.presentation"))
     refuse(dot_form, "cell_shape")
 
     no_source = build_manifest(members)
@@ -657,6 +688,89 @@ def test_refusals_carry_their_codes(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     with pytest.raises(CoverageProofError) as excinfo:
         load_manifest(oversize)
     assert excinfo.value.code == "manifest_oversize"
+
+
+# ---------------------------------------------------------------------------
+# 12b. Declared legacy alias package.<role> (seat ruling K-V1A-R1)
+# ---------------------------------------------------------------------------
+
+
+def dotted_package_variant(manifest: dict) -> dict:
+    """The same manifest with every package cell in the legacy dot spelling."""
+    dotted = copy.deepcopy(manifest)
+    for item in dotted["cells"]:
+        if item["field_id"].startswith("package:"):
+            item["field_id"] = "package." + item["field_id"][len("package:"):]
+    return dotted
+
+
+def test_legacy_alias_proves_same_tiers_and_blocks_acceptance() -> None:
+    thresholds = six_role_thresholds()
+    members = standard_members()
+    colon = build_manifest(members, package_roles=SIX_PACKAGE_ROLES)
+    dotted_manifest = dotted_package_variant(colon)
+
+    colon_report = run_proof(colon, thresholds)
+    dotted_report = run_proof(dotted_manifest, thresholds)
+
+    # All six roles dotted on both deep members across the four deep periods:
+    # 2 x 4 x 6 = 48 rewritten cells, and no other cell is affected.
+    assert dotted_report["field_id_aliases_applied"] == {"package.": 48}
+    assert dotted_report["acceptance_eligible"] is False
+    assert dotted_report["acceptance_blockers"] == [
+        "legacy_field_id_alias",
+        "manifest_draft",
+        "manifest_unattested",
+    ]
+    # Exactly the same tier results as the same manifest in colon form.
+    assert dotted_report["tiers"] == colon_report["tiers"]
+    assert (
+        dotted_report["incomplete_issuers"] == colon_report["incomplete_issuers"]
+    )
+    assert (
+        dotted_report["manifest_rollup_mismatch"]
+        == colon_report["manifest_rollup_mismatch"]
+    )
+    assert dotted_report["orphan_cells"] == colon_report["orphan_cells"]
+    assert dotted_report["status_normalised"] == colon_report["status_normalised"]
+    assert [entry["deep_pass"] for entry in dotted_report["issuers"]] == [
+        entry["deep_pass"] for entry in colon_report["issuers"]
+    ]
+    assert [entry["core_pass"] for entry in dotted_report["issuers"]] == [
+        entry["core_pass"] for entry in colon_report["issuers"]
+    ]
+    assert dotted_report["tiers"]["deep"]["pass"] == 2
+    assert dotted_report["tiers"]["core"]["pass"] == 3
+
+
+def test_canonical_manifest_reports_zero_aliases() -> None:
+    report = run_proof(build_manifest(standard_members()))
+    assert report["field_id_aliases_applied"] == {"package.": 0}
+    assert "legacy_field_id_alias" not in report["acceptance_blockers"]
+    assert report["acceptance_blockers"] == [
+        "manifest_draft",
+        "manifest_unattested",
+    ]
+
+
+def test_legacy_alias_refuses_unknown_dotted_forms() -> None:
+    members = standard_members()
+    # None of these roles is one of the small thresholds' required_package_roles
+    # (primary, label), and metric.<id> / bare package. are not the declared
+    # alias shape at all.
+    for bad_field_id in ("package.unknownrole", "metric.revenue", "package."):
+        manifest = build_manifest(members)
+        manifest["cells"].append(cell("0000000003", "A1", bad_field_id))
+        refuse(manifest, "cell_shape")
+
+
+def test_legacy_alias_and_canonical_spelling_is_duplicate() -> None:
+    members = standard_members()
+    # build_manifest already carries ("0000000001", "A1", "package:primary");
+    # the same cell in the legacy spelling is the same canonical cell.
+    manifest = build_manifest(members)
+    manifest["cells"].append(cell("0000000001", "A1", "package.primary"))
+    refuse(manifest, "duplicate_cell")
 
 
 # ---------------------------------------------------------------------------
@@ -709,6 +823,12 @@ def test_reports_conform_to_contract() -> None:
     clean = run_proof(build_manifest(members, draft=False, attested=True))
     jsonschema.validate(clean, contract)
     jsonschema.validate(run_proof(build_manifest(members)), contract)
+
+    # Alias reports carry the new required key and still conform.
+    thresholds = six_role_thresholds()
+    colon = build_manifest(standard_members(), package_roles=SIX_PACKAGE_ROLES)
+    jsonschema.validate(run_proof(colon, thresholds), contract)
+    jsonschema.validate(run_proof(dotted_package_variant(colon), thresholds), contract)
 
 
 # ---------------------------------------------------------------------------
@@ -885,6 +1005,40 @@ def test_render_print_block_shape() -> None:
     assert lines[3] == "deep fields:    48 / 48   (deep members x A1,A2,I1,I2; N/A excluded; withheld=0)"
     assert lines[4] == "core fields:    36 / 36   (core members x A1,I1; N/A excluded; withheld=0)"
     assert lines[9] == "acceptance:     eligible=true  blockers=none"
+
+
+def test_cli_threads_alias_roles_into_load_manifest(tmp_path: Path) -> None:
+    """The CLI passes the thresholds' role set so a dotted draft is measured."""
+    colon = build_manifest(standard_members(), package_roles=SIX_PACKAGE_ROLES)
+    manifest_path = tmp_path / "dotted_draft.json"
+    manifest_path.write_text(
+        json.dumps(dotted_package_variant(colon)), encoding="utf-8"
+    )
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(CLI_PATH),
+            "prove",
+            "--manifest",
+            str(manifest_path),
+            "--thresholds",
+            str(SHIPPED_THRESHOLDS),
+            "--proved-at",
+            "2026-10-19T00:00:00Z",
+            "--print",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    report = json.loads(result.stdout)
+    # 2 deep members x 4 deep periods x 6 roles rewritten by the CLI path too.
+    assert report["field_id_aliases_applied"] == {"package.": 48}
+    assert "legacy_field_id_alias" in report["acceptance_blockers"]
+    assert report["acceptance_eligible"] is False
+    acceptance_line = result.stderr.splitlines()[-1]
+    assert acceptance_line.startswith("acceptance:     eligible=false")
+    assert "legacy_field_id_alias" in acceptance_line
 
 
 # ---------------------------------------------------------------------------

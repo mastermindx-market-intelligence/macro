@@ -17,6 +17,7 @@
     "exclusions",
     "orphan_cells",
     "status_normalised",
+    "field_id_aliases_applied",
     "acceptance_eligible",
     "acceptance_blockers"
   ],
@@ -230,6 +231,17 @@
         "minimum": 0
       }
     },
+    "field_id_aliases_applied": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package."],
+      "properties": {
+        "package.": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "acceptance_eligible": {
       "type": "boolean"
     },
@@ -240,7 +252,8 @@
           "manifest_draft",
           "manifest_unattested",
           "deep_target_not_met",
-          "core_target_not_met"
+          "core_target_not_met",
+          "legacy_field_id_alias"
         ]
       }
     }

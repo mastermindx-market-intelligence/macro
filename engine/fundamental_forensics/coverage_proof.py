@@ -17,6 +17,15 @@ metric cells over the deep periods, core fields are all core members'
 
 A shortfall is reported, never hidden, and never repaired by editing a
 target, a band, or a window.
+
+One declared legacy alias exists (seat ruling K-V1A-R1): a ``package.<role>``
+field_id whose role is one of the thresholds config's ``required_package_roles``
+is rewritten to ``package:<role>`` before any duplicate check or cell indexing,
+counted under ``field_id_aliases_applied``, and reported as the
+``legacy_field_id_alias`` acceptance blocker.  The alias exists only so a
+census draft can be measured; an attested acceptance manifest must use the
+canonical vocabulary, and every other dotted or unknown ``field_id`` is still
+refused.
 """
 from __future__ import annotations
 
@@ -51,6 +60,13 @@ STATE_NOT_APPLICABLE = "not_applicable"
 STATE_ABSENT = "absent"
 REASON_CELL_MISSING = "cell_missing"
 NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
+
+# The single declared legacy field_id alias (seat ruling K-V1A-R1): the census
+# draft spells its package cells "package.<role>" where the frozen vocabulary
+# is "package:<role>".  The accepted roles are never listed here; they come
+# from the thresholds config's required_package_roles.
+LEGACY_PACKAGE_ALIAS_PREFIX = "package."
+LEGACY_FIELD_ID_ALIAS_BLOCKER = "legacy_field_id_alias"
 
 _CIK = re.compile(r"^[0-9]{10}$")
 _METRIC_FIELD = re.compile(r"^metric:\S+$")
@@ -143,6 +159,11 @@ class CoverageThresholds:
     @property
     def band_names(self) -> tuple[str, ...]:
         return tuple(name for name, _ in self.field_presence_bands)
+
+    @property
+    def package_alias_roles(self) -> frozenset[str]:
+        """The only roles whose legacy ``package.<role>`` spelling is aliased."""
+        return frozenset(self.tiers["deep"]["required_package_roles"])
 
     def band_for_rate(self, rate: float | None) -> str:
         """First band whose ``min_rate`` is <= rate; null rate has no band."""
@@ -487,8 +508,29 @@ def load_metric_sets(
 # ---------------------------------------------------------------------------
 
 
-def _check_cell_shape(cell: Any, position: int) -> tuple[str, str, str]:
-    """Validate one cell; return ``(cik, period_id, field_id)``."""
+def _is_canonical_field_id(field_id: str) -> bool:
+    return bool(
+        _METRIC_FIELD.fullmatch(field_id)
+        or _PACKAGE_FIELD.fullmatch(field_id)
+        or _STATEMENT_FIELD.fullmatch(field_id)
+        or _SPECIALIST_FIELD.fullmatch(field_id)
+        or field_id in _BARE_FIELDS
+    )
+
+
+def _check_cell_shape(
+    cell: Any,
+    position: int,
+    package_alias_roles: frozenset[str] = frozenset(),
+) -> tuple[str, str, str, bool]:
+    """Validate one cell; return ``(cik, period_id, canonical field_id, aliased)``.
+
+    The declared legacy alias is applied here, before any duplicate check or
+    cell indexing: ``package.<role>`` becomes ``package:<role>`` exactly when
+    ``role`` is one of ``package_alias_roles`` (the thresholds config's
+    required_package_roles).  Every other dotted or unknown ``field_id`` is
+    refused below exactly as it would be without the alias.
+    """
     def shape(problem: str) -> CoverageProofError:
         return CoverageProofError("cell_shape", f"cells[{position}] {problem}")
 
@@ -501,13 +543,17 @@ def _check_cell_shape(cell: Any, position: int) -> tuple[str, str, str]:
     if not isinstance(period_id, str):
         raise shape("period_id must be a string")
     field_id = cell.get("field_id")
-    if not isinstance(field_id, str) or not (
-        _METRIC_FIELD.fullmatch(field_id)
-        or _PACKAGE_FIELD.fullmatch(field_id)
-        or _STATEMENT_FIELD.fullmatch(field_id)
-        or _SPECIALIST_FIELD.fullmatch(field_id)
-        or field_id in _BARE_FIELDS
+    aliased = False
+    if (
+        isinstance(field_id, str)
+        and not _is_canonical_field_id(field_id)
+        and field_id.startswith(LEGACY_PACKAGE_ALIAS_PREFIX)
     ):
+        role = field_id[len(LEGACY_PACKAGE_ALIAS_PREFIX):]
+        if role and role in package_alias_roles:
+            field_id = f"package:{role}"
+            aliased = True
+    if not isinstance(field_id, str) or not _is_canonical_field_id(field_id):
         raise shape(
             f"field_id must be metric:<id>, package:<role>, statement:<kind>, "
             f"specialist:<PKnn>, packet or journey; got {field_id!r}"
@@ -530,10 +576,17 @@ def _check_cell_shape(cell: Any, position: int) -> tuple[str, str, str]:
             "source_generation_id must be a non-empty string; no coverage row "
             "without it"
         )
-    return cik, period_id, field_id
+    return cik, period_id, field_id, aliased
 
 
-def _index_cells(cells: Any) -> dict[tuple[str, str, str], Mapping[str, Any]]:
+def _index_cells(
+    cells: Any, package_alias_roles: frozenset[str] = frozenset()
+) -> tuple[dict[tuple[str, str, str], Mapping[str, Any]], int]:
+    """Index cells by canonical ``(cik, period_id, field_id)``.
+
+    Returns the index plus the count of legacy ``package.<role>`` field_ids
+    rewritten to the canonical spelling.
+    """
     if not isinstance(cells, list):
         raise CoverageProofError("manifest_limits", "manifest cells must be a list")
     if len(cells) > HARD_MAX_CELLS:
@@ -542,18 +595,26 @@ def _index_cells(cells: Any) -> dict[tuple[str, str, str], Mapping[str, Any]]:
             f"manifest carries {len(cells)} cells; the hard limit is {HARD_MAX_CELLS}",
         )
     index: dict[tuple[str, str, str], Mapping[str, Any]] = {}
+    aliases_applied = 0
     for position, cell in enumerate(cells):
-        key = _check_cell_shape(cell, position)
+        cik, period_id, field_id, aliased = _check_cell_shape(
+            cell, position, package_alias_roles
+        )
+        if aliased:
+            aliases_applied += 1
+        key = (cik, period_id, field_id)
         if key in index:
             raise CoverageProofError(
                 "duplicate_cell",
                 f"cells[{position}] repeats (cik, period_id, field_id)={key}",
             )
         index[key] = cell
-    return index
+    return index, aliases_applied
 
 
-def _validate_manifest_document(manifest: Any) -> dict[str, Any]:
+def _validate_manifest_document(
+    manifest: Any, package_alias_roles: frozenset[str] = frozenset()
+) -> dict[str, Any]:
     if not isinstance(manifest, dict):
         raise CoverageProofError(
             "manifest_schema", "manifest must be a JSON object"
@@ -573,12 +634,23 @@ def _validate_manifest_document(manifest: Any) -> dict[str, Any]:
             f"manifest carries {len(issuers)} issuers; the hard limit is "
             f"{HARD_MAX_ISSUERS}",
         )
-    _index_cells(manifest.get("cells"))
+    _index_cells(manifest.get("cells"), package_alias_roles)
     return manifest
 
 
-def load_manifest(path: str | Path) -> tuple[dict[str, Any], str]:
-    """Read a coverage manifest and return it with its raw-byte sha256."""
+def load_manifest(
+    path: str | Path,
+    *,
+    package_alias_roles: frozenset[str] = frozenset(),
+) -> tuple[dict[str, Any], str]:
+    """Read a coverage manifest and return it with its raw-byte sha256.
+
+    ``package_alias_roles`` is the thresholds config's required_package_roles,
+    threaded in by the caller: the declared legacy ``package.<role>`` spelling
+    is rewritten to ``package:<role>`` for exactly those roles.  Without the
+    role set every dotted ``field_id`` is refused, exactly as before the
+    alias existed.
+    """
     try:
         size = Path(path).stat().st_size
     except OSError as exc:
@@ -598,7 +670,7 @@ def load_manifest(path: str | Path) -> tuple[dict[str, Any], str]:
         raise CoverageProofError(
             "manifest_undecodable", f"manifest is not decodable JSON: {exc}"
         ) from exc
-    return _validate_manifest_document(raw), digest
+    return _validate_manifest_document(raw, package_alias_roles), digest
 
 
 # ---------------------------------------------------------------------------
@@ -658,7 +730,9 @@ def prove_coverage(
             f"{HARD_MAX_ISSUERS}",
         )
     cells = manifest.get("cells")
-    index = _index_cells(cells)
+    index, package_aliases_applied = _index_cells(
+        cells, thresholds.package_alias_roles
+    )
 
     direct = {mid for mid in direct_ids}
     formula = {mid for mid in formula_ids}
@@ -984,6 +1058,8 @@ def prove_coverage(
         blockers.append("deep_target_not_met")
     if not core_block["target_met"]:
         blockers.append("core_target_not_met")
+    if package_aliases_applied > 0:
+        blockers.append(LEGACY_FIELD_ID_ALIAS_BLOCKER)
     blockers.sort()
 
     issuer_entries.sort(key=lambda entry: entry["cik"])
@@ -1007,6 +1083,9 @@ def prove_coverage(
         },
         "orphan_cells": orphan_cells,
         "status_normalised": dict(sorted(status_normalised.items())),
+        "field_id_aliases_applied": {
+            LEGACY_PACKAGE_ALIAS_PREFIX: package_aliases_applied
+        },
         "acceptance_eligible": not blockers,
         "acceptance_blockers": blockers,
     }

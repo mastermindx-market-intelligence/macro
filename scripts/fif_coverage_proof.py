@@ -55,7 +55,9 @@ def _run_prove(args: argparse.Namespace) -> int:
     direct_ids, formula_ids = load_metric_sets(
         args.catalog, args.formulas, thresholds
     )
-    manifest, manifest_sha256 = load_manifest(args.manifest)
+    manifest, manifest_sha256 = load_manifest(
+        args.manifest, package_alias_roles=thresholds.package_alias_roles
+    )
     proved_at = _parse_proved_at(args.proved_at)
     if proved_at is None:
         print(
