@@ -28876,6 +28876,13 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Installed operator verifier and its exact tracked input closure.
+      - "app/requirements.txt"
+      - "contracts/market_memory/spy_experience_opportunity.v1.schema.json"
+      - "contracts/market_memory/spy_experience_outcome_revision.v1.schema.json"
+      - "contracts/market_memory/spy_experience_population_receipt.v1.schema.json"
+      - "contracts/market_memory/spy_experience_registration.v1.schema.json"
+      - "scripts/accrue_market_memory_spy_experience.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
