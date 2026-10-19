@@ -211,7 +211,8 @@
     var result = await client.auth.getSession();
     var session = result && result.data && result.data.session;
     var user = window.MDXAuth.user && window.MDXAuth.user();
-    if (!session || !session.user || !user || user.id !== session.user.id || !session.access_token) {
+    if (!session || !session.user || !user || typeof user.id !== "string" || !user.id
+        || user.id !== session.user.id || typeof session.access_token !== "string" || !session.access_token) {
       return { headers: headers, identity: null };
     }
     headers.Authorization = "Bearer " + session.access_token;

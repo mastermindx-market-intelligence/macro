@@ -85,7 +85,13 @@ export function mountCompanyResearch(root) {
     const result = await current.auth.getSession();
     if (disposed || !result || result.error) return null;
     const session = result.data && result.data.session || null;
-    if (canonicalKnown && (!canonicalOwner || !session || session.user.id !== canonicalOwner)) return null;
+    // A restored page may have missed an auth event. Re-read the canonical
+    // owner after the awaited SDK call; cached SDK state is not authority.
+    let user = null;
+    try { user = window.MDXAuth && typeof window.MDXAuth.user === 'function' && window.MDXAuth.user(); }
+    catch (_) { return null; }
+    if (!user || typeof user.id !== 'string' || !user.id || !session || !session.user
+        || user.id !== session.user.id || (canonicalKnown && canonicalOwner !== user.id)) return null;
     return session;
   }
 

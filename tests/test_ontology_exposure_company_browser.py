@@ -186,3 +186,22 @@ def test_back_forward_restore_loads_a_new_reading_after_clearing_old_state(brows
         assert page.evaluate("window.__fetchCount") == before + 1
     finally:
         context.close()
+
+
+@pytest.mark.parametrize("user,token", [({}, "fixture-token"), ({"id":""}, "fixture-token"), ({"id":"first"}, {"invalid":"token"})])
+def test_malformed_auth_binding_never_reads_owner_snapshot(browser, user, token):
+    context = browser.new_context()
+    page = context.new_page()
+    try:
+        page.set_content(incumbent.SHELL)
+        page.evaluate("""([user,token]) => {
+          window.calls=0;
+          window.MDXAuth={user:()=>user,client:async()=>({auth:{getSession:async()=>({data:{session:{user,access_token:token}}})}})};
+          window.fetch=async()=>{window.calls++;throw new Error('must not fetch');};
+        }""", [user, token])
+        page.add_script_tag(path=str(PREPARED))
+        page.wait_for_selector("#ox-root .ox-gate", state="attached")
+        assert page.evaluate("window.calls") == 0
+        assert page.locator("#ox-root .ox-hero").count() == 0
+    finally:
+        context.close()

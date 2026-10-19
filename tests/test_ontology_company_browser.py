@@ -318,3 +318,23 @@ def test_actual_macro_shell_auth_and_analytics_keep_private_values_local(page):
     settled(page, "signed_out")
     assert len(seen) == 3
     assert errors == []
+
+
+@pytest.mark.parametrize("canonical", ["null", "{id:'other-owner'}", "throw"])
+def test_restored_page_rereads_canonical_owner_despite_stale_sdk(page, canonical):
+    seen, errors = start(page)
+    lookup(page)
+    settled(page, "ready")
+    assert len(seen) == 2
+    page.evaluate("window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true}))")
+    settled(page, "idle")
+    if canonical == "throw":
+        page.evaluate("() => { window.MDXAuth.user=()=>{throw new Error('canonical unavailable')}; }")
+    else:
+        page.evaluate("value=>{window.testCanonicalUser=value}", None if canonical == "null" else {"id":"other-owner"})
+    page.evaluate("window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}))")
+    lookup(page)
+    settled(page, "signed_out")
+    assert len(seen) == 2
+    assert page.locator(".ox-company-choices button").count() == 0
+    assert errors == []

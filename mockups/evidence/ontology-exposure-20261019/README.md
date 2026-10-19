@@ -11,3 +11,5 @@ Root visually inspected all eight cells in both image roles. Names, unresolved-i
 Behavior is covered by `tests/test_ontology_exposure_company_browser.py`, including identity mismatch before issuer reads, late response after sign-out, account changes before publication, and explicit fact selection. The original public capture tool and its provenance are retained unchanged. Synthetic captures do not claim to be output of that anonymous-only tool.
 
 After capture, two nonvisual lifecycle handlers were tightened: pagehide clears the company input as well as results, and a persisted pageshow loads a new authenticated WTI reading. The capture records retain their original exact source hashes; the dedicated back/forward browser test passes on the final handlers. These changes do not alter either captured presentation.
+
+Final defensive auth hardening rereads the canonical user after the SDK await and rejects malformed owner/token bindings. The affected browser cases cover this nonvisual change; captured hashes and presentation evidence retain their original scope.
