@@ -441,16 +441,23 @@ class QuotePoint:
     prev_close: float | None = None
     age_min: float | None = None
     max_age_min: float | None = None
+    native_quote_metadata: dict[str, Any] | None = None
 
     @property
     def usable(self) -> bool:
         return self.state == "ok" and self.price is not None and self.ts is not None
 
     def to_dict(self) -> dict[str, Any]:
-        return {"state": self.state, "price": self.price,
+        from lib.quote_native_metadata import copy_native_metadata
+
+        result = {"state": self.state, "price": self.price,
                 "ts": _iso(self.ts), "basis": self.basis, "source": self.source,
                 "prev_close": self.prev_close, "age_min": self.age_min,
                 "max_age_min": self.max_age_min}
+        metadata = copy_native_metadata(self.native_quote_metadata)
+        if metadata is not None:
+            result["native_quote_metadata"] = metadata
+        return result
 
 
 def _iso(ts: datetime | None) -> str | None:
@@ -513,8 +520,10 @@ def read_quote(ticker: str, row: Mapping[str, Any] | None, *, now: datetime,
                         else row.get("prev_close"))
     price = _float(row.get("price"))
     ts = _quote_ts(row)
+    from lib.quote_native_metadata import copy_native_metadata
     common = {"ticker": ticker, "basis": basis, "source": source,
-              "prev_close": prev_close, "max_age_min": max_age_min}
+              "prev_close": prev_close, "max_age_min": max_age_min,
+              "native_quote_metadata": copy_native_metadata(row.get("native_quote_metadata"))}
     if basis in CARRIED_QUOTE_BASES:
         # §3b: a stale carry, never live.  Admitting it would append the PRIOR
         # session's close as today's provisional bar — a fabricated flat day.
@@ -594,7 +603,7 @@ class JournalRecord:
         return {"schema": SCHEMA_JOURNAL, "session": self.session,
                 "ticker": self.ticker, "pack_as_of": self.pack_as_of,
                 "pack_hash": self.pack_hash, "price_basis": self.price_basis,
-                "points": [dict(p) for p in self.points],
+                "points": copy.deepcopy(self.points),
                 "observations": [dict(o) for o in self.observations],
                 "refused": [dict(r) for r in self.refused]}
 
@@ -605,7 +614,7 @@ class JournalRecord:
                    pack_as_of=str(raw.get("pack_as_of") or ""),
                    pack_hash=str(raw.get("pack_hash") or ""),
                    price_basis=str(raw.get("price_basis") or ch.BASIS_ADJUSTED),
-                   points=[dict(p) for p in raw.get("points") or ()],
+                   points=copy.deepcopy(list(raw.get("points") or ())),
                    observations=[dict(o) for o in raw.get("observations") or ()],
                    refused=[dict(r) for r in raw.get("refused") or ()])
 
@@ -727,7 +736,8 @@ class SessionJournal:
 
     def append_point(self, record: JournalRecord, *, ts: datetime, price: float,
                      basis: str | None, source: str | None,
-                     basis_audit: Mapping[str, Any] | None) -> bool:
+                     basis_audit: Mapping[str, Any] | None,
+                     native_quote_metadata: dict | None = None) -> bool:
         """Append one quote point.  False when the append-only law refused it."""
         last = record.last_ts()
         if last is not None and ts <= last:
@@ -738,9 +748,13 @@ class SessionJournal:
                           "would land inside an already-sampled interval and rewrite "
                           "a published reading"})
             return False
-        record.points.append({"ts": _iso(ts), "price": float(price), "basis": basis,
-                              "source": source,
-                              "basis_audit": dict(basis_audit or {})})
+        from lib.quote_native_metadata import copy_native_metadata
+        point = {"ts": _iso(ts), "price": float(price), "basis": basis,
+                 "source": source, "basis_audit": dict(basis_audit or {})}
+        metadata = copy_native_metadata(native_quote_metadata)
+        if metadata is not None:
+            point["native_quote_metadata"] = metadata
+        record.points.append(point)
         return True
 
     def freeze_observations(self, record: JournalRecord,
@@ -1912,7 +1926,8 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
     last_point = record.points[-1] if record.points else None
     if not journal.append_point(record, ts=quote.ts, price=quote.price,
                                 basis=quote.basis, source=quote.source,
-                                basis_audit=audit):
+                                basis_audit=audit,
+                                native_quote_metadata=quote.native_quote_metadata):
         # THE ROW MUST ADVERTISE THE PRICE THE DETECTORS READ.  An append-only
         # refusal is lawful and the pass keeps evaluating — but publishing the
         # REJECTED quote beside an observation built from the kept one is a
@@ -1929,10 +1944,12 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
             reasons = reasons + ("journal_refused_point",)
             quote_rejected = quote.to_dict()
         kept_ts = _parse_iso((last_point or {}).get("ts"))
+        from lib.quote_native_metadata import copy_native_metadata
         quote = replace(
             quote, price=kept_price, ts=kept_ts,
             basis=(last_point or {}).get("basis"),
             source=(last_point or {}).get("source"),
+            native_quote_metadata=copy_native_metadata((last_point or {}).get("native_quote_metadata")),
             age_min=(None if kept_ts is None
                      else round((now - kept_ts).total_seconds() / 60.0, 4)))
 

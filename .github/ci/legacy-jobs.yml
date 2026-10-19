@@ -37,6 +37,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -1906,6 +1907,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -2839,6 +2841,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -5001,7 +5004,7 @@ jobs:
       # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
       # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
   quant-q02-american-exercise:
     if: ${{ false }}
@@ -5292,6 +5295,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
@@ -8920,6 +8924,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -12099,6 +12104,7 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
@@ -12291,6 +12297,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
+      - "lib/quote_native_metadata.py"
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
       - "collectors/sec_capital_structure.py"
@@ -16056,6 +16064,7 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/delisted_symbols.yml"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
@@ -18121,6 +18130,7 @@ jobs:
       - tests/test_china_standouts_serialization.py
       - tests/test_theme_graph_selection_cohort_publication.py
       - tests/test_theme_state_generation_applicability.py
+      - tests/test_theme_state_native_capture.py
       - tests/test_us_standouts_cascade_gate.py
       - "contracts/theme_graph/theme_state.v2.schema.json"
       - "contracts/theme_graph/theme_state_generation.v1.schema.json"
@@ -18272,7 +18282,7 @@ jobs:
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
-        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
         run: TZ=UTC python -m pytest tests/test_company_theme_exposure_successor.py tests/test_company_theme_exposure.py tests/test_publish_company_theme_exposure_r2.py tests/test_company_theme_exposure_production_bridge.py tests/test_company_theme_exposure_staleness_matrix.py -k 'not live_theme_inputs' -q
       - name: L3 leadership receipt (theme_state freshness + descriptive rows)
@@ -19346,6 +19356,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
@@ -19588,6 +19599,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve all 36 suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "lib/symbol_directory_receipts.py"
@@ -22449,6 +22461,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
       - "research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md"
@@ -22939,6 +22952,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -26546,6 +26560,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
+      - "lib/quote_native_metadata.py"
       - "scripts/calibrate_rate_inflation.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -27876,6 +27892,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "scripts/calibrate_rate_inflation.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/intelligence_workspace/__init__.py"
@@ -31356,6 +31373,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"
@@ -34368,6 +34386,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/theme_graph/native_disclosure_propagation.py"

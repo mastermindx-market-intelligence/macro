@@ -359,6 +359,9 @@ def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, k
     view = ontology.RepositoryStore()
     nodes = _attempt(lambda: view.read_nodes().to_dict("records"))
     subjects = {}
+    # basket_ids include price proxies (e.g. medical_devices -> managed_care),
+    # not an admitted canonical member population. Keep their native leg records
+    # without converting the crosswalk into membership/identity/rights receipts.
     for cfg in crosswalk["themes"]:
         node_id = identity.theme_node_id(cfg["id"])
         subjects[node_id] = {"kind": "canonical_theme", "name_en": cfg.get("name_en"), "name_zh": cfg.get("name_zh"), "source_family": None, "native_id": None, "basket": None}
