@@ -187,6 +187,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -457,6 +458,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2063,6 +2065,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -2288,6 +2291,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2921,6 +2925,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -3162,6 +3167,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -9748,6 +9754,7 @@ jobs:
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_five_issuer_sic_contract.py
+          tests/test_fundamental_forensics_formula_not_presented.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
@@ -9756,6 +9763,7 @@ jobs:
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_normalize.py
+          tests/test_fundamental_forensics_not_presented.py
           tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_peer_cohort.py
@@ -9771,6 +9779,7 @@ jobs:
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
+          tests/test_fundamental_forensics_query_not_presented.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_refusal_entry_readers.py
@@ -16119,6 +16128,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_score.yml
       - config/fundamental_forensics/coverage/five_issuer_v1.json
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/metabolism_budget.yml
       - config/sector_legs.json
@@ -16387,6 +16397,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/peer_cohort.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -21793,6 +21804,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_detector.yml
       - config/flow_score.yml
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/government_revenue/candidate_historical_suppressions.v1.json
       - config/government_revenue/candidate_issuance_corrections.v1.json
@@ -22012,6 +22024,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/packet_service.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -25218,6 +25231,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
       - "config/metabolism_budget.yml"
@@ -25424,6 +25438,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/peer_cohort.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -30182,6 +30197,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -30427,6 +30443,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -33098,6 +33115,7 @@ jobs:
       - "config/delisted_symbols.yml"
       - "config/earnings_story_promotion.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -33311,6 +33329,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
