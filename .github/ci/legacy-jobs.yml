@@ -15538,6 +15538,7 @@ jobs:
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - research/prophet_v4/d2/D2B3_FROZEN_CONTRACT_2026-08-21.md
+      - research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
       - scripts/__init__.py
       - scripts/build_company_theme_exposure.py
       - scripts/build_dt_contra_state.py
@@ -15545,6 +15546,7 @@ jobs:
       - scripts/build_theme_graph.py
       - scripts/ci/daily_engine_regional_desk_builders.sh
       - scripts/correct_gmi_identity_lineage.py
+      - scripts/gmi_coverage_proof.py
       - scripts/publish_company_disclosure.py
       - scripts/publish_company_theme_exposure_r2.py
       - scripts/seed_china_ths_baskets.py
@@ -15554,6 +15556,7 @@ jobs:
       - tests/test_company_theme_exposure_successor.py
       - tests/test_dt_contra_state.py
       - tests/test_gmi_activity_membership_admission.py
+      - tests/test_gmi_coverage_proof.py
       - tests/test_gmi_history_integrity.py
       - tests/test_publish_company_theme_exposure_r2.py
       - tests/test_theme_graph_activity_membership_history.py
@@ -16487,6 +16490,8 @@ jobs:
           TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort.py tests/test_theme_graph_selection_cohort_reads.py tests/test_theme_graph_selection_cohort_reads_pit.py tests/test_theme_graph_selection_cohort_projection.py -q
       - name: GMI finalized cohort publication and unchanged owner serialization
         run: TZ=UTC python -m pytest tests/test_theme_graph_selection_cohort_publication.py tests/test_theme_graph_selection_cohort_reads_wiring.py tests/test_china_standouts_serialization.py tests/test_build_china_library_more_actionable_guard.py tests/test_us_standouts_cascade_gate.py -q
+      - name: GMI step-7 coverage proof (measurement only; refuses data/ and site/ output)
+        run: TZ=UTC python -m pytest tests/test_gmi_coverage_proof.py -q
 
   sa-w4-improvement-lanes:
     if: ${{ false }}
