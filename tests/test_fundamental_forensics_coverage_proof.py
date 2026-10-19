@@ -1044,12 +1044,13 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert report["tiers"]["core"]["pass"] == 1000
     assert report["acceptance_eligible"] is False
     # The synthetic draft's computed sha256 does not start with the shipped
-    # pin (the pin is the real draft's prefix), the shipped freeze_ref names
-    # a path absent from this repository, and the manifest is a draft — so
-    # ruling V1-a r3 blocks acceptance on all three grounds.
+    # pin (the pin is the real draft's prefix) and the manifest is an
+    # unattested draft, so ruling V1-a r3 blocks acceptance.  The shipped
+    # freeze_ref names the coverage freeze record committed to this
+    # repository (#9609), so it resolves and is not a blocker.
+    assert report["thresholds"]["freeze_ref_exists"] is True
     assert report["acceptance_blockers"] == [
         "census_identity_mismatch",
-        "freeze_ref_missing",
         "manifest_draft",
         "manifest_unattested",
     ]
@@ -1064,7 +1065,7 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert lines[10] == "exclusions:     none"
     assert lines[11] == (
         "acceptance:     eligible=false  "
-        "blockers=census_identity_mismatch,freeze_ref_missing,"
+        "blockers=census_identity_mismatch,"
         "manifest_draft,manifest_unattested"
     )
 
@@ -1503,17 +1504,17 @@ def test_real_run_sanity_shipped_thresholds_block(tmp_path: Path) -> None:
             text=True,
         )
 
-    # The fixture's census-test identity is not the shipped pin, and the
-    # shipped freeze_ref names a path absent from this repository.
+    # The fixture's census-test identity is not the shipped pin.  The shipped
+    # freeze_ref names the committed coverage freeze record, so it resolves.
     mismatched_path = tmp_path / "small_mismatched.json"
     mismatched_path.write_text(json.dumps(small), encoding="utf-8")
     result = run_cli(mismatched_path)
     assert result.returncode == 0, result.stderr
     report = json.loads(result.stdout)
     assert report["acceptance_eligible"] is False
+    assert "freeze_ref_missing" not in report["acceptance_blockers"]
     for blocker in (
         "census_identity_mismatch",
-        "freeze_ref_missing",
         "manifest_draft",
         "manifest_unattested",
         "deep_target_not_met",
@@ -1544,7 +1545,9 @@ def test_real_run_sanity_shipped_thresholds_block(tmp_path: Path) -> None:
     assert "census_identity_mismatch" not in pinned_report["acceptance_blockers"]
     assert "mixed_source_generations" not in pinned_report["acceptance_blockers"]
     assert pinned_report["acceptance_eligible"] is False
-    assert "freeze_ref_missing" in pinned_report["acceptance_blockers"]
+    assert "freeze_ref_missing" not in pinned_report["acceptance_blockers"]
+    assert "deep_target_not_met" in pinned_report["acceptance_blockers"]
+    assert "core_target_not_met" in pinned_report["acceptance_blockers"]
     line = pinned_result.stderr.splitlines()[-1]
     assert line.startswith("acceptance:     eligible=false")
 
