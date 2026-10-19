@@ -30,19 +30,46 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Land the 2026-10-18 S3-install-refused handoff (PR 1609 merged, step 4 refused once on the
-      historical prejob link, S3-prime commissioned) from branch
-      claude/ssd-exec-ecosystem-agentos-c5-873aabd3 — the option (a) handoff landed in macro PR 9594;
-      then refresh
-      WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 with the installed 08d78873 facts (S2 installed 04:08Z, not
-      accepted, not armed, control plane DARK since 07:10:53Z; the 91c1cac5 supersede_unstarted_v1
-      acceptance bound to JOB-003 is superseded by descriptor 6594613b…) in a follow-up PR.
+      Land the 2026-10-19 S3-prime-installed handoff (bcf4a2f7 installed 00:25Z, disarm
+      autonomy-595595aa4389, step 4 descriptor 7da3c957…) from branch
+      claude/ssd-exec-ecosystem-agentos-c6-873aabd3 together with the
+      WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 frontier refresh in the same PR; the c5 record landed in
+      macro PR 9606 and the option (a) record in macro PR 9594. Keep the seat memory checkpoint
+      current; the next record is the acceptance/arm outcome after the Chairman's canary decision.
   - id: R1
     title: Requalify codex-01 provider readiness with the existing credential (Mastermind PR 1591), then supersede the prepared 91c1cac5 acceptance with the current-master successor S2 = 08d78873 (root JOB-003; terminal JOB-006 carried)
     status: in_progress
     depends_on: [A0]
     next_action: >
-      2026-10-18 13:5xZ (seat 873aabd3): PR 1609 MERGED 12:39:00Z after three reviews by one
+      2026-10-19 00:3xZ (seat 873aabd3): S3-PRIME INSTALLED. PR 1623 (child local_f20294a5, head
+      dec1daaa, maintenance module +41/-15, historical=True only at the prior-carry call, candidate
+      paths strict, closed two-generation set, test-only REVIEWED_FILES pin recomputed = MATCH) was
+      reviewed ONCE by the PR 1609 reviewer (verdict MERGE, 315 tests, one minor non-blocking
+      comment/docs finding) and MERGED 2026-10-18 14:44:00Z = master ba48cd87. Master then moved
+      (PR 1622, PR 1624 docs, PR 1625 fabric quota handoff) to
+      bcf4a2f72538682f2fbe4902f6417e59cd038678; the ordinary install policy admits only the clone's exact
+      origin/master, and the ba48cd87...bcf4a2f7 compare touches 28 files all outside
+      ops/executive_os, app and config (subtree ids identical), so the install sha is bcf4a2f7.
+      Host chain on bcf4a2f7 — clone Mastermind-bcf4a2f7; os-web-assets digest eec03841…;
+      root-only install-inputs (control successor 74366b97…, only proof_base_sha and
+      proof_source_repository changed); runbook step 4 ONCE 00:17:22Z rc 0 — the S3-prime tool
+      ADMITTED the historical 738581ef → 0123ad5a legacy link on the live host and prepared bundle
+      acceptance-maintenance/bcf4a2f7… with descriptor_sha256 7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12
+      (the acceptance flag value); install.sh run 1 REFUSED pre-mutation on the Python runtime
+      seal (67 root __pycache__ pycs written 10-18 09:1xZ by a seat sudo python probe without -B),
+      remedied with the seat's remove_stray_pycache.py (exactly the 67 flagged files) and codesign
+      re-verified clean; run 2 (plain mode, no --protected-master-sha) rc 0 at 00:25Z — installed
+      exact Executive OS release bcf4a2f7, admin checkout, four LaunchDaemons plists OK, worker
+      broker config v4 valid, privileged action broker armed, services stopped. autonomy-control.sh
+      from the installed copy (releases/bcf4a2f7…/ops/executive_os — a clone copy refuses) read
+      CONFIG_DRIFT (installed = expected, service_state STOPPED, both arms false); the release's own
+      disarm re-bound the receipt — transaction autonomy-595595aa4389, state DISARMED, status
+      UNARMED. launchd services absent; uid 451 distnoted only. S3 954842ae clone, assets and
+      install-inputs are inert history. The ONE option-(a) canary is SPENT; acceptance (within 28
+      minutes of a passing canary, with the descriptor digest above) and arm need a NEW readiness
+      receipt = the single Chairman question, asked once now, as promised. The arming review HOLD
+      stands until acceptance passes and the same auditor refreshes.
+      HISTORY (2026-10-18 13:5xZ, seat 873aabd3): PR 1609 MERGED 12:39:00Z after three reviews by one
       read-only Opus reviewer (HOLD, HOLD, MERGE, MERGE after the D8 identity-guard repair) —
       S3 = master 954842ae. S3 staged on the host (clone Mastermind-954842ae, inert assets
       5cd12476…, root-only install-inputs 378c3bae…); runbook step 4 (maintenance supersede-prejob
@@ -166,6 +193,10 @@ landmines:
   - Python tests at the pin need the repo root on sys.path and the macro checkout's tests/ package off it (python -P), or tests.test_executive_ceo_ingress resolves into macro.
   - Agent OS records are not liveness — the P4 "PICKED_UP by chat 01a1230a" claim is historical; the S' acceptance path is driven by the current seat after the human rotation, unless a live START is observed first.
   - S3 = 954842ae cannot be installed — PR 1609 Part B made prejob_evidence demand the eight-key protected-group receipt on EVERY supersede_prejob link, and the terminal carry walk re-validates the historical 738581ef → 0123ad5a link whose Oct 11 receipt is the legacy six-key generation; the supersede prepare for any successor refuses `interrupted acceptance receipt schema drifted` until S3-prime (historical two-generation admission at the line-294 call only) is installed. Never weaken the tool on the host, never edit receipts or bundles, never run install.sh before the supersede bundle exists.
+  - autonomy-control.sh refuses unless its RELEASE_ROOT equals /Library/Application Support/MastermindExecutive/releases/<expected sha> — run status, disarm and arm from the installed copy, never from a release clone.
+  - A root run of the framework Python without -B writes stdlib __pycache__ pycs under /Library/Frameworks/Python.framework/Versions/3.12 and install.sh then refuses pre-mutation (runtime seal invalid; codesign reports file added) — verify the seal with codesign --verify --deep --strict before every install and remove exactly the flagged pycs with the seat's remove_stray_pycache.py.
+  - In ordinary exact_protected_master mode install.sh must NOT receive --protected-master-sha (a frozen-mode-only argument, refused), and only the clone's exact origin/master is installable or acceptable — a reviewed squash that master has moved past (ba48cd87) is uninstallable unless the moved master's executive_os, app and config subtrees are proven identical.
+  - install.sh leaves CONFIG_DRIFT after every install (no receipt rebind); the remedy is the installed release's own autonomy-control.sh disarm, which writes a new transaction (autonomy-595595aa4389 for bcf4a2f7) — never hand-edit autonomy-state-v1.json or control.json.
 do_not_redo:
   - The 2026-10-17 Phase A census (ledger §1 and §5) — reuse until an installed SHA, installed config or runtime DB fact changes.
   - The install of 91c1cac5 and the acceptance receipt for 25c4b792.
@@ -173,23 +204,28 @@ do_not_redo:
   - The 213-test transport run at a552a5e5 (plan §6) until the transport source changes.
   - Mastermind PR 1591 (merged, reviewed once, verdict MERGE), PR 1598 (merged 2026-10-18 05:20:00Z) and PR 1609 (merged 2026-10-18 12:39:00Z, three reviews, final MERGE) — never re-review, re-merge, re-enqueue or add commits.
   - The S3 staging for 954842ae (clone, assets, install-inputs) and the ONE step-4 supersede attempt (refused) plus its root-cause diagnosis — never repeat step 4 for 954842ae; S3-prime is the written remedy.
+  - Mastermind PR 1623 (merged 2026-10-18 14:44:00Z, one read-only review, verdict MERGE, 315 tests) — never re-review, re-merge or add commits; its minor comment/docs finding is a follow-up by message to child local_f20294a5 only.
+  - The bcf4a2f7 host chain — clone Mastermind-bcf4a2f7, assets eec03841…, install-inputs 74366b97…, the ONE step-4 supersede (descriptor 7da3c957…), the seal repair (67 pycs), install.sh run 2 (2026-10-19 00:25Z), status and disarm autonomy-595595aa4389 — never repeat any step; the bundle and the installed release are the inputs to acceptance.
+  - The install-sha decision (bcf4a2f7 over ba48cd87) and its subtree-identity proof (ops/executive_os 28d73c2f…, app 75492340…, config d5bc9c07…) — reuse until master moves again before acceptance.
   - The 2026-10-18 option (a) host chain — finite host publication, finite-control-stage (marker 06:22:37Z), disarm transaction autonomy-ea0086af6ee4, Gate B receipt 42e1ac39…, the 06:57:19Z canary, the single S2 acceptance run and its root-cause diagnosis, the 07:10:53Z service stop, the arming review's FINAL HOLD verdict for S2.
 next_action: >
-  Lane R: S3 = 954842ae is MERGED (PR 1609, 2026-10-18 12:39:00Z) but NOT installable — the
-  maintenance supersede for it refused once on the historical 738581ef → 0123ad5a legacy receipt
-  (PR 1609 Part B strict shape applied to every link), so install.sh has not run; S2 = 08d78873
-  stays installed, unaccepted and unbootable, the host control plane DARK since 07:10:53Z, the arm
-  HELD by the independent review, the Chairman's one further canary SPENT. Next, in order — (1) the
-  S3-prime fix PR from child session local_f20294a5 (commissioned 13:4xZ by message; verify the
-  diff against the frozen spec and tests a–d, ONE read-only review by the PR 1609 reviewer, merge
-  through the queue, record the new master sha); (2) clone S3-prime, assets, install-inputs, step 4
-  ONCE with --successor-sha S3-prime, install.sh in plain mode, autonomy-control.sh status and
-  disarm on CONFIG_DRIFT, ps quiescence; (3) ask the Chairman ONCE to authorize one new readiness
-  canary for S3-prime acceptance and arm (Gate B first, canary via the renew route, acceptance within
-  28 minutes with the new maintenance descriptor digest, arm) or to hold S3-prime
-  installed-unaccepted; (4) on his word, acceptance.sh, arming review refresh, arm in the gap-5
-  order, Phase F H1–H8. Meanwhile, with no host mutation: land this record, refresh the autonomy P4
-  frontier, Lane A inputs (publication owner still unnamed).
+  Lane R: S3-prime = bcf4a2f72538682f2fbe4902f6417e59cd038678 is INSTALLED (2026-10-19 00:25Z),
+  disarmed and re-bound (autonomy-595595aa4389, UNARMED), NOT accepted, NOT armed; the host control
+  plane is DARK by design (services stopped since 2026-10-18 07:10:53Z, uid 451 distnoted only);
+  the maintenance supersede bundle for bcf4a2f7 is prepared ONCE (descriptor
+  7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12). The Chairman's one further canary is SPENT.
+  Next, in order — (1) the seat asks the Chairman ONCE to authorize ONE new readiness canary for
+  S3-prime acceptance and arm, or to hold bcf4a2f7 installed-unaccepted; (2) on his word — Gate B
+  preflight through the installed release's git_handoff_preflight.py (new receipt for bcf4a2f7),
+  the canary through the renew-device-revalidation route on the unchanged codex-01 credential,
+  acceptance.sh within 28 minutes with --maintenance-descriptor-sha256 7da3c957…, arming review
+  refresh by the same read-only auditor (continue a59b7a4984ee30c91 by message), arm in the
+  gap-5-safe order (status, arm-quiesce-control-uid, arm with the Gate B receipt and the same
+  credential deadline, status), Phase F H1–H8 with successful and interrupted journeys; (3) a
+  failing canary is a provider fact for the Chairman, never a second canary. Meanwhile, with no
+  host mutation — land this record, send the minor PR 1623 comment/docs follow-up to child
+  local_f20294a5 by message, Lane A inputs (publication owner still unnamed), auditor gaps 3 and 5
+  as reviewed source follow-ups.
 ---
 
 ## Context
