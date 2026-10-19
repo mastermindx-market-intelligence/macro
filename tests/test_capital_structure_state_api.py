@@ -17,6 +17,7 @@ projection is built by the real builder so the API's own validation accepts it.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import dataclasses
 import hashlib
 import json
 import re
@@ -32,16 +33,34 @@ from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 from app import capital_structure as api  # noqa: E402
+import tests.test_capital_structure_funding as F  # noqa: E402
+import tests.test_capital_structure_scenario_inputs as inputs_suite  # noqa: E402
+import tests.test_capital_structure_supply_scenarios as SS  # noqa: E402
 from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     AUTHORITY,
     PROJECTION_COMPATIBILITY,
+    FinancingScenario,
+    PriceAssumption,
+    validate_state_record,
 )
 from engine.capital_structure.projection import build_projection_bundle  # noqa: E402
 from engine.capital_structure.rule_applicability import (  # noqa: E402
+    build_rule_pack,
     load_rule_applicability_pack,
+)
+from engine.capital_structure.scenario_composition import compose_scenario  # noqa: E402
+from engine.capital_structure.scenario_inputs import (  # noqa: E402
+    CAPACITY_INPUTS_FILENAME,
+    ISSUER_FAMILIES,
+    RulesEntry,
+    ScenarioInputsUnavailable,
+    assemble_scenario_inputs,
 )
 from engine.capital_structure.state_bundle import (  # noqa: E402
     build_state_bundle,
+    issuer_inputs,
+    state_from_record,
+    then_known_state,
     validate_state_bundle,
 )
 from engine.capital_structure.verified_projection_generation import (  # noqa: E402
@@ -85,6 +104,25 @@ _STATE_NOT_BOUND = "state generation does not bind served projection"
 
 _FORBIDDEN = re.compile(r"\b(should|probability|score|rank|target|buy|sell)\b", re.I)
 _SEC_ORIGIN = "https://www.sec.gov"
+
+# ── U1b (SPEC_U1B §4): the scenario evaluate route ──────────────────────────
+EVALUATE_PATH = f"{PREFIX}/issuers/{ISSUER_ONE}/scenarios/evaluate"
+#: The scenario world: the state is cut at AS_OF, so the horizon starts that day
+#: and the L0 pack must govern it — capacity re-proves the rule digest at the
+#: horizon start before it evaluates anything.
+HORIZON_START = "2026-10-14"
+HORIZON_END = "2026-12-31"
+RULE_DATE = "2026-10-14"
+SCENARIO_PRICE = "2.00"
+FEE_RATE = "0.05"
+SCENARIO_LABEL = "u1b evaluate route fixture"
+SCENARIO_ASSUMPTIONS = (
+    ("burn_basis", "fixed_usd_per_day:51000"),
+    ("working_capital_basis", "excluded"),
+    ("seasonality_basis", "flat"),
+)
+_INPUTS_UNAVAILABLE = "capacity inputs unavailable"
+_INPUTS_NOT_BOUND = "capacity inputs do not bind served state"
 
 
 @pytest.fixture(scope="module")
@@ -230,6 +268,7 @@ class _Served(NamedTuple):
     def reset(self) -> None:
         api._reset_cache()
         api._reset_state_cache()
+        api._reset_inputs_cache()
 
 
 @pytest.fixture()
@@ -1094,3 +1133,619 @@ def test_u1_then_known_reads_the_verified_generation_once_per_request(
         == 200
     )
     assert served.generation_calls["generation"] == 1
+
+
+# ===========================================================================
+# U1b (SPEC_U1B §4): the private scenario evaluate route
+# ===========================================================================
+
+
+class _Inputs(NamedTuple):
+    """One test's published capacity inputs bundle, wired next to the state."""
+
+    record: dict[str, Any]
+    path: Path
+
+
+def _fixture_entries(as_of: str) -> dict[str, Any]:
+    """The S0 §10 per-issuer families, re-keyed to the served state's identity.
+
+    Imported from the U1B-1 suite's own fixtures (never copied): the objects are
+    contract instances, so re-keying issuer/as_of is a constructor round trip,
+    and ``inputs_suite._entry_for`` binds each one exactly as the producer does.
+    """
+    instruments = dataclasses.replace(
+        inputs_suite._fixture_instruments(), issuer_id=ISSUER_ONE, as_of=as_of
+    )
+    basis = dataclasses.replace(SS.basis(), issuer_id=ISSUER_ONE, as_of=as_of)
+    financials = F.financials(F.cash(), F.ocf())
+    commitments = F.covenants(
+        F.covenant("cov-min-1", "2000000", available_at="2026-10-01T00:00:00Z")
+    )
+    return {
+        inputs_suite.INSTRUMENTS_FAMILY: inputs_suite._entry_for(
+            instruments, inputs_suite.INSTRUMENTS_FAMILY
+        ),
+        inputs_suite.SHARE_BASIS_FAMILY: inputs_suite._entry_for(
+            basis, inputs_suite.SHARE_BASIS_FAMILY
+        ),
+        inputs_suite.FINANCIALS_FAMILY: inputs_suite._entry_for(
+            financials, inputs_suite.FINANCIALS_FAMILY
+        ),
+        inputs_suite.COMMITMENTS_FAMILY: inputs_suite._entry_for(
+            commitments, inputs_suite.COMMITMENTS_FAMILY
+        ),
+    }
+
+
+def _rules_entry(as_of_day: str) -> RulesEntry:
+    """The L0 pack as of the horizon date, with the builder's own unknowns kept."""
+    built, unknowns, _conditions, _excluded = build_rule_pack(
+        load_rule_applicability_pack(), as_of_day
+    )
+    assert built is not None, f"the L0 pack governs on {as_of_day}"
+    return RulesEntry(support="supported", unknowns=tuple(unknowns), record=built)
+
+
+def _inputs_bundle_record(
+    built: _Built,
+    *,
+    entries: dict[str, Any] | None = None,
+    rules: RulesEntry | None = None,
+    as_of: str | None = None,
+    state_generation_id: str | None = None,
+) -> dict[str, Any]:
+    """One serialized capacity inputs bundle bound to the served state fixture."""
+    bundle_as_of = as_of if as_of is not None else built.bundle["as_of"]
+    bundle = inputs_suite.CapacityInputsBundle(
+        as_of=bundle_as_of,
+        generated_at=f"{bundle_as_of[:10]}T12:00:00Z",
+        state_generation_id=(
+            state_generation_id
+            if state_generation_id is not None
+            else built.bundle["generation_id"]
+        ),
+        source_generation_id=stable_id_of_projection(),
+        rules=rules if rules is not None else _rules_entry(bundle_as_of[:10]),
+        issuers={
+            ISSUER_ONE: entries if entries is not None else _fixture_entries(bundle_as_of)
+        },
+    )
+    return json.loads(json.dumps(bundle.as_record(), sort_keys=True))
+
+
+def stable_id_of_projection() -> str:
+    from engine.capital_structure.issuer_state_contracts import stable_id  # noqa: PLC0415
+
+    return stable_id("projection:cs:", {"fixture": "u1b2"})
+
+
+def _test_scenario(**over: Any) -> FinancingScenario:
+    """The request's scenario, built once and rebuilt for every expectation."""
+    kwargs: dict[str, Any] = dict(
+        view="counterfactual",
+        as_of=AS_OF,
+        horizon_start=HORIZON_START,
+        horizon_end=HORIZON_END,
+        price=PriceAssumption("fixed", "USD", fixed_price=SCENARIO_PRICE),
+        actions=(),
+        fee_rate=FEE_RATE,
+        discount_rate=None,
+        other_assumptions=SCENARIO_ASSUMPTIONS,
+        unknown_resolutions=(),
+        label=SCENARIO_LABEL,
+    )
+    kwargs.update(over)
+    return FinancingScenario(**kwargs)
+
+
+def _scenario_body(scenario: FinancingScenario | None = None, **over: Any) -> dict[str, Any]:
+    """The POST body: the constructed scenario's record, identity stripped.
+
+    ``schema`` and ``scenario_id`` are the server's to mint (A32), so the body
+    carries exactly the assumption fields a ``FinancingScenario`` is built from.
+    """
+    record = (_test_scenario() if scenario is None else scenario).as_record()
+    record.pop("schema")
+    record.pop("scenario_id")
+    record.update(over)
+    return record
+
+
+def _checked(response, *, status: int | None = None, allow_advisory: bool = False):
+    """The ONE response helper every U1b test asserts through.
+
+    Private, uncacheable, no store, no validators — on success and on every
+    refusal — and no advisory vocabulary anywhere in a body (the advisory
+    refusal itself excepted: its whole point is to name the word it refused).
+    """
+    if status is not None:
+        assert response.status_code == status, (status, response.text[:400])
+    _headers(response)
+    assert response.headers.get("etag") is None
+    assert response.headers.get("last-modified") is None
+    body = response.json()
+    serialized = json.dumps(body, sort_keys=True).lower()
+    for word in api._RECOMMENDATION_WORDS:
+        if allow_advisory and word in serialized:
+            continue
+        assert word not in serialized, word
+    return body
+
+
+@pytest.fixture()
+def with_inputs(served: _Served, built: _Built) -> _Inputs:
+    """The served artifacts plus a published inputs bundle that binds them."""
+    record = _inputs_bundle_record(built)
+    path = served.state_path.parent / CAPACITY_INPUTS_FILENAME
+    path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    served.reset()
+    yield _Inputs(record, path)
+    api._reset_inputs_cache()
+
+
+def _recomputed_result(
+    built: _Built, inputs_record: dict[str, Any], scenario: FinancingScenario, pack: Any
+) -> dict[str, Any]:
+    """The composition the route owes, recomputed from the same fixtures alone."""
+    state = state_from_record(_state_record(built.bundle, ISSUER_ONE))
+    assembled = assemble_scenario_inputs(
+        inputs_record,
+        ISSUER_ONE,
+        scenario.as_of,
+        served_state_generation_id=built.bundle["generation_id"],
+    )
+    assert not isinstance(assembled, ScenarioInputsUnavailable)
+    result = compose_scenario(
+        state,
+        assembled.instruments,
+        assembled.basis,
+        assembled.financials,
+        assembled.commitments,
+        scenario,
+        assembled.rules,
+        pack=pack,
+    )
+    return result.as_record()
+
+
+# ---------------------------------------------------------------------------
+# Gate 6 — entitlement before any read
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_requires_entitlement_before_any_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _deny_site_full(monkeypatch)
+
+    def refuse(reader: str):
+        def _refuse(*_args, **_kwargs):
+            raise AssertionError(f"{reader} must follow entitlement")
+
+        return _refuse
+
+    for reader in ("_load", "_load_state", "_load_inputs", "_load_generation"):
+        monkeypatch.setattr(api, reader, refuse(reader))
+
+    with _bare_client() as test_client:
+        response = test_client.post(
+            EVALUATE_PATH,
+            json=_scenario_body(),
+            headers={"Authorization": "Bearer signed-in-free-user"},
+        )
+    _checked(response, status=403)
+    assert _detail(response)["required_feature"] == "site_full"
+
+
+# ---------------------------------------------------------------------------
+# Gate 7 — private, no-store, never shared-cached: on 200 and on every refusal
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_is_private_no_store_and_never_shared_cached(
+    client: TestClient, served: _Served, with_inputs: _Inputs
+) -> None:
+    responses = []
+
+    happy = client.post(EVALUATE_PATH, json=_scenario_body())
+    responses.append(happy)
+    unknown = client.post(EVALUATE_PATH, json=_scenario_body(strategist_note="x"))
+    responses.append(unknown)
+    mismatch = client.post(EVALUATE_PATH, json=_scenario_body(view="then_known"))
+    responses.append(mismatch)
+    uncovered = client.post(
+        f"{PREFIX}/issuers/sec:cik:9999999999/scenarios/evaluate", json=_scenario_body()
+    )
+    responses.append(uncovered)
+
+    served.state_path.parent.joinpath(CAPACITY_INPUTS_FILENAME).unlink()
+    served.reset()
+    absent = client.post(EVALUATE_PATH, json=_scenario_body())
+    responses.append(absent)
+
+    assert [response.status_code for response in responses] == [200, 422, 409, 404, 503]
+    for response in responses:
+        _checked(response)
+    assert happy.headers["cache-control"] == "private, no-store"
+
+
+# ---------------------------------------------------------------------------
+# Gate 8 — body limits fail closed; the contract's own violation is verbatim
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "shape",
+    (
+        "body_over_32kib",
+        "actions_over_16",
+        "unknown_field",
+        "label_over_120_chars",
+        "price_not_an_object",
+    ),
+)
+def test_u1b_evaluate_body_limits_fail_closed(
+    client: TestClient, with_inputs: _Inputs, shape: str
+) -> None:
+    if shape == "body_over_32kib":
+        body = {"view": "counterfactual", "padding": "a" * (32 * 1024 + 1)}
+        response = client.post(
+            EVALUATE_PATH,
+            content=json.dumps(body).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        assert response.status_code == 413
+        _checked(response)
+        return
+
+    if shape == "actions_over_16":
+        body = _scenario_body(actions=[{"route_id": f"route:{i}"} for i in range(17)])
+        expected = "too many actions"
+    elif shape == "unknown_field":
+        body = _scenario_body(strategist_note="x")
+        expected = "unknown field: strategist_note"
+    elif shape == "label_over_120_chars":
+        body = _scenario_body(label="u" * 121)
+        expected = "label too long"
+    else:
+        body = _scenario_body(price="fixed")
+        expected = "scenario.price: PriceAssumption required"
+
+    response = client.post(EVALUATE_PATH, json=body)
+    assert response.status_code == 422, (shape, response.text[:300])
+    if shape == "price_not_an_object":
+        assert _detail(response) == {"contract_error": expected}
+    else:
+        assert _detail(response) == expected
+    _checked(response)
+
+
+# ---------------------------------------------------------------------------
+# Gate 9 — the response echoes the scenario view identity, server-minted
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_echoes_the_scenario_view_identity(
+    client: TestClient, served: _Served, with_inputs: _Inputs
+) -> None:
+    bundle = served.built.bundle
+    published = _state_record(bundle, ISSUER_ONE)
+    scenario = _test_scenario()
+
+    body = _checked(client.post(EVALUATE_PATH, json=_scenario_body()), status=200)
+    assert body["view"] == {
+        "mode": "scenario",
+        "as_of": AS_OF,
+        "clock": "system",
+        "state_id": published["state_id"],
+        "generation_id": bundle["generation_id"],
+        "scenario_id": scenario.scenario_id,
+    }
+    assert body["compatibility"] == PROJECTION_COMPATIBILITY
+    assert body["authority"] == AUTHORITY
+    # Gate 3's route half: every family is echoed with support, reasons, binding,
+    # exactly as the published bundle names them; rules carries no binding.
+    published = with_inputs.record["issuers"][ISSUER_ONE]
+    assert body["inputs"] == {
+        **{
+            family: {
+                "support": published[family]["support"],
+                "reason_codes": list(published[family]["reason_codes"]),
+                "binding": published[family]["binding"],
+            }
+            for family in ISSUER_FAMILIES
+        },
+        "rules": {
+            "support": with_inputs.record["rules"]["support"],
+            "reason_codes": list(with_inputs.record["rules"]["reason_codes"]),
+            "binding": None,
+        },
+    }
+    supports = {family: row["support"] for family, row in body["inputs"].items()}
+    assert set(supports.values()) <= {"supported", "partial"}
+
+    # A32: a client-supplied scenario_id is an unknown field, never an identity.
+    imposed = client.post(EVALUATE_PATH, json=_scenario_body(scenario_id="scenario:mine"))
+    assert imposed.status_code == 422
+    assert _detail(imposed) == "unknown field: scenario_id"
+    _checked(imposed)
+
+
+# ---------------------------------------------------------------------------
+# Gate 10 — a then-known anchor runs only on then-known facts
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_then_known_anchor_requires_then_known_state(
+    client: TestClient,
+    served: _Served,
+    with_inputs: _Inputs,
+    pack,
+) -> None:
+    built = served.built
+    bundle = built.bundle
+
+    mismatch = client.post(EVALUATE_PATH, json=_scenario_body(view="then_known"))
+    assert mismatch.status_code == 409
+    assert _detail(mismatch) == "view_mismatch:then_known_scenario_on_current_state"
+    _checked(mismatch)
+
+    # The same scenario on the then-known state at the bundle's own cutoff:
+    # counterfactual on either state composes, and the bytes are S0's own.
+    derived = then_known_state(
+        _state_record(bundle, ISSUER_ONE),
+        issuer_inputs(bundle, built.generation, ISSUER_ONE),
+        cutoff=AS_OF,
+        rule_pack=pack,
+    )
+    response = client.post(
+        EVALUATE_PATH,
+        params={"mode": "then_known", "cutoff": AS_OF},
+        json=_scenario_body(view="counterfactual"),
+    )
+    assert response.status_code == 200, response.text[:400]
+    body = _checked(response)
+    assert body["view"]["mode"] == "scenario"
+    assert body["view"]["as_of"] == AS_OF
+    assert body["view"]["state_id"] == derived.state_id
+    assert body["view"]["state_id"] != _state_record(bundle, ISSUER_ONE)["state_id"]
+    recomputed = _recomputed_then_known(built, with_inputs.record, pack)
+    assert json.dumps(body["result"], sort_keys=True) == json.dumps(
+        recomputed, sort_keys=True
+    )
+
+
+def _recomputed_then_known(built: _Built, inputs_record: dict[str, Any], pack: Any) -> dict:
+    derived = then_known_state(
+        _state_record(built.bundle, ISSUER_ONE),
+        issuer_inputs(built.bundle, built.generation, ISSUER_ONE),
+        cutoff=AS_OF,
+        rule_pack=pack,
+    )
+    scenario = _test_scenario()
+    assembled = assemble_scenario_inputs(
+        inputs_record,
+        ISSUER_ONE,
+        scenario.as_of,
+        served_state_generation_id=built.bundle["generation_id"],
+    )
+    assert not isinstance(assembled, ScenarioInputsUnavailable)
+    return compose_scenario(
+        derived,
+        assembled.instruments,
+        assembled.basis,
+        assembled.financials,
+        assembled.commitments,
+        scenario,
+        assembled.rules,
+        pack=pack,
+    ).as_record()
+
+
+# ---------------------------------------------------------------------------
+# Gate 11 — the S0 result record, unchanged
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_returns_the_s0_result_record_unchanged(
+    client: TestClient, served: _Served, with_inputs: _Inputs, pack
+) -> None:
+    scenario = _test_scenario()
+    body = _checked(client.post(EVALUATE_PATH, json=_scenario_body()), status=200)
+    assert set(body) == {
+        "view",
+        "inputs",
+        "result",
+        "facts_unchanged",
+        "compatibility",
+        "authority",
+    }
+    assert body["facts_unchanged"] is True
+    validate_state_record("scenario_result", body["result"])
+    recomputed = _recomputed_result(served.built, with_inputs.record, scenario, pack)
+    assert json.dumps(body["result"], sort_keys=True) == json.dumps(
+        recomputed, sort_keys=True
+    )
+
+
+# ---------------------------------------------------------------------------
+# Gate 12 — unavailable inputs are a typed 409, never a partial answer
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_unavailable_inputs_is_409_with_components(
+    client: TestClient,
+    served: _Served,
+    built: _Built,
+) -> None:
+    entries = _fixture_entries(built.bundle["as_of"])
+    entries[inputs_suite.FINANCIALS_FAMILY] = inputs_suite.FamilyEntry(
+        family=inputs_suite.FINANCIALS_FAMILY,
+        support="unavailable",
+        reason_codes=("companyfacts_snapshot_unavailable",),
+    )
+    entries[inputs_suite.SHARE_BASIS_FAMILY] = inputs_suite.FamilyEntry(
+        family=inputs_suite.SHARE_BASIS_FAMILY,
+        support="unavailable",
+        reason_codes=("share_observations_not_admitted",),
+    )
+    record = _inputs_bundle_record(built, entries=entries)
+    path = served.state_path.parent / CAPACITY_INPUTS_FILENAME
+    path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    served.reset()
+
+    response = client.post(EVALUATE_PATH, json=_scenario_body())
+    assert response.status_code == 409, response.text[:400]
+    detail = _checked(response)["detail"]
+    assert detail == {
+        "code": "scenario_inputs_unavailable",
+        "components": {
+            "financials": {
+                "support": "unavailable",
+                "reason_codes": ["companyfacts_snapshot_unavailable"],
+            },
+            "share_basis": {
+                "support": "unavailable",
+                "reason_codes": ["share_observations_not_admitted"],
+            },
+        },
+        "available": ["instruments", "commitments", "rules"],
+    }
+    assert "result" not in json.dumps(response.json())
+
+
+# ---------------------------------------------------------------------------
+# Gate 13 — nothing is persisted, cached or logged
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_never_persists(
+    client: TestClient,
+    served: _Served,
+    with_inputs: _Inputs,
+    caplog: pytest.LogCaptureFixture,
+    pack,
+) -> None:
+    import logging
+
+    def snapshot() -> list[tuple[str, int]]:
+        root = served.state_path.parent
+        return sorted(
+            (str(path.relative_to(root)), path.stat().st_size)
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+
+    before = snapshot()
+    body = _scenario_body()
+    with caplog.at_level(logging.DEBUG):
+        first = client.post(EVALUATE_PATH, json=body)
+        second = client.post(EVALUATE_PATH, json=body)
+    first_body = _checked(first, status=200)
+    second_body = _checked(second, status=200)
+    assert snapshot() == before
+    assert first_body["result"]["result_id"] == second_body["result"]["result_id"]
+    assert first_body["result"]["result_id"] == _recomputed_result(
+        served.built, with_inputs.record, _test_scenario(), pack
+    )["result_id"]
+    assert all(
+        SCENARIO_LABEL not in record.getMessage() for record in caplog.records
+    )
+
+
+# ---------------------------------------------------------------------------
+# Gate 14 — advisory vocabulary is refused in the body, absent from the answer
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_evaluate_rejects_recommendation_vocabulary_in_body_and_response(
+    client: TestClient, with_inputs: _Inputs
+) -> None:
+    labelled = client.post(
+        EVALUATE_PATH, json=_scenario_body(label="should raise in December")
+    )
+    assert labelled.status_code == 422
+    detail = _detail(labelled)
+    assert "should raise" in detail
+    _checked(labelled, allow_advisory=True)
+
+    scored = client.post(EVALUATE_PATH, json=_scenario_body(score="1"))
+    assert scored.status_code == 422
+    assert "score" in _detail(scored)
+    _checked(scored, allow_advisory=True)
+
+    body = _checked(client.post(EVALUATE_PATH, json=_scenario_body()), status=200)
+    assert body["authority"]["prophet_authority"] is False
+
+
+# ---------------------------------------------------------------------------
+# Gate 15 — the inputs bundle fails closed while the state keeps serving
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_inputs_bundle_fails_closed_while_state_keeps_serving(
+    client: TestClient, served: _Served, built: _Built
+) -> None:
+    inputs_path = served.state_path.parent / CAPACITY_INPUTS_FILENAME
+    state_url = f"{PREFIX}/issuers/{ISSUER_ONE}/state"
+    body = _scenario_body()
+
+    def evaluate() -> Any:
+        return client.post(EVALUATE_PATH, json=body)
+
+    assert not inputs_path.exists()
+    missing = evaluate()
+    assert missing.status_code == 503
+    assert _detail(missing) == _INPUTS_UNAVAILABLE
+    _checked(missing)
+    assert client.get(state_url).status_code == 200
+
+    inputs_path.write_text("{not-json", encoding="utf-8")
+    served.reset()
+    unparseable = evaluate()
+    assert unparseable.status_code == 503
+    assert _detail(unparseable) == _INPUTS_UNAVAILABLE
+    _checked(unparseable)
+    assert client.get(state_url).status_code == 200
+
+    invalid = _inputs_bundle_record(built)
+    invalid["schema"] = "capital_structure.capacity_inputs.v9"
+    inputs_path.write_text(json.dumps(invalid, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    served.reset()
+    wrong_schema = evaluate()
+    assert wrong_schema.status_code == 503
+    assert _detail(wrong_schema) == _INPUTS_UNAVAILABLE
+    _checked(wrong_schema)
+    assert client.get(state_url).status_code == 200
+
+    foreign = _inputs_bundle_record(built, state_generation_id="state_bundle:another")
+    inputs_path.write_text(json.dumps(foreign, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    served.reset()
+    unbound = evaluate()
+    assert unbound.status_code == 503
+    assert _detail(unbound) == _INPUTS_NOT_BOUND
+    _checked(unbound)
+    assert client.get(state_url).status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Gate 20 — the production mount probe includes the evaluate route
+# ---------------------------------------------------------------------------
+
+
+def test_u1b_router_mount_probe_includes_evaluate() -> None:
+    """Gate 20: the evaluate route is entitled at declaration and mounted."""
+    route = next(
+        route
+        for route in api.router.routes
+        if route.path == f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate"
+    )
+    assert "POST" in route.methods
+    calls = {dependency.call for dependency in route.dependant.dependencies}
+    assert api.require_site_full_user in calls
+
+    import app.main as main_mod  # noqa: PLC0415
+
+    mounted = main_mod.app.openapi().get("paths", {})
+    assert f"{PREFIX}/issuers/{{issuer_id}}/scenarios/evaluate" in mounted

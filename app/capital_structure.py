@@ -24,12 +24,21 @@ from pathlib import Path
 from typing import Any, NamedTuple
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, Response
 
+from engine.capital_structure.capacity import CapacityInputError
+from engine.capital_structure.funding import FundingInputError
 from engine.capital_structure.issuer_state_contracts import (
     AUTHORITY,
     PROJECTION_COMPATIBILITY,
+    ActionSelection,
     ContractViolation,
+    EvidenceRef,
+    FinancingScenario,
+    PriceAssumption,
+    Provenance,
+    Quantity,
+    UnknownResolution,
 )
 from engine.capital_structure.projection import (
     PROJECTION_BUNDLE_SCHEMA,
@@ -42,11 +51,26 @@ from engine.capital_structure.rule_applicability import (
     load_rule_applicability_pack,
     rule_status_as_of,
 )
+from engine.capital_structure.scenario_composition import (
+    ScenarioCompositionError,
+    compose_scenario,
+)
+from engine.capital_structure.scenario_inputs import (
+    CAPACITY_INPUTS_FILENAME,
+    CAPACITY_INPUTS_SCHEMA,
+    ISSUER_FAMILIES,
+    RULES_FAMILY,
+    ScenarioInputsError,
+    ScenarioInputsUnavailable,
+    assemble_scenario_inputs,
+    validate_capacity_inputs_bundle,
+)
 from engine.capital_structure.state_bundle import (
     STATE_BUNDLE_SCHEMA,
     coverage_for,
     issuer_inputs,
     not_yet_observed,
+    state_from_record,
     then_known_state,
     validate_state_bundle,
 )
@@ -77,6 +101,12 @@ _STATE_CACHE: dict[str, Any] = {
     "size": None,
     "payload": None,
 }
+_INPUTS_CACHE: dict[str, Any] = {
+    "path": None,
+    "mtime_ns": None,
+    "size": None,
+    "payload": None,
+}
 #: The verified generation is read only on the then-known path, and is cached on
 #: the three artifacts that decide its contents.
 _GENERATION_ARTIFACTS = ("telemetry.json", "event_versions.parquet", "event_edges.parquet")
@@ -97,6 +127,32 @@ _PUBLIC_CLOCK_NOTE = "public clock not separately modelled in this generation"
 _STATE_UNAVAILABLE = "capital structure state unavailable"
 _STATE_NOT_BOUND = "state generation does not bind served projection"
 _ABSENT_RULE_CONDITION = "rule text not in the applicability pack"
+#: U1b: the published capacity inputs bundle sits next to the state bundle it
+#: binds, and every refusal below is verbatim from SPEC_U1B §4.
+_INPUTS_UNAVAILABLE = "capacity inputs unavailable"
+_INPUTS_NOT_BOUND = "capacity inputs do not bind served state"
+_SCENARIO_AS_OF_MISMATCH = "scenario.as_of must equal the state cutoff"
+_MAX_SCENARIO_BODY_BYTES = 32 * 1024
+_MAX_SCENARIO_ACTIONS = 16
+_MAX_SCENARIO_LABEL_CHARS = 120
+_RECOMMENDATION_WORDS = ("recommend", "should buy", "should sell", "should raise", "target price", "score")
+#: The exact top-level body a ``FinancingScenario`` is built from.  Anything
+#: else — including a client-supplied ``scenario_id`` — is an unknown field.
+_SCENARIO_BODY_FIELDS = frozenset(
+    {
+        "view",
+        "as_of",
+        "horizon_start",
+        "horizon_end",
+        "price",
+        "actions",
+        "fee_rate",
+        "discount_rate",
+        "other_assumptions",
+        "unknown_resolutions",
+        "label",
+    }
+)
 
 #: Source grades whose retained text a viewer grant may expose.  U1a retains no
 #: source text locally, so ``_retained_excerpt`` is the single hook a later grant
@@ -149,6 +205,12 @@ def _reset_state_cache() -> None:
     with _LOCK:
         _STATE_CACHE.update(path=None, mtime_ns=None, size=None, payload=None)
         _GENERATION_CACHE.update(key=None, payload=None)
+
+
+def _reset_inputs_cache() -> None:
+    """Test seam for the published capacity inputs bundle."""
+    with _LOCK:
+        _INPUTS_CACHE.update(path=None, mtime_ns=None, size=None, payload=None)
 
 
 def _records(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -235,6 +297,54 @@ def _load_state() -> dict[str, Any]:
 
         _STATE_CACHE.update(
             path=str(STATE_PATH),
+            mtime_ns=stat.st_mtime_ns,
+            size=stat.st_size,
+            payload=value,
+        )
+        return value
+
+
+def _load_inputs() -> dict[str, Any]:
+    """Read one validated published capacity inputs bundle, or fail closed.
+
+    The bundle is published next to the state bundle it binds, so the path is
+    derived from the served ``STATE_PATH`` on every call.  A missing, unreadable
+    or contract-invalid file is :data:`_INPUTS_UNAVAILABLE`; a valid bundle that
+    binds another state generation is :data:`_INPUTS_NOT_BOUND`.  A failed check
+    is never cached.
+    """
+    path = STATE_PATH.parent / CAPACITY_INPUTS_FILENAME
+    try:
+        stat = path.stat()
+    except OSError as exc:
+        raise _unavailable(_INPUTS_UNAVAILABLE) from exc
+
+    with _LOCK:
+        if (
+            _INPUTS_CACHE["payload"] is not None
+            and _INPUTS_CACHE["path"] == str(path)
+            and _INPUTS_CACHE["mtime_ns"] == stat.st_mtime_ns
+            and _INPUTS_CACHE["size"] == stat.st_size
+        ):
+            return _INPUTS_CACHE["payload"]
+
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(value, dict) or value.get("schema") != CAPACITY_INPUTS_SCHEMA:
+                raise ValueError("schema mismatch")
+            validate_capacity_inputs_bundle(value)
+        except Exception as exc:  # noqa: BLE001 — a published bundle is all-or-nothing
+            raise _unavailable(_INPUTS_UNAVAILABLE) from exc
+
+    # The binding check reads the state bundle through its own loader (which
+    # takes the same lock), so it runs outside the block above.
+    state = _load_state()
+    if value.get("state_generation_id") != state.get("generation_id"):
+        raise _unavailable(_INPUTS_NOT_BOUND)
+
+    with _LOCK:
+        _INPUTS_CACHE.update(
+            path=str(path),
             mtime_ns=stat.st_mtime_ns,
             size=stat.st_size,
             payload=value,
@@ -651,6 +761,194 @@ def _state_view(
     )
 
 
+# ---------------------------------------------------------------------------
+# U1b — the scenario evaluate route and its body boundary
+# ---------------------------------------------------------------------------
+
+
+def _advisory_match(value: Any) -> str | None:
+    """The first advisory-vocabulary match in one JSON string, or None.
+
+    Applied to every key and every string value of a request body: the joint
+    model answers what the contracted actions and inputs imply, and no field of
+    the request may ask it for advisory language instead.
+    """
+    text = str(value).strip().lower()
+    for word in _RECOMMENDATION_WORDS:
+        if word in text:
+            return word
+    return None
+
+
+def _body_advisory(body: Any) -> str | None:
+    """Scan a parsed body's keys and string values for advisory vocabulary."""
+    if isinstance(body, dict):
+        for key, value in body.items():
+            match = _advisory_match(key) or _body_advisory(value)
+            if match is not None:
+                return match
+        return None
+    if isinstance(body, list):
+        for item in body:
+            match = _body_advisory(item)
+            if match is not None:
+                return match
+        return None
+    if isinstance(body, str):
+        return _advisory_match(body)
+    return None
+
+
+def _quantity_from_body(row: Any) -> Quantity | None:
+    """Build a request ``Quantity`` through the contract constructor only."""
+    if row is None:
+        return None
+    if not isinstance(row, dict):
+        raise ContractViolation("quantity: an object is required")
+    provenance_row = row.get("provenance")
+    provenance = None
+    if provenance_row is not None:
+        if not isinstance(provenance_row, dict):
+            raise ContractViolation("quantity.provenance: an object is required")
+        evidence = provenance_row.get("evidence")
+        if evidence is None:
+            evidence = []
+        if not isinstance(evidence, list):
+            raise ContractViolation("quantity.provenance.evidence: a list is required")
+        refs = []
+        for item in evidence:
+            if not isinstance(item, dict):
+                raise ContractViolation("quantity.provenance.evidence: an object is required")
+            refs.append(
+                EvidenceRef(item.get("manifest_id"), item.get("span_id"), item.get("text_sha256"))
+            )
+        provenance = Provenance(
+            input_family=provenance_row.get("input_family"),
+            generation_id=provenance_row.get("generation_id"),
+            evidence=tuple(refs),
+            available_at=provenance_row.get("available_at"),
+        )
+    return Quantity(
+        unit=row.get("unit"),
+        status=row.get("status") or "unknown",
+        value=row.get("value"),
+        share_basis=row.get("share_basis"),
+        security_class_id=row.get("security_class_id"),
+        applicability=row.get("applicability"),
+        provenance=provenance,
+        note=row.get("note"),
+    )
+
+
+def _scenario_from_body(body: dict[str, Any]) -> FinancingScenario:
+    """The request body as a ``FinancingScenario``, constructor by constructor.
+
+    Every nested object is built through its own frozen contract class, so a
+    body that cannot be a scenario is a ``ContractViolation`` carrying the
+    contract's own message — never a partial guess.
+    """
+    price_row = body.get("price")
+    if not isinstance(price_row, dict):
+        raise ContractViolation("scenario.price: PriceAssumption required")
+    path = price_row.get("path")
+    if path is None:
+        path = []
+    if not isinstance(path, list):
+        raise ContractViolation("price.path: a list of (date, price) pairs is required")
+    price = PriceAssumption(
+        kind=price_row.get("kind"),
+        currency=price_row.get("currency") or "USD",
+        fixed_price=price_row.get("fixed_price"),
+        path=tuple(tuple(point) for point in path),
+    )
+
+    action_rows = body.get("actions")
+    if action_rows is None:
+        action_rows = []
+    if not isinstance(action_rows, list):
+        raise ContractViolation("scenario.actions: a list of ActionSelection is required")
+    actions = []
+    for row in action_rows:
+        if not isinstance(row, dict):
+            raise ContractViolation("scenario.actions: ActionSelection required")
+        conditions = row.get("conditions_assumed_met") or ()
+        if not isinstance(conditions, list):
+            raise ContractViolation("action.conditions_assumed_met: a list is required")
+        actions.append(
+            ActionSelection(
+                route_id=row.get("route_id"),
+                action=row.get("action"),
+                settlement=row.get("settlement"),
+                quantity=_quantity_from_body(row.get("quantity")),
+                conditions_assumed_met=tuple(conditions),
+            )
+        )
+
+    resolution_rows = body.get("unknown_resolutions")
+    if resolution_rows is None:
+        resolution_rows = []
+    if not isinstance(resolution_rows, list):
+        raise ContractViolation("scenario.unknown_resolutions: a list is required")
+    resolutions = []
+    for row in resolution_rows:
+        if not isinstance(row, dict):
+            raise ContractViolation("scenario.unknown_resolutions: UnknownResolution required")
+        resolutions.append(
+            UnknownResolution(
+                unknown_id=row.get("unknown_id"),
+                assumed=_quantity_from_body(row.get("assumed")),
+                rationale=row.get("rationale"),
+            )
+        )
+
+    other = body.get("other_assumptions")
+    if other is None:
+        other = []
+    if not isinstance(other, list):
+        raise ContractViolation("scenario.other_assumptions: a list of pairs is required")
+    label = body.get("label")
+    if label is not None and not isinstance(label, str):
+        raise ContractViolation("scenario.label: a string or null is required")
+    return FinancingScenario(
+        view=body.get("view"),
+        as_of=body.get("as_of"),
+        horizon_start=body.get("horizon_start"),
+        horizon_end=body.get("horizon_end"),
+        price=price,
+        actions=tuple(actions),
+        fee_rate=body.get("fee_rate"),
+        discount_rate=body.get("discount_rate"),
+        other_assumptions=tuple(tuple(item) for item in other),
+        unknown_resolutions=tuple(resolutions),
+        label=label,
+    )
+
+
+def _inputs_view(inputs_record: dict[str, Any], issuer_id: str) -> dict[str, Any]:
+    """The per-family support echo: support, reason codes and binding, no records.
+
+    The served bundle is the provenance of what was composed; echoing its whole
+    records would duplicate the result's own inputs.  ``rules`` is bundle-level
+    and names no binding of its own.
+    """
+    entries = inputs_record["issuers"][issuer_id]
+    echo: dict[str, Any] = {
+        family: {
+            "support": entries[family]["support"],
+            "reason_codes": list(entries[family]["reason_codes"]),
+            "binding": entries[family]["binding"],
+        }
+        for family in ISSUER_FAMILIES
+    }
+    rules = inputs_record["rules"]
+    echo[RULES_FAMILY] = {
+        "support": rules["support"],
+        "reason_codes": list(rules["reason_codes"]),
+        "binding": None,
+    }
+    return echo
+
+
 @router.get("/api/capital-structure/v1/coverage")
 def coverage(response: Response, _user: dict = Depends(require_site_full_user)) -> dict[str, Any]:
     """Coverage/freshness receipt for observed filing state; no inferred risk fields.
@@ -910,6 +1208,119 @@ def issuer_state_view(
         "receipt": resolved.state_record["receipt"],
         "input_generations": resolved.state_record["request"]["input_generations"],
         "not_yet_observed": resolved.not_yet_observed,
+    }
+
+
+@router.post("/api/capital-structure/v1/issuers/{issuer_id}/scenarios/evaluate")
+async def issuer_scenario_evaluate(
+    issuer_id: str,
+    request: Request,
+    response: Response,
+    mode: str | None = Query(default=None),
+    cutoff: str | None = Query(default=None),
+    clock: str | None = Query(default=None),
+    _user: dict = Depends(require_site_full_user),
+) -> dict[str, Any]:
+    """Compose one financing scenario over the served state and inputs, or refuse.
+
+    SPEC_U1B §4.  The route is the only place the product reaches the joint
+    model, and it never persists or caches a scenario: entitlement first, then
+    the served state generation and the published capacity inputs bundle, then
+    the body — built into a ``FinancingScenario`` through the contract
+    constructors only, under strict size and field limits.  A family the
+    bundle cannot bind is a typed 409 that names every unavailable family; the
+    composition itself is S0's, returned unchanged with the request's view
+    identity and the context-only authority receipt.
+    """
+    _private(response)
+    resolved = _state_view(issuer_id, mode, cutoff, clock)
+    state_bundle = resolved.bundle
+    inputs_record = _load_inputs()
+    state = state_from_record(resolved.state_record)
+
+    raw = await request.body()
+    if len(raw) > _MAX_SCENARIO_BODY_BYTES:
+        raise _private_error(413, "request body too large")
+    try:
+        body = json.loads(raw)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise _private_error(422, "request body is not valid JSON") from exc
+    if not isinstance(body, dict):
+        raise _private_error(422, "request body must be a JSON object")
+
+    advisory = _body_advisory(body)
+    if advisory is not None:
+        raise _private_error(422, f"request carries advisory vocabulary: {advisory!r}")
+    unknown = next((str(key) for key in sorted(body) if str(key) not in _SCENARIO_BODY_FIELDS), None)
+    if unknown is not None:
+        raise _private_error(422, f"unknown field: {unknown}")
+    label = body.get("label")
+    if isinstance(label, str) and len(label) > _MAX_SCENARIO_LABEL_CHARS:
+        raise _private_error(422, "label too long")
+    action_rows = body.get("actions")
+    if isinstance(action_rows, list) and len(action_rows) > _MAX_SCENARIO_ACTIONS:
+        raise _private_error(422, "too many actions")
+
+    try:
+        scenario = _scenario_from_body(body)
+    except ContractViolation as exc:
+        raise _private_error(422, {"contract_error": str(exc)}) from exc
+    if scenario.as_of != state.request.as_of:
+        raise _private_error(422, _SCENARIO_AS_OF_MISMATCH)
+
+    try:
+        assembled = assemble_scenario_inputs(
+            inputs_record,
+            issuer_id,
+            scenario.as_of,
+            served_state_generation_id=str(state_bundle["generation_id"]),
+        )
+    except ScenarioInputsError as exc:
+        # A stale binding, another as_of or an unknown issuer is a conflict with
+        # the published bundle — refused, never composed around.
+        raise _private_error(409, str(exc)) from exc
+    if isinstance(assembled, ScenarioInputsUnavailable):
+        raise _private_error(
+            409,
+            {
+                "code": "scenario_inputs_unavailable",
+                "components": assembled.components,
+                "available": list(assembled.available),
+            },
+        )
+    inputs_view = _inputs_view(inputs_record, issuer_id)
+
+    view = _view(
+        "scenario",
+        scenario.as_of,
+        resolved.view["clock"],
+        str(state.state_id),
+        str(state_bundle["generation_id"]),
+    )
+    view["scenario_id"] = scenario.scenario_id
+    try:
+        result = compose_scenario(
+            state,
+            assembled.instruments,
+            assembled.basis,
+            assembled.financials,
+            assembled.commitments,
+            scenario,
+            assembled.rules,
+            pack=_rule_pack(),
+        )
+    except ScenarioCompositionError as exc:
+        raise _private_error(409, str(exc)) from exc
+    except (CapacityInputError, FundingInputError) as exc:
+        raise _private_error(422, str(exc)) from exc
+
+    return {
+        "view": view,
+        "inputs": inputs_view,
+        "result": result.as_record(),
+        "facts_unchanged": True,
+        "compatibility": dict(PROJECTION_COMPATIBILITY),
+        "authority": dict(AUTHORITY),
     }
 
 
