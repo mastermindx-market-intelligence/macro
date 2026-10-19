@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
+from html.parser import HTMLParser
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -70,23 +70,59 @@ def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, by
     return payload, raw
 
 
+class _SectorHeroParser(HTMLParser):
+    """Read the actual served hero tag, ignoring scripts and HTML comments."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.heroes: list[list[tuple[str, str | None]]] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]],
+    ) -> None:
+        if tag != "section":
+            return
+        classes = [value for name, value in attrs if name == "class"]
+        if any(value and "rvx-hero" in value.split() for value in classes):
+            self.heroes.append(attrs)
+
+
 def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"site/sector_central.html is absent or unreadable: {exc}")
         return {key: None for key in _HTML_ATTRS}
-    # Non-greedy so text between two comments survives; an unclosed
-    # ``<!--`` hides the rest of the page from a browser, so it does here too.
-    text = re.sub(r"<!--.*?(?:-->|\Z)", "", text, flags=re.S)
-    out: dict[str, str | None] = {}
-    for key, attr in _HTML_ATTRS.items():
-        match = re.search(rf'\b{re.escape(attr)}="([^"]+)"', text)
-        out[key] = match.group(1) if match else None
-        if match is None:
-            errors.append(f"site/sector_central.html is missing {attr}")
-    return out
 
+    parser = _SectorHeroParser()
+    try:
+        parser.feed(text)
+        parser.close()
+    except ValueError as exc:
+        errors.append(f"site/sector_central.html has invalid markup: {exc}")
+        return {key: None for key in _HTML_ATTRS}
+    if len(parser.heroes) != 1:
+        errors.append(
+            "site/sector_central.html must have exactly one rvx-hero section "
+            f"for source verification (found {len(parser.heroes)})"
+        )
+    # Diagnostic values may be printed, but an extra or missing hero ALWAYS
+    # fails the release. No attribute from another DOM node can supply the
+    # missing source clock or byte stamps.
+    attrs = parser.heroes[0] if len(parser.heroes) == 1 else []
+    out: dict[str, str | None] = {}
+    for key, name in _HTML_ATTRS.items():
+        values = [value for attr, value in attrs if attr == name]
+        if len(values) != 1 or not values[0]:
+            out[key] = None
+            errors.append(
+                f"site/sector_central.html is missing {name}"
+                if not values else
+                f"site/sector_central.html has ambiguous {name}"
+            )
+        else:
+            out[key] = values[0]
+    return out
 
 def _require_date(
     label: str,
