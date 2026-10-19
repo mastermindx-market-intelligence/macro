@@ -64,7 +64,7 @@
     'text_annotations'
   ];
   var DATE_KEYS = ['id', 'value', 'known_at', 'label_code', 'semantic', 'source_ref'];
-  var AMOUNT_KEYS = ['id', 'value', 'currency', 'known_at', 'label_code', 'semantic', 'source_ref', 'is_lower_bound'];
+  var AMOUNT_KEYS = ['id', 'value', 'currency', 'known_at', 'as_of', 'label_code', 'semantic', 'source_ref', 'is_lower_bound'];
   var IMPACT_KEYS = [
     'ticker', 'company_name', 'relation_semantic', 'confidence', 'stance',
     'why_it_matters_en', 'why_it_matters_zh', 'watch_next_en', 'watch_next_zh',
@@ -164,6 +164,7 @@
       out.source_ref = safeUrl(out.source_ref);
       out.value = sanitizeScalar(out.value);
       out.currency = text(out.currency, 12);
+      if (Object.prototype.hasOwnProperty.call(out, 'as_of')) out.as_of = text(out.as_of, 100) || null;
       return out.id ? out : null;
     });
   }
@@ -431,10 +432,14 @@
     return '';
   }
 
-  function primaryAmount(event) {
+  function primaryAmountFact(event) {
     var wanted = event.primary_amount_id;
-    var row = array(event.amounts).filter(function (item) { return object(item) && item.id === wanted; })[0];
-    return row && typeof row.value === 'number' ? row.value : '';
+    return array(event.amounts).filter(function (item) { return object(item) && item.id === wanted; })[0] || {};
+  }
+
+  function primaryAmount(event) {
+    var row = primaryAmountFact(event);
+    return typeof row.value === 'number' ? row.value : '';
   }
 
   function primaryDate(event) {
@@ -692,7 +697,10 @@
         'event_id', 'record_id', 'version', 'kind', 'state', 'title_original', 'title_zh',
         'agency', 'primary_ticker', 'change_type', 'change_known_at', 'primary_date',
         'primary_amount', 'mapping_class', 'source_class', 'source_receipt_url',
-        'authority_tier', 'context_only', 'can_rank', 'can_size', 'limitations'
+        'authority_tier', 'context_only', 'can_rank', 'can_size', 'limitations',
+        'primary_amount_id', 'primary_amount_currency', 'primary_amount_semantic',
+        'primary_amount_label_code', 'primary_amount_known_at', 'primary_amount_as_of',
+        'primary_amount_source_ref', 'primary_amount_is_lower_bound'
       ];
       var rows = [headers];
       payload.records.forEach(function (event) {
@@ -700,6 +708,8 @@
         var change = event.change || {};
         var evidence = event.evidence || {};
         var authority = event.authority || {};
+        var amountValue = primaryAmount(event);
+        var amount = amountValue === '' ? {} : primaryAmountFact(event);
         rows.push([
           payload.contract, meta.bundle_id, meta.schema_version, meta.event_contract,
           meta.as_of, meta.known_at, payload.query.filters.mode, payload.query.filters.truth,
@@ -707,14 +717,16 @@
           event.event_id, event.record_id, event.version, event.kind, event.state,
           event.title_original, event.title_zh,
           agency.department_name || agency.name || '', event.primary_ticker,
-          change.type, change.known_at, primaryDate(event), primaryAmount(event),
+          change.type, change.known_at, primaryDate(event), amountValue,
           evidence.mapping_class, evidence.source_class, firstReceiptUrl(event),
           authority.tier, authority.context_only, authority.can_rank, authority.can_size,
-          meta.limitations
+          meta.limitations,
+          amount.id, amount.currency, amount.semantic, amount.label_code,
+          amount.known_at, amount.as_of, amount.source_ref, amount.is_lower_bound
         ]);
       });
       var bundle = (meta.bundle_id || 'unversioned').replace(/[^A-Za-z0-9._-]/g, '_');
-      var day = (meta.as_of || 'undated').replace(/[^0-9-]/g, '');
+      var day = (String(meta.as_of || '').match(/^\d{4}-\d{2}-\d{2}/) || [])[0] || 'undated';
       return {
         contract: EXPORT_CONTRACT,
         media_type: 'text/csv;charset=utf-8',

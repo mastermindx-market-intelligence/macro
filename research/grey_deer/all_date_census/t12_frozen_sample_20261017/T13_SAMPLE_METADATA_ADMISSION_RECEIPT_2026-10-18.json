@@ -1,0 +1,43 @@
+{
+  "command": [
+    "python3",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837/research/grey_deer/all_date_census/t12_frozen_sample_20261017/t13_sample_metadata_admission.py",
+    "--sample",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837/research/grey_deer/all_date_census/t12_frozen_sample_20261017/sample.json",
+    "--receipt",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837/research/grey_deer/all_date_census/t12_frozen_sample_20261017/receipt.json",
+    "--contract",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837/research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_USE_CONTRACT_2026-10-18.md",
+    "--contract-sha256",
+    "4c7a9d2225e9c27d6abd6a5f124b1f7fe6a70844c1adc4e8485b2c1f8c1ec8ce",
+    "--freeze-commit",
+    "9102e6954db145b92dd3d1c32e113405104ce212",
+    "--output",
+    "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-meta-ceo-evidence-20261017-01a14837/research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_ADMISSION_2026-10-18.json"
+  ],
+  "completed_at": "2026-10-18T02:07:24.693074+00:00",
+  "elapsed_seconds": 0.06667500000912696,
+  "exit_code": 0,
+  "features_joined": false,
+  "fits": 0,
+  "freeze_commit": "9102e6954db145b92dd3d1c32e113405104ce212",
+  "input_sha256": {
+    "T13_SAMPLE_USE_CONTRACT_2026-10-18.md": "4c7a9d2225e9c27d6abd6a5f124b1f7fe6a70844c1adc4e8485b2c1f8c1ec8ce",
+    "receipt.json": "ad8a1f5fe92fb12690a25794f917619a2e113baaf9a07fc3f446207020340d4f",
+    "sample.json": "944e0054b724aef775a5073ee8a1537779b464454a304acf4a4b396cd818a583",
+    "t13_sample_metadata_admission.py": "0d1b6e55aafb58932c5b581ac406c96e242f199f7838c3e8abc723039b6498ff"
+  },
+  "labels_recomputed": false,
+  "one_diagnostic_invocation": true,
+  "output_bytes": 1248719,
+  "output_sha256": "91a45bc0f4ecb650db01bdeb5e9ec6834a09249ed4057d5a5d54a4d5cd6841e5",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "root_verified_commit_contains_exact_inputs": true,
+  "runtime_mutation": false,
+  "sample_regenerated": false,
+  "schema": "grey_deer.t13_metadata_execution_receipt.v1",
+  "started_at": "2026-10-18T02:07:24.626119+00:00",
+  "stderr": "",
+  "stdout": "{\"bytes\": 1248719, \"fit_admitted\": false, \"horizons\": [{\"common_offset_supported_pairs\": 9, \"confirmatory_model_admission\": \"NOT_ADMITTED\", \"episodes\": 6, \"episodes_with_common_offset_supported_control\": 4, \"episodes_with_established_positive_support\": 6, \"episodes_with_role_supported_control\": 4, \"episodes_with_three_common_offset_supported_controls\": 2, \"horizon\": 5, \"independent_episode_count\": null, \"minimal_common_offset_support\": \"NECESSARY_SUPPORT_PRESENT_NOT_POWER\", \"minimal_role_support\": \"NECESSARY_SUPPORT_PRESENT_NOT_POWER\", \"original_positive_origins\": 32, \"original_requested_allocation\": \"INCOMPLETE_REQUESTED_ALLOCATION\", \"original_shortfall\": 8, \"placed_controls\": 10, \"requested_controls\": 18, \"role_supported_pairs\": 9}, {\"common_offset_supported_pairs\": 2, \"confirmatory_model_admission\": \"NOT_ADMITTED\", \"episodes\": 7, \"episodes_with_common_offset_supported_control\": 2, \"episodes_with_established_positive_support\": 7, \"episodes_with_role_supported_control\": 2, \"episodes_with_three_common_offset_supported_controls\": 0, \"horizon\": 10, \"independent_episode_count\": null, \"minimal_common_offset_support\": \"NECESSARY_SUPPORT_PRESENT_NOT_POWER\", \"minimal_role_support\": \"NECESSARY_SUPPORT_PRESENT_NOT_POWER\", \"original_positive_origins\": 99, \"original_requested_allocation\": \"INCOMPLETE_REQUESTED_ALLOCATION\", \"original_shortfall\": 18, \"placed_controls\": 3, \"requested_controls\": 21, \"role_supported_pairs\": 2}, {\"common_offset_supported_pairs\": 0, \"confirmatory_model_admission\": \"NOT_ADMITTED\", \"episodes\": 8, \"episodes_with_common_offset_supported_control\": 0, \"episodes_with_established_positive_support\": 7, \"episodes_with_role_supported_control\": 0, \"episodes_with_three_common_offset_supported_controls\": 0, \"horizon\": 21, \"independent_episode_count\": null, \"minimal_common_offset_support\": \"REFUSE_NO_ESTABLISHED_MATCHED_SUPPORT\", \"minimal_role_support\": \"REFUSE_NO_ESTABLISHED_MATCHED_SUPPORT\", \"original_positive_origins\": 238, \"original_requested_allocation\": \"INCOMPLETE_REQUESTED_ALLOCATION\", \"original_shortfall\": 23, \"placed_controls\": 1, \"requested_controls\": 24, \"role_supported_pairs\": 0}], \"metadata_diagnostic\": \"ACCEPTED_EXACT_IDENTITY_AND_STRUCTURE\", \"output_sha256\": \"91a45bc0f4ecb650db01bdeb5e9ec6834a09249ed4057d5a5d54a4d5cd6841e5\"}\n",
+  "trial_writes": 0
+}

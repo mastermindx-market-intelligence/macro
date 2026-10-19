@@ -669,6 +669,10 @@ ADMIN_MUST_NOT_RESTART = [
     "app/research.py",
     "lib/config.py",
     "scripts/build_site.py",
+    "engine/research_codegen/transport.py",
+    "engine/experiments_registry.py",
+    "data/research_factory/review/queue.json",
+    "templates/theme.css",
     "templates/index.html.j2",
 ]
 
@@ -918,6 +922,19 @@ def test_api_load_time_import_closure_is_covered_by_restart_regex():
     )
 
 
+def test_gmi_bea_imports_restart_api_without_restart_on_unrelated_ontology():
+    """Only the GMI API's actual import-cached modules need the API restart."""
+    for path in (
+        "engine/market_ontology/__init__.py",
+        "engine/market_ontology/exposure_map.py",
+        "engine/market_ontology/bea_gvc_current.py",
+    ):
+        assert _triggers_restart(path), path
+    # Other ontology research modules are not imported by macro-api on startup.
+    # Adding a blanket directory regex would restart on research-only changes.
+    assert not _triggers_restart("engine/market_ontology/mining_theme_research.py")
+
+
 def test_load_time_closure_probe_is_not_vacuous():
     """Guard the guard: an AST/glob regression must not silently pass the above."""
     closure = _api_load_time_closure()
@@ -1051,6 +1068,11 @@ def test_admin_closure_probe_is_not_vacuous():
     # __init__ -> state -> the substrate
     assert "engine/marketing/__init__.py" in closure, closure
     assert "engine/marketing/state.py" in closure, closure
+    # Read-only diagnostic validation loads the bridge and its direct contracts.
+    assert "engine/research_codegen/bridge.py" in closure
+    assert "engine/research_codegen/input_contract.py" in closure
+    assert "engine/research_codegen/evaluation.py" in closure
+    assert "engine/research_codegen/transport.py" not in closure
     # nightly-only lanes must stay OUT, else the closure is over-broad and the
     # narrow-restart intent is lost
     assert "engine/neuralweb/cortex.py" not in closure
