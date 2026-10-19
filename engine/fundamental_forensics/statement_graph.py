@@ -164,8 +164,20 @@ _MONTHS = {
 }
 
 
+STATEMENT_REFUSAL_CODES = (
+    "displayed_layout_unsupported",
+    "displayed_table_absent",
+    "displayed_columns_absent",
+    "statement_role_not_consolidated",
+)
+
+
 class StatementGraphError(ValueError):
     """The filing package cannot yield an as-reported statement tree."""
+
+    def __init__(self, message: str, *, refusal_code: str | None = None) -> None:
+        super().__init__(message)
+        self.refusal_code = refusal_code
 
 
 @dataclass(frozen=True)
@@ -827,7 +839,8 @@ def _compose_grouped_duration_year_row(
                 continue
             if low <= column < high and not _YEAR_CELL_RE.match(text):
                 raise _layout_unsupported(
-                    "grouped duration banner does not cover an exact contiguous run of year cells"
+                    "grouped duration banner does not cover an exact contiguous run of year cells",
+                    refusal_code="displayed_layout_unsupported",
                 )
     per_group: list[list[int]] = [[] for _ in groups]
     for start, colspan, year in year_cells:
@@ -838,7 +851,8 @@ def _compose_grouped_duration_year_row(
         ]
         if len(covers) != 1:
             raise _layout_unsupported(
-                "grouped duration banner does not cover an exact contiguous run of year cells"
+                "grouped duration banner does not cover an exact contiguous run of year cells",
+                refusal_code="displayed_layout_unsupported",
             )
         per_group[covers[0]].append(year)
     for years in per_group:
@@ -870,8 +884,11 @@ def _is_ix_numeric(tag: str) -> bool:
 _DISPLAYED_LAYOUT_UNSUPPORTED = "displayed statement layout unsupported:"
 
 
-def _layout_unsupported(detail: str) -> StatementGraphError:
-    return StatementGraphError(f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}")
+def _layout_unsupported(detail: str, *, refusal_code: str | None = None) -> StatementGraphError:
+    return StatementGraphError(
+        f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}",
+        refusal_code=refusal_code,
+    )
 
 
 def _grid_slot(*, text: str, facts: list[dict[str, Any]], colspan: int, rowspan: int, rowspan_carry: bool, colspan_carry: bool) -> dict[str, Any]:
@@ -1265,7 +1282,10 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser.close()
     parser._finalize_grid()
     if not parser.rows:
-        raise StatementGraphError(f"displayed statement table is absent: {title_label}")
+        raise StatementGraphError(
+            f"displayed statement table is absent: {title_label}",
+            refusal_code="displayed_table_absent",
+        )
     composed: tuple[list[str], frozenset[int], str] | None = None
     grouped: tuple[list[dict[str, Any]], frozenset[int], list[int]] | None = None
     glued: tuple[list[str], frozenset[int]] | None = None
@@ -1354,7 +1374,10 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
                 "grouped duration groups do not match the displayed fact columns"
             )
     if len(header_dates) < 2:
-        raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+        raise StatementGraphError(
+            f"displayed statement columns are absent: {title_label}",
+            refusal_code="displayed_columns_absent",
+        )
     # Values bind to columns by position, so a row carrying more values than the
     # table prints dated columns would silently lose its trailing values. The
     # right-edge pad lets a narrow banner row widen onto the body's grid; it must
@@ -1956,6 +1979,15 @@ def reconstruct_statement(
     registry: Any,
 ) -> dict[str, Any]:
     role_uri, title, title_search = _statement_identity(package, statement_type)
+    if (
+        re.match(r"^\d+ - Disclosure - ", title)
+        or "parent company" in title.casefold()
+        or "parentcompany" in role_uri.casefold()
+    ):
+        raise StatementGraphError(
+            f"statement role is not the consolidated statement: {title}",
+            refusal_code="statement_role_not_consolidated",
+        )
     pre = _stored_member(package, "presentation")
     lab = _stored_member(package, "label")
     cal = _stored_member(package, "calculation")
@@ -2130,15 +2162,35 @@ def reconstruct_primary_statements(
     unique_entities = sorted(set(entity_ids))
     if unique_entities != [package.manifest["cik"]]:
         raise StatementGraphError("XBRL entity identifier is not the source-native AAPL CIK")
-    statements = [
-        reconstruct_statement(
-            statement_type=kind,
-            package=package,
-            parsed_instance=parsed,
-            registry=registry,
-        )
-        for kind in ("income_statement", "balance_sheet", "cash_flow")
-    ]
+    statements: list[dict[str, Any]] = []
+    for kind in ("income_statement", "balance_sheet", "cash_flow"):
+        try:
+            statements.append(
+                reconstruct_statement(
+                    statement_type=kind,
+                    package=package,
+                    parsed_instance=parsed,
+                    registry=registry,
+                )
+            )
+        except StatementGraphError as exc:
+            if exc.refusal_code in STATEMENT_REFUSAL_CODES:
+                role_uri = title = None
+                if exc.refusal_code != "statement_role_not_consolidated":
+                    role_uri, title, _ = _statement_identity(package, kind)
+                statements.append(
+                    {
+                        "statement_type": kind,
+                        "role_uri": role_uri,
+                        "title": title,
+                        "columns": [],
+                        "row_count": 0,
+                        "rows": [],
+                        "refusal": {"code": exc.refusal_code},
+                    }
+                )
+            else:
+                raise
     return {
         "parsed_document_kind": (parsed.get("document") or {}).get("kind"),
         "fact_count": len(parsed.get("facts") or []),
@@ -2153,6 +2205,7 @@ __all__ = [
     "LABEL_PERIOD_END",
     "LABEL_PERIOD_START",
     "PRIMARY_STATEMENT_ROLES",
+    "STATEMENT_REFUSAL_CODES",
     "STATEMENT_TITLES",
     "StatementGraphError",
     "admit_golden_aapl_package",
