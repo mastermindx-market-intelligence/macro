@@ -2561,3 +2561,137 @@ def disclose_retained_source_bar_metadata(
         raise PermissionError("technical metadata capability binding differs")
     _authorize_retained_metadata(policy, "disclose_retained_source_bar_metadata", resource)
     return value
+
+
+_RETAINED_MARKS_TOKEN = object()
+_RETAINED_MARKS_SEAL_KEY = secrets.token_bytes(32)
+
+
+@dataclass(frozen=True)
+class RetainedSourceBarMarksCapability:
+    """Exact owner-read marks, NOT a published contextual observation."""
+    _token: object
+    _body: bytes
+    _resource: bytes
+    _policy_id: str
+    _seal: bytes
+
+
+def _marks_seal(body, resource, policy_id):
+    return hmac.digest(_RETAINED_MARKS_SEAL_KEY, market_memory_pit._canonical_bytes({
+        "body_sha256": _digest(body), "resource_sha256": _digest(resource),
+        "policy_id": policy_id}), "sha256")
+
+
+def _marks_authorization(policy, resource, *, disclose=False):
+    # Registration identifiers are selectors, never permission. The trusted
+    # application policy must authenticate actual E0 admission/current access
+    # and the exact source purpose before any numerical decoder is invoked.
+    _authorize_retained_metadata(policy, "read_registered_contextual_outcome_labels", resource)
+    _authorize_retained_metadata(policy, "disclose_retained_source_bar_marks" if disclose
+                                 else "read_retained_source_bar_marks", resource)
+
+
+def read_retained_source_bar_marks(
+    root: str | Path, *, technical_pin: PinnedTechnicalGenerationSnapshot,
+    metadata: RetainedSourceBarMetadataCapability, anchor_session: str,
+    target_session: str, definition_sha256: str, e0_registration_sha256: str,
+    visibility_cutoff: str, observation_deadline: str, policy: object,
+) -> RetainedSourceBarMarksCapability:
+    """Read two exact source marks after current source AND registered E0 use.
+
+    No installed policy currently grants these new actions. This owner seam
+    neither admits a study nor publishes a contextual-observation generation.
+    The existing metadata CLI policy intentionally refuses all label actions.
+    """
+    definition_sha256 = _require_digest(definition_sha256, field="outcome definition")
+    e0_registration_sha256 = _require_digest(e0_registration_sha256, field="E0 registration")
+    cutoff = _exact_utc(visibility_cutoff, field="outcome visibility cutoff")
+    deadline = _exact_utc(observation_deadline, field="registered observation deadline")
+    if type(technical_pin) is not PinnedTechnicalGenerationSnapshot:
+        raise MarketMemoryTechnicalStoreError("exact technical generation pin required")
+    value = disclose_retained_source_bar_metadata(metadata, policy=policy)
+    if any(value[key] != getattr(technical_pin, key) for key in
+           ("store_id", "generation_id", "generation_sha256")):
+        raise MarketMemoryTechnicalStoreError("mark metadata technical pin mismatch")
+    for session in (anchor_session, target_session):
+        if type(session) is not str:
+            raise MarketMemoryTechnicalStoreError("exact mark sessions required")
+        try:
+            parsed = date.fromisoformat(session)
+        except ValueError as exc:
+            raise MarketMemoryTechnicalStoreError("exact mark sessions required") from exc
+        if parsed.isoformat() != session:
+            raise MarketMemoryTechnicalStoreError("exact mark sessions required")
+    if anchor_session >= target_session:
+        raise MarketMemoryTechnicalStoreError("ordered distinct mark sessions required")
+    # Compare UTC instants; lexicographic comparison would mishandle optional
+    # fractions. A future source must not reach its price decoder.
+    instant = lambda s: datetime.fromisoformat(s.replace("Z", "+00:00"))
+    if any(instant(value[key]) > instant(cutoff) for key in ("first_observed_at", "available_at")):
+        raise MarketMemoryTechnicalStoreError("source marks not visible at cutoff")
+    if any(instant(value[key]) > instant(deadline) for key in ("first_observed_at", "available_at")):
+        raise MarketMemoryTechnicalStoreError("source observed after registered deadline")
+    resource = {key: value[key] for key in _RESOURCE_MARK_FIELDS}
+    resource.update(anchor_session=anchor_session, target_session=target_session,
+                    definition_sha256=definition_sha256,
+                    e0_registration_sha256=e0_registration_sha256,
+                    visibility_cutoff=cutoff, observation_deadline=deadline)
+    _marks_authorization(policy, resource)
+    with market_memory_pit.bounded_owner_reads(maximum_bytes=64 * 1024 * 1024):
+        store_root = validate_technical_actual_output_store_root(root)
+        fresh = pin_technical_actual_output_generation(store_root,
+            generation_id=technical_pin.generation_id, maximum_capture_count=256)
+        if fresh != technical_pin:
+            raise MarketMemoryTechnicalStoreError("mark technical pin differs from persisted generation")
+        receipt, _prepared, bodies, source, _source_body = _load_capture_metadata(
+            store_root, manifest={"store_id": fresh.store_id},
+            generation={"captures": [entry.as_dict() for entry in fresh.captures]},
+            capture_id=value["capture_id"])
+        if source["source_observation_id"] != value["source_observation_id"]:
+            raise MarketMemoryTechnicalStoreError("mark source differs from exact metadata")
+        _marks_authorization(policy, resource)
+        marks = technical.read_source_bar_marks(_pinned_inputs_from_receipt(receipt, bodies),
+                    anchor_session=anchor_session, target_session=target_session)
+        if marks["source_observation"] != value["source_observation"]:
+            raise MarketMemoryTechnicalStoreError("mark source observation differs")
+        result = {"schema": "market_memory.retained_source_bar_marks_owner.v1",
+                  **resource, "capture_id": value["capture_id"],
+                  "capture_receipt_sha256": value["capture_receipt_sha256"],
+                  "revision_id": value["revision_id"],
+                  "source_observation_sha256": value["source_observation_sha256"],
+                  "source_bodies": value["source_bodies"], "subject": value["subject"],
+                  "price_basis": value["price_basis"], "calendar": value["calendar"],
+                  "source_available_at": value["available_at"],
+                  "source_first_observed_at": value["first_observed_at"],
+                  "marks_read_at": _utc_now().astimezone(timezone.utc).isoformat().replace("+00:00", "Z"),
+                  "contextual_observation_published": False,
+                  "anchor": marks["anchor"], "target": marks["target"]}
+        body = market_memory_pit._canonical_bytes(result)
+        if len(body) > 64 * 1024:
+            raise MarketMemoryTechnicalStoreError("mark capability byte limit")
+        encoded_resource = market_memory_pit._canonical_bytes(resource)
+        _marks_authorization(policy, resource, disclose=True)
+        return RetainedSourceBarMarksCapability(_RETAINED_MARKS_TOKEN, body, encoded_resource,
+            policy.policy_id, _marks_seal(body, encoded_resource, policy.policy_id))
+
+
+_RESOURCE_MARK_FIELDS = ("profile", "store_id", "generation_id", "generation_sha256", "source_observation_id")
+
+
+def disclose_retained_source_bar_marks(capability, *, policy: object) -> dict[str, Any]:
+    if (type(capability) is not RetainedSourceBarMarksCapability
+            or capability._token is not _RETAINED_MARKS_TOKEN
+            or type(capability._body) is not bytes or len(capability._body) > 64 * 1024
+            or type(capability._resource) is not bytes
+            or capability._policy_id != getattr(policy, "policy_id", None)
+            or type(capability._seal) is not bytes
+            or not hmac.compare_digest(capability._seal,
+                _marks_seal(capability._body, capability._resource, capability._policy_id))):
+        raise PermissionError("original technical marks capability required")
+    body = json.loads(capability._body)
+    resource = json.loads(capability._resource)
+    if any(body.get(key) != value for key, value in resource.items()):
+        raise PermissionError("technical marks capability resource mismatch")
+    _marks_authorization(policy, resource, disclose=True)
+    return body

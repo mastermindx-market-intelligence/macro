@@ -1834,6 +1834,62 @@ def read_source_bar_metadata(inputs: PinnedTechnicalInputs) -> dict[str, Any]:
             "price_basis": copy.deepcopy(_PRICE_BASIS), "transform_version": TRANSFORM_VERSION}
 
 
+def read_source_bar_marks(inputs: PinnedTechnicalInputs, *,
+                          anchor_session: str, target_session: str) -> dict[str, Any]:
+    """Pure exact archived marks; the private owner must authorize labels first.
+
+    This does not select an observation, derive a horizon, authorize E0, or
+    publish an outcome. No nearby session or different source is substituted.
+    """
+    sessions = []
+    for value in (anchor_session, target_session):
+        if type(value) is not str:
+            raise MarketMemoryTechnicalObservationError("exact mark sessions required")
+        try:
+            parsed = date.fromisoformat(value)
+        except ValueError as exc:
+            raise MarketMemoryTechnicalObservationError("exact mark sessions required") from exc
+        if parsed.isoformat() != value:
+            raise MarketMemoryTechnicalObservationError("exact mark sessions required")
+        sessions.append(parsed)
+    if sessions[0] >= sessions[1]:
+        raise MarketMemoryTechnicalObservationError("ordered distinct mark sessions required")
+    metadata = read_source_bar_metadata(inputs)
+    if any(value not in metadata["bar_sessions"] for value in (anchor_session, target_session)):
+        raise MarketMemoryTechnicalObservationError("exact mark session unavailable")
+    parquet = _open_spy_parquet(inputs.fetched.spy_body)
+    if parquet.metadata.num_rows != len(metadata["bar_sessions"]):
+        raise MarketMemoryTechnicalObservationError("mark and metadata row counts differ")
+
+    def mark(session):
+        index = metadata["bar_sessions"].index(session.isoformat())
+        offset = 0
+        for group in range(parquet.metadata.num_row_groups):
+            size = parquet.metadata.row_group(group).num_rows
+            if index < offset + size:
+                # Decode only the requested close column and materialize only
+                # its named scalar, not unrelated OHLC/volume/price rows.
+                table = parquet.read_row_group(group, columns=["close"], use_threads=False)
+                if (table.num_rows != size or table.column_names != ["close"]
+                        or table.schema.field("close").type != pa.float64()):
+                    raise MarketMemoryTechnicalObservationError("exact close projection required")
+                value = table.column("close")[index - offset].as_py()
+                break
+            offset += size
+        else:
+            raise MarketMemoryTechnicalObservationError("exact close row unavailable")
+        if type(value) is not float or not math.isfinite(value) or value <= 0:
+            raise MarketMemoryTechnicalObservationError("finite positive binary64 close required")
+        numerator, denominator = value.as_integer_ratio()
+        row = {"session": session.isoformat(), "close_binary64_hex": value.hex(),
+               "close_integer_ratio": {"numerator": str(numerator), "denominator": str(denominator)}}
+        return {**row, "row_sha256": _sha256(_canonical_bytes(row))}
+
+    return {"schema": "market_memory.retained_source_bar_marks.v1",
+            "source_observation": metadata["source_observation"],
+            "anchor": mark(sessions[0]), "target": mark(sessions[1])}
+
+
 def build_current_spy_raw_close_ratio(
     repository_root: str | Path,
     *,

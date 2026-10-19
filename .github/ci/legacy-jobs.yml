@@ -30411,6 +30411,8 @@ jobs:
       - "engine/neuralweb/governance.py"
       - "engine/neuralweb/key_pool.py"
       - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_contextual_observation_store.py"
+      - "engine/neuralweb/market_memory_episode_outcomes.py"
       - "engine/neuralweb/market_memory_episode_comparison.py"
       - "engine/neuralweb/market_memory_episode_features.py"
       - "engine/neuralweb/market_memory_episode_retrieval.py"
@@ -30765,6 +30767,7 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
+      - "tests/test_market_memory_episode_outcomes.py"
       - "tests/test_market_memory_episode_comparison.py"
       - "tests/test_market_memory_episode_features.py"
       - "tests/test_market_memory_episode_retrieval.py"
@@ -30886,6 +30889,7 @@ jobs:
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_population.py
           tests/test_market_memory_episode_features.py
+          tests/test_market_memory_episode_outcomes.py
           tests/test_market_memory_episode_comparison.py
           tests/test_market_memory_experience_accrual.py
           tests/test_market_memory_retained_context_cohort.py
