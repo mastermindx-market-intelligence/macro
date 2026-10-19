@@ -204,9 +204,11 @@ on:
       # SSR page builder + its render test + the page template.
       - "engine/research_vault/**"
       - "scripts/ingest_research.py"
+      - "tests/test_research_vault_generation_cli.py"
       - "scripts/build_research_vault.py"
       - "tests/test_research_vault.py"
       - "tests/test_research_vault_strict_store.py"
+      - "tests/test_research_vault_generation_evidence.py"
       # Research Vault (RV W2) serving API + download gate: quota ledger, view
       # rate-limit, watermark, the app/research.py router + its security tests.
       - "app/research.py"
@@ -1078,6 +1080,7 @@ on:
       - "tests/test_government_revenue_dossiers.py"
       - "tests/test_government_revenue_subaward_api.py"
       - "tests/test_government_revenue_ui.py"
+      - "tests/test_government_revenue_candidate_sources.py"
       - "tests/test_government_revenue_dossier_ui.py"
       - "tests/test_government_revenue_briefcase_ui.py"
       # D3 temporal contract suite (wired by the same PR that added it).
@@ -1863,6 +1866,7 @@ on:
       - "tests/test_build_portfolio_ctx.py"
       - "tests/test_portfolio_ctx_chains.py"   # TXI W4 per-ticker chains merge
       - "scripts/build_state_of_themes.py"
+      - "scripts/build_theme_tree_page.py"
       - "tests/test_state_of_themes.py"
       - "engine/portfolio_brief.py"
       - "tests/test_portfolio_brief.py"
@@ -3378,6 +3382,7 @@ on:
       - "tests/test_sector_nav_links.py"
       - "tests/test_site_semantics_refs.py"
       - "tests/test_sp500_heatmap_caps.py"
+      - "tests/test_sp500_heatmap_intraday_clock.py"
       - "tests/test_stage_analysis_page.py"
       - "tests/test_stocktable_data.py"
       - "tests/test_template_items_footgun.py"

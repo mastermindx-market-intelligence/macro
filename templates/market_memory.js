@@ -12,7 +12,9 @@
     macroAuthBlocked: false,
     symbolAuthBlocked: false,
     macroNotice: null,
-    symbolNotice: null
+    symbolNotice: null,
+    legacyMacroPending: false,
+    legacySymbolPending: false
   };
   var ui = {};
 
@@ -195,6 +197,7 @@
   }
 
   function loadMacro() {
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacyMacroPending = true; return; }
     var requestId = ++state.macroRequest;
     state.macro = null;
     state.macroNotice = {kind: 'loading'};
@@ -408,6 +411,8 @@
       } catch (error) { /* standalone legacy client */ }
     }
 
+    // Hidden legacy panels defer only the read; validation and intent sync above still run.
+    if (ui.legacy && !ui.legacy.hasAttribute('open')) { state.legacySymbolPending = true; return; }
     request('/symbol/' + encodeURIComponent(ticker)).then(function (payload) {
       if (requestId !== state.symbolRequest) return;
       state.symbolAuthBlocked = false;
@@ -432,6 +437,17 @@
     ui.symbolInput = document.getElementById('mm-symbol-input');
     ui.symbolSummary = document.getElementById('mm-symbol-summary');
     ui.gridList = document.getElementById('mm-grid-list');
+
+    ui.legacy = document.getElementById('mmr-legacy');
+    // The retained page hides these panels inside <details id="mmr-legacy">.
+    // Its first open starts the deferred reads; standalone pages stay eager.
+    if (ui.legacy) {
+      ui.legacy.addEventListener('toggle', function () {
+        if (!ui.legacy.hasAttribute('open')) return;
+        if (state.legacyMacroPending) { state.legacyMacroPending = false; loadMacro(); }
+        if (state.legacySymbolPending) { state.legacySymbolPending = false; loadSymbol(state.latestRaw); }
+      });
+    }
 
     ui.symbolForm.addEventListener('submit', function (event) {
       event.preventDefault();

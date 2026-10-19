@@ -1896,6 +1896,14 @@ def draft_handoff(payload: dict[str, Any]) -> str:
         "The carriers list is the machine pin. Do not retype head SHAs, "
         "base SHAs, CI run ids, comment ids or review ids by hand.",
         "",
+        "Next-action review: the currently assigned receiver must inspect the",
+        "original PR/workspace and reconcile live writers, leases and effects.",
+        "Do not make a historical original writer or archived parent chat the",
+        "sole actor. Name the receiver\'s next permitted action; an actual",
+        "STARTed operation or EFFECT_UNKNOWN stays fenced on the same original carrier.",
+        "An exact-session proof target remains exact; advance only disjoint work.",
+        "If no valid receiver has been assigned, name the real assignment gate.",
+        "",
     ]
     if pins:
         body_lines.append(f"Pinned from the seat snapshot: {pins}.")

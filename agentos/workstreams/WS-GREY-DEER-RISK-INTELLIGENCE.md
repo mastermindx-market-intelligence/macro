@@ -41,6 +41,12 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
+  - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
+  - research/grey_deer/risk_radar_architecture_contract_20261017.md
+  - research/grey_deer/risk_radar_research_protocol_20261017.md
+  - research/grey_deer/all_date_census/PROTOCOL_2026-10-17.json
+  - research/grey_deer/all_date_census/v1/manifest.json
   - research/ROTATION_RISK_CONFLUENCE_IMPLEMENTATION_2026-10-08.md
   - research/ROTATION_RISK_CONFLUENCE_DELIVERY_2026-10-09.md
   - research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md
@@ -431,33 +437,56 @@ waves:
     pr: 9215
     # squash 54195c10bbeb. Reads only the committed stage-1/1b results (blob-pinned); no re-run, no price store, no trial ledger. FLOORPROJ: median years until every floor holds, SPY 12.48/7.01/5.54, panel 3.45/9.32/not reachable (h5/h10/h21). D9ALT: panel h21 collapses because the window reach (42 sessions) exceeds the largest event-date gap (38); candidates C1/C2/C3 named by rule structure, none frozen.
     depends_on: [GD-PB-W4-S1B-RUN]
+  - id: GD-RR-CENSUS-20261017
+    title: Meta-CEO source and all-date exposure census, recorded-version reconstruction and continuation revision
+    status: done
+    pr: 9515
+    # Normal squash eaf418862bdd,2026-10-17T14:01:10Z; reviewed head646cc093,all 12 packs and active native gates green.
+    # Separate main fetch9b464c9d:51owned blobs exact; shared CI owned job semantically identical. Source landing accepted.
+    # 36ETFs/8486sessions/305496rows, original prereg/outcome ancestry and failed studies preserved; zero new fits/promotions.
+    # Existing9517 workspace is delivered and independently accepted at bounded desktop scope; exact forecast qualifiers still missing.
+    # Copilot failed one real question; five finalization and six classifier controls reproduce the caveat-only mechanism. No source repair.
+    # Original Massive SPY identity and one T12 sample frozen; controls10/18,3/21,1/24 and warmup/immaturity failures retained.
+    # Retained FRED model purposes remain UNKNOWN/HOLD; T13/T14/T19 drafts and budgets unchanged.
+    # Mastermind1567 source is separately merged; full standard release qualification, production decision and live parity remain open.
+    depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Read the first nightly whose head descends from af468522ab6e (PR 9128):
-  data/grey_deer_pullback/forward_log.jsonl must exist on main with SPY rows,
-  forward_log_refusals.jsonl must explain any refusal, and the run must carry no
-  grey-deer-pullback-*-error annotation; on clean rows record GD-PB-W5 at
-  PRODUCTION_PROOF in a records PR. Rows needing US prices after 2026-10-09 wait for US
-  collection to publish again (QLedger GH001, owner QLedger). State: W0 through W5, W7 and
-  W8 are merged (PRs 8785, 8833, 8835, 8852, 8854, 8938, 9070, 9082, 9091, 9114, 9122,
-  9128, 9208, 9215). Both frozen retrospective runs are null - stage-1 (PR 8938, SPY only)
-  and stage-1b (PR 9122, 14-ETF panel under prereg v1.1): 0 of 12 claims pass. Neither run
-  is ever repeated on real data; a new configuration is a new prereg revision with its own
-  trial budget. W8's floor projection (exploratory) puts every SPY readiness floor years
-  away and the panel h21 floor out of reach under the frozen v1.1 episode rule; its draft
-  memo names v1.2 rule candidates (C1/C2/C3) chosen by rule structure, not floor clearance.
-  Freezing a v1.2 rule or any T13/T14/T19 draft prereg is a separate seat act (blob pins,
-  its own trial family, a READ_ONLY audit before freeze). The forward lane is research tier,
-  appends nothing to data/trial_ledger.jsonl and holds no rank, size or gate authority.
-  P-active stays blocked until PR 8188 lands with byte-identical rules.
-  The held 2026-10-08 incident note belongs to PR 8648 and is never written here.
-  Operation risk-radar-pullback-20261009 under carrier key
-  grey-deer-fable-orchestration-20261003-001 (ACK Slack 1791707775.860299);
-  incumbents PR 8721 (live writer) and PR 8188 (HOLD-FOR-SOL) are read-only.
-  Resumption file: research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md;
-  latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-14-OPUS-W7W8.md.
-  GD-UI-RADAR-1 is live and DO_NOT_REDO (PR 7467); GD-UI-RADAR-2 keeps its own
-  carrier; GD-3 accepted; GD-5A/B/C closed; GD-6/7/8/10 uncommissioned; GD-4C's engine
-  read is merged (PR 9208) with no consuming surface yet; GD-9A has a merged census only.
+  Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
+  and the cumulative GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS handoff.
+  Macro PR 9515 is merged and its source landing verified; never push that closed branch.
+  Continue the native evidence operation risk-radar-meta-ceo-evidence-20261017-01a14837
+  through normal source gates. The delivered 9517 desktop workspace has accepted
+  bounded proof under live_delivery_20261017/delivered_workspace; preserve exact
+  probability qualifiers as an open defect. Current workspace writer 9548 and gateway
+  writer 9447 have intersecting source paths; preserve their actual pending effects.
+  Use the completed Copilot source diagnosis before a custody-qualified repair;
+  require an installed changed path and a useful authenticated answer, not only tests.
+  Original SPY/T12 identity is frozen once. A separately reviewed metadata-only contract
+  and source were committed at9102e6954db1 before one October18 run. Its2138 window
+  records preserve null labels,1901 unknown dates and39 horizon intersections. Supported
+  pairs9/2/0 across4/2/0 events refuse the21-session matched lane and admit no model.
+  Before feature joins or fitting, qualify exact calendar/outcomes, source purpose and
+  availability, dependence, chronological evaluation, common-support baselines and trials.
+  Preserve severe control shortfalls and FRED-purpose UNKNOWN/HOLD; no sample mutation,
+  source swap, trial registration or activation of existing T13/T14/T19 drafts occurred.
+  Mastermind1567 source is merged; the October17 runtime observation still had October9 code.
+  The exact wrapper/helper review found298 deployment-eligible paths outside rollback scope
+  and health-result/transaction-order weaknesses. The forward_evaluation review confirms
+  marker-ownership, failed-activation, retained-output and baseline-completeness gaps.
+  Read its actual registry/package, service/health/caller locks and settlement reader next;
+  qualify transport, bounded repairs, complete current-master bundle and rollback/activation
+  transaction before the canonical production decision.
+  Autonomous production deployment remains prohibited; 1507 repository differences
+  are not a transfer count or live book/prompt/ledger parity. Existing publisher8132,
+  measured-pullback8721,9428 refusal boundaries and QLedger/nightly owners remain intact.
+  Require genuine natural W5 issuance; never backfill foresight. Do not rerun accepted
+  GD3 natural four-clock proof or frozen stage1/stage1b. Keep all failed/rejected claims.
+  Authentication is resolved; all-state warning freshness/expiry, current Terminal,
+  granular recovery/action usefulness and empirical superiority remain open.
+  Preserve Envelope rank/gate/size/execute false and Portfolio/Prophet numerical policy.
+  Paper writes still require actual catalog qualification. Whole programme remains active
+  and not finally accepted.
+
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection

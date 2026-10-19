@@ -1,23 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-15T18:17:35.512187+00:00",
-  "posts_seen": 10,
-  "seen_total": 292,
-  "evaluated": 2,
+  "as_of": "2026-10-19T01:19:59.293800+00:00",
+  "posts_seen": 8,
+  "seen_total": 297,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-10-15-bombshell-report-exposes-true-cost-of-radical-democrats-mass-amnesty-open-border",
-      "importance": 30,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-10-15-icymi-largest-ever-federal-anti-transnational-crime-operation-nets-1296-tren-de-",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

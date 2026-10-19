@@ -96,7 +96,7 @@
       "consumer_sentiment"
     ],
     "reasons": [
-      "worst_required_source_freshness=LATE_WITHIN_TOLERANCE"
+      "worst_required_source_freshness=STALE_SOURCE"
     ],
     "required": [
       {
@@ -113,7 +113,7 @@
       },
       {
         "component_id": "consumer_sentiment",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Consumer sentiment (Michigan)",
           "zh": "消费者信心（密歇根大学）"
@@ -208,8 +208,8 @@
         "status": "PRESENT"
       }
     ],
-    "state": "LATE_WITHIN_TOLERANCE",
-    "worst_freshness": "LATE_WITHIN_TOLERANCE"
+    "state": "STALE_SOURCE",
+    "worst_freshness": "STALE_SOURCE"
   },
   "axes": {
     "items": [
@@ -445,7 +445,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-55c276331b2b59f5"
+    "predecessor_generation_id": "consumer_payments-US-c9a0442fe3ef56e2"
   },
   "drivers": {
     "balance_sheet": [
@@ -538,11 +538,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-15T05:14:07Z",
+    "built_at": "2026-10-18T03:44:43Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "39d00535d992abc7b707b5b53695cbef0ae907ee",
-    "content_sha256": "ff3d48a2a7e466a9818120a970f02625fa61f7242918292f899901a813c77f2a",
-    "generation_id": "consumer_payments-US-ff3d48a2a7e466a9",
+    "code_version": "5e3e1e9d2d97439d0546072b89e9f94d3e84f2fa",
+    "content_sha256": "eb829a4292d90a07ee544be725bb3f9e8ca1cd0b0023f3db09a728c1ebdd1278",
+    "generation_id": "consumer_payments-US-eb829a4292d90a07",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -887,7 +887,7 @@
         "definition_id": "fred.UMCSENT.umich_sentiment",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_confident",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "consumer_sentiment_level",
         "model_version": "consumer_payments.compose.v1",
@@ -923,7 +923,7 @@
         "definition_id": "fred.UMCSENT.umich_sentiment",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_confident",
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "market_session": null,
         "metric_id": "consumer_sentiment_yoy",
         "model_version": "consumer_payments.compose.v1",
@@ -2444,7 +2444,7 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "LATE_WITHIN_TOLERANCE",
+        "freshness": "STALE_SOURCE",
         "label": {
           "en": "Consumer sentiment (University of Michigan, via FRED)",
           "zh": "消费者信心（密歇根大学，经FRED）"

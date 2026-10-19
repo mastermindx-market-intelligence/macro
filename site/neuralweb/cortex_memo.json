@@ -1,32 +1,14 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-10-15T09:27:25+00:00",
-  "summary": "Shadow/context-only committee read as of 2026-10-15: the US backdrop is MIXED (44), not an actionable risk-off signal. The meaningful deterioration is internal: leadership moved from INTACT to CRACKING, breadth is at the 14th percentile with a price divergence, liquidity is contracting, HY OAS widened roughly 40 bp over 21 days, and systematic flows are aligned cutting. Credit is the dominant Risk Radar scare, but the caution cell\u2019s measured 21-session pullback rate is 16.0% versus a 17.8% base rate (0.9x), so it does not establish a bearish edge. Rates remain restrictive: real 10-year yield is 2.88%, term premium is rising, and the curve is bear-steepening. At the same time, recession risk is off, financial conditions remain loose on their older observation clock, volatility is calm/normalizing, and two of three major indices retain uptrends. The correct interpretation is unresolved transition and fragile participation, not an originated position. Factor intelligence is immature: only 10 panel dates, the >=60-date floor is unmet, Pair G is dormant, no factor attention observations have been graded, and the composite is non-tradeable. The graded-spine sample returned was capped and dominated by unsigned-MFE board rows, so it cannot support a clean directional conclusion. A proposed leadership/credit/breadth persistence hypothesis was rejected as invalid because its metric was not in the gradeable registry; no hypothesis was registered or treated as evidence.",
-  "what_fired": [
-    "Attention: leadership-credit-breadth deterioration. Retain while at least two remain adverse: leadership CRACKING/BROKEN, HY OAS 21-day change above zero, or breadth below the 30th percentile; clear after all three normalize under the pre-committed criterion.",
-    "Attention: long-end premium pressure. Retain while at least two remain true: real 10-year yield has not fallen 20 bp from 2.88%, term-premium direction remains rising, or the curve remains a bear steepener.",
-    "Attention: overdue and conflicting Master Brain theses. All displayed theses remain open beyond their check-by dates; the Long Treasuries thesis directly meets its stated adverse condition through real yield above 2.5% plus bear steepening, while China-overweight context conflicts with China Q3/contracting liquidity, Fear-band context, and a strengthening dollar."
-  ],
-  "contradictions_review": "Current graph contradictions are substantive but display-only. Q2 reflation conflicts with a caution Risk Radar and with bonds/FX cross-asset divergence; FX dollar and rates/credit both contradict the equity-regime label. Leadership CRACKING, weak breadth, contracting liquidity and credit widening conflict with still-positive trend and calm volatility. This is a tension between resilient headline tape and deteriorating internals, not independent confirmation: lineage is only partial and several sources share equity-price dependencies. The briefing also reports ticker-level demand-versus-supply divergences. Factor Pair G contributes no evidence because its ledger is absent until the panel reaches 60 distinct dates. Open-thesis review adds explicit conflicts: Long Treasuries versus its own real-yield/bear-steepener falsifier, and China overweight versus current China, dollar and liquidity context.",
-  "decaying_families": [
-    "Altdata: negative shrunken IC across pooled 5/21/63-day horizons and especially weak in Q2; held and unarmed.",
-    "Policy and policy-intent families: negative signed excess across most observed horizons/regimes, with thin samples in some cells; unarmed.",
-    "Desk families at 63 days\u2014AI desk, narrative brain, radar desk, stock desk and thematic desk\u2014show negative signed excess; all remain unarmed or vacuous under the held-out test.",
-    "Demand-chain: only 9/12 effective events and negative pooled 21-day signed excess; still accruing, not decision-grade.",
-    "Board families show positive unsigned-MFE summaries, but their held-out allocation tests are vacuous or below the pre-registered bar; these should not be read as directional efficacy.",
-    "Factor composite: negative IC legs include investment, low-volatility, low-beta and composite; panel history is below the required floor and the composite is non-tradeable."
-  ],
-  "deserves_operator": [
-    "Reconcile leadership CRACKING, breadth divergence and widening credit against the still-MIXED headline regime at the stated falsifiable normalization conditions; do not promote the caution radar because its measured pullback rate is below base.",
-    "Review the long-end-premium pathway after the next rates update. Current evidence is consistent with pressure\u2014restrictive/rising real yields and rising term premium\u2014but issuance/demand and model-agreement legs are missing, so the pathway is incomplete.",
-    "Score, close or explicitly re-date every overdue Master Brain thesis. Prioritize the Long Treasuries thesis because its written falsifier is currently met, then reconcile the China-overweight thesis with current China Q3/contracting-liquidity and stronger-dollar context.",
-    "Treat factor output as shadow-only until the panel reaches 60 dates and Pair G activates; there are currently zero contradiction records and zero graded factor-attention firings.",
-    "Repair and, if still worthwhile, restake the rejected persistence hypothesis using an allowed gradeable metric such as hit_rate_difference, with the same minimum sample and matched-base design. The rejected submission created no registered hypothesis.",
-    "Do not infer engine skill from the capped spine dump or from unsigned-MFE board outcomes. Use signed excess and non-vacuous held-out comparisons for any later reliability judgment."
-  ],
+  "as_of": "2026-10-18T21:39:42+00:00",
+  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
+  "what_fired": [],
+  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
+  "decaying_families": [],
+  "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-10-14",
+    "as_of": "2026-10-18",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -38,37 +20,26 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 127,
-      "total_rows": 135
+      "ungradeable": 143,
+      "total_rows": 151
     },
     "is_context_only": true
   },
-  "tool_call_census": {
-    "read_world_state": 1,
-    "read_factor_state": 1,
-    "query_spine": 1,
-    "read_contradictions": 1,
-    "list_factor_contradictions": 1,
-    "read_kernel": 1,
-    "read_master_brain_theses": 1,
-    "flag_attention": 1,
-    "stake_hypothesis": 1,
-    "write_memo": 1
-  },
+  "tool_call_census": {},
   "is_context_only": true,
   "run_status": {
-    "status": "ok",
-    "degraded": false,
-    "degradation_reason": null,
-    "model_used": "claude-opus-4-8",
+    "status": "degraded",
+    "degraded": true,
+    "degradation_reason": "model_unavailable",
+    "model_used": "claude-sonnet-4-6",
     "provider_attempts": [
       {
         "provider": "oauth",
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nUsgLt4zQda3EKw31j'}"
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgARkNSE1KhJauujy3j7z'}"
       },
       {
         "provider": "oauth",
@@ -76,7 +47,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nW8KgMQegybjuxvX6h'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgARkWSvUiNzrS3X6sJLW'}"
       },
       {
         "provider": "oauth",
@@ -84,7 +55,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3nagWJY3LkE2QReVTH7'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgARmm9F9AuHFLT2PwzyA'}"
       },
       {
         "provider": "oauth",
@@ -92,53 +63,29 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cg3np8P9nMuK2z6AHGmvm'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgARrKhSHYL3uCUiRbMf8'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-opus-4-8",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgAS5js6q9cNKT55TuJZC'}"
       },
       {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
         "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
-      },
-      {
-        "provider": "codex",
-        "model": "gpt-5.6-sol",
-        "attempted": true,
-        "ok": true,
-        "error_type": null,
-        "error_message": null
+        "ok": false,
+        "error_type": "auth",
+        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgAS5kqtYF9W4vv3aE6eY'}"
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 10,
+    "tool_call_batches": 0,
+    "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-10-15T08:48:43Z"
+    "context_as_of": "2026-10-18T07:03:19Z"
   }
 }
