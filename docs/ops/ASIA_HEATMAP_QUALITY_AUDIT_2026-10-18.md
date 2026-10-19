@@ -527,3 +527,63 @@ retry, replacement carrier, protected approval, merge or deployment is claimed.
 Mission complete: **false**. The new source subjects, exact file hashes,
 partial checks, failed source observation and unchanged admission boundaries are
 recorded in [the current source and diagnostics record](evidence/asia-heatmap-quality-20261018/current-main-and-source-diagnostics-20261019.json).
+
+## Continuation — 2026-10-19: native closure correction and original-pair custody
+
+This is a source/evidence continuation for the same mission. The original audit
+run `heatmap-quality-audit-20261018-c1-r1` remains `EFFECT_UNKNOWN`;
+this section supplies no terminal audit receipt or protected approval.
+
+The live candidate `ee0e39c6919b49fc33f649389cfe876e698d2139` failed
+native CI run **39238397941**, `contract-delta` job **118012990317**.
+The actual tested merge was
+`6b7d85d8313b3bc0190c4fecda84e49aae7c2968` against base
+`b303c4b32d4d16401050b25d41131b49501720e5`.
+The validator reported exactly two introduced uncovered imports in
+`washout-turn-organ`: `engine/theme_graph/economic_context.py` and
+`engine/theme_graph/issuer_economic_context.py`. Its three packing probes passed.
+Earlier preservation of job mappings did not establish transitive closure.
+
+Commit `af225ec852a7725fca4bc54fa613db2fd0a020fd` adds those exact two paths
+to that job's declarations. All 327 jobs, every other job mapping, the target's
+non-path fields, and its 1,172 existing paths and relative order remain intact.
+The job now declares 1,174 paths. No runtime, validator, ceiling, or exemption
+changed.
+
+The existing canonical closure validator, run on an exact copy of this one
+exclusive job, reproduced both findings before the correction. At
+**11:06:54–11:07:22 UTC**, it evaluated the corrected mapping and returned
+`findings: {}`. The invocation left its inspected source unchanged. This is
+a bounded qualification of the specific declaration repair; native CI on the
+forthcoming publication remains necessary.
+
+The same original rehearsal has already advanced to local commit
+`764029e75909a7caebc69089f3b903e6045a4c58`, tree
+`5cc3b7b0c12887fce60d48d98d0f6e773143b875`, containing published live
+`ee0e39c6919b49fc33f649389cfe876e698d2139` and settled
+`f679236ba3926cd3ce3dd6ffa95d0df0d605a985`.
+Its two changed-declaration checks passed at 10:41 UTC; original rehearsal
+`ef873ccfedd1330d0e883736baa4ac2eab40bcd9` remains an ancestor, with no
+pending merge. That recorded pair does not yet contain this closure correction
+or the new evidence, and is not qualification of the repaired pair.
+
+For settled native run **39236316198**, the downloaded, hash-bound semantic
+fragments establish all sixteen control-plane steps in pack 0 and all four
+reference-integrity steps in pack 7 passed. Those results are not a terminal
+success claim for the whole workflow. In particular, they do not supply the
+three approved Sector Central Full RIG owner receipts. Current owner-delta
+reads, received by **11:08:34 UTC**, returned no new comments on Macro
+#9592/#7646 or Mastermind #1391 since 10:35 UTC.
+
+The exact source subjects, native failure, before/after results, pair composition,
+and artifact hashes are recorded in
+[evidence/asia-heatmap-quality-20261018/washout-closure-and-original-pair-20261019.json](evidence/asia-heatmap-quality-20261018/washout-closure-and-original-pair-20261019.json).
+This publication will descend from the locally validated correction; its Git
+commit identity is separate from that validation subject.
+
+All prior audit bytes and evidence records are preserved. The denied predecessor
+recovery-comment write has not been retried or repackaged; the original audit has
+not been resubmitted or replaced. No protected approval, arm, merge, or deployment
+has occurred. Candidate design acceptance and authenticated natural-session
+China/HK proof remain unestablished. The recorded unsuccessful 10:12 UTC source
+observation remains unchanged by this CI-only correction.

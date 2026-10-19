@@ -1,0 +1,775 @@
+{
+  "audit_custody": {
+    "all_prior_bytes_preserved": true,
+    "original_prefix_bytes": 17373,
+    "prior_bytes": 36188,
+    "prior_sha256": "65cf048098cca1e8b6739debff9f068fe23b20e3aa2e542a53c3b41f6ebbd7ab"
+  },
+  "classification": "ORIGINAL_HEATMAP_SOURCE_CONTINUATION_EVIDENCE",
+  "consultation": {
+    "basis": "Supplied diff and executed receipt consultation; no independent repository execution by consultation agents.",
+    "protected_approval": false
+  },
+  "consumed_native_fragments": [
+    {
+      "archive_sha256": "6eed71092f9ee7dcac53caad294261368f089464909583baac06b94d1da198a9",
+      "artifact_id": 12180459559,
+      "fragments": [
+        {
+          "all_steps_passed": true,
+          "focus_jobs": [
+            {
+              "infrastructure": {
+                "outcome": "passed"
+              },
+              "job_exec_sha256": "e0f4ff62b4b06c89a449561d0a967c09fba6798285bc91492b97fed0cf3e64a9",
+              "logical_job_id": "ci-control-plane-contracts",
+              "steps": [
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "ci-plan/ci-pack/ci-gate workflow structure contract",
+                  "step_spec_sha256": "57e5cc036736d6037a86a63c1594f17ef499a7004270af2dc4a6e16e7099fcab"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "hosted-runner packing contract",
+                  "step_spec_sha256": "dd8be65339e381c859528d15675eb202bd2a71bebdf7f406cee1cbba69067b62"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "merge-gate reliability report contract",
+                  "step_spec_sha256": "59ac9544621bca999e205b5bd692c1dcb5a8f520f637424cfb59155cfab74745"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "transitional self-hosted runner policy and canary contracts",
+                  "step_spec_sha256": "741b9801ba1c65f945d16bd4811112f9f133e8bb4c6c9a0ff9a730fd3666f2f6"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "nightly backstop selftest (scripts/nightly_backstop.py)",
+                  "step_spec_sha256": "3ba4beac591884db8169ac0c931a134ff922620c09be1b41e56f42c2f114ddd3"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "nightly backstop dispatch rule (must never fire over a live run)",
+                  "step_spec_sha256": "eb953de03e2819aac95a3859ea2aa6c03da33dd07d3e9cc087aeb2f2cf02b0e7"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "audit_unrun_tests selftest",
+                  "step_spec_sha256": "024b9029b284d3135f1f5896de4008f5781f21c7c3ae20195d1ea4d7b9d3d11a"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "no suite may be named by zero run: steps (baseline-gated)",
+                  "step_spec_sha256": "2eb60823af6d79cb634254809e5f7704855833c5a18a0f8b131242eedeec15f3"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "unrun-census discovery unit tests",
+                  "step_spec_sha256": "9f02fe3a0412cf3984a092cbb802c6697f753f39051474fd6ae44b272920eb97"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "differential contract-delta gate contract",
+                  "step_spec_sha256": "85d2f026c0d2e9d39cb55ab936786f29db4b3f4ceba8aeaa50ab784993d74d2a"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "check_skip_only_suites selftest",
+                  "step_spec_sha256": "664594606e39caf31e0fd3c621cf585acc993d8a28cefedcfd367e2d42cde31a"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "no suite may skip in every job that names it",
+                  "step_spec_sha256": "b4710756665aa58aa70713bc0e97fa69d066705a8866886d262461351aeda57f"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "skip-only detector unit tests",
+                  "step_spec_sha256": "af0feb1970d67d1c8740b82270e04d617286ba685f5cbfa061e14e5fbd7d5891"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "check_ci_trigger_closure selftest",
+                  "step_spec_sha256": "c564111b0ffcee745aa17afa35d5105ed6fa0825e24c3eca411b0d4b27f314ab"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "every guarded suite's subjects must reach its own trigger paths",
+                  "step_spec_sha256": "d0290a52ad7ad0e2ffd89002c1cd3d2922219ecbaf9318c055d9434c57fa9a14"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "trigger-closure guard unit tests",
+                  "step_spec_sha256": "241ebaf82a64cf8d1ecf5a682615d7063ac436ddfe1636ff2344d0d537f2ee01"
+                }
+              ]
+            }
+          ],
+          "job_count": 1,
+          "json_path": "/tmp/mmx-heatmap-native-plans-20261019-irohglfu/settled-pack0-pack-0.json",
+          "json_sha256": "906d330567366e6a56e030e8c6955bec185c3fb0088861a6a6ab6fad20db4ac2",
+          "plan_sha256": "e57f503510e7ef1b9a1c731c8685af85547b48716d035ea5217dcb73995d8bdf",
+          "step_count": 16,
+          "subject_head": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+          "tested_merge": "9e6638173035cf3374e291b548a41a102e1c5a17"
+        }
+      ],
+      "label": "settled-pack0"
+    },
+    {
+      "archive_sha256": "23cbc00e50520559382bdba7c8df7d7f42544ccf4d97dd1fc29d2fce0b2bf332",
+      "artifact_id": 12181395269,
+      "fragments": [
+        {
+          "all_steps_passed": true,
+          "focus_jobs": [
+            {
+              "infrastructure": {
+                "outcome": "passed"
+              },
+              "job_exec_sha256": "daa8f5137be72705ddbbd9822c757a78021f1bb5e153add1fa0049733eb93f4b",
+              "logical_job_id": "reference-integrity",
+              "steps": [
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "reference-integrity selftest (gate fires on synthetic violations)",
+                  "step_spec_sha256": "2a8e9b2db562a8021b30fb9bd301fdaa39abf3c8391bd5951f9e82c9a03ea936"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "RIG artifact integrity across the checkout (hard gate)",
+                  "step_spec_sha256": "21c2d0071975e9c971e128ad69f7ef6c55d29ca42b322eb1e3b1ee80d30e726a"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "reference-integrity mutation / anti-vacuity suite",
+                  "step_spec_sha256": "2a0aaad75724cd93f668053385507d27839010af913cb684ffecec29de571f56"
+                },
+                {
+                  "failure_signature": null,
+                  "outcome": "passed",
+                  "proof_id": "XPV2-SC-R3A binding pack \u2014 fixture/routing/access mutation-armor",
+                  "step_spec_sha256": "6df6a66b94d9544adeb43d1129fcbbb0b4c90f0905b5d6fd7377f99d28b021c2"
+                }
+              ]
+            }
+          ],
+          "job_count": 24,
+          "json_path": "/tmp/mmx-heatmap-native-plans-20261019-irohglfu/settled-pack7-pack-7.json",
+          "json_sha256": "60f9a6475abd2b0460d8df4d6039ea5a4c2c1a8f2536deaf5c9f4f6999f81e01",
+          "plan_sha256": "e57f503510e7ef1b9a1c731c8685af85547b48716d035ea5217dcb73995d8bdf",
+          "step_count": 53,
+          "subject_head": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+          "tested_merge": "9e6638173035cf3374e291b548a41a102e1c5a17"
+        }
+      ],
+      "label": "settled-pack7"
+    }
+  ],
+  "local_after": {
+    "canonical_job_count": 327,
+    "classification": "ONE_JOB_CANONICAL_CLOSURE_REPRODUCER",
+    "diagnostic_input": "/tmp/mmx-heatmap-washout-closure-20261019-o640v11z/after-one-job.json",
+    "exclusive": true,
+    "findings": {},
+    "finished_utc": "2026-10-19T11:07:22.107710+00:00",
+    "full_manifest_unchanged": true,
+    "input_definition_exact": true,
+    "job_evaluated": "washout-turn-organ",
+    "loaded_jobs": 1,
+    "manifest_sha256": "29a7766033f4ddb07e845bd351262c4cca03a95c6293180a08420648e45f2bdf",
+    "phase": "after",
+    "protected_approval": false,
+    "scope": "The existing validator executed on an exact copy of the one affected job; this is not whole-manifest or native CI qualification.",
+    "source_head": "af225ec852a7725fca4bc54fa613db2fd0a020fd",
+    "source_head_unchanged": true,
+    "source_tree": "88638b8dd234d2252572c68baaa54cd556888f18",
+    "specific_closure_passed": true,
+    "started_utc": "2026-10-19T11:06:54.795823+00:00"
+  },
+  "local_before": {
+    "classification": "ONE_JOB_CANONICAL_CLOSURE_REPRODUCER",
+    "diagnostic_input": "/tmp/mmx-heatmap-washout-closure-20261019-o640v11z/before-one-job.json",
+    "exclusive": true,
+    "findings": {
+      "washout-turn-organ": [
+        "engine/theme_graph/economic_context.py",
+        "engine/theme_graph/issuer_economic_context.py"
+      ]
+    },
+    "finished_utc": "2026-10-19T10:57:44.178915+00:00",
+    "full_manifest_unchanged": true,
+    "job_evaluated": "washout-turn-organ",
+    "loaded_jobs": 1,
+    "phase": "before",
+    "reproduced_native_failure": true,
+    "scope": "The existing validator executed on an exact copy of the one affected job; this is not whole-manifest or native CI qualification.",
+    "source_head": "ee0e39c6919b49fc33f649389cfe876e698d2139",
+    "started_utc": "2026-10-19T10:56:55.155718+00:00"
+  },
+  "mission_complete": false,
+  "native_base_overlap": {
+    "ancestry_only_republication": false,
+    "full_changed_path_count": 3870,
+    "native_test_base": "b303c4b32d4d16401050b25d41131b49501720e5",
+    "overlap_with_owned_live_settled_and_pair_paths": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "pair_nonmutating_preview_tree": "9dc5342f51500ea7f5ebd9591ff1c87041270819",
+    "preview_only": true,
+    "source_join_base": "69dd6e774cc48223005426765e74aed193d55954",
+    "upstream_additions": "Tiingo BOATS test path/command and three macro-command script paths, separate from the washout gap."
+  },
+  "native_ci_observation": {
+    "corrected_candidate": "Not yet published at record creation; no native result is inherited as its own qualification.",
+    "live_before_correction": {
+      "jobs": [
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118012990259,
+          "name": "ci-plan",
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "failed_steps": [
+            "differential contract-delta gate"
+          ],
+          "id": 118012990317,
+          "name": "contract-delta",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838067,
+          "name": "ci-pack-9",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838071,
+          "name": "ci-pack-10",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118014838100,
+          "name": "ci-pack-3",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838191,
+          "name": "ci-pack-4",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118014838222,
+          "name": "ci-pack-7",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838246,
+          "name": "ci-pack-0",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118014838263,
+          "name": "ci-pack-2",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838284,
+          "name": "ci-pack-8",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838323,
+          "name": "ci-pack-11",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838355,
+          "name": "ci-pack-6",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838386,
+          "name": "ci-pack-5",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118014838547,
+          "name": "ci-pack-1",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 118014839466,
+          "name": "trusted-ci",
+          "status": "completed"
+        }
+      ],
+      "run_id": 39238397941,
+      "scope": "The existing pre-correction run has a contract-delta failure. No manual cancellation or rerun requested.",
+      "source_head": "ee0e39c6919b49fc33f649389cfe876e698d2139"
+    },
+    "observed_at_utc": "2026-10-19 11:08:34 UTC",
+    "settled": {
+      "jobs": [
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118006127934,
+          "name": "ci-plan",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118006128083,
+          "name": "contract-delta",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007562790,
+          "name": "ci-pack-0",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118007562793,
+          "name": "ci-pack-10",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007562812,
+          "name": "ci-pack-2",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007562894,
+          "name": "ci-pack-7",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118007562927,
+          "name": "ci-pack-5",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118007562933,
+          "name": "ci-pack-3",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007562935,
+          "name": "ci-pack-11",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007562972,
+          "name": "ci-pack-6",
+          "status": "completed"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118007563005,
+          "name": "ci-pack-8",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 118007563015,
+          "name": "ci-pack-1",
+          "status": "in_progress"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007563060,
+          "name": "ci-pack-9",
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 118007563396,
+          "name": "ci-pack-4",
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 118007564708,
+          "name": "trusted-ci",
+          "status": "completed"
+        }
+      ],
+      "run_id": 39236316198,
+      "scope": "Individual status receipt only; the full run is not yet established successful.",
+      "source_head": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985"
+    }
+  },
+  "native_failure": {
+    "base_sha": "b303c4b32d4d16401050b25d41131b49501720e5",
+    "command": "python scripts/check_contract_delta.py --base b303c4b32d4d16401050b25d41131b49501720e5",
+    "completed_at_utc": "2026-10-19T10:46:06Z",
+    "inherited_findings": 0,
+    "introduced_findings": 2,
+    "job_id": 118012990317,
+    "job_name": "contract-delta",
+    "logical_job": "washout-turn-organ",
+    "missing_paths": [
+      "engine/theme_graph/economic_context.py",
+      "engine/theme_graph/issuer_economic_context.py"
+    ],
+    "packing_probes_passed": 3,
+    "python": "3.12.13",
+    "qualification": "Concrete transitive declaration gap. Earlier preservation of manifest mappings did not prove transitive import closure; the new native finding governs this correction.",
+    "repository": "mastermindx-market-intelligence/macro",
+    "run_id": 39238397941,
+    "subject_head_sha": "ee0e39c6919b49fc33f649389cfe876e698d2139",
+    "tested_merge_commit": "6b7d85d8313b3bc0190c4fecda84e49aae7c2968",
+    "tested_tree": "580b82a605bd2d70136fcec07c907c7f8642a15a",
+    "ubuntu": "24.04.5",
+    "validator_wall_seconds": 458
+  },
+  "original_audit": {
+    "effect": "EFFECT_UNKNOWN",
+    "lineage": "UNVERIFIED",
+    "packet_sha256": "fd87d006643a6ce7b70b3a115ff1cf72b04feeb6d28276701a06d632c4397509",
+    "replaced": false,
+    "reported_status": "ACTIVE_OR_WAITING",
+    "resubmitted": false,
+    "run_id": "heatmap-quality-audit-20261018-c1-r1",
+    "worker": "UNKNOWN"
+  },
+  "original_audit_run": "heatmap-quality-audit-20261018-c1-r1",
+  "original_pair_at_record_creation": {
+    "correction_not_yet_included": true,
+    "declaration_test": {
+      "child_pid": 28433,
+      "classification": "ORIGINAL_PAIR_CHANGED_DECLARATION_QUALIFICATION_RESULT",
+      "finished_utc": "2026-10-19T10:41:12.802151+00:00",
+      "head_after": "764029e75909a7caebc69089f3b903e6045a4c58",
+      "inherited_cleanup_warnings": 2,
+      "passed": 2,
+      "returncode": 0,
+      "source_head": "764029e75909a7caebc69089f3b903e6045a4c58",
+      "started_utc": "2026-10-19T10:41:06.820647+00:00",
+      "status_after": "",
+      "timed_out": false
+    },
+    "live_join": {
+      "classification": "ORIGINAL_PAIR_LIVE_JOIN_LOCAL_COMMIT",
+      "commit_output": "[detached HEAD 8c2738a3c3] merge: advance original Asia pair with live source diagnostics",
+      "deployed": false,
+      "finished_utc": "2026-10-19T10:37:41.854660+00:00",
+      "head": "8c2738a3c3d7613c216758b4a5aca965253f595a",
+      "merge_head_exists": false,
+      "merge_output": "Auto-merging .github/ci/legacy-jobs.yml\nAuto-merging .github/workflows/ci.yml",
+      "original_rehearsal_ancestor_preserved": true,
+      "parents": [
+        "8f752163d15c5e43519c9e588ad2ac9abc857b42",
+        "ee0e39c6919b49fc33f649389cfe876e698d2139"
+      ],
+      "protected_approval": false,
+      "scoped_whitespace": "PASS",
+      "started_utc": "2026-10-19T10:37:38.958454+00:00",
+      "status_after": "",
+      "tree": "5cc3b7b0c12887fce60d48d98d0f6e773143b875"
+    },
+    "original_rehearsal_record_unchanged": true,
+    "parsed_workflow": {
+      "changed_nodes": [
+        {
+          "merged_matches_composed_set": true,
+          "ours_added": [
+            "scripts/check_china_heatmap_freshness.py",
+            "tests/test_china_heatmap_settled_close.py"
+          ],
+          "ours_removed": [],
+          "path": "on.pull_request.paths",
+          "theirs_added": [
+            "scripts/tiingo_chart_history.py",
+            "tests/test_brain_research_mode.py",
+            "tests/test_tiingo_chart_history.py"
+          ],
+          "theirs_removed": []
+        }
+      ],
+      "classification": "ORIGINAL_PAIR_PARSED_WORKFLOW_COMPOSITION",
+      "source_tree": "5cc3b7b0c12887fce60d48d98d0f6e773143b875",
+      "unchanged_nodes_preserved": true
+    },
+    "protected_approval": false,
+    "published": false,
+    "semantic_composition": {
+      "china_job_nonpaths_exact_original": true,
+      "classification": "ORIGINAL_PAIR_SOURCE_COMPOSITION",
+      "exclusive_original_paths_retained": {
+        ".github/workflows/asia-close.yml": true,
+        "agentos/discoveries/DSC-CHINA-HEATMAP-LACKED-SETTLED-CLOSE-PUBLISHER.md": true,
+        "collectors/china_stock_tencent.py": true,
+        "collectors/china_universe.py": true,
+        "collectors/hk_breadth.py": true,
+        "collectors/hk_closes_deep.py": true,
+        "config/dag.yml": true,
+        "config/house_law_checks.yml": true,
+        "docs/HOUSE_LAW_CI_GUARD_SUITE.md": true,
+        "scripts/build_market_heatmap.py": true,
+        "scripts/check_china_heatmap_freshness.py": true,
+        "scripts/check_tushare_freshness.py": true,
+        "tests/test_china_heatmap_gate.py": true,
+        "tests/test_china_heatmap_settled_close.py": true,
+        "tests/test_china_universe_extras.py": true,
+        "tests/test_ci_pack.py": true,
+        "tests/test_hk_freshness.py": true,
+        "tests/test_tushare_freshness_tripwire.py": true
+      },
+      "incoming_component_blobs_exact": {
+        "app/deploy/update.sh": true,
+        "app/main.py": true,
+        "docs/ops/ASIA_HEATMAP_QUALITY_AUDIT_2026-10-18.md": true,
+        "docs/ops/evidence/asia-heatmap-quality-20261018/current-main-and-source-diagnostics-20261019.json": true,
+        "scripts/build_china_heatmap_live.py": true,
+        "tests/test_china_heatmap_live_producer.py": true
+      },
+      "job_counts": {
+        "base": 327,
+        "merged": 327,
+        "ours": 327,
+        "theirs": 327
+      },
+      "joint_changes": {
+        "bea-gvc-current-descriptive-consumer": {
+          "merged_path_set_exact_union": true,
+          "nonpath_fields_composed": true,
+          "ours_paths_added": [],
+          "ours_paths_removed": [],
+          "theirs_paths_added": [
+            "engine/theme_graph/economic_context.py",
+            "engine/theme_graph/issuer_economic_context.py"
+          ],
+          "theirs_paths_removed": []
+        },
+        "c19-wp22-dhi-traversal": {
+          "merged_path_set_exact_union": true,
+          "nonpath_fields_composed": true,
+          "ours_paths_added": [],
+          "ours_paths_removed": [],
+          "theirs_paths_added": [
+            "engine/theme_graph/economic_context.py",
+            "engine/theme_graph/issuer_economic_context.py"
+          ],
+          "theirs_paths_removed": []
+        },
+        "crypto-assistant-context": {
+          "merged_path_set_exact_union": true,
+          "nonpath_fields_composed": true,
+          "ours_paths_added": [],
+          "ours_paths_removed": [],
+          "theirs_paths_added": [
+            "engine/theme_graph/economic_context.py",
+            "engine/theme_graph/issuer_economic_context.py"
+          ],
+          "theirs_paths_removed": []
+        },
+        "research-price-panel": {
+          "merged_path_set_exact_union": true,
+          "nonpath_fields_composed": true,
+          "ours_paths_added": [],
+          "ours_paths_removed": [],
+          "theirs_paths_added": [
+            "engine/theme_graph/economic_context.py",
+            "engine/theme_graph/issuer_economic_context.py"
+          ],
+          "theirs_paths_removed": []
+        }
+      },
+      "mismatches": [],
+      "refs": {
+        "base": "a58c4a150cbae97af1d1a8820028f94553afb481",
+        "merged": "5cc3b7b0c12887fce60d48d98d0f6e773143b875",
+        "ours": "8f752163d15c5e43519c9e588ad2ac9abc857b42",
+        "theirs": "ee0e39c6919b49fc33f649389cfe876e698d2139"
+      },
+      "settled_test_in_china_command": true,
+      "settled_test_in_china_paths": true,
+      "workflow_hunks": {
+        "ours": {
+          "added": {
+            "retained_in_composition": true,
+            "source_lines": 9
+          },
+          "removed": {
+            "retained_in_composition": true,
+            "source_lines": 4
+          }
+        },
+        "theirs": {
+          "added": {
+            "retained_in_composition": true,
+            "source_lines": 3
+          },
+          "removed": {
+            "retained_in_composition": true,
+            "source_lines": 0
+          }
+        }
+      }
+    },
+    "settled_join": {
+      "classification": "ORIGINAL_PAIR_BOTH_PUBLISHED_SOURCES_LOCAL_COMMIT",
+      "commit_output": "[detached HEAD 764029e759] merge: bind published settled source in the original Asia pair",
+      "deployed": false,
+      "finished_utc": "2026-10-19T10:40:01.938863+00:00",
+      "head": "764029e75909a7caebc69089f3b903e6045a4c58",
+      "merge_head_exists": false,
+      "merge_output": "",
+      "parents": [
+        "8c2738a3c3d7613c216758b4a5aca965253f595a",
+        "f679236ba3926cd3ce3dd6ffa95d0df0d605a985"
+      ],
+      "required_protected_review_and_ci_pending": true,
+      "second_join_tree_unchanged": true,
+      "source_ancestors_verified": [
+        "ee0e39c6919b49fc33f649389cfe876e698d2139",
+        "f679236ba3926cd3ce3dd6ffa95d0df0d605a985",
+        "ef873ccfedd1330d0e883736baa4ac2eab40bcd9",
+        "00eca5c41ac4a69c03b5e7afe2293039c5105496",
+        "96233ea000a73dfff9f707e550622a19386df0ed"
+      ],
+      "started_utc": "2026-10-19T10:39:58.575915+00:00",
+      "status_after": "",
+      "tree": "5cc3b7b0c12887fce60d48d98d0f6e773143b875"
+    }
+  },
+  "owner_return_delta": {
+    "full_rig_hold": "The three original approved owner receipts remain absent. Upstream draft relocation and a passing reference-integrity check provide no owner approval.",
+    "macro_7646": [],
+    "macro_9592": [],
+    "mastermind_1391": [],
+    "observed_at_utc": "2026-10-19 11:08:34 UTC",
+    "since": "2026-10-19T10:35:00Z"
+  },
+  "protected_skillpack_pin": "1ffe6b566b9addb58d13893bfb78e8505dce1752",
+  "recorded_at_utc": "2026-10-19T11:10:59.346261+00:00",
+  "replacement_audit": false,
+  "retained_boundaries": {
+    "armed": false,
+    "candidate_authenticated_natural_session_proof": "NOT_ESTABLISHED",
+    "denied_predecessor_comment_repackaged": false,
+    "denied_predecessor_comment_retried": false,
+    "deployed": false,
+    "design_acceptance": "NOT_ESTABLISHED",
+    "full_local_closure_or_census_rerun": false,
+    "local_validation_custody": "The manifest changed by two declarations between the prior and corrected commits. The bounded validation invocation itself left its inspected source unchanged.",
+    "merged": false,
+    "new_audit_run": false,
+    "old_completed_tests_or_browser_check_rerun": false,
+    "old_merge_head_recreated": false,
+    "protected_approval": false,
+    "raw_ssh_or_replacement_recovery": false,
+    "source_acquisition": "The recorded 10:12 UTC producer observation remains unsuccessful (1722 Tencent normalized, zero qualified); this CI declaration correction does not change that result."
+  },
+  "scope": "A source correction and evidence continuation within the original live branch and original rehearsal; no protected approval, merge, deployment, or audit recovery action.",
+  "source_fix": {
+    "after_sha256": "29a7766033f4ddb07e845bd351262c4cca03a95c6293180a08420648e45f2bdf",
+    "before_sha256": "4e22bf364cc1703bad0f7471fc1d5f3b31aba4e587b6c666ba06ff05705c461f",
+    "blob": "e165c588d06d5783c16a0890fd66e2827beb2fcb",
+    "classification": "ORIGINAL_LIVE_TWO_PATH_CI_CLOSURE_FIX_LOCAL_COMMIT",
+    "commit": "af225ec852a7725fca4bc54fa613db2fd0a020fd",
+    "commit_output": "[sol/china-hk-live-completion-20261012 af225ec852] ci: declare washout economic context dependencies\n 1 file changed, 2 insertions(+)",
+    "diff": "diff --git a/.github/ci/legacy-jobs.yml b/.github/ci/legacy-jobs.yml\nindex 01717a35f6..e165c588d0 100644\n--- a/.github/ci/legacy-jobs.yml\n+++ b/.github/ci/legacy-jobs.yml\n@@ -25852,6 +25852,8 @@ jobs:\n       - \"engine/theme_emergence.py\"\n       - \"engine/theme_fingerprint.py\"\n       - \"engine/theme_graph/__init__.py\"\n+      - \"engine/theme_graph/economic_context.py\"\n+      - \"engine/theme_graph/issuer_economic_context.py\"\n       - \"engine/theme_graph/identity.py\"\n       - \"engine/theme_graph/micro_rs_proxy_display.py\"\n       - \"engine/theme_graph/identity_resolution.py\"",
+    "finished_utc": "2026-10-19T11:01:18.499880+00:00",
+    "job": "washout-turn-organ",
+    "job_count": 327,
+    "other_job_mappings_unchanged": true,
+    "parent": "ee0e39c6919b49fc33f649389cfe876e698d2139",
+    "path": ".github/ci/legacy-jobs.yml",
+    "path_count_after": 1174,
+    "path_count_before": 1172,
+    "paths_added": [
+      "engine/theme_graph/economic_context.py",
+      "engine/theme_graph/issuer_economic_context.py"
+    ],
+    "paths_removed": [],
+    "protected_approval": false,
+    "published": false,
+    "runtime_or_ceiling_change": false,
+    "status_after": "",
+    "target_existing_path_sequence_preserved": true,
+    "target_nonpath_fields_unchanged": true,
+    "tree": "88638b8dd234d2252572c68baaa54cd556888f18"
+  },
+  "source_subject": {
+    "corrected_live_commit": "af225ec852a7725fca4bc54fa613db2fd0a020fd",
+    "corrected_live_tree": "88638b8dd234d2252572c68baaa54cd556888f18",
+    "evidence_publication_commit": "The commit containing this record is a descendant of corrected_live_commit and must be bound from Git; it is not the local validator subject.",
+    "parent_published_live": "ee0e39c6919b49fc33f649389cfe876e698d2139",
+    "settled_published_commit": "f679236ba3926cd3ce3dd6ffa95d0df0d605a985"
+  }
+}
