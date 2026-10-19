@@ -13,8 +13,18 @@ rule pack is not yet visible at the query's ``recorded_at``.
 The rule pack is a governed, content-digested YAML document
 (``config/fundamental_forensics/metrics/v1/not_presented/core.yaml``). This
 module loads it fail-closed, evaluates one metric against parsed linkbases and
-an exact slot-context fact map, and recomputes the evidence from package bytes
-so a tampered receipt is refused.
+an exact slot-context fact map, and can recompute the evidence from package
+bytes (``verify_not_presented_evidence``; the engine entry point is
+``BitemporalMetricQueryEngine.verify_not_presented``).
+
+That recomputation is available but is NOT on the receipt replay path yet:
+``MetricMatrix.from_dict`` / ``MetricCell.from_dict`` replay checks only the
+evidence shape and the NP rule-id prefix, so a receipt whose evidence was
+altered but stays well-formed replays. A caller that needs the verdict
+re-proven must hold the filing packages and call the verifier explicitly.
+The whole NP path is dormant until a caller constructs the engine with
+``not_presented_pack=`` and ``filing_packages=``; no production query path
+does so today.
 """
 from __future__ import annotations
 

@@ -663,6 +663,35 @@ def _csv_safe(value: Any) -> str:
     return f"'{text}" if text.startswith(("=", "+", "-", "@", "\t", "\r")) else text
 
 
+# In-row marker for a qualified sum in the tabular exports (CSV, XLSX derived
+# from CSV, and the Parquet cells projection).  A qualified sum is a formula
+# VALUE whose versioned not-presented policy omitted one or more operands; the
+# JSON receipt prints them as ``provenance.qualified_not_presented``.  The
+# tabular rows have one fixed column set, so the reason column (always empty
+# on a VALUE) carries this marker plus the omitted operand IDs instead.  A
+# reader therefore never sees a qualified sum as a plain number.  No kernel
+# reason starts with this prefix.
+QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX = "qualified_not_presented: "
+
+
+def _export_reason_text(cell: Any) -> str | None:
+    """Reason-column text shared by the CSV/XLSX and Parquet projections.
+
+    Every cell exports its kernel reason unchanged, except a qualified sum,
+    which exports the in-row qualifier marker.  Before the not-presented
+    policy clock no cell carries a qualifier, so pre-clock export bytes are
+    the historical bytes.
+    """
+    qualified = cell.provenance.qualified_not_presented
+    if not qualified:
+        return cell.reason
+    if cell.state is not CellState.VALUE or cell.reason is not None:
+        raise QueryValidationError(
+            "a not-presented qualifier is exported only on a formula value"
+        )
+    return QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX + ", ".join(qualified)
+
+
 @dataclass(frozen=True)
 class QueryPolicy:
     """Both cutoffs are mandatory; a missing cutoff is never silently "now".
@@ -4306,7 +4335,7 @@ class MetricMatrix:
                 cell.state.value,
                 decimal_text(cell.value) or "",
                 cell.unit or "",
-                cell.reason or "",
+                _export_reason_text(cell) or "",
                 provenance.accession or "",
                 provenance.form or "",
                 _date_text(provenance.filed_at) or "",
