@@ -549,7 +549,9 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
             "does not change who produced the underlying measurement. "
             "Keep independently produced Mastermind measurements distinct, "
             "with their own subjects and dates. Carry dated receipts inline "
-            "and link only the allowlisted coverage page."
+            "and link only the URLs in LINKING. When THE STORY explicitly "
+            "names an issuer, use its allowlisted stock dossier if present; "
+            "never infer an issuer or construct a missing link."
         )
         parts.append(f"  desk: {primary.get('name')}")
     else:

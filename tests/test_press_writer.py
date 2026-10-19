@@ -112,6 +112,19 @@ def test_research_desk_prompt_forbids_republishing_the_source():
 
 
 @pytest.mark.parametrize("desk", ["research_desk", "research_note"])
+def test_research_prompt_preserves_explicit_issuer_dossier_path(desk):
+    coverage = "https://www.mastermind-x.com/research/demo.html"
+    dossier = "https://www.mastermind-x.com/stocks/CNDT.html"
+    _, user = W.build_prompt(F.slot(
+        desk=desk, allowed_links=[coverage, dossier],
+        story={"tickers": ["CNDT"]}), F.config())
+    assert "link only the allowlisted coverage page" not in user
+    assert "use its allowlisted stock dossier" in user
+    assert "never infer an issuer or construct a missing link" in user
+    assert f"LINKING: {coverage}, {dossier}" in user
+
+
+@pytest.mark.parametrize("desk", ["research_desk", "research_note"])
 def test_research_coverage_does_not_claim_external_estimates_as_our_measurements(desk):
     """The actual USDA slot labels our annotations first_party, not its forecasts.
 
