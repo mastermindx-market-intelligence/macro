@@ -3352,7 +3352,7 @@
       + '.hm-quality dt{font-size:10px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;}'
       + '.hm-quality dd{margin:0;font-weight:600;color:var(--text);overflow-wrap:anywhere;}'
       + '.hm-quality p{font-size:11px;line-height:1.7;color:var(--muted);margin:0;max-width:105ch;}'
-      + '.hm-quality[data-quality-state=degraded]{border-color:var(--warn,var(--line));}'
+      + '.hm-asia .hx-pulse,.hm-asia .hx-pulse.up,.hm-asia .hx-pulse.down{border-color:var(--line);}'
       + '.hm-asia :is(button,input,summary,a):focus-visible{outline:2px solid var(--text);outline-offset:3px;}'
       + '.hm-asia .hm-mrow{min-height:52px;} .hm-asia .hm-mgrp{break-inside:avoid;}'
       + '.hm-asia .hm-mrow:hover{background:var(--panel2);}'
