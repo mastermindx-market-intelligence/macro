@@ -5057,7 +5057,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_618),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_630),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5091,6 +5091,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
     only the measured 5,618. Job counts, the other two weight ceilings,
     all suites and the ten-pack ceiling remain unchanged.
+
+    Guarded dedicated-reader backend composition (2026-10-19) adds six
+    backend suites to research-vault's existing canonical command: exactly
+    twelve estimator units. Fund only the affected build_free_content probe's
+    5,618 -> 5,630 increase. Job counts, other probe ceilings, selectors and
+    the ten-pack bound remain unchanged; ordinary Brain F11 suites remain held.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
