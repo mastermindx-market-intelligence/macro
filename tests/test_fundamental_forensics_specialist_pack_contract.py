@@ -673,12 +673,13 @@ _FROZEN_PACKS = {
         "pack_specific_codes": (),
     },
     "PK11": {
-        "digest": "d849be0cbd8fe68038d7a3f4f5aae6d00b1121ba53b761320de504795b467d51",
+        "digest": "d9bb1bebb4df0e0917739e7dbd96b245aca0e1a36b3a901b892077e4caf80e5b",
         "fields": (
             "provision_for_credit_losses_total",
             "credit_loss_expense_financing_receivables",
             "credit_loss_expense_off_balance_sheet",
             "allowance_for_credit_losses",
+            "net_write_offs",
             "loans_held_for_investment",
             "deposits",
             "cet1_capital",
@@ -2075,6 +2076,42 @@ def test_frozen_pack_required_fields_enforced(pack_id: str) -> None:
         assert f"fields: required field_id '{victim}' is absent" in errors, errors
     else:
         assert errors == []
+
+
+def test_pk11_acl_rollforward_is_loan_basis() -> None:
+    """K-PK11-R1: the rollforward reads the financing-receivable provision and net write-offs."""
+    schema = load_pack_schema("PK11")
+    checks = {c["check_id"]: c for c in schema["checks"]}
+    assert checks["provision_vs_acl_rollforward"]["operands"] == [
+        "allowance_for_credit_losses",
+        "credit_loss_expense_financing_receivables",
+        "net_write_offs",
+    ]
+    fields = {f["field_id"]: f for f in schema["fields"]}
+    assert fields["net_write_offs"] == {
+        "field_id": "net_write_offs",
+        "name": "Allowance for credit losses, write-offs net of recoveries (rollforward input)",
+        "type": "decimal",
+        "unit": "USD",
+        "period_kind": "duration",
+        "allowed_evidence_kinds": ["xbrl_fact"],
+        "required": False,
+    }
+
+
+def test_pk11_unvalued_net_write_offs_leaves_rollforward_not_evaluable() -> None:
+    """K-PK11-R1 / R-K3: an unvalued rollforward operand abstains typed, never an implied zero."""
+    obj = _frozen_applicable_result("PK11")
+    row = next(r for r in obj["fields"] if r["field_id"] == "net_write_offs")
+    row.update(
+        quality_state="missing",
+        non_value_state="missing",
+        reason="missing_standard_fact:us-gaap:FinancingReceivableAllowanceForCreditLossWriteoffAfterRecovery",
+    )
+    check = next(c for c in obj["checks"] if c["check_id"] == "provision_vs_acl_rollforward")
+    assert (check["status"], check["reason"]) == ("not_evaluable", "missing_dependency")
+    _finish(obj)
+    assert validate_pack_result(obj) == []
 
 
 def test_pk11_non_bank_class_abstention_accepted() -> None:
