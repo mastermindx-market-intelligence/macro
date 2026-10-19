@@ -2404,5 +2404,5331 @@
   }
  ],
  "packet_corrections": [],
- "defects": []
+ "defects": [
+  {
+   "id": "D-C1-0001",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "accounts_payable",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:AccountsPayableCurrent",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "169767000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1196017,
+     "raw_text": "169,767"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "169767000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0002",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "accounts_payable",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:AccountsPayableCurrent",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "145559000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1195242,
+     "raw_text": "145,559"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "145559000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0003",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "accounts_receivable_net",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:AccountsReceivableNetCurrent",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "922805000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1177663,
+     "raw_text": "922,805"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "922805000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0004",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "accounts_receivable_net",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:AccountsReceivableNetCurrent",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1303740000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1177081,
+     "raw_text": "1,303,740"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1303740000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0005",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "basic_earnings_per_share",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:EarningsPerShareBasic",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usdPerShare",
+     "decimals": "2",
+     "scale": 0,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-2.55",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1273808,
+     "raw_text": "2.55"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-2.55",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0006",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "basic_earnings_per_share",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:EarningsPerShareBasic",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usdPerShare",
+     "decimals": "2",
+     "scale": 0,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-3.86",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1272814,
+     "raw_text": "3.86"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-3.86",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0007",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "basic_weighted_average_shares",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "shares",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "328001000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1276822,
+     "raw_text": "328,001"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "328001000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0008",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "basic_weighted_average_shares",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:WeightedAverageNumberOfSharesOutstandingBasic",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "shares",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "332707000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1275910,
+     "raw_text": "332,707"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "332707000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0009",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "capital_expenditures",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "35086000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1646659,
+     "raw_text": "35,086"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "35086000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0010",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "capital_expenditures",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:PaymentsToAcquirePropertyPlantAndEquipment",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "46279000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1645953,
+     "raw_text": "46,279"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "46279000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0011",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "cash_and_cash_equivalents",
+     "period_key": [
+      "instant",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+    "context": {
+     "contextRef": "c-34",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1762749000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1719157,
+     "raw_text": "1,762,749"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1762749000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0012",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "cash_and_cash_equivalents",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "2628798000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1174882,
+     "raw_text": "2,628,798"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "2628798000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0013",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "cash_and_cash_equivalents",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:CashAndCashEquivalentsAtCarryingValue",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "2828163000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1174090,
+     "raw_text": "2,828,163"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "2828163000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0001",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "cash_to_total_debt",
+     "period_key": [
+      "instant",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.cash_to_total_debt/v1",
+     "expression": "cash_and_cash_equivalents / total_debt",
+     "dependencies": [
+      "cash_and_cash_equivalents",
+      "total_debt"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2024-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0011"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0002",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "cash_to_total_debt",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.cash_to_total_debt/v1",
+     "expression": "cash_and_cash_equivalents / total_debt",
+     "dependencies": [
+      "cash_and_cash_equivalents",
+      "total_debt"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2025-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0012"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0003",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "cash_to_total_debt",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.cash_to_total_debt/v1",
+     "expression": "cash_and_cash_equivalents / total_debt",
+     "dependencies": [
+      "cash_and_cash_equivalents",
+      "total_debt"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2026-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0013"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0014",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "common_stock_repurchases",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "591732000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1675279,
+     "raw_text": "591,732"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "591732000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0015",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "common_stock_repurchases",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1932333000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1674692,
+     "raw_text": "1,932,333"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1932333000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0016",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "cost_of_revenue",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:CostOfGoodsAndServicesSold",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "898558000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1240040,
+     "raw_text": "898,558"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "898558000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0017",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "cost_of_revenue",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:CostOfGoodsAndServicesSold",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1214673000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1239457,
+     "raw_text": "1,214,673"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1214673000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0018",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "current_assets",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:AssetsCurrent",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "5869372000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1181872,
+     "raw_text": "5,869,372"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "5869372000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0019",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "current_assets",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:AssetsCurrent",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "5742612000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1181247,
+     "raw_text": "5,742,612"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "5742612000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0020",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "current_liabilities",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:LiabilitiesCurrent",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "3301183000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1201600,
+     "raw_text": "3,301,183"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "3301183000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0021",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "current_liabilities",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:LiabilitiesCurrent",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "4421691000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1200970,
+     "raw_text": "4,421,691"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "4421691000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0004",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "current_ratio",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.current_ratio/v1",
+     "expression": "current_assets / current_liabilities",
+     "dependencies": [
+      "current_assets",
+      "current_liabilities"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "1.777960203963245903059600149400987",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0018",
+     "D-C1-0020"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0005",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "current_ratio",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.current_ratio/v1",
+     "expression": "current_assets / current_liabilities",
+     "dependencies": [
+      "current_assets",
+      "current_liabilities"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "1.298736614566689531222331004133939",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0019",
+     "D-C1-0021"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0006",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "debt_to_equity",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.debt_to_equity/v1",
+     "expression": "total_debt / stockholders_equity",
+     "dependencies": [
+      "total_debt",
+      "stockholders_equity"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2025-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: stockholders_equity (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: stockholders_equity (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0063"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0022",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "depreciation_depletion_amortization",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:DepreciationDepletionAndAmortization",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "119903000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1600368,
+     "raw_text": "119,903"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "119903000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0023",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "depreciation_depletion_amortization",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:DepreciationDepletionAndAmortization",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "182508000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1599663,
+     "raw_text": "182,508"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "182508000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0024",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "diluted_earnings_per_share",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:EarningsPerShareDiluted",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usdPerShare",
+     "decimals": "2",
+     "scale": 0,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-2.55",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1273670,
+     "raw_text": "2.55"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-2.55",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0025",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "diluted_earnings_per_share",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:EarningsPerShareDiluted",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usdPerShare",
+     "decimals": "2",
+     "scale": 0,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-3.86",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1272676,
+     "raw_text": "3.86"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-3.86",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0026",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "diluted_weighted_average_shares",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "shares",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "328001000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1276998,
+     "raw_text": "328,001"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "328001000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0027",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "diluted_weighted_average_shares",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "shares",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "332707000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1276086,
+     "raw_text": "332,707"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "332707000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0007",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "free_cash_flow",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.free_cash_flow/v1",
+     "expression": "net_cash_from_operating_activities - capital_expenditures",
+     "dependencies": [
+      "net_cash_from_operating_activities",
+      "capital_expenditures"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "813036000",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: net_cash_from_operating_activities (unlinked source vintages require an explicit typed revision lineage), capital_expenditures (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: net_cash_from_operating_activities (unlinked source vintages require an explicit typed revision lineage), capital_expenditures (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0041",
+     "D-C1-0009"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0008",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "free_cash_flow",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.free_cash_flow/v1",
+     "expression": "net_cash_from_operating_activities - capital_expenditures",
+     "dependencies": [
+      "net_cash_from_operating_activities",
+      "capital_expenditures"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "913485000",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: net_cash_from_operating_activities (unlinked source vintages require an explicit typed revision lineage), capital_expenditures (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: net_cash_from_operating_activities (unlinked source vintages require an explicit typed revision lineage), capital_expenditures (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0042",
+     "D-C1-0010"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0028",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "goodwill",
+     "period_key": [
+      "instant",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:Goodwill",
+    "context": {
+     "contextRef": "c-34",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "975906000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 2398050,
+     "raw_text": "975,906"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "975906000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0029",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "goodwill",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:Goodwill",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1056559000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1187331,
+     "raw_text": "1,056,559"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1056559000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0030",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "goodwill",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:Goodwill",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1194367000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1186769,
+     "raw_text": "1,194,367"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1194367000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0009",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "gross_margin",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.gross_margin/v1",
+     "expression": "gross_profit / revenue",
+     "dependencies": [
+      "gross_profit",
+      "revenue"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "0.6798284261937246146341567702563595",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: gross_profit (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: gross_profit (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0031",
+     "D-C1-0059"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0010",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "gross_margin",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.gross_margin/v1",
+     "expression": "gross_profit / revenue",
+     "dependencies": [
+      "gross_profit",
+      "revenue"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "0.6650467847416553514839526626435723",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: gross_profit (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: gross_profit (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0032",
+     "D-C1-0060"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0031",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "gross_profit",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:GrossProfit",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1907931000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1242070,
+     "raw_text": "1,907,931"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1907931000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0032",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "gross_profit",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:GrossProfit",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "2411723000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1241450,
+     "raw_text": "2,411,723"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "2411723000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0033",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "income_tax_expense_benefit",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:IncomeTaxExpenseBenefit",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-11233000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1262926,
+     "raw_text": "11,233"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-11233000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0034",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "income_tax_expense_benefit",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:IncomeTaxExpenseBenefit",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "4113000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1262349,
+     "raw_text": "4,113"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "4113000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0035",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "intangible_assets_net",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:FiniteLivedIntangibleAssetsNet",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "277202000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 2383539,
+     "raw_text": "277,202"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "277202000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0036",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "intangible_assets_net",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:FiniteLivedIntangibleAssetsNet",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "246490000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 2362879,
+     "raw_text": "246,490"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "246490000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0011",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "inventory_to_revenue",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.inventory_to_revenue/v1",
+     "expression": "inventory_net / revenue",
+     "dependencies": [
+      "inventory_net",
+      "revenue"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "inventory_net",
+       "state": "typed_absence_verified",
+       "code": "missing_standard_fact",
+       "dep_period": [
+        "instant",
+        "2024-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0059"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0012",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "inventory_to_revenue",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.inventory_to_revenue/v1",
+     "expression": "inventory_net / revenue",
+     "dependencies": [
+      "inventory_net",
+      "revenue"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "inventory_net",
+       "state": "typed_absence_verified",
+       "code": "missing_standard_fact",
+       "dep_period": [
+        "instant",
+        "2025-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0060"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0037",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_financing_activities",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInFinancingActivities",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-854103000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1691286,
+     "raw_text": "854,103"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-854103000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0038",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_financing_activities",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInFinancingActivities",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-226523000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1690512,
+     "raw_text": "226,523"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-226523000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0039",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_investing_activities",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInInvestingActivities",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "832258000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1664766,
+     "raw_text": "832,258"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "832258000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0040",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_investing_activities",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInInvestingActivities",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "190646000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1664003,
+     "raw_text": "190,646"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "190646000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0041",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_operating_activities",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "848122000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1643596,
+     "raw_text": "848,122"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "848122000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0042",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_cash_from_operating_activities",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "959764000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1642833,
+     "raw_text": "959,764"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "959764000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0013",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "net_debt",
+     "period_key": [
+      "instant",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.net_debt/v1",
+     "expression": "total_debt - cash_and_cash_equivalents",
+     "dependencies": [
+      "total_debt",
+      "cash_and_cash_equivalents"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2024-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0011"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0014",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "net_debt",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.net_debt/v1",
+     "expression": "total_debt - cash_and_cash_equivalents",
+     "dependencies": [
+      "total_debt",
+      "cash_and_cash_equivalents"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2025-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0012"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0015",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "net_debt",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "code",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "code_mismatch",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.net_debt/v1",
+     "expression": "total_debt - cash_and_cash_equivalents",
+     "dependencies": [
+      "total_debt",
+      "cash_and_cash_equivalents"
+     ],
+     "missing_inputs": [
+      {
+       "dependency": "total_debt",
+       "state": "typed_absence_verified",
+       "code": "missing_dependency",
+       "dep_period": [
+        "instant",
+        "2026-01-31"
+       ]
+      }
+     ]
+    },
+    "gold": {
+     "value_exact": null,
+     "code": "missing_dependency",
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: cash_and_cash_equivalents (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0013"
+    ]
+   }
+  },
+  {
+   "id": "D-C1-0043",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_income_loss",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetIncomeLoss",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-836097000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1269861,
+     "raw_text": "836,097"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-836097000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0044",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "net_income_loss",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:NetIncomeLoss",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-1285640000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1269006,
+     "raw_text": "1,285,640"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-1285640000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0045",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "operating_expenses",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:OperatingExpenses",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "3002704000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1250707,
+     "raw_text": "3,002,704"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "3002704000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0046",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "operating_expenses",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:OperatingExpenses",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "3867733000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1250075,
+     "raw_text": "3,867,733"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "3867733000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0047",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "operating_income_loss",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:OperatingIncomeLoss",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-1094773000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1252803,
+     "raw_text": "1,094,773"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-1094773000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0048",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "operating_income_loss",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:OperatingIncomeLoss",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-1456010000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1252164,
+     "raw_text": "1,456,010"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-1456010000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0049",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "operating_lease_right_of_use_asset",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "359439000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1186009,
+     "raw_text": "359,439"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "359439000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0050",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "operating_lease_right_of_use_asset",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:OperatingLeaseRightOfUseAsset",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "274897000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1185428,
+     "raw_text": "274,897"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "274897000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0051",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "pretax_income_loss",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-849223000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1260881,
+     "raw_text": "849,223"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-849223000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0052",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "pretax_income_loss",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-1285099000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1260170,
+     "raw_text": "1,285,099"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-1285099000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0053",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "property_plant_equipment_net",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:PropertyPlantAndEquipmentNet",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "296393000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1184642,
+     "raw_text": "296,393"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "296393000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0054",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "property_plant_equipment_net",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:PropertyPlantAndEquipmentNet",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "248611000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1184062,
+     "raw_text": "248,611"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "248611000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0016",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "receivables_to_revenue",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.receivables_to_revenue/v1",
+     "expression": "accounts_receivable_net / revenue",
+     "dependencies": [
+      "accounts_receivable_net",
+      "revenue"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "0.3302710254699020733735282767899678",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0059"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0017",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "receivables_to_revenue",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.receivables_to_revenue/v1",
+     "expression": "accounts_receivable_net / revenue",
+     "dependencies": [
+      "accounts_receivable_net",
+      "revenue"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "0.2544688997009703297709351102306532",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: accounts_receivable_net (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: accounts_receivable_net (unlinked source vintages require an explicit typed revision lineage), revenue (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0060"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0018",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "receivables_to_revenue",
+     "period_key": [
+      "duration",
+      "2025-02-01",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.receivables_to_revenue/v1",
+     "expression": "accounts_receivable_net / revenue",
+     "dependencies": [
+      "accounts_receivable_net",
+      "revenue"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "0.2783422353716289641255471348303332",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: accounts_receivable_net (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: accounts_receivable_net (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": []
+   }
+  },
+  {
+   "id": "D-C1-0055",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "research_and_development_expense",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:ResearchAndDevelopmentExpense",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1287949000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1246658,
+     "raw_text": "1,287,949"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1287949000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0056",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "research_and_development_expense",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:ResearchAndDevelopmentExpense",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1783379000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1246072,
+     "raw_text": "1,783,379"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1783379000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0057",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "retained_earnings_accumulated_deficit",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:RetainedEarningsAccumulatedDeficit",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-7293575000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1223757,
+     "raw_text": "7,293,575"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-7293575000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0058",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "retained_earnings_accumulated_deficit",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:RetainedEarningsAccumulatedDeficit",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "-9494249000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1223163,
+     "raw_text": "9,494,249"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "-9494249000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0059",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "revenue",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "2806489000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1238080,
+     "raw_text": "2,806,489"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "2806489000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0060",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "revenue",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "3626396000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1237270,
+     "raw_text": "3,626,396"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "3626396000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0061",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "share_based_compensation_expense",
+     "period_key": [
+      "duration",
+      "2023-02-01",
+      "2024-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:ShareBasedCompensation",
+    "context": {
+     "contextRef": "c-11",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1168015000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1607332,
+     "raw_text": "1,168,015"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1168015000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0062",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "share_based_compensation_expense",
+     "period_key": [
+      "duration",
+      "2024-02-01",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:ShareBasedCompensation",
+    "context": {
+     "contextRef": "c-10",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "1479314000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1606639,
+     "raw_text": "1,479,314"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "1479314000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0063",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "stockholders_equity",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:StockholdersEquity",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "2999929000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1225233,
+     "raw_text": "2,999,929"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "2999929000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0064",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "total_assets",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:Assets",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "9033938000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1193257,
+     "raw_text": "9,033,938"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "9033938000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0065",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "total_assets",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:Assets",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "9132495000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1192418,
+     "raw_text": "9,132,495"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "9132495000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0066",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000008",
+     "metric_id": "total_liabilities",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000008",
+    "concept": "us-gaap:Liabilities",
+    "context": {
+     "contextRef": "c-5",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "6027295000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1208525,
+     "raw_text": "6,027,295"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "6027295000",
+     "code": null,
+     "source_accession": "0001640147-26-000008"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C1-0067",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": "0001640147-26-000037",
+     "metric_id": "total_liabilities",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C1_viewB_unlinked_vintages",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": "0001640147-26-000037",
+    "concept": "us-gaap:Liabilities",
+    "context": {
+     "contextRef": "c-4",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": 3,
+     "dimensioned": false,
+     "nil": false
+    },
+    "filed_value": "7208393000",
+    "filed_location": {
+     "accession": "0001640147-26-000008",
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 1207901,
+     "raw_text": "7,208,393"
+    },
+    "formula": null,
+    "gold": {
+     "value_exact": "7208393000",
+     "code": null,
+     "source_accession": "0001640147-26-000037"
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "UNMAPPED_KERNEL_REASON:unlinked source vintages require an explicit typed revision lineage",
+     "reason": "unlinked source vintages require an explicit typed revision lineage",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "unlinked source vintages require an explicit typed revision lineage",
+     "cite": "engine/fundamental_forensics/query.py:5952-5982 (unlinked source vintages refusal; 'Filing time and hashes are not a source-fusion policy') and engine/fundamental_forensics/raw_ledger.py:1212-1233 (duplicate_group_key includes accession + body_sha256, so any two filings' facts are distinct groups)"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    }
+   }
+  },
+  {
+   "id": "D-C2-0019",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "working_capital",
+     "period_key": [
+      "instant",
+      "2025-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.working_capital/v1",
+     "expression": "current_assets - current_liabilities",
+     "dependencies": [
+      "current_assets",
+      "current_liabilities"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "2568189000",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0018",
+     "D-C1-0020"
+    ]
+   }
+  },
+  {
+   "id": "D-C2-0020",
+   "row_keys": [
+    {
+     "view": "latest_known_as_of",
+     "source_accession": null,
+     "metric_id": "working_capital",
+     "period_key": [
+      "instant",
+      "2026-01-31"
+     ]
+    }
+   ],
+   "comparison": "value",
+   "record": {
+    "ruling": "R-G-1",
+    "cluster": "C2_viewB_formula_unlinked_cascade",
+    "kr_label": "KERNEL_DEFECT_CANDIDATE",
+    "category": "value_vs_absence",
+    "accession": null,
+    "concept": null,
+    "context": null,
+    "filed_value": null,
+    "filed_location": null,
+    "formula": {
+     "formula_rule_id": "formula.working_capital/v1",
+     "expression": "current_assets - current_liabilities",
+     "dependencies": [
+      "current_assets",
+      "current_liabilities"
+     ],
+     "missing_inputs": null
+    },
+    "gold": {
+     "value_exact": "1320921000",
+     "code": null,
+     "source_accession": null
+    },
+    "kernel_output": {
+     "state": "not_evaluable",
+     "value_exact": null,
+     "kernel_code": "incompatible_dependencies",
+     "reason": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "provenance_accession": null
+    },
+    "kernel_observation": {
+     "kernel": "incompatible_dependencies: current_assets (unlinked source vintages require an explicit typed revision lineage), current_liabilities (unlinked source vintages require an explicit typed revision lineage)",
+     "note": "cascade of C1: a dependency cell refused on unlinked vintages and the formula reports incompatible_dependencies instead of the gold value/absence"
+    },
+    "repro": {
+     "test": "tests/test_fif_g_pack_kernel.py::test_kernel_cells_match_gold_cells[0001640147-latest_known_as_of-union]",
+     "env": "FIF_GSRC_STAGE_ROOT=<stage root holding the admitted package bytes>"
+    },
+    "cascade_of": [
+     "D-C1-0019",
+     "D-C1-0021"
+    ]
+   }
+  }
+ ]
 }
