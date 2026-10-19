@@ -2316,7 +2316,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         </div>
       </div>
       <div class="rvx-hocard">
-        <div class="cap">{{ t("THIS WEEK'S HANDOFF", '本周交棒') }}</div>
+        <div class="cap">{{ t("LAST RECORDED HANDOFF", '最近一次已记录的交棒') }}</div>
         <div class="rvx-handoff">
           <div class="rvx-hocol out">
             <div class="lbl">{{ t('Losing the lead', '失去领先') }}</div>
@@ -2392,8 +2392,8 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
       {{ t('Source session unverified. Treat all action rows as historical context, not current calls.', '源数据交易日尚未核验。所有操作列表仅供历史参考，并非当前操作建议。') }}
       {% endif %}
     </p>
-    {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Refreshing the action board — check back after tonight’s close.', '正在刷新操作板 — 今晚收盘后再查看。') }}</p>{% endif %}
-    <div class="rvx-sec-sub si-lane-foot">{{ t('Lanes are the only gated, graded calls on this page — everything below is context, measured nightly.', '操作清单是本页唯一的门控与自评分判断 — 下方内容均为背景信息，每晚计算。') }}
+    {% if action_board %}{% include "_us_act_now_board.html.j2" %}{% else %}<p class="rvx-sec-sub muted">{{ t('Action board unavailable until a coherent, source-verified snapshot is published. No current calls.', '操作清单暂不可用：需等待同交易日且来源可核验的快照发布；当前无有效操作建议。') }}</p>{% endif %}
+    <div class="rvx-sec-sub si-lane-foot">{{ t('Only source-verified lanes carry graded calls. Everything below is dated context, not a live updating feed.', '仅来源已核验的操作清单才包含评级判断。下方均为带日期的背景信息，并非实时数据流。') }}
       {# the funnel it drills into is the #confluence view on this page now, not a page away #}
       <a href="#confluence" style="color:var(--ink-link, var(--link))">{{ t('Drill to stocks →', '下钻到个股 →') }}</a></div>
     <div id="grader" class="grader grader-inboard" hidden></div>
@@ -2467,7 +2467,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
         <button class="sc-tab on" data-fam="baskets" role="tab">🧺 <span class="l-en">Themes</span><span class="l-zh">主题</span> <i id="sc-tab-n-bsk"></i></button>
       </div>
     </div>
-    <p class="rvx-sec-sub">{{ t('Right = strong vs the S&P. Up = gaining speed this week. Leaders sweep from Leading into Weakening as they tire; laggards turn up through Improving. Hover any dot — click through for members.', '右 = 相对标普强。上 = 本周加速。领涨者会从「领先」滑向「走弱」；落后者经「改善」重新转强。悬停查看，点击进入成分页。') }}</p>
+    <p class="rvx-sec-sub">{{ t('Right = relative strength vs the S&P. Up = acceleration over the measured session window ending at this snapshot. Leaders move toward Weakening as they tire; laggards turn toward Improving. Hover any dot — click through for members.', '右 = 相对标普强弱。上 = 截至本次快照所覆盖交易日窗口的加速。领涨者走弱时移向「走弱」；落后者转强时移向「改善」。悬停查看，点击进入成分页。') }}</p>
     <div class="rvx-map-wrap">
       <div class="rvx-card rvx-map-card">
         <svg class="rvx-rmap" id="rvx-rmap" viewBox="0 0 600 480" aria-label="Rotation map"></svg>
@@ -3619,7 +3619,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     } else if(rot===null){
       // Rotation artifact absent — first wired nightly hasn't run yet.
       ftRail='<div class="ft-rail ft-await"><span class="ft-rank">'+L('fast lens','快线')+'</span>'
-        +'<span class="ft-state">'+L('awaiting tonight\'s data','等待今晚数据')+'</span></div>';
+        +'<span class="ft-state">'+L('awaiting a source-verified session','等待已核验来源的交易日数据')+'</span></div>';
     }
     if(c.confluence) chips.push('<span class="chip2">'+L('confluence','共振')+' <b>'+c.confluence.agree+'/'+c.confluence.of+'</b></span>');
     if(c.early) chips.push('<span class="chip2 early">'+L('early','偏早')+'</span>');
@@ -4200,7 +4200,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
               '早期观察 — 仅作背景，尚未成为已记录事件 · 截至 ')) + esc(EC.as_of) + '</p>';
       var m = (EC.state != null && Object.prototype.hasOwnProperty.call(EARLY_MAP, EC.state)) ? EARLY_MAP[EC.state] : null;
       if (m) out += '<p class="mr-early-clause">' + esc(L(m[0], m[1])) + '</p>';
-      else out += '<p class="mr-early-cov">' + esc(L('No early reading to show today.', '今日没有可显示的早期读数。')) + '</p>';
+      else out += '<p class="mr-early-cov">' + esc(L('No qualifying early reading in this snapshot.', '本次快照没有符合条件的早期读数。')) + '</p>';
       var cov = EC.coverage || {};
       if (num(cov.evaluable_2s) && num(cov.registered_pairs)) {
         var partial = false, rcs = EC.reason_codes || [], i;
