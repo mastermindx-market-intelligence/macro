@@ -224,5 +224,85 @@
       "research/bonds_transmission_r30_2026-10-18/r33/test-bonds-integration.py": "e31dbd473f5fcec427753382bc9e3ff814c2a1bd5910a7c8e73aeedf6881b590"
     },
     "binding_result_owner": "Current PR #9578 exact resulting head; these local checks are not hosted CI or release authorization"
+  },
+  "main_integration": {
+    "recorded_at": "2026-10-19T12:34:19.633040+00:00",
+    "candidate_parent": "c7ad89b7980d50749b3bd290f70a4d4f4bfc4054",
+    "integrated_main": "f4098574290136f1a3e8aa01d55fb54a6d4ec2f9",
+    "fixed_source_tree_before_receipt_updates": "9c2ff2bfec53c569fc074ad68a25c543958a9b66",
+    "conflict_paths": [
+      "tests/test_ci_pack.py"
+    ],
+    "resolution": "Both existing CI curation entries retained; test assertions and limits unchanged.",
+    "bonds_scope_paths": 816,
+    "added_for_new_main_imports": [
+      "contracts/theme_graph/activity_membership_proposal.v1.schema.json",
+      "engine/market_ontology/__init__.py",
+      "engine/market_ontology/bea_gvc_current.py",
+      "engine/theme_graph/economic_context.py",
+      "engine/theme_graph/issuer_economic_context.py"
+    ],
+    "bonds_prior_811_paths_and_commands_preserved": true,
+    "all_other_jobs_equal_to_integrated_main": true,
+    "runtime_unchanged_from_c7ad_sha256": {
+      "scripts/build_macro_context.py": "4370a17da646c4c31d4dc32ea3dbf38775da05421fd51c1a4eaf3562960cfeac",
+      "templates/bonds.html.j2": "edffe64e9374ea683ff880caa3b0ff2cd525e1ecab16f644343b760ae344565d",
+      "templates/_bonds_source_adapter.js.j2": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
+      "templates/_bonds_source_inspector.js.j2": "dcafda815a349afa39b74512c6a099485d4b22b0a475574351ed3324cb343ce8",
+      "templates/_bonds_source_inspector.css.j2": "e86e001554382589e86c6e06ef42212b829383e2028e9bb45c0e51c5511d5fa9"
+    },
+    "first_attempt": {
+      "source_tree": "44f240999807d3ccdee0648e8a3dab3aa84785e5",
+      "passed": 1,
+      "failed": 1,
+      "packing_case": "interrupted after decisive closure failure",
+      "process_pid": 41541,
+      "process_exit": 2,
+      "raw_xml_sha256": "f210dca0c66e7eee21357f37d0c9c2f8a2bae58200afd105f1e8a39171168d0f",
+      "lossless_raw_xml_gzip": "ci-main-integration-initial.xml.gz"
+    },
+    "repaired_attempt": {
+      "passed": 3,
+      "failed": 0,
+      "errors": 0,
+      "process_pid": 70054,
+      "process_exit": 0,
+      "seconds": 366.273,
+      "receipt": "ci-main-integration.xml",
+      "receipt_sha256": "36af74be34d939a2bbdeebb8aefd2c7b3d285883b12ede10c69873c0aee76331",
+      "tests": [
+        "test_the_curated_exclusive_set_is_actually_declared",
+        "test_curated_exclusive_scopes_cover_their_own_import_closure",
+        "test_exclusive_curation_narrows_ordinary_code_prs"
+      ]
+    },
+    "rig_structural_resolution": {
+      "main_commit": "b91514a3a4301edff33ced2644e4cea7cdfef716",
+      "merged_via_pr": 7100,
+      "effect": "Three unapproved Sector Central migration packets rehomed as explicit design drafts.",
+      "rig_admission_granted": false
+    },
+    "final_c7ad_fabric_review": {
+      "run_id": "r33-repair-final-source-review-20261019-c4",
+      "controller_pid": 5363,
+      "state": "ACTIVE_OR_WAITING; controller return unconfirmed at last observation",
+      "retry_allowed": false,
+      "acceptance": "pending; do not infer a passed review"
+    },
+    "native_main_integration_advisory": "No usable independent comparison returned. Not accepted as evidence; root owns the preservation checks.",
+    "hosted_ci": "New integration commit needs its own binding ci/fences. c7ad had only queued ci-authority at observation.",
+    "production_origin_observed": false,
+    "production_acceptance": false,
+    "mission_complete": false,
+    "current_status_owner": "Macro PR #9578 conversation; reread exact head, checks, review, holds and effects.",
+    "native_advisory_operation_receipt": {
+      "tool": "studio_direct_start_process",
+      "outer_result": "aborted after 627 seconds; no PID or completion receipt returned",
+      "command_scope": "git cat-file/show/rev-parse/ls-tree and YAML/AST comparisons; git write-tree may materialize a content-addressed tree and its index cache",
+      "execution_confirmed": false,
+      "source_reconciliation": "Parent independently observed expected HEAD, MERGE_HEAD, staged content tree and no unstaged or unmerged source; this command contains no source edit, ref update, commit, push, release or runtime action.",
+      "acceptance": "NOT_ACCEPTED as review evidence",
+      "replayed": false
+    }
   }
 }

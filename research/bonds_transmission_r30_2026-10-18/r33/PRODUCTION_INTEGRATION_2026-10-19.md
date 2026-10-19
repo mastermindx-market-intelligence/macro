@@ -18,7 +18,7 @@ The candidate is implemented and passes bounded source and browser checks. Indep
 - Current receiver: this attended ChatGPT session, continuing the existing source carrier. No prior live writer, formal exclusive lease or unresolved modifying effect was found in the checked PR/worktree state. This is a custody observation, not a manufactured lease grant. A successor must recheck actual current head and occupancy.
 - Source worktree: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-transmission-r33-20261018-c4`.
 - Compatible verified protected procedure pin: Mastermind `dc816f498f7cffa19cc82210ca8d73643fa5f156`, skillpack v1 / 1.0.1 / bootstrap major 1.
-- Current-main compatibility/input pin: Macro `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`. Bonds template, Bonds builder, Macro-context template, `lib/pages.py` and access-policy blobs matched the carrier; the Macro builder difference was the accepted 204-line R33 addition. No ancestry-only merge was performed.
+- Current-main compatibility/input pin: Macro `80f270c44bcdf11f5e71dacc05b11a0875a01d7f`. Bonds template, Bonds builder, Macro-context template, `lib/pages.py` and access-policy blobs matched the carrier; the Macro builder difference was the accepted 204-line R33 addition. That was the initial compatibility check. The later main integration below reconciles a concrete source conflict and its newly imported dependencies.
 - No matching Agent OS workstream/handoff ownership record was found for the bounded Bonds/Macro-context paths. This evidence stays with its existing PR and research handoff; no unsupported workstream or second registry was created.
 
 ## Implementation paths
@@ -83,6 +83,16 @@ The initial local full packing rehearsal reported 191 passed, 5 failed and 2 ski
 
 The retained e58 delta review correctly checked its bounded display changes but its static CI-registration assurance was contradicted by the later hosted packing failure. That whole verdict is not accepted as CI clearance. The subsequent CI-scope proposal was explicitly qualified: the root must prove complete coverage, positive triggers, unchanged ceilings and no new ancestor gap.
 
+## Main integration after c7ad repair
+
+The repaired source commit is `c7ad89b7980d50749b3bd290f70a4d4f4bfc4054`. Its only observed workflow was queued `ci-authority`; binding `ci` and `fences` had not appeared, and GitHub mergeability remained unknown. A local merge-tree check against inspected main `f4098574290136f1a3e8aa01d55fb54a6d4ec2f9` proved one conflict in `tests/test_ci_pack.py`. The resolution retains both the Bonds and newly landed BEA curation entries. All other job definitions match that main commit, and the five R33 runtime files remain byte-identical to c7ad. The 54 integration checks and 24 canonical captures were not repeated for this CI-only slice.
+
+Main also introduces four concrete imported dependencies and one package initializer. The existing Bonds job now declares **816 paths**, retaining every prior path, suite, command and limit. The initial merged-tree attempt recorded one pass and one real closure failure; the parent interrupted its remaining packing case after that decisive result. The [raw XML is preserved losslessly](verification/integration/ci-main-integration-initial.xml.gz). After the five-path repair, [all three existing guards passed](verification/integration/ci-main-integration.xml): curated-set equality, complete curated import coverage and the existing packing limits. The source tree tested before receipt/document updates is `9c2ff2bfec53c569fc074ad68a25c543958a9b66`. Two unrelated temporary-directory cleanup warnings are retained.
+
+The [adjudication](verification/integration/source-review-adjudication.json) records the exact parents, conflict, five added paths, unchanged runtime hashes and both test attempts. A separate native advisory returned no usable comparison and supplies no independent acceptance evidence. The final c7ad Fabric review remains on its original run `r33-repair-final-source-review-20261019-c4` until reconciled. Its result and the resulting head's hosted CI/release effects must be recorded in the existing PR conversation; neither is presumed successful here.
+
+Main commit `b91514a3a4301edff33ced2644e4cea7cdfef716`, merged via PR #7100 on 19 October, rehomed the three unapproved Sector Central packets as explicit design drafts. This resolves their structural placement failure seen on e58's tested base; **no approved RIG receipt or source admission was created**. Existing Sector Central ownership remains intact.
+
 ## Serving-path review resolution
 
 The source configuration resolves `storage.site_dir` to `site`. Caddy inherits `/opt/macro/site.served` for this payload; its nested `/var/lib/macro-live/public` root applies only to the explicit `@vps_external` matcher, which excludes `/macro-context-data/decision_workspaces.json`. The existing `app/deploy/update.sh` holds `macro-update.lock` and publishes `site/` into `site.served/` using per-file atomic rsync. This resolves the review's asserted live-write tear and ambiguous-root concerns at source level. The existing serving mechanism stays intact; actual deployed filesystem/response proof is still required.
@@ -95,7 +105,7 @@ The first read-only Fabric census (`r33-production-source-census-20261019-c4`, r
 
 The port return (`r33-bonds-inspector-port-20261019-c4`, response SHA-256 `544835b049793ddb5681f20785e88b7c85534e5c97d0fe26dbff134017de6514`) is terminal and **NOT_ACCEPTED as a complete implementation**. A single JSON escaping error was repaired to inspect the response. The parent retained useful presentation portions and independently corrected the transport, state and accessibility defects above. Neither return is production acceptance. The native advisory child is terminal; no reciprocal watcher was armed.
 
-All source effects remain on the original worktree/branch/PR. No unknown modifying effect, active monitor, saved investigation, source-admission write, merge or deployment is asserted.
+All source effects remain on the original worktree/branch/PR. No unknown modifying effect, active monitor, saved investigation, source-admission write, production merge or deployment is asserted.
 
 ## Current existing-owner gates and next actions
 
