@@ -3268,10 +3268,30 @@ function rvxSet(id,html){const e=document.getElementById(id);if(e)e.innerHTML=ht
 function rvxBar(id,pct,col){const e=document.getElementById(id);if(e){e.style.width=Math.max(2,Math.min(100,pct))+'%';e.style.background=col;}}
 function renderInternals(){
   const mc=(THEME&&THEME.market_concentration)||{}; const zh=isZh();
+  const hero=document.querySelector('.rvx-hero[data-si-as-of]');
+  const serverDate=hero?(hero.getAttribute('data-si-as-of')||''):'';
+  const basketDate=(BASKETS&&BASKETS.as_of)||'';
+  const sourceDate=mc.source_as_of||'';
+  // The independently sourced S&P 500 breadth tape cannot inherit the
+  // render clock, a different basket vintage, or a made-up S&P 1500 scope.
+  const measured=mc.source_universe==='sp500_current_constituents' &&
+    sourceDate && sourceDate===serverDate && sourceDate===basketDate;
+  if(!measured){
+    ['mkt-breadth','mkt-ad','mkt-hilo','mkt-above'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.textContent='—';
+    });
+    ['mkt-ad-bar','mkt-hilo-bar','mkt-above-bar'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.style.width='0%';
+    });
+    const note=zh?'未测 — 数据源交易日或覆盖范围未核验':
+      'Not measured — source session or coverage unverified';
+    ['mkt-breadth-sub','mkt-ad-sub','mkt-hilo-sub','mkt-above-sub'].forEach(id=>rvxSet(id,note));
+    return;
+  }
   const vmap={narrow:[zh?'狭窄':'Narrow','var(--down)'],broad:[zh?'广泛':'Broad','var(--up)'],mixed:[zh?'中性':'Mixed','var(--warn)']};
-  const vv=vmap[mc.verdict]||vmap.mixed;
-  const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv[0]; be.style.color=vv[1];}
-  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'));
+  const vv=vmap[mc.verdict]||null;
+  const be=document.getElementById('mkt-breadth'); if(be){be.textContent=vv?vv[0]:'—'; be.style.color=vv?vv[1]:'var(--muted)';}
+  rvxSet('mkt-breadth-sub', mc.verdict==='broad'?(zh?'广泛参与 — 全面上涨。':'Broad participation — a risk-on tide.'):mc.verdict==='narrow'?(zh?'狭窄 — 少数个股主导。':'Narrow — a few names carry it.'):mc.verdict==='mixed'?(zh?'无明显共识，领涨面较窄。':'No strong consensus. Leadership is narrow.'):(zh?'尚无可靠的广度判断':'No measured breadth verdict'));
   if(mc.adv!=null&&mc.dec!=null){ rvxSet('mkt-ad', mc.adv+'<span class="rvx-mut" style="font-size:13px"> / </span>'+mc.dec);
     rvxSet('mkt-ad-sub', (zh?'涨跌比 ':'A/D ')+(mc.ad_ratio!=null?(+mc.ad_ratio).toFixed(2):'—'));
     rvxBar('mkt-ad-bar', mc.adv/((mc.adv+mc.dec)||1)*100, (mc.ad_ratio||0)>=1?'var(--up)':'var(--warn)'); }
