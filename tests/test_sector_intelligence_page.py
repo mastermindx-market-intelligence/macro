@@ -332,6 +332,7 @@ def _write_sector_intelligence_generation(
     baskets_asof: str = "2026-09-14",
     breadth_asof: str | None = None,
     breadth_scope: str = "sp500_current_constituents",
+    breadth_metrics: dict | None = None,
     theme_asof: str | None = None,
     action_asof: str | None = None,
     sector_asof: str | None = None,
@@ -358,6 +359,8 @@ def _write_sector_intelligence_generation(
             "source_universe": breadth_scope,
             "directional": False,
         }
+        if breadth_metrics is not None:
+            baskets["theme_intel"]["market_concentration"].update(breadth_metrics)
     baskets_path = site / "basketdata" / "baskets.json"
     baskets_path.write_bytes(_json_bytes(baskets))
     baskets_sha = hashlib.sha256(baskets_path.read_bytes()).hexdigest()
@@ -505,6 +508,46 @@ def test_sector_gate_binds_embedded_breadth_source_session_and_population(
     else:
         assert report["ok"] is False
         assert any(expected_error in err for err in report["errors"]), report
+
+
+@pytest.mark.parametrize(
+    ("advances", "declines", "claimed_ratio", "expected_error"),
+    [
+        (251, 240, 1.05, None),
+        (251, 240, 1.04, "contradicts measured advances and declines"),
+        (251, 240, 9.0, "contradicts measured advances and declines"),
+        (251, None, 1.05, "ad_ratio has unmeasured A/D prerequisites"),
+        (251, 0, 1.05, "ad_ratio has unmeasured A/D prerequisites"),
+    ],
+)
+def test_sector_gate_cannot_publish_an_inconsistent_ad_ratio(
+    tmp_path: Path,
+    advances: int,
+    declines: int | None,
+    claimed_ratio: float,
+    expected_error: str | None,
+) -> None:
+    # All component clocks and byte digests are coherent; this isolates
+    # source arithmetic rather than merely proving a hash or vintage refusal.
+    _write_sector_intelligence_generation(
+        tmp_path,
+        action_asof="2026-09-14",
+        breadth_asof="2026-09-14",
+        breadth_metrics={
+            "observed_members": 500,
+            "adv": advances,
+            "dec": declines,
+            "ad_ratio": claimed_ratio,
+            "pct_above_50": 56.0,
+            "verdict": "mixed",
+        },
+    )
+    report = _evaluate_sector_intelligence(tmp_path)
+    if expected_error is None:
+        assert report["ok"] is True, report
+    else:
+        assert report["ok"] is False
+        assert any(expected_error in e for e in report["errors"]), report
 
 
 def test_semantic_freshness_rejects_individually_fresh_vintage_split(
