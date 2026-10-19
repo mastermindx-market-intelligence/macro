@@ -13,6 +13,30 @@ Actual endpoint activation and data receipt now have bounded proof below. Full
 fundamentals scope, complete backfill, canonical admission and production consumer
 acceptance remain open, distinct from the Chairman's purchase/rights attestation.
 
+## Statement comparison consumer — 2026-10-15
+
+The existing read-only research CLI now compares two exact retained statement
+captures, one `asReported=true` and one `asReported=false`:
+
+```sh
+python -m scripts.tiingo_research_query compare-statements --symbol jpm \
+  --as-reported-capture DAY:FULL_RECEIPT_ID \
+  --restated-capture DAY:FULL_RECEIPT_ID \
+  --start 2023-01-01 --end 2026-10-09 \
+  --observed-before 2026-10-13T00:00:00Z --acknowledge-hindsight
+```
+
+It aligns fiscal year, quarter (annual=0), statement section and metric code.
+Both sides retain their source rows, receipt IDs, capture clocks and vendor
+release labels. Multiple release claims stay unpaired; conflicting permanent
+IDs are reported as identity conflicts. Metrics present on only one side are
+not described as historical additions/removals. Values are compared in the
+retained vendor representation without inferring units or revision materiality.
+The actual retained JPM captures yield 860 equal values, 42 differences and 67
+metrics only in the reported capture. This uses no network, credentials or
+archive writes. Historical identity, known-at, complete depth and PIT eligibility
+remain unproven; the relay's denied-path diagnostic decision remains pending.
+
 ## Current verified delivery evidence — 2026-10-13 (local)
 
 The original 4,392-request scope is fully dispositioned across six actual captures:

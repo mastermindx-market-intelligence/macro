@@ -69,7 +69,7 @@ import os
 import re
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -694,7 +694,84 @@ def _breadth_block(raw: object, gaps: list[str]) -> dict | None:
             "delay_min": _f(raw.get("delay_min")), "asof": raw.get("asof")}
 
 
-def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
+def _intraday_comparison_block(raw: object, *, now: datetime | None = None) -> dict | None:
+    """Read the existing pulse producer's measured interval; invent no detector."""
+    if (not isinstance(raw, dict) or raw.get("schema") != "basket_intraday_comparison.v1"
+            or raw.get("status") != "observed" or raw.get("benchmark") != "SPY"
+            or raw.get("method") != "matched_member_equal_weight"):
+        return None
+    count, total = raw.get("matched_members"), raw.get("total_members")
+    if type(count) is not int or type(total) is not int or not 0 < count <= total:
+        return None
+    fields = ("relative_change_pct", "absolute_change_pct", "benchmark_change_pct",
+              "coverage_pct", "elapsed_minutes")
+    try:
+        values = {key: _f(raw.get(key)) for key in fields}
+    except (OverflowError, ValueError):
+        return None
+    if any(value is None for value in values.values()):
+        return None
+    if any(abs(values[key]) > LEADERS_MAX_ABS_PCT for key in fields[:3]):
+        return None
+    if abs(values["coverage_pct"] - 100 * count / total) > 0.001:
+        return None
+    try:
+        start = datetime.fromisoformat(raw["reference_asof"])
+        end = datetime.fromisoformat(raw["source_asof"])
+        if start.tzinfo is None or end.tzinfo is None or end <= start:
+            return None
+        evaluated = now or datetime.now(timezone.utc)
+        if evaluated.tzinfo is None or evaluated.utcoffset() is None:
+            return None
+        age_minutes = (evaluated - end).total_seconds() / 60
+        if not 0 <= age_minutes <= QUOTES_STALE_MIN:
+            return None
+        elapsed = (end - start).total_seconds()
+        if abs(values["elapsed_minutes"] - elapsed / 60) > 1e-6:
+            return None
+        # Reuse the same session owner as the producer. Calendar date strings
+        # and a current build stamp cannot validate an overnight or holiday path.
+        from engine.session_digest import session_window_et
+        from lib.nyse_calendar import is_session
+        from zoneinfo import ZoneInfo
+        day = end.astimezone(ZoneInfo("America/New_York")).date()
+        if raw.get("session_date") != day.isoformat() or not is_session(day):
+            return None
+        opened, closed = session_window_et(day)
+        kind = raw.get("observation_kind", "regular")
+        if kind == "settled_regular":
+            # v1 settlement envelope: the existing producer's 90-second
+            # settlement tolerance, explicitly declared, never an AH session.
+            grace = _f(raw.get("settlement_tolerance_seconds"))
+            if (grace != 90 or evaluated < closed or end < closed - timedelta(minutes=1)
+                    or not opened <= start < end <= closed + timedelta(seconds=grace)):
+                return None
+        elif kind != "regular" or not opened <= start < end <= closed:
+            return None
+        skew = _f(raw.get("max_clock_skew_seconds"))
+        if skew is None or not 0 <= skew <= min(60, elapsed / 10):
+            return None
+        expected_relative = 100 * ((1 + values["absolute_change_pct"] / 100)
+                                   / (1 + values["benchmark_change_pct"] / 100) - 1)
+        # Producer rounds each return to 6 decimals; allow rounding, not a
+        # separately authored relative-performance value.
+        if abs(values["relative_change_pct"] - expected_relative) > 3e-6:
+            return None
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None
+    delivery = {}
+    if "delivery_state" in raw or "is_new_observation" in raw:
+        state, fresh = raw.get("delivery_state"), raw.get("is_new_observation")
+        if state not in ("new", "retained") or type(fresh) is not bool or fresh != (state == "new"):
+            return None
+        delivery = {"delivery_state": state, "is_new_observation": fresh}
+    # Explicit allowlist: scores, trade directions, confidence and targets never ride.
+    return {**values, **delivery, "matched_members": count, "total_members": total,
+            "observation_kind": kind, "max_clock_skew_seconds": skew,
+            "reference_asof": start.isoformat(), "source_asof": end.isoformat()}
+
+
+def _leaders_block(raw: object, gaps: list[str], *, now: datetime | None = None) -> dict | None:
     """Today's strongest / weakest groups off the intraday basket pulse.
 
     SOURCE CHOICE — the intraday basket pulse (basket_pulse.v1, ~14 KB), the
@@ -738,10 +815,15 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
         gaps.append("leaders: no baskets")
         return None
     rows: list[dict] = []
+    intraday: list[dict] = []
     for b in rows_raw:
         if not isinstance(b, dict):
             continue
         bid = str(b.get("id") or "").strip()
+        comparison = _intraday_comparison_block(b.get("intraday_comparison"), now=now)
+        if bid and comparison is not None:
+            intraday.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
+                             **comparison})
         chg = _f(b.get("live_ew_chg_pct"))
         if not bid or chg is None:
             continue
@@ -750,7 +832,7 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
             continue
         rows.append({"id": bid, "label": _BASKET_LABELS.get(bid, _humanize(bid)),
                      "change_pct": chg})
-    if not rows:
+    if not rows and not intraday:
         gaps.append("leaders: no group with a usable move")
         return None
 
@@ -758,12 +840,14 @@ def _leaders_block(raw: object, gaps: list[str]) -> dict | None:
                 key=lambda r: -r["change_pct"])[:LEADERS_PER_SIDE]
     down = sorted((r for r in rows if r["change_pct"] < 0),
                   key=lambda r: r["change_pct"])[:LEADERS_PER_SIDE]
-    if not up and not down:
+    if not up and not down and not intraday:
         gaps.append("leaders: every group flat")
         return None
 
+    intraday = sorted(intraday, key=lambda r: -abs(r["relative_change_pct"]))[:2 * LEADERS_PER_SIDE]
     mode = str(raw.get("mode") or "").strip()
     return {"up": up, "down": down, "mode": mode,
+            **({"intraday": intraday} if intraday else {}),
             "mode_note": _LEADERS_MODE_NOTE.get(mode, ""),
             # as_of_quotes is the tape the moves were measured on; as_of_utc is
             # the build. The quote stamp is the one that says when the numbers
@@ -1236,7 +1320,7 @@ def build_packet(root: Path, *, now: datetime | None = None) -> dict:
 
         for key, path, builder in (
             ("breadth", live / "breadth.json", lambda r: _breadth_block(r, gaps)),
-            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps)),
+            ("leaders", live / "basket_pulse.json", lambda r: _leaders_block(r, gaps, now=now)),
             ("drivers", live / "market_drivers.json", _drivers_block),
             ("shock", live / "shock_state.json", _shock_block),
             ("rates", root / "data" / "rates_command" / "latest.json", _rates_block),
@@ -1845,6 +1929,28 @@ def _render_leaders(p: dict) -> str:
     halves = [f"{word} — {body}" for word, body in
               (("up", half(ld.get("up") or [])), ("down", half(ld.get("down") or [])))
               if body]
+    comparisons = []
+    for row in ld.get("intraday") or []:
+        value = _signed(row.get("relative_change_pct"), 2, "%")
+        # These are source intervals, not a display-only minute stamp. Retain
+        # seconds/fractions so a 40-second observation never looks zero-length.
+        def source_stamp(key: str) -> str:
+            return (datetime.fromisoformat(row[key]).astimezone(timezone.utc)
+                    .isoformat(sep=" ").replace("+00:00", "Z"))
+        window = (f"SPY window {source_stamp('reference_asof')} to {source_stamp('source_asof')}; "
+                  f"{row['elapsed_minutes'] * 60:g}s")
+        absolute = _signed(row.get("absolute_change_pct"), 2, "%")
+        benchmark = _signed(row.get("benchmark_change_pct"), 2, "%")
+        closing_note = "regular-session close; " if row.get("observation_kind") == "settled_regular" else ""
+        if row.get("is_new_observation") is False:
+            closing_note += "retained observation; "
+        # A matched member may differ from the SPY clock within the producer's
+        # disclosed tolerance at EACH endpoint; never imply exact synchrony.
+        tolerance = f"member clocks within {row['max_clock_skew_seconds']:g}s/endpoint"
+        comparisons.append(f"{row['label']} {absolute} price, SPY {benchmark}, {value} vs SPY ({window}; "
+                           f"{tolerance}; {closing_note}{row['matched_members']}/{row['total_members']} matched)")
+    if comparisons:
+        halves.append("since prior observation vs SPY (not fund flows) - " + _SEP.join(comparisons))
     if not halves:
         return ""
     bits = ", ".join(x for x in (_stamp(ld.get("asof")), ld.get("mode_note") or "") if x)

@@ -1,0 +1,87 @@
+{
+  "canonical_commit": "1097efa6859f3bf244d4d0610afb4636d261af86",
+  "installed_at": "2026-10-15T08:54:33.863627+00:00",
+  "installed_head": "1097efa6859f3bf244d4d0610afb4636d261af86",
+  "inputs_unchanged": true,
+  "selected_slots": [
+    {
+      "id": "press-brief-2026-10-15-22ccbdeadfa8",
+      "sources": [
+        "chronicle:POWI-BULL-20260930"
+      ],
+      "story": {
+        "kind": "signal_close",
+        "title_hint": "Prophet close: POWI BULL \u2192 INVALIDATED (-13.6% in 14d)",
+        "tickers": [
+          "POWI"
+        ],
+        "themes": [],
+        "event_date": "2026-10-14"
+      },
+      "allowed_links": [
+        "https://www.mastermind-x.com/stocks/POWI.html"
+      ]
+    },
+    {
+      "id": "press-brief-2026-10-15-682ee4493d83",
+      "sources": [
+        "chronicle:VNO-BULL-20261008"
+      ],
+      "story": {
+        "kind": "signal_close",
+        "title_hint": "Prophet close: VNO BULL \u2192 INVALIDATED (-4.3% in 6d)",
+        "tickers": [
+          "VNO"
+        ],
+        "themes": [],
+        "event_date": "2026-10-14"
+      },
+      "allowed_links": [
+        "https://www.mastermind-x.com/stocks/VNO.html"
+      ]
+    }
+  ],
+  "local_application_commit": "7bbfc486edd97234c11d7f1f82e1278269998e54",
+  "source_sha256": "93bed297a32ea5c890ecc002c26f3c23b06c37f452d642252789b695b8a8550a",
+  "tests": {
+    "initial_red": 6,
+    "planner_writer_validator_pass": 251,
+    "missing_sparse_artifact_test": "PASS separately against six unchanged original runtime artifacts",
+    "runner_triage_pass": 243,
+    "existing_sparse_skip": 1,
+    "total_affected_pass": 495,
+    "portable_groups": 38,
+    "new_prophet_groups": 3,
+    "new_targeted_after_indexing": 7,
+    "captured_native_row_controls": 2,
+    "contract_introduced": 0,
+    "contract_inherited": 0
+  },
+  "reused_unchanged_portable_groups": 12,
+  "current_changed_probe_groups_executed": 26,
+  "native_dependencies_match_origin_main": true,
+  "semantics": "Uses native corrected ledger and native event adapter, preserves quarantine and snapshot stability. Binds event identity/content and preserves paper-plan/provisional/legacy clocks through existing context_relevance. No new numeric receipt credit, ranking, producer, rights or publication changes.",
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "d14_credit": "0/10",
+  "local_only": true,
+  "runtime_proof": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/brief-after-chronicle-1097.json",
+  "tests_log": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/prophet-scope-tests.txt",
+  "runner_log": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/prophet-scope-run-tests.txt",
+  "contract_log": "/Users/chriswong/agent-evidence/mmx-public-intelligence-20261011/diagnostics/prophet-scope-contract.txt",
+  "browser": {
+    "public_dossier": "POWI loaded",
+    "standalone_terminal": "authenticated, selected POWI",
+    "embedded_terminal": "NOT_ACCEPTED: blank/about:blank on two normal launches",
+    "diagnostic_limit": "Browser Use resolving a paused document response; production cause unproved",
+    "signup_or_follow_writes": 0
+  },
+  "receipt_relevance": {
+    "slot_fact_count": 22,
+    "brief_receipt_floor": 5,
+    "issuer_specific_fact_count": 1,
+    "other_facts": "15 broad engine context facts and 6 unrelated movers; count does not establish article relevance",
+    "next": "Review current native packet and broad-context scope after installed consumer guard; no unrelated padding, no issuer-causality claim, no provider attempt yet"
+  }
+}

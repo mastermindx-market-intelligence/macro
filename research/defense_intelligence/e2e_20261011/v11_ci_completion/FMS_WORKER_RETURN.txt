@@ -1,0 +1,14 @@
+Repair complete and sealed. Summary of the work:
+
+**Diagnosis (confirmed against packet bytes, SHA-verified):** the controller move left the FMS tab in the fenced HTML template but moved all four wiring symbols (`rowsByMode.fms`, `fmsUI`, `createGovernmentRevenueFms`, `fms_case`) and all 13 JS strip fragments into `templates/government-revenue-page.js.j2`. Both CI failures reproduced locally with the original file, including the exact stale-fragment message `',fms:[]'`.
+
+**Repair (single file, `tests/test_fms_ui.py`, 7 hunks):**
+- Added a `PAGE_JS` module constant reading the new page controller template.
+- `test_fms_tab_and_mode_wiring_present_in_the_shell`: same 8 assertions, none deleted — the 4 tab/label assertions stay on the fenced HTML template, the 4 wiring assertions now check `PAGE_JS`.
+- `_strip_fms_shell(template_text, page_js_text)`: tab button still stripped from the HTML; the 13 JS fragments stripped from the page controller, updated to the moved text (the `authReloadOwner:true` wiring and the `// {# … #}` freshness-comment form). Every fragment retains its fail-closed stale-guard assert.
+- `test_fms_shell_delta_stays_inside_its_own_byte_budget`: now sums the rendered-HTML delta and the raw page-controller delta under the **unchanged** 8,192-byte budget (HTML-only measurement would have stopped bounding the wiring).
+- Module docstring B13 bullet updated; B12/B14 tests, frozen strings, entitlement checks, negative controls, and both budget constants untouched.
+
+**Verification:** repaired module passes the wiring, budget, and page-fence tests (direct call and pytest); measured delta 266 B (HTML) + 2,506 B (page JS) = 2,772 B ≤ 8,192 B; three negative controls (page-JS drift, HTML tab drift, wiring-symbol drift) all fail closed; patch applies byte-identically via `git apply` and `patch -p1` and reverse-applies; collected test-name set identical to the original (15 tests, none removed/renamed/weakened). Limitations (fastapi, `app/government_revenue.py`, dossiers.js, baked site HTML, site_access.yml not supplied — B12/B14 not executed locally, stubs fail loudly) are recorded in `validation.json`; the parent owns the full-suite run.
+
+FABRIC_ARTIFACTS_V1 {"files":[{"bytes":8285,"path":"/tmp/fabric-110534c8b115f3c0cab68d78fe33a3363334e449/fms-tests.patch","sha256":"78b02cf504de3d55ada54ea6476ef5090a2d5c62bf138a20651f17384f9a80af"},{"bytes":8878,"path":"/tmp/fabric-110534c8b115f3c0cab68d78fe33a3363334e449/validation.json","sha256":"e2f1292cd683573a60aba931a7f14ced9315573442de89985636f1eaea74d051"}],"host":"ubuntu1","parent":"01a13300-c75b-79c3-83f9-79b3b4c01dc7","request_sha256":"016a5b9d50983a1ea86bd901f2a1d12e81602d79d858f6ec711cc51b61b0264b","root":"01a13300-c75b-79c3-83f9-79b3b4c01dc7","run_id":"defense-fms-extracted-shell-tests-01a13300-a","schema":"mastermind.fabric_artifact_manifest.v1"}
