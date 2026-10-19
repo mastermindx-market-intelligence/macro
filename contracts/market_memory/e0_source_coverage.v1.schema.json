@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "research_factory.market_memory_e0_source_coverage.v1",
+  "$id": "https://mastermind-x.com/contracts/market_memory/e0_source_coverage.v1.schema.json",
   "title": "Market Memory E0 source coverage (display-only declarations)",
   "description": "Declared metadata only for market-memory E0 source coverage. Every value is a producer declaration; null always means unresolved and is never inferred, defaulted, or dated. This vocabulary performs no source authentication, establishes no source independence, proves no coverage completeness, and grants no operational admission; the parent resolves provenance and enforces membership and semantic joins.",
   "type": "object",
