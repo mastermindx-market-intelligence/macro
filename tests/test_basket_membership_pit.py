@@ -393,3 +393,48 @@ def test_new_unreceipted_snapshot_cannot_prove_an_absent_basket(data_root):
     got = pit.members_asof("ths_new", "2026-07-08", suite=THS)
     assert got["pit"] is False and got["members"] == []
     assert got["note"] == "no basket-scoped observation"
+
+
+# ---------------------------------------------------------------------------
+# 6. an existing-but-unreadable store (Q02-F1) — corruption is a third outcome,
+#    never absence and never current membership
+# ---------------------------------------------------------------------------
+
+def test_a_corrupt_store_answers_unreadable_never_current(data_root):
+    """Garbage parquet bytes where the history lives are neither a store that
+    never had history nor an observation of current membership."""
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
+    p = pit.history_path(THS)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(b"broken")
+    got = pit.members_asof("ths_ai", "2026-07-08", suite=THS)  # must not raise
+    assert got["basis"] == "membership_unreadable"
+    assert got["members"] == []
+    assert got["pit"] is False
+    assert got["snapshot_date"] is None
+
+
+def test_a_read_failure_after_a_pit_hit_never_leaves_a_pit_flag(data_root, monkeypatch):
+    """The handler RESETS the answer it may already have half-filled: an
+    exception after ``out`` was marked pit=True must land on
+    basis=membership_unreadable with no members and no pit flag."""
+    _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
+    assert pit.append_snapshot(THS, asof="2026-07-08", lane="asia")["written"]
+    # append_snapshot stamps versioned (member.v2) rows, so the covered path is
+    # _members_asof_versioned (probed: record_kind present on every row).
+    assert pit.read_history(THS, include_collection_records=True)[
+        "record_kind"].notna().any()
+
+    def boom(out, covered, date):
+        out.update(pit=True, basis="pit_snapshot", snapshot_date=date,
+                   members=["SYNTH.X"])
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(pit, "_members_asof_versioned", boom)
+    got = pit.members_asof("ths_ai", "2026-07-08", suite=THS)
+    assert got["pit"] is False
+    assert got["basis"] == "membership_unreadable"
+    assert got["members"] == []
+    assert got["snapshot_date"] is None
+    assert got["source_shape"] is None
+    assert got["note"] == "read failed (RuntimeError)"
