@@ -144,10 +144,15 @@ def diagnose_registered_spy_population(
     if supplied != _POPULATION_ROOTS or any(path.resolve() != path for path in supplied):
         raise MarketMemoryExperienceCliError("population diagnostic requires exact installed v1 roots")
     repository, experience_root, trusted_root, technical_root = supplied
+    if _ROOT != repository:
+        raise MarketMemoryExperienceCliError("population diagnostic must execute the installed CLI")
     extra = ("engine/neuralweb/market_memory_population.py",)
     commit = _verified_repository_commit(repository, extra_inputs=extra)
     from engine.neuralweb import market_memory_population as population
     from engine.neuralweb import market_memory_experience_accrual as experience
+    if any(Path(module.__file__).resolve().parents[2] != repository
+           for module in (population, experience)):
+        raise MarketMemoryExperienceCliError("population diagnostic imports differ from installed root")
 
     if type(through_session) is not str or through_session not in population.FROZEN_PILOT_SESSION_SET:
         raise MarketMemoryExperienceCliError("population diagnostic requires a frozen v1 pilot session")
@@ -161,6 +166,14 @@ def diagnose_registered_spy_population(
             if (repository_root != str(repository) or experience_root != str(supplied[1])
                     or through_session != requested_session):
                 raise population.MarketMemoryPopulationAccessError("operator population scope mismatch")
+            # The first check is scope-only, before P0 opens any owner path.
+            # The owner authenticates its ledger next; all later bound checks
+            # revalidate installed identities and source before disclosure.
+            if registration_id is None and store_id is None:
+                return population.PopulationAccessGrant(
+                    policy_version=population.POPULATION_ACCESS_POLICY_VERSION,
+                    caller_scope="operator.readonly_w2c_v1_census", granted=True,
+                    limitations=("internal_operator_metadata_only",))
             if _verified_repository_commit(repository, extra_inputs=extra) != commit:
                 raise population.MarketMemoryPopulationAccessError("installed population source changed")
             registration = experience.load_registration(repository)
