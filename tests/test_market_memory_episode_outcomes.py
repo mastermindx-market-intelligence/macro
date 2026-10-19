@@ -398,6 +398,22 @@ def test_persisted_observation_rechecks_original_numerical_purpose_before_body(c
         outcomes.disclose_contextual_outcomes(cap,policy=Policy({action}))
 
 
+def test_raw_preparation_read_mark_revocation_prevents_every_sidecar_write(corpus, monkeypatch):
+    from engine.neuralweb import market_memory_contextual_observation_store as observations
+    preparation = prepare(corpus)
+    assert preparation._marks
+    root = corpus[0]
+    before = prices._tree(root)
+    denied = Policy({"read_retained_source_bar_marks"})
+    monkeypatch.setattr(store, "_write_json_create_once", lambda *a, **k: pytest.fail("sidecar write after read revocation"))
+    with pytest.raises(PermissionError):
+        store.disclose_retained_source_bar_marks(preparation._marks[0], policy=denied)
+    with pytest.raises(PermissionError):
+        observations.append_contextual_observations(root, preparation=preparation, policy=denied)
+    assert prices._tree(root) == before
+    assert not (root / "contextual_observations_v1").exists()
+
+
 def test_registered_deadline_censors_late_source_without_value_decode(corpus,monkeypatch):
     definition=outcomes.RetainedArchivedBarOutcomeDefinition("2026-07-01","2026-07-31","2026-08-01T00:00:00Z")
     monkeypatch.setattr(technical,"read_source_bar_marks",lambda *a,**k:pytest.fail("late label"))

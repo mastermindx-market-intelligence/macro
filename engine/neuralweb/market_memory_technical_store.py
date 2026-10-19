@@ -2693,5 +2693,6 @@ def disclose_retained_source_bar_marks(capability, *, policy: object) -> dict[st
     resource = json.loads(capability._resource)
     if any(body.get(key) != value for key, value in resource.items()):
         raise PermissionError("technical marks capability resource mismatch")
+    _marks_authorization(policy, resource)
     _marks_authorization(policy, resource, disclose=True)
     return body
