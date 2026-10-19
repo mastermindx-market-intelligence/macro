@@ -11,7 +11,7 @@ never inferential claims or the original real-data P1/P2/P3 source.
 Research contract:
   research/LEADERSHIP_ROTATION_V3_CANDIDATE_2026-10-18.md §2/§6
 
-No real-market outcomes, V3 pass/claim decision, release gate or cache here.
+No future-price outcomes, V3 pass/claim decision, release gate or cache here.
 """
 from __future__ import annotations
 
@@ -27,10 +27,6 @@ __all__ = ["candidate_h1_synthetic_comparison", "SyntheticPriorControl", "candid
 MATCH_WINDOW = 40
 MISS_DELAY = MATCH_WINDOW + 1
 MARGIN_EARLIER = 5.0
-# Frozen study outcome(R,t,20) is R[t+1+20]-R[t+1].
-# A control must fully mature BEFORE A1 close t, not just ON that close.
-FORWARD20_MATURE_LAG = 21
-MIN_STRICT_PRIOR_AGE = FORWARD20_MATURE_LAG + 1
 
 
 def candidate_h1_synthetic_comparison(
@@ -138,9 +134,8 @@ def candidate_h2_prior_control_match(
     """Select a past, matured B1 comparison origin using no future outcomes.
 
     Same registered pair, equal *own-date* past-volatility quintile, B1 day
-    with A1 not active, and origin c within [t-63,t-22]. The frozen
-    study origin is c+1 and Y20 matures at c+21, strictly before A1 close t;
-    the future outcome is NEVER passed to this
+    with A1 not active, and origin c within [t-63,t-21]. At c+20 < t the
+    reference's future-20 outcome has matured, but it is NEVER passed to this
     selector and cannot influence tie-breaks. No comparison is powered or
     preregistered by the selection alone. All inputs are synthetic P0 caller
     objects, not market-data rows or durable events.
@@ -182,7 +177,7 @@ def candidate_h2_prior_control_match(
         and c.warmup_sessions >= 252
         and not c.a1_active
         and c.volatility_quintile == a1_event.volatility_quintile
-        and MIN_STRICT_PRIOR_AGE <= a1_event.origin - c.origin <= 63
+        and 21 <= a1_event.origin - c.origin <= 63
     ]
     # Duplicate candidate origins mean source identity is ambiguous. This
     # check is applied to *eligible matches*, not unrelated date populations.
@@ -195,7 +190,7 @@ def candidate_h2_prior_control_match(
             "v3_preregistered": False, "size_or_power_proven": False,
         }
     picked = max(matches, key=lambda c: c.origin)
-    if picked.origin + FORWARD20_MATURE_LAG >= a1_event.origin:
+    if picked.origin + 20 >= a1_event.origin:
         raise ValueError("FORWARD_OUTCOME_NOT_MATURED")
     return {
         "scope": "P0_SYNTHETIC_ONLY", "status": "MATCHED",
@@ -220,7 +215,7 @@ class SyntheticH3Event:
     feature_asof: int             # latest index used by pre-origin features
     warmup_sessions: int
     residual_y20: float | None    # synthetic matured future-only label, never selector
-    matured_at: int | None        # origin+21 iff measured (o=t+1, horizon=20)
+    matured_at: int | None        # origin+20 iff measured
 
 
 def candidate_h3_synthetic_interaction(
@@ -267,7 +262,7 @@ def candidate_h3_synthetic_interaction(
         else:
             if type(x.residual_y20) not in (int, float) or not math.isfinite(float(x.residual_y20)):
                 raise ValueError("invalid future residual observation")
-            if type(x.matured_at) is not int or x.matured_at != x.origin + FORWARD20_MATURE_LAG:
+            if type(x.matured_at) is not int or x.matured_at != x.origin + 20:
                 raise ValueError("residual Y20 requires exact future-only maturity")
 
     for x in a1_events:
@@ -299,7 +294,7 @@ def candidate_h3_synthetic_interaction(
             and b.donor_weak == a.donor_weak
             and b.receiver_spy_sign == a.receiver_spy_sign
             and b.volatility_quintile == a.volatility_quintile
-            and MIN_STRICT_PRIOR_AGE <= a.origin - b.origin <= 63
+            and 21 <= a.origin - b.origin <= 63
         ]
         if not risk_set:
             unpaired += 1
@@ -463,7 +458,7 @@ def candidate_v3_p0_pair_diagnostic(ps, *, start: int, end: int) -> dict:
                 receiver_spy_sign=int(np.sign(recv_move)),
                 volatility_quintile=quintile[t], feature_asof=t,
                 warmup_sessions=t, residual_y20=label,
-                matured_at=(t + FORWARD20_MATURE_LAG) if label is not None else None,
+                matured_at=(t + 20) if label is not None else None,
             ))
         return out, unavailable
 
