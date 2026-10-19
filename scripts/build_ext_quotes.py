@@ -315,6 +315,27 @@ def _r2_client():
         return None
 
 
+class R2PublicationDenied(RuntimeError):
+    """Storage refused this invocation; no later callback may retry its writes."""
+
+
+def _r2_access_denied(error: Exception) -> bool:
+    # boto3 ClientError exposes structured metadata. Do not inspect or retain
+    # the provider's message, which can include request/credential information.
+    response = getattr(error, "response", None)
+    if not isinstance(response, dict):
+        return False
+    metadata = response.get("ResponseMetadata", {})
+    detail = response.get("Error", {})
+    status = metadata.get("HTTPStatusCode") if isinstance(metadata, dict) else None
+    code = detail.get("Code") if isinstance(detail, dict) else None
+    return status in (401, 403) or code in (
+        "AccessDenied", "AccessDeniedException", "AllAccessDisabled",
+        "InvalidAccessKeyId", "SignatureDoesNotMatch", "InvalidToken",
+        "ExpiredToken", "TokenRefreshRequired", "AccountProblem",
+    )
+
+
 def _publish_r2(payload_json: str) -> bool:
     """Publish only the approved BOATS allowlist to the existing relay key."""
     try:
@@ -339,7 +360,9 @@ def _publish_r2(payload_json: str) -> bool:
         log.info("ext_quotes: published → R2 %s/%s", bucket, R2_KEY)
         return True
     except Exception as exc:  # noqa: BLE001
-        log.warning("ext_quotes: R2 publish failed: %s", exc)
+        if _r2_access_denied(exc):
+            raise R2PublicationDenied("R2 denied publication") from None
+        log.warning("ext_quotes: R2 publish failed (%s)", type(exc).__name__)
         return False
 
 
@@ -575,15 +598,29 @@ def publish_boats_stream(*, max_seconds: int = 600, max_messages: int = 20000,
     last_publish = -math.inf
     publication = {"requested": publish, "attempted": 0, "succeeded": 0,
                    "failed": 0, "final_invalidation_delivered": None}
+    publication_denied = False
 
     def emit(force=False):
-        nonlocal last_publish
+        nonlocal last_publish, publication_denied
+        if publication_denied:
+            # Continue bounded archival/cleanup without another storage effect.
+            # In particular, an ended callback must not retry a denied PUT.
+            # Consumers expire the last accepted snapshot independently.
+            if reducer.status == "ended":
+                publication["final_invalidation_delivered"] = False
+            return
         tick = time.monotonic()
         if force or tick - last_publish >= BOATS_PUBLISH_S:
             payload = reducer.snapshot(datetime.now(timezone.utc))
             if publish:
                 publication["attempted"] += 1
-                delivered = _publish_r2(json.dumps(payload, separators=(",", ":")))
+                try:
+                    delivered = _publish_r2(json.dumps(payload, separators=(",", ":")))
+                except R2PublicationDenied:
+                    publication_denied = True
+                    publication["access_denied"] = True
+                    delivered = False
+                    log.warning("ext_quotes: R2 access denied; publication stopped for this invocation")
                 publication["succeeded" if delivered else "failed"] += 1
                 if reducer.status == "ended":
                     publication["final_invalidation_delivered"] = delivered
