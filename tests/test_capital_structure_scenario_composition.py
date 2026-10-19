@@ -1109,18 +1109,12 @@ def test_s0_a22_permuted_actions_and_reversed_input_records_report_identical_ans
     assert forward_record["as_of"] == permuted.as_record()["as_of"]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "S0-b FINDING: A22 permutation identity -- permuting scenario.actions order "
-        "changes the scenario_id and therefore the result_id and the record "
-        "(observed: two compositions over one byte-identical state with identical "
-        "reported answers carry different result_ids), because the merged "
-        "scenario_id digests the actions tuple in its given order"
-    ),
-)
 def test_s0_a22_permuting_the_scenario_actions_gives_an_identical_result_id_and_record() -> None:
-    """§11 item 6 as written: action order never changes identity."""
+    """§11 item 6 as written: action order never changes identity.
+
+    Found by the S0-b lane (the scenario id digested actions in their given
+    order); FinancingScenario now stores its keyed sets canonically.
+    """
     forward = compose(actions=[
         C2.cash(TAKE_A, "shelf_takedown", "8000000"),
         C2.cash(TAKE_B, "shelf_takedown", "7000000"),
