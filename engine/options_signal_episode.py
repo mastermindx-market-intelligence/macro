@@ -179,8 +179,8 @@ _schema_validation_memo: ContextVar[_SchemaValidationMemo | None] = ContextVar(
 
 
 @contextmanager
-def schema_validation_session(*, max_bytes: int = 128 * 1024 * 1024,
-                              max_entries: int = 100_000):
+def schema_validation_session(*, max_bytes: int = 768 * 1024 * 1024,
+                              max_entries: int = 300_000):
     """Reuse successful schema checks within one build, including locked rereads.
 
     Semantics, joins, duplicate detection and append byte comparisons always run.
