@@ -1,10 +1,12 @@
-"""LR-W6 V3 candidates: synthetic-only H1 timing and H2 control qualification.
+"""LR-W6 V3 candidates: synthetic-only H1 timing, H2 control, H3 contrast.
 
 This is NOT the V3 pre-registration, a P0 size/power simulator, a P1/P2/P3
 reader, or a market-data consumer. All inputs are caller-supplied synthetic
 P0 phases, alarm indices or information-date records with NO forward outcomes.
 H1 reuses the frozen T11 episode classifier and its matching/burden definitions.
 H2 tests eligibility of prior B1 controls without constructing a return label.
+H3 tests source-dated paired contrast arithmetic on caller-labelled P0 outcomes,
+never inferential claims or the original real-data P1/P2/P3 source.
 
 Research contract:
   research/LEADERSHIP_ROTATION_V3_CANDIDATE_2026-10-18.md §2/§6
