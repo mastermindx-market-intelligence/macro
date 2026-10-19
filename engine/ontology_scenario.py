@@ -194,6 +194,8 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
             # scenarios() currently consumes only raw betas; its artifact carries
             # no estimation span/N/calendar/vintage contract for frozen X2 replay.
             root = _unavailable('NUMERIC_OWNER_METADATA_UNAVAILABLE')
+            root['missing_owner_contract'] = ['scenario_beta_estimation_span', 'scenario_beta_sample_counts',
+                                              'owner_calendar_and_knowledge_cutoff']
         elif normalized['horizon'] != '60d':
             root = _unavailable('HORIZON_INCOMPATIBLE')
         elif len(baseline.future_sessions) < 60:
@@ -227,6 +229,7 @@ def evaluate_scenario(assumption: dict, *, snapshot: dict, chain: dict,
                             path_condition='UNDETERMINED', threshold_evaluation=dict(confirmed=passed, receipts=receipts))
             else:
                 native = txi.eval_node(chain, 'oil_shock', adapters)
+                if not native['resolved']: native = {**native, 'confirmed': None}
                 root = dict(status=('ROOT_THRESHOLD_MET' if native['confirmed'] else 'SCENARIO_NOT_ARMED')
                             if native['resolved'] else 'UNAVAILABLE', method_class='THRESHOLD_STATE_ONLY', **native)
             root['input_status'] = dict(history='OBSERVED_BASELINE', future='ASSUMED', calendar='OWNER_SUPPLIED')

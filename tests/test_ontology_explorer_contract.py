@@ -1399,3 +1399,13 @@ def test_x2_creation_clock_is_explicit_but_not_assumption_identity(x2_inputs):
     with pytest.raises(ScenarioInputError):
         evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
                           created_at='2026-12-31T23:00:00Z', evaluated_at=baseline.knowledge_cutoff)
+
+
+def test_x2_native_unresolved_is_unknown_not_a_false_observation(x2_inputs, monkeypatch):
+    from engine import transmission_chains as txi
+    def unavailable(*args):
+        return {'id':'oil_shock','resolved':False,'confirmed':False,'receipts':[],
+                'unresolved_reason':'synthetic owner refusal'}
+    monkeypatch.setattr(txi,'eval_node',unavailable)
+    root = _x2_run(x2_inputs)['root_evaluation']
+    assert root['status'] == 'UNAVAILABLE' and root['confirmed'] is None
