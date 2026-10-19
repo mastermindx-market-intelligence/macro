@@ -11,4 +11,3 @@ The first capture attempt lacked shared stylesheet bytes in a sparse worktree an
 The K1 matrix adds eight desktop/mobile × dark/light × EN/ZH captures of native transition references and source details. Reference IDs and owner pointers are partial evidence references: freshness policy, rights, body access and historical replay remain unavailable. The mobile long-reference wrapping repair is visible in these cells.
 
 The ETF matrix adds sixteen cells for qualified tracking references and unavailable tracking, using the actual native composer on synthetic owner rows. Evidence details retain the native dates, reconstruction/seed provenance and selected security. The interface explicitly withholds fund identity, holdings, weights and performance. ETF screenshots cover the final extended Theme component; the earlier Theme-only capture manifest preserves its original source hashes and is not restamped as evidence for later ETF code.
-
