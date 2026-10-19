@@ -402,3 +402,201 @@ def test_native_agreement_uses_owner_listing_fields_not_immutable_id_prefix(evid
     aliases = b._reference_aliases(state, {"MU": stable}, [row], [], [])
     assert [(r.vendor_symbol, r.security_id) for r in aliases] == [("MU", stable)]
     assert state["probes"]["MU"]["status"] == "BOUND"
+
+
+# R24 — native-generation preservation guard for the EXISTING legacy writer.
+# Source-only tests. The old writer must refuse native publication/history
+# until its canonical owner can append genuine observation revisions.
+@pytest.mark.parametrize("native", [
+    {"publication": {"schema": "mastermind.identity_publication.v1", "generation_id": "a" * 64},
+     "identity_observations": {"schema": "mastermind.identity_observations.v1", "attempts": []}},
+    {"publication": {"schema": "mastermind.identity_publication.v1"}},
+    {"identity_observations": {"schema": "mastermind.identity_observations.v1"}},
+    {"publication": None, "identity_observations": None},
+    {"publication": {}, "identity_observations": {"anchor": None}},
+])
+def test_r24_existing_native_generation_refuses_before_any_source_write(
+        tmp_path, monkeypatch, native):
+    out = tmp_path / "canonical-reference"
+    out.mkdir()
+    original = {"prospective_reference": {"schema": "legacy-retain"},
+                "generated_at": "2026-10-15T13:32:43", **native}
+    receipt = out / b.RECEIPT_NAME
+    receipt.write_text(json.dumps(original, sort_keys=True) + "\n")
+    artifacts = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        p = out / name
+        p.write_bytes(("preserve original bytes: " + name).encode())
+        artifacts[name] = p.read_bytes()
+    original_receipt = receipt.read_bytes()
+    def forbidden(*_a, **_kw):
+        raise AssertionError("builder touched identity input or output before publication-history refusal")
+    monkeypatch.setattr(b, "_iso_now", forbidden)
+    monkeypatch.setattr(b, "_write_parquet", forbidden)
+    with pytest.raises(IdentityError, match="native identity publication"):
+        b.build(out)
+    assert receipt.read_bytes() == original_receipt
+    assert all((out / name).read_bytes() == data for name, data in artifacts.items())
+
+
+def test_r24_legacy_only_receipt_does_not_trigger_native_guard(tmp_path):
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt = out / b.RECEIPT_NAME
+    receipt.write_text(json.dumps({"prospective_reference": {"schema": "legacy"},
+                                   "generated_at": "2026-10-15T13:32:43"}) + "\n")
+    before = receipt.read_bytes()
+    b._assert_no_unpreserved_native_generation(out)
+    assert receipt.read_bytes() == before
+
+
+def test_r24_nightly_fails_closed_and_preserves_complete_native_history(
+        tmp_path, monkeypatch, capsys):
+    out = tmp_path / "canonical-reference"
+    out.mkdir()
+    original_receipt = out / b.RECEIPT_NAME
+    original_receipt.write_text(json.dumps({
+        "prospective_reference": {"schema": "legacy"},
+        "publication": {"schema": "mastermind.identity_publication.v1", "generation_id": "b" * 64},
+        "identity_observations": {"schema": "mastermind.identity_observations.v1", "attempts": []},
+        "generated_at": "2026-10-15T13:32:43"}, sort_keys=True) + "\n")
+    prior = {b.RECEIPT_NAME: original_receipt.read_bytes()}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        p = out / name
+        p.write_bytes(("native-generation:" + name).encode())
+        prior[name] = p.read_bytes()
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_args: False)
+    # Sparse test checkout may omit unrelated breadth and membership inputs.
+    # Bind those preflight existence checks to this deliberately existing file;
+    # no collector, production read, or real identity regeneration is allowed.
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, original_receipt)
+    # Failure must be specifically typed as native-publication refusal,
+    # not just some unrelated missing input, and cannot change prior bytes.
+    assert b.run_nightly_refresh(out) == 0
+    output = capsys.readouterr().out
+    assert "native identity publication" in output
+    assert "refusing stale legacy rollback" in output
+    assert all((out / name).read_bytes() == data for name, data in prior.items())
+
+
+def test_r24_new_native_publication_arriving_during_legacy_rebuild_refuses_before_any_write(
+        evidence, tmp_path, monkeypatch):
+    """A read at function entry alone is insufficient while build computes."""
+    _path, _bundle, listing_rows = evidence
+    setup_builder(monkeypatch, tmp_path, listing_rows)
+    out = tmp_path / "out"
+    b.build(out)  # Establish ordinary legacy artifact baseline on temporary files.
+    originals = {name: (out / name).read_bytes() for name in b._NIGHTLY_ARTIFACT_NAMES}
+    receipt_file = out / b.RECEIPT_NAME
+    baseline = json.loads(receipt_file.read_text())
+    assert "publication" not in baseline and "identity_observations" not in baseline
+    native = dict(
+        publication={"schema": "mastermind.identity_publication.v1", "generation_id": "c" * 64},
+        identity_observations={"schema": "mastermind.identity_observations.v1", "attempts": []},
+    )
+    original_iso = b._iso_now
+    calls = []
+    def concurrent_native_owner_receipt():
+        calls.append(True)
+        if len(calls) == 1:
+            receipt_file.write_text(json.dumps({**baseline, **native}, sort_keys=True) + "\n")
+        return original_iso()
+    monkeypatch.setattr(b, "_iso_now", concurrent_native_owner_receipt)
+    with pytest.raises(IdentityError, match="native identity publication"):
+        b.build(out)
+    assert calls, "test must inject after entry guard and before output writes"
+    assert {name: (out / name).read_bytes() for name in b._NIGHTLY_ARTIFACT_NAMES} == originals
+    retained = json.loads(receipt_file.read_text())
+    assert retained["publication"] == native["publication"]
+    assert retained["identity_observations"] == native["identity_observations"]
+
+
+@pytest.mark.parametrize("mode", ["raised_refusal", "receipt_notes", "unchanged_inputs"])
+def test_r24_nightly_never_restores_over_concurrent_native_generation(
+        tmp_path, monkeypatch, capsys, mode):
+    """A newer native receipt wins even when the old nightly must abort.
+
+    The native write here is a controlled temporary fixture, never an actual
+    publisher; the existing nightly must not remove it by restoring its stale
+    pre-build receipt. All three existing branches historically risked this.
+    """
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt_file = out / b.RECEIPT_NAME
+    legacy = {"prospective_reference": {"schema": "legacy"},
+              "generated_at": "2026-10-15T13:32:43"}
+    receipt_file.write_text(json.dumps(legacy, sort_keys=True) + "\n")
+    older_bytes = receipt_file.read_bytes()
+    prior_artifacts = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        f = out / name
+        f.write_bytes(("old-generation:" + name).encode())
+        prior_artifacts[name] = f.read_bytes()
+
+    # Keep the existing nightly input-preflight untouched in real operation;
+    # these synthetic fixtures bind mandatory existence paths to a known file
+    # so the test actually exercises the later recovery/rollback branches.
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, receipt_file)
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_: False)
+
+    newer = {**legacy,
+             "publication": {"schema": "mastermind.identity_publication.v1",
+                             "generation_id": "a" * 64},
+             "identity_observations": {
+                 "schema": "mastermind.identity_observations.v1",
+                 "attempts": []}}
+    newer_bytes = (json.dumps(newer, sort_keys=True) + "\n").encode()
+    called = []
+
+    def native_arrives_during_legacy_refresh(_out_dir, **_kwargs):
+        called.append(True)
+        receipt_file.write_bytes(newer_bytes)
+        if mode == "raised_refusal":
+            (out / b._NIGHTLY_ARTIFACT_NAMES[0]).write_bytes(b"native-newer-artifact")
+            raise IdentityError("native identity publication/history arrived after older snapshot")
+        return {"notes": ["legacy owner cannot classify this"]} if mode == "receipt_notes" else {"notes": []}
+
+    monkeypatch.setattr(b, "build", native_arrives_during_legacy_refresh)
+    assert b.run_nightly_refresh(out) == 0
+    logs = capsys.readouterr().out
+    assert len(called) == 1, "The simulated newer publication must actually occur"
+    assert receipt_file.read_bytes() == newer_bytes, (
+        "nightly rolled back a newer source-owned native receipt to legacy"
+    )
+    assert "security-master-native-history-race" in logs
+    if mode == "raised_refusal":
+        assert (out / b._NIGHTLY_ARTIFACT_NAMES[0]).read_bytes() == b"native-newer-artifact"
+    assert receipt_file.read_bytes() != older_bytes
+
+
+def test_r24_original_legacy_error_still_restores_last_good_bytes(
+        tmp_path, monkeypatch, capsys):
+    """Ordinary failed legacy rebuild retains its pre-existing rollback law."""
+    out = tmp_path / "reference"
+    out.mkdir()
+    receipt_file = out / b.RECEIPT_NAME
+    receipt_file.write_text(json.dumps({"prospective_reference": {"schema": "legacy"}}) + "\n")
+    original_receipt = receipt_file.read_bytes()
+    originals = {}
+    for name in b._NIGHTLY_ARTIFACT_NAMES:
+        f = out / name
+        f.write_bytes(("old:" + name).encode())
+        originals[name] = f.read_bytes()
+    for key in ("CONSTITUENTS", "MIDCAP_CONSTITUENTS", "SMALLCAP_CONSTITUENTS",
+                "MEMBERSHIP", "DELISTED_LEDGER", "CONFIG_YML", "TICKER_ALIASES_PY"):
+        monkeypatch.setattr(b, key, receipt_file)
+    monkeypatch.setattr(b, "_identity_rail_unreadable", lambda *_: False)
+
+    def invalid_legacy_write(_out_dir, **_kwargs):
+        (out / b._NIGHTLY_ARTIFACT_NAMES[0]).write_bytes(b"partial-invalid-legacy")
+        raise ValueError("synthetic original legacy failure")
+
+    monkeypatch.setattr(b, "build", invalid_legacy_write)
+    assert b.run_nightly_refresh(out) == 0
+    assert "keeping last-good artifacts" in capsys.readouterr().out
+    assert receipt_file.read_bytes() == original_receipt
+    assert all((out / name).read_bytes() == data for name, data in originals.items())
