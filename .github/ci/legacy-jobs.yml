@@ -9389,6 +9389,7 @@ jobs:
           tests/test_fundamental_forensics_query_metric_qualification.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
+          tests/test_fundamental_forensics_refusal_entry_readers.py
           tests/test_fundamental_forensics_saved_store_schema.py
           tests/test_fundamental_forensics_sec_request_pacer.py
           tests/test_fundamental_forensics_source_sync.py
@@ -9396,6 +9397,7 @@ jobs:
           tests/test_fundamental_forensics_state_peer_cohort.py
           tests/test_fundamental_forensics_statement_grid.py
           tests/test_fundamental_forensics_statement_grid_p5b.py
+          tests/test_fundamental_forensics_statement_refusals.py
           tests/test_fundamental_forensics_lane_c_cat_title.py
           tests/test_fundamental_forensics_lane_c2_bac_periods.py
           tests/test_fundamental_forensics_ui.py
@@ -9413,7 +9415,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -31017,6 +31019,7 @@ jobs:
       - scripts/tiingo_ingest.py
       - scripts/build_ext_quotes.py
       - tests/test_tiingo_boats_display.py
+      - tests/test_tiingo_boats_coverage_cli.py
       - tests/test_build_ext_quotes.py
       - scripts/tiingo_materialize.py
       - scripts/tiingo_vendor_cohort.py
@@ -31059,6 +31062,7 @@ jobs:
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
+          tests/test_tiingo_boats_coverage_cli.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
           tests/test_tiingo_corpus_audit.py tests/test_tiingo_additional_history.py
@@ -32725,6 +32729,11 @@ jobs:
       - "tests/fixtures/macro_workspace_prior_publication/**"
       # Literal site artifact reference in the closure (liquidity composer).
       - "site/liquiditydata/global_liquidity_transmission.json"
+      # GLT T21 (#9657): the liquidity suite imports the Macro Command copy
+      # guard and machine-text counter to pin the Now view's measured copy.
+      - "scripts/__init__.py"
+      - "scripts/check_macro_command_copy.py"
+      - "scripts/count_macro_command_machine_text.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
