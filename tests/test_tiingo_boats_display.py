@@ -138,7 +138,7 @@ def test_publishing_failure_is_machine_readable_and_final_invalidation_separate(
  monkeypatch.setattr(builder,'_publish_r2',lambda _:next(delivered))
  result=builder.publish_boats_stream(publish=True)
  assert result['publication_ok'] is False
- assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False}
+ assert result['publication']=={'requested':True,'attempted':2,'succeeded':1,'failed':1,'final_invalidation_delivered':False,'access_denied':False}
 
 def test_requested_publication_success_requires_terminal_empty_delivery(monkeypatch):
  import scripts.build_ext_quotes as builder
@@ -215,7 +215,8 @@ def test_approved_empty_invalidation_uses_same_object_and_disables_cache(monkeyp
 
 
 @pytest.mark.parametrize('status,code',[(401,'Unauthorized'),(403,'AccessDenied'),
-                                      (400,'InvalidAccessKeyId'),(400,'SignatureDoesNotMatch')])
+                                      (400,'InvalidAccessKeyId'),(400,'SignatureDoesNotMatch'),
+                                      (None,'403'),(None,'Forbidden'),(None,'AccessForbidden')])
 def test_storage_denial_blocks_later_callbacks_without_interrupting_cleanup(monkeypatch,caplog,status,code):
  import scripts.build_ext_quotes as builder
  import scripts.tiingo_ingest as ing
@@ -244,6 +245,7 @@ def test_storage_denial_blocks_later_callbacks_without_interrupting_cleanup(monk
  assert result['publication_ok'] is False
  assert result['publication']=={'requested':True,'attempted':1,'succeeded':0,'failed':1,
                                'final_invalidation_delivered':False,'access_denied':True}
+ assert 'publication stopped for this invocation' in caplog.text
  assert 'SECRET_PROVIDER_BODY' not in caplog.text
 
 
@@ -316,3 +318,115 @@ def test_invalid_identity_is_refused_before_case_mapping(symbol):
  r=reducer();consume(r,frame())
  consume(r,frame(offset=1,symbol=symbol),1)
  assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+@pytest.mark.parametrize('denied', [True, False])
+def test_client_initialization_failure_is_scrubbed_and_denial_stops_callbacks(monkeypatch, caplog, denied):
+ import sys, types
+ import scripts.build_ext_quotes as builder
+ import scripts.tiingo_ingest as ing
+ calls=[]
+ class Failure(Exception):
+  response={'Error':{'Code':'Forbidden' if denied else 'ServiceUnavailable'}}
+ def client(*args,**kwargs):
+  calls.append(True)
+  raise Failure('SECRET_PROVIDER_BODY')
+ monkeypatch.setitem(sys.modules,'boto3',types.SimpleNamespace(client=client))
+ monkeypatch.setitem(sys.modules,'botocore.config',types.SimpleNamespace(Config=lambda **kwargs:object()))
+ for name in ('R2_ENDPOINT','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY'):
+  monkeypatch.setenv(name,'offline-fixture')
+ if not denied:
+  assert builder._r2_client() is None
+  assert 'R2 client build failed (Failure)' in caplog.text
+ else:
+  def stream(**kwargs):
+   for kind,payload in [('connected',{'connection':1}),('tick',{}),('ended',{})]:
+    kwargs['observer'](kind,payload)
+   return {'raw_messages':0,'segments':0}
+  monkeypatch.setattr(ing,'boats_stream',stream)
+  result=builder.publish_boats_stream(publish=True)
+  assert result['publication']['access_denied'] is True
+  assert result['publication']['final_invalidation_delivered'] is False
+  assert 'publication stopped for this invocation' in caplog.text
+ assert calls==[True]
+ assert 'SECRET_PROVIDER_BODY' not in caplog.text
+
+
+# ── coverage capacity: MAX_BOATS_SYMBOLS raises the 500-symbol display bound ──
+
+def capacity_symbols(count, first=None):
+ symbols=[f"Z{index:05d}" for index in range(count)]
+ if first is not None:
+  symbols[0]=first
+ return symbols
+
+def capacity_reducer(count):
+ r=BoatsLastTrade(capacity_symbols(count,first='AMD'),'12345678-1234-1234-1234-123456789abc')
+ r.reset('connected',1)
+ return r
+
+def test_full_observed_universe_of_8395_valid_covered_names_is_accepted_and_delivered():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(8395)
+ assert len(r.symbols)==8395
+ assert r.symbols[0]=='AMD' and r.symbols[-1]=='Z08394'
+ # Stable coverage ordering survives the capacity lift.
+ assert list(r.symbols)==capacity_symbols(8395,first='AMD')
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='Z00600',price=101),2)
+ consume(r,frame(offset=3,symbol='z08394',price=102),3)
+ payload=r.snapshot(NOW+timedelta(seconds=3))
+ assert set(payload['quotes'])=={'AMD','Z00600','Z08394'}
+ assert payload['coverage_symbols'][600]=='Z00600' and payload['coverage_symbols'][-1]=='Z08394'
+ # Names above the previous 500-symbol bound are validated and delivered.
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))==payload
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))['quotes']['Z08394']['extPrice']==102
+
+def test_hard_boundary_accepts_10000_and_refuses_10001():
+ from scripts.build_ext_quotes import public_boats_payload, MAX_BOATS_SYMBOLS
+ assert capacity_reducer(MAX_BOATS_SYMBOLS).snapshot(NOW)['coverage_symbols'].__len__()==10_000
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(10_001),'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={};p['stream_status']='ended'
+ exact=dict(p);exact['coverage_symbols']=capacity_symbols(10_000,first='AMD')
+ assert public_boats_payload(exact,NOW)['coverage_symbols'].__len__()==10_000
+ over=dict(p);over['coverage_symbols']=capacity_symbols(10_001,first='AMD')
+ with pytest.raises(ValueError):
+  public_boats_payload(over,NOW)
+
+def test_duplicate_coverage_is_rejected_at_either_bound():
+ from scripts.build_ext_quotes import public_boats_payload
+ with pytest.raises(ValueError):
+  BoatsLastTrade(['AMD','AMD'],'12345678-1234-1234-1234-123456789abc')
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(10_000,first='AMD')[:-1]+['AMD'],'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={}
+ duplicated=dict(p);duplicated['coverage_symbols']=['AMD','AMD']
+ with pytest.raises(ValueError):
+  public_boats_payload(duplicated,NOW)
+
+def test_uncovered_rows_are_rejected_at_full_universe_coverage():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(8395)
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='MSFT'),2)  # uncovered vendor symbol
+ payload=r.snapshot(NOW+timedelta(seconds=2))
+ assert set(payload['quotes'])=={'AMD'}
+ stranger=dict(payload);stranger['quotes']={'ZZZZZ':payload['quotes']['AMD']}
+ with pytest.raises(ValueError):
+  public_boats_payload(stranger,NOW+timedelta(seconds=2))
+
+def test_stale_and_gap_invalidation_are_unchanged_at_capacity():
+ r=capacity_reducer(8395)
+ consume(r,frame(offset=1),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']
+ # Stale trades still age out at the same 30-second deadline.
+ assert r.snapshot(NOW+timedelta(seconds=32))['quotes']=={}
+ consume(r,frame(offset=2),2)
+ assert 'AMD' in r.snapshot(NOW+timedelta(seconds=2))['quotes']
+ consume(r,frame('B',3,symbol='AMD'),3)
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ # A gap still clears every covered symbol without touching coverage.
+ r.reset('gap')
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ assert len(r.snapshot(NOW+timedelta(seconds=3))['coverage_symbols'])==8395
