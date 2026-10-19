@@ -35,7 +35,7 @@ def _run_node(tmp_path: Path, body: str, initial_state: str | None = None) -> di
         global.window = window;
         eval(source);
         const clock = () => '2026-08-02T12:00:00Z';
-        const make = () => window.createGovernmentRevenueBriefcase({storage: localStorage, now: clock, ownerId: 'test-user'});
+        const make = () => window.createGovernmentRevenueBriefcase({storage: localStorage, now: clock, ownerId: 'test-user', membershipMode: 'legacy'});
         %(body)s
         """
     ) % {
@@ -287,7 +287,7 @@ def test_ui_mount_wires_saved_view_and_first_local_baseline(tmp_path: Path) -> N
         var filters={mode:'opportunities',truth:'defense',q:'radar',agency:'Department of Defense',ticker:'LMT'},applied=null,ready=true;
         function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
         var app=window.mountGovernmentRevenueBriefcaseUI({get:node,tr:function(x){return x},esc:esc,text:function(x,fb){return x==null||x===''?(fb||''):String(x)},
-          onOwnerChange:function(callback){callback('test-user')},getFilters:function(){return filters},applyFilters:function(value){applied=value},getVisibleEventIds:function(){return []},getSelectedEventId:function(){return null},getWorkspace:function(){return %(workspace)s},isWorkspaceReady:function(){return ready},openDrawer:function(){}});
+          onOwnerChange:function(callback){callback('test-user')},getFilters:function(){return filters},applyFilters:function(value){applied=value},getMatchingEventIds:function(){return []},getVisibleEventIds:function(){return []},getSelectedEventId:function(){return null},getWorkspace:function(){return %(workspace)s},isWorkspaceReady:function(){return ready},openDrawer:function(){}});
         app.bind();node('savedViewName').value='Defense radar';node('saveView').fire('click');
         filters={mode:'changes',truth:'all',q:'',agency:'',ticker:''};node('savedViewSelect').fire('change');
         node('toggleLocalAlert').fire('click');
@@ -512,7 +512,7 @@ def test_local_alert_inbox_distinguishes_correction_new_and_unclassified_history
       const storage={getItem:k=>values[k]||null,setItem:(k,v)=>{values[k]=String(v)}};
       const document={activeElement:null};global.window={localStorage:storage,document};
       eval(fs.readFileSync(CORE,'utf8'));
-      const stateOwner=window.createGovernmentRevenueBriefcase({storage,ownerId:'test-user'});
+      const stateOwner=window.createGovernmentRevenueBriefcase({storage,ownerId:'test-user',membershipMode:'legacy'});
       const v=stateOwner.createView({name:'Defense',filters:{mode:'changes'}}).view;
       const a=stateOwner.createAlert({view_id:v.id,type:'award_change'}).alert;
       stateOwner.reconcile(BASE,{complete:true,bundle_matched:true});
@@ -787,3 +787,157 @@ def test_ui_reports_alert_storage_failure_with_and_without_ready_workspace(tmp_p
     assert 'available only in this tab' in out['status']
     assert 'browser storage is unavailable' in out['status']
     assert 'warn' in out['className']
+
+
+def _page_membership_source() -> str:
+    """Run the production row builder/predicate/resolver, not a copied predicate."""
+    page = (ROOT / 'templates/government-revenue-page.js.j2').read_text()
+    blocks = []
+    for name in ('buildRows', 'pageRowMatches', 'matchingWorkspaceEventIds'):
+        start = page.index('  function ' + name + '(')
+        end = page.index('\n  function ', start + 1)
+        blocks.append(page[start:end])
+    return '\n'.join(blocks)
+
+
+def _membership_harness(workspace: dict) -> str:
+    return r"""
+      let WORKSPACE=WORKSPACE_JSON,WORKSPACE_EVENTS=WORKSPACE.events,HAS_WORKSPACE=true;
+      let briefcaseWorkspaceReady=true,rowsByMode={},lang='en';
+      const COMPANIES=[],DATA={},arr=x=>Array.isArray(x)?x:[],obj=x=>x&&typeof x==='object';
+      const text=(x,fallback='')=>x==null?fallback:String(x);
+      const agencyName=a=>a.department_name||'',agencySubName=a=>a.subagency||'';
+      const defenseAgency=a=>/Department of Defense/.test(a);
+      const company=t=>['LMT','BA'].includes(t)?{tags:['defense']}:null;
+      const tr=(en,zh)=>lang==='zh'?zh:en,isOfficial=r=>r.truth==='official';
+      const workspaceTitle=e=>lang==='zh'&&e.title_zh?e.title_zh:e.title_original;
+      const workspaceSummary=e=>e.display_summary||'',identitySubjectRows=()=>[];
+      PAGE_SOURCE
+      function load(next){WORKSPACE=next;WORKSPACE_EVENTS=next.events;buildRows();}
+      buildRows();
+      const app=window.createGovernmentRevenueBriefcase({storage:localStorage,now:clock,ownerId:'test-user',resolveEventIds:matchingWorkspaceEventIds});
+    """.replace('WORKSPACE_JSON', json.dumps(workspace)).replace('PAGE_SOURCE', _page_membership_source())
+
+
+@needs_node
+def test_page_membership_drives_export_order_issuer_tags_and_localized_search(tmp_path: Path) -> None:
+    nasa = _event('govws-nasa', 'opportunity', title='Space sensor prototype')
+    nasa['agency'] = {'department_name': 'NASA'}
+    nasa['title_zh'] = '空间传感器原型'
+    hidden = _event('govws-hidden', 'award_change', ticker='BA')
+    hidden['record_id'] = 'HOWMET-hidden-identifier'
+    workspace = _workspace(nasa, hidden)
+    out = _run_node(tmp_path, _membership_harness(workspace) + r"""
+      const defense=app.buildJsonExport(WORKSPACE,{mode:'changes',truth:'defense',ticker:'LMT'});
+      const hidden=app.buildJsonExport(WORKSPACE,{mode:'changes',q:'HOWMET'});
+      lang='zh';buildRows();
+      const localized=app.buildJsonExport(WORKSPACE,{mode:'changes',q:'传感器'});
+      rowsByMode.changes.reverse();
+      const ordered=app.buildJsonExport(WORKSPACE,{mode:'changes'}),csv=app.buildCsvExport(WORKSPACE,{mode:'changes'});
+      process.stdout.write(JSON.stringify({defense,hidden,localized,ordered,csv}));
+    """)
+    assert [x['event_id'] for x in out['defense']['records']] == ['govws-nasa']
+    assert out['hidden']['records'] == []
+    assert [x['event_id'] for x in out['localized']['records']] == ['govws-nasa']
+    assert [x['event_id'] for x in out['ordered']['records']] == ['govws-hidden', 'govws-nasa']
+    import csv, io
+    assert [x['event_id'] for x in csv.DictReader(io.StringIO(out['csv']['content']))] == ['govws-hidden', 'govws-nasa']
+    assert 'must-not-export' not in json.dumps(out)
+
+
+@needs_node
+def test_each_saved_alert_uses_own_page_membership_and_preserves_event_semantics(tmp_path: Path) -> None:
+    original = _event('govws-lmt-old', 'award_change')
+    original['agency'] = {'department_name': 'NASA'}
+    ba = _event('govws-ba-old', 'award_change', ticker='BA')
+    correction = _event('govws-lmt-correction', 'award_change')
+    correction.update(record_id=original['record_id'], version=2)
+    correction['agency'] = original['agency']
+    correction['change']['is_correction'] = True
+    opportunity = _event('govws-opportunity', 'opportunity')
+    new_ba = _event('govws-ba-new', 'award_change', ticker='BA')
+    base, later = _workspace(original, ba), _workspace(original, ba, correction, opportunity, new_ba)
+    out = _run_node(tmp_path, _membership_harness(base) + r"""
+      const views=['LMT','BA'].map(ticker=>app.createView({name:ticker,filters:{mode:'changes',truth:'defense',ticker}}).view);
+      views.forEach(view=>app.createAlert({view_id:view.id,type:'award_change'}));
+      const first=app.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      load(LATER);
+      // A different active query must never become either saved view's window.
+      const active=app.buildJsonExport(WORKSPACE,{mode:'changes',q:'no-match'});
+      const next=app.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      const replay=app.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      const before=JSON.stringify(values);briefcaseWorkspaceReady=false;
+      const outage=app.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      process.stdout.write(JSON.stringify({first,active,next,replay,outage,preserved:before===JSON.stringify(values)}));
+    """.replace('LATER', json.dumps(later)))
+    assert out['first']['reconciled'] and out['first']['alerts'] == []
+    assert out['active']['records'] == []
+    assert {x['event_id']: x['notification_kind'] for x in out['next']['alerts']} == {
+        'govws-lmt-correction': 'correction', 'govws-ba-new': 'new_observation'}
+    assert out['replay']['alerts'] == []
+    assert out['outage']['reason'] == 'view_membership_unavailable'
+    assert out['preserved']
+
+
+@needs_node
+@pytest.mark.parametrize('bad', ['undefined', 'null', "['missing']", "['govws-a','govws-a']", "Array(501).fill('govws-a')", "(()=>{throw Error('unready')})()"])
+def test_invalid_second_view_membership_is_atomic_and_export_never_falls_back(tmp_path: Path, bad: str) -> None:
+    workspace = _workspace(_event('govws-a', 'opportunity'))
+    out = _run_node(tmp_path, r"""
+      const ws=WORKSPACE;let fail=false;
+      const app=window.createGovernmentRevenueBriefcase({storage:localStorage,ownerId:'test-user',now:clock,resolveEventIds:(w,f)=>{
+        if(fail&&f.ticker==='BA')return BAD;
+        return ['govws-a'];
+      }});
+      ['LMT','BA'].forEach(ticker=>{const view=app.createView({name:ticker,filters:{mode:'changes',ticker}}).view;app.createAlert({view_id:view.id,type:'opportunity'});});
+      const before=JSON.stringify(values);fail=true;
+      const result=app.reconcile(ws,{complete:true,bundle_matched:true});
+      let exportCode;try{app.buildJsonExport(ws,{mode:'changes',ticker:'BA'})}catch(e){exportCode=e.code}
+      process.stdout.write(JSON.stringify({result,preserved:before===JSON.stringify(values),snapshot:app.state(),exportCode}));
+    """.replace('WORKSPACE', json.dumps(workspace)).replace('BAD', bad))
+    assert out['result']['reason'] == 'view_membership_unavailable'
+    assert out['preserved']
+    assert all(not x['primed'] for x in out['snapshot']['alerts'])
+    assert out['exportCode'] == 'view_membership_unavailable'
+
+
+@needs_node
+def test_missing_page_resolver_and_wrong_workspace_fail_without_false_empty(tmp_path: Path) -> None:
+    workspace = _workspace(_event('govws-a', 'opportunity'))
+    out = _run_node(tmp_path, _membership_harness(workspace) + r"""
+      const missing=window.createGovernmentRevenueBriefcase({storage:localStorage,ownerId:'no-resolver'});
+      let missingCode,wrongCode;
+      try{missing.buildJsonExport(WORKSPACE,{mode:'changes'})}catch(e){missingCode=e.code}
+      try{app.buildJsonExport(JSON.parse(JSON.stringify(WORKSPACE)),{mode:'changes'})}catch(e){wrongCode=e.code}
+      process.stdout.write(JSON.stringify({missingCode,wrongCode}));
+    """)
+    assert out == {'missingCode': 'view_membership_unavailable', 'wrongCode': 'view_membership_unavailable'}
+
+
+@needs_node
+def test_legacy_alert_upgrade_does_not_backfill_newly_included_old_records(tmp_path: Path) -> None:
+    old = _event('govws-old', 'award_change')
+    nasa = _event('govws-old-nasa', 'award_change')
+    nasa['agency'] = {'department_name': 'NASA'}
+    correction = _event('govws-new-correction', 'award_change')
+    correction['agency'] = nasa['agency']
+    correction['change']['is_correction'] = True
+    out = _run_node(tmp_path, _membership_harness(_workspace(old, nasa)) + r"""
+      const legacy=make(),view=legacy.createView({name:'Existing LMT monitor',filters:{mode:'changes',truth:'defense',ticker:'LMT'}}).view;
+      legacy.createAlert({view_id:view.id,type:'award_change'});
+      legacy.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      const oldState=legacy.state();delete oldState.alerts[0].membership_contract;
+      const key='mastermind.government_revenue.briefcase.v1.user.test-user';values[key]=JSON.stringify(oldState);
+      function reopen(){return window.createGovernmentRevenueBriefcase({storage:localStorage,ownerId:'test-user',resolveEventIds:matchingWorkspaceEventIds,now:clock});}
+      const upgraded=reopen();const first=upgraded.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      const afterUpgrade=upgraded.state();const reloaded=reopen();
+      const repeat=reloaded.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      load(NEXT);const next=reloaded.reconcile(WORKSPACE,{complete:true,bundle_matched:true});
+      process.stdout.write(JSON.stringify({oldState,first,afterUpgrade,repeat,next}));
+    """.replace('NEXT', json.dumps(_workspace(old, nasa, correction))))
+    assert out['oldState']['alerts'][0]['seen_event_ids'] == ['govws-old']
+    assert out['first']['alerts'] == [] and len(out['first']['rebaselined_alert_ids']) == 1
+    assert out['afterUpgrade']['alerts'][0]['seen_event_ids'] == ['govws-old', 'govws-old-nasa']
+    assert out['afterUpgrade']['alerts'][0]['membership_contract'] == 'page_filter_membership.v1'
+    assert out['repeat']['alerts'] == [] and out['repeat']['rebaselined_alert_ids'] == []
+    assert [(x['event_id'], x['notification_kind']) for x in out['next']['alerts']] == [('govws-new-correction', 'correction')]

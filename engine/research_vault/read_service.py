@@ -314,7 +314,10 @@ class ResearchReadService:
         if conn is None:
             return "UNAVAILABLE", []
         try:
-            found = set(corpus_mod.sha_index(conn).values()) & admitted
+            # Presence is by report identity; byte-identical reports remain
+            # distinct members even when their PDF content digest is shared.
+            found = {row[0] for row in conn.execute("SELECT doc_id FROM documents")
+                     if row[0] in admitted}
         except Exception:
             return "UNAVAILABLE", []
         if len(found) < len(admitted):
@@ -784,9 +787,12 @@ class ResearchReadService:
             )
         admitted = _catalog_items(catalog)
         admitted_ids = set(admitted)
+        visible_ids = admitted_ids
+        if gated.entitlement != "pro":
+            visible_ids = admitted_ids & self._preview_ids(catalog)
         conn = self._open_corpus()
         try:
-            corpus_state, extra = self._corpus_snapshot(conn, admitted_ids)
+            corpus_state, extra = self._corpus_snapshot(conn, visible_ids)
             if conn is None or corpus_state == "UNAVAILABLE":
                 source = self._with_degradation(catalog, now, extra)
                 return self._search_envelope(
@@ -807,7 +813,12 @@ class ResearchReadService:
                 filter_map.get("date_from"),
                 filter_map.get("date_to"),
                 limit=effective,
+                allowed_ids=visible_ids,
             )
+            from engine.research_vault.fulltext_index import discovery_coverage
+            coverage = discovery_coverage(conn, catalog, visible_ids)
+            if coverage == "PARTIAL_CORPUS":
+                extra.append("FULL_TEXT_PARTIAL")
         finally:
             _close_conn(conn)
 
@@ -833,7 +844,9 @@ class ResearchReadService:
                     "rank": index,
                 }
             )
-        coverage = "PARTIAL_CORPUS" if corpus_state == "PARTIAL" else "PREFIX_ONLY_LEGACY"
+        if corpus_state == "PARTIAL":
+            coverage = "PARTIAL_CORPUS"
+            extra.append("FULL_TEXT_PARTIAL")
         source = self._with_degradation(catalog, now, extra)
         return self._search_envelope(
             available=True,

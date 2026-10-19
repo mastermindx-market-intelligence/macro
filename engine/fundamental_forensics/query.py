@@ -25,7 +25,7 @@ from __future__ import annotations
 import ast
 import csv
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from decimal import (
     Context,
     Decimal,
@@ -45,6 +45,7 @@ from itertools import islice
 import re
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Protocol, Sequence
+from zoneinfo import ZoneInfo
 
 from .metric_registry import (
     ConceptAlias,
@@ -279,6 +280,36 @@ def _date_value(value: date | datetime | str | None, *, field_name: str) -> date
 
 def _date_text(value: date | None) -> str | None:
     return value.isoformat() if value is not None else None
+
+
+_EDGAR_TIMEZONE = ZoneInfo("America/New_York")
+_EDGAR_FILING_CUTOFF = time(17, 30)
+_EDGAR_MAX_WEEKDAY_ROLL = 3
+
+
+def _latest_edgar_filed_date(accepted_at: datetime) -> date:
+    """Return the latest SEC filing date consistent with an EDGAR acceptance.
+
+    Regulation S-T Rule 13(a): a submission accepted after 5:30 p.m. Eastern
+    time, or on a non-business day, is deemed filed on the next business day,
+    so its filing date legitimately follows the acceptance date (in UTC and
+    in Eastern time).  Within filing hours the filing date may not follow the
+    Eastern acceptance date.  Federal holidays and unscheduled EDGAR closures
+    are not modelled: an out-of-hours acceptance may roll to at most the third
+    weekday after its Eastern date (the next business day past two intervening
+    weekday closures).  ``filed_at`` never gates availability; this bound only
+    keeps filing metadata consistent with the occurrence it describes.
+    """
+    eastern = accepted_at.astimezone(_EDGAR_TIMEZONE)
+    bound = eastern.date()
+    if bound.weekday() < 5 and eastern.time() < _EDGAR_FILING_CUTOFF:
+        return bound
+    rolled = 0
+    while rolled < _EDGAR_MAX_WEEKDAY_ROLL:
+        bound += timedelta(days=1)
+        if bound.weekday() < 5:
+            rolled += 1
+    return bound
 
 
 def _positive_int(value: int, *, field_name: str, ceiling: int) -> int:
@@ -1151,10 +1182,11 @@ class CellProvenance:
             if (
                 self.accepted_at is not None
                 and self.filed_at is not None
-                and self.filed_at > self.accepted_at.date()
+                and self.filed_at > _latest_edgar_filed_date(self.accepted_at)
             ):
                 raise QueryValidationError(
-                    "filing metadata provenance filed_at follows source acceptance"
+                    "filing metadata provenance filed_at follows the EDGAR filing date "
+                    "of source acceptance"
                 )
         if self.alias_priority is not None and (
             isinstance(self.alias_priority, bool)
@@ -4692,8 +4724,10 @@ class BitemporalMetricQueryEngine:
                         "filing metadata available_at cannot precede source acceptance"
                     )
                 if metadata.filed_at is not None and fact.accepted_at is not None:
-                    if metadata.filed_at > fact.accepted_at.date():
-                        raise QueryValidationError("filing metadata filed_at follows source acceptance")
+                    if metadata.filed_at > _latest_edgar_filed_date(fact.accepted_at):
+                        raise QueryValidationError(
+                            "filing metadata filed_at follows the EDGAR filing date of source acceptance"
+                        )
                 existing = frozen.get(fact.occurrence_id)
                 if existing is not None and existing != metadata:
                     raise QueryValidationError(
