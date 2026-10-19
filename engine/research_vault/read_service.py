@@ -192,6 +192,7 @@ class ResearchReadService:
         rio_inventory: Callable[[], Iterable[str]] | None = None,
         source_classifier: Callable[..., Mapping[str, Any]] | None = None,
         clock: Callable[[], datetime] | None = None,
+        comparison_owners: Any = None,
     ) -> None:
         self._catalog_store = catalog_store
         self._corpus_connection = corpus_connection
@@ -203,6 +204,17 @@ class ResearchReadService:
         self._rio_inventory = rio_inventory
         self._source_classifier = source_classifier
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._comparison_owners = comparison_owners
+
+    def comparison_view(self, *, caller_context: Any, request: Any) -> Mapping[str, Any]:
+        """Private Brain seam; the four public ReadPort tools are unchanged."""
+        from engine.research_vault.comparison import failure, view
+        gated = self._gate_context(caller_context, "find_evidence")
+        if not isinstance(gated, ServerReadContext) or self._entitle_report(gated) is not None:
+            return failure("REPORT_NOT_ENTITLED", denied=True)
+        if gated.surface != "brain":
+            return failure("COMPARISON_SURFACE_UNAVAILABLE", denied=True)
+        return view(self, gated, request, self._comparison_owners)
 
     def _now(self) -> datetime:
         return self._clock()
@@ -493,6 +505,12 @@ class ResearchReadService:
         extracted_sha = extracted.get("extracted_text_sha256") if extracted is not None else None
         stored_sha = getattr(stored, "source_content_sha256", None)
         if extracted is not None and stored_sha == extracted_sha:
+            # The store validates this closed receipt. Current source identity
+            # and exhaustive model context are separate properties.
+            receipt = getattr(stored, "receipt", None)
+            context = receipt.get("source_context") if isinstance(receipt, Mapping) else None
+            if isinstance(context, Mapping) and context.get("coverage") == "PARTIAL_SOURCE_CONTEXT":
+                extra.append("RIO_PARTIAL")
             return "CURRENT", stored, extra
         return "STALE", stored, extra
 
@@ -538,6 +556,7 @@ class ResearchReadService:
         rio_artifact_sha256: str | None,
         segment_count_total: int,
         segments: list[dict[str, Any]],
+        text_revision: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         return {
             "schema": read_port.FETCH_SCHEMA,
@@ -552,6 +571,7 @@ class ResearchReadService:
             "rio_artifact_sha256": rio_artifact_sha256,
             "segment_count_total": segment_count_total,
             "segments": segments,
+            "text_revision": text_revision,
         }
 
     def _report_meta(self, item: Mapping[str, Any]) -> dict[str, Any]:
@@ -900,7 +920,7 @@ class ResearchReadService:
         if item is None:
             return read_port.failure("REPORT_NOT_FOUND")
         coverage, extracted, segments, extra = self._resolve_text(checked, item)
-        rio_state, stored, rio_extra = self._rio_state(checked, extracted)
+        rio_state, stored, rio_extra = self._rio_state(checked, extracted if coverage == "FULL_TEXT" else None)
         extra.extend(rio_extra)
         source = self._with_degradation(catalog, now, extra)
         sha = getattr(stored, "artifact_sha256", None) if stored is not None else None
@@ -909,8 +929,22 @@ class ResearchReadService:
         layer = extracted.get("text_layer_state") if extracted is not None else None
         if not isinstance(layer, str):
             layer = None
-        if coverage == "FULL_TEXT":
+        text_revision = None
+        if coverage == "FULL_TEXT" and extracted is not None:
             total, projected = self._project_segments(segments, segment_start, max_segments)
+            # Identity comes from the same validated canonical record as these
+            # segments. A second load could silently bind them to a correction.
+            text_revision = {
+                "schema": "research_vault.text_revision.v1",
+                "source_pdf_sha256": extracted["source_pdf_sha256"],
+                "extracted_text_sha256": extracted["extracted_text_sha256"],
+                "extractor_name": extracted["extractor_name"],
+                "extractor_version": extracted["extractor_version"],
+                "segmenter_version": fulltext.SEGMENTER_VERSION,
+                "segment_max_bytes": SEGMENT_MAX_BYTES,
+                "char_count": extracted["char_count"],
+                "byte_count": extracted["byte_count"],
+            }
         else:
             total, projected = 0, []
         return self._fetch_envelope(
@@ -924,6 +958,7 @@ class ResearchReadService:
             rio_artifact_sha256=sha,
             segment_count_total=total,
             segments=projected,
+            text_revision=text_revision,
         )
 
     def find_evidence(
@@ -975,7 +1010,7 @@ class ResearchReadService:
                 rio_state="NOT_REQUESTED",
             )
         coverage, extracted, segments, extra = self._resolve_text(checked, item)
-        rio_state, _stored, rio_extra = self._rio_state(checked, extracted)
+        rio_state, _stored, rio_extra = self._rio_state(checked, extracted if coverage == "FULL_TEXT" else None)
         extra.extend(rio_extra)
         if coverage != "FULL_TEXT" or extracted is None:
             source = self._with_degradation(catalog, now, extra)

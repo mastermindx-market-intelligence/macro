@@ -6236,6 +6236,14 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -8505,6 +8513,21 @@ jobs:
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -18235,10 +18258,10 @@ jobs:
         # Fundamental Forensics package import in this isolated environment.
         # requests closes app.main's eager app.market_memory import.
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
+      # API security, source-bound evidence and F11 use this same environment.
+      # Combine the incumbent calls rather than adding packing step overhead.
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_api.py -q
-      - name: source-bound report evidence — corpus selector
-        run: python -m pytest tests/test_research_evidence_passages.py -q
+        run: python -m pytest tests/test_research_vault_comparison.py tests/test_research_comparison_gateway.py tests/test_research_vault_producer_generation.py tests/test_research_vault_generation_window.py tests/test_research_vault_generation_selection.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_public_projection.py tests/test_research_api.py tests/test_research_evidence_passages.py tests/test_research_vault_read_runtime.py tests/test_brain_research_read_port.py tests/test_research_vault_fetch_revision.py tests/test_research_vault_rio_source_qualification.py tests/test_research_vault_f11_factory.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
@@ -18274,6 +18297,14 @@ jobs:
       - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -19019,6 +19050,14 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -21015,6 +21054,21 @@ jobs:
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py
@@ -22578,6 +22632,13 @@ jobs:
       - "tests/test_government_program_oversight_ui.py"
       - "tests/test_government_program_army_source_boundary.py"
       - "tests/test_government_program_curator_clock_advance.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "research/prophet_v4/PROPHET_STRATEGY_PLATFORM_AND_CYCLE_CAPTURE_ARCHITECTURE_FREEZE_2026-08-30.md"
@@ -23347,6 +23408,14 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -28719,6 +28788,14 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/prophet_candidate_state.py"
@@ -29247,6 +29324,21 @@ jobs:
       - tests/test_market_memory_retained_saved_api.py
       - tests/test_market_memory_read_observation.py
       - tests/test_market_memory_retained_legacy_guard.py
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_forward.py
@@ -32055,6 +32147,21 @@ jobs:
       - engine/neuralweb/market_memory_retained_catalog.py
       - engine/neuralweb/market_memory_retained_saved.py
       - engine/neuralweb/market_memory_retained_legacy_guard.py
+      - "engine/research_intelligence/selection.py"
+      - "engine/research_vault/comparison.py"
+      - "engine/research_intelligence/projection.py"
+      # Shared Research Read import closure.
+      - "engine/qual_extraction.py"
+      - "engine/research_intelligence/extractor.py"
+      - "engine/research_intelligence/schema.py"
+      - "engine/research_intelligence/store.py"
+      - "engine/research_vault/fulltext.py"
+      - "engine/research_vault/fulltext_store.py"
+      - "engine/research_vault/read_adapters.py"
+      - "engine/research_vault/read_port.py"
+      - "engine/research_vault/read_runtime.py"
+      - "engine/research_vault/read_service.py"
+      - "scripts/check_research_vault_source_freshness.py"
       - config/market_memory_factory_bindings.v1.json
       - config/market_memory_retained_use.v1.json
       - engine/neuralweb/market_memory_episode_comparison.py

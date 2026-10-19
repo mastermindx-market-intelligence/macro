@@ -172,3 +172,11 @@ results with unresolved controller/lease state, and resumed M1 discovery without
 fresh publication proof. The current execution checkpoint above supersedes that dated activity record;
 neither source progress nor old producer counters satisfies the required
 current-generation 95 percent or live-client gates.
+
+Historical F11 integration record: the October 14 04:40 UTC continuation update
+records generation/public-projection and I03 comparison source on held draft
+#9177 at2962036f, alongside the then-current #9223/#1445 carriers. Its source
+logic is now composed for review against the current producer/fullbody source;
+that historical activity does not establish current writer settlement, an actual
+producer-published common generation95, selected readiness or authenticated client
+acceptance. Those effect gates remain held under the current execution frontier.
