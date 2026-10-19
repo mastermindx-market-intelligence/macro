@@ -329,6 +329,91 @@ def test_the_admitted_chain_is_the_wti_path_only():
 SCENARIO_ROUTE = '/api/ontology/explorer/scenario/v1'
 
 
+def _rates_scenario_client(monkeypatch, tmp_path, x2_inputs, *, old=False):
+    from tests.test_rate_inflation_transmission import _native_scenario_calibration
+    from engine import ontology_scenario_runtime as runtime
+    client, root = _qualified_scenario_client(monkeypatch, tmp_path, x2_inputs)
+    def forbidden(*a, **k): raise AssertionError('rates must not enter WTI series/calendar adapter')
+    monkeypatch.setattr(runtime, '_load_native_baseline', forbidden)
+    cal, _ = _native_scenario_calibration(monkeypatch, asof=x2_inputs[2].effective_at)
+    if old: cal.pop('scenario_beta_metadata')
+    path = root/'data/transmission/calibration.json'
+    path.write_text(json.dumps(cal))
+    return client, root, path, cal
+
+
+def _rates_payload(snapshot):
+    payload = _scenario_payload(snapshot)
+    payload['assumption'].update(node_ref='transmission:real10y_chg63', shock_definition='absolute_change_bp_over_horizon',
+      magnitude=50, unit='bp', horizon='63d', path_shape='terminal_only')
+    return payload
+
+
+def test_rates_scenario_native_emitter_to_private_http_without_recalibration_or_writes(monkeypatch, tmp_path, x2_inputs):
+    from scripts import calibrate_rate_inflation as producer
+    client, root, path, cal = _rates_scenario_client(monkeypatch, tmp_path, x2_inputs)
+    before = {p: p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    def forbidden(*a, **k): raise AssertionError('HTTP request tried to fit/read input series')
+    monkeypatch.setattr(producer, 'scenario_betas', forbidden)
+    monkeypatch.setattr(producer.inputs, 'build_features', forbidden)
+    monkeypatch.setattr(producer.inputs, 'yahoo_closes', forbidden)
+    with client:
+        snapshot = client.get(ROUTE).json()
+        assert any(r['path']=='data/transmission/calibration.json' for r in snapshot['source']['reads'])
+        response = client.post(SCENARIO_ROUTE, json=_rates_payload(snapshot))
+        repeated = client.post(SCENARIO_ROUTE, json=_rates_payload(snapshot))
+    _assert_scenario_private(response)
+    assert response.status_code == 200
+    value = response.json(); numeric = value['root_evaluation']
+    assert numeric['status'] == 'NUMERIC_ILLUSTRATION'
+    assert numeric['method_class'] == 'EMPIRICAL_SAME_WINDOW_BETA'
+    assert numeric['scenario']['shock_bp'] == 50 and numeric['coverage']['displayed_assets'] == ['SPY','TLT']
+    assert all(not v for v in value['authority'].values()) and all(v == 0 for v in value['side_effect_receipt'].values())
+    assert value['combined_estimate'] is None and all(h['value'] is None for h in value['hop_evaluations'])
+    assert value['owner_receipt']['generation'].startswith('sha256:')
+    assert value['owner_receipt']['knowledge_cutoff'] == cal['scenario_beta_metadata']['generated_at']
+    assert value['owner_receipt']['selected_knowledge_cutoff'] == snapshot['source']['built']
+    assert 'rights_ref' not in value['owner_receipt']
+    assert repeated.json()['scenario_eval_id'] == value['scenario_eval_id']
+    assert {p:p.read_bytes() for p in root.rglob('*') if p.is_file()} == before
+
+
+def test_rates_old_scalar_artifact_is_typed_unavailable_but_stays_in_selected_manifest(monkeypatch, tmp_path, x2_inputs):
+    client, root, path, _ = _rates_scenario_client(monkeypatch, tmp_path, x2_inputs, old=True)
+    with client:
+        snapshot = client.get(ROUTE).json()
+        response = client.post(SCENARIO_ROUTE, json=_rates_payload(snapshot))
+    assert response.status_code == 200
+    assert response.json()['root_evaluation']['reason'] == 'NUMERIC_OWNER_METADATA_UNAVAILABLE'
+    _assert_scenario_private(response)
+
+
+def test_rates_selected_generation_change_refuses_instead_of_substituting_new_calibration(monkeypatch, tmp_path, x2_inputs):
+    client, root, path, _ = _rates_scenario_client(monkeypatch, tmp_path, x2_inputs)
+    with client:
+        snapshot = client.get(ROUTE).json()
+        path.write_bytes(path.read_bytes()+b'\n')
+        response = client.post(SCENARIO_ROUTE, json=_rates_payload(snapshot))
+    assert response.status_code == 409 and response.json()['detail']['code'] == 'source_changed'
+    _assert_scenario_private(response)
+
+
+def test_rates_scenario_rechecks_native_bytes_after_numeric_composition(monkeypatch, tmp_path, x2_inputs):
+    from engine import rate_inflation_transmission as owner
+    client, root, path, _ = _rates_scenario_client(monkeypatch, tmp_path, x2_inputs)
+    original = owner.evaluate_scenario_beta
+    def changed(*a, **kw):
+        value = original(*a, **kw)
+        path.write_bytes(path.read_bytes()+b'\n')
+        return value
+    monkeypatch.setattr(owner, 'evaluate_scenario_beta', changed)
+    with client:
+        response = client.post(SCENARIO_ROUTE, json=_rates_payload(client.get(ROUTE).json()))
+    assert response.status_code == 503
+    assert 'NUMERIC_ILLUSTRATION' not in response.text
+    _assert_scenario_private(response)
+
+
 def _scenario_payload(snapshot):
     return {'schema':'ontology_scenario_request.v1',
             'source_manifest_hash':snapshot['source']['source_manifest_hash'],

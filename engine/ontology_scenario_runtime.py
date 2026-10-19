@@ -4,13 +4,15 @@ Uses the existing X1 composer, its exact read manifest and native TXI definition
 The current native WTI adapter is a historical parquet reader, NOT a futures
 calendar/vintage owner. The existing cash-session dispatcher explicitly excludes
 CL=F. Consequently ordinary runtime returns a named unsupported-owner result
-until native futures/calendar/vintage inputs are actually supplied. Tests can
-exercise the same handoff with synthetic qualified inputs; none are installed.
+until native futures/calendar/vintage inputs are actually supplied. Rates use
+their existing native calibration plus additive sample/clock metadata instead;
+no future price calendar or request-time fitting is needed for that illustration.
 """
 from __future__ import annotations
 
 from datetime import UTC, datetime
 import hashlib
+import json
 from pathlib import Path
 
 import yaml
@@ -20,7 +22,7 @@ from engine.ontology_scenario import SeriesBaseline, evaluate_scenario
 from engine import transmission_chains as txi
 from lib.market_session import cash_market_for_symbol
 
-METHOD = 'ontology_scenario.runtime.v1'
+METHOD = 'ontology_scenario.runtime.v2'
 
 
 class ScenarioSnapshotChanged(ValueError):
@@ -85,13 +87,30 @@ def evaluate_current_scenario(root: Path, assumption: dict, expected_manifest: s
     if assumption['baseline_effective_at'] != source['asof'] or not same_cutoff:
         raise ScenarioSnapshotChanged('BASELINE_CHANGED')
     refusal = None
-    try:
-        baseline = _load_native_baseline(root, snapshot, assumption)
-    except NativeScenarioInputsUnavailable as exc:
-        baseline = None
-        refusal = dict(reason=exc.reason, missing_owner_inputs=list(exc.missing), adapter_method=METHOD)
+    baseline = None
+    calibration = None
+    calibration_receipt = None
+    if assumption['node_ref'] == 'transmission:real10y_chg63':
+        calibration_receipt = next((r for r in receipts if r['path'] == 'data/transmission/calibration.json'), None)
+        if calibration_receipt:
+            def unique(pairs):
+                result = {}
+                for key, value in pairs:
+                    if key in result: raise ValueError('duplicate native field')
+                    result[key] = value
+                return result
+            try:
+                calibration = json.loads(_read_bound(root, calibration_receipt), object_pairs_hook=unique)
+            except (ValueError, UnicodeError, RecursionError):
+                pass  # Native malformed/old metadata stays a typed unavailable.
+    else:
+        try:
+            baseline = _load_native_baseline(root, snapshot, assumption)
+        except NativeScenarioInputsUnavailable as exc:
+            refusal = dict(reason=exc.reason, missing_owner_inputs=list(exc.missing), adapter_method=METHOD)
     result = evaluate_scenario(assumption, snapshot=snapshot, chain=chain, baseline=baseline,
-                               evaluated_at=now.isoformat(), owner_refusal=refusal)
+                               evaluated_at=now.isoformat(), owner_refusal=refusal,
+                               rates_calibration=calibration, calibration_receipt=calibration_receipt)
     # Recheck the complete immutable X1 source set AFTER owner composition too.
     for receipt in receipts: _read_bound(root, receipt)
     return result
