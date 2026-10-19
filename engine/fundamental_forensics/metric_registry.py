@@ -52,6 +52,19 @@ ALLOWED_UNITS = frozenset({"USD", "shares", "USD/shares", "ratio"})
 ALLOWED_PERIOD_KINDS = frozenset({"duration", "instant"})
 ALLOWED_FORMS = frozenset({"10-K", "10-K/A", "10-Q", "10-Q/A"})
 ALLOWED_TAXONOMIES = frozenset({"us-gaap", "dei"})
+# G0-c governed dimensional profile (A31/A32): the CLOSED axis universe a
+# catalog metric may declare alongside ``consolidated_only``. Axes declare
+# which dimensional scopes a pack may serve as labelled scope rows; the
+# consolidated cell itself stays the filing's undimensioned consolidated fact
+# (no-sum fence), so ``require_dimensions`` and ``allow_member_selection``
+# remain false everywhere.
+ALLOWED_DIMENSIONAL_AXES = frozenset(
+    {
+        "StatementBusinessSegmentsAxis",
+        "srt:ConsolidationItemsAxis",
+        "StatementClassOfStockAxis",
+    }
+)
 ALLOWED_STATEMENTS = frozenset(
     {"income_statement", "cash_flow_statement", "balance_sheet", "derived"}
 )
@@ -740,7 +753,24 @@ def _dimensional_profile(
         allow_attested_occurrence_profile
         and mode == ATTESTED_OCCURRENCE_DIMENSIONAL_MODE
     )
-    if not supported_mode or axes or required is not False or member_selection is not False:
+    # G0-c: only ``consolidated_only`` may declare governed axes, every axis
+    # must sit inside the closed ALLOWED_DIMENSIONAL_AXES universe, and no
+    # axis may repeat. The attested-occurrence bridge and every other mode
+    # stay dimensionless, and the no-sum fence keys below stay mandatory.
+    governed_axes = (
+        not axes
+        or (
+            mode == "consolidated_only"
+            and len(set(axes)) == len(axes)
+            and set(axes).issubset(ALLOWED_DIMENSIONAL_AXES)
+        )
+    )
+    if (
+        not supported_mode
+        or not governed_axes
+        or required is not False
+        or member_selection is not False
+    ):
         raise ValueError(
             f"{field} has an unsupported dimensional profile"
         )
