@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Deliver exact-draft promotion, accepted Crop bundle and three-file CNDT Research landing through one normal protected PR; controller cap applies automatic refreshes, not initial PR creation. CNDT pair is known-complete and ingest39209343602 committedc9a475c;205uniform holds preserve ranking. After protected install publish only exact reviewed Crop bytes, then qualify actual CNDT packet for one bounded writer. Publication/cutoverfalse; no discretionary writer approval is missing.
+next_action: Finish SAME PR9650 with two accepted exact reviewed bundles (Crop595words/CNDT541words,0manualproseedits), protected release/normal updater, then two sequential existing-workflow promotions and actual article/dossier/acquisition verification. Writer known28065estimatedtokens within explicitly amended32000allocation; original histories/12drafts retained. No discretionary approval wait or new writer. Publication/cutoverfalse; ten mixed-desk passes incomplete.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/macro/pull/9650
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
   - https://github.com/mastermindx-market-intelligence/macro/pull/9334
