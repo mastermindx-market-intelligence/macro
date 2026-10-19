@@ -10,8 +10,18 @@ Format: {ROOT: {mean, std, n_obs, computed_asof}, ...}
 This is a DISPLAY-TIER heuristic denominator (labeled "eod252") for the live
 flow feed's unusual-name z-scores.  These are also the "prem baselines" that
 enable prem_z for single names (Mag7, memory-storage, etc.) — not just ETFs.
-It is NOT a validated edge.  Roots with fewer than MIN_SESSIONS complete
-sessions produce no entry (z labeled "none" in the feed).
+It is NOT a validated edge.  Roots with fewer than MIN_SESSIONS observed daily values
+produce no entry (z labeled "none" in the feed).
+
+Store binding: the thetadata_eod store is resolved ONCE per run via
+engine.thetadata_store.resolve_thetadata_store(required=True,
+purpose="live_flow_baselines"), including configured external stores. An
+unresolvable store is refused before any --all scan or output write, instead
+of silently producing a merge-only artifact from the wrong checkout path.
+
+Window: statistics cover the latest EOD_WINDOW (252) observed daily values
+in chronological order — not the first 252 and not all history.  n_obs
+reflects the selected window.
 
 FC-R7 (FLOW_CONTINUITY_MASTERPLAN): extended from 18 ETF roots to the full
 poll universe (~375 roots) with chunked, bounded-memory processing.
@@ -59,8 +69,12 @@ from lib.procutil import hard_exit  # noqa: E402
 
 log = logging.getLogger(__name__)
 
-# Minimum complete trading sessions required to emit a baseline
+# Minimum observed daily values required to emit a baseline
 MIN_SESSIONS = 120
+
+# EOD252 display window: statistics are computed over the latest 252 observed
+# daily values (chronologically sorted), never first-252 or all-history.
+EOD_WINDOW = 252
 
 # Output path (git-tracked)
 BASELINES_PATH = "live_flow_baselines/baselines.json"
@@ -102,9 +116,18 @@ POLL_UNIVERSE_ANCHORS = [
 CHUNK_SIZE = 25
 
 
+def bind_store() -> Path:
+    """Resolve the canonical store once for each invocation, before output work."""
+    from engine.thetadata_store import resolve_thetadata_store
+
+    resolved = resolve_thetadata_store(required=True, purpose="live_flow_baselines")
+    if resolved is None:
+        raise RuntimeError("baselines: no thetadata store resolved — refusing to build baselines")
+    return Path(resolved)
+
+
 def _store_root() -> Path:
-    """Path to the thetadata_eod store."""
-    return config.data_dir() / "thetadata_eod"
+    return bind_store()
 
 
 def _out_path() -> Path:
@@ -122,15 +145,15 @@ def _load_existing() -> dict:
         return {}
 
 
-def _all_roots_in_store() -> list[str]:
+def _all_roots_in_store(store: Path | None = None) -> list[str]:
     """List of roots present in the thetadata_eod/eod/ directory."""
-    eod_dir = _store_root() / "eod"
+    eod_dir = (store if store is not None else _store_root()) / "eod"
     if not eod_dir.exists():
         return []
     return sorted(d.name for d in eod_dir.iterdir() if d.is_dir())
 
 
-def _daily_gross_premium(root: str) -> pd.Series | None:
+def _daily_gross_premium(root: str, store: Path | None = None) -> pd.Series | None:
     """Compute per-day gross premium for root from the thetadata_eod store.
 
     Gross premium per day = sum(close * volume * 100) over all contracts.
@@ -139,9 +162,11 @@ def _daily_gross_premium(root: str) -> pd.Series | None:
 
     Returns a Series indexed by date string "YYYY-MM-DD", or None if insufficient data.
     """
+    from engine.thetadata_store import _load_parquets, clear_parquet_cache
+
+    bound_store = store if store is not None else _store_root()
     try:
-        from engine.thetadata_store import _load_parquets, store_root
-        eod = _load_parquets("eod", root, years=None, store=str(_store_root()))
+        eod = _load_parquets("eod", root, years=None, store=str(bound_store))
         if eod is None or eod.empty:
             log.debug("baselines: no EOD data for %s", root)
             return None
@@ -175,19 +200,28 @@ def _daily_gross_premium(root: str) -> pd.Series | None:
     except Exception as e:  # noqa: BLE001
         log.warning("baselines: error loading %s: %s", root, e)
         return None
+    finally:
+        # This finite builder does not reuse full-year frames across roots.
+        # gc.collect alone cannot release the canonical reader's strong refs.
+        clear_parquet_cache()
 
 
-def compute_baseline(root: str) -> dict | None:
-    """Compute {mean, std, n_obs, computed_asof} for root, or None if insufficient."""
-    daily = _daily_gross_premium(root)
+def compute_baseline(root: str, store: Path | None = None) -> dict | None:
+    """Compute {mean, std, n_obs, computed_asof} for root, or None if insufficient.
+
+    Statistics cover the latest EOD_WINDOW (252) observed daily values in
+    chronological order; n_obs reflects that selected window.
+    """
+    daily = _daily_gross_premium(root, store=store)
     if daily is None or len(daily) < MIN_SESSIONS:
         n = len(daily) if daily is not None else 0
         log.info("baselines: %s — %d sessions < %d minimum — skip", root, n, MIN_SESSIONS)
         return None
 
-    mean_val = float(np.mean(daily.values))
-    std_val  = float(np.std(daily.values, ddof=1))
-    n_obs    = int(len(daily))
+    window = daily.sort_index().iloc[-EOD_WINDOW:]
+    mean_val = float(np.mean(window.values))
+    std_val  = float(np.std(window.values, ddof=1))
+    n_obs    = int(len(window))
     asof     = str(date.today())
 
     log.info("baselines: %s — n_obs=%d mean=%.0f std=%.0f", root, n_obs, mean_val, std_val)
@@ -199,7 +233,8 @@ def compute_baseline(root: str) -> dict | None:
     }
 
 
-def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE) -> dict:
+def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE,
+        *, store: Path | None = None) -> dict:
     """Compute baselines for given roots and write/merge into baselines.json.
 
     FC-R7: processes roots in chunks of chunk_size to bound memory usage.
@@ -207,6 +242,10 @@ def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE) -
 
     Returns the full updated baselines dict.
     """
+    # Canonical binding FIRST (outside the per-root try): a refused store must
+    # abort the run before any load/merge/write — never degrade to a
+    # merge-only artifact published as healthy.
+    bound_store = store if store is not None else bind_store()
     existing = _load_existing()
     updated = dict(existing)
 
@@ -221,7 +260,7 @@ def run(roots: list[str], dry_run: bool = False, chunk_size: int = CHUNK_SIZE) -
         for root in chunk:
             root = root.upper()
             try:
-                result = compute_baseline(root)
+                result = compute_baseline(root, store=bound_store)
                 if result is None:
                     n_skip += 1
                 else:
@@ -277,10 +316,20 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
+    # Bind the canonical store FIRST: an unresolvable store is a hard refusal
+    # before any --all directory scan or output write. All CLI modes then
+    # share this invocation's canonical binding.
+    try:
+        store = bind_store()
+    except Exception as e:  # noqa: BLE001
+        log.error("baselines: store binding refused: %s", e)
+        hard_exit(1)
+        return 1
+
     if args.all:
-        roots = _all_roots_in_store()
+        roots = _all_roots_in_store(store)
         if not roots:
-            log.error("baselines: no roots found in %s", _store_root() / "eod")
+            log.error("baselines: no roots found in %s", store / "eod")
             hard_exit(1)
             return 1
     elif args.poll_universe:
@@ -294,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
 
     log.info("baselines: computing for %d roots, dry_run=%s chunk_size=%d",
              len(roots), args.dry_run, args.chunk_size)
-    run(roots, dry_run=args.dry_run, chunk_size=args.chunk_size)
+    run(roots, dry_run=args.dry_run, chunk_size=args.chunk_size, store=store)
 
     # hard_exit required: parquet reads in _daily_gross_premium via thetadata_store
     # can trigger PyArrow ThreadPool deadlock at interpreter shutdown.

@@ -959,14 +959,17 @@ jobs:
       - "lib/closes_panel.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "lib/procutil.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "ops/launchd/com.mastermind.liveflow.plist"
       - "scripts/build_flow_archive.py"
       - "scripts/build_flow_surface.py"
+      - "scripts/build_live_flow_baselines.py"
       - "scripts/live_flow_poller.py"
       - "tests/test_flow_archive.py"
       - "tests/test_live_flow_recovery.py"
+      - "tests/test_live_flow_baselines.py"
       - "tests/test_live_flow_tiering.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -979,7 +982,7 @@ jobs:
         # support the live-flow engine and pyyaml is imported by lib.config.
         run: pip install pytest pandas numpy pyyaml requests
       - name: live-flow WAL/cycle-recovery + sibling suites
-        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py -q
 
   integrated-answer-v0:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
