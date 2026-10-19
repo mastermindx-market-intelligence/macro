@@ -18,7 +18,10 @@ from pathlib import Path
 import pytest
 
 from engine.ontology_explorer import compose_snapshot
-from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+from tests.ontology_explorer_fixtures import build_root, chain_state
+
+# Invented observations exercise an admitted product identity, never a live read.
+SLUG = 'oil_inflation_duration_derate'
 
 
 def _scenario_browser(browser, *, qualified=False, mutate=None, status=200):
@@ -320,7 +323,8 @@ def browser():
 def synthetic_snapshot(tmp_path: Path) -> dict:
     source_root = build_root(
         tmp_path,
-        state_doc=chain_state(confirmed=(False, False, True, True)),
+        slug=SLUG,
+        state_doc=chain_state(SLUG, confirmed=(False, False, True, True)),
     )
     return compose_snapshot(
         source_root,
@@ -337,6 +341,7 @@ def _open(
     height: int,
     responses: list[dict] | None = None,
     reading_expected: bool = True,
+    query: str = "",
 ):
     context = browser.new_context(
         viewport={"width": width, "height": height},
@@ -355,10 +360,10 @@ def _open(
         ),
     )
     page.route(
-        "http://ontology.test/ontology.html",
+        "http://ontology.test/ontology.html*",
         lambda route: route.fulfill(status=200, content_type="text/html", body=SHELL),
     )
-    page.goto("http://ontology.test/ontology.html", wait_until="load")
+    page.goto("http://ontology.test/ontology.html" + query, wait_until="load")
     page.add_style_tag(path=str(THEME_CSS))
     page.add_style_tag(path=str(ONTOLOGY_CSS))
     page.evaluate(
@@ -367,7 +372,9 @@ def _open(
           window.__brainOpens = 0;
           window.__fetchCount = 0;
           const queue = (config.responses || [{status: 200, body: config.snapshot}]).slice();
-          window.fetch = () => {
+          window.__requestURLs = [];
+          window.fetch = (url) => {
+            window.__requestURLs.push(url);
             const item = queue[Math.min(window.__fetchCount, queue.length - 1)];
             window.__fetchCount += 1;
             return Promise.resolve({
@@ -395,10 +402,41 @@ def _open(
     return context, page
 
 
+@pytest.mark.parametrize('query',['?chain=', '?chain=unadmitted', '?chain=dollar_spike_em_multinational&chain=oil_inflation_duration_derate'])
+def test_path_selection_refuses_invalid_queries_without_a_default_request(browser,synthetic_snapshot,query):
+    ctx,page=_open(browser,synthetic_snapshot,width=390,height=844,query=query,reading_expected=False)
+    try:
+        assert 'This path is not available here' in page.locator('#ox-root').inner_text()
+        assert page.evaluate('__requestURLs')==[]
+        assert page.locator('#ox-steps').count()==0
+    finally:ctx.close()
+
+
+def test_explicit_dollar_selection_refuses_a_successful_reply_from_another_path(browser,synthetic_snapshot):
+    ctx,page=_open(browser,synthetic_snapshot,width=390,height=844,query='?chain=dollar_spike_em_multinational',reading_expected=False)
+    try:
+        page.wait_for_function("document.querySelector('#ox-root').getAttribute('aria-busy')!=='true'")
+        assert page.evaluate('__requestURLs')==['/api/ontology/explorer/v1?chain=dollar_spike_em_multinational']
+        assert page.locator('#ox-steps').count()==0
+    finally:ctx.close()
+
+
+def test_default_oil_selection_refuses_a_successful_dollar_reply(browser,tmp_path):
+    from tests.ontology_explorer_fixtures import dollar_root
+    snapshot=compose_snapshot(dollar_root(tmp_path),chain='dollar_spike_em_multinational')
+    ctx,page=_open(browser,snapshot,width=390,height=844,reading_expected=False)
+    try:
+        page.wait_for_function("document.querySelector('#ox-root').getAttribute('aria-busy')!=='true'")
+        assert page.evaluate('__requestURLs')==['/api/ontology/explorer/v1']
+        assert page.locator('#ox-steps').count()==0
+    finally:ctx.close()
+
+
 @pytest.mark.parametrize('language',['en','zh'])
 def test_native_transition_references_keep_policy_limits_visible(browser,tmp_path,language):
-    from tests.test_ontology_explorer_contract import _root_with_episodes, _native_k1_transition
-    root = _root_with_episodes(tmp_path, [_native_k1_transition()])
+    from tests.test_ontology_explorer_contract import _native_k1_transition
+    root = build_root(tmp_path,slug=SLUG)
+    (root/'data/transmission/chain_episodes.jsonl').write_text(json.dumps(_native_k1_transition(chain=SLUG,episode_id=SLUG+'@r2:2026-01-01'))+'\n')
     snapshot = compose_snapshot(root, chain=SLUG, now=datetime(2026,1,4,tzinfo=UTC))
     assert snapshot['evidence']['k1']['status']=='partial'
     context,page=_open(browser,snapshot,width=390,height=844)
@@ -1147,3 +1185,30 @@ def test_research_continuation_uses_existing_theme_owner_and_abstains(browser,sy
         page.wait_for_url('**/state_of_themes.html#research-reading-order')
         assert page.locator('#research-reading-order').count()==1
     finally:context.close()
+
+
+@pytest.mark.parametrize('chain,selected', [
+    ('oil_inflation_duration_derate', None),
+    ('dollar_spike_em_multinational', 'dollar_spike_em_multinational'),
+])
+def test_native_transmission_return_keeps_selected_path_revision_and_step(browser, chain, selected):
+    """Execute the existing landing script, including URL encoding, in a browser."""
+    from urllib.parse import urlencode, urlparse, parse_qs, unquote
+    source = (ROOT / 'templates/transmission.html.j2').read_text()
+    script = source[source.index('id="tx-from"'):].split('<script>', 1)[1].split('</script>', 1)[0]
+    ctx = browser.new_context(); page = ctx.new_page()
+    try:
+        focus, revision = 'em_derate', 'r3+fixture'
+        page.route('**/*', lambda route: route.fulfill(status=200, content_type='text/html',
+            body='<p id="tx-from" hidden>Return to the selected step <a id="tx-from-back">Back</a></p>'))
+        page.goto('https://macro.example/transmission.html?' + urlencode({'from': chain, 'focus': focus, 'rev': revision}))
+        page.evaluate(script)
+        href = urlparse(page.locator('#tx-from-back').get_attribute('href'))
+        query = parse_qs(href.query)
+        assert href.path == 'ontology.html'
+        assert query == ({'chain': [selected], 'rev': [revision]} if selected else {'rev': [revision]})
+        assert unquote(href.fragment) == 'ox-leg-' + focus
+        assert page.locator('#tx-from').is_visible()
+        assert focus not in page.locator('#tx-from').inner_text()
+    finally:
+        ctx.close()

@@ -1970,3 +1970,171 @@ def test_mutation_disloc_residual_slot_with_noncanonical_owner_fires_r008():
     v["slots"].append(rogue)
     codes = _codes(validate_vector(v))
     assert "K3E_R008" in codes
+
+
+# Research OpportunityCase integration. All inputs in this section are synthetic
+# contract fixtures. No fixture is relabeled as a retained/live market candidate.
+def _opportunity_case_inputs(vector=None, *, include_evaluation=True):
+    from lib import evidence_foundation as ef
+    from lib import opportunity_case as oc
+    from tests.test_evidence_foundation_product_contract import _references, _golden_blocks
+    recipe = json.loads((ROOT / "tests/fixtures/evidence_foundation/aapl_security_state_recipe_valid.json").read_text())
+    blocks = _golden_blocks()
+    if not include_evaluation:
+        blocks = [b for b in blocks if b["block_key"] != "forward_context"]
+        recipe["block_specs"] = [s for s in recipe["block_specs"] if s["block_key"] != "forward_context"]
+        recipe["output_mappings"] = [m for m in recipe["output_mappings"] if m["block_key"] != "forward_context"]
+    consumer = {"workstream": "WS:ALPHA-INTELLIGENCE-INTEGRATION",
+                "job": "synthetic research composition", "output_contract": oc.SCHEMA}
+    recipe["consumer"] = consumer
+    for block in blocks:
+        block["consumer"] = consumer
+        block["permitted_consumers"] = [oc.SCHEMA]
+        block["evidence_block_id"] = ef.compute_block_id(block)
+    for spec in recipe["block_specs"]:
+        leg = {"earnings_change": "company_context", "fundamental_context": "valuation_context",
+               "theme_context": "transmission", "forward_context": "path_timing"}[spec["block_key"]]
+        spec["output_fields"] = [leg]
+    for mapping in recipe["output_mappings"]:
+        mapping["output_field"] = {"earnings_change": "company_context", "fundamental_context": "valuation_context",
+                                   "theme_context": "transmission", "forward_context": "path_timing"}[mapping["block_key"]]
+    recipe["output_mappings"] = list({m["output_field"]: m for m in recipe["output_mappings"]}.values())
+    recipe["recipe_id"] = ef.compute_recipe_id(recipe)
+    if vector is None:
+        subject, asof, slots = _base_vector()
+        asof["value"] = "2026-08-26"
+        asof["t0_evidence_ref"]["recorded_clock"]["value"] = "2026-08-26"
+        vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    refs = _references()
+    used = {rid for block in blocks for rid in block["reference_ids"]}
+    refs = {rid: refs[rid] for rid in sorted(used)}
+    evaluation = [rid for rid, ref in refs.items() if ref["owner_store"] == "qledger.claim"]
+    return dict(recipe=recipe, blocks=blocks, references=refs, vector=vector,
+                evaluation_reference_ids=evaluation)
+
+
+def test_opportunity_case_composes_native_legs_and_keeps_identity_missingness():
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    before = json.dumps(inputs, sort_keys=True)
+    case = oc.compose_case(**inputs)
+    assert oc.validate_case(case) == case
+    assert json.dumps(inputs, sort_keys=True) == before
+    assert case["inferred"]["slots"][0]["value_or_null"]["resid_z"] == 11.85
+    assert case["market_incorporation"] == inputs["vector"]["projection"]["market_reflection"]
+    assert case["strongest_unresolved_fact"] == inputs["vector"]["projection"]["strongest_unresolved_fact"]
+    assert case["failed_gates"] == inputs["vector"]["projection"]["failed_or_unavailable_gates"]
+    assert case["evidence_binding"]["state"] == "identity_unresolved"
+    assert case["evidence_binding"]["scope"] == "native_subjects_only"
+    assert case["company_context"]["block_ids"] == []
+    assert case["company_context"]["withheld_block_ids"]
+    assert case["research_state"] == "partial"
+    assert case["denominators"]["vector"] == inputs["vector"]["denominator"]
+    assert case["denominators"]["evidence"] == case["evidence_binding"]["recipe_receipt"]["denominator"]
+    assert case["evaluation_refs"][0]["object_class"] == "forward_claim"
+    assert case["calibrated"] == {"state": "unavailable", "opportunity_score": None,
+                                  "confidence": None, "probability": None, "impact": None}
+    assert set(case["authority"].values()) == {False}
+
+
+def test_opportunity_case_no_fixture_or_block_order_becomes_a_priority():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    second = json.loads(json.dumps(first))
+    second["blocks"].reverse()
+    assert oc.compose_case(**first) == oc.compose_case(**second)
+
+
+def test_opportunity_case_identity_survives_new_evidence_version():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    second = json.loads(json.dumps(first))
+    slot = next(s for s in second["vector"]["slots"] if s["construct"] == "drl_resid_shock")
+    slot["value_or_null"]["resid_z"] = 12.5
+    second["vector"]["content_sha256"] = compute_content_sha256(second["vector"])
+    a, b = oc.compose_case(**first), oc.compose_case(**second)
+    assert a["case_id"] == b["case_id"] and a["content_sha256"] != b["content_sha256"]
+
+
+def test_opportunity_case_identity_provenance_refresh_is_a_version_not_a_new_case():
+    from lib import opportunity_case as oc
+    first = _opportunity_case_inputs()
+    first["vector"]["subject"] = {"subject_type": "dataos_security_id", "value": "SEC:US-XNAS-AAPL",
+        "identity_state": "bridge_validated", "identity_bridge": {"method": "dataos_security_master", "receipt": "synthetic-v1"}}
+    first["vector"]["content_sha256"] = compute_content_sha256(first["vector"])
+    second = json.loads(json.dumps(first))
+    second["vector"]["subject"]["identity_bridge"]["receipt"] = "synthetic-v2"
+    second["vector"]["content_sha256"] = compute_content_sha256(second["vector"])
+    a, b = oc.compose_case(**first), oc.compose_case(**second)
+    assert a["case_id"] == b["case_id"] and a["content_sha256"] != b["content_sha256"]
+
+
+def test_opportunity_case_boolean_numeric_substitution_is_not_exact_bytes():
+    from lib import opportunity_case as oc
+    case = oc.compose_case(**_opportunity_case_inputs())
+    case["authority"]["can_rank"] = 0
+    with pytest.raises(oc.OpportunityCaseError, match="case_projection_or_identity_mismatch"):
+        oc.validate_case(case)
+
+
+@pytest.mark.parametrize("mutation", ["score", "authority", "observed", "gate", "extra"])
+def test_opportunity_case_rehashed_projection_cannot_promote_or_hide_native_leg(mutation):
+    from lib import opportunity_case as oc
+    case = oc.compose_case(**_opportunity_case_inputs())
+    if mutation == "score": case["calibrated"]["opportunity_score"] = 10
+    elif mutation == "authority": case["authority"]["can_rank"] = True
+    elif mutation == "observed": case["reality"] = case["inferred"]
+    elif mutation == "gate": case["failed_gates"]["gates"].append({"state": "passed"})
+    else: case["RP1"] = 1
+    case["content_sha256"] = oc._hash({k: v for k, v in case.items() if k != "content_sha256"})
+    with pytest.raises(oc.OpportunityCaseError, match="case_projection_or_identity_mismatch"):
+        oc.validate_case(case)
+
+
+@pytest.mark.parametrize("mutation", ["reference", "block", "vector", "consumer", "evaluation"])
+def test_opportunity_case_uses_actual_native_validators(mutation):
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    if mutation == "reference": next(iter(inputs["references"].values()))["authority"]["can_size"] = True
+    elif mutation == "block": inputs["blocks"][0]["coverage"]["included"] = 2
+    elif mutation == "vector": inputs["vector"]["slots"][0]["state"] = "missing"
+    elif mutation == "consumer": inputs["vector"]["permitted_consumers"] = ["research_session"]
+    else: inputs["evaluation_reference_ids"] = [next(r for r, ref in inputs["references"].items()
+                                                     if ref["object_class"] != "forward_claim")]
+    with pytest.raises(oc.OpportunityCaseError):
+        oc.compose_case(**inputs)
+
+
+def test_opportunity_case_bounded_unknown_inputs_do_not_open_any_owner(monkeypatch):
+    from lib import opportunity_case as oc
+    inputs = _opportunity_case_inputs()
+    inputs["blocks"] *= 17
+    with pytest.raises(oc.OpportunityCaseError):
+        oc.compose_case(**inputs)
+
+
+def test_opportunity_case_vector_transmission_is_instrument_context_not_market_verdict():
+    from lib import opportunity_case as oc
+    subject, asof, slots = _base_vector()
+    asof["value"] = "2026-08-26"
+    asof["t0_evidence_ref"]["recorded_clock"]["value"] = "2026-08-26"
+    subject = {"subject_type": "dataos_security_id", "value": "SEC:US-XNAS-AAPL",
+               "identity_state": "bridge_validated",
+               "identity_bridge": {"method": "dataos_security_master", "receipt": "synthetic-owner-receipt"}}
+    slots.append(dict(construct="macro_chain_state", state="observed", value_or_null="failed",
+                      asof=_clock("2026-08-14"), known_at=_clock("2026-08-14")))
+    vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    case = oc.compose_case(**_opportunity_case_inputs(vector))
+    assert case["transmission"]["owner_slots"][0]["value_or_null"] == "failed"
+    assert case["transmission"]["state"] == "partial"
+    assert all("macro_chain_state" not in leg["slot_refs"]
+               for leg in case["market_incorporation"]["incorporation_legs"])
+    assert case["calibrated"]["opportunity_score"] is None
+
+
+def test_opportunity_case_future_evaluation_receipt_cannot_enter_an_earlier_case():
+    from lib import opportunity_case as oc
+    subject, asof, slots = _base_vector()
+    vector = compose_vector(subject, asof, slots, permitted_consumers=["opportunity_case_k5"])
+    with pytest.raises(oc.OpportunityCaseError, match="case_reference_after_cutoff"):
+        oc.compose_case(**_opportunity_case_inputs(vector))

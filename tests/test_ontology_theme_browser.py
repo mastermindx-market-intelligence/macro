@@ -20,9 +20,9 @@ CHAIN='oil_inflation_duration_derate'
 def theme_reading(tmp_path):
     return native_theme_reading(tmp_path)
 
-def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None):
+def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch=None, chain=CHAIN):
     root=_theme_owner_root(tmp_path)
-    fx.build_root(root,slug=CHAIN)
+    fx.build_root(root,slug=chain)
     if etf:
         from tests.test_theme_graph_hierarchy_paths import _selected_etf_view
         view=_selected_etf_view()
@@ -40,8 +40,8 @@ def native_theme_reading(tmp_path, *, etf=False, etf_identity=False, monkeypatch
     for row in rows:
         if row['node_id'] in labels: row['name_en'],row['name_zh']=labels[row['node_id']]
     parquet.write_table(arrow.Table.from_pylist(rows),path)
-    snapshot=ontology_explorer.compose_snapshot(root,chain=CHAIN)
-    payload=dict(schema='ontology_theme_request.v1',chain=CHAIN,source_manifest_hash=snapshot['source']['source_manifest_hash'],
+    snapshot=ontology_explorer.compose_snapshot(root,chain=chain)
+    payload=dict(schema='ontology_theme_request.v1',chain=chain,source_manifest_hash=snapshot['source']['source_manifest_hash'],
                  identity_kind='security',identity_id='SEC:US-XNAS-AAA')
     result=ontology_theme.compose_theme_continuation(root,payload)
     assert result['theme_map']['availability']['state']=='AVAILABLE'
@@ -171,7 +171,7 @@ def test_etf_decoder_refuses_foreign_identity_rights_clocks_or_authority(browser
 
 def start(browser,theme_reading,*,width=1440,theme='dark',language='en',mutate=None):
     snapshot,result=theme_reading
-    ctx,page,other,errors=portfolio_start(browser,snapshot,width=width,theme=theme,language=language,full_shell=True)
+    ctx,page,other,errors=portfolio_start(browser,snapshot,width=width,theme=theme,language=language,full_shell=True,chain=snapshot['source']['chain'])
     # Missing shared assets must not silently turn visual evidence into unstyled HTML.
     assert page.evaluate("Boolean(getComputedStyle(document.documentElement).getPropertyValue('--bg').trim())"), 'shared Macro theme stylesheet missing'
     assert page.evaluate("document.documentElement.dataset.theme") == theme
@@ -185,7 +185,7 @@ def start(browser,theme_reading,*,width=1440,theme='dark',language='en',mutate=N
     def respond(route):
         body=json.loads(route.request.post_data)
         seen.append({'url':route.request.url,'body':body,'headers':route.request.headers})
-        assert body==dict(schema='ontology_theme_request.v1',chain=CHAIN,
+        assert body==dict(schema='ontology_theme_request.v1',chain=snapshot['source']['chain'],
              source_manifest_hash=snapshot['source']['source_manifest_hash'],identity_kind='security',identity_id='SEC:US-XNAS-AAA')
         status,headers,value=200,dict(HEADERS),deepcopy(result)
         if mutate: status,headers,value=mutate(status,headers,value)
@@ -199,6 +199,19 @@ def start(browser,theme_reading,*,width=1440,theme='dark',language='en',mutate=N
 
 def settled(page,state):
     page.wait_for_function("s=>document.querySelector('[data-theme-result]').dataset.state===s",arg=state,timeout=5000)
+
+
+def test_dollar_continuation_keeps_theme_identity_and_clears_private_read_on_owner_change(browser,tmp_path):
+    reading=native_theme_reading(tmp_path,chain='dollar_spike_em_multinational')
+    ctx,page,seen,errors=start(browser,reading)
+    try:
+        page.locator('[data-theme-read]').click();settled(page,'ready')
+        assert len(seen)==1 and seen[0]['body']['chain']=='dollar_spike_em_multinational'
+        assert 'Synthetic solar' in page.locator('[data-theme-result]').inner_text()
+        page.evaluate("pOwner='owner-b';window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{user:{id:pOwner}}}))")
+        assert 'Synthetic solar' not in page.locator('[data-theme-result]').inner_text()
+        assert page.locator('[data-theme-read]').is_disabled() and len(seen)==1 and not errors
+    finally:ctx.close()
 
 @pytest.mark.parametrize('width',[390,1440])
 @pytest.mark.parametrize('theme,language',[('dark','en'),('light','zh')])

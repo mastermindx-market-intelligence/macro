@@ -18,11 +18,19 @@
 (function () {
   "use strict";
 
-  var API = "/api/ontology/explorer/v1";
+  var DEFAULT_CHAIN = "oil_inflation_duration_derate";
+  var CHAINS = [DEFAULT_CHAIN, "dollar_spike_em_multinational"];
+  var requestedChains = new URLSearchParams(window.location.search).getAll("chain");
+  var selectedChain = requestedChains.length ? requestedChains[0] : DEFAULT_CHAIN;
+  var acceptedChain = requestedChains.length <= 1 && CHAINS.includes(selectedChain);
+  var API = "/api/ontology/explorer/v1" + (requestedChains.length ? "?chain=" + encodeURIComponent(selectedChain) : "");
   var OPS = { gt: "\u003e", lt: "\u003c", gte: "\u2265", lte: "\u2264",
     eq: "=", ne: "\u2260" };
   var root = document.getElementById("ox-root");
   if (!root) return;
+  document.querySelectorAll("[data-ontology-chain]").forEach(function (link) {
+    if (acceptedChain && link.getAttribute("data-ontology-chain") === selectedChain) link.setAttribute("aria-current", "page");
+  });
   var LEG_DETAIL_ID = "ox-steps";
   var legDetail = null;
   var readingEpoch = 0;
@@ -297,6 +305,13 @@
   }
 
   function gateForFailure(code) {
+    if (code === "chain_not_admitted") {
+      gate("This path is not available here", "此处尚不支持该路径",
+        "Choose one of the supported paths above. Another path's reading will not be substituted.",
+        "请选择上方支持的路径。不会用其他路径的读数替代。",
+        null, null, null, code);
+      return;
+    }
     if (code === "source_incoherent") {
       gate("The current sources disagree", "当前来源相互矛盾",
         "The owner artifacts could not be trusted together, so no partial or earlier reading is shown as current.",
@@ -360,7 +375,7 @@
     blocker.appendChild(blockerLabel);
     var blockerValue = el("strong");
     if (snapshot.first_blocking_leg) {
-      blockerValue.appendChild(bi(snapshot.first_blocking_leg.title));
+      blockerValue.appendChild(bi(pathLegTitle(snapshot, snapshot.first_blocking_leg)));
     } else {
       blockerValue.appendChild(say("No current blocker", "当前无阻断环节"));
     }
@@ -445,7 +460,7 @@
       var body = el("div", "st-body");
       body.appendChild(el("div", "st-idx", String(leg.index).padStart(2, "0")));
       var name = el("div", "st-name");
-      name.appendChild(bi(leg.title));
+      name.appendChild(bi(pathLegTitle(snapshot, leg)));
       body.appendChild(name);
       var verdict = el("div", "st-verdict");
       verdict.appendChild(legVerdict(leg));
@@ -899,6 +914,23 @@
     return d;
   }
 
+  function pathLegTitle(snapshot, leg) {
+    if (snapshot.source?.chain === 'dollar_spike_em_multinational') {
+      if (leg.node_id === 'em_derate') return {en: 'FXI versus SPY: EM proxy', zh: 'FXI 相对 SPY：新兴市场代理'};
+      if (leg.node_id === 'dollar_spike') return {en: 'Dollar trend and positioning', zh: '美元趋势与持仓分位'};
+    }
+    return leg.title;
+  }
+  function pathLegQualification(snapshot, leg) {
+    if (snapshot.source?.chain !== 'dollar_spike_em_multinational') return null;
+    if (leg.node_id === 'em_derate') return {
+      en: 'The native predicate uses FXI (China large-cap) relative to SPY over 63 observations as an EM proxy. It does not measure all emerging markets or multinational earnings.',
+      zh: '原生条件使用 FXI（中国大型股）相对 SPY 的63个观测间隔表现作为新兴市场代理，并非全部新兴市场或跨国企业盈利的测量。'};
+    if (leg.node_id === 'dollar_spike') return {
+      en: 'This condition measures dollar trend and positioning. High real rates are a declared mechanism, not an observed cause in this predicate.',
+      zh: '此条件测量美元趋势与持仓分位。高实际利率是声明的机制，并非该条件中已观测到的原因。'};
+    return null;
+  }
   function renderLegDetail(snapshot) {
     var d = detail("Inspect each step: readings, timing and what we are watching",
       "查看各环节：读数、时间窗口与我们正在观察的条件");
@@ -910,8 +942,10 @@
          control — while still allowing focus() to land on it. */
       box.tabIndex = -1;
       var h = el("h3");
-      h.appendChild(bi(leg.title));
+      h.appendChild(bi(pathLegTitle(snapshot, leg)));
       box.appendChild(h);
+      var qualification = pathLegQualification(snapshot, leg);
+      if (qualification) { var note = el('p', 'ox-note'); note.appendChild(bi(qualification)); box.appendChild(note); }
       var kv = el("dl", "ox-kv");
       (leg.receipts || []).forEach(function (receipt) {
         /* Receipts are facts about a single reading. Their fields are ALL
@@ -1049,9 +1083,11 @@
       ? units[receipt.metric] : "";
     var en = value ? "Observed: " + value + unit : "Observed: not published";
     var zh = value ? "读数：" + value + unit : "读数：未发布";
+    var named = { up: "向上", strengthening: "走强", "EM equities": "新兴市场股票" };
+    if (Object.prototype.hasOwnProperty.call(named, value)) zh = "读数：" + named[value];
     if (threshold) {
-      en += " · Requires: " + (op ? op + " " : "") + threshold + unit;
-      zh += " · 要求：" + (op ? op + " " : "") + threshold + unit;
+      en += " · Requires: " + (receipt.op === "in_contains" ? "includes " : op ? op + " " : "") + threshold + unit;
+      zh += " · 要求：" + (receipt.op === "in_contains" ? "包含 " : op ? op + " " : "") + (named[threshold] || threshold) + unit;
     }
     if (receipt.passed === true) {
       en += " · Met"; zh += " · 已满足";
@@ -1186,6 +1222,15 @@
     screens.forEach(function (screen) {
       var box = el("div", "ox-leg");
       var h = el("h3"); h.appendChild(bi(screen.label)); box.appendChild(h);
+      if (snapshot.source?.chain === 'dollar_spike_em_multinational') {
+        var limits = {
+          em_revenue_exposure: {en: 'Disclosed EM revenue is a conservative lower bound; mixed geographic regions are excluded. Missing disclosures remain unevaluable.', zh: '已披露的新兴市场营收是保守下限，不计入混合地区。缺失披露仍属无法评估。'},
+          multinational_fx_translation: {en: 'Foreign revenue is a disclosed screening input, not a measured earnings response to this dollar move.', zh: '海外营收是已披露的筛选输入，并非本次美元变化对盈利影响的测量。'},
+          dollar_debt_burden: {en: "The screen assumes US filers' debt is USD-denominated. This is a stated assumption: debt currency is not measured in the substrate.", zh: '此筛选假设美国披露人的债务以美元计价。这是明示假设；底层数据未测量债务币种。'},
+          em_commodity_sector_proxy: {en: 'Materials and Energy sector membership is a coarse proxy, not a per-company EM revenue measurement.', zh: '材料与能源行业归属是粗略代理，并非逐公司新兴市场营收测量。'}
+        };
+        if (limits[screen.id]) { var limit = el('p','ox-note'); limit.dataset.screenQualification = screen.id; limit.appendChild(bi(limits[screen.id])); box.appendChild(limit); }
+      }
       if (screen.note) { var note = el("p", "ox-note"); note.appendChild(bi(screen.note)); box.appendChild(note); }
       var companies = screen.companies;
       if (companies && Array.isArray(companies.linked) && Array.isArray(companies.unlinked)) {
@@ -1613,6 +1658,7 @@
 
   async function load() {
     invalidateReading();
+    if (!acceptedChain) { gateForFailure("chain_not_admitted"); return; }
     var epoch = readingEpoch;
     root.replaceChildren();
     root.setAttribute("aria-busy", "true");
@@ -1646,7 +1692,8 @@
         return;
       }
       if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
-          || snapshot.schema !== "ontology_explorer_snapshot.v1") {
+          || snapshot.schema !== "ontology_explorer_snapshot.v1"
+          || snapshot.source?.chain !== selectedChain) {
         gateForFailure("invalid_snapshot");
         return;
       }

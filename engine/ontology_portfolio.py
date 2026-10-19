@@ -29,7 +29,8 @@ class PortfolioInputError(ValueError):
 def validate_request(value: object) -> dict:
     if not isinstance(value, dict) or set(value) != _FIELDS:
         raise PortfolioInputError('invalid_request')
-    if value['schema'] != 'ontology_portfolio_request.v1' or value['chain'] != explorer.DEFAULT_CHAIN:
+    if value['schema'] != 'ontology_portfolio_request.v1' or value['chain'] not in (
+            explorer.DEFAULT_CHAIN, 'dollar_spike_em_multinational'):
         raise PortfolioInputError('invalid_request')
     manifest = value['source_manifest_hash']
     symbols = value['symbols']

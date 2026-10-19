@@ -234,14 +234,15 @@ window.MDXAuth={user:()=>pOwner?{id:pOwner}:null,client:async()=>pClient};
 """
 
 
-def portfolio_start(browser, synthetic_snapshot, *, width=1440, theme='dark', language='en', mutate=None, full_shell=False):
+def portfolio_start(browser, synthetic_snapshot, *, width=1440, theme='dark', language='en', mutate=None, full_shell=False, chain='oil_inflation_duration_derate'):
     import mimetypes
     from copy import deepcopy
     snapshot=deepcopy(synthetic_snapshot)
-    snapshot['source']['chain']='oil_inflation_duration_derate'
-    snapshot['company_exposure']={'asof':'2026-01-01','identity_source':{'sha256':'c'*64}}
-    snapshot['exposure_screens']=[{'id':'oil','label':{'en':'Oil-sensitive screen','zh':'石油敏感度筛选'},
-      'status':'available','n':2,'unevaluable':0,'cuts':{},'companies':{'linked':[], 'unlinked':[]}}]
+    snapshot['source']['chain']=chain
+    if chain=='oil_inflation_duration_derate':
+        snapshot['company_exposure']={'asof':'2026-01-01','identity_source':{'sha256':'c'*64}}
+        snapshot['exposure_screens']=[{'id':'oil','label':{'en':'Oil-sensitive screen','zh':'石油敏感度筛选'},
+          'status':'available','n':2,'unevaluable':0,'cuts':{},'companies':{'linked':[], 'unlinked':[]}}]
     shell=incumbent.SHELL.replace('<html lang="en" data-lang="en" data-theme="light">',
       f'<html lang="en" data-lang="{language}" data-theme="{theme}">')
     shell=shell.replace('<main class="ox-wrap"><div id="ox-root" aria-busy="true"></div></main>', '''
@@ -292,7 +293,7 @@ def portfolio_start(browser, synthetic_snapshot, *, width=1440, theme='dark', la
             src=(PREPARED.parent.parent/'site' if full_shell else PREPARED.parent)/path.lstrip('/')
             if not src.is_file():src=PREPARED.parent.parent/'site'/path.lstrip('/')
             r.fulfill(status=200,content_type=mimetypes.guess_type(src)[0] or 'text/javascript',body=src.read_bytes()) if src.is_file() else r.fulfill(status=204)
-    page.route('**/*',route);page.goto(('https://www.mastermind-x.com' if full_shell else 'https://macro.example')+'/ontology.html')
+    page.route('**/*',route);page.goto(('https://www.mastermind-x.com' if full_shell else 'https://macro.example')+'/ontology.html'+('' if chain=='oil_inflation_duration_derate' else '?chain='+chain))
     try:
         page.wait_for_function("document.querySelector('[data-portfolio-result]').dataset.state==='idle'", timeout=5000)
     except Exception:
@@ -304,6 +305,38 @@ def portfolio_start(browser, synthetic_snapshot, *, width=1440, theme='dark', la
 
 def portfolio_settled(page,state):
     page.wait_for_function("s=>document.querySelector('[data-portfolio-result]').dataset.state===s",arg=state,timeout=5000)
+
+
+@pytest.mark.parametrize('theme,language,width',[('dark','en',1440),('light','zh',390)])
+def test_dollar_native_definition_on_macro_shell_keeps_proxy_and_scenario_limits(browser,tmp_path,theme,language,width):
+    from tests.ontology_explorer_fixtures import dollar_root
+    from engine.ontology_explorer import compose_snapshot
+    chain='dollar_spike_em_multinational'
+    snapshot=compose_snapshot(dollar_root(tmp_path),chain=chain)
+    ctx,page,seen,errors=portfolio_start(browser,snapshot,width=width,theme=theme,language=language,full_shell=True,chain=chain)
+    try:
+        assert page.locator('[data-ontology-chain][aria-current=page]').get_attribute('data-ontology-chain')==chain
+        assert page.locator('#ox-steps [id^="ox-leg-"]').count()==3
+        page.locator('#ox-root details').evaluate_all('nodes=>nodes.forEach(n=>n.open=true)')
+        text=page.locator('#ox-root').inner_text()
+        assert ('includes EM equities' if language=='en' else '包含 新兴市场股票') in text
+        assert ('Observed: not published' if language=='en' else '读数：未发布') in text
+        assert ('proxy' if language=='en' else '代理') in text
+        assert ('stated assumption' if language=='en' else '明示假设') in text
+        terminal=page.locator('#ox-leg-em_derate').inner_text()
+        assert 'FXI' in terminal and 'SPY' in terminal and '63' in terminal
+        assert ('China large-cap' if language=='en' else '中国大型股') in terminal
+        assert ('not an observed cause' if language=='en' else '并非该条件中已观测到的原因') in page.locator('#ox-leg-dollar_spike').inner_text()
+        page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='path_unavailable'")
+        assert page.locator('#ox-scenario [type=submit]').is_disabled()
+        page.locator('#ox-scenario [name=magnitude]').fill('12')
+        page.locator('#ox-scenario button[type=button]').click()
+        page.evaluate("window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{event:'TOKEN_REFRESHED',user:{id:pOwner}}}))")
+        assert page.locator('[data-scenario-result]').get_attribute('data-state')=='path_unavailable'
+        assert ('observed reading' if language=='en' else '观测读数') in page.locator('[data-scenario-result]').inner_text()
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+        assert not errors and seen==[] and page.evaluate('pCalls.queries')==0
+    finally:ctx.close()
 
 
 @pytest.mark.parametrize('theme',['dark','light'])

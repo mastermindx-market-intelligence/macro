@@ -5,7 +5,7 @@ const BUDGET_MS = 15000;
 const HASH = /^sha256:[a-f0-9]{64}$/;
 const SYMBOL = /^[A-Z0-9^][A-Z0-9.^=:_-]{0,63}$/;
 const SID = /^SEC:[A-Za-z0-9:._/-]{1,120}$/;
-const CHAIN = 'oil_inflation_duration_derate';
+const CHAINS = ['oil_inflation_duration_derate', 'dollar_spike_em_multinational'];
 const STATES = ['covered', 'not_in_available_screens', 'identity_unresolved', 'membership_unavailable'];
 function words(en, zh) {
   const f = document.createDocumentFragment();
@@ -364,7 +364,7 @@ export function mountPortfolio(root) {
   }
   function receive(event) {
     invalidate(); const r = event.detail;
-    if (!r || r.chain !== CHAIN || !HASH.test(r.source_manifest_hash) || !day(r.asof)
+    if (!r || !CHAINS.includes(r.chain) || !HASH.test(r.source_manifest_hash) || !day(r.asof)
         || r.owner_id !== canonical() || !r.owner_id || !Array.isArray(r.channels) || r.channels.length > 100
         || !(r.identity_sha256 === null || /^[a-f0-9]{64}$/.test(r.identity_sha256))
         || r.channels.some(c => !c || typeof c.id !== 'string' || c.id.length > 128 || !c.label

@@ -11797,6 +11797,10 @@ jobs:
     # Declared additions retain inference and must also cover every named suite.
     # Python invokes this Node suite; name its non-Python dependency explicitly.
     paths:
+      - "lib/opportunity_case.py"
+      - "contracts/opportunity_evidence/**"
+      - "tests/test_opportunity_evidence_vector_contract.py"
+      - "tests/test_entry_radar_w4_live.py"
       - "contracts/evidence_foundation/**"
       - "tests/ontology_company_controller.test.mjs"
       - "engine/ontology_theme.py"
@@ -11818,13 +11822,15 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright jsonschema==4.26.0
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx playwright requests jsonschema==4.26.0
       - name: install ontology browser
         run: python -m playwright install --with-deps chromium
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
         run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
+      - name: ontology research case — native evidence and existing live episode projection
+        run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
         run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_ontology_explorer_brain_browser.py tests/test_ontology_company_browser.py tests/test_ontology_company_controller.py tests/test_ontology_exposure_company_browser.py tests/test_ontology_theme_browser.py -q
 

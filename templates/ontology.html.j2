@@ -39,9 +39,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 {% include "_site_nav.html.j2" %}
 
 <main class="ox-wrap">
+  <nav class="ox-company-choices" aria-label="{{ 'Transmission path / 传导路径' }}">
+    <a class="ox-cta secondary" href="ontology.html" data-ontology-chain="oil_inflation_duration_derate">{{ t('Oil & rates path', '石油与利率路径') }}</a>
+    <a class="ox-cta secondary" href="ontology.html?chain=dollar_spike_em_multinational" data-ontology-chain="dollar_spike_em_multinational">{{ t('Dollar & emerging markets path', '美元与新兴市场路径') }}</a>
+  </nav>
   <div id="ox-root" class="ox-skeleton" aria-busy="true" aria-live="polite">
     <header class="ox-hero">
-      <p class="ox-eyebrow">{{ t('WTI Live Path', 'WTI 实时路径') }}</p>
+      <p class="ox-eyebrow">{{ t('Observed transmission path', '已观测传导路径') }}</p>
       <div class="ox-state" data-state="unknown">
         <span class="ox-state-word">{{ t('Loading', '加载中') }}</span>
       </div>
@@ -91,8 +95,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
   <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
     <h2 id="ox-company-title">{{ t('Company research', '公司研究') }}</h2>
     <p class="ox-note">{{ t(
-      'Inspect source-announced plans. Selecting a company does not establish a connection to the WTI path above.',
-      '查看来源披露的计划。选择公司并不确立其与上方 WTI 路径的联系。') }}</p>
+      'Inspect source-announced plans. Selecting a company does not establish a connection to the path above.',
+      '查看来源披露的计划。选择公司并不确立其与上方路径的联系。') }}</p>
     <form class="ox-company-form">
       <label class="ox-company-label" for="ox-company-query">{{ t('Company symbol', '公司代码') }}
         <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required>

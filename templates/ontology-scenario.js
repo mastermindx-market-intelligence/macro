@@ -153,6 +153,7 @@ export function mountScenario(root) {
   const form = root.querySelector('[data-scenario-form]'), output = root.querySelector('[data-scenario-result]');
   if (!form || !output) return null;
   let reading = null, operation = null, epoch = 0, disposed = false, subscription = null;
+  let unsupportedOwner = null;
   let eventOwner = canonical();
   function select(name, label, options) {
     const wrap = document.createElement('label'); wrap.className = 'ox-company-label'; wrap.append(words(...label));
@@ -177,6 +178,7 @@ export function mountScenario(root) {
     output.replaceChildren(); output.dataset.state = state; output.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     const copy = {
       no_reading: ['Load a current path reading first.', '请先加载当前路径读数。'],
+      path_unavailable: ['Scenario evaluation is available only for the oil and rates path. This dollar path remains an observed reading.', '情景评估仅适用于石油与利率路径。此美元路径仍表示观测读数。'],
       idle: ['Enter an explicit assumption. Evaluation runs only when requested.', '请输入明确假设；仅在您请求后运行评估。'],
       loading: ['Evaluating this assumption against the selected reading…', '正在依据所选读数评估该假设…'],
       invalid: ['Enter a finite change; WTI must remain above −100%.', '请输入有限数值；WTI变化必须大于−100%。'],
@@ -200,13 +202,13 @@ export function mountScenario(root) {
       ? ['WTI: 60 owner sessions. Future sessions must come from its owner; none are guessed.', 'WTI：60个数据方交易日。未来交易日必须由数据方提供，不作推测。']
       : ['Real yield: a 63-observation same-window illustration, using the selected native calibration when available.', '实际收益率：使用所选原生校准（如可用），展示63个观测间隔的同窗示意。'])));
   }
-  function clear(reset = false) { stop(); if (reset) { form.reset(); magnitude.value = ''; changedNode(); } status(reading ? 'idle' : 'no_reading'); }
-  function invalidate() { reading = null; clear(true); }
+  function clear(reset = false) { stop(); if (reset) { form.reset(); magnitude.value = ''; changedNode(); } status(reading ? 'idle' : unsupportedOwner ? 'path_unavailable' : 'no_reading'); }
+  function invalidate() { reading = null; unsupportedOwner = null; clear(true); }
   function auth(event) {
     const u = event.detail?.user; eventOwner = typeof u?.id === 'string' && u.id ? u.id : null;
     // The page reloads only when its canonical owner changes. A same-owner
     // refresh must clear private inputs/results without stranding that reading.
-    if (event.detail?.event !== 'SIGNED_OUT' && reading?.owner_id === eventOwner && eventOwner === canonical()) clear(true);
+    if (event.detail?.event !== 'SIGNED_OUT' && (reading?.owner_id === eventOwner || unsupportedOwner === eventOwner) && eventOwner === canonical()) clear(true);
     else invalidate();
   }
   function check(op) {
@@ -331,6 +333,9 @@ export function mountScenario(root) {
   }
   function receive(event) {
     invalidate(); const r = event.detail;
+    if (r?.chain === 'dollar_spike_em_multinational' && r.owner_id === canonical() && r.owner_id === eventOwner) {
+      unsupportedOwner = r.owner_id; status('path_unavailable'); return;
+    }
     if (!r || r.chain !== CHAIN || !HASH.test(r.source_manifest_hash) || !day(r.asof) || !instant(r.built)
         || !(typeof r.rev === 'string' && /^[A-Za-z0-9._:-]{1,128}$/.test(r.rev) || Number.isSafeInteger(r.rev))
         || typeof r.composer_method !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(r.composer_method)

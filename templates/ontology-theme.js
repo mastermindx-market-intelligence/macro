@@ -296,7 +296,7 @@ export function mountTheme(root) {
     })(),cancellation]); } catch(_){if(!disposed && epoch===op.id){if(owner()!==op.owner || canonicalOwner!==op.owner){invalidate();status('signed_out');}else status('unavailable');}}
     finally{op.abort.abort();if(op.reader)cancel(op.reader);clearTimeout(op.timer);if(operation===op)operation=null;}
   }
-  function receive(event){reading=null;clear();const r=event.detail;if(!r || r.chain!=='oil_inflation_duration_derate' || !HASH.test(r.source_manifest_hash)
+  function receive(event){reading=null;clear();const r=event.detail;if(!r || !['oil_inflation_duration_derate','dollar_spike_em_multinational'].includes(r.chain) || !HASH.test(r.source_manifest_hash)
     || !day(r.asof) || !stamp(r.built) || !r.owner_id || r.owner_id!==owner() || r.owner_id!==canonicalOwner)return;
     reading={chain:r.chain,source_manifest_hash:r.source_manifest_hash,asof:r.asof,built:r.built,owner_id:r.owner_id};clear();}
   function select(event){const s=event.detail;if(identity(s) && s.owner_id===owner() && s.owner_id===canonicalOwner){

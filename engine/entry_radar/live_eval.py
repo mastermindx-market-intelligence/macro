@@ -1623,7 +1623,8 @@ def run_pass(*, now: datetime, pack: lp.LivePack | None,
              env: Mapping[str, str] | None = None,
              tickers: Sequence[str] | None = None,
              unspooled_ok: bool = False,
-             dry_run: bool = False) -> PassResult:
+             dry_run: bool = False,
+             opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> PassResult:
     """One 5-minute RTH pass.  PURE given its inputs (W4 design §2 steps 1-10).
 
     ``quotes`` is the loaded quote view in ``live_verify.load_live_quotes`` shape
@@ -1686,7 +1687,8 @@ def run_pass(*, now: datetime, pack: lp.LivePack | None,
     return _evaluate(now=now, session=session, pack=pack, quotes=quotes,
                      ledger=ledger, state_dir=root, spool=spool,
                      intraday_reader=intraday_reader, cfg=cfg, probe=probe,
-                     unspooled_ok=unspooled_ok, dry_run=dry_run)
+                     unspooled_ok=unspooled_ok, dry_run=dry_run,
+                     opportunity_cases=opportunity_cases)
 
 
 def _probe_tickers(pack: lp.LivePack | None) -> list[str]:
@@ -1702,7 +1704,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
               quotes: Mapping[str, Any] | None, ledger: ll.LiveEpisodeLedger,
               state_dir: Path | None, spool: ll.EventSpool | None,
               intraday_reader: Any, cfg: LiveEvalConfig, probe: Sequence[str],
-              unspooled_ok: bool, dry_run: bool = False) -> PassResult:
+              unspooled_ok: bool, dry_run: bool = False,
+              opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> PassResult:
     """Steps 4-10.  One name at a time, then one spool object for the pass.
 
     ONE NAME CANNOT KILL THE PASS.  ``LiveEvalError``, ``ChallengerError``,
@@ -1878,7 +1881,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     health["content"]["ledger_hash"] = _ledger_hash(ledger)
     payload = _payload(now=now, session=session, pack=pack, results=results,
                        delta=delta, committed=committed, health=health,
-                       ledger=ledger)
+                       ledger=ledger, opportunity_cases=opportunity_cases)
     t_payload = time.perf_counter()
     timing["payload_s"] = t_payload - t_journal
     if not dry_run:
@@ -2652,10 +2655,99 @@ def _priority_lookup(board: Mapping[str, Any]
     return {ticker: tuple(rows) for ticker, rows in grouped.items()}
 
 
+def _project_opportunity_case(case: object, episode: dict, *, now: str) -> dict:
+    """Read an exact current LER episode, never mutate or create its lifecycle.
+
+    Radar's own pinned episode identity + canonical bytes bind this projection.
+    No ticker-to-security join is inferred: only a same-owner symbol vector is
+    eligible here. Canonical-security cases need an actual LER identity bridge.
+    """
+    from hashlib import sha256
+    from lib import evidence_foundation as ef
+    from lib.opportunity_case import OpportunityCaseError, SCHEMA, validate_case
+    row = ll.LiveEpisode.from_dict(episode)
+    data = validate_case(case)
+    vector = data["inputs"]["vector"]
+    asof = vector["asof"]
+    origin = asof["t0_evidence_ref"]
+    subject = data["subject"]
+    instant = lambda s: datetime.fromisoformat(s.replace("Z", "+00:00"))
+    try:
+        current = instant(now)
+        if (current.tzinfo is None or row.terminal or row.state != "CANDIDATE"
+                or subject != {"subject_type": "us_listing_symbol", "value": row.ticker,
+                               "identity_state": "single_owner_native", "identity_bridge": None}
+                or asof["t0_source"] != "radar_observed_at" or asof["t0_mode"] != "live"
+                or asof["grain"] != "datetime" or asof["value"] != row.candidate_at
+                or origin["native_identity"] != {"episode_id": row.episode_id}
+                or origin["native_digest"] != {"state": "known", "sha256": sha256(row.canonical.encode()).hexdigest()}
+                or instant(data["generated_at"]) > current
+                or instant(asof["value"]) > current):
+            raise OpportunityCaseError("case_episode_binding_unavailable")
+    except (TypeError, ValueError, KeyError) as exc:
+        if isinstance(exc, OpportunityCaseError):
+            raise
+        raise OpportunityCaseError("case_episode_clock_invalid") from None
+    return copy.deepcopy({
+        "case_ref": {"schema": SCHEMA, "case_id": data["case_id"], "sha256": data["content_sha256"]},
+        "episode_id": row.episode_id, "research_state": data["research_state"],
+        **{k: data[k] for k in ("reality", "inferred", "transmission", "market_incorporation",
+                               "company_context", "strongest_unresolved_fact", "failed_gates",
+                               "next_observables", "denominators", "dominant_degradation")},
+        "evidence_binding_state": data["evidence_binding"]["state"],
+        "evaluation_reference_ids": [r["reference_id"] for r in data["evaluation_refs"]],
+        "authority": dict(ef.ALL_FALSE_AUTHORITY),
+    })
+
+
+def _attach_opportunity_cases(episode_rows: list[dict[str, Any]], *,
+                              cases: Mapping[str, Mapping[str, Any]] | None,
+                              now: datetime, health: dict[str, Any] | None) -> None:
+    """Read at most eight supplied cases AFTER lifecycle/spool decisions.
+
+    The existing source-reading caller may supply already composed cases by
+    native episode ID. This is a bounded view of existing episodes, never a
+    candidate source, case store, network reader or input to RP1/detection.
+    Default absence performs no case work and preserves the current wire.
+    """
+    if cases is None:
+        return
+    report = {"state": "available", "requested": 0, "attached": 0, "refusals": {}}
+    if health is not None:
+        health["opportunity_cases"] = report
+    if (not isinstance(cases, Mapping) or len(cases) > 8
+            or any(type(key) is not str for key in cases)):
+        report["state"] = "unavailable"
+        report["refusals"]["case_input_bound_invalid"] = 1
+        return
+    report["requested"] = len(cases)
+    from lib.opportunity_case import OpportunityCaseError
+    by_id = {row["episode_id"]: row for row in episode_rows}
+    for episode_id, case in sorted(cases.items()):
+        row = by_id.get(episode_id)
+        try:
+            if row is None:
+                raise OpportunityCaseError("case_episode_not_selected")
+            native_row = {key: row[key] for key in ll.EPISODE_FIELDS if key in row}
+            projection = _project_opportunity_case(case, native_row, now=_iso(now))
+            # No forward-result field or numeric authority gets an exemption
+            # merely because it is nested under a research case.
+            if forward_knowledge_keys(projection):
+                raise OpportunityCaseError("case_live_projection_not_permitted")
+            row["research_case"] = projection
+            report["attached"] += 1
+        except Exception as exc:
+            code = str(exc) if isinstance(exc, OpportunityCaseError) else "case_projection_unavailable"
+            report["refusals"][code] = report["refusals"].get(code, 0) + 1
+    if report["refusals"]:
+        report["state"] = "partial" if report["attached"] else "unavailable"
+
+
 def _payload(*, now: datetime, session: date, pack: lp.LivePack,
              results: Sequence[NameResult], delta: ll.PendingDelta,
              committed: bool, health: Mapping[str, Any],
-             ledger: ll.LiveEpisodeLedger) -> dict[str, Any]:
+             ledger: ll.LiveEpisodeLedger,
+             opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> dict[str, Any]:
     """``live/entry_radar.json``.  Mechanical copy only — nothing is composed.
 
     A name with ANY non-PROBING lane gets full per-lane detail; a pure-probing
@@ -2681,6 +2773,8 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
         now=now,
         health=health if isinstance(health, dict) else None,
     )
+    _attach_opportunity_cases(episode_rows, cases=opportunity_cases, now=now,
+                              health=health if isinstance(health, dict) else None)
     return {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),

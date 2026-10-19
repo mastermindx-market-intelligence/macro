@@ -55,6 +55,12 @@ def test_the_public_shell_contains_no_current_owner_reading():
     """Every number the researcher sees must have arrived over the authenticated
     API. Nothing that looks like a receipt may be baked into the static file."""
     page = _built_page()
+    # The fixed product selector is public navigation, not an owner reading.
+    # Exempt this exact attribute only; the same node token anywhere else still
+    # fails, as do all receipt, snapshot and market-value markers below.
+    selector = 'data-ontology-chain="oil_inflation_duration_derate"'
+    assert page.count(selector) == 1
+    page = page.replace(selector, 'data-ontology-chain=""')
     forbidden = (
         "chain_state", "value_receipt", "base_rate", "p_confirm",
         "ontology_explorer_snapshot", "source_manifest_hash",
@@ -475,7 +481,9 @@ def test_the_continuation_context_is_consumed_on_both_ends():
     consumer = consumer[:consumer.index("</script>")]
     for needle in ('q.get("focus")', 'q.get("from")', 'q.get("rev")',
                    '"#ox-leg-" + encodeURIComponent(focus)',
-                   '"?rev=" + encodeURIComponent(rev)', "box.hidden = false"):
+                   'backQuery.set("rev", rev)',
+                   'backQuery.set("chain", from)',
+                   'href += "?" + backQuery.toString()', "box.hidden = false"):
         assert needle in consumer, needle
     # The identifier travels in the href only: no textContent/innerText write
     # in the consumer, and the visible copy is a fixed bilingual sentence.

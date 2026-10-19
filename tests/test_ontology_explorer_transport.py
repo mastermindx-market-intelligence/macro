@@ -320,10 +320,61 @@ def test_a_chain_that_composes_is_not_thereby_an_accepted_product(monkeypatch, t
     _assert_private(response)
 
 
-def test_the_admitted_chain_is_the_wti_path_only():
+def test_admission_is_limited_to_the_verified_oil_and_dollar_paths():
     from app.ontology_explorer import ACCEPTED_CHAINS, DEFAULT_CHAIN
-    assert ACCEPTED_CHAINS == {"oil_inflation_duration_derate"}
+    assert ACCEPTED_CHAINS == {"oil_inflation_duration_derate", "dollar_spike_em_multinational"}
     assert DEFAULT_CHAIN in ACCEPTED_CHAINS
+
+
+@pytest.mark.parametrize('authed,entitled,status', [(False,False,401),(True,False,403),(True,True,200)])
+def test_dollar_native_path_preserves_authorization_and_private_headers(monkeypatch,tmp_path,authed,entitled,status):
+    api = _api()
+    accepted = api.ACCEPTED_CHAINS
+    root = fx.dollar_root(tmp_path)
+    with _client(monkeypatch,tmp_path,root=root,authed=authed,entitled=entitled) as client:
+        monkeypatch.setattr(api,'ACCEPTED_CHAINS',accepted)
+        response=client.get(ROUTE,params={'chain':'dollar_spike_em_multinational'})
+    assert response.status_code==status,response.text
+    _assert_private(response)
+    if status==200:
+        body=response.json()
+        assert body['source']['chain']=='dollar_spike_em_multinational'
+        assert len(body['path']['legs'])==3
+        assert body['source']['asof']=='2026-01-02'
+        assert {s['id'] for s in body['exposure_screens']}=={
+            'em_revenue_exposure','multinational_fx_translation','dollar_debt_burden','em_commodity_sector_proxy'}
+    else:
+        assert 'receipts' not in response.text
+
+
+def test_dollar_missing_source_does_not_substitute_oil_and_duplicate_chain_is_rejected(monkeypatch,tmp_path):
+    api=_api()
+    accepted=api.ACCEPTED_CHAINS
+    root=fx.dollar_root(tmp_path)
+    with _client(monkeypatch,tmp_path,root=root) as client:
+        monkeypatch.setattr(api,'ACCEPTED_CHAINS',accepted)
+        duplicate=client.get(ROUTE,params=[('chain','oil_inflation_duration_derate'),('chain','dollar_spike_em_multinational')])
+        assert duplicate.status_code==400
+        _assert_private(duplicate)
+        (root/'data/transmission/chain_state.json').unlink()
+        missing=client.get(ROUTE,params={'chain':'dollar_spike_em_multinational'})
+        assert missing.status_code==503 and missing.json()['detail']['code']=='source_unavailable'
+        _assert_private(missing)
+
+
+def test_dollar_portfolio_requires_the_exact_selected_native_snapshot(tmp_path):
+    from engine.ontology_explorer import compose_snapshot
+    from engine.ontology_portfolio import project_portfolio_read, PortfolioInputError
+    from datetime import date
+    snapshot=compose_snapshot(fx.dollar_root(tmp_path),chain='dollar_spike_em_multinational')
+    payload=dict(schema='ontology_portfolio_request.v1',chain=snapshot['source']['chain'],
+                 source_manifest_hash=snapshot['source']['source_manifest_hash'],symbols=['UNRESOLVED'])
+    snapshot['company_exposure']['asof']='2026-01-02'
+    response=project_portfolio_read(payload,snapshot=snapshot,aliases=None,identity_date=date(2026,1,4))
+    assert response['chain']==payload['chain'] and response['rows'][0]['state']=='identity_unresolved'
+    assert response['pnl'] is None and not any(response['authority'].values())
+    with pytest.raises(PortfolioInputError,match='snapshot_changed'):
+        project_portfolio_read({**payload,'chain':'oil_inflation_duration_derate'},snapshot=snapshot,aliases=None,identity_date=date(2026,1,4))
 
 
 SCENARIO_ROUTE = '/api/ontology/explorer/scenario/v1'

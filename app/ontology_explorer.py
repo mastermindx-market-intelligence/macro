@@ -75,7 +75,7 @@ _CHAIN_PARAM_RE = re.compile(r"[a-z0-9][a-z0-9_]{0,80}")
 #: is a library — but a slug the composer can parse is not thereby a product X1
 #: has been built and proven for. Only chains admitted here are served; anything
 #: else is refused even when it exists and composes cleanly.
-ACCEPTED_CHAINS = frozenset({"oil_inflation_duration_derate"})
+ACCEPTED_CHAINS = frozenset({"oil_inflation_duration_derate", "dollar_spike_em_multinational"})
 
 
 class _PrivateOntologyRoute(APIRoute):
@@ -154,6 +154,7 @@ def _unavailable(code: str, reason: str) -> HTTPException:
 
 @router.get("/v1")
 def read_snapshot(
+    request: Request,
     _user: dict = Depends(require_site_full_user),
     chain: str | None = Query(default=None, max_length=81),
 ) -> JSONResponse:
@@ -165,7 +166,7 @@ def read_snapshot(
     # fullmatch, not match: Python's `$` also matches before a trailing newline,
     # so `^...$` accepted a slug with a line break appended — which reached the
     # composer and split one log call across two lines.
-    if not _CHAIN_PARAM_RE.fullmatch(slug):
+    if len(request.query_params.getlist('chain')) > 1 or not _CHAIN_PARAM_RE.fullmatch(slug):
         raise HTTPException(
             400,
             detail={"schema": ERROR_SCHEMA_ID, "code": "unknown_chain",
