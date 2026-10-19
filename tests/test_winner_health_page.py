@@ -410,18 +410,18 @@ def test_null_days_in_episode_does_not_invent_an_age(tmp_path):
     r["state"] = "breaking"
     r["days_in_episode"] = None
     row = _row_html(_render(tmp_path, _ctx({"breaking": [r]})), "ABSI")
-    assert "sessions in this run" not in row
+    assert "in this run" not in row
     assert "本轮已持续" not in row
     r0 = _row("ZERO", 0.9, legs=[_leg("below_50d")])
     r0["state"] = "breaking"
     r0["days_in_episode"] = 0
     row0 = _row_html(_render(tmp_path, _ctx({"breaking": [r0]})), "ZERO")
-    assert "sessions in this run" not in row0
+    assert "in this run" not in row0
     r2 = _row("DELL", 0.9, legs=[_leg("below_50d")])
     r2["state"] = "breaking"
     del r2["days_in_episode"]
     html2 = _render(tmp_path, _ctx({"breaking": [r2]}))  # absent key: no crash
-    assert "sessions in this run" not in _row_html(html2, "DELL")
+    assert "in this run" not in _row_html(html2, "DELL")
 
 
 def test_compact_group_still_prints_the_age(tmp_path):
@@ -434,6 +434,25 @@ def test_compact_group_still_prints_the_age(tmp_path):
     row = _row_html(html, "AG07")
     assert '<div class="c-sp">' not in row       # compact really dropped the spark
     assert "88 sessions in this run" in row      # ...and not the reading
+
+
+def test_single_session_run_age_is_singular(tmp_path):
+    """A run that started this session is "1 session", never "1 sessions".
+    The committed board carries days_in_episode=1 rows, so the plural bug
+    would print on the published page. The ZH copy has no plural to get wrong.
+    """
+    r = _row("ONE1", 0.9, legs=[_leg("below_50d")])
+    r["state"] = "breaking"
+    r["days_in_episode"] = 1
+    row = _row_html(_render(tmp_path, _ctx({"breaking": [r]})), "ONE1")
+    assert "1 session in this run" in row
+    assert not re.search(r"(?<!\d)1 sessions in this run", row)
+    assert "本轮已持续 1 个交易日" in row
+    r2 = _row("TWO2", 0.9, legs=[_leg("below_50d")])
+    r2["state"] = "breaking"
+    r2["days_in_episode"] = 2
+    row2 = _row_html(_render(tmp_path, _ctx({"breaking": [r2]})), "TWO2")
+    assert "2 sessions in this run" in row2
 
 
 

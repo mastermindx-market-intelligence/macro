@@ -252,8 +252,8 @@
         never converted to months. Null or absent prints nothing at all. -#}
     {%- if r.days_in_episode is defined and r.days_in_episode is not none
            and r.days_in_episode is integer and r.days_in_episode >= 1 %}
-    <span class="legs clean">{{ t(r.days_in_episode ~ ' sessions in this run',
-      '本轮已持续 ' ~ r.days_in_episode ~ ' 个交易日') }}</span>
+    <span class="legs clean">{{ t(r.days_in_episode ~ (' session' if r.days_in_episode == 1
+      else ' sessions') ~ ' in this run', '本轮已持续 ' ~ r.days_in_episode ~ ' 个交易日') }}</span>
     {%- endif %}
     {%- endif %}
   </div>
