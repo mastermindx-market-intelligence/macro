@@ -1934,6 +1934,45 @@ def test_cli_cik_dropped_with_new_finding_ids_exits_two(monkeypatch, capsys, tmp
     assert FJ.load_ledger(store).head_sequence == 1
 
 
+def test_cli_cik_dropped_with_zero_findings_exits_two(monkeypatch, capsys, tmp_path) -> None:
+    # The nightly path is the CLI: it must thread the state's companies so a
+    # CIK dropped on a night with no findings is still refused.
+    cli = _load_cli()
+    store = InMemoryStrictConditionalStore()
+    state_night1 = _workbench_state(
+        {"AAPL": _company(1111111, [_wfinding("a:q1", "revenue_collapse")])}, utc_text(NIGHT1)
+    )
+    rows1, scope1, generated1 = FJ.workbench_rows_from_state(state_night1)
+    FJ.record_judgments(
+        store, kind="workbench", rows=rows1, recorded_at=NIGHT1,
+        source_generated_at=generated1, scope_entities=scope1,
+    )
+    writes = len(store.conditional_writes)
+    monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: store)
+    state_path = tmp_path / "state-night2.json"
+    state_path.write_text(
+        json.dumps(_workbench_state({"AAPL": _company(None, [])}, utc_text(NIGHT2))),
+        encoding="utf-8",
+    )
+    code = cli.main(
+        [
+            "record-state",
+            "--state",
+            str(state_path),
+            "--recorded-at",
+            utc_text(NIGHT2),
+            "--local-store",
+            str(tmp_path / "store"),
+        ]
+    )
+    assert code == 2
+    document = json.loads(capsys.readouterr().out)
+    assert document["ok"] is False
+    assert document["error"]["code"] == "cik_dropped"
+    assert len(store.conditional_writes) == writes
+    assert FJ.load_ledger(store).head_sequence == 1
+
+
 def test_cli_state_file_failures_exit_two(monkeypatch, capsys, tmp_path) -> None:
     cli = _load_cli()
     monkeypatch.setattr(cli, "build_production_dataset_store", lambda root: InMemoryStrictConditionalStore())

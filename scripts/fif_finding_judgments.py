@@ -92,7 +92,7 @@ def _build_write_store(args: argparse.Namespace):
 def _cmd_record_state(args: argparse.Namespace) -> int:
     store = _build_write_store(args)
     state = _load_json_document(Path(args.state))
-    rows, scope_entities, source_generated_at = FJ.workbench_rows_from_state(state)
+    rows, scope_entities, source_generated_at, company_identities = FJ.workbench_rows_and_companies_from_state(state)
     return _emit(
         FJ.record_judgments(
             store,
@@ -101,6 +101,7 @@ def _cmd_record_state(args: argparse.Namespace) -> int:
             recorded_at=args.recorded_at,
             source_generated_at=source_generated_at,
             scope_entities=scope_entities,
+            company_identities=company_identities,
         )
     )
 
