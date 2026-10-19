@@ -322,7 +322,6 @@
     "tests/test_f501_block_sector_readthrough.py",
     "tests/test_factor_integration.py",
     "tests/test_factor_orthogonal.py",
-    "tests/test_factor_seasonality.py",
     "tests/test_factor_series.py",
     "tests/test_factors_page_render.py",
     "tests/test_fear_greed.py",
