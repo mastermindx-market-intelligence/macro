@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/fitted_use_binding.v2.schema.json",
+  "title": "Purpose-bound retained comparison normalization binding v2",
+  "description": "Immutable reference metadata consumed only by the fixed installed source owner. This schema alone grants no permission, selection, fit or study admission. No default window, source, task or reviewer is supplied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "registration_ref",
+    "source_owner",
+    "purpose",
+    "normalization_method",
+    "training_start_inclusive",
+    "fit_cutoff",
+    "eligible_use_from",
+    "training_task_ids",
+    "source_coverage_ref",
+    "interval_split_ref"
+  ],
+  "properties": {
+    "schema": {
+      "const": "market_memory.fitted_use_binding.v2"
+    },
+    "binding_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+    },
+    "registration_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "object_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "source_owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "store_id",
+        "generation_id",
+        "generation_sha256",
+        "membership_sha256"
+      ],
+      "properties": {
+        "profile": {
+          "const": "market_memory.trusted.macro_regime_canary.v1"
+        },
+        "store_id": {
+          "type": "string",
+          "pattern": "^mmstore_[a-f0-9]{64}$"
+        },
+        "generation_id": {
+          "type": "string",
+          "pattern": "^mmgeneration_[a-f0-9]{64}$"
+        },
+        "generation_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "membership_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "purpose": {
+      "const": "normalization_parameter_estimation_for_customer_comparisons"
+    },
+    "normalization_method": {
+      "const": "house_numeric_exact_mean_range.v2"
+    },
+    "training_start_inclusive": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"
+    },
+    "fit_cutoff": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"
+    },
+    "eligible_use_from": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"
+    },
+    "training_task_ids": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+      }
+    },
+    "source_coverage_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "object_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "interval_split_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "object_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    }
+  }
+}

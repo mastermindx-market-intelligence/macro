@@ -30570,6 +30570,37 @@ jobs:
       - "engine/neuralweb/key_pool.py"
       - "engine/neuralweb/market_memory.py"
       - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "contracts/market_memory/e0_evaluation_spec.v1.schema.json"
+      - "contracts/market_memory/e0_interval_split.v1.schema.json"
+      - "contracts/market_memory/e0_reviewer_plan.v1.schema.json"
+      - "contracts/market_memory/e0_source_coverage.v1.schema.json"
+      - "contracts/market_memory/e0_tasks.v1.schema.json"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "engine/research_factory/market_memory_e0_access_history.py"
+      - "engine/research_factory/market_memory_e0_allocation.py"
+      - "engine/research_factory/market_memory_e0_allocation_binding.py"
+      - "engine/research_factory/market_memory_e0_baselines.py"
+      - "engine/research_factory/market_memory_e0_condition_evidence.py"
+      - "engine/research_factory/market_memory_e0_domains.py"
+      - "engine/research_factory/market_memory_e0_evaluation_spec.py"
+      - "engine/research_factory/market_memory_e0_installed_control.py"
+      - "engine/research_factory/market_memory_e0_reservations.py"
+      - "engine/research_factory/market_memory_e0_task_evidence.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "tests/test_market_memory_e0_control_records.py"
+      - "tests/test_market_memory_e0_installed_control.py"
+      - "tests/test_market_memory_e0_registered_method.py"
+      - "tests/test_market_memory_e0_selected_task_inputs.py"
+      - "config/market_memory_retained_use.v2.json"
+      - "contracts/market_memory/fitted_use_binding.v2.schema.json"
+      - "engine/research_factory/market_memory_fitted_use.py"
+      - "engine/neuralweb/market_memory_fitted_normalization.py"
       - "engine/neuralweb/market_memory_exact_index.py"
       - "engine/neuralweb/market_memory_episode_features.py"
       - "engine/neuralweb/market_memory_episode_retrieval.py"
@@ -30923,6 +30954,7 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
+      - "tests/test_market_memory_fitted_normalization.py"
       - "tests/test_market_memory_exact_index.py"
       - "tests/test_market_memory_episode_features.py"
       - "tests/test_market_memory_episode_retrieval.py"
@@ -31042,6 +31074,7 @@ jobs:
           tests/test_ptse_w3_publication.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_population.py
+          tests/test_market_memory_fitted_normalization.py
           tests/test_market_memory_exact_index.py
           tests/test_market_memory_episode_features.py
           tests/test_market_memory_episode_comparison.py
