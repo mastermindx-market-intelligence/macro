@@ -17,15 +17,35 @@ Field rules (ported from the census writer):
 * Formula metrics are present only when every operand is present; a formula
   operand is evaluated through its own operands, and a dependency cycle is a
   missing operand (``absent_dependency``).  Operands are always strict.
-* D2 (seat ruling 2026-10-19) - when the cached companyfacts carry no us-gaap
-  fact from the slot's own accession, a direct metric's ``absent_no_alias_fact``
-  is not evidence of absence: the cell is ``stale`` with reason
-  ``companyfacts_missing_accession``.
+* Strict alias search (W-R2 M3) - an alias matches only facts in its own
+  taxonomy.  When the alias concept is filed in the slot's accessions only
+  under another taxonomy, the cell is ``absent_other_taxonomy_only``; when the
+  metric has a us-gaap alias and the slot's accessions carry ifrs-full facts
+  but no us-gaap fact, it is ``absent_ifrs_taxonomy``.
+* Slot dates (W-R2 m6) - a present slot whose report or filing date is not an
+  ISO calendar date is never evaluated: the cell is ``failed_extraction`` with
+  reason ``invalid_slot_date``.
+* D2 (seat ruling 2026-10-19; W-R2 M4) - when the cached companyfacts carry no
+  fact from the slot's own accession in any taxonomy (dei included), a direct
+  metric's ``absent_no_alias_fact`` is not evidence of absence: the cell is
+  ``stale`` with reason ``companyfacts_missing_accession``.  Limitation: D2
+  cannot tell a genuinely stale cache from an accession that companyfacts
+  never carried; the writer reads no cache fetch time and never compares one
+  with the filing date.
 * D1 (seat ruling 2026-10-19) - see ``COVER_DATE_POLICY``.  The dei cover-page
   share count filed in the slot's own accession, dated after the period end
   and on or before the filing date, is written as a present cell qualified
   ``cover_date_as_of`` with its own ``as_of`` date.  It is never relabelled as
-  a period-end count, and no formula consumes it.
+  a period-end count, and no formula consumes it.  The policy is visible only
+  at a rule clock on or after its ``available_at`` (W-R2 m7), applies only to
+  forms exactly ``10-K`` or ``10-Q``, and more than one distinct value at the
+  selected date (a multi-class cover page) is the typed absence
+  ``cover_date_multi_class``, never one present value and never a sum (W-R2 M2).
+
+Issuer rollups (W-R2 M1): ``present_cells``, ``core_pass`` and ``deep_pass``
+are any-basis and count qualified present cells; ``present_cells_strict``,
+``core_pass_strict`` and ``deep_pass_strict`` count only present cells that
+carry no qualifier and no derivation.
 """
 
 from __future__ import annotations
@@ -51,6 +71,7 @@ WRITER_SCHEMA = "fif.coverage_writer/v1"
 COVER_DATE_POLICY: dict[str, str] = {
     "policy_id": "fif.coverage_writer.cover_date_as_of",
     "version": "1.0.0",
+    "available_at": "2026-10-19T00:00:00Z",
     "metric_id": "common_shares_outstanding",
     "taxonomy": "dei",
     "concept": "EntityCommonStockSharesOutstanding",
@@ -61,8 +82,16 @@ COVER_DATE_POLICY: dict[str, str] = {
         "with its own as_of date; it is not a period-end count and is never relabelled as one."
     ),
 }
-COVER_DATE_FORMS = ("10-K", "10-Q")
+COVER_DATE_FORMS = frozenset({"10-K", "10-Q"})
 QUALIFIER_KEYS = ("qualifier", "as_of", "qualifier_policy")
+ROLLUP_BASIS: dict[str, str] = {
+    "present_cells": "any_basis",
+    "core_pass": "any_basis",
+    "deep_pass": "any_basis",
+    "present_cells_strict": "strict",
+    "core_pass_strict": "strict",
+    "deep_pass_strict": "strict",
+}
 
 CORE_WINDOW_SLOTS = ("A1", "I1")
 DEEP_WINDOW_SLOTS = ("A1", "A2", "I1", "I2")
@@ -78,6 +107,34 @@ def qualifier_policy_ref() -> str:
 def _bump(counters: dict[str, int] | None, key: str, amount: int = 1) -> None:
     if counters is not None:
         counters[key] = counters.get(key, 0) + amount
+
+
+def _utc_instant(value: str) -> _dt.datetime:
+    """A timezone-aware instant; a naive timestamp raises ValueError."""
+    parsed = _dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError(f"rule clock must carry a timezone: {value!r}")
+    return parsed
+
+
+def cover_policy_visible(recorded_at: str | None) -> bool:
+    """D1 is visible only at a rule clock on or after its ``available_at``.
+
+    No rule clock is fail-closed: strict only.
+    """
+    if recorded_at is None:
+        return False
+    return _utc_instant(recorded_at) >= _utc_instant(COVER_DATE_POLICY["available_at"])
+
+
+def _iso_date(value: Any) -> bool:
+    """True only for a string that round-trips as an ISO calendar date (YYYY-MM-DD)."""
+    if not isinstance(value, str):
+        return False
+    try:
+        return _dt.date.fromisoformat(value).isoformat() == value
+    except ValueError:
+        return False
 
 
 # --- Registry view ---------------------------------------------------------
@@ -173,20 +230,9 @@ def check_metric_against_facts(
     kind = spec["kind"]
     period_rejected = False
     for priority, taxonomy, concept in aliases:
-        facts_for_concept = None
-        if taxonomy in facts:
-            facts_for_concept = facts.get(taxonomy, {}).get(concept)
-        # Ported unchanged from the census writer: when the alias taxonomy
-        # carries no such concept, the concept name is searched in every
-        # taxonomy (a known gap, kept for equivalence).
-        if not facts_for_concept:
-            for _taxonomy, payload in facts.items():
-                if isinstance(payload, dict):
-                    candidate = payload.get(concept)
-                    if candidate and isinstance(candidate, dict):
-                        facts_for_concept = candidate
-                        break
-        if not facts_for_concept:
+        payload = facts.get(taxonomy)
+        facts_for_concept = payload.get(concept) if isinstance(payload, dict) else None
+        if not facts_for_concept or not isinstance(facts_for_concept, dict):
             continue
         units = facts_for_concept.get("units", {}) or {}
         for unit_name, fact_list in units.items():
@@ -219,43 +265,82 @@ def check_metric_against_facts(
                 return True, "present", concept, unit_name, priority
     if period_rejected:
         return False, "absent_period_mismatch", "", "", None
-    if "ifrs-full" in facts and not any(t in facts for t in ("us-gaap", "gaap", "dei")):
+    for _priority, taxonomy, concept in aliases:
+        if _payload_has_accession(facts.get(taxonomy), accessions, concept):
+            continue
+        if any(
+            other != taxonomy and _payload_has_accession(payload, accessions, concept)
+            for other, payload in facts.items()
+        ):
+            return False, "absent_other_taxonomy_only", "", "", None
+    if (
+        any(taxonomy == "us-gaap" for _priority, taxonomy, _concept in aliases)
+        and _payload_has_accession(facts.get("ifrs-full"), accessions)
+        and not _payload_has_accession(facts.get("us-gaap"), accessions)
+    ):
         return False, "absent_ifrs_taxonomy", "", "", None
     return False, "absent_no_alias_fact", "", "", None
 
 
+def _payload_has_accession(payload: Any, accessions: set[str], concept: str | None = None) -> bool:
+    """True when a fact in one taxonomy's payload carries an accession in ``accessions``.
+
+    ``payload`` maps concept -> {"units": {unit: [fact, ...]}}; with ``concept``
+    only that concept is searched.  Malformed levels are skipped.
+    """
+    if not isinstance(payload, dict) or not accessions:
+        return False
+    concepts = [payload.get(concept)] if concept is not None else list(payload.values())
+    for entry in concepts:
+        if not isinstance(entry, dict):
+            continue
+        units = entry.get("units")
+        if not isinstance(units, dict):
+            continue
+        for fact_list in units.values():
+            if not isinstance(fact_list, list):
+                continue
+            for fact in fact_list:
+                if isinstance(fact, dict) and fact.get("accn") in accessions:
+                    return True
+    return False
+
+
 def companyfacts_missing_accession(facts: Mapping[str, Any], accession: str) -> bool:
-    """D2: no us-gaap fact in ``facts`` carries the slot's own accession.
+    """D2: no fact in any taxonomy of ``facts`` (dei included) carries the slot's own accession.
 
     Amendments are not consulted: an amendment's facts do not show that the
     original filing is in the cache.  An empty accession is never missing.
+    Limitation: D2 cannot tell a genuinely stale cache from an accession that
+    companyfacts never carried; the writer reads no cache fetch time and never
+    compares one with the filing date.
     """
     if not accession:
         return False
-    for concept in (facts.get("us-gaap") or {}).values():
-        for unit_facts in (concept.get("units") or {}).values():
-            for fact in unit_facts:
-                if fact.get("accn") == accession:
-                    return False
-    return True
+    return not any(_payload_has_accession(payload, {accession}) for payload in facts.values())
 
 
-def cover_date_as_of(
+def cover_date_outcome(
     spec: Mapping[str, Any],
     facts: Mapping[str, Any],
     slot: Mapping[str, Any],
     counters: dict[str, int] | None = None,
-) -> str | None:
-    """D1: the single qualifying cover-page instant, or None."""
+    *,
+    recorded_at: str | None = None,
+) -> dict[str, Any] | None:
+    """D1: the qualified present cell, the typed multi-class absence, or None."""
     policy = COVER_DATE_POLICY
     if spec.get("metric_id") != policy["metric_id"]:
         return None
     if slot.get("slot_status") != "present":
         return None
+    if not cover_policy_visible(recorded_at):
+        _bump(counters, "cover_fallback_policy_not_visible")
+        return None
     if not any(t == policy["taxonomy"] and c == policy["concept"] for _p, t, c in spec.get("aliases") or []):
         _bump(counters, "cover_fallback_alias_not_visible")
         return None
-    if not str(slot.get("form") or "").startswith(COVER_DATE_FORMS):
+    if str(slot.get("form") or "") not in COVER_DATE_FORMS:
         _bump(counters, "cover_fallback_form_not_covered")
         return None
     accession = slot.get("accession") or ""
@@ -266,6 +351,7 @@ def cover_date_as_of(
     concept = (facts.get(policy["taxonomy"]) or {}).get(policy["concept"]) or {}
     fact_list = (concept.get("units") or {}).get("shares") or []
     instants: dict[str, int] = {}
+    values: dict[str, set[str]] = {}
     for fact in fact_list:
         if not isinstance(fact, dict) or fact.get("start"):
             continue
@@ -274,6 +360,7 @@ def cover_date_as_of(
         end = fact.get("end") or ""
         if report_date < end <= filing_date:
             instants[end] = instants.get(end, 0) + 1
+            values.setdefault(end, set()).add(json.dumps(fact.get("val"), sort_keys=True))
     if not instants:
         return None
     if len(instants) > 1:
@@ -282,7 +369,16 @@ def cover_date_as_of(
     ((as_of, count),) = instants.items()
     if count > 1:
         _bump(counters, "cover_multi_value")
-    return as_of
+    if len(values[as_of]) > 1:
+        _bump(counters, "cover_date_multi_class")
+        return {"status": "absent", "reason_code": "cover_date_multi_class"}
+    return {
+        "status": "present",
+        "reason_code": "present",
+        "qualifier": policy["qualifier"],
+        "as_of": as_of,
+        "qualifier_policy": qualifier_policy_ref(),
+    }
 
 
 def _formula_operands_present(
@@ -292,6 +388,7 @@ def _formula_operands_present(
     slot: Mapping[str, Any],
     visiting: frozenset[str],
     allow_qualified: bool,
+    recorded_at: str | None = None,
 ) -> bool:
     accessions = slot_accessions(slot)
     slot_period = (slot.get("report_date", ""), slot.get("slot_id", ""))
@@ -302,14 +399,17 @@ def _formula_operands_present(
         if dep_spec["formula_dependencies"]:
             if dep in visiting:
                 return False
-            if not _formula_operands_present(dep_spec, specs, facts, slot, visiting | {dep}, allow_qualified):
+            if not _formula_operands_present(
+                dep_spec, specs, facts, slot, visiting | {dep}, allow_qualified, recorded_at
+            ):
                 return False
             continue
         present, _reason, _concept, _unit, _priority = check_metric_against_facts(
             dep_spec, facts, accessions, slot_period=slot_period
         )
         if not present and allow_qualified:
-            present = cover_date_as_of(dep_spec, facts, slot, None) is not None
+            outcome = cover_date_outcome(dep_spec, facts, slot, None, recorded_at=recorded_at)
+            present = outcome is not None and outcome["status"] == "present"
         if not present:
             return False
     return True
@@ -321,6 +421,8 @@ def evaluate_cell(
     facts: Mapping[str, Any],
     slot: Mapping[str, Any],
     counters: dict[str, int] | None = None,
+    *,
+    recorded_at: str | None = None,
 ) -> dict[str, Any]:
     """Status of one (slot, metric) cell: strict -> D1 fallback -> D2 relabel."""
     slot_status = slot.get("slot_status", "slot_absent")
@@ -328,12 +430,15 @@ def evaluate_cell(
         return {"status": slot_status, "reason_code": slot_status}
     if slot_status and str(slot_status).startswith("not_applicable"):
         return {"status": slot_status, "reason_code": slot_status}
+    if not (_iso_date(slot.get("report_date")) and _iso_date(slot.get("filing_date"))):
+        _bump(counters, "invalid_slot_date")
+        return {"status": "failed_extraction", "reason_code": "invalid_slot_date"}
 
     metric_id = spec["metric_id"]
     if spec["formula_dependencies"]:
-        if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), False):
+        if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), False, recorded_at):
             return {"status": "present", "reason_code": "present"}
-        if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), True):
+        if _formula_operands_present(spec, specs, facts, slot, frozenset((metric_id,)), True, recorded_at):
             _bump(counters, "formula_blocked_by_qualified_operand")
         return {"status": "absent", "reason_code": "absent_dependency"}
 
@@ -345,15 +450,9 @@ def evaluate_cell(
     )
     if present:
         return {"status": "present", "reason_code": "present"}
-    as_of = cover_date_as_of(spec, facts, slot, counters)
-    if as_of is not None:
-        return {
-            "status": "present",
-            "reason_code": "present",
-            "qualifier": COVER_DATE_POLICY["qualifier"],
-            "as_of": as_of,
-            "qualifier_policy": qualifier_policy_ref(),
-        }
+    outcome = cover_date_outcome(spec, facts, slot, counters, recorded_at=recorded_at)
+    if outcome is not None:
+        return outcome
     if (
         reason == "absent_no_alias_fact"
         and slot_status == "present"
@@ -391,6 +490,16 @@ def _rollup_cells_for_issuer(cells, tier_assigned):
         if _is_deep_only_field(field_id) and tier_assigned != "deep":
             continue
         yield period_id, field_id, status
+
+
+def _strict_status(cell: Mapping[str, Any]) -> str:
+    """The cell's status on the strict basis: a present cell carrying a non-null
+    qualifier or derivation becomes the internal token ``present_labelled``,
+    which no rollup counts as present.  The token is never written."""
+    status = str(cell.get("status", ""))
+    if status == "present" and (cell.get("qualifier") is not None or cell.get("derivation") is not None):
+        return "present_labelled"
+    return status
 
 
 def _count_rollup_cells(cells, tier_assigned):
@@ -496,7 +605,7 @@ def rewrite_manifest(
             unavailable.add(cik)
             cells_out.append(new)
             continue
-        result = evaluate_cell(spec, specs, loaded_facts, slot, counters)
+        result = evaluate_cell(spec, specs, loaded_facts, slot, counters, recorded_at=recorded_at)
         for key in QUALIFIER_KEYS:
             new.pop(key, None)
         new.update(result)
@@ -513,16 +622,23 @@ def rewrite_manifest(
         cells_out.append(new)
 
     triples_by_cik: dict[str, list[tuple[str, str, str]]] = {}
+    strict_triples_by_cik: dict[str, list[tuple[str, str, str]]] = {}
     for cell in cells_out:
-        triples_by_cik.setdefault(str(cell.get("cik", "")), []).append(
-            (str(cell.get("period_id", "")), str(cell.get("field_id", "")), str(cell.get("status", "")))
-        )
+        cik_key = str(cell.get("cik", ""))
+        period_field = (str(cell.get("period_id", "")), str(cell.get("field_id", "")))
+        triples_by_cik.setdefault(cik_key, []).append((*period_field, str(cell.get("status", ""))))
+        strict_triples_by_cik.setdefault(cik_key, []).append((*period_field, _strict_status(cell)))
     metric_ids = sorted(specs)
     issuers_out: list[dict[str, Any]] = []
+    rollups = {
+        "any_basis": {"core_pass": 0, "deep_pass": 0, "present_cells": 0},
+        "strict": {"core_pass_strict": 0, "deep_pass_strict": 0, "present_cells_strict": 0},
+    }
     for issuer in base_manifest.get("issuers", []):
         new_issuer = dict(issuer)
         tier_assigned = issuer.get("tier_assigned")
         cells = triples_by_cik.get(str(issuer.get("cik", "")), [])
+        strict_cells = strict_triples_by_cik.get(str(issuer.get("cik", "")), [])
         present_cells, absent_cells, na_cells = _count_rollup_cells(cells, tier_assigned)
         new_issuer.update(
             {
@@ -531,8 +647,17 @@ def rewrite_manifest(
                 "na_cells": na_cells,
                 "core_pass": _window_pass(cells, tier_assigned, CORE_WINDOW_SLOTS, metric_ids),
                 "deep_pass": _deep_pass(cells, tier_assigned, metric_ids),
+                "present_cells_strict": _count_rollup_cells(strict_cells, tier_assigned)[0],
+                "core_pass_strict": _window_pass(strict_cells, tier_assigned, CORE_WINDOW_SLOTS, metric_ids),
+                "deep_pass_strict": _deep_pass(strict_cells, tier_assigned, metric_ids),
             }
         )
+        rollups["any_basis"]["core_pass"] += int(new_issuer["core_pass"])
+        rollups["any_basis"]["deep_pass"] += int(new_issuer["deep_pass"])
+        rollups["any_basis"]["present_cells"] += present_cells
+        rollups["strict"]["core_pass_strict"] += int(new_issuer["core_pass_strict"])
+        rollups["strict"]["deep_pass_strict"] += int(new_issuer["deep_pass_strict"])
+        rollups["strict"]["present_cells_strict"] += new_issuer["present_cells_strict"]
         issuers_out.append(new_issuer)
 
     manifest = dict(base_manifest)
@@ -547,12 +672,14 @@ def rewrite_manifest(
         "catalog_version": provenance.get("catalog_version", ""),
         "mapping_pack_version": provenance.get("mapping_pack_version", ""),
         "base_manifest_sha256": provenance.get("base_manifest_sha256", ""),
+        "rollup_basis": dict(ROLLUP_BASIS),
     }
     counters["facts_unavailable_issuers"] = len(unavailable)
     counts: dict[str, Any] = {
         "by_reason": by_reason,
         "present_strict": present_strict,
         "present_qualified": present_qualified,
+        "issuer_rollups": rollups,
     }
     for name in (
         "cells_rewritten",
@@ -560,10 +687,13 @@ def rewrite_manifest(
         "slot_row_missing",
         "slot_accession_mismatch",
         "facts_unavailable_issuers",
+        "invalid_slot_date",
+        "cover_fallback_policy_not_visible",
         "cover_fallback_alias_not_visible",
         "cover_fallback_form_not_covered",
         "cover_window_ambiguous",
         "cover_multi_value",
+        "cover_date_multi_class",
         "formula_blocked_by_qualified_operand",
     ):
         counts[name] = counters.get(name, 0)

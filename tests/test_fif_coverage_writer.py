@@ -9,8 +9,11 @@ from __future__ import annotations
 import copy
 import gzip
 import json
+import os
 import re
 import socket
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -22,6 +25,7 @@ MODULE_PATH = ROOT / "scripts" / "fif_coverage_writer.py"
 SHARES = "common_shares_outstanding"
 DEI_SHARES = ("dei", "EntityCommonStockSharesOutstanding")
 TEN_DIGITS = re.compile(r"\b\d{10}\b")
+RULE_CLOCK = "2026-10-19T12:00:00Z"
 
 
 def _cik(i: int) -> str:
@@ -218,7 +222,7 @@ def test_d1_fallback_qualifies_only_the_single_in_window_own_accession_instant()
     marker = _own_usgaap_marker(slot)
 
     counters: dict = {}
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters, recorded_at=RULE_CLOCK)
     assert cell == {
         "status": "present",
         "reason_code": "present",
@@ -228,42 +232,55 @@ def test_d1_fallback_qualifies_only_the_single_in_window_own_accession_instant()
     }
     assert counters == {}
 
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-08-14")), slot)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-08-14")), slot, recorded_at=RULE_CLOCK)
     assert cell["qualifier"] == "cover_date_as_of" and cell["as_of"] == "2026-08-14"
 
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-08-15")), slot)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-08-15")), slot, recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_period_mismatch"}
 
     amendment = _accn(1, 2)
     amended_slot = _slot(amendments=amendment)
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(amendment, "2026-07-20")), amended_slot)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(amendment, "2026-07-20")), amended_slot,
+                           recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_period_mismatch"}
 
     counters = {}
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-07-20", "2026-07-27")), slot, counters)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-07-20", "2026-07-27")), slot, counters,
+                           recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_period_mismatch"}
     assert counters == {"cover_window_ambiguous": 1}
 
+    # W-R2 M2: identical duplicates collapse; distinct values at the date are a typed absence.
     counters = {}
-    cell = w.evaluate_cell(spec, {}, _facts(marker, _dei(slot, "2026-07-20", "2026-07-20")), slot, counters)
-    assert cell["qualifier"] == "cover_date_as_of"
+    same = ("dei", DEI_SHARES[1], "shares", [_fact(slot["accession"], "2026-07-20", val=7)] * 2)
+    cell = w.evaluate_cell(spec, {}, _facts(marker, same), slot, counters, recorded_at=RULE_CLOCK)
+    assert cell["qualifier"] == "cover_date_as_of" and cell["as_of"] == "2026-07-20"
     assert counters == {"cover_multi_value": 1}
 
     counters = {}
+    classes = ("dei", DEI_SHARES[1], "shares",
+               [_fact(slot["accession"], "2026-07-20", val=7), _fact(slot["accession"], "2026-07-20", val=8)])
+    cell = w.evaluate_cell(spec, {}, _facts(marker, classes), slot, counters, recorded_at=RULE_CLOCK)
+    assert cell == {"status": "absent", "reason_code": "cover_date_multi_class"}
+    assert counters == {"cover_multi_value": 1, "cover_date_multi_class": 1}
+
+    counters = {}
     other_metric = _shares_spec(metric_id="weighted_shares_other")
-    cell = w.evaluate_cell(other_metric, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters)
+    cell = w.evaluate_cell(other_metric, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters,
+                           recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_period_mismatch"}
     assert counters == {}
 
     counters = {}
     no_dei = _shares_spec(aliases=[(5, "us-gaap", "CommonStockSharesOutstanding")])
-    cell = w.evaluate_cell(no_dei, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters)
+    cell = w.evaluate_cell(no_dei, {}, _facts(marker, _dei(slot, "2026-07-20")), slot, counters, recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_no_alias_fact"}
     assert counters == {"cover_fallback_alias_not_visible": 1}
 
     counters = {}
     foreign = _slot(form="20-F")
-    cell = w.evaluate_cell(spec, {}, _facts(_own_usgaap_marker(foreign), _dei(foreign, "2026-07-20")), foreign, counters)
+    foreign_facts = _facts(_own_usgaap_marker(foreign), _dei(foreign, "2026-07-20"))
+    cell = w.evaluate_cell(spec, {}, foreign_facts, foreign, counters, recorded_at=RULE_CLOCK)
     assert "qualifier" not in cell
     assert counters == {"cover_fallback_form_not_covered": 1}
 
@@ -276,7 +293,7 @@ def test_formula_never_consumes_a_qualified_operand():
     specs = {SHARES: _shares_spec(), "per_share": _spec("per_share", deps=(SHARES,))}
     counters: dict = {}
     facts = _facts(_own_usgaap_marker(slot), _dei(slot, "2026-07-20"))
-    cell = w.evaluate_cell(specs["per_share"], specs, facts, slot, counters)
+    cell = w.evaluate_cell(specs["per_share"], specs, facts, slot, counters, recorded_at=RULE_CLOCK)
     assert cell == {"status": "absent", "reason_code": "absent_dependency"}
     assert counters == {"formula_blocked_by_qualified_operand": 1}
 
@@ -505,3 +522,209 @@ def test_cli_rewrite_is_byte_identical_across_runs(tmp_path, capsys):
     assert outputs[0] == outputs[1]
     written = json.loads(outputs[0])
     assert written["writer"]["catalog_version"] and written["writer"]["base_manifest_sha256"]
+
+
+# W-R2 M1: strict-only issuer rollups ---------------------------------------------------------------------
+
+
+def test_strict_rollups_exclude_qualified_present_cells():
+    annual = _slot(1)
+    interim = _slot(1, slot_id="I1", n=3, report_date="2026-03-31", filing_date="2026-05-08", form="10-Q")
+    specs = {"total_assets": _spec("total_assets", aliases=[(10, "us-gaap", "Assets")]), SHARES: _shares_spec()}
+
+    def cell(slot, metric_id):
+        return {"cik": slot["cik"], "period_id": slot["slot_id"], "field_id": f"metric:{metric_id}",
+                "accession": slot["accession"], "tier": "core", "status": "absent",
+                "reason_code": "absent_no_alias_fact"}
+
+    base = {
+        "cells": [cell(slot, metric_id) for slot in (annual, interim) for metric_id in sorted(specs)],
+        "issuers": [{"cik": annual["cik"], "tier_assigned": "core"}],
+    }
+    facts = _facts(
+        ("us-gaap", "Assets", "USD",
+         [_fact(annual["accession"], annual["report_date"]), _fact(interim["accession"], interim["report_date"])]),
+        _dei(interim, interim["report_date"]),  # strict: the interim period end
+        _dei(annual, "2026-07-20"),  # qualified: the annual cover date
+    )
+    manifest, counts = w.rewrite_manifest(base, [annual, interim], {annual["cik"]: facts}.get, specs, RULE_CLOCK, {})
+    (issuer,) = manifest["issuers"]
+    assert issuer["core_pass"] is True and issuer["core_pass_strict"] is False
+    assert issuer["present_cells"] == 4 and issuer["present_cells_strict"] == 3
+    assert issuer["deep_pass"] is False and issuer["deep_pass_strict"] is False
+    assert counts["issuer_rollups"] == {
+        "any_basis": {"core_pass": 1, "deep_pass": 0, "present_cells": 4},
+        "strict": {"core_pass_strict": 0, "deep_pass_strict": 0, "present_cells_strict": 3},
+    }
+    assert manifest["writer"]["rollup_basis"] == {
+        "present_cells": "any_basis", "core_pass": "any_basis", "deep_pass": "any_basis",
+        "present_cells_strict": "strict", "core_pass_strict": "strict", "deep_pass_strict": "strict",
+    }
+
+    plain = {"status": "present", "reason_code": "present"}
+    assert w._strict_status(plain) == "present"
+    assert w._strict_status({**plain, "qualifier": "cover_date_as_of"}) == "present_labelled"
+    assert w._strict_status({**plain, "derivation": "composed"}) == "present_labelled"
+    assert w._strict_status({**plain, "qualifier": None}) == "present"
+    assert w._strict_status({"status": "absent", "qualifier": "cover_date_as_of"}) == "absent"
+
+
+# W-R2 M3: the strict alias search never leaves the alias's own taxonomy -----------------------------------
+
+
+def test_strict_alias_search_never_crosses_taxonomy():
+    slot = _slot(form="20-F")
+    own = slot["accession"]
+    assets = _spec("total_assets", aliases=[(10, "us-gaap", "Assets")])
+    dei_own = _dei(slot, "2026-07-20")
+
+    ifrs_only = _facts(("ifrs-full", "Assets", "USD", [_fact(own, "2026-06-30")]), dei_own)
+    present, reason, *_rest = w.check_metric_against_facts(assets, ifrs_only, {own}, slot_period=("2026-06-30", "A1"))
+    assert (present, reason) == (False, "absent_other_taxonomy_only")
+    assert w.evaluate_cell(assets, {}, ifrs_only, slot) == {
+        "status": "absent", "reason_code": "absent_other_taxonomy_only"}
+
+    elsewhere = _facts(("ifrs-full", "Assets", "USD", [_fact(_accn(1, 50), "2026-06-30")]), dei_own)
+    assert w.evaluate_cell(assets, {}, elsewhere, slot) == {"status": "absent", "reason_code": "absent_no_alias_fact"}
+
+
+# W-R2 M4: D2 needs the accession missing from every taxonomy -----------------------------------------------
+
+
+def test_d2_requires_the_accession_missing_from_every_taxonomy():
+    slot = _slot(form="20-F")
+    own = slot["accession"]
+    revenue = _spec("revenue", kind="duration", aliases=[(10, "us-gaap", "Revenues")])
+    probe = _facts(
+        ("ifrs-full", "Revenue", "USD", [_fact(own, "2026-06-30", start="2025-07-02")]),
+        _dei(slot, "2026-07-20"),
+    )
+    assert w.evaluate_cell(revenue, {}, probe, slot) == {"status": "absent", "reason_code": "absent_ifrs_taxonomy"}
+    assert w.companyfacts_missing_accession(probe, own) is False
+
+    dei_only = _facts(_dei(slot, "2026-07-20"))
+    assert w.companyfacts_missing_accession(dei_only, own) is False
+    assert w.evaluate_cell(revenue, {}, dei_only, slot) == {"status": "absent", "reason_code": "absent_no_alias_fact"}
+
+    nowhere = _facts(("ifrs-full", "Revenue", "USD", [_fact(_accn(1, 50), "2026-06-30", start="2025-07-02")]))
+    assert w.companyfacts_missing_accession(nowhere, own) is True
+    assert w.evaluate_cell(revenue, {}, nowhere, slot) == {
+        "status": "stale", "reason_code": "companyfacts_missing_accession"}
+
+
+# W-R2 m6: slot dates must be ISO calendar dates ------------------------------------------------------------
+
+
+def test_invalid_slot_dates_are_typed_failures():
+    direct = _spec("total_assets", aliases=[(10, "us-gaap", "Assets")])
+    formula = _spec("ratio", deps=("total_assets",))
+    specs = {"total_assets": direct, "ratio": formula}
+    for overrides in ({"report_date": "6/30/2026"}, {"filing_date": "20260814"}, {"filing_date": ""}):
+        slot = _slot(**overrides)
+        facts = _facts(("us-gaap", "Assets", "USD", [_fact(slot["accession"], slot["report_date"])]))
+        for spec in (direct, formula):
+            counters: dict = {}
+            assert w.evaluate_cell(spec, specs, facts, slot, counters) == {
+                "status": "failed_extraction", "reason_code": "invalid_slot_date"}
+            assert counters == {"invalid_slot_date": 1}
+    assert w.evaluate_cell(direct, specs, _facts(("us-gaap", "Assets", "USD", [_fact(_slot()["accession"],
+                                                                                  "2026-06-30")])), _slot())[
+        "status"] == "present"
+
+
+# W-R2 m7: the cover-date policy is rule-clocked --------------------------------------------------------------
+
+
+def test_cover_date_policy_is_rule_clocked():
+    assert w.COVER_DATE_POLICY["available_at"] == "2026-10-19T00:00:00Z"
+    slot = _slot()
+    facts = _facts(_own_usgaap_marker(slot), _dei(slot, "2026-07-20"))
+    spec = _shares_spec()
+
+    counters: dict = {}
+    cell = w.evaluate_cell(spec, {}, facts, slot, counters, recorded_at="2026-10-18T23:59:59Z")
+    assert cell == {"status": "absent", "reason_code": "absent_period_mismatch"}
+    assert counters == {"cover_fallback_policy_not_visible": 1}
+
+    cell = w.evaluate_cell(spec, {}, facts, slot, recorded_at="2026-10-19T00:00:00Z")
+    assert cell["qualifier"] == "cover_date_as_of" and cell["as_of"] == "2026-07-20"
+
+    counters = {}
+    assert w.evaluate_cell(spec, {}, facts, slot, counters) == {
+        "status": "absent", "reason_code": "absent_period_mismatch"}
+    assert counters == {"cover_fallback_policy_not_visible": 1}
+
+    with pytest.raises(ValueError):
+        w.evaluate_cell(spec, {}, facts, slot, recorded_at="2026-10-19T00:00:00")
+
+    _base, slots, loader, specs, provenance = _rewrite_fixture()
+    _manifest, counts = w.rewrite_manifest(_base, slots, loader, specs, "2026-10-18T00:00:00Z", provenance)
+    assert counts["present_qualified"] == {"all": 0, "core": 0}
+    assert counts["cover_fallback_policy_not_visible"] == 1
+
+
+# W-R2 NIT: exact form membership ---------------------------------------------------------------------------
+
+
+def test_cover_date_forms_match_exactly():
+    spec = _shares_spec()
+    for form in ("10-K/A", "10-KT", "10-QT", "10-K405"):
+        slot = _slot(form=form)
+        counters: dict = {}
+        cell = w.evaluate_cell(spec, {}, _facts(_own_usgaap_marker(slot), _dei(slot, "2026-07-20")), slot, counters,
+                               recorded_at=RULE_CLOCK)
+        assert "qualifier" not in cell
+        assert counters == {"cover_fallback_form_not_covered": 1}
+    for form in ("10-K", "10-Q"):
+        slot = _slot(form=form)
+        cell = w.evaluate_cell(spec, {}, _facts(_own_usgaap_marker(slot), _dei(slot, "2026-07-20")), slot,
+                               recorded_at=RULE_CLOCK)
+        assert cell["qualifier"] == "cover_date_as_of"
+
+
+# W-R2 m8: the CLI runs with sockets refused before the writer is imported -------------------------------------
+
+_GUARDED_CLI = """
+import socket, sys
+def refuse(*_args, **_kwargs):
+    raise AssertionError("network access attempted")
+socket.socket = refuse
+socket.create_connection = refuse
+socket.getaddrinfo = refuse
+from scripts import fif_coverage_writer as w
+raise SystemExit(w.main(sys.argv[1:]))
+"""
+
+
+def test_cli_runs_offline_with_socket_guard_installed_before_import(tmp_path, capsys):
+    base, slots, loader, _specs, _provenance = _rewrite_fixture()
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    for cik in {slot["cik"] for slot in slots}:
+        facts = loader(cik)
+        if facts is not None:
+            payload = json.dumps({"facts": facts}).encode("utf-8")
+            (cache / f"{w.companyfacts_cache_key(cik)}.gz").write_bytes(gzip.compress(payload, mtime=0))
+    base_path = tmp_path / "base.json"
+    base_path.write_text(json.dumps(base), encoding="utf-8")
+    slots_path = tmp_path / "slots.csv"
+    header = list(slots[0])
+    slots_path.write_text(
+        ",".join(header) + "\n" + "".join(",".join(slot[k] for k in header) + "\n" for slot in slots),
+        encoding="utf-8",
+    )
+
+    def args(out):
+        return ["rewrite", "--base-manifest", str(base_path), "--slots", str(slots_path), "--facts-cache",
+                str(cache), "--recorded-at", RULE_CLOCK, "--out", str(out), "--repo-root", str(ROOT)]
+
+    guarded = tmp_path / "guarded.json"
+    result = subprocess.run(
+        [sys.executable, "-c", _GUARDED_CLI, *args(guarded)],
+        cwd=str(ROOT), capture_output=True, text=True, env={**os.environ, "PYTHONPATH": str(ROOT)},
+    )
+    assert result.returncode == 0, result.stderr
+    in_process = tmp_path / "in_process.json"
+    assert w.main(args(in_process)) == 0
+    capsys.readouterr()
+    assert guarded.read_bytes() == in_process.read_bytes()
