@@ -441,3 +441,89 @@ protected integration/deployment admission and actual candidate proof.
 Mission complete: **false**. Exact source, logs, observed failures, checkout
 resolution and effect fences are recorded in
 [the hosted CI correction receipt](evidence/asia-heatmap-quality-20261018/hosted-ci-correction-20261019.json).
+
+
+## 2026-10-19 original source composition and one-shot diagnostics — acceptance pending
+
+The original settled carrier now contains commit
+`f679236ba3926cd3ce3dd6ffa95d0df0d605a985`, tree
+`32260aaa6898cef17816ca557a02b220edfdd565`, with parents
+`00eca5c41ac4a69c03b5e7afe2293039c5105496` and
+`69dd6e774cc48223005426765e74aed193d55954`. Its three overlapping CI files
+preserve the settled dependencies, commands and scopes and the upstream
+declarations. All 327 job mappings retain the appropriate parent changes.
+The join introduces no new packing allowance or exemption. The two affected
+declaration tests passed on this committed source; no earlier completed
+qualification was rerun.
+
+A normal non-force push to the original PR #7193 branch was verified at
+10:16:45 UTC. At 10:28 UTC, native fences run
+[39236315980](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236315980)
+was successful and native CI run
+[39236316198](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39236316198)
+was queued. These checks belong to settled source `f679236b`; they do not
+qualify the live source or the combined rehearsal.
+
+The original live carrier includes current-main merge
+`b93cf8bd5112d2b62222f5ddef3f7c6d79470ee9`, tree
+`8bb95bb62371f396373eb78c729cfc289e1d8fd7`, with parents
+`dada27c2853c066fd5fd0338bc5e06d1eacf4c3c` and `69dd6e77`.
+The sole textual conflict in the deployment restart matcher was resolved by
+retaining the original China clock/calendar entries and upstream economic-context
+entries. The 182 existing restart positive/negative and API import-closure cases
+passed on this merge. All seven jointly changed CI path sets preserve their
+parent union; the other job mappings, China/washout package-init declarations,
+and both sets of application changes are retained. The original pair remains
+at `8f752163d15c5e43519c9e588ad2ac9abc857b42` at this record's creation.
+Its new source join and qualification are still pending.
+
+Live diagnostic commit `8314d4287bb6f2d67a08e2e36be88cf9ffbca60d`, tree
+`97ac1a2f9b77fea3ed256d615385a2f29cb7be00`, is a child of `b93cf8bd`.
+It adds fixed refusal reasons and aggregate normalized/qualified/retained counts
+to one-shot logging. It does not change source requests, transport retries,
+market phase/calendar, timestamp eligibility, coverage, public schema or atomic
+publication. Eight focused cases passed, including rejection, successful fallback,
+retained-data monotonicity, private-field exclusion and persistent-loop quietness.
+This evidence publication is a later descendant of that executed source.
+
+Local qualification of the broader live CI declaration analysis remains partial.
+The combined attempt timed out without individual test results. In the split
+attempt, workflow-path existence and curated declaration checks passed; the
+import-closure check remained incomplete at 360 seconds and the ancestor census
+was not reached. The observed stack was in static source/dependency analysis.
+This is not a predicate-failure diagnosis or a four-check pass. Required hosted
+checks remain pending, and no ceiling, exemption or gate was relaxed.
+
+One bounded invocation of committed source `8314d428`, from
+10:12:39.845 to 10:12:50.540 UTC, used the retained 1,724-member October 16
+baseline without changing it. Tushare returned zero normalized quotes. Tencent
+returned 1,722 normalized quotes and zero qualified quotes. The producer exited 1
+and wrote no output. The fixed diagnostics expose the refusal before candidate
+discard; they do not establish successful acquisition or product acceptance.
+The retained events contain no provider timestamp distribution, so the precise
+cause of timestamp-window rejection remains unestablished. No automatic retry
+was issued. The earlier unsuccessful 09:11 observation is also preserved.
+
+Already-merged upstream work relocated the three Sector Central packets as
+unapproved drafts while retaining their substantive capability and acceptance
+requirements. That relocation supplies no approved Full RIG receipt or original
+owner acknowledgment. The latest bounded original-owner delta reads at 09:59 UTC
+returned no new comments. The original Full RIG hold remains binding regardless
+of later check behavior. The protected Skillpack pin remains
+`1ffe6b566b9addb58d13893bfb78e8505dce1752` after compatibility verification.
+
+The authenticated China production page was observed available at 08:52 UTC
+with “Sign out,” the October 16 daily close and old renderer
+`heatmap.js?v=d76e68a7`. This supersedes the earlier availability failure as a
+later observation; it does not establish a candidate deployment. Candidate
+dark/light, English/Chinese and viewport acceptance, authenticated candidate
+access, and natural-session China/HK proof remain **NOT_ESTABLISHED**.
+
+The original audit `heatmap-quality-audit-20261018-c1-r1` remains
+**EFFECT_UNKNOWN**, with worker state **UNKNOWN** and lineage **UNVERIFIED**.
+Its original receipt, all intervening audit content, source custody and
+DO_NOT_REDO records are preserved. No audit resubmission, denied recovery-comment
+retry, replacement carrier, protected approval, merge or deployment is claimed.
+Mission complete: **false**. The new source subjects, exact file hashes,
+partial checks, failed source observation and unchanged admission boundaries are
+recorded in [the current source and diagnostics record](evidence/asia-heatmap-quality-20261018/current-main-and-source-diagnostics-20261019.json).
