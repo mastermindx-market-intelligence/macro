@@ -474,17 +474,21 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     The optional original prelabel_design bytes are a diagnostic input, never
     a substitute for a registration reference or a reviewer plan. They share
     the object/byte bounds. Only registration references, the known reviewer
-    plan's fixed evidence layer and guide digest links are followed; this is not
-    a recursive object loader.
+    plan's and temporal declarations' fixed evidence layers and guide digest
+    links are followed; this is not a recursive object loader.
 
     The known task contract checks supplied question bytes, exact frozen source
     identities and original availability clocks. It does not select actual tasks
     or establish answerability/usefulness. The reviewer plan checks declared
     roles, task coverage and blinding rules, never actual independence or
-    annotation. Splits and allocation still lack payload contracts; reference
+    annotation. Source/split declarations check frozen identities, explicit
+    intervals and declared grouping consistency; they never populate unknown
+    owner metadata, authenticate provenance or assign actual splits. Reference
     closure never certifies admission.
     """
     reg = validate_e0_registration(registration)
+    from . import market_memory_e0_domains as temporal
+    temporal_roles = {schema: role for role, schema in temporal.SCHEMAS.items()}
     extra = int(prelabel_design is not None)
     if type(objects) is not dict or len(objects) + extra > MAX_DOMAIN_OBJECTS:
         raise E0ControlError("bounded_domain_objects_required")
@@ -522,6 +526,7 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     from . import market_memory_e0_evaluation_spec as evaluation
     evaluation_roles = {schema: role for role, schema in evaluation.SCHEMAS.items()}
     evaluation_values = {}
+    temporal_values = {}
 
     for _role, ref in roots:
         clean = _domain_reference(ref)
@@ -545,6 +550,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             raise E0ControlError("reviewer_plan_reference_role_mismatch")
         if clean["schema"] in evaluation_roles and _role != evaluation_roles[clean["schema"]]:
             raise E0ControlError("evaluation_declaration_reference_role_mismatch")
+        if clean["schema"] in temporal_roles and _role != temporal_roles[clean["schema"]]:
+            raise E0ControlError("temporal_domain_reference_role_mismatch")
         if digest in references:
             if references[digest] != clean:
                 raise E0ControlError("domain_reference_alias_mismatch")
@@ -564,7 +571,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
                         for key in ("membership", "design", "prelabel_binding")}
         value = (_domain_json(body) if digest in json_digests
                  or clean["schema"] in {_TASK_SCHEMA, _REVIEWER_PLAN_SCHEMA}
-                 or clean["schema"] in evaluation_roles else None)
+                 or clean["schema"] in evaluation_roles
+                 or clean["schema"] in temporal_roles else None)
         if type(value) is dict:
             declared_schema = value.get("schema", value.get("document_type"))
             if declared_schema != clean["schema"]:
@@ -581,6 +589,9 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             evaluation_values[_role] = evaluation.validate_declaration(value, body, role=_role, registration=reg)
             roots.extend(evaluation.provenance_references(evaluation_values[_role], role=_role))
             linked_digests.add(_FROZEN_DOMAIN_DIGESTS["annotation_guide"])
+        if clean["schema"] in temporal_roles:
+            temporal_values[_role] = temporal.validate_declaration(value, body, role=_role, registration=reg)
+            roots.extend(temporal.provenance_references(temporal_values[_role], role=_role))
 
     binding = None
     if prelabel_design is not None:
@@ -646,6 +657,13 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
     if reviewer_plan is not None:
         reviewer_checks.append(_reviewer_plan_binding_checks(
             reviewer_plan, tasks=task_value, membership=membership, parsed=parsed))
+    coverage = temporal_values.get("source_coverage_ref")
+    interval_split = temporal_values.get("interval_split_ref")
+    coverage_checks = ([] if coverage is None else [temporal.source_coverage_checks(
+        coverage, membership=membership, resolved_digests=set(parsed))])
+    split_checks = ([] if interval_split is None else [temporal.interval_split_checks(
+        interval_split, tasks=task_value, coverage=coverage, membership=membership,
+        resolved_digests=set(parsed))])
 
     evaluation_checks = [evaluation.binding_checks(declared, role=role, tasks=task_value,
         reviewer_plan=reviewer_plan, outcome_definition=evaluation_values.get("outcome_definition_ref"),
@@ -667,6 +685,8 @@ def resolve_e0_domain_references(*, registration: object, objects: object,
             "task_binding_checks": task_checks,
             "reviewer_plan_binding_checks": reviewer_checks,
             "evaluation_binding_checks": evaluation_checks,
+            "source_coverage_binding_checks": coverage_checks,
+            "interval_split_binding_checks": split_checks,
             "domain_metadata_complete": False, "operational_admission": False,
             "unresolved_semantics": ["tasks_and_query_selection", "source_coverage_and_feature_intervals",
                 "episode_clusters_and_interval_splits", "reviewer_plan_and_independence",
