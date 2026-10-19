@@ -636,6 +636,38 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK08": {
+        "digest": "d8a0fd053a36bb7da7b4c8f36d701004057f981571acbee41c5a735a821c9df1",
+        "fields": (
+            "loss_contingency_accrual",
+            "loss_contingency_range_low",
+            "loss_contingency_range_high",
+            "loss_contingency_range_disclosed",
+            "contingency_nature",
+            "commitments_and_contingencies_bs_state",
+            "commitments_text_block",
+            "legal_proceedings_item3",
+            "allegation_span",
+            "procedural_status_span",
+        ),
+        "required": (),
+        "checks": (
+            "accrual_vs_range",
+            "nil_bs_vs_note",
+            "item3_vs_note",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
