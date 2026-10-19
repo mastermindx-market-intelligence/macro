@@ -177,6 +177,18 @@ _GLT_LEG_ORDER: tuple[tuple[str, str], ...] = (
     ("usd_funding", "real_yield_10y"),
 )
 
+# GLT T21 review M1: each leg's source row copies the freshness token of the
+# composed metric row named here (monetary legs and funding legs both publish
+# a glt_<leg>_..._contribution_z row; compose() performs the copy).
+_GLT_LEG_METRIC_ID: dict[str, str] = {
+    "fed": "glt_fed_monetary_contribution_z",
+    "ecb": "glt_ecb_monetary_contribution_z",
+    "boj": "glt_boj_monetary_contribution_z",
+    "broad_dollar": "glt_broad_dollar_contribution_z",
+    "high_yield_oas": "glt_high_yield_oas_contribution_z",
+    "real_yield_10y": "glt_real_yield_10y_contribution_z",
+}
+
 # GLT T21: only the two non-USD monetary legs (ECB/BoJ) can carry a model_spec
 # with an FX translation. The Fed balance sheet is already USD; a per-leg USD
 # translation row is never emitted for it (frozen spec S4).
@@ -456,7 +468,10 @@ def _translation_row(metric_id: str, leg: str, leg_receipt: dict[str, Any],
         # easier; the view-row's bilingual basis label carries the meaning).
         None, "engine.global_liquidity_transmission",
         f"freshness.component_snapshot.monetary.{leg}.model_spec",
-        receipt["reference_date"], "NOT_COVERED",
+        # T21 review M2: no reading exists, so no observed date and no
+        # reference period (S4: observed_at None); calculation_as_of below
+        # stays glt_asof.
+        None, "NOT_COVERED",
         source_refs=source_refs,
         status="ABSENT", null_reason="NOT_COVERED",
         transformation=(
@@ -514,6 +529,16 @@ def compose(glt: Mapping[str, Any], cb_desk: Mapping[str, Any],
     metrics = _metrics(built_at, st, er, q, fr, glt_asof, glt_repr_fresh,
                         fed_bs, ecb_bs, boj_bs, contradictions,
                         leg_receipts=leg_receipts)
+    # GLT T21 review M1: each glt_leg_<leg> source row carries the freshness
+    # token of that leg's OWN composed metric row — copied, never recomputed
+    # (the metric row evaluates glt_asof + owner status; the source row must
+    # never disagree with the row it publishes, S3). A leg whose metric row
+    # is somehow absent keeps the receipt-builder fallback token.
+    metrics_fresh_by_id = {m["metric_id"]: m.get("freshness") for m in metrics}
+    for _lr in leg_receipts:
+        _row_fresh = metrics_fresh_by_id.get(_GLT_LEG_METRIC_ID.get(_lr["leg"]))
+        if _row_fresh:
+            _lr["leg_freshness"] = _row_fresh
     metrics_by_id = {m["metric_id"]: m["value"] for m in metrics}
 
     required_avail = _required_availability(built_at, glt_asof, st, fed_bs, glt_owner_fresh)

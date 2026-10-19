@@ -48,9 +48,10 @@ BASE_LCB_METRIC_COUNT = 28
 # identifier may appear (frozen spec S9 (f) reasoning).
 _T21_BASELINE_STRICT_TOKENS: tuple[str, ...] = ()
 
-# GLT T21: baseline count of ``find_violations`` violations on the rendered
-# LCB page at BASE.
-_BASELINE_VIOLATION_COUNT = 0
+# GLT T21: baseline ``find_violations`` violations on the rendered LCB page
+# at BASE = e38026e9f4e964d3d2efb77d6f5baa136e247b26 (STEP 1b). None at BASE.
+_BASELINE_VIOLATIONS: tuple[str, ...] = ()
+_BASELINE_VIOLATION_COUNT = len(_BASELINE_VIOLATIONS)
 
 
 # --------------------------------------------------------------------------- #
@@ -1242,7 +1243,7 @@ def test_t21_rendered_page_adds_no_new_machine_identifier(tmp_path) -> None:
     if _BASELINE_VIOLATION_COUNT == 0:
         assert violations == [], violations
     else:
-        assert set(violations).issubset(set(_BASELINE_VIOLATION_COUNT)), violations
+        assert set(violations) <= set(_BASELINE_VIOLATIONS), violations
     counts = counter.count_file(html_path)
     assert counts["top"]["strict"] == 0, counts
     # composite-regex count: sum of strict/loose/parquet/ruleid in the top
@@ -1273,13 +1274,14 @@ def test_t21_linkage_fed_label_reaches_rendered_element(tmp_path) -> None:
     html = _t21_render_html(snap, tmp_path)
     # The shell wraps the metric name in <span class="mq-metric-name"> and
     # prints the bilingual label pair inside two ``<span class="l-en">`` /
-    # ``<span class="l-zh">`` children. The rendered EN/ZH pair is the LABEL
-    # pair we ship; the T11 byte-identity constraint forces us to ship the
-    # deslug form ("Glt fed monetary contribution z" /
-    # "美联储货币贡献 z 值") rather than the spec's example text. Both
-    # strings ARE in the html below.
-    expected_en = "Glt fed monetary contribution z"
-    expected_zh = "美联储货币贡献 z 值"
+    # ``<span class="l-zh">`` children. T21 review M3(e): the reviewed S7
+    # strings ship ("Fed balance sheet, against its own history" /
+    # "美联储资产负债表（对比自身历史）"); the T11 preservation goldens
+    # froze BASE's de-slugged fallback, so tests/test_macro_rates_curves_
+    # route.py collapses exactly these strings back to BASE text for that
+    # comparison only.
+    expected_en = "Fed balance sheet, against its own history"
+    expected_zh = "美联储资产负债表（对比自身历史）"
     needle = (
         '<span class="mq-metric-name">'
         f'<span class="l-en">{expected_en}</span>'
@@ -1374,6 +1376,33 @@ def test_t21_four_clocks_mapped_from_release_receipt() -> None:
     assert leg_src["definition_id"] == "WALCL"
     assert leg_src["provider"] == "Board of Governors of the Federal Reserve System"
 
+    # T21 review M1: EVERY leg source row present carries the SAME freshness
+    # token as that leg's composed metric row (copied, never recomputed).
+    # The equality is checked under a normal past clock (the frozen spec's
+    # canonical example built_at): under the module BUILT_AT the fixture's
+    # receipts are a future clock and both freshness paths return
+    # SOURCE_FAILED, which would hide a divergence.
+    fresh_snap = liquidity_central_banks.compose(
+        _glt_with_receipts(), _producer_cb_desk(), _base_hist(),
+        built_at="2026-10-17T00:00:00Z")
+    metric_fresh = {m["metric_id"]: m["freshness"]
+                    for m in fresh_snap["metrics"]["items"]}
+    leg_metric_by_leg = {
+        "fed": "glt_fed_monetary_contribution_z",
+        "ecb": "glt_ecb_monetary_contribution_z",
+        "boj": "glt_boj_monetary_contribution_z",
+        "broad_dollar": "glt_broad_dollar_contribution_z",
+        "high_yield_oas": "glt_high_yield_oas_contribution_z",
+        "real_yield_10y": "glt_real_yield_10y_contribution_z",
+    }
+    leg_sources = [s for s in fresh_snap["sources"]["items"]
+                   if s["source_id"].startswith("glt_leg_")]
+    assert leg_sources, "fixture must produce glt_leg_* source rows"
+    for src in leg_sources:
+        leg = src["source_id"][len("glt_leg_"):]
+        assert src["freshness"] == metric_fresh[leg_metric_by_leg[leg]], (
+            leg, src["freshness"], metric_fresh[leg_metric_by_leg[leg]])
+
     cb_fed = next(m for m in snap["metrics"]["items"]
                   if m["metric_id"] == "cb_fed_balance_sheet_level")
     assert cb_fed["released_at"] != "2026-10-08"
@@ -1407,6 +1436,9 @@ def test_t21_translation_rows_only_for_ecb_and_boj() -> None:
         assert t["freshness"] == "NOT_COVERED"
         assert t["unit"] == "USD billions"
         assert t["source_refs"] == src_refs[t["metric_id"]]
+        # T21 review M2: no reading exists, so no observed date and no
+        # reference period (S4: observed_at None).
+        assert t["observed_at"] is None and t["reference_period"] is None
     # composing _base_glt() (no model_spec) yields NO translation rows and
     # the metric count is unchanged versus BASE.
     base_snap = liquidity_central_banks.compose(

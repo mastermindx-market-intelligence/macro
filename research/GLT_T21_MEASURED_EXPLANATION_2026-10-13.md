@@ -31,7 +31,7 @@ never improves the rank).
 4. Presenter — `lib/macro_suite_view.py` `_metrics` maps snapshot to view rows with `normalized`, `unit`, `basis`, `fx_translation`: `grep -n "_is_normalized_metric\|_strip_currency_unit\|_fx_translation_view" lib/macro_suite_view.py`.
 5. Label — `lib/macro_suite_labels.py` resolves `glt_fed_monetary_contribution_z`: `grep -n "glt_fed_monetary_contribution_z" lib/macro_suite_labels.py`.
 6. Template variable — `templates/_macro_suite_shell.html.j2` row block for the metric grid: `grep -n "metric-row\|mq-metric-name" templates/_macro_suite_shell.html.j2`.
-7. Rendered element — `test_t21_linkage_fed_label_reaches_rendered_element` asserts `<span class="l-en">Fed balance sheet, against its own history</span>` and `<span class="l-zh">美联储资产负债表（对比自身历史）</span>`.
+7. Rendered element — `test_t21_linkage_fed_label_reaches_rendered_element` asserts `<span class="mq-metric-name"><span class="l-en">Fed balance sheet, against its own history</span><span class="l-zh">美联储资产负债表（对比自身历史）</span></span>`.
 
 ## 3. Words shown and words refused
 
@@ -40,7 +40,7 @@ Refused-word list: `will`, `expected`, `projected`, `forecast`,
 added by S7 contains any of those words. (Item 1 mentions them only as
 things the workspace does not show.)
 
-UNIT: `"USD billions"` "Usd billions"/"十亿美元"; `"EUR billions"` "Eur billions"/"十亿欧元"; `"JPY billions"` "Jpy billions"/"十亿日元"; `"local currency"` "Local currency"/"本币"; `"ratio_0_1"` "Share (0–1)"/"占比（0–1）".
+UNIT: `"USD billions"` "USD bn"/"十亿美元"; `"EUR billions"` "EUR bn"/"十亿欧元"; `"JPY billions"` "JPY bn"/"十亿日元"; `"local currency"` "local currency"/"本币"; `"ratio_0_1"` "share (0–1)"/"占比（0–1）".
 
 BASIS: `"fx_translation_not_fresh_money"` "Currency translation — not new central-bank money"/"汇率折算——非央行新增资金"; `"standardized_monetary_contribution"` "Standardized contribution to the central-bank money reading"/"对央行货币读数的标准化贡献"; `"standardized_funding_contribution"` "Standardized contribution to the dollar-funding reading"/"对美元融资读数的标准化贡献"; `"trailing_13w_pct_change"` "Change over the last 13 weeks"/"近13周变化"; `"trailing_52w_pct_change"` "Change over the last 52 weeks"/"近52周变化".
 
@@ -82,22 +82,22 @@ glt_boj_monetary_contribution_z          0.830764     std dev        LATE_WITHIN
 glt_broad_dollar_contribution_z          -0.119342    std dev        LATE_WITHIN_TOLERANCE 2026-10-08   2026-10-09   2026-10-09T00:00:00Z   2026-10-16T18:16:51.754201Z
 glt_high_yield_oas_contribution_z        -0.305917    std dev        LATE_WITHIN_TOLERANCE 2026-10-08   2026-10-09   2026-10-09T00:00:00Z   2026-10-16T18:16:51.754201Z
 glt_real_yield_10y_contribution_z        -1.508251    std dev        LATE_WITHIN_TOLERANCE 2026-10-08   2026-10-09   2026-10-09T00:00:00Z   2026-10-16T18:16:51.754201Z
-glt_ecb_usd_translation                  None         Usd billions   NOT_COVERED    2026-10-02   -            -                      -
-glt_boj_usd_translation                  None         Usd billions   NOT_COVERED    2026-09-30   -            -                      -
-cb_fed_balance_sheet_level               6747.6       Usd billions   CURRENT        2026-10-07   -            -                      -
+glt_ecb_usd_translation                  None         USD bn         NOT_COVERED    -            -            -                      -
+glt_boj_usd_translation                  None         USD bn         NOT_COVERED    -            -            -                      -
+cb_fed_balance_sheet_level               6747.6       USD bn         CURRENT        2026-10-07   -            -                      -
 cb_fed_balance_sheet_impulse_13w         0.18         %              CURRENT        2026-10-07   -            -                      -
 cb_fed_balance_sheet_impulse_52w         2.38         %              CURRENT        2026-10-07   -            -                      -
-cb_ecb_balance_sheet_level               5943.9       Eur billions   CURRENT        2026-10-09   -            -                      -
+cb_ecb_balance_sheet_level               5943.9       EUR bn         CURRENT        2026-10-09   -            -                      -
 cb_ecb_balance_sheet_impulse_13w         -0.45        %              CURRENT        2026-10-09   -            -                      -
 cb_ecb_balance_sheet_impulse_52w         -4.12        %              CURRENT        2026-10-09   -            -                      -
-cb_boj_balance_sheet_level               625025.3     Jpy billions   STALE_SOURCE   2026-09-01   -            -                      -
+cb_boj_balance_sheet_level               625025.3     JPY bn         STALE_SOURCE   2026-09-01   -            -                      -
 cb_boj_balance_sheet_impulse_13w         -13.67       %              STALE_SOURCE   2026-09-01   -            -                      -
 cb_boj_balance_sheet_impulse_52w         -15.13       %              STALE_SOURCE   2026-09-01   -            -                      -
-glt_monetary_coverage_ratio              1            Ratio 0 1      LATE_WITHIN_TOLERANCE 2026-10-09   -            -                      -
-glt_funding_coverage_ratio               1            Ratio 0 1      LATE_WITHIN_TOLERANCE 2026-10-09   -            -                      -
+glt_monetary_coverage_ratio              1            share (0–1)    LATE_WITHIN_TOLERANCE 2026-10-09   -            -                      -
+glt_funding_coverage_ratio               1            share (0–1)    LATE_WITHIN_TOLERANCE 2026-10-09   -            -                      -
 glt_leg_fed                              freshness=LATE_WITHIN_TOLERANCE provider='Board of Governors of the Federal Reserve System' ref_period=2026-10-07 released_at=2026-10-08 first_known_at=2026-10-08T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=WALCL definition_version=1.0.0
-glt_leg_ecb                              freshness=STALE_SOURCE provider='European Central Bank via FRED' ref_period=2026-10-02 released_at=2026-10-06 first_known_at=2026-10-08T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=ECBASSETSW definition_version=1.0.0
-glt_leg_boj                              freshness=STALE_SOURCE provider='Bank of Japan via FRED' ref_period=2026-09-30 released_at=2026-10-02 first_known_at=2026-10-08T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=JPNASSETS definition_version=1.0.0
+glt_leg_ecb                              freshness=LATE_WITHIN_TOLERANCE provider='European Central Bank via FRED' ref_period=2026-10-02 released_at=2026-10-06 first_known_at=2026-10-08T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=ECBASSETSW definition_version=1.0.0
+glt_leg_boj                              freshness=LATE_WITHIN_TOLERANCE provider='Bank of Japan via FRED' ref_period=2026-09-30 released_at=2026-10-02 first_known_at=2026-10-08T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=JPNASSETS definition_version=1.0.0
 glt_leg_broad_dollar                     freshness=LATE_WITHIN_TOLERANCE provider='Board of Governors of the Federal Reserve System via FRED' ref_period=2026-10-08 released_at=2026-10-09 first_known_at=2026-10-09T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=DTWEXBGS definition_version=1.0.0
 glt_leg_high_yield_oas                   freshness=LATE_WITHIN_TOLERANCE provider='ICE BofA via FRED and the repo append-only archive' ref_period=2026-10-08 released_at=2026-10-09 first_known_at=2026-10-09T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=BAMLH0A0HYM2 definition_version=1.0.0
 glt_leg_real_yield_10y                   freshness=LATE_WITHIN_TOLERANCE provider='Board of Governors of the Federal Reserve System via FRED' ref_period=2026-10-08 released_at=2026-10-09 first_known_at=2026-10-09T00:00:00Z collected_at=2026-10-16T18:16:51.754201Z definition_id=DFII10 definition_version=1.0.0
@@ -123,6 +123,12 @@ STEP 1b whole-page figure `27` lives in the drawer bucket (the six
 `global_liquidity_transmission.json` path in Sources details); the
 spec's `(f)` comment explicitly allows this and the existing `(f)`
 implementation is correct.
+
+Review repair (2026-10-17): leg source rows now carry the leg metric
+row's own freshness token; translation rows carry no observed or
+reference date; the T11 preservation check collapses exactly the
+reviewed T21 label strings back to BASE's fallback text and still
+fails on any other edit; the goldens are untouched.
 
 ## 7. T12 vocabulary citation
 
