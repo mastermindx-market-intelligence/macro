@@ -26602,6 +26602,9 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_foresight_cascade.py"
+      - "tests/test_foresight_health.py"
+      - "tests/test_foresight_score.py"
+      - "tests/test_foresight_sizing.py"
       - "engine/power_scarcity.py"
       - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
@@ -26673,6 +26676,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
+      - name: Foresight health, score and sizing suites
+        run: python -m pytest tests/test_foresight_health.py tests/test_foresight_score.py tests/test_foresight_sizing.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
