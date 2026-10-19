@@ -469,6 +469,52 @@ oip_release_owned_empty_lock() {
   python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" release "$1" "$2"
 }
 
+
+# Reuse the incumbent index-lock/QLedger/ref-CAS transaction for immutable
+# retained capture OIDs. The worktree is intentionally NEVER restored here:
+# Git's index lock does not protect independent working-file writers.
+oip_retained_overlay_locked() {
+  local index_snapshot="$1" parent="$2" parent_tree="$3" target="$4"
+  shift 4
+  local path entry metadata mode kind oid status frozen_tree
+  if [ "$target" != "$(git rev-parse 'refs/remotes/origin/main^{commit}' 2>/dev/null)" ] ||
+     ! git merge-base --is-ancestor "$target" "$parent"; then
+    echo "::error title=retained capture boundary moved::ref or ancestry changed under index ownership" >&2
+    return 1
+  fi
+  if ! frozen_tree=$(GIT_INDEX_FILE="$index_snapshot" git write-tree --missing-ok) ||
+     [ "$frozen_tree" != "$parent_tree" ]; then
+    echo "::error title=retained capture index changed::a foreign staged preimage must be preserved" >&2
+    return 1
+  fi
+  if ! status=$(GIT_OPTIONAL_LOCKS=0 git status --porcelain=v1 --untracked-files=all --ignored=matching -- "$@") ||
+     [ -n "$status" ]; then
+    echo "::error title=retained capture working preimage changed::pending writer bytes preserved" >&2
+    return 1
+  fi
+  for path in "$@"; do
+    if ! [[ "$path" =~ ^data/us_prophet_rank/episode_inputs/turn_watch/producer_captures/[0-9a-f]{64}\.json$ ]]; then
+      echo "::error title=retained capture path rejected::$path" >&2
+      return 1
+    fi
+    entry=$(git ls-tree "$target" -- "$path") || return 1
+    if [ -z "$entry" ] || [ "$entry" = "${entry#*$'\t'}" ] ||
+       [ "${entry#*$'\t'}" != "$path" ] ||
+       [ "$(git ls-tree "$parent" -- "$path")" = "$entry" ]; then
+      echo "::error title=retained capture OID rejected::$path" >&2
+      return 1
+    fi
+    metadata="${entry%%$'\t'*}"
+    read -r mode kind oid <<<"$metadata"
+    if [ "$mode" != 100644 ] || [ "$kind" != blob ] ||
+       ! git cat-file -e "$oid^{blob}" 2>/dev/null; then
+      echo "::error title=retained capture blob rejected::$path" >&2
+      return 1
+    fi
+    GIT_INDEX_FILE="$index_snapshot" git update-index --add --cacheinfo 100644 "$oid" "$path" || return 1
+  done
+}
+
 # Commit the exact live index snapshot while owning Git's real index lock.
 # The same primitive is used for the broad engine tree and the later render-sync
 # tree with different root allowlists.  No validation-then-commit window exists:
@@ -477,6 +523,13 @@ oip_release_owned_empty_lock() {
 oip_commit_locked_roots() {
   local message="$1" reject_narrow="$2"
   shift 2
+  local capture_target="" capture_expected_parent=""
+  if [ "${1:-}" = "--retained-capture-overlay" ]; then
+    [ "$#" -ge 4 ] || return 1
+    capture_target="$2"
+    capture_expected_parent="$3"
+    shift 3
+  fi
   local -a allowed_roots=("$@")
   local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
   local diff_path="" tree="" candidate="" restore_target="" status path root matched rc=0 owned=0
@@ -510,6 +563,14 @@ oip_commit_locked_roots() {
       cp -- "$index_path" "$snapshot" || rc=$?
     else
       GIT_INDEX_FILE="$snapshot" git read-tree "$parent" || rc=$?
+    fi
+  fi
+  if [ "$rc" -eq 0 ] && [ -n "$capture_target" ]; then
+    if [ "$parent" != "$capture_expected_parent" ] ||
+       ! oip_retained_overlay_locked "$snapshot" "$parent" "$parent_tree" "$capture_target" "${allowed_roots[@]}"; then
+      rc=1
+      # No real index/ref change occurred; leave any late staged writer intact.
+      qledger_rejected=1
     fi
   fi
   if [ "$rc" -eq 0 ]; then

@@ -79,7 +79,12 @@ def test_overlapping_runners_preserve_first_remote_capture_and_other_outputs(run
         retention.check_retained(second)
     result = retention.preserve_retained(second)
     assert result["restored_count"] == 1
-    assert (second / CAPTURE).read_bytes() == FIRST
+    # The published commit retains main's immutable capture. A conflicting
+    # local working file is left intact, never destroyed to prepare that commit.
+    assert git(second, "show", "HEAD:" + CAPTURE).stdout == FIRST
+    assert (second / CAPTURE).read_bytes() == SECOND
+    assert git(second, "diff", "--", CAPTURE).stdout
+    assert not git(second, "diff", "--cached", "--", CAPTURE).stdout
     assert git(second, "diff", "--name-only", before, "HEAD").stdout.decode().splitlines() == [CAPTURE]
     assert (second / "data/other_engine_output.json").read_bytes() == b'{"retain_me":true}\n'
     assert retention.check_retained(second)["state"] == "PRESERVED"
@@ -96,7 +101,9 @@ def test_remote_moves_after_guard_native_push_refuses_then_retry_rechecks(runner
     retention.preserve_retained(second)
     git(second, "push", "origin", "main")
     write(second, OTHER_CAPTURE, SECOND)
-    commit(second, "second next capture")
+    # A later producer must not blanket-stage retained worktree conflict bytes.
+    git(second, "add", "--", OTHER_CAPTURE)
+    git(second, "commit", "-m", "second next capture")
     retention.check_retained(second)
     git(first, "pull", "--ff-only", "origin", "main")
     write(first, OTHER_CAPTURE, FIRST)
@@ -136,7 +143,8 @@ def test_retained_deletion_is_restored_and_new_receipt_is_not_removed(runners):
     write(second, OTHER_CAPTURE, SECOND)
     commit(second, "candidate deleted old receipt")
     assert retention.preserve_retained(second)["restored_count"] == 1
-    assert (second / CAPTURE).read_bytes() == FIRST
+    assert git(second, "show", "HEAD:" + CAPTURE).stdout == FIRST
+    assert not (second / CAPTURE).exists()  # deletion retained as local dirt
     assert (second / OTHER_CAPTURE).read_bytes() == SECOND
 
 
@@ -150,7 +158,8 @@ def test_invalid_remote_clock_bytes_are_retained_without_promoting_them(runners)
     git(second, "fetch", "origin", "main")
     git(second, "rebase", "-X", "theirs", "origin/main")
     retention.preserve_retained(second)
-    assert (second / CAPTURE).read_bytes() == b"invalid retained metadata\n"
+    assert git(second, "show", "HEAD:" + CAPTURE).stdout == b"invalid retained metadata\n"
+    assert (second / CAPTURE).read_bytes() == SECOND
     assert retention.check_retained(second)["state"] == "PRESERVED"
 
 
@@ -189,3 +198,80 @@ def test_engine_publisher_corrects_each_rebase_then_checks_final_push_candidate(
     assert loop.index("qledger_push_candidate=$(git rev-parse") < loop.index("turn_watch_capture_retention.py check")
     assert 'check --candidate "$qledger_push_candidate" || exit $?' in loop
     assert loop.index("turn_watch_capture_retention.py check") < loop.index('push_do origin "$qledger_push_candidate:refs/heads/main"')
+
+
+@pytest.mark.parametrize("late_stage", [False, True], ids=["worktree", "staged"])
+def test_late_independent_receipt_writer_survives_preflight_race(runners, monkeypatch, late_stage):
+    _, _, second = overlap(runners)
+    prior_head = git(second, "rev-parse", "HEAD").stdout
+    real = retention._git
+    observed_target_reads = 0
+    foreign = b"foreign writer after preflight\n"
+
+    def interleave(repo, *args):
+        nonlocal observed_target_reads
+        result = real(repo, *args)
+        # Second target resolution is precisely after the prior unlocked
+        # clean-index/receipt checks. Old git-restore then lost these bytes.
+        if args == ("rev-parse", "--verify", "--end-of-options", "origin/main^{commit}"):
+            observed_target_reads += 1
+            if observed_target_reads == 2:
+                write(second, CAPTURE, foreign)
+                if late_stage:
+                    git(second, "add", "--", CAPTURE)
+        return result
+
+    monkeypatch.setattr(retention, "_git", interleave)
+    with pytest.raises((ValueError, subprocess.CalledProcessError)):
+        retention.preserve_retained(second)
+    assert observed_target_reads == 2
+    assert git(second, "rev-parse", "HEAD").stdout == prior_head
+    assert (second / CAPTURE).read_bytes() == foreign
+    assert git(second, "show", ":" + CAPTURE).stdout == (foreign if late_stage else SECOND)
+    assert (second / "data/other_engine_output.json").read_bytes() == b'{"retain_me":true}\n'
+    assert not (second / ".git/index.lock").exists()
+
+
+@pytest.mark.parametrize("race", ["index_lock", "head_move"])
+def test_late_lock_or_parent_movement_withholds_without_losing_preimage(runners, monkeypatch, race):
+    _, _, second = overlap(runners)
+    real = retention._git
+    observations = 0
+
+    def interleave(repo, *args):
+        nonlocal observations
+        result = real(repo, *args)
+        if args == ("rev-parse", "--verify", "--end-of-options", "origin/main^{commit}"):
+            observations += 1
+            if observations == 2:
+                if race == "index_lock":
+                    (second / ".git/index.lock").write_bytes(b"foreign lock\n")
+                else:
+                    git(second, "commit", "--allow-empty", "-m", "concurrent new parent")
+        return result
+
+    monkeypatch.setattr(retention, "_git", interleave)
+    with pytest.raises((ValueError, subprocess.CalledProcessError)):
+        retention.preserve_retained(second)
+    assert observations == 2
+    assert (second / CAPTURE).read_bytes() == SECOND
+    assert git(second, "show", ":" + CAPTURE).stdout == SECOND
+    if race == "index_lock":
+        assert (second / ".git/index.lock").read_bytes() == b"foreign lock\n"
+    else:
+        assert git(second, "log", "-1", "--format=%s").stdout.strip() == b"concurrent new parent"
+        assert not (second / ".git/index.lock").exists()
+
+
+def test_identical_digest_rerun_needs_no_correction_or_worktree_change(runners):
+    _, first, second = runners
+    write(first, CAPTURE, FIRST)
+    commit(first, "first producer")
+    git(first, "push", "origin", "main")
+    write(second, CAPTURE, FIRST)
+    commit(second, "same exact capture")
+    git(second, "fetch", "origin", "main")
+    git(second, "rebase", "--autostash", "-X", "theirs", "origin/main")
+    before = state(second)
+    assert retention.preserve_retained(second)["restored_count"] == 0
+    assert state(second) == before

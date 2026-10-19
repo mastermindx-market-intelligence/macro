@@ -70,13 +70,16 @@ def preserve_retained(repo: Path, onto: str = "origin/main") -> dict:
         raise ValueError("pending work at a retained producer capture path")
     if _commit(repo, "HEAD") != candidate or _commit(repo, onto) != target:
         raise ValueError("capture retention boundary moved before correction")
-    _git(repo, "restore", "--source", target, "--staged", "--worktree", "--", *differing)
-    # Source in a contained shell: do not import its shell options into the
-    # caller, and do not expose the broad data/site allowlist for this correction.
+    # The incumbent committer acquires Git's real index lock BEFORE replacing
+    # exact capture entries in its private index snapshot. Working-file bytes
+    # are never overwritten: independent writers do not honor Git's index lock.
     command = ('source "$1"\nshift\n'
-               'oip_commit_locked_roots "engine: preserve retained Turn Watch captures" true "$@"')
+               'target="$1"; candidate="$2"; shift 2\n'
+               'oip_commit_locked_roots "engine: preserve retained Turn Watch captures" '
+               'true --retained-capture-overlay "$target" "$candidate" "$@"')
     subprocess.run(["bash", "-c", command, "turn-watch-capture-retention",
-                    str(REPO_ROOT / "scripts/ci/options_signal_nightly.sh"), *differing],
+                    str(REPO_ROOT / "scripts/ci/options_signal_nightly.sh"),
+                    target, candidate, *differing],
                    cwd=repo, check=True, capture_output=True)
     return {**check_retained(repo, target), "restored_count": len(differing)}
 
