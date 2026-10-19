@@ -1,9 +1,10 @@
-"""LR-W6 H1 V3 candidate: synthetic-only, non-inferential delay diagnostic.
+"""LR-W6 V3 candidates: synthetic-only H1 timing and H2 control qualification.
 
 This is NOT the V3 pre-registration, a P0 size/power simulator, a P1/P2/P3
-reader, or a market-data consumer. The only input is caller-supplied phases
-and alarm indices from synthetic P0 data. It deliberately reuses the frozen
-T11 episode classifier (and its original matching/burden definitions).
+reader, or a market-data consumer. All inputs are caller-supplied synthetic
+P0 phases, alarm indices or information-date records with NO forward outcomes.
+H1 reuses the frozen T11 episode classifier and its matching/burden definitions.
+H2 tests eligibility of prior B1 controls without constructing a return label.
 
 Research contract:
   research/LEADERSHIP_ROTATION_V3_CANDIDATE_2026-10-18.md §2/§6
