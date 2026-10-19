@@ -388,7 +388,7 @@ def test_llm_broken_reasons_agree_with_status_grid():
     _status_llm, which now delegates), and reasons are non-empty exactly on BROKEN."""
     for h0 in (None, 0.0, 0.2, 0.5):
         for heat_now in (None, 0.0, 0.25, 0.5):
-            for p0 in (None, False, True):
+            for p0 in (None, False, True, 0, 1, "yes"):
                 for phys_now in (False, True):
                     for n_now in (0, 1, 2, 3):
                         opened = {"heat_at_open": h0, "physical_at_open": p0,

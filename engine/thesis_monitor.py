@@ -558,8 +558,8 @@ def _append_update_event(
 # ── LLM thesis evaluation (original heat-decay logic) ───────────────────────
 
 def _llm_broken_reasons(opened: dict, heat_now: float, phys_now: bool, n_now: int) -> list[str]:
-    """Which LLM kill condition(s) hold, in fixed order. DISPLAY-ONLY: `_status_llm`
-    owns the verdict; this only explains a BROKEN that verdict already made."""
+    """Which LLM kill condition(s) hold, in fixed order. Verdict-bearing: `_status_llm`
+    delegates its BROKEN test here, so a non-empty list IS the BROKEN verdict."""
     h0 = opened.get("heat_at_open") or 0.0
     drop = h0 - (heat_now or 0.0)
     reasons: list[str] = []
