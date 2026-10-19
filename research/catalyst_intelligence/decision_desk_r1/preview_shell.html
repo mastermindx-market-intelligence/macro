@@ -17,11 +17,11 @@
 </head>
 <body>
   <aside class="replay-bar" aria-label="Preview controls">
-    <p><strong>Contract replay</strong> · Synthetic owner cut, evaluated 1 Aug 2026. This preview has no live feed or monitoring.</p>
+    <p><strong>Contract replay</strong> · Synthetic owner cuts, evaluated 1 Aug and 19 Oct 2026. The source-context case uses a fictional filing and has no live feed or monitoring.</p>
     <div class="replay-controls">
       <select id="previewTheme" aria-label="Preview theme"><option value="dark">Dark</option><option value="light">Light</option></select>
       <select id="previewLanguage" aria-label="Preview language"><option value="en">English</option><option value="zh">中文</option></select>
-      <select id="previewScenario" aria-label="Preview state"><option value="captured">Captured API response</option><option value="conflict">Simulated timing conflict</option><option value="withdrawn">Simulated withdrawal</option><option value="unavailable">Simulated unavailable API</option></select>
+      <select id="previewScenario" aria-label="Preview state"><option value="source">Captured API · source context</option><option value="captured">Captured API · earlier evidence gap</option><option value="conflict">Simulated timing conflict</option><option value="withdrawn">Simulated withdrawal</option><option value="unavailable">Simulated unavailable API</option></select>
     </div>
   </aside>
   <main id="desk"></main>
@@ -42,14 +42,16 @@
   document.documentElement.lang=language==='zh'?'zh-CN':'en';
   document.getElementById('previewTheme').value=document.documentElement.dataset.theme;
   document.getElementById('previewLanguage').value=language;
-  let account='synthetic-preview-account', mode='captured', forcePage=null, forceDetail=null;
+  let account='synthetic-preview-account', mode=params.get('case')==='legacy'?'captured':'source', forcePage=null, forceDetail=null;
+  document.getElementById('previewScenario').value=mode;
   const harness={data, setPage:p=>{forcePage=p;},setDetail:d=>{forceDetail=d;},setContext:k=>{account=k;}};
   function responseFor(q) {
     if(mode==='unavailable') throw Object.assign(new Error('simulated unavailable'),{status:503});
     if(forcePage) return clone(forcePage);
-    const p=clone(data['page-'+q.view+'-'+(q.horizon_days===null?'None':q.horizon_days)+'.json']);
+    const prefix=mode==='source'?'source/':'';
+    const p=clone(data[prefix+'page-'+q.view+'-'+(q.horizon_days===null?'None':q.horizon_days)+'.json']);
     if(!p) throw new Error('No captured response for query');
-    if(mode!=='captured' && p.rows.length) {
+    if(!['captured','source'].includes(mode) && p.rows.length) {
       p.generation_id='simulated-'+mode;
       if(mode==='conflict') {
         p.rows[0].timing.state='conflicted'; p.rows[0].research_priority.lane='RECONCILE';
@@ -63,8 +65,8 @@
     loadPage:async({query})=>responseFor(query),
     loadDetail:async()=>{
       if(forceDetail) return clone(forceDetail);
-      const d=clone(data['company-detail.json']);
-      if(mode!=='captured') {const p=responseFor(desk.getState().query);d.generation_id=p.generation_id;d.event=p.rows[0];}
+      const d=clone(data[(mode==='source'?'source/':'')+'company-detail.json']);
+      if(!['captured','source'].includes(mode)) {const p=responseFor(desk.getState().query);d.generation_id=p.generation_id;d.event=p.rows[0];}
       return d;
     },
     onCaseChange:selection=>{
@@ -76,7 +78,11 @@
   window.reviewHarness=Object.assign(harness,{desk});
   document.getElementById('previewTheme').addEventListener('change',e=>{document.documentElement.dataset.theme=e.target.value;});
   document.getElementById('previewLanguage').addEventListener('change',e=>{const u=new URL(location);u.searchParams.set('lang',e.target.value);u.searchParams.set('theme',document.documentElement.dataset.theme);location.href=u;});
-  document.getElementById('previewScenario').addEventListener('change',e=>{mode=e.target.value;forcePage=null;forceDetail=null;desk.refresh();});
+  document.getElementById('previewScenario').addEventListener('change',e=>{
+    mode=e.target.value;forcePage=null;forceDetail=null;
+    const u=new URL(location);u.searchParams.set('case',mode==='source'?'source':'legacy');u.hash='';history.replaceState(null,'',u);
+    desk.refresh();
+  });
   function openRoute(){const h=new URLSearchParams(location.hash.slice(1));if(h.has('event'))desk.openCase({event_fact_ref:h.get('event'),issuer_id:h.get('issuer'),tab:h.get('tab')||'setup'});else desk.close();}
   window.addEventListener('hashchange',openRoute);
   desk.refresh().then(openRoute);

@@ -21,7 +21,7 @@
   const obj = x => x !== null && typeof x === 'object' && !Array.isArray(x);
   const str = (x, max = 4096) => typeof x === 'string' && x.trim().length > 0 && x.length <= max;
   const strings = x => Array.isArray(x) && x.length <= 200 && x.every(v => str(v));
-  const civil = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x) &&
+  const civil = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x) && x.slice(0, 4) !== '0000' &&
     !Number.isNaN(Date.parse(x + 'T00:00:00Z')) && new Date(x + 'T00:00:00Z').toISOString().slice(0, 10) === x;
   const utc = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(x) &&
     civil(x.slice(0, 10)) && !Number.isNaN(Date.parse(x));
@@ -65,18 +65,57 @@
       return [{href: link.href, symbol: security.display_symbol, security_id: security.security_id}];
     });
   }
+  function companyEvidence(item, row, cutoff) {
+    const fields = ['contract_id', 'schema_version', 'scope', 'role', 'event_id',
+      'event_revision_ref', 'issuer_cik', 'document_ref', 'document_revision',
+      'accession', 'document_content_sha256', 'document_bytes', 'span_ref',
+      'span_start_byte', 'span_end_byte', 'span_text_sha256', 'url', 'label',
+      'excerpt', 'source_class', 'rights_profile', 'rights_state', 'filed_on',
+      'source_available_at', 'observed_at', 'projection_cutoff', 'authority'];
+    if (!obj(item) || Object.keys(item).length !== fields.length || !fields.every(k => Object.hasOwn(item, k))) return false;
+    if (item.contract_id !== 'company_catalyst_public_evidence.v1' || item.schema_version !== '1.0.0' ||
+        item.scope !== 'event_source_context' || item.role !== 'source_context' || item.excerpt !== null ||
+        item.label !== 'SEC source document' || item.rights_profile !== 'rp_public_primary_v1' ||
+        item.rights_state !== 'public_primary' || !['primary_filing', 'issuer_release'].includes(item.source_class)) return false;
+    if (!['issuer_cik', 'document_ref', 'span_ref', 'accession', 'event_revision_ref'].every(k => str(item[k]))) return false;
+    if (row.event_family.startsWith('registry_') || !/^evt_source_[0-9a-f]{64}$/.test(item.event_id) ||
+        item.event_id !== row.event_fact_ref || item.event_revision_ref !== row.event_revision_ref ||
+        !/^[A-Za-z0-9][A-Za-z0-9_.:#-]{0,511}$/.test(item.event_revision_ref) ||
+        !/^[0-9]{10}$/.test(item.issuer_cik) || item.issuer_cik === '0000000000' ||
+        row.issuer.company_id !== 'cik:' + item.issuer_cik ||
+        !/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(item.document_ref) ||
+        !/^span_[0-9a-f]{20}$/.test(item.span_ref) ||
+        !/^[0-9]{10}-[0-9]{2}-[0-9]{6}$/.test(item.accession) ||
+        ![item.document_content_sha256, item.span_text_sha256].every(x => typeof x === 'string' && /^[0-9a-f]{64}$/.test(x))) return false;
+    if (!Number.isSafeInteger(item.document_revision) || item.document_revision < 1 ||
+        ![item.document_bytes, item.span_start_byte, item.span_end_byte].every(Number.isInteger) ||
+        item.document_bytes < 1 || item.document_bytes > 16777216 ||
+        item.span_start_byte < 0 || item.span_start_byte >= item.span_end_byte || item.span_end_byte > item.document_bytes) return false;
+    const clock = x => utc(x) && /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,6})?Z$/.test(x);
+    const clockKey = x => x.slice(0, 19) + '.' + (x.includes('.') ? x.slice(20, -1) : '').padEnd(6, '0');
+    if (![item.source_available_at, item.observed_at, item.projection_cutoff].every(clock) ||
+        clockKey(item.source_available_at) > clockKey(item.observed_at) ||
+        clockKey(item.observed_at) > clockKey(item.projection_cutoff) ||
+        (cutoff && (!clock(cutoff) || clockKey(item.projection_cutoff) > clockKey(cutoff))) ||
+        (item.filed_on !== null && (!civil(item.filed_on) || item.filed_on > item.projection_cutoff.slice(0, 10)))) return false;
+    const a = item.authority;
+    if (!obj(a) || Object.keys(a).length !== 4 || a.classification !== 'source_fact' || a.decision_authority !== false ||
+        canonical(a.allowed_uses) !== canonical(['display', 'context', 'explain']) ||
+        canonical(a.forbidden_uses) !== canonical(['originate_signal', 'rank_security', 'select_security',
+          'size_position', 'gate_decision', 'execute_trade', 'raise_authority'])) return false;
+    const locator = typeof item.url === 'string' && /^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/([1-9][0-9]*)\/([0-9]{18})\/[A-Za-z0-9][A-Za-z0-9_.-]{0,255}\.(?:htm|html|txt)$/.exec(item.url);
+    return !!locator && locator[1] === String(Number(item.issuer_cik)) && locator[2] === item.accession.replaceAll('-', '');
+  }
   function evidenceLinks(row) {
-    if (!row.event_family.startsWith('registry_')) return [];
-    const seen = new Set();
+    const registry = row.event_family.startsWith('registry_'), seen = new Set();
     return row.evidence.flatMap(item => {
-      // This is the existing registry evidence shape. Other evidence shapes
-      // need an explicit owner-approved adapter; never derive a URL from an ID.
-      if (!obj(item) || !str(item.url) || !row.timing.evidence_refs.includes(item.url)) return [];
+      if (!obj(item) || !str(item.url)) return [];
+      if (registry ? !row.timing.evidence_refs.includes(item.url) : !companyEvidence(item, row)) return [];
       try {
         const url = new URL(item.url);
         if (url.protocol !== 'https:' || url.username || url.password || seen.has(url.href)) return [];
         seen.add(url.href);
-        return [{href: item.url, label: url.hostname}];
+        return [{href: item.url, label: url.hostname, ...(registry ? {} : {role: 'source_context'})}];
       } catch (_) { return []; }
     });
   }
@@ -111,6 +150,14 @@
     });
     need(obj(r.missingness) && ['source', 'identity', 'asset', 'economic', 'estimates'].every(k => strings(r.missingness[k])));
     need(Array.isArray(r.evidence) && r.evidence.length <= 200 && r.evidence.every(obj));
+    const sourceRecords = r.evidence.filter(item => item.contract_id === 'company_catalyst_public_evidence.v1');
+    need(sourceRecords.length <= 128, 'EVIDENCE_BINDING_MISMATCH');
+    const sourceKeys = new Set();
+    sourceRecords.forEach(item => {
+      need(companyEvidence(item, r, cutoff), 'EVIDENCE_BINDING_MISMATCH');
+      const key = canonical([item.document_ref, item.span_ref]);
+      need(!sourceKeys.has(key), 'EVIDENCE_BINDING_MISMATCH'); sourceKeys.add(key);
+    });
     need(Array.isArray(r.assets) && Array.isArray(r.relationships) && str(r.economic_exposure_state));
     need(obj(r.links) && Array.isArray(r.links.stock_research) && r.links.stock_research.length <= 100 && r.links.stock_research.every(obj));
     return r;
@@ -277,6 +324,10 @@
     task: ['Next step', '下一步'], uncertainty: ['What remains unresolved', '尚待解决'],
     wording: ['Source wording', '来源原文'], noWording: ['No source wording supplied.', '未提供来源原文。'],
     setup: ['Setup', '概况'], scenarios: ['Scenarios', '情景'], research: ['Research', '研究'], sources: ['Sources', '来源'],
+    companySource: ['Open SEC source document', '打开 SEC 来源文件'],
+    sourceContext: ['Source context', '来源背景'],
+    sourceContextBody: ['This link is bound to the supplied event and document revision. Whether the cited passage supports the milestone still needs review.', '此链接与所提供的事件和文件版本绑定。引用段落是否支持该关键事件仍需核查。'],
+    sourceContextRisk: ['Review whether the linked filing supports this milestone.', '请核查关联文件是否支持此关键事件。'],
     sourceMissing: ['The source link was not supplied in this view.', '此视图未提供来源链接。'],
     sourceMissingBody: ['The wording can be reviewed, but its supporting document cannot yet be inspected here.', '可查看已提供的原文，但暂时无法在此核查其依据文件。'],
     noEstimates: ['Scenario estimates are not available yet.', '情景估计暂未提供。'],
@@ -329,7 +380,9 @@
     const resolved = row.issuer.state === 'resolved';
     const symbols = row.issuer.securities.map(s => s.display_symbol);
     let title = FAMILY_COPY[row.event_family][lang], task = t('reviewTask');
-    let risk = evidenceLinks(row).length ? t('outcomeRisk') : t('evidenceRisk');
+    const sources = evidenceLinks(row);
+    let risk = sources.some(item => item.role === 'source_context') ? t('sourceContextRisk') :
+      (sources.length ? t('outcomeRisk') : t('evidenceRisk'));
     let restricted = false;
     if (!row.revision_is_current) {
       title = t('supersededTitle'); task = t('supersededTask'); risk = t('supersededRisk'); restricted = true;
@@ -388,8 +441,10 @@
     function sourceSection(row) {
       const area = el('div', 'bci-dd-sources');
       const links = evidenceLinks(row);
-      if (links.length) links.forEach(item => area.append(link(item.href, item.label + ' ↗', {kind: 'evidence'})));
+      if (links.length) links.forEach(item => area.append(link(item.href,
+        (item.role === 'source_context' ? t('companySource') : item.label) + ' ↗', {kind: 'evidence'})));
       else area.append(field(t('sourceMissing'), t('sourceMissingBody')));
+      if (links.some(item => item.role === 'source_context')) area.append(field(t('sourceContext'), t('sourceContextBody')));
       area.append(field(t('wording'), row.timing.source_wording || t('noWording')));
       return area;
     }

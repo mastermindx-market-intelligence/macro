@@ -1,0 +1,75 @@
+{
+  "candidate_head": "430234957531693b6b13f026a161e28542086a82",
+  "fixture_kind": "synthetic Company source context through actual owner functions and API",
+  "capture_method": "TestClient; existing test auth override; fixed _wmn_now; synthetic _read_bundle",
+  "source_admission": false,
+  "entitled_runtime_verified": false,
+  "production_publication_verified": false,
+  "evaluation_cutoff": "2026-10-19T00:00:00Z",
+  "source_body_kind": "fictional SEC-location synthetic filing, not an observed issuer disclosure",
+  "responses": [
+    {
+      "file": "company-page.json",
+      "status": 200,
+      "sha256": "eb2ed821285cc99a3e712308a64fd5a53cf18076a9be276185fab26fd91b5c90",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-7.json",
+      "status": 200,
+      "sha256": "79774ac6e52db95f5d0b2026ea1e4f278ccbc95b73242231fb6d438706d90f12",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-30.json",
+      "status": 200,
+      "sha256": "b93e506539a7312fde0fa57115ddf2dd827f644d81e0991646766a9c82d04a97",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-90.json",
+      "status": 200,
+      "sha256": "eb2ed821285cc99a3e712308a64fd5a53cf18076a9be276185fab26fd91b5c90",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-180.json",
+      "status": 200,
+      "sha256": "5c54050d1d0b9c60f5dd07d5537f3522edd2f738b3f27fe5d5b8bc25a83648a6",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-365.json",
+      "status": 200,
+      "sha256": "e9ac9891ab311b441b6ffcd9550e1baf7ac3d4283905332e5a712baa5531b57c",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-reconcile-None.json",
+      "status": 200,
+      "sha256": "3041ba751a4b732d34165635c4d2a68f72cbbab684b98973d2d9b185ecd3945d",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-history-None.json",
+      "status": 200,
+      "sha256": "c7fcfcce78c380a41a686ae571759476eb6becd253a715f9c016df01a382ff57",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "company-detail.json",
+      "status": 200,
+      "sha256": "795334749bbe4a481d0662ee16bae7175af869390477909578c248bac3e74c18",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    }
+  ]
+}

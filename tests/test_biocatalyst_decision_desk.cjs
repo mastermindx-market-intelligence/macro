@@ -195,3 +195,91 @@ test('accepted state is copied and immutable against subsequent host payload mut
   assert.equal(c.getState().page.rows[0].timing.source_wording, baseline.rows[0].timing.source_wording);
   assert.throws(() => { c.getState().page.rows.pop(); }, TypeError);
 });
+
+const sourceFixtures = path.join(fixtures, 'company_evidence_r2');
+const sourceRead = name => JSON.parse(fs.readFileSync(path.join(sourceFixtures, name), 'utf8'));
+const sourcePage = sourceRead('company-page.json'), sourceDetail = sourceRead('company-detail.json');
+function sourceController(overrides = {}) {
+  return controller({loadPage: async () => copy(sourcePage), loadDetail: async () => copy(sourceDetail), ...overrides});
+}
+test('new source context retains exact R2 API bytes, cut and explicitly synthetic scope', () => {
+  const receipt = sourceRead('capture-receipt.json');
+  assert.match(receipt.candidate_head, /^[0-9a-f]{40}$/);
+  assert.notEqual(receipt.candidate_head, 'ec5c2e2544576f20348c6eadf834fe3cefae8039');
+  assert.equal(receipt.source_admission, false); assert.equal(receipt.entitled_runtime_verified, false);
+  for (const response of receipt.responses) {
+    assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(sourceFixtures, response.file))).digest('hex'), response.sha256);
+    assert.equal(response.cache_control, 'private, no-store'); assert.equal(response.vary, 'Authorization');
+  }
+  assert.equal(sourcePage.input_cut.cutoff, '2026-10-19T00:00:00Z');
+  assert.equal(sourcePage.rows[0].evidence[0].excerpt, null);
+});
+test('unaltered R2 list and detail expose only the supplied source-context destination', async () => {
+  const c = sourceController(); await c.refresh(); await c.open(desk.rowKey(sourcePage.rows[0]));
+  assert.equal(c.getState().phase, 'loaded'); assert.equal(c.getState().detail.phase, 'loaded');
+  const row = c.getState().page.rows[0], evidence = row.evidence[0];
+  assert.deepEqual(desk.evidenceLinks(row), [{href: evidence.url, label: 'www.sec.gov', role: 'source_context'}]);
+  assert.equal(desk.stockLinks(row)[0].href, 'stock.html?ticker=SYNB');
+  assert.match(desk.presentation(row, sourcePage).risk, /Review whether the linked filing supports this milestone/);
+  assert(!/confirmed|validated|buy|positive outcome/.test(desk.presentation(row, sourcePage).risk));
+});
+for (const [name, mutate] of [
+  ['foreign event', (p, r, e) => { e.event_id = 'other-event'; }],
+  ['noncanonical Company event', (p, r, e) => { e.event_id = r.event_fact_ref = r.row_key.event_fact_ref = 'evt_source_not_canonical'; }],
+  ['Company source on a registry family', (p, r, e) => { r.event_family = 'registry_primary_completion'; }],
+  ['lossy document revision', (p, r, e) => { e.document_revision = Number.MAX_SAFE_INTEGER + 1; }],
+  ['duplicate document/span', (p, r, e) => { r.evidence.push(copy(e)); }],
+  ['unbounded source list', (p, r, e) => { r.evidence = Array.from({length:129}, (_,i) => ({...copy(e), span_ref:'span_'+i.toString(16).padStart(20,'0')})); }],
+  ['foreign revision', (p, r, e) => { e.event_revision_ref = 'other-revision'; }],
+  ['foreign issuer', (p, r, e) => { e.issuer_cik = '0007654321'; }],
+  ['malformed revision', (p, r, e) => { e.event_revision_ref = r.event_revision_ref = r.revision_summary.revision_ref = 'revision with spaces'; }],
+  ['different SEC filing', (p, r, e) => { e.url = e.url.replace('000123456726000001', '000123456726000002'); }],
+  ['different SEC issuer path', (p, r, e) => { e.url = e.url.replace('/1234567/', '/7654321/'); }],
+  ['unsupported domain', (p, r, e) => { e.url = e.url.replace('www.sec.gov', 'example.test'); }],
+  ['unbound query', (p, r, e) => { e.url += '?other=1'; }],
+  ['non-public rights', (p, r, e) => { e.rights_state = 'licensed'; }],
+  ['different rights profile', (p, r, e) => { e.rights_profile = 'rp_internal'; }],
+  ['source-support promotion', (p, r, e) => { e.role = 'supports'; }],
+  ['decision promotion', (p, r, e) => { e.authority.decision_authority = true; }],
+  ['extra authority field', (p, r, e) => { e.authority.forecast = true; }],
+  ['unapproved excerpt', (p, r, e) => { e.excerpt = 'a source passage'; }],
+  ['private extension', (p, r, e) => { e.source_locator = '/private/source'; }],
+  ['span outside document', (p, r, e) => { e.span_end_byte = e.document_bytes + 1; }],
+  ['non-integer revision', (p, r, e) => { e.document_revision = true; }],
+  ['coerced accession', (p, r, e) => { e.accession = ['0001234567-26-000001']; }],
+  ['unsupported evidence version', (p, r, e) => { e.schema_version = '2.0.0'; }],
+  ['availability after observation', (p, r, e) => { e.source_available_at = '2026-10-18T16:01:00.000001Z'; }],
+  ['microsecond beyond input cut', (p, r, e) => { e.projection_cutoff = '2026-10-19T00:00:00.000001Z'; }],
+  ['excess fractional precision', (p, r, e) => { e.observed_at = '2026-10-18T16:01:00.0000001Z'; }],
+  ['normalized midnight', (p, r, e) => { e.observed_at = '2026-10-18T24:00:00Z'; }],
+  ['year-zero availability', (p, r, e) => { e.source_available_at = '0000-01-01T00:00:00Z'; }],
+  ['year-zero filing', (p, r, e) => { e.filed_on = '0000-01-01'; }],
+  ['filing after projection', (p, r, e) => { e.filed_on = '2026-10-20'; }],
+]) test('source context refuses ' + name + ' without retaining earlier visible data', async () => {
+  const p = copy(sourcePage), row = p.rows[0]; mutate(p, row, row.evidence[0]);
+  let invalid = false;
+  const c = sourceController({loadPage: async () => invalid ? p : copy(sourcePage)});
+  await c.refresh(); await c.open(desk.rowKey(sourcePage.rows[0]));
+  invalid = true; await c.refresh();
+  assert.equal(c.getState().phase, 'unavailable'); assert.equal(c.getState().page, null); assert.equal(c.getState().detail, null);
+});
+test('source projection at the exact microsecond cut is accepted without millisecond rounding', async () => {
+  const p = copy(sourcePage), e = p.rows[0].evidence[0];
+  p.input_cut.cutoff = p.evaluation_cutoff = e.projection_cutoff = '2026-10-19T00:00:00.000001Z';
+  const c = sourceController({loadPage: async () => p}); await c.refresh();
+  assert.equal(c.getState().phase, 'loaded');
+});
+test('detail cannot substitute another source inside the same publication and event revision', async () => {
+  const d = copy(sourceDetail); d.event.evidence[0].url = d.event.evidence[0].url.replace('synthetic.htm', 'another.htm');
+  const c = sourceController({loadDetail: async () => d}); await c.refresh(); await c.open(desk.rowKey(sourcePage.rows[0]));
+  assert.equal(c.getState().page, null); assert.equal(c.getState().detail, null);
+});
+test('a source context link never removes correction or stale-record restrictions', () => {
+  for (const change of [r => { r.occurrence = 'withdrawn'; }, r => { r.revision_is_current = false; },
+    r => { r.timing.state = 'conflicted'; }, r => { r.missingness.source = ['SOURCE_NOT_CURRENT']; }]) {
+    const p = copy(sourcePage); change(p.rows[0]);
+    const v = desk.presentation(p.rows[0], p);
+    assert.equal(v.restricted, true);
+    assert.notEqual(v.risk, desk.presentation(sourcePage.rows[0], sourcePage).risk);
+  }
+});
