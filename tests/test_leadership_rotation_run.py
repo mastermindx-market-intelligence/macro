@@ -1797,3 +1797,52 @@ def test_v3_h3_p0_fails_closed_on_missing_stratum_missing_outcome_or_bad_time():
     with pytest.raises(ValueError, match="donor_weak must be boolean"):
         from dataclasses import replace
         check([replace(weak, donor_weak=None)], [control])
+
+
+
+def test_v3_actual_g2_synthetic_pair_exercises_all_three_candidate_contrasts():
+    """Accepted G2 generator + existing frozen arm reader, no real market data.
+
+    This does NOT establish null size, power, honest group N, predictive status
+    or pass the original prereg V1/V2/V2.1 obligations.
+    """
+    import numpy as np
+    from scripts import leadership_rotation_p0 as p0
+    from scripts import leadership_rotation_study as st
+    from scripts.leadership_rotation_v3_candidate import candidate_v3_p0_pair_diagnostic
+
+    groups, truth = p0.simulate_family(
+        sigma=p0.G2_SIGMA, delta=.04, rho=p0.G2_RHO,
+        n_formation=252 * 4,
+        seed_seq=np.random.SeedSequence([20261018, 107, 1]),
+    )
+    assert truth["n"] == st.WARMUP + 252 * 4 + p0.TAIL
+    sample = groups["broadening_proxy"][0]
+    out = candidate_v3_p0_pair_diagnostic(
+        sample, start=st.WARMUP, end=st.WARMUP + 252 * 4 - 1,
+    )
+    assert out["scope"] == "P0_SYNTHETIC_ONLY"
+    assert out["status"] == "DIAGNOSTIC_ONLY"
+    assert out["pair_id"] == sample.pair_id
+    assert out["v3_preregistered"] is False
+    assert out["size_or_power_proven"] is False
+    assert out["predictive_capability_qualified"] is False
+    assert out["h1"]["status"] in ("DESCRIPTIVE", "NOT_EXECUTABLE")
+    assert out["h2"]["total_a1"] == (
+        out["h2"]["matched"] + out["h2"]["unmatched"]
+        + out["h2"]["feature_unavailable"]
+    )
+    assert all(t - 63 <= b < t - 20 for t, b in out["h2"]["control_dates"])
+    assert out["h3"]["n_a1"] + out["h3_feature_unavailable"]["a1"] <= out["h2"]["total_a1"]
+    assert out["h3"]["n_selected"] + out["h3"]["n_unpaired"] == out["h3"]["n_a1"]
+    assert out["h3"]["status"] in ("DESCRIPTIVE", "NOT_EXECUTABLE")
+    assert out["h3"]["matching_and_cluster_inference_proven"] is False
+    if out["h3"]["status"] != "DESCRIPTIVE":
+        assert out["h3"]["delta_log_units"] is None
+
+    # An accepted synthetic path can't pretend it read or reserved a live P1.
+    import inspect
+    code = inspect.getsource(candidate_v3_p0_pair_diagnostic)
+    assert "run_p1(" not in code
+    assert "store.read(" not in code
+    assert "config.data_dir(" not in code
