@@ -4326,6 +4326,7 @@ CURATED_EXCLUSIVE = {
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
     "research-vault",
+    "market-memory-e0-contract",  # E0 suites own their exact dependency closure.
     # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
     "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites

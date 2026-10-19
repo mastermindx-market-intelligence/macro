@@ -9895,6 +9895,7 @@ jobs:
           tests/test_capital_structure_capacity_c2x.py
           tests/test_capital_structure_capacity_c2d.py
           tests/test_capital_structure_g0_venue.py
+          tests/test_capital_structure_g0_verification.py
           tests/test_capital_structure_registration_integration.py
           tests/test_capital_structure_share_basis.py
           tests/test_capital_structure_authorized_shares.py
@@ -12099,7 +12100,6 @@ jobs:
           tests/test_research_factory_schema.py
           tests/test_research_factory_market_memory.py
           tests/test_research_codegen_factory_fence.py
-          tests/test_market_memory_e0_control_records.py
           tests/test_market_memory_evidence_accounting.py
           tests/test_market_memory_evidence_accounting_parent.py
           tests/test_research_factory_market_memory_evidence.py
@@ -12120,6 +12120,63 @@ jobs:
           tests/test_research_codegen_admin_tokens.py
           tests/test_holdout_vault.py
           tests/test_promotion_gate.py
+          -q
+
+  market-memory-e0-contract:
+    # E0 semantic/storage contracts have one narrow CI owner. Keep the universal
+    # Research Factory authority guard above broad; these suites do not need to
+    # increase the selected weight of unrelated templates/scripts/engines.
+    if: ${{ false }}  # executed inside the existing ci-pack matrix
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/research_factory/market_memory_e0_*.py"
+      - "engine/research_factory/market_memory_contextual_registration.py"
+      - "tests/test_market_memory_e0_*.py"
+      - "tests/fixtures/market_memory_e0/**"
+      - "contracts/market_memory/**"
+      - "config/market_memory_canary.v1.json"
+      - "engine/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/brain_analogues.py"
+      - "engine/neuralweb/market_memory.py"
+      - "engine/neuralweb/market_memory_episode_comparison.py"
+      - "engine/neuralweb/market_memory_episode_features.py"
+      - "engine/neuralweb/market_memory_episode_retrieval.py"
+      - "engine/neuralweb/market_memory_identity.py"
+      - "engine/neuralweb/market_memory_lineage.py"
+      - "engine/neuralweb/market_memory_operating_cortex_service.py"
+      - "engine/neuralweb/market_memory_pit.py"
+      - "engine/neuralweb/market_memory_projection.py"
+      - "engine/neuralweb/market_memory_retained_context_cohort.py"
+      - "engine/neuralweb/market_memory_trusted.py"
+      - "engine/research_factory/__init__.py"
+      - "engine/research_factory/codegen_boundary.py"
+      - "engine/research_factory/ledger.py"
+      - "engine/research_factory/market_memory_evidence_accounting.py"
+      - "engine/research_factory/schema.py"
+      - "engine/research_factory/state.py"
+      - "research/market_memory/RETRIEVAL_PROTOCOL_2026_10_12.json"
+      - "tests/__init__.py"
+      - "tests/market_memory_e0_fixtures.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install E0 source dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests jsonschema fastapi httpx
+      - name: Market Memory E0 control, reservation and condition contracts
+        run: >-
+          python -m pytest
+          tests/test_market_memory_e0_control_records.py
+          tests/test_market_memory_e0_domains.py
+          tests/test_market_memory_e0_evaluation_spec.py
+          tests/test_market_memory_e0_reservations.py
+          tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_allocation.py
           -q
 
   research-codegen-runtime-qualification:
