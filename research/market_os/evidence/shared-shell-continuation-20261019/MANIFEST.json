@@ -5,7 +5,7 @@
   "programme": "WS:MARKET-OS",
   "original_root": "market-os-shared-shell-design-20260924-sol-001",
   "attended_parent": "shared-shell-production-20261018-c1",
-  "macro_source_head": "cd00da8f433f512baf471dfef4517a838cbef145",
+  "macro_source_head": "c7867f101287788dc9aaf2ac0483e0c35426b59f",
   "terminal_application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
   "terminal_repair_candidate_R": "bd158476d6ba1394b2867fa09db6faa762473158",
   "visual_acceptance": "BLOCKED; no canonical EVIDENCE.yml or application screenshots",
@@ -153,7 +153,7 @@
     },
     {
       "file": "browser-connection-observation.json",
-      "source": "Attended Browser error and original local-preview cleanup, 08:18\u201308:24 UTC",
+      "source": "Attended Browser error and original local-preview cleanup, 08:18–08:24 UTC",
       "bytes": 1907,
       "sha256": "fd877a68a6066ebbf525bc58f389d36761a7353c329459d87155a22cb9b43839",
       "encoding": "identity"
@@ -175,8 +175,8 @@
     {
       "file": "README.md",
       "source": "Attended synthesis; exact observations and limitations are distinguished",
-      "bytes": 14853,
-      "sha256": "2044aed039ae3120ecadcbe2417b5d7535dd750565efde9a7abcd19fdc710bc1",
+      "bytes": 16833,
+      "sha256": "fcab90ac059df83018577f35db7239a2ad5c80c5d0e41da729100816623e2340",
       "encoding": "identity"
     },
     {
@@ -239,9 +239,142 @@
       "bytes": 2948,
       "sha256": "21e398e561c10a8681b92efa655de766dccec40375f716ef4d5d53bd7cd559da",
       "encoding": "identity"
+    },
+    {
+      "file": "shared-shell-continuation-native-publication-20261019.json",
+      "source": "/tmp/shared-shell-continuation-native-publication-20261019.json",
+      "bytes": 1158,
+      "sha256": "cf795cea151fe823d6f94ac30948ec74e900334e0b2aeac12daaea652cbd78d3"
+    },
+    {
+      "file": "shared-shell-macro-conflict-census-20261019T090638Z.json",
+      "source": "/tmp/shared-shell-macro-conflict-census-20261019T090638Z.json",
+      "bytes": 1869,
+      "sha256": "e911bacf3ef1124f993d986b574169b606c62b6c22a3ef7f47a8ec5b015bac7b"
+    },
+    {
+      "file": "shared-shell-macro-generated-conflict-intents-20261019.json.gz",
+      "source": "/tmp/shared-shell-macro-generated-conflict-intents-20261019.json",
+      "bytes": 23606,
+      "sha256": "50a083bc2b3c2bcb2bbc400984bf5f1c923fa4292154e0602228f773b55d566e",
+      "original_bytes": 202105,
+      "original_sha256": "26b582646776c9fc9feda36e08446762b1fbc9885398b7fb7bf45c9ef1c31d06",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-macro-generated-conflict-sides-20261019.json",
+      "source": "/tmp/shared-shell-macro-generated-conflict-sides-20261019.json",
+      "bytes": 9052,
+      "sha256": "21767745595daaa08e7dc7c16e68d912d6e8c666232d5ce40262baf6144b15af"
+    },
+    {
+      "file": "shared-shell-macro-three-conflict-resolution-20261019.json",
+      "source": "/tmp/shared-shell-macro-three-conflict-resolution-20261019.json",
+      "bytes": 4024,
+      "sha256": "90c8b834db3ff48c448a5b637f80359bcbbd60040680e6e2b767f8822c8c98e2"
+    },
+    {
+      "file": "shared-shell-macro-integrated-conflict-validation-20261019.json",
+      "source": "/tmp/shared-shell-macro-integrated-conflict-validation-20261019.json",
+      "bytes": 2258,
+      "sha256": "8caf5f575385b42aa54c02c006ecc6f89888ac23092de8fe14c069c3e5e568ff"
+    },
+    {
+      "file": "shared-shell-macro-integrated-conflict-validation-20261019.log.gz",
+      "source": "/tmp/shared-shell-macro-integrated-conflict-validation-20261019.log",
+      "bytes": 3524,
+      "sha256": "e024176be5e2b2389f393812c83723461cf35cae1e77693bbf12e5f4f115bb26",
+      "original_bytes": 13079,
+      "original_sha256": "d86f0fe10267966f4d38f01ed56a401c78522467048a2f376f90594a05d12ad4",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-macro-ci-inventory-validation-20261019.json",
+      "source": "/tmp/shared-shell-macro-ci-inventory-validation-20261019.json",
+      "bytes": 965,
+      "sha256": "f737fff3275e2809bad74f18b8297e4cc9cccbe249cdd3ee0ce0ae946a2cf2b2"
+    },
+    {
+      "file": "shared-shell-macro-ci-inventory-validation-20261019.log.gz",
+      "source": "/tmp/shared-shell-macro-ci-inventory-validation-20261019.log",
+      "bytes": 1950,
+      "sha256": "7c94b8f1bd4a68630236a3f86dff43a4c73c695a21605fed9dfcf2891204f060",
+      "original_bytes": 4009,
+      "original_sha256": "8eb54bf878735a255a4c55f09ec175008c17a23cd6414631a541899021963123",
+      "encoding": "gzip"
+    },
+    {
+      "file": "shared-shell-macro-real-conflict-merge-commit-20261019.json",
+      "source": "/tmp/shared-shell-macro-real-conflict-merge-commit-20261019.json",
+      "bytes": 936,
+      "sha256": "10cf7200df4599c92a149d940cec7ca754552024063695492a9bd57d1ee3625a"
+    },
+    {
+      "file": "shared-shell-original-sni-receipt-census-20261019.json",
+      "source": "/tmp/shared-shell-original-sni-receipt-census-20261019.json",
+      "bytes": 42940,
+      "sha256": "c6f0372cc75015bb1b1af30320213e5a538f9d752fa85d68a816a301beedafe8"
+    },
+    {
+      "file": "fgi9548-sni-lock-repair-test-20261018.log.gz",
+      "source": "/tmp/fgi9548-sni-lock-repair-test-20261018.log",
+      "bytes": 456,
+      "sha256": "49ed090397355839b6ffd494ce6f2138ae192aa48114019cc808f686d188d155",
+      "original_bytes": 1089,
+      "original_sha256": "30cd5b9bdfb37e36e3aee27292a4444952aba901b823e109e46f990a47fe4aa2",
+      "encoding": "gzip"
+    },
+    {
+      "file": "fgi9548-a20-full-20261019.log.gz",
+      "source": "/tmp/fgi9548-a20-full-20261019.log",
+      "bytes": 446,
+      "sha256": "a6815ac1a57324f2c4832da002f9fb9433a7aecd66b48e3cf842606d40c58ad8",
+      "original_bytes": 1077,
+      "original_sha256": "d7f389de490f8414ae97e216af2ab24704e8d1b112981514837b31b84fe06c04",
+      "encoding": "gzip"
+    },
+    {
+      "file": "terminal-repair-ci-observation-0933.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 2021,
+      "sha256": "0803a9aec0c12ee5a82ddefa36b4ec2e0bbcf33e8e440daf8572a6c5a0e1d954"
+    },
+    {
+      "file": "browser-disconnection-observation.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 1132,
+      "sha256": "afc54541933369a5aea856a1a7ad8909ed2d485017b4301a0c8d9d71fdfa5dbe"
+    },
+    {
+      "file": "macro-cd00-independent-source-review.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 1519,
+      "sha256": "b3ca628804a3d0be4eab4df524758ea0f093aaecaa2078b3d29f56088086ac4c"
+    },
+    {
+      "file": "macro-ci-inventory-intent-review.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 1332,
+      "sha256": "d12b05008d06368f2a2f87d9fc5188dd954eba20564bccb4bdaa5ca74761714f"
+    },
+    {
+      "file": "sni-retained-proof-reconciliation.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 1307,
+      "sha256": "c8a2c65560b2e236ea831624c217d80449231a5fcc1fad57aaf1da30418ea77d"
+    },
+    {
+      "file": "native-consultation-receipt-boundaries.json",
+      "source": "attended parent record from retained tool or bounded counsel evidence",
+      "bytes": 485,
+      "sha256": "b426217abf33b26c031d5fc37261566988d3f301a3a8e4d85c56b8c80afe2a24"
     }
   ],
-  "indexed_at": "2026-10-19T08:56:39.260151+00:00",
+  "indexed_at": "2026-10-19T09:37:54.868615+00:00",
   "current_terminal_repair_candidate": "43bc48091225effdd8193a8ca6de584809b17f97",
-  "latest_host_observed_at": "2026-10-19T08:51:09.898796+00:00"
+  "latest_host_observed_at": "2026-10-19T08:51:09.898796+00:00",
+  "macro_incoming_main": "69dd6e774cc48223005426765e74aed193d55954",
+  "latest_confirmed_macro_publication": "3261331f95371b96187ccbfd3fc055067d4a6945",
+  "publication_of_this_package": "awaiting normal native push receipt",
+  "browser_connection": "originating browser disconnected; no new application acceptance"
 }
