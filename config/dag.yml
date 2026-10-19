@@ -261,6 +261,31 @@ lanes:
           projection.
           outputs: [data/capital_structure/state_bundle.json]
 
+      - id: compile_capital_structure_instrument_candidate_terms
+        module: scripts.compile_capital_structure_instrument_candidate_terms
+        note: >
+          Best-effort nightly candidate-term compilation (SPEC_U1B gate 21). Reads
+          document_term_observations.parquet plus the source manifests through the
+          collector-owned source stores and publishes
+          instrument_candidate_terms.parquet under data/capital_structure, or
+          refuses; a refusal is a normal night, so the workflow step is
+          continue-on-error and its outcome is recorded (never a fatal term) in
+          the capital-structure checkpoint gate. Runs after the state bundle and
+          before the capacity-inputs producer that consumes its rows.
+          outputs: [data/capital_structure/instrument_candidate_terms.parquet]
+
+      - id: build_capital_structure_capacity_inputs
+        module: scripts.build_capital_structure_capacity_inputs
+        note: >
+          Offline fail-closed capacity inputs bundle (SPEC_U1B §3). Reads the
+          state bundle published immediately above plus the same verified
+          generation, binds every family tonight's run can lawfully produce
+          (candidate terms, covenant/document commitments, the L0 rule pack)
+          with typed per-family unavailability for the rest, and atomically
+          publishes capacity_inputs.json or nothing. Fatal like the state step;
+          runs before the checkpoint that stages both outputs.
+          outputs: [data/capital_structure/capacity_inputs.json]
+
   # ── daily.yml / collect_tail ─────────────────────────────────────────────
   # 2026-07-14 collect split: the slow post-adapter accrual band (ThetaData
   # tape-flow, TIL organs, shadow-importance, qledger backfill) moved here from
