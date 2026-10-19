@@ -1066,3 +1066,57 @@ def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
     assert any(
         "missing data-si-as-of" in error for error in report["errors"]
     ), report
+
+
+
+def test_publication_stamps_must_belong_to_the_served_hero(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    # A stale visible hero cannot be rescued by a valid time string in a
+    # separate hidden or decorative node inserted ahead of the real section.
+    path.write_text(
+        '<div data-si-as-of="2026-09-14"></div>' +
+        genuine.replace('data-si-as-of="2026-09-14"',
+                        'data-si-as-of="2026-09-15"'),
+        encoding="utf-8",
+    )
+    result = _evaluate_sector_intelligence(tmp_path)
+    assert not result["ok"], result
+    assert any("VINTAGE SPLIT" in error for error in result["errors"])
+    assert result["facts"]["dates"]["site/sector_central.html:data-si-as-of"] == "2026-09-15"
+
+
+def test_publication_stamp_on_unrelated_node_is_not_a_hero_stamp(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    stamp = genuine.split('data-si-baskets-sha256="', 1)[1].split('"', 1)[0]
+    path.write_text(
+        f'<div data-si-baskets-sha256="{stamp}"></div>' +
+        genuine.replace(f'data-si-baskets-sha256="{stamp}"', ''),
+        encoding="utf-8",
+    )
+    result = _evaluate_sector_intelligence(tmp_path)
+    assert not result["ok"], result
+    assert any("missing data-si-baskets-sha256" in x for x in result["errors"])
+
+
+def test_publication_rejects_ambiguous_or_duplicate_hero_metadata(tmp_path: Path) -> None:
+    _write_sector_intelligence_generation(tmp_path, action_asof="2026-09-14")
+    path = tmp_path / "site" / "sector_central.html"
+    genuine = path.read_text(encoding="utf-8")
+    path.write_text(genuine + genuine, encoding="utf-8")
+    duplicate = _evaluate_sector_intelligence(tmp_path)
+    assert not duplicate["ok"], duplicate
+    assert any("exactly one rvx-hero" in x for x in duplicate["errors"])
+
+    path.write_text(
+        genuine.replace('data-si-as-of="2026-09-14"',
+                        'data-si-as-of="2026-09-14" data-si-as-of="2026-09-15"'),
+        encoding="utf-8",
+    )
+    duplicate_attribute = _evaluate_sector_intelligence(tmp_path)
+    assert not duplicate_attribute["ok"], duplicate_attribute
+    assert any("ambiguous data-si-as-of" in x
+               for x in duplicate_attribute["errors"])
