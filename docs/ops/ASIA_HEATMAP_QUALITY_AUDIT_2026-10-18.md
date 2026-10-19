@@ -283,3 +283,63 @@ current production identity/access evidence, not authenticated candidate proof.
 retains exact scope and limits. The original audit run, Sector Central RIG-owner
 blocker, protected review/CI, deployment admission and natural-session proof all
 remain separate gates. No release or new independent approval is claimed.
+
+
+## 2026-10-19 current-main integration and house-token repair — release remains held
+
+The original live carrier now contains source `a094dc39593c3520d9efcd738199e98e0822d37b` (tree
+`862ff8c52ca94119c350e6f6ccc22c1b90f3f109`). This is a source continuation on original PR #8144, not a
+new audit root or a deployed release. The original settled head remains
+`00eca5c41ac4a69c03b5e7afe2293039c5105496`.
+
+A fresh GitHub read resolved the live PR's earlier unknown mergeability to a real
+conflict. Current main `b9c81d2f0a09c0d52e476082561ffcbe43a4057b` was integrated on the original live workspace in
+`a892bd2b967bbdda25291b65c38db38f2acc6fed`. The five conflicts preserved both parents:
+CI dependency lists, Caddy access/cache rules, the API restart trigger and the two
+CI/VPS test files. The resolved Caddy and restart source reuse the retained
+rehearsal bytes; the current tracked-path census preserves the full 518-path
+parent union with no dropped or extra matches. No unrelated CI command or gate
+changed. A fresh non-mutating merge against main `973dc08ad77861affff852479f8473ed22d6f192` is conflict-free.
+
+The current-base design ratchet identified eight owned findings: a search emoji,
+six literal corner radii and a non-token font declaration. Both renderer mirrors
+now use the existing house search geometry, canonical control/card radius tokens
+with the house's documented compatibility fallbacks, and `--font-ui`. The neutral
+Asia container-border correction remains present. Both mirror SHA-256 values are
+`589ae2cc7fba51a7c87cd480d5c801cdd278af5b56a9aca3e19b6219d5aa5da8`.
+The design ratchet now reports zero blocking findings; syntax checks and all
+28 focused renderer tests pass. Runtime-style and visual-evidence ratchets pass;
+these are not a new authenticated browser or visual-matrix approval.
+
+The actual new CI declaration gap was repaired with one command path and 267
+measured import paths across seven existing jobs. The original combined rehearsal
+then exposed omitted source inputs in its old sparse selection. The canonical
+materialization helper added only omitted source roots, preserved every original
+selection and left the staged tree unchanged. With complete source inputs, the
+China job needed 29 additional contract/research paths. Both canonical CI
+declaration/import-closure tests pass. The combined China scope is now 945 exact
+paths; its 556 additions to the standalone live scope are carried on the original
+live source, with all non-path manifest fields unchanged and zero missing paths
+on the current live job. The older unapplied patch remains historical evidence.
+
+Final original combined rehearsal is local `7109774aa6cd4c4e49cfb0b70db2b6114043cdc8`, tree
+`75b17b3b129933c5bdeb8bd8bfb95a9629ef21a6`. It preserves original `ef873ccf` and settled `00eca5c4` as
+ancestors and contains current live `a094dc39593c3520d9efcd738199e98e0822d37b`. It is clean with no
+pending merge. Its final step changes only the two renderer copies relative to
+the CI-qualified integration; the CI manifest and CI test blobs are identical.
+This rehearsal is not a published release.
+
+No new owner return was present on Macro #9592/#7646 or Mastermind #1391 at the
+recorded read. The three Sector Central packet blobs remain unchanged on the
+latest main inspected. Settled CI 39114047414's reference-integrity failure
+remains binding; its passed ci-pack-5 and the completed old-HTML browser check
+were not rerun. Audit `heatmap-quality-audit-20261018-c1-r1` remains under the `EFFECT_UNKNOWN`
+fence (reported carrier status `ACTIVE_OR_WAITING`), with UNKNOWN worker state
+and UNVERIFIED lineage; it was not duplicated or resubmitted.
+The denied predecessor recovery-comment write was not retried.
+
+Consume hosted CI for the newly published live head and preserve its native run
+identity. Fresh independent review, the RIG approval, deployment admission, actual
+new visual/authenticated proof and natural market-session proof remain open.
+Mission complete: **false**. Full source, validation, preservation and gate details
+are in [the current-main integration receipt](evidence/asia-heatmap-quality-20261018/current-main-integration-20261019.json).
