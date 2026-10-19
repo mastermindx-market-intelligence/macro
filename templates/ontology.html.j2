@@ -5,7 +5,8 @@
 
     This template renders a public, cacheable page that contains no current
     reading of any kind. It describes what the trace is and hands off to
-    ontology.js, which is the only thing that talks to the authenticated API.
+    ontology.js and the company inspector, which read their existing private
+    APIs only in the browser. No company reading is included in this shell.
 
     Nothing here may be filled from `data/transmission/` at build time. A
     "realistic" example baked into the shell to avoid an empty first paint is a
@@ -19,11 +20,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% include "_interfonts.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>WTI Live Path — Mastermind</title>
-{% set seo_title = 'WTI Live Path — which step in the oil-to-duration path is actually met | Mastermind' %}{% set seo_desc = 'A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.' %}{% set seo_path = 'ontology.html' %}
+<title>Ontology Explorer — Mastermind</title>
+{% set seo_title = 'Ontology Explorer — transmission paths and source-bound company research | Mastermind' %}{% set seo_desc = 'A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.' %}{% set seo_path = 'ontology.html' %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="{{ nav_prefix|default('') }}theme.css">
 <link rel="stylesheet" href="{{ nav_prefix|default('') }}ontology.css">
+<link rel="stylesheet" href="{{ nav_prefix|default('') }}ontology-company.css">
 <style>
 /* The canvas is this page's own responsibility. theme.css defines the palette
    but never paints <body>, so a page that omits this rule ships dark panels on
@@ -60,6 +62,24 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     </ol>
   </div>
 
+
+  <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
+    <h2 id="ox-company-title">{{ t('Company research', '公司研究') }}</h2>
+    <p class="ox-note">{{ t(
+      'Inspect source-announced plans. Selecting a company does not establish a connection to the WTI path above.',
+      '查看来源披露的计划。选择公司并不确立其与上方 WTI 路径的联系。') }}</p>
+    <form class="ox-company-form">
+      <label class="ox-company-label" for="ox-company-query">{{ t('Company symbol', '公司代码') }}
+        <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required>
+      </label>
+      <button class="ox-cta" type="submit">{{ t('Inspect company', '查看公司') }}</button>
+      <button class="ox-cta secondary" type="button" data-company-clear>{{ t('Clear', '清除') }}</button>
+    </form>
+    <div data-company-result aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Choose a company to inspect its source-announced plans.', '选择一家公司，查看其来源披露的计划。') }}</p>
+    </div>
+  </section>
+
   <noscript>
     <section class="ox-gate">
       <h2>{{ t('This page needs JavaScript', '本页面需要 JavaScript') }}</h2>
@@ -90,5 +110,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 <script src="{{ nav_prefix|default('') }}supabase.js" defer></script>
 <script src="{{ nav_prefix|default('') }}theme.js" defer></script>
 <script src="{{ nav_prefix|default('') }}ontology.js" defer></script>
+<script type="module" src="{{ nav_prefix|default('') }}ontology-company.js"></script>
 </body>
 </html>
