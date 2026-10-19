@@ -7,14 +7,8 @@ examples, the typed negative states are the frozen tuples from
 ``issuer_state_contracts``, and the fixture-bundle traceability run reuses the
 U1a state-bundle suite's fixtures BY IMPORT.
 
-Engine import note: the engine package initializer raises at import on a host
-whose CPython build does not reproduce the document-term authority seal (that
-module is not on this lane's import path at all). The checker's
-``_engine_module`` helper first tries the real package and, only when the
-package initializer itself refuses, loads the same submodule file under a stub
-parent; submodule bytes and their own validation are identical either way.
-This is recorded per process, never silent (the helper prints a warning), and
-on a sealed host the real package import simply wins.
+Engine modules are imported through the real package via the checker's
+``_engine_module`` (no stub fallback).
 """
 from __future__ import annotations
 
@@ -39,8 +33,7 @@ _SPEC = importlib.util.spec_from_file_location(
 checker = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(checker)
 
-# Engine modules through the checker's own loader (real package first, stub
-# parent only when the package initializer refuses on this host).
+# Engine modules through the checker's own loader (the real package only).
 _rq = checker._engine_module("reference_qualification")
 _contracts = checker._engine_module("issuer_state_contracts")
 PACK = _rq.load_reference_pack(ROOT / _rq.REFERENCE_PACK_RELPATH)

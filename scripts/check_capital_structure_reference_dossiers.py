@@ -55,14 +55,9 @@ bundle is absent on this tree (printed verbatim). ``--json`` wraps the same
 result in one JSON object; the exit-3 message stays verbatim in its
 ``message`` field.
 
-Engine import note: the reference-pack loader is imported through the
-``engine.capital_structure`` package. On a host whose package initializer
-cannot run (the document-term authority seal verifies only on the interpreter
-builds it was sealed on), :func:`_engine_module` loads the same submodule file
-under a stub parent instead. The submodule bytes and all of their own
-validation (``parse_reference_pack``) are identical either way; the seal
-protects the document-term parser, which this checker never imports. The
-fallback prints a warning line so the import mode is never silent.
+Engine import note: the reference-pack loader and the state contracts are
+imported through the real ``engine.capital_structure`` package. A host whose
+package initializer refuses is the wrong interpreter; the error propagates.
 """
 from __future__ import annotations
 
@@ -73,7 +68,6 @@ import json
 from pathlib import Path
 import re
 import sys
-import types
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DOSSIER_DIR = Path("research") / "capital_structure" / "e2e_20261013" / "reference"
@@ -95,37 +89,14 @@ _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _engine_module(name: str):
-    """Import ``engine.capital_structure.<name>`` (see module docstring)."""
-    full = f"engine.capital_structure.{name}"
-    try:
-        return importlib.import_module(full)
-    except Exception as exc:  # the package initializer refused on this host
-        print(
-            f"check_capital_structure_reference_dossiers: package initializer "
-            f"unavailable ({type(exc).__name__}); loading {full} from its file",
-            file=sys.stderr,
-        )
-    import engine  # top-level package only; never the capital_structure init
+    """Import ``engine.capital_structure.<name>`` through the real package.
 
-    parent = sys.modules.get("engine.capital_structure")
-    if parent is None or not getattr(parent, "__path__", None):
-        parent = types.ModuleType("engine.capital_structure")
-        parent.__path__ = [str(Path(engine.__file__).resolve().parent / "capital_structure")]
-
-        def _package_getattr(attribute):  # package-style submodule re-exports
-            try:
-                return importlib.import_module(f"engine.capital_structure.{attribute}")
-            except ModuleNotFoundError:
-                pass
-            for sibling in ("event_spine", "projection"):
-                module = importlib.import_module(f"engine.capital_structure.{sibling}")
-                if hasattr(module, attribute):
-                    return getattr(module, attribute)
-            raise AttributeError(attribute)
-
-        parent.__getattr__ = _package_getattr
-        sys.modules["engine.capital_structure"] = parent
-    return importlib.import_module(full)
+    There is no fallback: a host whose package initializer refuses (for
+    example the document-term authority seal) is the wrong interpreter for
+    this checker, and the refusal propagates instead of loading a submodule
+    under a stub parent.
+    """
+    return importlib.import_module(f"engine.capital_structure.{name}")
 
 
 def parse_dossier(text: str, ticker: str) -> dict:
