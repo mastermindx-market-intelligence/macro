@@ -234,6 +234,10 @@ while push_attempt; do
   # both sides' hashed files (next externalize_css prunes the orphan) and
   # finishes the rebase; anything else is left for the abort+retry below.
   if { perl -e 'alarm 420; exec @ARGV or die' -- git rebase --autostash -X theirs origin/main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+    # Two producers may first capture the same pair before either pushes. Keep
+    # main's exact retained receipt after -X theirs, without losing other output.
+    # The correction uses the existing locked committer with exact receipt paths.
+    python3 scripts/ci/turn_watch_capture_retention.py preserve || exit $?
     # post-rebase template↔site re-sync (ui.template_site_sync): -X theirs can
     # resurrect this run's checkout-time template copies over a reword that merged
     # mid-nightly (2026-07-07: engine-render commit 2ae709f9f0 reverted #1793's
@@ -290,6 +294,7 @@ while push_attempt; do
     fi
     # This is the actual final candidate, including any render-sync commit.
     qledger_push_candidate=$(git rev-parse 'refs/heads/main^{commit}') || exit 1
+    python3 scripts/ci/turn_watch_capture_retention.py check --candidate "$qledger_push_candidate" || exit $?
     if push_do origin "$qledger_push_candidate:refs/heads/main"; then echo "pushed engine outputs on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
   fi
   push_abort_rebase

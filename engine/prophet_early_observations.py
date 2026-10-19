@@ -25,6 +25,7 @@ from engine.us_candidate_episode import (
     load_candidate_episode_store_snapshot,
 )
 from engine.us_candidate_episode_intake import IdentitySpine, TURN_WATCH_SCHEMA, _source_id
+from engine.turn_watch_capture import load_producer_capture, producer_capture_unavailable
 
 SCHEMA = "prophet.early_observations/v1"
 AUTHORITY = {"buy": False, "alert": False, "entry_open": False,
@@ -155,6 +156,7 @@ def unavailable_observations(reason: str) -> dict:
                       "first_available_at": None, "source_available_at": None,
                       "observed_at": None, "published_at": None,
                       "actual_clock_state": "NOT_RECORDED"},
+           "producer_capture": producer_capture_unavailable(),
            "authority": dict(AUTHORITY)}
 
 
@@ -226,6 +228,9 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
         return out
     receipt = "sha256:" + digest
     coverage, featured = _source_coverage(doc, public_artifact_path)
+    producer_capture = (load_producer_capture(source_path, raw, doc)
+                        if coverage["state"] == "VERIFIED_SOURCE_PARTITION"
+                        else producer_capture_unavailable("SOURCE_ARTIFACT_UNVERIFIED"))
     relation_index = None
     if episode_root is not None:
         try:
@@ -280,13 +285,15 @@ def load_observations(source_path: Path, *, spine: IdentitySpine | None,
                           "episode_relation": _episode_relation(event_id, receipt, security, relation_index),
                           "authority": dict(AUTHORITY)})
     out.update(status="CURRENT_SESSION" if session == reference_session else "RETAINED_PREVIOUS_SESSION",
-               reason=None, source_receipt=receipt, rows=projected, coverage=coverage)
+               reason=None, source_receipt=receipt, rows=projected, coverage=coverage,
+               producer_capture=producer_capture)
     out["clocks"].update(source_session=session, logical_known_at=doc.get("known_at"))
     # Bind pagination to source, B1 generation and the actual current identity
     # projection. A changed receipt, alias resolution or B1 return invalidates it.
     material = {"source_receipt": receipt, "rows": projected, "coverage": coverage,
                 "generation_id": relation_index[0] if relation_index else None,
-                "identity_receipts": list(spine.source_receipts) if spine else []}
+                "identity_receipts": list(spine.source_receipts) if spine else [],
+                "producer_capture": producer_capture}
     out["snapshot_id"] = "early:" + sha256(canonical_json(material).encode()).hexdigest()
     return out
 

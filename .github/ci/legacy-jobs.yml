@@ -967,6 +967,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/turn_watch_capture.py"
       - "tests/test_c19_wp22_dhi_traversal.py"
       - "app/integrated_answer.py"
       - "app/company_intelligence.py"
@@ -4480,6 +4481,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -6318,6 +6320,7 @@ jobs:
     # output and are correctly gate:data; narrowing that job's own gate is a
     # separate, larger cleanup outside this PR's scope.
     paths:
+      - "engine/turn_watch_capture.py"
       - "app/prophet_lab.py"
       - "engine/prophet_lab/**"
       - "engine/entry_radar/__init__.py"
@@ -6738,6 +6741,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/turn_watch_capture.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -9594,6 +9598,8 @@ jobs:
     # Git subprocess inference otherwise claims unrelated template and code trees.
     scope: exclusive
     paths:
+      - "scripts/ci/turn_watch_capture_retention.py"
+      - "tests/test_turn_watch_capture_retention.py"
       - ".github/workflows/**"
       - "scripts/ci/*.sh"
       - "data/**"
@@ -9703,7 +9709,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml pandas pyarrow requests
       - name: push-retry policy tests (classification, budgets, jitter, real git races)
-        run: python -m pytest tests/test_push_retry.py -q
+        run: python -m pytest tests/test_push_retry.py tests/test_turn_watch_capture_retention.py -q
       # This is the existing code-gate owner of the shared Git publication
       # index boundary. Execute the M2-heredoc regression and exact inode
       # ownership refusals here; flow-surface retains its data-gate closure.
@@ -16055,6 +16061,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -16804,6 +16811,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -18789,6 +18797,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       - "engine/government_revenue/program_dossier.py"
       - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
       - lib/symbol_directory_receipts.py
@@ -21122,6 +21131,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -22212,6 +22222,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -26443,6 +26454,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
@@ -26925,6 +26937,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       - lib/dataos/web_history.py
       - lib/dataos/web_readers.py
       - lib/dataos/web_workspace.py
@@ -29757,6 +29770,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/turn_watch_capture.py"
       # MI W14 (2026-10-17): scripts/build_qbus_news_universe.py reads via the native parquet helper.
       - lib/native_parquet.py
       - "engine/government_revenue/program_dossier.py"
