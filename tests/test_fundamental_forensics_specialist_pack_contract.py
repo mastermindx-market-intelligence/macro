@@ -668,6 +668,55 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK11": {
+        "digest": "d849be0cbd8fe68038d7a3f4f5aae6d00b1121ba53b761320de504795b467d51",
+        "fields": (
+            "provision_for_credit_losses_total",
+            "credit_loss_expense_financing_receivables",
+            "credit_loss_expense_off_balance_sheet",
+            "allowance_for_credit_losses",
+            "loans_held_for_investment",
+            "deposits",
+            "cet1_capital",
+            "risk_weighted_assets",
+            "net_interest_income",
+            "cet1_ratio_disclosed",
+            "regulatory_minimum_disclosed",
+            "lcr_disclosed",
+            "nsfr_disclosed",
+            "liquid_assets_disclosed",
+            "npl_or_npa_disclosed",
+        ),
+        "required": (
+            "provision_for_credit_losses_total",
+            "allowance_for_credit_losses",
+            "net_interest_income",
+        ),
+        "checks": (
+            "acl_coverage",
+            "cet1_vs_minimum",
+            "capital_ratio_arithmetic",
+            "provision_vs_acl_rollforward",
+            "nii_not_revenue",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "division_by_zero",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+            "issuer_class_unknown",
+            "industrial_basis_excluded_for_financial_institution",
+            "issuer_class_not_bank",
+        ),
+        "pack_specific_codes": (
+            "issuer_class_not_bank",
+        ),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
@@ -1993,3 +2042,17 @@ def test_frozen_pack_required_fields_enforced(pack_id: str) -> None:
         assert f"fields: required field_id '{victim}' is absent" in errors, errors
     else:
         assert errors == []
+
+
+def test_pk11_non_bank_class_abstention_accepted() -> None:
+    """PK11 is class-gated: a non-bank resolver class abstains with its pack code."""
+    obj = _minimal_result("PK11")
+    obj["applicability"] = {
+        "state": "not_applicable",
+        "reason": "issuer_class_not_bank",
+        "rule_id": "pack.pk11.applicability/v1",
+        "sic": None,
+        "sic_source": None,
+    }
+    _finish(obj)
+    assert validate_pack_result(obj) == []
