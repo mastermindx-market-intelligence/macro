@@ -1,6 +1,6 @@
 ---
 workstream: "WS:CI-MERGE-CONTROL-PLANE"
-session: "01a153e8-3c85-7bb2-af63-7f477b570512 / claude/ci-pack-throughput-results-20261019"
+session: "01a153e8-3c85-7bb2-af63-7f477b570512 / claude/ci-pack-throughput-natural-20261019"
 model: codex
 ended_because: ci_handoff
 mission: >
@@ -64,7 +64,7 @@ danger_areas:
 ---
 
 Workspace: `/Volumes/Mastermind/agent-workspaces/codex/ffcf/macro-main`.
-Branch: `claude/ci-pack-throughput-results-20261019`, fresh main after PR9763.
+Branch: `claude/ci-pack-throughput-natural-20261019`, fresh main after report PR9780.
 Original root: `01a153e8-3c85-7bb2-af63-7f477b570512`.
 Evidence: `/Volumes/Mastermind/ci-pack-throughput-20261019/`.
 Report: `research/ci_pack_throughput_20261019/README.md`.
@@ -95,17 +95,57 @@ causal gain, cost neutrality or30% fleet p95 established. Exact-run fixed-cost
 replay: old heuristic2694.53 -> calibrated2266.33sec max; excludes overhead.
 Retain calibration; no speculative expansion.
 
-Natural dedup-only16:50 cohort37 completions, two selected-set matches, zero
-execution-proof matches; reuse caches. Weighted cohort starts after18:49:48Z;
-18:53 snapshot weighted-natural-runs-1853.json has one pending/no completions.
-Require tested blobf5e4e9c3202c35c9b29c6d038e1d077661fe6375 and base ancestry
-from38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae. compare_natural.py accepts
---merge/--blob/--output; earlier defaults retained. Ancestry cache must match
-treatment merge, not merely base SHA. Keep cancellations/reruns/pending visible.
+Natural weighted20:48 snapshot:32 runs,19 verified first-attempt completions
+(14success/5failure),9pending,4cancelled. All19 qualify tested planner blob
+f5e4e9c3202c35c9b29c6d038e1d077661fe6375 and base ancestry from
+38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae. Scoped success N13 p50/p95
+2106/3941sec, summed wall215.68/399.37min. Scoped failure N4 first-red
+1669.5/2105sec. No exact original baseline selected-set/execution-proof matches.
+Nine completions select neither calibrated job; five scoped exposed successes
+have2452/3941sec and277.48/399.37 summed wall. All statistics descriptive.
+Early6-success p95 2426sec became3941 as slower work completed; no causal gain,
+cost neutrality or30% target established. No speculative shard/weight expansion.
 
-Next: finish publishing this batched result through normal source, then collect
-naturally concluded weighted first attempts at the existing hourly boundary;
-compare exact selected and execution-proof identities before another source slice.
-Do not dispatch artificial CI, rerun accepted tests, duplicate observers, message
-peers, add a control plane, expand shards or deploy unrelated services. Preserve
-writers/root/unknown effects. Respect300sec same-run read cooldown, no bypass.
+Retained weighted-natural-runs/comparison/summary/stage-summary-2048.json plus
+weighted-exposure-2048.json. Prior19:52 and dedup-only16:50 cohorts preserved.
+Exploratory adjacent control16:50..18:49:48:35runs,22plans screened. Exact pair
+39300382055(control,verified old blob/base) and39306252071(weighted) selects
+91jobs but neither calibrated job. Control failed; weighted passed. It cannot
+estimate calibration speedup. Do not replace baseline or relax full proof match.
+Supplementary evidence late-control-matches/exact-match-2048.json retained.
+
+Successful tail39311574352(PR9639):159jobs after476-file change/27selected job
+changes. Critical pack6 wall3610sec, checkout377, wrapper3205; commands1525.04.
+Two depth8->32 waits691.30/725.67sec target the same exact merge SHA before
+signal-gate-pair-coherence/ruling-graph. Full log recovered by one same-carrier
+read after cooldown; weighted-tail-39311574352.log now retained, do not download
+again. Natural global success39309256542 full log retained:258jobs,2517sec/
+373.43wall min; FIF1989.85sec, control1269.95, earnings779.43,nw-lobe681.92.
+Critical checkout479sec. Details weighted-natural-tail-costs-2048.json.
+
+Third bounded source slice is now prepared: _prepare_provided_actions checks
+existing _tested_tree_ancestry_ready(root,trusted_git_env,exactSHA) BEFORE the
+first depth2 fetch. Every invocation rechecks live local ancestry; no success
+cache, cross-repository reuse, weakened predicate, command/proof or shard change.
+Incomplete ancestry retains all bounded/legacy recovery rungs. New notice makes
+real hosted reuse observable. Source changed only this precheck/notice.
+Real shallow-Git regression shows original second consumer makes3 extra fetches;
+after fix complete history persists and a separate shallow repo still fetches.
+Nine fetch/recovery tests pass5.70sec.199 authority tests pass; one unconditional
+fetch mock corrected to missing-then-ready and passes2.15sec.42 inherited cleanup
+warnings retained.329-job all-gate manifest validates. Logs ancestry-before,
+ancestry-after, ancestry-authority, ancestry-authority-repair, ancestry-manifest.
+First acquisition may remain necessary; neither23.6min aggregate nor12.1min
+second interval is an accepted saving. Hosted trial must establish real behavior.
+
+Open-PR title scan and existing workspace inventory found no competing ancestry
+repair. Preserve PR8094's separate curation scope and PR9773's active FIF repair.
+Implementations9722/9763 and report9780 remain merged/verified; all old observers
+are settled/consumed. Do not create a new observer per current heartbeat limit.
+
+Next: finish this batched comparison plus bounded ancestry trial through normal
+GitHub source, active authority/full hosted proof and normal merge. Use existing
+hourly heartbeat as fallback attention and one bounded same-carrier read at a
+useful boundary after cooldown; do not hot-poll or manufacture CI. Keep this one
+checkpoint current; preserve original root, active writers and unknown effects.
+No peer messages, new control plane, speculative shards or unrelated deployment.
