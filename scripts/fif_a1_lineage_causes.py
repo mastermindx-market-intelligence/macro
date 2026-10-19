@@ -18,12 +18,19 @@ anywhere in this module):
   guard 8 (``changed_value``) or guard 12 (``nil_state_difference``), or any
   chain state ``contradictory``.  Takes precedence and is never folded into
   the cross-taxonomy code.
+* ``precision_consistent_unconfirmed`` — any adjacent edge refused by kernel
+  guard 8 (unequal parsed values that still agree under the kernel's own
+  rounding intervals) or guard 9 (equal values at different accuracy tokens).
+  Restatement takes precedence over it, and it takes precedence over the
+  cross-taxonomy code.  The cell stays refused: no rounding tolerance,
+  rescue or value substitution is applied.
 * ``cross_taxonomy_version_confirmation_unavailable`` — every failing edge
   fails ONLY by guard 11 (``source_taxonomy_namespace_version_mismatch``).
   Bucketed per logical key as ``v1_pair`` (exactly 2 accessions) or
   ``v2_unproven_chain`` (3+ accessions whose chain state is ``unproven``);
   ``cascade`` counts derived cells whose not-evaluable dependency leaves are
-  ALL cross-taxonomy cells.
+  ALL cross-taxonomy cells — a single precision leaf disqualifies the
+  cascade.
 * ``unclassified_lineage_refusal`` — anything else, carrying the raw kernel
   codes verbatim.
 
@@ -39,6 +46,7 @@ from engine.fundamental_forensics.lineage_evidence import (
     CHAIN_STATE_UNPROVEN,
     REFUSAL_CHANGED_VALUE,
     REFUSAL_NIL_STATE_DIFFERENCE,
+    REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED,
     REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH,
     classify_filing_chain,
     evaluate_confirmation,
@@ -63,6 +71,9 @@ UNLINKED_VINTAGES_REASON = (
 INCOMPATIBLE_DEPENDENCIES_PREFIX = "incompatible_dependencies: "
 
 CODE_RESTATEMENT = "restatement_requires_revision_lineage"
+# The kernel's own precision-consistent refusal code (guards 8/9), imported —
+# never a copied string literal.
+CODE_PRECISION = REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
 CODE_CROSS_TAXONOMY = "cross_taxonomy_version_confirmation_unavailable"
 CODE_UNCLASSIFIED = "unclassified_lineage_refusal"
 
@@ -174,7 +185,26 @@ def classify_logical_key(
             "accessions": accessions,
         }
 
-    # Precedence 2: every FAILING edge fails ONLY by guard 11.  An edge that
+    # Precedence 2: any edge the kernel itself refused as precision-consistent
+    # (guard 8 — unequal values whose rounding intervals still agree — or
+    # guard 9 — equal values at different accuracy tokens).  Read only the
+    # edge codes evaluate_confirmation already returned; no guard logic here.
+    if any(
+        code == REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
+        for pair in edges
+        for code in pair
+        if code is not None
+    ):
+        return {
+            "code": CODE_PRECISION,
+            "bucket": None,
+            "basis": None,
+            "kernel_code": REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED,
+            "kernel_codes": raw_codes,
+            "accessions": accessions,
+        }
+
+    # Precedence 3: every FAILING edge fails ONLY by guard 11.  An edge that
     # passes the guarded call outright (an exact confirmation) is not a
     # failing edge and does not disqualify the key.
     if archive_available:
@@ -214,6 +244,7 @@ def classify_logical_key(
                 "accessions": accessions,
             }
 
+    # Precedence 4: anything else carries the raw kernel codes verbatim.
     return {
         "code": CODE_UNCLASSIFIED,
         "bucket": None,
@@ -357,6 +388,7 @@ def classify_refusal_causes(
     all_cells = classified + cascade_classified
     histogram: dict[str, Any] = {
         CODE_RESTATEMENT: 0,
+        CODE_PRECISION: 0,
         CODE_CROSS_TAXONOMY: {
             BUCKET_V1_PAIR: 0,
             BUCKET_V2_UNPROVEN_CHAIN: 0,
@@ -404,6 +436,7 @@ __all__ = [
     "BUCKET_V1_PAIR",
     "BUCKET_V2_UNPROVEN_CHAIN",
     "CODE_CROSS_TAXONOMY",
+    "CODE_PRECISION",
     "CODE_RESTATEMENT",
     "CODE_UNCLASSIFIED",
     "INCOMPATIBLE_DEPENDENCIES_PREFIX",

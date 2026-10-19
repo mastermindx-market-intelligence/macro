@@ -909,3 +909,215 @@ def test_cascade_mapping_over_synthetic_cell_records(registry):
     assert row["bucket"] == "cascade"
     assert row["cascade"] is True
     assert result["histogram"][CODE_CROSS_TAXONOMY]["cascade"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Precision-consistent refusals — REAL kernel guard 8/9 codes, no mocking
+# ---------------------------------------------------------------------------
+
+
+def _precision_facts():
+    """The kernel guard-8 shape: unequal parsed values whose rounding
+    intervals still agree (1.23 at decimals 2 vs 1.234 at decimals 3)."""
+    return [
+        _synthetic_fact(
+            accession="0001",
+            body="a" * 64,
+            accepted_at=_CHAIN_ACCEPTED[0],
+            value="1.23",
+            decimals="2",
+        ),
+        _synthetic_fact(
+            accession="0002",
+            body="b" * 64,
+            accepted_at=_CHAIN_ACCEPTED[1],
+            value="1.234",
+            decimals="3",
+        ),
+    ]
+
+
+def test_precision_consistent_pair_is_precision_code():
+    import engine.fundamental_forensics.lineage_evidence as lineage_evidence
+    from engine.fundamental_forensics.lineage_evidence import (
+        REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED,
+        evaluate_confirmation,
+    )
+    from scripts.fif_a1_lineage_causes import classify_logical_key
+
+    facts = _precision_facts()
+    parent_group = [facts[0]]
+    child_group = [facts[1]]
+    # The kernel itself names this refusal before the classifier ever runs.
+    assert (
+        evaluate_confirmation(
+            parent_group, child_group, require_taxonomy_uri=False
+        )
+        == REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
+    )
+
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2025})
+    verdict = classify_logical_key(
+        facts, taxonomy_uris=uris, archive_available=True
+    )
+    assert verdict["code"] == "precision_consistent_unconfirmed"
+    assert verdict["bucket"] is None
+    assert verdict["kernel_code"] == "precision_consistent_unconfirmed"
+
+    # The code is unchanged without archive URIs (elimination basis).
+    eliminated = classify_logical_key(
+        facts, taxonomy_uris={}, archive_available=False
+    )
+    assert eliminated["code"] == "precision_consistent_unconfirmed"
+
+    # CODE_PRECISION is the IMPORTED kernel constant, never a copied literal.
+    from scripts.fif_a1_lineage_causes import CODE_PRECISION
+
+    assert CODE_PRECISION == "precision_consistent_unconfirmed"
+    assert (
+        CODE_PRECISION
+        is lineage_evidence.REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
+    )
+
+
+def test_precision_cell_counts_in_histogram_and_is_not_unclassified(registry):
+    from scripts.fif_a1_lineage_causes import UNLINKED_VINTAGES_REASON
+
+    facts = _precision_facts()
+    cells = _real_kernel_cells(facts, registry)
+    if not (len(cells) == 1 and cells[0].reason == _UNLINKED):
+        # The real query path refused with a different reason: fall back to a
+        # direct SimpleNamespace cell carrying the unlinked-vintages reason,
+        # the same shape as the cascade test's leaf node.
+        cells = [
+            types.SimpleNamespace(
+                metric_id="total_assets",
+                period=types.SimpleNamespace(
+                    kind="instant", start=None, end="2025-09-27"
+                ),
+                reason=UNLINKED_VINTAGES_REASON,
+                provenance=types.SimpleNamespace(
+                    source_occurrence_ids=tuple(
+                        fact.occurrence_id for fact in facts
+                    )
+                ),
+                dependency_nodes=(),
+            )
+        ]
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2025})
+    result = _classify(facts, cells, uris, True)
+    histogram = result["histogram"]
+    assert histogram["precision_consistent_unconfirmed"] == 1
+    assert histogram["unclassified_lineage_refusal"] == 0
+    row = result["cells"][0]
+    assert row["code"] == "precision_consistent_unconfirmed"
+
+
+def test_changed_value_on_another_edge_beats_precision():
+    from engine.fundamental_forensics.lineage_evidence import (
+        REFUSAL_CHANGED_VALUE,
+        REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED,
+        evaluate_confirmation,
+    )
+    from scripts.fif_a1_lineage_causes import CODE_PRECISION, classify_logical_key
+
+    facts = [
+        _synthetic_fact(
+            accession="0001",
+            body="a" * 64,
+            accepted_at=_CHAIN_ACCEPTED[0],
+            value="1.23",
+            decimals="2",
+        ),
+        _synthetic_fact(
+            accession="0002",
+            body="b" * 64,
+            accepted_at=_CHAIN_ACCEPTED[1],
+            value="1.234",
+            decimals="3",
+        ),
+        _synthetic_fact(
+            accession="0003",
+            body="c" * 64,
+            accepted_at=_CHAIN_ACCEPTED[2],
+            value="9.876",
+            decimals="3",
+        ),
+    ]
+    parent_group = [facts[0]]
+    middle_group = [facts[1]]
+    child_group = [facts[2]]
+    assert (
+        evaluate_confirmation(
+            parent_group, middle_group, require_taxonomy_uri=False
+        )
+        == REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
+    )
+    assert (
+        evaluate_confirmation(
+            middle_group, child_group, require_taxonomy_uri=False
+        )
+        == REFUSAL_CHANGED_VALUE
+    )
+
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2025, "0003": 2025})
+    verdict = classify_logical_key(
+        facts, taxonomy_uris=uris, archive_available=True
+    )
+    assert verdict["code"] == "restatement_requires_revision_lineage"
+    without_archive = classify_logical_key(
+        facts, taxonomy_uris={}, archive_available=False
+    )
+    assert without_archive["code"] == "restatement_requires_revision_lineage"
+    assert CODE_PRECISION in verdict["kernel_codes"]
+    assert REFUSAL_CHANGED_VALUE in verdict["kernel_codes"]
+
+
+def test_precision_leaf_is_not_cascade():
+    from engine.fundamental_forensics.query import CellState
+    from scripts.fif_a1_lineage_causes import (
+        BUCKET_CASCADE,
+        CODE_CROSS_TAXONOMY,
+        UNLINKED_VINTAGES_REASON,
+        classify_logical_key,
+        classify_refusal_causes,
+    )
+
+    facts = _precision_facts()
+    uris = _uris_for(facts, {"0001": 2025, "0002": 2025})
+    verdict = classify_logical_key(
+        facts, taxonomy_uris=uris, archive_available=True
+    )
+    # The precision leaf is NOT a cross-taxonomy cell, so it can never
+    # satisfy the cascade's all-cross-taxonomy leaf test.
+    assert verdict["code"] != CODE_CROSS_TAXONOMY
+
+    provenance = types.SimpleNamespace(
+        source_occurrence_ids=tuple(fact.occurrence_id for fact in facts)
+    )
+    leaf_node = types.SimpleNamespace(
+        state=CellState.NOT_EVALUABLE,
+        reason=UNLINKED_VINTAGES_REASON,
+        provenance=provenance,
+    )
+    derived_cell = types.SimpleNamespace(
+        metric_id="gross_margin",
+        period=types.SimpleNamespace(
+            kind="duration", start="2024-09-29", end="2025-09-27"
+        ),
+        reason="incompatible_dependencies: total_assets (unlinked source vintages require an explicit typed revision lineage)",
+        dependency_nodes=(leaf_node,),
+    )
+    event_by_id = {fact.occurrence_id: fact for fact in facts}
+    events_by_logical_key = {}
+    for fact in facts:
+        events_by_logical_key.setdefault(fact.logical_key, []).append(fact)
+    result = classify_refusal_causes(
+        cells=[derived_cell],
+        event_by_id=event_by_id,
+        events_by_logical_key=events_by_logical_key,
+        taxonomy_uris=uris,
+        archive_available=True,
+    )
+    assert result["cells"] == []
+    assert result["histogram"][CODE_CROSS_TAXONOMY][BUCKET_CASCADE] == 0
