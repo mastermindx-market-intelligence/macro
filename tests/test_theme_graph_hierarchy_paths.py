@@ -795,3 +795,114 @@ def test_withdrawn_or_retired_sub_theme_matches_micro():
     assert [el["node_id"] for el in retired_sub[0]["path"]] == [
         "theme:cat", "theme:t", "theme:sub", "theme:m",
     ]
+
+
+# F04 uses the display reader, never the internal neighborhood serialization.
+def _selected_security_row(node_id='co:us:AAA', security_id='SEC:US-XNAS-AAA'):
+    return dict(schema='gmi.identity_resolution/v1', node_id=node_id,
+        graph_kind='company', market_scope='us', graph_identity_epoch=1,
+        source_native_symbol='PRIVATE-NOT-A-JOIN', resolution_asof='2026-09-18',
+        resolution_state='RESOLVED', issuer_id='ISS:US-XNAS-AAA', security_id=security_id,
+        listing_key=security_id.removeprefix('SEC:'), join_method='vendor_alias',
+        master_generated_at='2026-09-18T00:00:00Z', master_symbol_directory_snapshot=None,
+        master_code_version='fixture', refusal_reason=None, source_receipts='PRIVATE-OWNER-RECEIPTS',
+        computed_at='2026-09-18T17:42:27Z', engine_version='theme_graph.v1')
+
+
+def _selected_house_view(*, second=False):
+    nodes = [_company('co:us:AAA'), _basket('basket:baskets:solar'),
+             _theme('macro:energy', 'macro_category'), _theme('theme:solar', 'theme'),
+             _local_theme('ltheme:finviz:PRIVATE'), _basket('basket:baskets_china_ths:PRIVATE')]
+    edges = [_parent_of('macro:energy', 'theme:solar'),
+             _edge('member', 'MEMBER_OF', 'co:us:AAA', 'basket:baskets:solar'),
+             _edge('express', 'EXPRESSES', 'basket:baskets:solar', 'theme:solar'),
+             _edge('private-member', 'MEMBER_OF', 'co:us:AAA', 'ltheme:finviz:PRIVATE'),
+             _edge('private-basket', 'MEMBER_OF', 'co:us:AAA', 'basket:baskets_china_ths:PRIVATE'),
+             _edge('private-express', 'EXPRESSES', 'basket:baskets_china_ths:PRIVATE', 'theme:solar')]
+    if second:
+        nodes.append(_company('co:us:AAB'))
+        edges.append(_edge('member-b', 'MEMBER_OF', 'co:us:AAB', 'basket:baskets:solar'))
+    view = FakeStore(nodes, edges)
+    view._evidence = [{**{c: None for c in store.EVIDENCE_COLUMNS},
+        'evidence_id': 'ev:fixture', 'source_ref': 'config/theme_crosswalk.yml',
+        'licensing_display_ok': True}]
+    view.read_evidence = lambda: view._evidence
+    return view
+
+
+def _selected_hierarchy(rows=None, view=None, **kw):
+    from engine.theme_graph.security_navigation import compose_security_hierarchy
+    return compose_security_hierarchy(view or _selected_house_view(),
+        [_selected_security_row()] if rows is None else rows,
+        identity_kind=kw.pop('identity_kind', 'security'), identity_id=kw.pop('identity_id', 'SEC:US-XNAS-AAA'),
+        asof=ASOF, knowledge_cutoff=kw.pop('knowledge_cutoff', ASOF), **kw)
+
+
+def test_selected_house_display_retains_current_identity_and_no_private_graph():
+    result = _selected_hierarchy()
+    assert result['authority_ceiling'] == 'display_only'
+    assert result['identity_basis'] == 'LATEST_PUBLISHED_OWNER_REFERENCE'
+    assert result['historical_identity_claim'] is False
+    assert result['availability']['state'] == 'AVAILABLE'
+    binding = result['bindings'][0]
+    assert binding['resolution']['computed_at'] == '2026-09-18T17:42:27Z'  # later than graph cutoff, deliberately current
+    assert binding['paths'] == _hp(_selected_house_view(), 'co:us:AAA')
+    encoded = json.dumps(result)
+    assert 'PRIVATE' not in encoded and 'source_receipts' not in encoded
+    assert all('neighborhood' not in b and 'relations' not in b for b in result['bindings'])
+    assert result['etf_tracking']['status'] == 'unavailable'
+
+
+def test_selected_house_issuer_preserves_all_share_classes():
+    rows = [_selected_security_row(), _selected_security_row('co:us:AAB', 'SEC:US-XNAS-AAB')]
+    result = _selected_hierarchy(rows=rows, view=_selected_house_view(second=True),
+        identity_kind='issuer', identity_id='ISS:US-XNAS-AAA')
+    assert len(result['bindings']) == 2
+    assert {b['resolution']['security_id'] for b in result['bindings']} == {'SEC:US-XNAS-AAA', 'SEC:US-XNAS-AAB'}
+    assert all(b['paths'] for b in result['bindings'])
+
+
+@pytest.mark.parametrize('rows,state', [([], 'IDENTITY_OWNER_UNAVAILABLE'),
+    ([_selected_security_row(security_id='SEC:US-XNAS-OTHER')], 'NO_GRAPH_BINDING')])
+def test_selected_house_absence_is_not_no_themes(rows, state):
+    result = _selected_hierarchy(rows=rows)
+    assert result['availability']['state'] == state and result['bindings'] == []
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'retired', 'future', 'vendor_only'])
+def test_selected_house_unqualified_subject_has_no_paths(mutation):
+    view = _selected_house_view()
+    if mutation == 'missing': view._nodes = [n for n in view._nodes if n['node_id'] != 'co:us:AAA']
+    elif mutation == 'retired': view._nodes[0]['status'] = 'retired'
+    elif mutation == 'future': view._nodes[0]['computed_at'] = '2030-01-01T00:00:00Z'
+    else: view._edges = [e for e in view._edges if e['edge_id'] != 'member']
+    result = _selected_hierarchy(view=view)
+    assert result['availability']['state'] == 'NO_QUALIFIED_HOUSE_PATH'
+    assert result['bindings'][0]['paths'] == []
+
+
+def test_selected_house_keeps_intraday_knowledge_cutoff():
+    view = _selected_house_view()
+    view._edges[1]['belief_time'] = '2024-06-01T13:00:00Z'
+    result = _selected_hierarchy(view=view, knowledge_cutoff='2024-06-01T12:00:00Z')
+    assert result['bindings'][0]['paths'] == []
+    result = _selected_hierarchy(view=view, knowledge_cutoff='2024-06-01T14:00:00Z')
+    assert result['bindings'][0]['paths']
+    assert result['knowledge_cutoff'] == '2024-06-01T14:00:00+00:00'
+
+
+def test_selected_house_duplicate_identity_refuses():
+    with pytest.raises(ValueError, match='duplicate'):
+        _selected_hierarchy(rows=[_selected_security_row(), _selected_security_row()])
+
+
+@pytest.mark.parametrize('mutation', ['vendor', 'missing', 'revoked', 'unmapped'])
+def test_selected_house_refuses_unqualified_edge_evidence(mutation):
+    view = _selected_house_view()
+    if mutation == 'vendor': view._evidence[0]['source_ref'] = 'finviz_themes/private'
+    elif mutation == 'missing': view._evidence.clear()
+    elif mutation == 'revoked': view._evidence[0]['licensing_display_ok'] = False
+    else: view._evidence[0]['source_ref'] = 'unknown/private'
+    result = _selected_hierarchy(view=view)
+    assert result['bindings'][0]['paths'] == []
+    assert 'private' not in json.dumps(result)

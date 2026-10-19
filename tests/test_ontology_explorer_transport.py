@@ -724,3 +724,122 @@ def test_x4_actual_numeric_nan_validity_is_not_normalized_to_unbounded(monkeypat
     assert response.status_code==200
     assert all(row['security_id'] is None and row['state']=='identity_unresolved' for row in response.json()['rows'])
     _assert_scenario_private(response)
+
+
+THEME_ROUTE = '/api/ontology/explorer/theme/v1'
+
+
+def _theme_owner_root(tmp_path):
+    import pyarrow as arrow
+    import pyarrow.parquet as parquet
+    from engine.theme_graph import store
+    from test_theme_graph_hierarchy_paths import _selected_house_view, _selected_security_row
+    root = fx.build_root(tmp_path)
+    view = _selected_house_view()
+    tables = {'nodes': (view._nodes, store.NODE_COLUMNS), 'edges': (view._edges, store.EDGE_COLUMNS),
+              'node_lifecycle': ([], store.NODE_LIFECYCLE_COLUMNS),
+              'evidence': (view._evidence, store.EVIDENCE_COLUMNS),
+              'identity_resolution': ([_selected_security_row()], store.IDENTITY_RESOLUTION_COLUMNS)}
+    directory = root / 'data/theme_graph'
+    directory.mkdir(parents=True)
+    for name, (rows, columns) in tables.items():
+        table = arrow.Table.from_pylist(rows) if rows else arrow.table({c: [] for c in columns})
+        parquet.write_table(table, directory / f'{name}.parquet')
+    (root / 'config').mkdir()
+    (root / 'config/theme_sources.yml').write_bytes((Path(__file__).parents[1] / 'config/theme_sources.yml').read_bytes())
+    return root
+
+
+def _theme_body(client):
+    return dict(schema='ontology_theme_request.v1', chain=fx.SLUG,
+        source_manifest_hash=client.get(ROUTE).json()['source']['source_manifest_hash'],
+        identity_kind='security', identity_id='SEC:US-XNAS-AAA')
+
+
+def test_theme_actual_native_http_read_is_house_only_and_byte_bound(monkeypatch, tmp_path):
+    import hashlib
+    root = _theme_owner_root(tmp_path)
+    before = {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    with _client(monkeypatch, tmp_path, root=root) as client:
+        body = _theme_body(client)
+        response = client.post(THEME_ROUTE, json=body)
+    assert response.status_code == 200, response.text
+    assert response.headers['vary'] == 'Authorization, Cookie'
+    assert response.headers['cache-control'] == 'private, no-store'
+    result = response.json()
+    assert result['source']['source_manifest_hash'] == body['source_manifest_hash']
+    assert result['source']['built'] == '2026-01-03 02:10 UTC'
+    assert result['theme_map']['knowledge_cutoff'] == '2026-01-03T02:10:00+00:00'
+    assert result['theme_map']['availability']['state'] == 'AVAILABLE'
+    assert 'PRIVATE' not in response.text and 'ltheme:' not in response.text
+    assert 'source_receipts' not in response.text and 'research_internal_only' not in response.text
+    assert len(result['source']['reads']) == 6
+    for receipt in result['source']['reads']:
+        assert hashlib.sha256(before[receipt['path']]).hexdigest() == receipt['sha256']
+    assert before == {str(p.relative_to(root)): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+
+
+@pytest.mark.parametrize('kind,identity', [('ticker','AAA'), ('security','AAA'), ('issuer','SEC:US-XNAS-AAA'),
+    ('security','SEC: US-XNAS-AAA'), ('security', ['SEC:US-XNAS-AAA'])])
+def test_theme_rejects_labels_and_mismatched_identity(monkeypatch, tmp_path, kind, identity):
+    with _client(monkeypatch, tmp_path) as client:
+        body = _theme_body(client); body.update(identity_kind=kind, identity_id=identity)
+        response = client.post(THEME_ROUTE, json=body)
+    assert response.status_code == 400
+    assert response.headers['cache-control'] == 'private, no-store'
+
+
+@pytest.mark.parametrize('mutation', ['stale', 'missing', 'policy', 'mid_read', 'snapshot_mid_read'])
+def test_theme_withholds_changed_or_unavailable_source(monkeypatch, tmp_path, mutation):
+    from engine import ontology_theme as owner
+    root = _theme_owner_root(tmp_path)
+    with _client(monkeypatch, tmp_path, root=root) as client:
+        body = _theme_body(client)
+        if mutation == 'stale': body['source_manifest_hash'] = 'sha256:' + '0' * 64
+        elif mutation == 'missing': (root / 'data/theme_graph/nodes.parquet').unlink()
+        elif mutation == 'policy': (root / 'config/theme_sources.yml').write_text('families: {mastermind_curated: {rights_class: internal_only, auth_class: house}}')
+        else:
+            original = owner.security_navigation.compose_security_hierarchy
+            def changed(*a, **kw):
+                result = original(*a, **kw)
+                path = root / ('data/theme_graph/nodes.parquet' if mutation == 'mid_read' else owner.explorer._STATE_REL)
+                path.write_bytes(path.read_bytes() + b' ')
+                return result
+            monkeypatch.setattr(owner.security_navigation, 'compose_security_hierarchy', changed)
+        response = client.post(THEME_ROUTE, json=body)
+    assert response.status_code == (409 if mutation == 'stale' else 503)
+    assert 'bindings' not in response.text and 'PRIVATE' not in response.text
+
+
+@pytest.mark.parametrize('authed,entitled,code', [(False, True,401), (True,False,403)])
+def test_theme_auth_precedes_owner_io(monkeypatch, tmp_path, authed, entitled, code):
+    monkeypatch.setattr(_api(), 'compose_theme_continuation', lambda *a: pytest.fail('source read before auth'))
+    with _client(monkeypatch, tmp_path, authed=authed, entitled=entitled) as client:
+        response = client.post(THEME_ROUTE, json={})
+    assert response.status_code == code
+    assert response.headers['vary'] == 'Authorization, Cookie'
+
+
+def test_theme_duplicate_request_private_bounds_and_methods(monkeypatch, tmp_path):
+    with _client(monkeypatch, tmp_path) as client:
+        assert client.post(THEME_ROUTE, content='{"schema":1,"schema":2}', headers={'content-type':'application/json'}).status_code == 400
+        assert client.post(THEME_ROUTE, content='x' * 4097, headers={'content-type':'application/json'}).status_code == 413
+        assert client.post(THEME_ROUTE+'?identity_id=secret', json={}).status_code == 400
+        assert client.post(THEME_ROUTE, content='{}', headers={'content-type':'text/plain'}).status_code == 415
+        for method in ['get','head','put','patch','delete','options']:
+            response = getattr(client,method)(THEME_ROUTE)
+            assert response.status_code == 405 and response.headers['cache-control'] == 'private, no-store'
+
+
+
+def test_theme_uses_existing_product_admission_and_response_ceiling(monkeypatch, tmp_path):
+    with _client(monkeypatch, tmp_path) as client:
+        body = _theme_body(client)
+        body['chain'] = 'unadmitted_chain'
+        assert client.post(THEME_ROUTE, json=body).status_code == 404
+        body['chain'] = fx.SLUG
+        monkeypatch.setattr(_api(), 'compose_theme_continuation', lambda *a: {'payload': 'x' * 262144})
+        response = client.post(THEME_ROUTE, json=body)
+        assert response.status_code == 503
+        assert response.json()['detail']['code'] == 'response_too_large'
+        assert response.headers['vary'] == 'Authorization, Cookie'

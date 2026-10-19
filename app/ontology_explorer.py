@@ -44,6 +44,7 @@ from engine.ontology_portfolio import (
     MAX_REQUEST_BYTES as MAX_PORTFOLIO_REQUEST_BYTES, PortfolioInputError,
     compose_portfolio_read, parse_request as parse_portfolio_request,
 )
+from engine.ontology_theme import ThemeInputError, compose_theme_continuation, validate_request as validate_theme_request
 from engine.ontology_scenario import ScenarioInputError, parse_assumption
 from engine.ontology_scenario_runtime import ScenarioSnapshotChanged, evaluate_current_scenario
 
@@ -67,7 +68,8 @@ _PRIVATE_HEADERS = {
 }
 
 _PRIVATE_POST_PATHS = frozenset({'/api/ontology/explorer/scenario/v1',
-                                 '/api/ontology/explorer/portfolio/v1'})
+                                 '/api/ontology/explorer/portfolio/v1',
+                                 '/api/ontology/explorer/theme/v1'})
 _POST_HEADERS = {**_PRIVATE_HEADERS, 'Vary': 'Authorization, Cookie'}
 
 _CHAIN_PARAM_RE = re.compile(r"[a-z0-9][a-z0-9_]{0,80}")
@@ -340,5 +342,34 @@ async def read_private_portfolio(request: Request,
 @router.api_route('/portfolio/v1',methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'],include_in_schema=False)
 def _portfolio_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
     error = _post_error(405,'method_not_allowed')
+    error.headers['Allow'] = 'POST'
+    raise error
+
+
+@router.post('/theme/v1')
+async def read_private_theme(request: Request,
+                             _user: dict = Depends(require_site_full_user)) -> Response:
+    payload = await _private_post_body(request)
+    try:
+        payload = validate_theme_request(payload)
+        if payload['chain'] not in ACCEPTED_CHAINS:
+            raise _post_error(404, 'chain_not_admitted')
+        result = await run_in_threadpool(compose_theme_continuation, _repo_root(), payload)
+    except ThemeInputError as exc:
+        if str(exc) == 'snapshot_changed': raise _post_error(409, 'source_changed') from None
+        raise _post_error(400, 'invalid_theme_request') from None
+    except (SourceUnavailable, SourceIncoherent, OSError):
+        raise _post_error(503, 'source_unavailable') from None
+    except HTTPException:
+        raise
+    except Exception:
+        log.error('ontology theme failed unexpectedly')
+        raise _post_error(500, 'internal_error') from None
+    return _bounded_post_response(result)
+
+
+@router.api_route('/theme/v1', methods=['GET','HEAD','PUT','PATCH','DELETE','OPTIONS'], include_in_schema=False)
+def _theme_method_not_allowed(_user: dict = Depends(require_site_full_user)) -> Response:
+    error = _post_error(405, 'method_not_allowed')
     error.headers['Allow'] = 'POST'
     raise error
