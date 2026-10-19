@@ -1,0 +1,446 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/fundamental_forensics_coverage_proof.v1.schema.json",
+  "title": "Fundamental forensics C2 coverage proof v1",
+  "description": "Report of prove_coverage: predeclared tier/period/field thresholds proven from a fundamental_forensics.coverage_manifest/v1 document by membership, never by ticker loop count.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "proved_at",
+    "thresholds",
+    "manifest",
+    "tiers",
+    "issuers",
+    "incomplete_issuers",
+    "manifest_rollup_mismatch",
+    "exclusions",
+    "orphan_cells",
+    "status_normalised",
+    "acceptance_eligible",
+    "acceptance_blockers"
+  ],
+  "properties": {
+    "schema": {
+      "const": "fundamental_forensics.coverage_proof/v1"
+    },
+    "proved_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["thresholds_id", "content_sha256", "deep_target", "core_target"],
+      "properties": {
+        "thresholds_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "deep_target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "core_target": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "sha256",
+        "source_generation_id",
+        "cutoff_at",
+        "recorded_at",
+        "draft",
+        "attested",
+        "basis"
+      ],
+      "properties": {
+        "schema": {
+          "type": ["string", "null"]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_generation_id": {
+          "type": ["string", "null"]
+        },
+        "cutoff_at": {
+          "type": ["string", "null"]
+        },
+        "recorded_at": {
+          "type": ["string", "null"]
+        },
+        "draft": {
+          "type": ["boolean", "null"]
+        },
+        "attested": {
+          "type": ["boolean", "null"]
+        },
+        "basis": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "tiers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core", "deep"],
+      "properties": {
+        "core": {
+          "$ref": "#/$defs/core_tier"
+        },
+        "deep": {
+          "$ref": "#/$defs/deep_tier"
+        }
+      }
+    },
+    "issuers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cik",
+          "ticker",
+          "tier",
+          "core_pass",
+          "deep_pass",
+          "field_rate",
+          "band",
+          "failed_fields",
+          "withheld_fields"
+        ],
+        "properties": {
+          "cik": {
+            "type": "string",
+            "pattern": "^[0-9]{10}$"
+          },
+          "ticker": {
+            "type": "string"
+          },
+          "tier": {
+            "enum": ["core", "deep"]
+          },
+          "core_pass": {
+            "type": "boolean"
+          },
+          "deep_pass": {
+            "type": ["boolean", "null"]
+          },
+          "field_rate": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "band": {
+            "type": "string",
+            "minLength": 1
+          },
+          "failed_fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "withheld_fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "incomplete_issuers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deep", "core"],
+      "properties": {
+        "deep": {
+          "$ref": "#/$defs/cik_list"
+        },
+        "core": {
+          "$ref": "#/$defs/cik_list"
+        }
+      }
+    },
+    "manifest_rollup_mismatch": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cik", "field", "manifest_value", "proof_value"],
+        "properties": {
+          "cik": {
+            "type": "string",
+            "pattern": "^[0-9]{10}$"
+          },
+          "field": {
+            "enum": [
+              "core_pass",
+              "deep_pass",
+              "present_cells",
+              "absent_cells",
+              "na_cells"
+            ]
+          },
+          "manifest_value": {},
+          "proof_value": {}
+        }
+      }
+    },
+    "exclusions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_reasons", "header"],
+      "properties": {
+        "issuer_reasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "header": {
+          "type": "object"
+        }
+      }
+    },
+    "orphan_cells": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status_normalised": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "acceptance_eligible": {
+      "type": "boolean"
+    },
+    "acceptance_blockers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "manifest_draft",
+          "manifest_unattested",
+          "deep_target_not_met",
+          "core_target_not_met"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "cik_list": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9]{10}$"
+      }
+    },
+    "count_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "fields_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "applicable", "not_applicable", "withheld", "rate"],
+      "properties": {
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "withheld": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rate": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "bands_block": {
+      "type": "object",
+      "required": [
+        "complete",
+        "high",
+        "partial",
+        "low",
+        "no_applicable_fields"
+      ],
+      "properties": {
+        "complete": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "high": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partial": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "low": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "no_applicable_fields": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "component_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "absent", "not_applicable", "missing"],
+      "properties": {
+        "present": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "absent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "core_tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "members",
+        "pass",
+        "target_met",
+        "shortfall",
+        "fields",
+        "bands",
+        "failing_reasons"
+      ],
+      "properties": {
+        "target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_met": {
+          "type": "boolean"
+        },
+        "shortfall": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "$ref": "#/$defs/fields_block"
+        },
+        "bands": {
+          "$ref": "#/$defs/bands_block"
+        },
+        "failing_reasons": {
+          "$ref": "#/$defs/count_map"
+        }
+      }
+    },
+    "deep_tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "members",
+        "pass",
+        "target_met",
+        "shortfall",
+        "fields",
+        "bands",
+        "failing_reasons",
+        "components"
+      ],
+      "properties": {
+        "target": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "members": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_met": {
+          "type": "boolean"
+        },
+        "shortfall": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "$ref": "#/$defs/fields_block"
+        },
+        "bands": {
+          "$ref": "#/$defs/bands_block"
+        },
+        "failing_reasons": {
+          "$ref": "#/$defs/count_map"
+        },
+        "components": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/component_counts"
+          }
+        }
+      }
+    }
+  }
+}
