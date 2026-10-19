@@ -793,7 +793,7 @@ jobs:
             else
               echo "::error title=qledger carve snapshot failed::could not snapshot the carved data/qledger + site/qledger bytes; they stay dirty and ride the push loop's --autostash unprotected (a conflicted re-apply discards them)."
             fi
-            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); market data is committed without them."
+            echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); the market commit, if any, excludes them."
           fi
           if git diff --cached --quiet; then echo "no market data changes to commit"; exit 0; fi
           git commit -m "data: daily collection $(date -u +%F)"
