@@ -12176,6 +12176,7 @@ jobs:
           tests/test_market_memory_e0_evaluation_spec.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_condition_evidence.py
           tests/test_market_memory_e0_allocation.py
           -q
 
