@@ -31016,6 +31016,8 @@ jobs:
       - tests/test_tiingo_boats_display.py
       - tests/test_boats_session_runner.py
       - scripts/run_boats_session.py
+      - scripts/refresh_boats_history.py
+      - tests/test_boats_history_refresh.py
       - ops/launchd/run_ext_quotes_loop.sh
       - ops/launchd/com.macro.extquotes.plist
       - tests/test_tiingo_boats_coverage_cli.py
@@ -31062,6 +31064,7 @@ jobs:
           tests/test_tiingo_boats_stream_chain.py tests/test_tiingo_vendor_cohort.py
           tests/test_tiingo_boats_display.py tests/test_build_ext_quotes.py
           tests/test_boats_session_runner.py
+          tests/test_boats_history_refresh.py
           tests/test_tiingo_boats_coverage_cli.py
           tests/test_tiingo_ingestion_integrity.py
           tests/test_tiingo_reference_audit.py tests/test_tiingo_planning.py
