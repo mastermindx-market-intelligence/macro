@@ -127,6 +127,11 @@ _DOCUMENT_TERMS_LEDGER_ABSENT = "document_terms_ledger_absent"
 _DOCUMENT_TERMS_ARTIFACT_MISMATCH = "document_terms_artifact_mismatch"
 _DOCUMENT_TERMS_DIGEST_MISMATCH = "document_terms_digest_mismatch"
 
+#: SPEC U1C step 8: no admitted share-count reader exists, so share counts stay
+#: context-only and ``capacity_authority`` stays False.  The served state names
+#: that absence instead of implying zero shares.
+_SHARE_COUNT_GENERATION_NOT_ADMITTED = "share_count_generation_not_admitted"
+
 #: The shelf form families whose eligibility routes a coverage denominator may
 #: declare (SPEC §6).  A non-shelf family observes no route at all, which is its
 #: own named reason rather than a zero denominator.
@@ -591,6 +596,27 @@ def _registration_family(reg: RegistrationIntegration, inputs: CapitalInputs) ->
     )
 
 
+def _share_basis_family() -> FamilyState:
+    """Share basis, served as an explicitly unavailable family (SPEC U1C step 8).
+
+    No admitted share-count reader exists, so the family names that absence and
+    carries NO records, ever: capacity's adapter iterates every family of the
+    state, and a record here would leak a context-only share count into
+    evaluated capacity inputs.  ``capacity_authority`` stays False.
+    """
+    return FamilyState(
+        "share_basis",
+        FamilyProvenance(
+            family="share_basis",
+            input_family="share_count_observations",
+            input_schema=None,
+            support="unavailable",
+        ),
+        records=(),
+        unavailable=(_SHARE_COUNT_GENERATION_NOT_ADMITTED,),
+    )
+
+
 def issuer_state(
     inputs: CapitalInputs,
     *,
@@ -639,7 +665,7 @@ def issuer_state(
     state = CapitalState(
         request,
         generated_at,
-        families=(_registration_family(reg, inputs),),
+        families=(_registration_family(reg, inputs), _share_basis_family()),
         receipt=receipt,
         projection_generation_id=projection_generation_id,
     )

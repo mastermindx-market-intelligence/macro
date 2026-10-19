@@ -641,3 +641,54 @@ def test_explicit_as_of_never_seals_fee_rows_available_after_it(pack, tmp_path):
     )
 
 
+# ---------------------------------------------------------------------------
+# F3: share basis is served as an explicit unavailable family
+# ---------------------------------------------------------------------------
+
+
+def _share_schemas_in(node: Any) -> set[str]:
+    """Every record schema appearing anywhere inside a JSON-able structure."""
+    found: set[str] = set()
+    if isinstance(node, Mapping):
+        schema = node.get("schema")
+        if isinstance(schema, str):
+            found.add(schema)
+        for value in node.values():
+            found |= _share_schemas_in(value)
+    elif isinstance(node, (list, tuple)):
+        for value in node:
+            found |= _share_schemas_in(value)
+    return found
+
+
+def test_share_basis_is_served_as_an_explicit_unavailable_family(pack, tmp_path):
+    """Every issuer carries share_basis as unavailable with no records, the
+    bundle coverage never names it, and capacity reads no share record."""
+    events, edges = _s3_amended_effective_post_effective()
+    ledger = _write_ledger(tmp_path / DOCUMENT_LEDGER_FILENAME, _standard_ledger())
+    _, _, bundle = _bundle(events, edges, pack, ledger_path=ledger)
+
+    assert len(bundle["issuers"]) > 0
+    for record in bundle["issuers"]:
+        families = {row["family"]: row for row in record["families"]}
+        assert set(families) == {"registration", "share_basis"}
+        share = families["share_basis"]
+        assert share["provenance"]["support"] == "unavailable"
+        assert share["records"] == []
+        assert share["unavailable"] == ["share_count_generation_not_admitted"]
+    assert "share_basis" not in bundle["coverage"]["families"]
+
+    # The generic contract re-construction (validate_state_bundle already ran
+    # state_from_record per issuer) round-trips the new family byte for byte.
+    state = state_from_record(_state_record(bundle, ISSUER))
+    share_family = state.family("share_basis")
+    assert share_family is not None
+    assert share_family.records == ()
+    assert share_family.provenance.support == "unavailable"
+
+    built = ra.build_rule_pack(pack, SALE)[0]
+    assert built is not None, f"no qualified rule text on {SALE}"
+    evaluation = explain_capacity(state, _scenario(), built, pack=pack)
+    share_schemas = set(c1.SHARE_COUNT_SCHEMAS) | {c1.SHARE_BASIS_RESULT_SCHEMA}
+    served = _share_schemas_in(evaluation.inputs)
+    assert not served & share_schemas, sorted(served & share_schemas)

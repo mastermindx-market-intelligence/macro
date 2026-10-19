@@ -127,7 +127,7 @@
               "type": "object",
               "required": ["family", "provenance"],
               "properties": {
-                "family": {"const": "registration"}
+                "family": {"enum": ["registration", "share_basis"]}
               }
             }
           },
