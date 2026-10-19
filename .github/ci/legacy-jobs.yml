@@ -9370,6 +9370,7 @@ jobs:
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_normalize.py
           tests/test_fundamental_forensics_p0_view_contract.py
+          tests/test_fundamental_forensics_pack_evaluation.py
           tests/test_fundamental_forensics_page.py
           tests/test_fundamental_forensics_peer_cohort.py
           tests/test_fundamental_forensics_periods.py
