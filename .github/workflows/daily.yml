@@ -1353,9 +1353,12 @@ jobs:
         # NIGHTLY). A refusal is a NORMAL night (no admissible source store, no rows),
         # so the step is continue-on-error and the checkpoint gate below carries its
         # outcome as a RECORDED term, never a fatal one. It owns no provider path and
-        # writes only under data/capital_structure/.
+        # writes only under data/capital_structure/. The step timeout keeps a slow
+        # compiler night a RECORDED failure: without it a stall would run into the
+        # job's 90-minute timeout and lose tonight's whole capital-structure checkpoint.
         id: cs_candidates
         continue-on-error: true
+        timeout-minutes: 20
         run: python -m scripts.compile_capital_structure_instrument_candidate_terms
       - name: build the capital-structure capacity inputs bundle (one generation or nothing)
         id: cs_inputs
