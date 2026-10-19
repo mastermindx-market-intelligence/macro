@@ -55,9 +55,7 @@ def _run_prove(args: argparse.Namespace) -> int:
     direct_ids, formula_ids = load_metric_sets(
         args.catalog, args.formulas, thresholds
     )
-    manifest, manifest_sha256 = load_manifest(
-        args.manifest, package_alias_roles=thresholds.package_alias_roles
-    )
+    manifest_bytes = load_manifest(args.manifest)
     proved_at = _parse_proved_at(args.proved_at)
     if proved_at is None:
         print(
@@ -66,8 +64,7 @@ def _run_prove(args: argparse.Namespace) -> int:
         )
         return 2
     report = prove_coverage(
-        manifest,
-        manifest_sha256,
+        manifest_bytes,
         thresholds,
         direct_ids,
         formula_ids,

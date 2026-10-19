@@ -8,6 +8,7 @@ targets (deep 2, core 3) plus a 4-direct/2-formula catalog fixture.
 from __future__ import annotations
 
 import copy
+from collections.abc import Iterator
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -114,14 +115,32 @@ def small_thresholds(**overrides) -> CoverageThresholds:
     return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
 
 
-def six_role_thresholds() -> CoverageThresholds:
-    """small_thresholds with all six frozen package roles required."""
+def small_thresholds_with_prefix(prefix: str) -> CoverageThresholds:
+    """small_thresholds whose census pin is the given draft-sha prefix."""
+    mapping = small_thresholds_mapping()
+    mapping["census_identity"] = {
+        **mapping["census_identity"],
+        "manifest_draft_sha256_prefix": prefix,
+    }
+    return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
+
+
+def six_role_thresholds(manifest: dict | None = None) -> CoverageThresholds:
+    """small_thresholds with all six frozen package roles required.
+
+    With a manifest, the census pin matches that manifest's draft identity
+    (see ``identity_prefix_for``)."""
     mapping = small_thresholds_mapping()
     deep = dict(mapping["tiers"]["deep"])
     deep["required_package_roles"] = list(SIX_PACKAGE_ROLES)
     tiers = dict(mapping["tiers"])
     tiers["deep"] = deep
     mapping["tiers"] = tiers
+    if manifest is not None:
+        mapping["census_identity"] = {
+            **mapping["census_identity"],
+            "manifest_draft_sha256_prefix": identity_prefix_for(manifest),
+        }
     return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
 
 
@@ -307,14 +326,55 @@ def build_manifest(
     }
     if header is not None:
         manifest["header"] = header
+    if attested and not draft:
+        # Ruling V1-a r3 (M4): the attestation step records which draft it
+        # attests — here the sha256 of the same content in draft form.
+        draft_view = dict(manifest)
+        draft_view["draft"] = True
+        draft_view["attested"] = False
+        manifest["manifest_draft_sha256"] = hashlib.sha256(
+            manifest_bytes(draft_view)
+        ).hexdigest()
     return manifest
 
 
+def manifest_bytes(manifest: dict) -> bytes:
+    """The canonical fixture serialization: what run_proof hands the prover."""
+    return json.dumps(manifest, sort_keys=True).encode("utf-8")
+
+
+def identity_prefix_for(manifest: dict) -> str:
+    """The 20-hex census pin a threshold author would pin for this manifest.
+
+    Ruling V1-a r3 (M4): the draft identity is the manifest bytes' sha256 for
+    a draft and the declared top-level ``manifest_draft_sha256`` otherwise.
+    A non-draft manifest without a valid declaration has no identity, so the
+    pin falls back to a value nothing matches.  This mirrors how the real
+    c2_thresholds_v1 pin was authored: the sha prefix of the real draft.
+    """
+    declared = manifest.get("manifest_draft_sha256")
+    if manifest.get("draft") is True:
+        return hashlib.sha256(manifest_bytes(manifest)).hexdigest()[:20]
+    if isinstance(declared, str) and re.fullmatch(r"[0-9a-f]{64}", declared):
+        return declared[:20]
+    return "0" * 20
+
+
+def small_thresholds_for(manifest: dict, **overrides) -> CoverageThresholds:
+    """small_thresholds whose census pin matches the manifest's draft identity."""
+    mapping = small_thresholds_mapping()
+    mapping.update(overrides)
+    mapping["census_identity"] = {
+        **mapping["census_identity"],
+        "manifest_draft_sha256_prefix": identity_prefix_for(manifest),
+    }
+    return thresholds_from_mapping(mapping, enforce_frozen_targets=False)
+
+
 def run_proof(manifest: dict, thresholds: CoverageThresholds | None = None) -> dict:
-    active = thresholds if thresholds is not None else small_thresholds()
-    sha = hashlib.sha256(json.dumps(manifest, sort_keys=True).encode("utf-8")).hexdigest()
+    active = thresholds if thresholds is not None else small_thresholds_for(manifest)
     return prove_coverage(
-        manifest, sha, active, DIRECT_IDS, FORMULA_IDS, proved_at=PROVED_AT
+        manifest_bytes(manifest), active, DIRECT_IDS, FORMULA_IDS, proved_at=PROVED_AT
     )
 
 
@@ -619,9 +679,11 @@ def test_manifest_rollup_mismatch_reports_both_values() -> None:
     present = mismatches[("0000000001", "present_cells")]
     assert present["manifest_value"] == 999
     assert present["proof_value"] == 39
+    assert present["reason"] == "rollup_value_mismatch"
     core_pass = mismatches[("0000000003", "core_pass")]
     assert core_pass["manifest_value"] is False
     assert core_pass["proof_value"] is True
+    assert core_pass["reason"] == "rollup_value_mismatch"
     # Deep members compare deep_pass; core-only issuers do not.
     assert ("0000000001", "deep_pass") not in mismatches
 
@@ -699,8 +761,7 @@ def test_refusals_carry_their_codes(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     naive = build_manifest(members)
     with pytest.raises(CoverageProofError) as excinfo:
         prove_coverage(
-            naive,
-            "0" * 64,
+            manifest_bytes(naive),
             small_thresholds(),
             DIRECT_IDS,
             FORMULA_IDS,
@@ -731,10 +792,12 @@ def dotted_package_variant(manifest: dict) -> dict:
 
 
 def test_legacy_alias_proves_same_tiers_and_blocks_acceptance() -> None:
-    thresholds = six_role_thresholds()
     members = standard_members()
     colon = build_manifest(members, package_roles=SIX_PACKAGE_ROLES)
     dotted_manifest = dotted_package_variant(colon)
+    # The census pin matches the dotted draft's computed identity, so the
+    # asserted blocker list isolates the alias blocker.
+    thresholds = six_role_thresholds(dotted_manifest)
 
     colon_report = run_proof(colon, thresholds)
     dotted_report = run_proof(dotted_manifest, thresholds)
@@ -970,9 +1033,12 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert report["tiers"]["deep"]["pass"] == 250
     assert report["tiers"]["core"]["pass"] == 1000
     assert report["acceptance_eligible"] is False
-    # The shipped freeze_ref names a path absent from this repository, so
-    # ruling V1-a r2 (F2) blocks acceptance on top of draft/unattested.
+    # The synthetic draft's computed sha256 does not start with the shipped
+    # pin (the pin is the real draft's prefix), the shipped freeze_ref names
+    # a path absent from this repository, and the manifest is a draft — so
+    # ruling V1-a r3 blocks acceptance on all three grounds.
     assert report["acceptance_blockers"] == [
+        "census_identity_mismatch",
         "freeze_ref_missing",
         "manifest_draft",
         "manifest_unattested",
@@ -988,7 +1054,8 @@ def test_cli_exit_codes_and_print_block(tmp_path: Path) -> None:
     assert lines[8] == "exclusions:     none"
     assert lines[9] == (
         "acceptance:     eligible=false  "
-        "blockers=freeze_ref_missing,manifest_draft,manifest_unattested"
+        "blockers=census_identity_mismatch,freeze_ref_missing,"
+        "manifest_draft,manifest_unattested"
     )
 
     # --out writes the same single JSON document.
@@ -1184,23 +1251,36 @@ def test_census_identity_blockers_individually() -> None:
     assert report["census_identity"]["mismatched_fields"] == ["cutoff_at"]
     assert report["acceptance_blockers"] == ["census_identity_mismatch"]
 
-    # Blocker 3 (prefix): a manifest-declared draft prefix differs from the
-    # thresholds' declared value; BASE defines no computation for it, so the
-    # declared values are compared and the prover-computed manifest bytes
-    # hash rides on the report.
+    # Blocker 3 (prefix): the thresholds' pin must prefix the draft
+    # identity.  For a non-draft manifest the identity is the declared
+    # top-level manifest_draft_sha256 (ruling V1-a r3, M4); a pin that does
+    # not prefix it is a census identity mismatch.
     wrong_prefix = build_manifest(members, draft=False, attested=True)
-    wrong_prefix["manifest_draft_sha256_prefix"] = "f" * 20
-    report = run_proof(wrong_prefix)
+    declared_identity = wrong_prefix["manifest_draft_sha256"]
+    assert declared_identity[:20] != "f" * 20
+    report = run_proof(wrong_prefix, small_thresholds_with_prefix("f" * 20))
     assert report["census_identity"]["mismatched_fields"] == [
         "manifest_draft_sha256_prefix"
     ]
+    assert report["census_identity"]["draft_identity"] == declared_identity
+    assert (
+        report["census_identity"]["draft_identity_basis"]
+        == "declared_manifest_draft_sha256"
+    )
     assert report["acceptance_blockers"] == ["census_identity_mismatch"]
     assert report["manifest_sha256"] == report["manifest"]["sha256"]
 
-    # A manifest declaring the thresholds' own prefix adds no blocker.
+    # A pin that prefixes the declared identity adds no blocker.
     right_prefix = build_manifest(members, draft=False, attested=True)
-    right_prefix["manifest_draft_sha256_prefix"] = "0" * 20
-    assert run_proof(right_prefix)["acceptance_blockers"] == []
+    assert (
+        run_proof(
+            right_prefix,
+            small_thresholds_with_prefix(
+                right_prefix["manifest_draft_sha256"][:20]
+            ),
+        )["acceptance_blockers"]
+        == []
+    )
 
 
 def test_mixed_source_generations_blocker_with_counts() -> None:
@@ -1221,21 +1301,27 @@ def test_mixed_source_generations_blocker_with_counts() -> None:
     assert report["acceptance_blockers"] == ["mixed_source_generations"]
 
 
-def test_freeze_ref_missing_blocks_and_reports_path() -> None:
+def test_freeze_ref_missing_blocks_and_reports_relative_path() -> None:
     members = standard_members()
-    thresholds = small_thresholds(freeze_ref="docs/NO_SUCH_FREEZE.md")
-    report = run_proof(
-        build_manifest(members, draft=False, attested=True), thresholds
-    )
+    manifest = build_manifest(members, draft=False, attested=True)
+    thresholds = small_thresholds_for(manifest, freeze_ref="docs/NO_SUCH_FREEZE.md")
+    report = run_proof(manifest, thresholds)
     assert report["thresholds"]["freeze_ref"] == "docs/NO_SUCH_FREEZE.md"
-    assert report["thresholds"]["freeze_ref_path"].endswith("docs/NO_SUCH_FREEZE.md")
+    # Ruling V1-a r3 (M2): the report carries the declared relative path and
+    # its resolution flags — never an absolute host path.
+    assert "freeze_ref_path" not in report["thresholds"]
+    assert report["thresholds"]["freeze_ref_valid"] is True
     assert report["thresholds"]["freeze_ref_exists"] is False
+    assert report["thresholds"]["freeze_ref_sha256"] is None
     assert report["acceptance_eligible"] is False
     assert report["acceptance_blockers"] == ["freeze_ref_missing"]
 
     # The small fixture's own freeze_ref (this test file) exists: no blocker.
     ok_report = run_proof(build_manifest(members, draft=False, attested=True))
     assert ok_report["thresholds"]["freeze_ref_exists"] is True
+    assert ok_report["thresholds"]["freeze_ref_sha256"] == hashlib.sha256(
+        Path(__file__).read_bytes()
+    ).hexdigest()
     assert "freeze_ref_missing" not in ok_report["acceptance_blockers"]
 
 
@@ -1327,7 +1413,11 @@ def test_probe_p5_orphans_and_rollup_mismatch_block() -> None:
     report = run_proof(manifest)
 
     assert report["orphan_cells"] == 1
-    assert report["orphan_reasons"] == {"cik_not_member": 1, "period_outside_windows": 0}
+    assert report["orphan_reasons"] == {
+        "cik_not_member": 1,
+        "period_outside_windows": 0,
+        "package_not_deep_member": 0,
+    }
     assert report["manifest_rollup_mismatch"]
     assert report["acceptance_eligible"] is False
     assert report["acceptance_blockers"] == ["orphan_cells", "rollup_mismatch"]
@@ -1343,7 +1433,11 @@ def test_out_of_window_metric_cell_is_an_orphan() -> None:
     report = run_proof(manifest)
 
     assert report["orphan_cells"] == 2
-    assert report["orphan_reasons"] == {"cik_not_member": 0, "period_outside_windows": 2}
+    assert report["orphan_reasons"] == {
+        "cik_not_member": 0,
+        "period_outside_windows": 2,
+        "package_not_deep_member": 0,
+    }
     assert report["acceptance_eligible"] is False
     assert report["acceptance_blockers"] == ["orphan_cells"]
     # Neither cell leaks into any denominator.
@@ -1405,12 +1499,19 @@ def test_real_run_sanity_shipped_thresholds_block(tmp_path: Path) -> None:
 
     # With the shipped identity pinned on the same manifest, the identity
     # blockers disappear; every remaining blocker condition still holds
-    # acceptance false.
+    # acceptance false.  A non-draft manifest's draft identity is its
+    # declared manifest_draft_sha256 (ruling V1-a r3, M4), so the attested
+    # fixture declares one that starts with the shipped pin.
     pinned = copy.deepcopy(small)
     pinned["source_generation_id"] = identity["source_generation_id"]
     pinned["cutoff_at"] = identity["cutoff_at"]
     for item in pinned["cells"]:
         item["source_generation_id"] = identity["source_generation_id"]
+    pinned["draft"] = False
+    pinned["attested"] = True
+    pinned["manifest_draft_sha256"] = (
+        identity["manifest_draft_sha256_prefix"] + "a" * 44
+    )
     pinned_path = tmp_path / "small_pinned.json"
     pinned_path.write_text(json.dumps(pinned), encoding="utf-8")
     pinned_result = run_cli(pinned_path)
@@ -1425,7 +1526,287 @@ def test_real_run_sanity_shipped_thresholds_block(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 17. Source hygiene scan
+# 17. Review-lane rulings V1-a r3 (2026-10-19): gap G1 and findings M1-M5
+# ---------------------------------------------------------------------------
+
+
+def test_present_cells_may_carry_present_or_empty_reason() -> None:
+    """G1: the real census draft stamps its present cells with reason_code
+    "present" (79,385 cells) or "" (2,832 cells); both spellings are
+    accepted.  BASE refused every non-empty reason_code, so this probe
+    failed there with present_cell_carries_reason."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    seen: set[str] = set()
+    for index, item in enumerate(manifest["cells"]):
+        if item["status"] == "present":
+            item["reason_code"] = "present" if index % 2 == 0 else ""
+            seen.add(item["reason_code"])
+    assert seen == {"present", ""}
+    report = run_proof(manifest)
+    assert report["acceptance_blockers"] == []
+    assert report["tiers"]["deep"]["fields"]["present"] == 48
+    assert report["tiers"]["core"]["fields"]["present"] == 36
+
+
+def test_present_cell_with_absent_dependency_reason_is_refused() -> None:
+    members = standard_members()
+    manifest = build_manifest(members)
+    manifest["cells"][0]["reason_code"] = "absent_dependency"
+    refuse(manifest, "present_cell_carries_reason")
+
+
+def test_freeze_ref_absolute_path_is_invalid() -> None:
+    """M1: an absolute freeze_ref breaks the relative-POSIX rule and adds
+    freeze_ref_invalid; the proof still reports."""
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    thresholds = small_thresholds_for(manifest, freeze_ref="/etc/passwd")
+    report = run_proof(manifest, thresholds)
+    assert report["thresholds"]["freeze_ref"] == "/etc/passwd"
+    assert report["thresholds"]["freeze_ref_valid"] is False
+    assert report["thresholds"]["freeze_ref_exists"] is False
+    assert report["thresholds"]["freeze_ref_sha256"] is None
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["freeze_ref_invalid"]
+
+
+def test_freeze_ref_traversal_and_bad_segments_are_invalid() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    for bad in ("../outside.md", "engine/..", "docs//map.md", "docs\\map.md"):
+        thresholds = small_thresholds_for(manifest, freeze_ref=bad)
+        report = run_proof(manifest, thresholds)
+        assert report["thresholds"]["freeze_ref_valid"] is False, bad
+        assert report["thresholds"]["freeze_ref_sha256"] is None, bad
+        assert "freeze_ref_invalid" in report["acceptance_blockers"], bad
+        assert "freeze_ref_missing" not in report["acceptance_blockers"], bad
+
+
+def test_freeze_ref_directory_is_invalid() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    thresholds = small_thresholds_for(manifest, freeze_ref="engine")
+    report = run_proof(manifest, thresholds)
+    assert report["thresholds"]["freeze_ref_valid"] is False
+    assert report["thresholds"]["freeze_ref_exists"] is False
+    assert report["acceptance_blockers"] == ["freeze_ref_invalid"]
+
+
+def test_shipped_freeze_ref_is_a_valid_relative_path() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    # The shipped census pin does not match this fixture's identity; only
+    # the freeze_ref ruling is under test here.
+    report = run_proof(manifest, load_thresholds(SHIPPED_THRESHOLDS))
+    assert report["thresholds"]["freeze_ref"] == (
+        "research/financial_intelligence_fabric/FIF_C2_COVERAGE_FREEZE.md"
+    )
+    assert report["thresholds"]["freeze_ref_valid"] is True
+    assert "freeze_ref_invalid" not in report["acceptance_blockers"]
+
+
+def _all_strings(value: object) -> Iterator[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _all_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _all_strings(item)
+
+
+def test_report_carries_no_absolute_host_path() -> None:
+    """M2: the report is host-independent — no string value starts with "/"
+    or names the checkout root — and freeze_ref_sha256 is the sha256 of the
+    referenced file's bytes."""
+    report = run_proof(build_manifest(standard_members(), draft=False, attested=True))
+    for text in _all_strings(report):
+        assert not text.startswith("/"), text
+        assert str(REPO_ROOT) not in text, text
+    assert "freeze_ref_path" not in report["thresholds"]
+    fixture_freeze = (
+        REPO_ROOT / "tests" / "test_fundamental_forensics_coverage_proof.py"
+    )
+    assert report["thresholds"]["freeze_ref_sha256"] == hashlib.sha256(
+        fixture_freeze.read_bytes()
+    ).hexdigest()
+
+
+def test_missing_rollup_field_blocks_with_field_invalid() -> None:
+    """M3: a missing rollup field is a reported mismatch, never a skip."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    del manifest["issuers"][0]["present_cells"]
+    report = run_proof(manifest)
+    mismatches = {
+        (item["cik"], item["field"]): item
+        for item in report["manifest_rollup_mismatch"]
+    }
+    entry = mismatches[("0000000001", "present_cells")]
+    assert entry["manifest_value"] is None
+    assert entry["proof_value"] == 39
+    assert entry["reason"] == "rollup_field_invalid"
+    assert report["acceptance_eligible"] is False
+    assert "rollup_mismatch" in report["acceptance_blockers"]
+
+
+def test_ill_typed_rollup_fields_block_with_field_invalid() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    manifest["issuers"][2]["core_pass"] = "yes"
+    manifest["issuers"][0]["na_cells"] = None
+    report = run_proof(manifest)
+    mismatches = {
+        (item["cik"], item["field"]): item
+        for item in report["manifest_rollup_mismatch"]
+    }
+    for key in (("0000000003", "core_pass"), ("0000000001", "na_cells")):
+        entry = mismatches[key]
+        assert entry["manifest_value"] is None, key
+        assert entry["reason"] == "rollup_field_invalid", key
+    assert report["acceptance_blockers"] == ["rollup_mismatch"]
+
+
+def test_correct_rollups_give_no_mismatch_entry() -> None:
+    report = run_proof(build_manifest(standard_members(), draft=False, attested=True))
+    assert report["manifest_rollup_mismatch"] == []
+    assert "rollup_mismatch" not in report["acceptance_blockers"]
+
+
+def test_caller_can_no_longer_inject_a_hash() -> None:
+    """M4: prove_coverage takes the manifest bytes; the r2 call shape (a
+    parsed manifest plus a caller-computed sha256) is refused outright."""
+    manifest = build_manifest(standard_members())
+    # The exact r2 call no longer even parses: the hash parameter is gone.
+    with pytest.raises(TypeError):
+        prove_coverage(
+            manifest,
+            "0" * 64,
+            small_thresholds(),
+            DIRECT_IDS,
+            FORMULA_IDS,
+            proved_at=PROVED_AT,
+        )
+    # Handing over a parsed manifest in the new shape is a typed refusal.
+    with pytest.raises(CoverageProofError) as excinfo:
+        prove_coverage(
+            manifest,
+            small_thresholds(),
+            DIRECT_IDS,
+            FORMULA_IDS,
+            proved_at=PROVED_AT,
+        )
+    assert excinfo.value.code == "manifest_bytes"
+
+
+def test_draft_prefix_pin_passes_and_fails_on_computed_sha() -> None:
+    """M4: for a draft the identity is the bytes' sha256, computed by the
+    prover; the pin check always runs."""
+    manifest = build_manifest(standard_members())  # a draft
+    computed = hashlib.sha256(manifest_bytes(manifest)).hexdigest()
+    assert computed[:20] != "f" * 20
+
+    report = run_proof(manifest, small_thresholds_with_prefix(computed[:20]))
+    assert report["manifest"]["sha256"] == computed
+    assert report["manifest_sha256"] == computed
+    assert report["census_identity"]["draft_identity"] == computed
+    assert report["census_identity"]["draft_identity_basis"] == "manifest_bytes_sha256"
+    assert report["census_identity"]["mismatched_fields"] == []
+
+    failing = run_proof(manifest, small_thresholds_with_prefix("f" * 20))
+    assert failing["census_identity"]["mismatched_fields"] == [
+        "manifest_draft_sha256_prefix"
+    ]
+    assert "census_identity_mismatch" in failing["acceptance_blockers"]
+
+
+def test_attested_manifest_without_declared_draft_sha256_is_blocked() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    del manifest["manifest_draft_sha256"]
+    report = run_proof(manifest, small_thresholds_for(manifest))
+    assert report["census_identity"]["draft_identity"] is None
+    assert report["census_identity"]["draft_identity_basis"] == (
+        "absent_manifest_draft_sha256"
+    )
+    assert report["census_identity"]["mismatched_fields"] == [
+        "manifest_draft_sha256_prefix"
+    ]
+    assert report["manifest"]["manifest_draft_sha256"] is None
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["census_identity_mismatch"]
+
+
+def test_attested_manifest_with_matching_declared_sha_is_not_blocked() -> None:
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    declared = manifest["manifest_draft_sha256"]
+    report = run_proof(manifest, small_thresholds_with_prefix(declared[:20]))
+    assert report["census_identity"]["draft_identity"] == declared
+    assert report["census_identity"]["draft_identity_basis"] == (
+        "declared_manifest_draft_sha256"
+    )
+    assert report["census_identity"]["mismatched_fields"] == []
+    assert report["manifest"]["manifest_draft_sha256"] == declared
+    assert report["acceptance_blockers"] == []
+
+
+def test_package_cell_on_core_only_member_is_an_orphan() -> None:
+    """M5: a package cell on a member that is not deep is an orphan."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"].append(cell("0000000003", "A1", "package:primary"))
+    report = run_proof(manifest)
+    assert report["orphan_cells"] == 1
+    assert report["orphan_reasons"]["package_not_deep_member"] == 1
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["orphan_cells"]
+
+
+def test_legacy_spelled_package_cell_on_core_member_is_an_orphan() -> None:
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"].append(cell("0000000003", "A1", "package.label"))
+    report = run_proof(manifest)
+    assert report["orphan_reasons"]["package_not_deep_member"] == 1
+    assert "orphan_cells" in report["acceptance_blockers"]
+    # The legacy spelling also trips the alias blocker; both block.
+    assert "legacy_field_id_alias" in report["acceptance_blockers"]
+
+
+def test_package_cell_outside_windows_is_an_orphan() -> None:
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    # A deep member's package cell on an undeclared period: the window check
+    # covers every field family (M5), so it is a period orphan even though
+    # the member is deep.
+    manifest["cells"].append(cell("0000000001", "A3", "package:primary"))
+    report = run_proof(manifest)
+    assert report["orphan_cells"] == 1
+    assert report["orphan_reasons"]["period_outside_windows"] == 1
+    assert report["orphan_reasons"]["package_not_deep_member"] == 0
+    assert report["acceptance_blockers"] == ["orphan_cells"]
+
+
+def test_real_draft_package_shape_gives_zero_orphans() -> None:
+    """M5: the real census draft's package cells sit on deep members in A2
+    and I2; a fixture in that shape gives zero orphans."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    package_a2_i2 = [
+        item
+        for item in manifest["cells"]
+        if item["field_id"].startswith("package:")
+        and item["period_id"] in ("A2", "I2")
+    ]
+    assert package_a2_i2
+    assert all(item["cik"] in {"0000000001", "0000000002"} for item in package_a2_i2)
+    report = run_proof(manifest)
+    assert report["orphan_cells"] == 0
+    assert report["orphan_reasons"] == {
+        "cik_not_member": 0,
+        "period_outside_windows": 0,
+        "package_not_deep_member": 0,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 18. Source hygiene scan
 # ---------------------------------------------------------------------------
 
 

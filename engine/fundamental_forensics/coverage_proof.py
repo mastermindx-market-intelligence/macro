@@ -1,10 +1,12 @@
 """C2 coverage proof: predeclared thresholds proven from a coverage manifest.
 
 Acceptance case A36 — "predeclare issuer/period/field thresholds; prove them
-by manifest, not ticker loop count."  This module is pure: no network, no
-store, no wall-clock read, and no import from ``scripts/``.  It reads a frozen
-thresholds config, the governed metric catalog, and a
-``fundamental_forensics.coverage_manifest/v1`` document, and produces a
+by manifest, not ticker loop count."  This module uses no network, no store
+and no wall clock, and imports nothing from ``scripts/``.  The one repository
+file it opens itself is the file named by the thresholds' ``freeze_ref``,
+whose bytes it hashes for the report; the frozen thresholds config, the
+governed metric catalog and the ``fundamental_forensics.coverage_manifest/v1``
+document all arrive through its parameters, and the output is a
 ``fundamental_forensics.coverage_proof/v1`` report plus a fixed print block.
 
 Membership comes only from ``issuers[]`` (``tier_assigned``); a ticker loop,
@@ -40,6 +42,27 @@ and any disagreement is an acceptance blocker; orphan cells and rollup
 mismatches block acceptance; a metric cell outside the declared windows is
 an orphan, never silently dropped; core periods outside the deep periods are
 refused at load.
+
+Review-lane rulings (V1-a r3, 2026-10-19) make the prover accept the real
+census draft's present cells and bind the proof to byte-computed identity:
+a present cell may carry ``reason_code`` ``None``, ``""`` or ``"present"``
+(anything else is still refused); ``freeze_ref`` must be a relative POSIX
+path — no leading slash, no backslash, no ``..`` or empty segment — whose
+resolved path lies inside the repository root and names a regular file, and
+a rule break adds the ``freeze_ref_invalid`` blocker while the report still
+runs (the report carries the declared relative path, its validity, its
+existence and its bytes' sha256 — never an absolute host path); a missing or
+ill-typed manifest rollup field blocks through ``rollup_mismatch`` with
+reason ``rollup_field_invalid`` instead of skipping the comparison; the
+manifest arrives as bytes and the prover itself computes every sha256 it
+reports, so a caller-supplied hash is never trusted; the draft identity is
+the manifest bytes' sha256 for a draft and the declared top-level
+``manifest_draft_sha256`` (64 lowercase hex) otherwise, and the thresholds'
+``manifest_draft_sha256_prefix`` must always prefix it — the pin check is
+never skipped; and the orphan window check covers every field family (a
+wildcard-period cell is windowless by declaration, not out of window), with
+a package cell on a member that is not deep an orphan under the new reason
+``package_not_deep_member``.
 """
 from __future__ import annotations
 
@@ -79,6 +102,7 @@ REASON_CELL_MISSING = "cell_missing"
 REASON_FORMULA_INPUTS_ABSENT = "formula_inputs_absent"
 REASON_ORPHAN_CIK = "cik_not_member"
 REASON_ORPHAN_WINDOW = "period_outside_windows"
+REASON_ORPHAN_PACKAGE = "package_not_deep_member"
 NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
 COMPLETE_BAND = "complete"
 
@@ -100,6 +124,7 @@ _PACKAGE_FIELD = re.compile(r"^package:\S+$")
 _STATEMENT_FIELD = re.compile(r"^statement:\S+$")
 _SPECIALIST_FIELD = re.compile(r"^specialist:PK[0-9]{2}$")
 _BARE_FIELDS = frozenset({"packet", "journey"})
+_SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
 
 # Manifest status -> proof state.  ``slot_absent`` is never turned into
 # ``not_applicable``; only an explicit ``not_applicable`` leaves the
@@ -574,6 +599,20 @@ def _is_canonical_field_id(field_id: str) -> bool:
     )
 
 
+def _is_package_field_id(field_id: Any) -> bool:
+    """True for a package cell in either accepted spelling.
+
+    Ruling V1-a r3 (M5) orphans a package cell on a member that is not deep.
+    Both the canonical ``package:<role>`` and the accepted legacy
+    ``package.<role>`` spelling name a package cell; by the time cells reach
+    the orphan scan, ``_index_cells`` has already refused every dotted
+    spelling whose role is not one of the thresholds' alias roles.
+    """
+    return isinstance(field_id, str) and (
+        field_id.startswith("package:") or field_id.startswith(LEGACY_PACKAGE_ALIAS_PREFIX)
+    )
+
+
 def _check_cell_shape(
     cell: Any,
     position: int,
@@ -627,15 +666,17 @@ def _check_cell_shape(
             f"cells[{position}] has an unsupported status: {status!r}",
         )
     if status == "present":
-        # Ruling V1-a r2 (F4): a present cell carries no failure reason.  A
-        # non-null reason_code on a present cell is refused with a typed
-        # code, never silently counted as present.
+        # Ruling V1-a r3 (G1): the real census draft stamps its present cells
+        # with reason_code "present" (or ""), so those two spellings — plus
+        # an explicit null — are accepted.  Any other value on a present cell
+        # is still refused with a typed code, never silently counted.
         reason = cell.get("reason_code")
-        if reason is not None and reason != "":
+        if reason is not None and reason not in ("", "present"):
             raise CoverageProofError(
                 "present_cell_carries_reason",
                 f"cells[{position}] is present but carries reason_code "
-                f"{reason!r}; a present cell carries no reason",
+                f"{reason!r}; a present cell may carry no reason or "
+                f"'present'",
             )
     source_generation_id = cell.get("source_generation_id")
     if not isinstance(source_generation_id, str) or not source_generation_id:
@@ -679,44 +720,15 @@ def _index_cells(
     return index, aliases_applied
 
 
-def _validate_manifest_document(
-    manifest: Any, package_alias_roles: frozenset[str] = frozenset()
-) -> dict[str, Any]:
-    if not isinstance(manifest, dict):
-        raise CoverageProofError(
-            "manifest_schema", "manifest must be a JSON object"
-        )
-    schema = manifest.get("schema")
-    if schema != MANIFEST_SCHEMA:
-        raise CoverageProofError(
-            "manifest_schema",
-            f"manifest schema must equal {MANIFEST_SCHEMA}; got {schema!r}",
-        )
-    issuers = manifest.get("issuers")
-    if not isinstance(issuers, list):
-        raise CoverageProofError("manifest_limits", "manifest issuers must be a list")
-    if len(issuers) > HARD_MAX_ISSUERS:
-        raise CoverageProofError(
-            "manifest_limits",
-            f"manifest carries {len(issuers)} issuers; the hard limit is "
-            f"{HARD_MAX_ISSUERS}",
-        )
-    _index_cells(manifest.get("cells"), package_alias_roles)
-    return manifest
+def load_manifest(path: str | Path) -> bytes:
+    """Read a coverage manifest file's bytes under the hard size limit.
 
-
-def load_manifest(
-    path: str | Path,
-    *,
-    package_alias_roles: frozenset[str] = frozenset(),
-) -> tuple[dict[str, Any], str]:
-    """Read a coverage manifest and return it with its raw-byte sha256.
-
-    ``package_alias_roles`` is the thresholds config's required_package_roles,
-    threaded in by the caller: the declared legacy ``package.<role>`` spelling
-    is rewritten to ``package:<role>`` for exactly those roles.  Without the
-    role set every dotted ``field_id`` is refused, exactly as before the
-    alias existed.
+    Ruling V1-a r3 (M4): the bytes — never a parsed document and never a
+    caller-computed hash — are what ``prove_coverage`` takes.  The prover
+    parses the bytes and computes the sha256 itself, so nothing about the
+    manifest's identity is taken on the caller's word.  Every document-level
+    refusal (schema, limits, cell shape, the legacy alias) happens inside
+    ``prove_coverage``, with the thresholds' alias roles in hand.
     """
     try:
         size = Path(path).stat().st_size
@@ -729,15 +741,55 @@ def load_manifest(
             "manifest_oversize",
             f"manifest is {size} bytes; the hard limit is {HARD_MAX_MANIFEST_BYTES}",
         )
-    data = Path(path).read_bytes()
-    digest = hashlib.sha256(data).hexdigest()
     try:
-        raw = json.loads(data.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        return Path(path).read_bytes()
+    except OSError as exc:
         raise CoverageProofError(
-            "manifest_undecodable", f"manifest is not decodable JSON: {exc}"
+            "manifest_undecodable", f"cannot read manifest file: {exc}"
         ) from exc
-    return _validate_manifest_document(raw, package_alias_roles), digest
+
+
+# ---------------------------------------------------------------------------
+# Freeze reference
+# ---------------------------------------------------------------------------
+
+
+def _freeze_ref_state(freeze_ref: str) -> dict[str, Any]:
+    """Resolve ``freeze_ref`` against the repository root (rulings M1/M2).
+
+    ``freeze_ref`` must be a relative POSIX path — no leading slash, no
+    backslash, no ``..`` or empty segment — whose resolved path lies inside
+    ``_REPO_ROOT.resolve()`` and names a regular file.  A rule break
+    (including a directory or an escape from the root) is reported as
+    ``valid=False`` and becomes the ``freeze_ref_invalid`` blocker; the proof
+    still runs and reports.  A well-formed path naming nothing keeps
+    ``freeze_ref_missing``.  The sha256 is over the file's exact bytes, or
+    ``None`` when the path is invalid or missing; no absolute host path ever
+    leaves this function.
+    """
+    valid = not freeze_ref.startswith("/") and "\\" not in freeze_ref and all(
+        segment not in ("", "..") for segment in freeze_ref.split("/")
+    )
+    exists = False
+    sha256: str | None = None
+    if valid:
+        root = _REPO_ROOT.resolve()
+        resolved = (root / freeze_ref).resolve()
+        if root not in resolved.parents:
+            # A symlink whose target escapes the repository is a rule break,
+            # not a missing file.
+            valid = False
+        else:
+            try:
+                if resolved.is_file():
+                    exists = True
+                    sha256 = hashlib.sha256(resolved.read_bytes()).hexdigest()
+                elif resolved.exists():
+                    # Present but not a regular file (a directory, a device).
+                    valid = False
+            except OSError:
+                pass
+    return {"valid": valid, "exists": exists, "sha256": sha256}
 
 
 # ---------------------------------------------------------------------------
@@ -764,21 +816,39 @@ def _reason_of(label: str) -> str:
 
 
 def prove_coverage(
-    manifest: Any,
-    manifest_sha256: str,
+    manifest_bytes: bytes,
     thresholds: CoverageThresholds,
     direct_ids: Any,
     formula_ids: Any,
     *,
     proved_at: datetime,
 ) -> dict[str, Any]:
-    """Recompute tier coverage from membership and required cells."""
+    """Recompute tier coverage from membership and required cells.
+
+    Ruling V1-a r3 (M4): the manifest arrives as its exact bytes; this
+    function parses them and computes the sha256 itself.  A parsed document
+    or a caller-supplied hash is refused — nothing about the manifest's
+    identity is taken on the caller's word.
+    """
     if not isinstance(proved_at, datetime):
         raise CoverageProofError("naive_clock", "proved_at must be a datetime")
     if proved_at.tzinfo is None or proved_at.utcoffset() is None:
         raise CoverageProofError(
             "naive_clock", "proved_at must carry an explicit timezone"
         )
+    if not isinstance(manifest_bytes, (bytes, bytearray)):
+        raise CoverageProofError(
+            "manifest_bytes",
+            "prove_coverage takes the manifest's bytes; a parsed manifest or "
+            "a caller-supplied sha256 is never accepted",
+        )
+    manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
+    try:
+        manifest = json.loads(manifest_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise CoverageProofError(
+            "manifest_undecodable", f"manifest bytes are not decodable JSON: {exc}"
+        ) from exc
     if not isinstance(manifest, Mapping):
         raise CoverageProofError("manifest_schema", "manifest must be an object")
     if manifest.get("schema") != MANIFEST_SCHEMA:
@@ -842,7 +912,11 @@ def prove_coverage(
     deep_cik_set = set(deep_ciks)
 
     orphan_cells = 0
-    orphan_reasons: dict[str, int] = {REASON_ORPHAN_CIK: 0, REASON_ORPHAN_WINDOW: 0}
+    orphan_reasons: dict[str, int] = {
+        REASON_ORPHAN_CIK: 0,
+        REASON_ORPHAN_WINDOW: 0,
+        REASON_ORPHAN_PACKAGE: 0,
+    }
     status_normalised: dict[str, int] = {}
     cell_generation_counts: dict[str, int] = {}
     issuer_cell_states: dict[str, dict[str, int]] = {
@@ -877,16 +951,21 @@ def prove_coverage(
             orphan_cells += 1
             orphan_reasons[REASON_ORPHAN_CIK] += 1
             continue
-        field_id = cell.get("field_id")
-        if (
-            isinstance(field_id, str)
-            and field_id.startswith("metric:")
-            and cell.get("period_id") not in member_windows[cik]
-        ):
-            # Ruling V1-a r2 (F6): a metric cell outside the declared
-            # windows is an orphan, never silently dropped.
+        period_id = cell.get("period_id")
+        if period_id != WILDCARD_PERIOD and period_id not in member_windows[cik]:
+            # Ruling V1-a r3 (M5): every cell family is window-checked — a
+            # cell outside the member's declared windows is an orphan,
+            # never silently counted.  A wildcard-period cell (packet,
+            # journey, specialist) is windowless by declaration, so it is
+            # not "outside" any window.
             orphan_cells += 1
             orphan_reasons[REASON_ORPHAN_WINDOW] += 1
+            continue
+        if _is_package_field_id(cell.get("field_id")) and cik not in deep_cik_set:
+            # Ruling V1-a r3 (M5): a package cell (either accepted spelling)
+            # on a member that is not deep is an orphan.
+            orphan_cells += 1
+            orphan_reasons[REASON_ORPHAN_PACKAGE] += 1
             continue
         issuer_cell_states[cik][state] += 1
 
@@ -1136,18 +1215,34 @@ def prove_coverage(
         if cik in deep_cik_set:
             comparisons.append(("deep_pass", issuer.get("deep_pass"), proof["deep_pass"]))
         for field, manifest_value, proof_value in comparisons:
+            # Ruling V1-a r3 (M3): a missing or ill-typed rollup field is a
+            # reported mismatch, never a skipped comparison.  The entry
+            # records a null manifest value so no ill-typed literal rides on
+            # the report; both kinds block through ``rollup_mismatch``.
             if field in ("core_pass", "deep_pass"):
-                if not isinstance(manifest_value, bool):
-                    continue
-            elif not isinstance(manifest_value, int) or isinstance(manifest_value, bool):
-                continue
-            if manifest_value != proof_value:
+                well_typed = isinstance(manifest_value, bool)
+            else:
+                well_typed = isinstance(manifest_value, int) and not isinstance(
+                    manifest_value, bool
+                )
+            if not well_typed:
+                rollup_mismatch.append(
+                    {
+                        "cik": cik,
+                        "field": field,
+                        "manifest_value": None,
+                        "proof_value": proof_value,
+                        "reason": "rollup_field_invalid",
+                    }
+                )
+            elif manifest_value != proof_value:
                 rollup_mismatch.append(
                     {
                         "cik": cik,
                         "field": field,
                         "manifest_value": manifest_value,
                         "proof_value": proof_value,
+                        "reason": "rollup_value_mismatch",
                     }
                 )
     rollup_mismatch.sort(key=lambda item: (item["cik"], item["field"]))
@@ -1167,27 +1262,47 @@ def prove_coverage(
     def verbatim(key: str) -> Any:
         return manifest.get(key)
 
-    # Ruling V1-a r2 (F2): the manifest must carry the thresholds' pinned
-    # census identity.  The proof still runs and reports; every disagreement
-    # is an acceptance blocker instead of a refusal.  ``cutoff_at`` and
-    # ``source_generation_id`` are compared against the manifest's top-level
-    # fields; ``manifest_draft_sha256_prefix`` is a declared value on both
-    # sides (BASE defines no computation for it), so it is compared only when
-    # the manifest declares one.
+    # Ruling V1-a r3 (M4): the manifest's census identity is byte-bound.  The
+    # draft identity is the sha256 this function computed from the manifest
+    # bytes when the manifest is a draft; otherwise it is the manifest's
+    # declared top-level ``manifest_draft_sha256`` — the attestation step's
+    # record of which draft it attests — which must be 64 lowercase hex
+    # characters.  A non-draft manifest without a valid declaration has no
+    # draft identity.  The thresholds' ``manifest_draft_sha256_prefix`` must
+    # be a prefix of that identity, and the check always runs: it is never
+    # skipped on a declaration's absence.  ``cutoff_at`` and
+    # ``source_generation_id`` are still compared against the manifest's
+    # top-level fields; every disagreement is an acceptance blocker instead
+    # of a refusal, and the proof still runs and reports.
     thresholds_identity = dict(thresholds.census_identity)
     manifest_identity = {
         "source_generation_id": manifest.get("source_generation_id"),
         "cutoff_at": manifest.get("cutoff_at"),
         "manifest_draft_sha256_prefix": manifest.get("manifest_draft_sha256_prefix"),
     }
+    declared_draft_sha256 = manifest.get("manifest_draft_sha256")
+    if manifest.get("draft") is True:
+        draft_identity = manifest_sha256
+        draft_identity_basis = "manifest_bytes_sha256"
+    elif (
+        isinstance(declared_draft_sha256, str)
+        and _SHA256_HEX.fullmatch(declared_draft_sha256)
+    ):
+        draft_identity = declared_draft_sha256
+        draft_identity_basis = "declared_manifest_draft_sha256"
+    else:
+        draft_identity = None
+        draft_identity_basis = "absent_manifest_draft_sha256"
     identity_mismatched_fields = [
         field
         for field in ("source_generation_id", "cutoff_at")
         if manifest_identity[field] != thresholds_identity[field]
     ]
-    declared_prefix = manifest_identity["manifest_draft_sha256_prefix"]
-    if declared_prefix is not None and (
-        declared_prefix != thresholds_identity["manifest_draft_sha256_prefix"]
+    if not (
+        isinstance(draft_identity, str)
+        and draft_identity.startswith(
+            thresholds_identity["manifest_draft_sha256_prefix"]
+        )
     ):
         identity_mismatched_fields.append("manifest_draft_sha256_prefix")
     manifest_generation = manifest_identity["source_generation_id"]
@@ -1200,12 +1315,15 @@ def prove_coverage(
         "mismatched_fields": sorted(identity_mismatched_fields),
         "cell_source_generation_counts": dict(sorted(cell_generation_counts.items())),
         "mixed_source_generations": mixed_source_generations,
+        "draft_identity": draft_identity,
+        "draft_identity_basis": draft_identity_basis,
     }
 
-    # Ruling V1-a r2 (F2): ``freeze_ref`` must name a path that exists
-    # relative to the repository root.
-    freeze_path = _REPO_ROOT / thresholds.freeze_ref
-    freeze_ref_exists = freeze_path.exists()
+    # Rulings V1-a r3 (M1/M2): ``freeze_ref`` is resolved inside the
+    # repository root and only the declared relative path, its validity, its
+    # existence and its bytes' sha256 enter the report — never an absolute
+    # host path.
+    freeze_ref_state = _freeze_ref_state(thresholds.freeze_ref)
 
     report_manifest = {
         "schema": verbatim("schema"),
@@ -1216,6 +1334,9 @@ def prove_coverage(
         "draft": verbatim("draft"),
         "attested": verbatim("attested"),
         "basis": verbatim("basis"),
+        # The attestation step's record of which draft this manifest attests
+        # (ruling V1-a r3, M4); null on a draft or when undeclared.
+        "manifest_draft_sha256": verbatim("manifest_draft_sha256"),
     }
 
     blockers: list[str] = []
@@ -1233,7 +1354,11 @@ def prove_coverage(
         blockers.append("census_identity_mismatch")
     if mixed_source_generations:
         blockers.append("mixed_source_generations")
-    if not freeze_ref_exists:
+    if not freeze_ref_state["valid"]:
+        # Ruling V1-a r3 (M1): an absolute path, a traversal, a backslash,
+        # an empty segment, an escape from the root, or a non-regular file.
+        blockers.append("freeze_ref_invalid")
+    elif not freeze_ref_state["exists"]:
         blockers.append("freeze_ref_missing")
     # Ruling V1-a r2 (F5): orphan cells and rollup mismatches block
     # acceptance; they were reported but non-blocking before.
@@ -1253,13 +1378,14 @@ def prove_coverage(
             "deep_target": thresholds.deep_target,
             "core_target": thresholds.core_target,
             "freeze_ref": thresholds.freeze_ref,
-            "freeze_ref_path": str(freeze_path),
-            "freeze_ref_exists": freeze_ref_exists,
+            "freeze_ref_valid": freeze_ref_state["valid"],
+            "freeze_ref_exists": freeze_ref_state["exists"],
+            "freeze_ref_sha256": freeze_ref_state["sha256"],
         },
         "manifest": report_manifest,
-        # The manifest bytes' sha256 computed by the prover itself (ruling
-        # V1-a r2, F2): the thresholds pin only a declared draft prefix,
-        # whose computation BASE never defined.
+        # The manifest bytes' sha256, computed by the prover itself from the
+        # bytes it was handed (ruling V1-a r3, M4); the draft identity used
+        # for the prefix pin rides in ``census_identity``.
         "manifest_sha256": manifest_sha256,
         "census_identity": census_identity_block,
         "tiers": {"core": core_block, "deep": deep_block},

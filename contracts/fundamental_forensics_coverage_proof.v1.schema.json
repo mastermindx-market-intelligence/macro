@@ -41,8 +41,9 @@
         "deep_target",
         "core_target",
         "freeze_ref",
-        "freeze_ref_path",
-        "freeze_ref_exists"
+        "freeze_ref_valid",
+        "freeze_ref_exists",
+        "freeze_ref_sha256"
       ],
       "properties": {
         "thresholds_id": {
@@ -65,12 +66,15 @@
           "type": "string",
           "minLength": 1
         },
-        "freeze_ref_path": {
-          "type": "string",
-          "minLength": 1
+        "freeze_ref_valid": {
+          "type": "boolean"
         },
         "freeze_ref_exists": {
           "type": "boolean"
+        },
+        "freeze_ref_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
     },
@@ -86,7 +90,9 @@
         "manifest",
         "mismatched_fields",
         "cell_source_generation_counts",
-        "mixed_source_generations"
+        "mixed_source_generations",
+        "draft_identity",
+        "draft_identity_basis"
       ],
       "properties": {
         "thresholds": {
@@ -110,6 +116,17 @@
         },
         "mixed_source_generations": {
           "type": "boolean"
+        },
+        "draft_identity": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "draft_identity_basis": {
+          "enum": [
+            "manifest_bytes_sha256",
+            "declared_manifest_draft_sha256",
+            "absent_manifest_draft_sha256"
+          ]
         }
       }
     },
@@ -151,6 +168,9 @@
         },
         "basis": {
           "type": ["string", "null"]
+        },
+        "manifest_draft_sha256": {
+          "description": "Optional, echoed verbatim: the sha256 of the draft this attested manifest records (null on a draft or when undeclared; an ill-typed declaration echoes as-is and blocks through census_identity_mismatch)."
         }
       }
     },
@@ -244,7 +264,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["cik", "field", "manifest_value", "proof_value"],
+        "required": ["cik", "field", "manifest_value", "proof_value", "reason"],
         "properties": {
           "cik": {
             "type": "string",
@@ -260,7 +280,10 @@
             ]
           },
           "manifest_value": {},
-          "proof_value": {}
+          "proof_value": {},
+          "reason": {
+            "enum": ["rollup_field_invalid", "rollup_value_mismatch"]
+          }
         }
       }
     },
@@ -320,6 +343,7 @@
           "legacy_field_id_alias",
           "census_identity_mismatch",
           "mixed_source_generations",
+          "freeze_ref_invalid",
           "freeze_ref_missing",
           "orphan_cells",
           "rollup_mismatch"
