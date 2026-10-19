@@ -963,3 +963,603 @@ def test_s0_a_debt_draw_is_funding_only_and_agrees_with_itself() -> None:
     # §7: the net side is the gross less the scenario fee, 500,000 - 25,000.
     assert money(result.coverage[0].scenario_net) == Decimal("475000.00")
     assert money(result.coverage[0].gross_basis) == Decimal("500000")
+
+
+# ---------------------------------------------------------------------------
+# §7 / §11.5 — one test per coverage status, the deficit case and the assertion
+# ---------------------------------------------------------------------------
+
+
+def test_s0_coverage_covered_states_the_exact_gap_balance_and_zero_shortfall() -> None:
+    """§7: covered = the floor is met once the scenario's own flows are counted."""
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    check(result)
+    period = result.coverage[0]
+    assert period.status == "covered"
+    assert money(period.gap) == Decimal("978000.00")
+    assert money(period.scenario_net) == Decimal("5700000.00")
+    assert money(period.scenario_balance) == COMPUTED_CLOSING + Decimal("5700000.00")
+    assert money(period.shortfall) == Decimal(0)
+    assert money(period.gross_basis) == Decimal("6000000")
+    assert money(period.net_basis) == Decimal("5700000.00")
+    assert period.note.startswith(c.COVERAGE_SCENARIO_ONLY_NOTE)
+
+
+def test_s0_coverage_shortfall_states_the_exact_decimal_amount() -> None:
+    """§10: a $1M request at fee 0.05 leaves exactly $28,000.00 short of the floor."""
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "1000000")])
+    check(result)
+    period = result.coverage[0]
+    assert period.status == "shortfall"
+    assert money(period.scenario_net) == Decimal("950000.00")
+    assert money(period.scenario_balance) == COMPUTED_CLOSING + Decimal("950000.00")
+    assert money(period.shortfall) == LIQUIDITY_FLOOR - (COMPUTED_CLOSING + Decimal("950000.00"))
+    assert money(period.shortfall) == Decimal("28000.00")
+
+
+def test_s0_coverage_indeterminate_keeps_the_balance_exact_and_withholds_the_shortfall() -> None:
+    """§7: an unknown input marks the status without discarding what is known."""
+    result = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")],
+        capacity_kwargs=C2.a21_kwargs(outstanding=None),
+    )
+    check(result)
+    period = result.coverage[0]
+    assert period.status == "indeterminate"
+    assert money(period.scenario_net) == Decimal("5700000.00")
+    assert money(period.scenario_balance) == COMPUTED_CLOSING + Decimal("5700000.00")
+    assert period.shortfall.status == "unknown" and period.shortfall.value is None
+    assert "the joint check is indeterminate" in period.shortfall.note
+
+
+def test_s0_coverage_not_evaluated_carries_the_blocker_and_no_numbers() -> None:
+    """§7: an infeasible joint check is never turned into coverage numbers."""
+    result = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    check(result)
+    for period in result.coverage:
+        assert period.status == "not_evaluated"
+        assert period.gap.status == "unknown" and period.gap.value is None
+        assert period.scenario_net.status == "unknown" and period.scenario_net.value is None
+        assert period.scenario_balance.status == "unknown" and period.scenario_balance.value is None
+        assert period.shortfall.status == "unknown" and period.shortfall.value is None
+        assert f"asserted_actions_infeasible:{BABY_POOL}" in period.note
+        assert period.note.startswith(c.COVERAGE_SCENARIO_ONLY_NOTE)
+
+
+def test_s0_the_f1_deficit_case_keeps_the_exact_negative_balance() -> None:
+    """§7: where F1 withholds a negative closing, S0's own value stays exact."""
+    result = compose(actions=[], cash=Decimal("100000"))
+    check(result)
+    period = result.coverage[0]
+    opening = result.funding_schedule.periods[0]
+    assert opening.opening_balance.status == "known"
+    assert opening.closing_balance.status == "unknown"
+    assert "-3878000.00" in (opening.closing_balance.note or "")
+    assert period.status == "shortfall"
+    assert money(period.scenario_net) == Decimal(0)
+    assert period.scenario_balance.value == "-3878000.00"
+    assert money(period.gap) == Decimal("5878000.00")
+    assert money(period.shortfall) == Decimal("5878000.00")
+
+
+def test_s0_the_consistency_assertion_fires_on_a_tampered_schedule(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """§7: a schedule whose flows no longer sum to its published closing is refused."""
+    real = capacity_module.bind_funding_schedule
+
+    def tampered(state: Any, schedule: Any) -> Any:
+        bound = real(state, schedule)
+        burn = [flow for flow in bound.periods[0].uses if flow.flow_id.startswith("use:burn")]
+        assert burn, "the fixture books an assumed burn"
+        object.__setattr__(burn[0], "certainty", "conditional")
+        return bound
+
+    monkeypatch.setattr(capacity_module, "bind_funding_schedule", tampered)
+    with pytest.raises(sc.ScenarioCompositionError) as excinfo:
+        compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    assert str(excinfo.value) == "funding_balance_identity_mismatch:2026-10-14"
+
+
+# ---------------------------------------------------------------------------
+# §11.6 — A22 carried through the composer
+# ---------------------------------------------------------------------------
+
+
+SUBSTANTIVE_FIELDS = (
+    "action_checks", "joint_check", "cash_reconciliation", "issuance_rows",
+    "scenario_new_shares_low", "scenario_new_shares_high", "price_bases", "coverage",
+    "authorized_headroom", "blockers", "unknowns", "notes",
+)
+
+
+def test_s0_a22_permuted_actions_and_reversed_input_records_report_identical_answers() -> None:
+    """A22: order changes no reported answer -- only identity moves, and only
+    where the state contract itself says record order changes identity."""
+    forward = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    permuted = compose(actions=[
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+    ])
+    reversed_records = compose(
+        actions=[
+            C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+            C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+        ],
+        reverse_records=True,
+    )
+    check(forward)
+    check(permuted)
+    check(reversed_records)
+    forward_record = forward.as_record()
+    for other in (permuted, reversed_records):
+        other_record = other.as_record()
+        for field in SUBSTANTIVE_FIELDS:
+            assert forward_record[field] == other_record[field], field
+    # Permuting the actions leaves even the state untouched; reversing the
+    # state's records moves the state's own identity by its own contract (the
+    # C2 precedent), never an answer.
+    assert forward.state_id == permuted.state_id
+    assert forward_record["as_of"] == permuted.as_record()["as_of"]
+
+
+def test_s0_a22_permuting_the_scenario_actions_gives_an_identical_result_id_and_record() -> None:
+    """§11 item 6 as written: action order never changes identity.
+
+    Found by the S0-b lane (the scenario id digested actions in their given
+    order); FinancingScenario now stores its keyed sets canonically.
+    """
+    forward = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    permuted = compose(actions=[
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+    ])
+    assert forward.result_id == permuted.result_id
+    assert forward.as_record() == permuted.as_record()
+
+
+def test_s0_a22_raising_a_pool_bound_never_worsens_the_joint_or_lowers_the_balance() -> None:
+    """A22: a raised bound is monotone -- the joint answer never gets worse and
+    a known scenario balance never falls."""
+    infeasible = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    raised = compose(
+        actions=[
+            C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+            C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+        ],
+        capacity_kwargs=C2.a21_kwargs(float_value="60000000", outstanding="50000005"),
+    )
+    check(infeasible)
+    check(raised)
+    assert infeasible.joint_check.status == "infeasible"
+    assert raised.joint_check.status == "feasible"
+    assert JOINT_RANK[raised.joint_check.status] >= JOINT_RANK[infeasible.joint_check.status]
+    tight = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")],
+        capacity_kwargs=C2.a21_kwargs(outstanding="15000005"),
+    )
+    slack = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")],
+        capacity_kwargs=C2.a21_kwargs(outstanding="30000005"),
+    )
+    assert JOINT_RANK[slack.joint_check.status] >= JOINT_RANK[tight.joint_check.status]
+    assert money(slack.coverage[0].scenario_balance) >= money(tight.coverage[0].scenario_balance)
+    # Where both balances are known the raised bound never lowers any of them;
+    # where one is unknown (the infeasible run) there is no number to lower.
+    for before, after in ((infeasible, raised), (tight, slack)):
+        before_balance = before.coverage[0].scenario_balance
+        after_balance = after.coverage[0].scenario_balance
+        if before_balance.status == "known" and after_balance.status == "known":
+            assert Decimal(after_balance.value) >= Decimal(before_balance.value)
+
+
+def _exact_number(text: str) -> Fraction:
+    return Fraction(Decimal(text)) if "/" not in text else Fraction(text)
+
+
+def _scaled_text(base: str, scaled: str, k: Decimal) -> bool:
+    """Whether two exact texts differ only by k-scaled (or constant) numbers."""
+    numbers = re.compile(r"\d+(?:\.\d+)?")
+    if numbers.split(base) != numbers.split(scaled):
+        return False
+    base_parts, scaled_parts = numbers.findall(base), numbers.findall(scaled)
+    return len(base_parts) == len(scaled_parts) and all(
+        Decimal(after) == Decimal(before) * k or Decimal(after) == Decimal(before)
+        for before, after in zip(base_parts, scaled_parts)
+    )
+
+
+def _walk_scaled(base: Any, scaled: Any, k: Decimal, path: str = "") -> None:
+    """Every money field scales by k, every status is unchanged, share counts are
+    invariant (the price scales with the amounts), and no other field moves."""
+    if isinstance(base, Mapping) and isinstance(scaled, Mapping):
+        assert set(base) == set(scaled), f"{path}: key sets differ"
+        unit, status = base.get("unit"), base.get("status")
+        if unit in ("usd", "shares") and status is not None and "value" in base:
+            assert scaled.get("status") == status, f"{path}: status changed"
+            if status == "known":
+                before, after = Decimal(base["value"]), Decimal(scaled["value"])
+                assert after == before * k if unit == "usd" else after == before, (
+                    f"{path}: {before} -> {after} at k={k}"
+                )
+            return
+        for key in base:
+            if key in ("scenario_id", "state_id", "receipt", "condition"):
+                continue
+            if key == "assumptions":
+                assert [item["key"] for item in base[key]] == [
+                    item["key"] for item in scaled[key]
+                ], path
+                continue
+            if key == "price_bases" and path == "":
+                for before_row, after_row in zip(base[key], scaled[key]):
+                    for side in ("low", "high"):
+                        if before_row.get(side) is not None:
+                            assert _exact_number(after_row[side]) == (
+                                _exact_number(before_row[side]) * Fraction(k)
+                            ), f"{path}.{side}"
+                continue
+            _walk_scaled(base[key], scaled[key], k, f"{path}.{key}")
+        return
+    if isinstance(base, (list, tuple)) and isinstance(scaled, (list, tuple)):
+        assert len(base) == len(scaled), f"{path}: lengths differ"
+        for index, (before, after) in enumerate(zip(base, scaled)):
+            _walk_scaled(before, after, k, f"{path}[{index}]")
+        return
+    if isinstance(base, str) and isinstance(scaled, str) and _scaled_text(base, scaled, k):
+        return
+    assert base == scaled, f"{path}: {str(base)[:80]!r} != {str(scaled)[:80]!r}"
+
+
+@pytest.mark.parametrize("k", [7, 1000])
+def test_s0_a22_scaling_every_usd_input_and_the_floor_by_k_scales_every_money_field(
+    k: int,
+) -> None:
+    """A22: k in {{7, 1000}} scales every money field by k; statuses never move.
+
+    No field is skipped for rounding: the scaled price path keeps every
+    usd-per-share quotient integral, so the floor never meets a remainder.  The
+    share-count fields are not money and are asserted invariant instead, because
+    the scenario price is itself a USD input that scales with the amounts.
+    """
+    scale = Decimal(k)
+    base = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")],
+        capacity_kwargs=C2.path_kwargs(),
+    )
+    base_record = base.as_record()
+    scaled = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", str(Decimal("6000000") * scale))],
+        cash=OPENING_CASH * scale,
+        floor=LIQUIDITY_FLOOR * scale,
+        burn_per_day=BURN_PER_DAY * scale,
+        price=PriceAssumption(
+            kind="path",
+            path=(
+                ("2026-10-14", str(Decimal("2.00") * scale)),
+                ("2026-11-14", str(Decimal("3.00") * scale)),
+            ),
+        ),
+        capacity_kwargs=C2.path_kwargs(
+            registered=str(Decimal("20000000") * scale),
+            float_value=str(Decimal("300000000") * scale),
+        ),
+    )
+    check(scaled)
+    scaled_record = scaled.as_record()
+    # The scaled run keeps the base run's every status and every answer's shape.
+    assert scaled.joint_check.status == base.joint_check.status
+    assert scaled.coverage[0].status == base.coverage[0].status
+    assert money(scaled.coverage[0].shortfall) == Decimal(0)
+    assert money(scaled.coverage[0].scenario_net) == (
+        money(base.coverage[0].scenario_net) * scale
+    )
+    top_fields = (
+        "schema", "scenario_view", "state_view_mode", "as_of", "action_checks",
+        "joint_check", "cash_reconciliation", "issuance_rows", "scenario_new_shares_low",
+        "scenario_new_shares_high", "price_bases", "coverage", "authorized_headroom",
+        "blockers", "unknowns", "notes", "prophet_authority",
+    )
+    _walk_scaled(
+        {field: base_record[field] for field in top_fields},
+        {field: scaled_record[field] for field in top_fields},
+        scale,
+    )
+    for component in ("capacity_envelope", "supply_envelope", "funding_schedule"):
+        _walk_scaled(base_record[component], scaled_record[component], scale, component)
+
+
+# ---------------------------------------------------------------------------
+# §5 / §11.7 — A26: an unknown part never yields a finite total
+# ---------------------------------------------------------------------------
+
+
+def test_s0_an_unknown_instrument_maximum_keeps_the_share_totals_unknown() -> None:
+    """A26: a warrant whose outstanding count is unknown never sums to a number."""
+    series = "series_s0_unknown_max_warrants"
+    instrument_id = SS.series_id(series)
+    unknown_count = SS.economic_term(instrument_id, "instruments_outstanding", status="unknown")
+    term_id, instrument = SS.make_instrument(
+        series,
+        instruments_outstanding=unknown_count,
+        shares_per_instrument="1",
+        exercise_price="1.50",
+    )
+    result = compose(
+        actions=[warrant_action(
+            term_id, "cash",
+            Quantity.known("1000000", "shares", share_basis="scenario_incremental_issuance"),
+        )],
+        instruments=SS.instrument_set((term_id, instrument)),
+    )
+    check(result)
+    row = issuance_of(result)[term_id]
+    assert row.shares_low.status == "unknown" and row.shares_low.value is None
+    assert row.shares_high.status == "unknown" and row.shares_high.value is None
+    assert row.unknown_id is not None
+    assert row.unknown_id in {item.unknown_id for item in result.unknowns}
+    assert result.scenario_new_shares_low.status == "unknown"
+    assert result.scenario_new_shares_low.value is None
+    assert result.scenario_new_shares_high.status == "unknown"
+    assert term_id in (result.scenario_new_shares_low.note or "")
+
+
+def test_s0_an_unknown_price_keeps_the_share_totals_unknown() -> None:
+    """A26: no price in effect at the horizon start, no share count, no total."""
+    result = compose(
+        actions=[C2.cash(TAKE_A, "shelf_takedown", "1000000")],
+        capacity_kwargs=C2.path_kwargs(path=(("2026-10-20", "2.00"),)),
+    )
+    check(result)
+    row = issuance_of(result)[TAKE_A]
+    assert row.shares_low.status == "unknown" and row.shares_low.value is None
+    assert row.basis == "not_priced"
+    assert row.unknown_id == f"scenario_shares_unpriced:{TAKE_A}"
+    assert result.scenario_new_shares_low.status == "unknown"
+    assert result.scenario_new_shares_high.status == "unknown"
+    assert f"scenario_shares_unpriced:{TAKE_A}" in unknown_ids_of(result)
+
+
+# ---------------------------------------------------------------------------
+# §7 / §11.8 — A30: coverage is scenario-only, never cash on hand
+# ---------------------------------------------------------------------------
+
+
+def test_s0_no_field_or_note_states_cash_on_hand_and_every_period_note_is_scenario_only() -> None:
+    """A30: the only cash-on-hand language in a record is the negation, and every
+    coverage period carries the exact scenario-only disclosure."""
+    for kwargs in (
+        {"actions": [C2.cash(TAKE_A, "shelf_takedown", "6000000")]},
+        {"actions": [C2.cash(TAKE_A, "shelf_takedown", "6000000")], "fee_rate": None},
+        {"actions": [CB.action(CB.REPURCHASE_ROUTE, "repurchase", "cash", "400000")]},
+    ):
+        result = compose(**kwargs)
+        check(result)
+        record = result.as_record()
+        keys: list[str] = []
+        keys_of(record, keys)
+        for key in keys:
+            # No field is named or claimed as cash the issuer holds: the only keys
+            # that mention cash at all are structural names (the I-trace's
+            # cash_effects family, F1's cash_basis and S0's cash_reconciliation
+            # rows), none of which states or implies a cash-on-hand amount.
+            assert "on_hand" not in key.lower(), key
+            if "cash" in key.lower():
+                assert key in ("cash_effects", "cash_basis", "cash_reconciliation"), key
+        texts: list[str] = []
+        string_values(record, texts)
+        mentioned = [text for text in texts if CASH_ON_HAND in text.lower()]
+        assert mentioned, "the disclosure itself must travel in the record"
+        for text in mentioned:
+            # Every mention is the negation -- the coverage disclosure, the result
+            # note, or a component's own "(not cash on hand)" flow condition.
+            assert NOT_CASH_ON_HAND in text.lower(), text
+    # With no fee rate the period note is the exact disclosure, nothing more.
+    unpriced = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")], fee_rate=None)
+    check(unpriced)
+    for period in unpriced.coverage:
+        assert period.note == c.COVERAGE_SCENARIO_ONLY_NOTE
+    # With a fee rate the note carries the exact disclosure plus the two bases.
+    priced = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    check(priced)
+    for period in priced.coverage:
+        assert period.note.startswith(c.COVERAGE_SCENARIO_ONLY_NOTE)
+        assert " at fee rate 0.05" in period.note
+    # An infeasible run still discloses, and names why it is not evaluated.
+    refused = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    check(refused)
+    for period in refused.coverage:
+        assert period.note.startswith(c.COVERAGE_SCENARIO_ONLY_NOTE)
+
+
+# ---------------------------------------------------------------------------
+# §9 / §11.9 — A32: an assumption change is a new identity on an untouched state
+# ---------------------------------------------------------------------------
+
+
+def explain_with_state(
+    actions: Sequence[ActionSelection] = (),
+    *,
+    fee_rate: str | None = FEE_RATE,
+    scenario_over: Mapping[str, Any] | None = None,
+) -> tuple[sc.ScenarioComposition, c.CapitalState, c.FinancingScenario]:
+    """The shared composition plus the exact state and scenario it ran on.
+
+    It assembles the same fixtures as :func:`explain` and calls the composer
+    directly, so the caller can hash the state record before and after.
+    """
+    kwargs = dict(C2.a21_kwargs())
+    other = tuple(kwargs.pop("other", ()))
+    assumptions = other + tuple(
+        (name, f"fixed_usd_per_day:{BURN_PER_DAY}" if name == "burn_basis" else value)
+        for name, value in FUNDING_ASSUMPTIONS
+    )
+    state, scenario, rules = C1.build(other=assumptions, **kwargs)
+    over: dict[str, Any] = {"actions": tuple(actions), "fee_rate": fee_rate}
+    if scenario_over:
+        over.update(scenario_over)
+    scenario = dataclasses.replace(scenario, **over)
+    financials = F.financials(F.cash(str(OPENING_CASH), measured="2026-06-30"))
+    commitments = F.covenants(
+        F.covenant("cov-min-1", str(LIQUIDITY_FLOOR), available_at=COVENANT_AVAILABLE)
+    )
+    composition = sc.explain_scenario(
+        state,
+        SS.instrument_set(),
+        SS.basis(),
+        financials,
+        commitments,
+        scenario,
+        rules,
+        pack=C1.PACK,
+    )
+    return composition, state, scenario
+
+
+def test_s0_a32_price_date_and_rule_edition_changes_are_new_identities_on_an_untouched_state() -> None:
+    """A32: price, date and rule edition each move every identity and no state byte."""
+    base_actions = [C2.cash(TAKE_A, "shelf_takedown", "6000000")]
+    base, state, scenario = explain_with_state(actions=base_actions)
+    check(base.result)
+    state_digest = c.sha256_of(state.as_record())
+    editions = {
+        "price": {"price": PriceAssumption(kind="fixed", fixed_price="2.50")},
+        "date": {"horizon_end": "2026-12-30"},
+        "rule_edition": {
+            "other_assumptions": tuple(scenario.other_assumptions)
+            + (("rule_pack_edition", "L0:2026-10-14:s0b-probe"),),
+        },
+    }
+    seen_ids = {("base", base.result.scenario_id)}
+    for name, over in editions.items():
+        variant, variant_state, _ = explain_with_state(
+            actions=base_actions, scenario_over=over
+        )
+        result = variant.result
+        check(result)
+        # The state is byte-identical: no evidence digest moved.
+        assert c.sha256_of(variant_state.as_record()) == state_digest
+        assert result.state_id == base.result.state_id
+        assert result.scenario_id != base.result.scenario_id
+        assert result.result_id != base.result.result_id
+        assert result.receipt.receipt_id != base.result.receipt.receipt_id
+        assert result.receipt.input_digest != base.result.receipt.input_digest
+        for seen_name, seen_scenario_id in seen_ids:
+            assert result.scenario_id != seen_scenario_id, (name, seen_name)
+        seen_ids.add((name, result.scenario_id))
+
+
+# ---------------------------------------------------------------------------
+# §0.5 / §11.10 — safety sweeps over three result shapes
+# ---------------------------------------------------------------------------
+
+
+def test_s0_safety_sweeps_pass_on_the_a21_coverage_and_reconciliation_results() -> None:
+    """§0 items 5 and 6 over an infeasible, a covered and a disagreeing result."""
+    a21 = compose(actions=[
+        C2.cash(TAKE_A, "shelf_takedown", "8000000"),
+        C2.cash(TAKE_B, "shelf_takedown", "7000000"),
+    ])
+    coverage = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    instruments, warrant_id = cash_warrant(exercise_price="1.50")
+    reconciliation = compose(
+        actions=[warrant_action(
+            warrant_id, "cash",
+            Quantity.known("1000000", "shares", share_basis="scenario_incremental_issuance"),
+        )],
+        instruments=instruments,
+    )
+    for result in (a21, coverage, reconciliation):
+        check(result)
+        record = result.as_record()
+        keys: list[str] = []
+        keys_of(record, keys)
+        for key in keys:
+            assert not c.FORBIDDEN_PROPERTY_PATTERN.match(key), key
+        texts: list[str] = []
+        string_values(record, texts)
+        for text in texts:
+            assert not FORBIDDEN_NOTE.search(text), text
+        assert result.prophet_authority is False
+    assert recon_of(reconciliation)[warrant_id].conflict_id in reconciliation.blockers
+
+
+# ---------------------------------------------------------------------------
+# §7a / §11.11 — authorized headroom is disclosed, never assumed
+# ---------------------------------------------------------------------------
+
+
+AUTHORIZED_NOT_EVALUATED_NOTE = (
+    "charter share limit not evaluated by capacity; requested share issuance is not checked "
+    "against authorized shares"
+)
+
+
+def test_s0_authorized_headroom_not_evaluated_when_capacity_omits_it() -> None:
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    check(result)
+    disclosure = result.authorized_headroom
+    assert (disclosure.status, disclosure.pool_id, disclosure.capacity_status) == (
+        "not_evaluated", None, None,
+    )
+    assert disclosure.note == AUTHORIZED_NOT_EVALUATED_NOTE
+    assert sc.AUTHORIZED_HEADROOM_UNKNOWN in unknown_ids_of(result)
+    assert sc.AUTHORIZED_HEADROOM_UNKNOWN == (
+        "authorized_headroom_not_evaluated:charter_limit_unchecked"
+    )
+
+
+def test_s0_authorized_headroom_status_carried_verbatim(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The control is composed before the patch, so it is the same run without the key.
+    control = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    assert control.authorized_headroom.status == "not_evaluated"
+    real = capacity_module.explain_capacity
+
+    def with_authorized(*args: Any, **kwargs: Any) -> Any:
+        evaluation = real(*args, **kwargs)
+        evaluation.inputs["authorized"] = {"pool": "P", "status": "unknown"}
+        return evaluation
+
+    monkeypatch.setattr(capacity_module, "explain_capacity", with_authorized)
+    result = compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    check(result)
+    disclosure = result.authorized_headroom
+    assert (disclosure.status, disclosure.pool_id, disclosure.capacity_status, disclosure.note) == (
+        "unknown", "P", "unknown", None,
+    )
+    assert "authorized_headroom_unknown:P" in unknown_ids_of(result)
+    # The disclosure adds nothing of its own: the joint check and every issuance
+    # row are exactly what the same run without the key reports.
+    assert result.joint_check == control.joint_check
+    assert [row.as_record() for row in result.issuance_rows] == [
+        row.as_record() for row in control.issuance_rows
+    ]
+
+
+def test_s0_an_unrecognised_authorized_status_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    real = capacity_module.explain_capacity
+
+    def with_bogus(*args: Any, **kwargs: Any) -> Any:
+        evaluation = real(*args, **kwargs)
+        evaluation.inputs["authorized"] = {"pool": "P", "status": "bogus"}
+        return evaluation
+
+    monkeypatch.setattr(capacity_module, "explain_capacity", with_bogus)
+    with pytest.raises(sc.ScenarioCompositionError) as excinfo:
+        compose(actions=[C2.cash(TAKE_A, "shelf_takedown", "6000000")])
+    assert str(excinfo.value) == "authorized_status_unrecognised:bogus"
