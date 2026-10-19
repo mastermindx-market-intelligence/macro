@@ -14494,6 +14494,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/json_strict.py"
       # Connected Research Factory import closure (PR9463).
       - engine/oracle/compounds.py
       - engine/oracle/graph.py
@@ -16996,6 +16997,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # Connected Research Factory import closure (PR9463).
@@ -23170,6 +23172,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
@@ -24496,6 +24499,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       # Connected Research Factory import closure (PR9463).
