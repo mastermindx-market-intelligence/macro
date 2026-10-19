@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Complete native article PR9696 at6bcd9cd3 through exactCI39235580372 via verified watcher10675, protected landing and normal installed/public acceptance. Native emission already consumed once. Keep9650 watcher93558/exactCI39231026885 running but feature merge disarmed until native content accepted; then finish same feature carrier. Original histories, rights and refusals preserved.
+next_action: Consume existing native coordinator Macro9696 protected publication/install return; root advances SAME9650 actual recovery/guard integration through capacity-admitted exact CI/protected install/browser proof. Terminal1075 source/data and scoped CNDT chart/return browser acceptance complete; never replay original OP/emitter. Current CHECKPOINT owns detailed state.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9696
   - https://github.com/mastermindx-market-intelligence/macro/pull/9648
