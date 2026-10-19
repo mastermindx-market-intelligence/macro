@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/e0_reviewer_plan.v1.schema.json",
+  "title": "Research Factory Market Memory E0 Reviewer Plan (display-only metadata contract)",
+  "description": "Preregistration-shaped reviewer-plan record for the E0 dual-annotation stage of the research_factory market-memory study: exactly two preregistered independent reviewers annotate without access to each other's provisional ratings, and one preregistered independent adjudicator resolves disagreements while original ratings, source spans, and adjudication reasons are retained. This schema validates metadata consistency only: field presence, shapes, constants, and bounds. It does not authenticate identity, qualification, independence, assignments, or blinding; supplied evidence refs and fixed booleans are plan declarations whose presence or hash never authenticates the underlying facts. Cross-object distinctness (distinct reviewer principals, adjudicator distinct from reviewers) and conformance of principal/task identifiers to the referenced membership and tasks artifacts are semantic joins owned by the parent validator, not expressible here. This document confers no study admission, activation, authority, or budget change, does not modify the frozen protocol or annotation guide, and the 512 ceiling on assignments is a resource bound, not a sample size.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "object_id",
+    "authority",
+    "study_id",
+    "preregistered_at",
+    "protocol_sha256",
+    "annotation_guide_sha256",
+    "membership_sha256",
+    "tasks_ref",
+    "reviewers",
+    "adjudicator",
+    "assignments",
+    "blinding"
+  ],
+  "properties": {
+    "schema": {
+      "const": "research_factory.market_memory_e0_reviewer_plan.v1"
+    },
+    "object_id": {
+      "$ref": "#/$defs/bounded_id"
+    },
+    "authority": {
+      "const": "display_only"
+    },
+    "study_id": {
+      "$ref": "#/$defs/bounded_id"
+    },
+    "preregistered_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 27
+    },
+    "protocol_sha256": {
+      "const": "5821074f0ad1564780759a7e5d7ca6595cd8d411f119629f31ee431f2a481ca6"
+    },
+    "annotation_guide_sha256": {
+      "const": "4efc664f6c86f5af6a62ac4fd8b98ae37ae130fa18ecfa7bdf0a88b399a71696"
+    },
+    "membership_sha256": {
+      "const": "76de9522d40c65c33de0dcde59f581a5c493f4be218df3221adb9c3af1495c8f"
+    },
+    "tasks_ref": {
+      "$ref": "#/$defs/tasks_ref"
+    },
+    "reviewers": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/participant"
+      }
+    },
+    "adjudicator": {
+      "$ref": "#/$defs/participant"
+    },
+    "assignments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "$ref": "#/$defs/assignment"
+      }
+    },
+    "blinding": {
+      "$ref": "#/$defs/blinding"
+    }
+  },
+  "$defs": {
+    "bounded_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "sha256_hex": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "object_id",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "schema": {
+          "$ref": "#/$defs/bounded_id"
+        },
+        "object_id": {
+          "$ref": "#/$defs/bounded_id"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256_hex"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        }
+      }
+    },
+    "tasks_ref": {
+      "description": "Exact reference to the preregistered E0 tasks artifact; its schema field is pinned to the known tasks const.",
+      "allOf": [
+        {
+          "$ref": "#/$defs/reference"
+        },
+        {
+          "properties": {
+            "schema": {
+              "const": "research_factory.market_memory_e0_tasks.v1"
+            }
+          }
+        }
+      ]
+    },
+    "participant": {
+      "description": "Supplied opaque evidence references for one preregistered participant role (reviewer or adjudicator). Presence or hash of these refs does not authenticate identity, qualification, or independence; those are verified by the parent validator against the preregistered membership record, not by this schema. No people are named or invented here.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principal_ref",
+        "qualification_ref",
+        "independence_ref"
+      ],
+      "properties": {
+        "principal_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "qualification_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "independence_ref": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "assignment": {
+      "description": "Preregistered assignment shape for one task: bounded task identifier, exactly two unique reviewer principal identifiers, and one adjudicator principal identifier. This schema does not allocate conditions, generate packets, or carry outcomes or actual annotation fields; matching these identifiers against participant principal_ref.object_id values and the exact task list is a semantic join owned by the parent validator.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "reviewer_principal_ids",
+        "adjudicator_principal_id"
+      ],
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/bounded_id"
+        },
+        "reviewer_principal_ids": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/bounded_id"
+          }
+        },
+        "adjudicator_principal_id": {
+          "$ref": "#/$defs/bounded_id"
+        }
+      }
+    },
+    "blinding": {
+      "description": "Fixed plan declarations about packet suppression and retention. These are declared intentions only, not authenticated enforcement.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method_identity_suppressed",
+        "provider_identity_suppressed",
+        "later_outcome_values_suppressed",
+        "peer_provisional_ratings_visible",
+        "original_ratings_retained",
+        "adjudication_reasons_retained"
+      ],
+      "properties": {
+        "method_identity_suppressed": {
+          "const": true
+        },
+        "provider_identity_suppressed": {
+          "const": true
+        },
+        "later_outcome_values_suppressed": {
+          "const": true
+        },
+        "peer_provisional_ratings_visible": {
+          "const": false
+        },
+        "original_ratings_retained": {
+          "const": true
+        },
+        "adjudication_reasons_retained": {
+          "const": true
+        }
+      }
+    }
+  }
+}
