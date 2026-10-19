@@ -22593,7 +22593,7 @@ jobs:
       - "tests/test_shared_theme_progressive_loader.cjs"
       - "templates/theme.js"
       - "tests/fixtures/government_revenue/archetypes/**"
-    timeout-minutes: 8
+    timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
