@@ -491,7 +491,9 @@ def market_concentration(region: str = "us") -> dict:
     last = b.iloc[-1]
     def f(c):
         try:
-            return float(last[c])
+            value = float(last[c])
+            # An unmeasured numerator is not a neutral/mixed market verdict.
+            return value if np.isfinite(value) else None
         except Exception:  # noqa: BLE001
             return None
     adv, dec = f("adv"), f("dec")
