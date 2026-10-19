@@ -1242,10 +1242,10 @@ def test_alias_bytes_in_manifest_are_the_bytes_used_for_identity(tmp_path, monke
     before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
     first = explorer.compose_snapshot(root, chain=fx.SLUG)
     exposure = first["company_exposure"]
-    channel = exposure["channels"][0]
+    channel = first["exposure_screens"][0]
     assert exposure["asof"] == "2026-01-02"
     assert exposure["substrate"]["substrate_asof"]["min"] == "2026-01-01"
-    assert "SYNTHETIC_PRIVATE_REPORT" not in json.dumps(exposure)
+    assert "SYNTHETIC_PRIVATE_REPORT" not in json.dumps(first)
     assert channel["companies"]["linked"] == [
         {"symbol": "SYNA", "security_id": "SEC:0:SYNTHETIC"}]
     assert channel["companies"]["unlinked"] == [{"symbol": "SYNB", "reason": "unresolved"}]
@@ -1257,7 +1257,7 @@ def test_alias_bytes_in_manifest_are_the_bytes_used_for_identity(tmp_path, monke
     _exposure_aliases(root, symbol="SYNB")
     second = explorer.compose_snapshot(root, chain=fx.SLUG)
     assert second["source"]["source_manifest_hash"] != first["source"]["source_manifest_hash"]
-    assert second["company_exposure"]["channels"][0]["companies"]["linked"][0]["symbol"] == "SYNB"
+    assert second["exposure_screens"][0]["companies"]["linked"][0]["symbol"] == "SYNB"
 
 
 @pytest.mark.parametrize("present", [False, True])
@@ -1269,7 +1269,7 @@ def test_missing_or_unreadable_identity_retains_membership_without_action(tmp_pa
         path.write_bytes(b"synthetic unreadable parquet")
     snap = explorer.compose_snapshot(root, chain=fx.SLUG)
     exposure = snap["company_exposure"]
-    channel = exposure["channels"][0]
+    channel = snap["exposure_screens"][0]
     assert channel["status"] == "available"
     assert channel["names"] == ["SYNA", "SYNB"]
     assert channel["n"] == 2 and channel["unevaluable"] == 3

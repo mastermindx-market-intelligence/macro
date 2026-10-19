@@ -320,6 +320,9 @@ def compose_snapshot(root: Path | str, *, chain: str = DEFAULT_CHAIN,
         "path": _ALIASES_REL,
         "sha256": digests.get(_ALIASES_REL),
     }
+    substrate = snapshot["company_exposure"]["substrate"]
+    snapshot["source"]["substrate_asof"] = (
+        substrate.get("substrate_asof") if substrate is not None else None)
 
     # Re-verify AFTER composing, by re-reading rather than by trusting a stat
     # taken beforehand. This catches any source rewritten after this process
@@ -447,6 +450,17 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
     first_blocking = _first_blocking_leg(legs)
     contradiction = _contradiction(legs, first_blocking)
 
+    company_exposure = _project_company_exposure(
+        definition, state_doc, observed, aliases, gaps=gaps)
+    by_channel = {channel["id"]: channel for channel in company_exposure["channels"]}
+    for screen in exposure_screens:
+        channel = by_channel.get(screen["id"])
+        if channel is not None:
+            screen.update({key: value for key, value in channel.items() if key != "id"})
+        else:
+            screen.update({"status": "unavailable", "reason": company_exposure["reason"],
+                           "companies": None})
+
     payload = {
         "schema": SCHEMA_ID,
         "generated_at": now.replace(microsecond=0).isoformat().replace("+00:00", "Z"),
@@ -503,8 +517,10 @@ def _build(definition: dict, state_doc: dict, episodes_raw: bytes | None, *,
         "clocks": _clocks(observed, state_doc, hops, now=now),
         "invalidators": invalidators,
         "exposure_screens": exposure_screens,
-        "company_exposure": _project_company_exposure(
-            definition, state_doc, observed, aliases, gaps=gaps),
+        # Membership is carried once, on the existing exposure screens. This
+        # metadata binds their common owner clocks and identity read receipt.
+        "company_exposure": {key: value for key, value in company_exposure.items()
+                             if key != "channels"},
         "display_permission": {
             "status": "not_determined_here",
             "policy": "site_full entitlement, enforced at the transport layer",
