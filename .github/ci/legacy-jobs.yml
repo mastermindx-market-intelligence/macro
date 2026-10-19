@@ -1049,14 +1049,17 @@ jobs:
       - "lib/closes_panel.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "lib/procutil.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "ops/launchd/com.mastermind.liveflow.plist"
       - "scripts/build_flow_archive.py"
       - "scripts/build_flow_surface.py"
+      - "scripts/build_live_flow_baselines.py"
       - "scripts/live_flow_poller.py"
       - "tests/test_flow_archive.py"
       - "tests/test_live_flow_recovery.py"
+      - "tests/test_live_flow_baselines.py"
       - "tests/test_live_flow_tiering.py"
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -1069,7 +1072,7 @@ jobs:
         # support the live-flow engine and pyyaml is imported by lib.config.
         run: pip install pytest pandas numpy pyyaml requests
       - name: live-flow WAL/cycle-recovery + sibling suites
-        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py -q
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py -q
 
   integrated-answer-v0:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -7048,6 +7051,7 @@ jobs:
       # AD-1T1 (2026-08-22): full-universe incremental T1 daily maintainer —
       # legacy characterization (F17), the --daily hostile suite, and the
       # launchd scheduler suite.
+      - "scripts/build_live_flow_baselines.py"
       - "tests/test_topup_thetadata_legacy.py"
       - "tests/test_topup_thetadata_daily.py"
       - "tests/test_topup_thetadata_scheduler.py"
@@ -32798,6 +32802,13 @@ jobs:
       - lib/dataos/identity.py
       - lib/dataos/sec_filing_identity.py
       - lib/dataos/sec_cusip_binding.py
+      - lib/dataos/sec_schedule13d.py
+      - lib/dataos/sec13d_research.py
+      - lib/evidence_foundation.py
+      - tests/fixtures/sec_schedule13d/**
+      - tests/test_sec_schedule13d.py
+      - tests/test_dataos_sec13d_cusip.py
+      - tests/test_sec13d_research.py
       - tests/test_sec_filing_identity.py
       - tests/test_dataos_sec_cusip.py
       # M01 (DATA-OS-COMPLETION): the frozen market support matrix. Its suite reads the
@@ -32863,11 +32874,12 @@ jobs:
       - name: install deps
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
-        run: pip install pytest pyyaml pandas pyarrow
+        run: pip install pytest pyyaml pandas pyarrow jsonschema
       - name: retained SEC filing CUSIP identity and cutoff contracts (hermetic)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py -q -rs
+          tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py
+          tests/test_sec_schedule13d.py tests/test_dataos_sec13d_cusip.py tests/test_sec13d_research.py -q -rs
       - name: basket composition read binds membership, identity and price to one request (U04)
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
