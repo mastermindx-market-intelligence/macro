@@ -35257,3 +35257,18 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  catalyst-stock-context:
+    if: ${{ false }}
+    gate: code
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install Catalyst owner-contract dependencies
+        run: pip install pytest jsonschema pandas pyarrow pyyaml requests
+      - name: Catalyst peer, news, and entry research consumer contracts
+        run: python -m pytest tests/test_catalyst_stock_context.py -q

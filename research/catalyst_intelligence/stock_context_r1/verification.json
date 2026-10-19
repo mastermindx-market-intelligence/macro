@@ -1,0 +1,83 @@
+{
+  "schema": "catalyst.stock_context_verification.v1",
+  "recorded_at": "2026-10-19",
+  "scope": "NONACTIVATED_RESEARCH_CONSUMER",
+  "base_sha": "97261c2a319e62faec05690c04e6fae180540235",
+  "mastermind_source_sha": "bcf4a2f72538682f2fbe4902f6417e59cd038678",
+  "source_sha256": {
+    "engine/catalyst_intelligence/__init__.py": "ac312306b503d147c2ebbbe8a4aab461d2533b856a6f03f8b0dc66157db25833",
+    "engine/catalyst_intelligence/__main__.py": "bc6bb466404337b1efd5a2aac608abf3393387ec9c4f3f5b244580ae14bd59e9",
+    "engine/catalyst_intelligence/assessment.py": "104e02d28d3dfca1438b1f2629b0c354633616e822b780d129a036813b0bd0d5",
+    "engine/catalyst_intelligence/peer_context.py": "8d7b15d3cf90af5da6fd1c53711c3814e9af856460e4dfffaad9a233ea3934c7",
+    "tests/test_catalyst_stock_context.py": "1043212e4cd7bf9a71df45bae2d5e91b4e4929b23aba88df8d77c41efb5b49a7"
+  },
+  "fixture_byte_sha256": {
+    "capture-receipt.json": "a83273c7e37a75abe2176c591fcca21ac2ed5402ea906d50522ef11a3cf3483d",
+    "owner_assessment.json": "f92e428ccf3c5b610eaab29547eaae5a70d6fa9916ff17775ff851125f1c205f",
+    "owner_request.json": "bd515b37fae9605a85aaaf32328ce080e74494e58c5453364d834768f2ff1865"
+  },
+  "logical_request_digest": "sha256:ff41bda56bcc4bdf1e62a3b34a2acf08465e9c302290e8e3317c3bde0bf804d0",
+  "logical_assessment_id": "sha256:72556d7460579fc458ef77b7468d094d48292e05a6d2d33a503c4df707ade1fa",
+  "focused_tests": {
+    "command": "python -m pytest tests/test_catalyst_stock_context.py -q --basetemp=/tmp/catalyst-stock-context-r1-pytest-20261019",
+    "runtime": "M2 Python 3.12",
+    "passed": 43,
+    "exit_code": 0,
+    "duration_seconds": 2.13
+  },
+  "cli": {
+    "command": "python -m engine.catalyst_intelligence < research/catalyst_intelligence/stock_context_r1/fixtures/owner_request.json",
+    "exit_code": 0,
+    "owner_code_invoked": [
+      "engine.news_impact.thesis.project",
+      "engine.prophet_entry_availability.validate_entry_availability"
+    ],
+    "fixture_generation_also_invoked": [
+      "engine.prophet_candidate_state.project_candidate_states",
+      "engine.prophet_entry_availability.evaluate_entry_availability"
+    ]
+  },
+  "ci_registration": {
+    "manifest": ".github/ci/legacy-jobs.yml",
+    "job": "catalyst-stock-context",
+    "validation_exit_code": 0,
+    "code_jobs_validated": 256,
+    "runtime": "Python 3.12"
+  },
+  "independent_review": {
+    "role": "C3 integration principal",
+    "decision": "ACCEPT",
+    "scope": "inspected source and synthetic owner fixtures; nonactivated research consumer",
+    "tests_rerun_by_reviewer": false,
+    "closed_findings": [
+      "all-visible revision conflicts reconciled before window filter",
+      "withdrawn or superseded observed history not classified as no observed event",
+      "owner-qualified event and comparison namespaces",
+      "NewsImpact ThesisError translated to bounded refusal"
+    ],
+    "source_admission": false
+  },
+  "program_review": {
+    "role": "C3 entry research principal",
+    "decision": "ACCEPT",
+    "reviewed_program_sha256": "b60dde95a077479df16692a505c362f9a46cb69424827247eebe1f936573cb60",
+    "clarifications_applied": [
+      "publication dependency fence required for first live case",
+      "explicit event-sensitive execution costs and liquidity assumptions"
+    ]
+  },
+  "limitations": [
+    "synthetic supplied cohort and prices",
+    "source cuts and rights not independently admitted",
+    "no live API or correction delivery",
+    "no entry-policy qualification or causal estimate",
+    "zero terminal values refuse; extension required before historical-loss study"
+  ],
+  "hosted_checks": "Read current PR head; this file does not assert hosted CI success.",
+  "first_party_import_contract": {
+    "command": "python -m pytest tests/test_first_party_import_names.py -q --basetemp=/tmp/catalyst-stock-context-import-pytest-20261019",
+    "passed": 15,
+    "exit_code": 0,
+    "duration_seconds": 69.95
+  }
+}
