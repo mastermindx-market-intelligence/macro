@@ -1491,6 +1491,7 @@
       if (epoch !== readingEpoch) return;
       if (!sameOwner) { signedOutGate(); return; }
       render(snapshot);
+      focusFromHash();
       portfolioReading = {
         chain: snapshot.source.chain, source_manifest_hash: snapshot.source.source_manifest_hash,
         asof: snapshot.company_exposure && snapshot.company_exposure.asof,
@@ -1501,7 +1502,6 @@
       deliverPortfolioReading();
       scenarioReading = Object.assign({}, snapshot.source, { owner_id: auth.identity.id });
       deliverScenarioReading();
-      focusFromHash();
     } catch (error) {
       if (epoch === readingEpoch) gateForFailure("request_failed");
     } finally {
