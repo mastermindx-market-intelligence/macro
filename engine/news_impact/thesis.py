@@ -1396,10 +1396,21 @@ def _material_delta_triggers(
         # Restrict to records attached to this view's original proposition.
         if not _record_belongs(rec, view["original_proposition_fact_id"], log, as_of_utc):
             continue
+        gid = _provenance_group_id(rec)
+        known_group_reporting = (
+            rec.get("novelty") in {"new_reporting_of_old_fact", "commentary"}
+            and gid in prior_groups
+        )
         if rec.get("record_kind") == "fact_revision":
             fp = rec.get("quantity_fingerprint") or {}
-            if fp.get("form") == "present":
-                # Compare to prior live fingerprint if any.
+            # Contributions belong to this attached record. A milestone is not
+            # a numeric revision, and a mirror cannot erase another record's
+            # independently established contribution to the interval.
+            if (
+                fp.get("form") == "present"
+                and rec.get("novelty") != "independently_observed_milestone"
+                and not known_group_reporting
+            ):
                 fired.add("changed_numeric_terms")
             if rec.get("novelty") == "independently_observed_milestone":
                 fired.add("independently_observed_milestone")
@@ -1407,18 +1418,8 @@ def _material_delta_triggers(
                 fired.add("source_correction")
             if rec.get("polarity") == "contrary" and prior_supporting:
                 fired.add("contradiction")
-        gid = _provenance_group_id(rec)
         if gid and gid not in prior_groups:
             fired.add("new_independent_source")
-        # Cosmetic / mirror: same fingerprint, known group, manifestation.
-        if (
-            rec.get("novelty") in {"new_reporting_of_old_fact", "commentary"}
-            and _provenance_group_id(rec) in prior_groups
-        ):
-            fp = rec.get("quantity_fingerprint") or {}
-            # Do not treat as changed_numeric_terms.
-            fired.discard("changed_numeric_terms")
-            fired.discard("new_independent_source")
     # missed_deadline: armed now, not armed before
     now_missed = any(
         w.get("code") == "missed_stated_deadline" and w.get("armed")
@@ -1465,18 +1466,6 @@ def _material_delta_triggers(
         # caller named a prior_as_of (Case 2/3/4).
         if not records:
             return []
-    # Drop changed_numeric_terms if the only new revisions are milestones with
-    # form=absent fingerprints.
-    if "changed_numeric_terms" in fired:
-        numeric = False
-        for rec in records:
-            if rec.get("record_kind") != "fact_revision":
-                continue
-            fp = rec.get("quantity_fingerprint") or {}
-            if fp.get("form") == "present" and rec.get("novelty") != "independently_observed_milestone":
-                numeric = True
-        if not numeric:
-            fired.discard("changed_numeric_terms")
     return [t for t in TRIGGER_EMIT_ORDER if t in fired]
 
 
