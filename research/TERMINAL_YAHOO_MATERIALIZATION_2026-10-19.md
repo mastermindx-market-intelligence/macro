@@ -5,6 +5,23 @@ Declared before judging the new binder's test or production results.
 Owner baseline: Macro `97261c2a319e62faec05690c04e6fae180540235`.
 Consumer baseline: Terminal `4a418f530ff0482b6e518ec98a6d12dc3dee42b8`.
 
+## Reference evidence: what the adapter records and what the leaf refuses
+
+The leaf has no clock and no I/O. The adapter reads the exact two reference
+files once per snapshot, records their actual current ``read_at`` (an
+ISO-8601 instant in UTC, passed verbatim), hashes the bytes, and re-reads the
+same files; a byte-different second read during one snapshot returns
+``MATERIALIZATION_REFERENCE_CHANGED`` and prevents binding. This detects a
+change during the read; it does not prove an atomic publication generation.
+The leaf never derives a reference age, a stale/fresh verdict, or an identity
+publication generation. The reference dict carries only
+``files_sha256`` (hashes of the two files actually read), ``read_at`` (the
+adapter's recorded instant, verbatim), ``generation_id=None``,
+``generation_attested=False``, and ``historical_availability="UNATTESTED"``.
+No upstream registry row, no historical availability window, no action
+revision set, and no point-in-time universe are admitted here. Reference read
+time is recorded; upstream freshness and history are unavailable.
+
 ## Decision and scope
 
 D00.D3 already admits Yahoo `auto_adjust` history as a TRADJ vendor total-return
@@ -37,7 +54,9 @@ request symbol in `yahoo_fetch`, using the existing VendorAliasTable reader.
 Both must resolve to one same stored security with one active US listing in
 XNYS/XNAS/XASE/ARCX. The historical `yahoo` namespace is not the fetch namespace;
 same-spelled strings do not establish identity. Missing, ambiguous, superseded,
-out-of-scope or conflicting identity evidence refuses.
+out-of-scope or conflicting identity evidence refuses. The injected
+listing-key parser must expose ``country`` and ``mic``; a malformed or
+non-object return is a typed ``MATERIALIZATION_IDENTITY_UNRESOLVED``.
 
 Record the actual producing source version, the loaded owner module version,
 the exact reference files read, and their content hashes. A hash describes
@@ -55,11 +74,13 @@ The normalized numeric row codec is normative in the owner leaf:
 3. In original order, each row's ten ASCII ISO-date bytes followed by five
    IEEE-754 binary64 big-endian values: open, high, low, close, volume.
 
-Rows must contain exactly six fields, strictly increasing valid session dates,
-finite positive OHLC with valid bounds, and nonnegative integral volume no
-larger than 2^53-1. Negative-zero volume normalizes to positive zero. Reject
-Boolean/string numeric coercions, duplicate or reordered dates, non-finite
-values and unsupported row shapes. The digest is SHA-256 of these bytes.
+Rows must contain exactly six fields, strictly increasing well-formed ISO
+calendar dates (the codec enforces ISO calendar shape and order, not
+exchange-calendar membership), finite positive OHLC with valid bounds, and
+nonnegative integral volume no larger than 2^53-1. Negative-zero volume
+normalizes to positive zero. Reject Boolean/string numeric coercions,
+duplicate or reordered dates, non-finite values and unsupported row shapes.
+The digest is SHA-256 of these bytes.
 
 This binds the exact normalized row values consumed by Terminal; it does not
 claim to be a hash of the original Yahoo response. Python compact JSON and
@@ -81,12 +102,62 @@ binds the resulting output. Polygon overlap tolerance is not permission to
 extend a Yahoo content binding. The old provenance may be inspected but cannot
 remain an active qualification. Refusal evidence must survive later refreshes.
 
+## Direct readout divergence and evidence_mode differences
+
+The direct-Yahoo binder agrees with ``engine.price_ladder.terminal_daily_ohlc_contract_v1()``
+on the shared invariants the owner agreement test pins: ``schema``,
+``purpose``, ``identity_namespace``, ``venues``, ``field_units``,
+``store_vendor``, and the five ``adjustment_reference`` fields except the
+deliberately specific ``readout``. The direct variant intentionally diverges
+on three ``evidence_mode`` fields and on the adjustment ``readout``:
+
+| field                     | engine factory (Macro-store)            | direct-Yahoo binder                     |
+| ------------------------- | --------------------------------------- | --------------------------------------- |
+| ``adjustment_reference.readout`` | ``vendor-adjusted — not a printed price`` | ``vendor total-return proxy — not a printed price`` |
+| ``evidence_mode.clock``        | ``"ingested_at"``                    | ``"observed_at"``                       |
+| ``evidence_mode.registry_row`` | ``"equity.bars.daily.stocks"``       | ``null``                                |
+| ``evidence_mode.code_version`` | ``null``                             | passes through ``owner.code_version``   |
+
+The ``output_registry_row`` (``terminal.bars.daily.ohlc_json``),
+``dependency_generation_ids`` (empty list), ``generation_attested``
+(``False``) and ``mode`` (``CURRENT``) keys are shared. The factory stays
+the Macro-store view-contract source of truth; the direct variant is a
+separate observation source for the same dataset row and never widens the
+factory's meaning. The direct binder rejects missing or malformed reference
+inputs; the existing factory and C04 emitter retain their separate contracts.
+
+## Codec ownership and existing regression coverage
+
+This leaf at ``lib/dataos/terminal_materialization.py`` owns the canonical
+``dataos.terminal_ohlc.rows.v1`` codec and its SHA-256 digest. The same
+bytes and digest are pinned as regression goldens against the consumer
+implementations already present in Terminal at the pinned commit
+``0b3c47df56d5063884e9f542e21f8ca5976f2f6f``:
+
+- JavaScript regression guard:
+  ``terminal/lib/__tests__/terminalMaterialization.test.ts`` — uses
+  ``lib/__tests__/terminalMaterialization.fixture.json`` and asserts the
+  portable ``encoded_hex`` / ``bars_sha256`` / ``portable_encoded_hex`` /
+  ``portable_sha256`` values produced by this leaf.
+- Browser end-to-end guard:
+  ``terminal/e2e/returns-intelligence.spec.ts`` — installs the same golden
+  via ``lib/__tests__/terminalMaterialization.fixture.json`` and verifies
+  the owner golden rows before qualifying the history, then rejects a
+  changed content variant.
+
+The normative golden remains ``tests/terminal_materialization_golden.json``
+in Macro. Terminal retains its matching fixture and consumer guards; no
+additional JavaScript implementation or CI plane is added to Macro.
+
 ## Acceptance and remaining product boundary
 
 Hermetic evidence must cover the accepted fresh source, namespace mismatch,
 unknown/ambiguous/superseded listing, unsupported request, wrong digest,
-changed non-close OHLC, append, malformed row, stale reference, and preserved
-reuse. Include portable Python/JavaScript byte and digest golden fixtures.
+changed non-close OHLC, append, malformed row, missing reference pair,
+changed reference pair, malformed parser return, tzdata absent
+(``MATERIALIZATION_CLOCK_INVALID``), verbatim ``read_at`` round-trip, the
+owner agreement test, and preserved reuse. Include portable Python/JavaScript
+byte and digest golden fixtures.
 
 Delivery additionally requires merged owner code, its installed consumer,
 an actual artifact emitted through the existing nightly, and a live Returns

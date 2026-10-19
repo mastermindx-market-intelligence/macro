@@ -3,7 +3,14 @@
 This leaf deliberately imports no package, engine, filesystem or network code.
 The existing adapter supplies the canonical VendorAliasTable reader, listing
 parser and exact reference/source evidence. It performs no identity allocation.
-See research/TERMINAL_YAHOO_MATERIALIZATION_2026-10-19.md.
+
+The leaf has no clock and no I/O. ``encode_terminal_rows`` and
+``terminal_rows_sha256`` import and operate without tzdata. The adapter
+records the actual current ``read_at`` of the two reference files and detects
+a changed pair during one snapshot; this leaf passes that instant through
+verbatim. No reference publication-generation clock or upstream freshness is
+available here. The leaf rejects missing or malformed reference inputs and
+never derives an age. See ``research/TERMINAL_YAHOO_MATERIALIZATION_2026-10-19.md``.
 """
 from __future__ import annotations
 
@@ -14,7 +21,7 @@ import re
 import struct
 from collections.abc import Mapping
 from datetime import date, datetime
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 API_VERSION = "dataos.terminal_yahoo_materialization.v1"
 ROW_CODEC = "dataos.terminal_ohlc.rows.v1"
@@ -30,7 +37,21 @@ MAX_ROWS = 30_000
 MAX_SAFE_INTEGER = 2**53 - 1
 _SHA = re.compile(r"^[0-9a-f]{64}$")
 _SYMBOL = re.compile(r"^[A-Z0-9][A-Z0-9.-]{0,19}$")
-_NY = ZoneInfo("America/New_York")
+
+
+def _new_york():
+    """Resolve America/New_York on demand.
+
+    The encode/hash helpers and import itself do not require tzdata; only this
+    call needs the system catalog. A missing or empty catalog surfaces as
+    ``None`` so the binder can produce typed ``MATERIALIZATION_CLOCK_INVALID``
+    rather than letting ``ZoneInfoNotFoundError`` escape. Real NY/DST semantics
+    are preserved when the catalog is present.
+    """
+    try:
+        return ZoneInfo("America/New_York")
+    except ZoneInfoNotFoundError:
+        return None
 
 
 class MaterializationRefusal(ValueError):
@@ -172,7 +193,9 @@ def bind_terminal_yahoo_materialization(document, *, alias_table, master_records
         _require(type(adapter) is str and 0 < len(adapter) <= 100,
                  "MATERIALIZATION_SOURCE_UNSUPPORTED")
         observed = _instant(observation.get("observed_at"))
-        on = observed.astimezone(_NY).date()
+        ny = _new_york()
+        _require(ny is not None, "MATERIALIZATION_CLOCK_INVALID")
+        on = observed.astimezone(ny).date()
         rows = document.get("bars")
         digest = terminal_rows_sha256(rows)
         coverage = {"first": rows[0][0], "last": rows[-1][0], "rows": len(rows)}
@@ -198,10 +221,12 @@ def bind_terminal_yahoo_materialization(document, *, alias_table, master_records
         row = matches[0]
         try:
             listing = parse_listing_key(row.get("listing_key"))
+            listing_country = listing.country
+            listing_mic = listing.mic
         except (ValueError, TypeError, AttributeError):
             raise MaterializationRefusal("MATERIALIZATION_IDENTITY_UNRESOLVED") from None
-        _require(row.get("country") == "US" and listing.country == "US"
-                 and row.get("mic") in VENUES and listing.mic == row.get("mic"),
+        _require(row.get("country") == "US" and listing_country == "US"
+                 and row.get("mic") in VENUES and listing_mic == row.get("mic"),
                  "VENUE_OUT_OF_SCOPE")
         producer = _version(producer_version, "mastermindx-market-intelligence/mastermind-terminal",
                             PRODUCER_FILES)

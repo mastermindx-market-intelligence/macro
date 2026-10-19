@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import ast
 import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -480,3 +482,112 @@ def test_TDM_portable_golden_values_and_owner_contract():
     document, arguments, _ = _tdm_case()
     result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
     assert result["view"] == golden["document"]["view"]
+
+
+# Bounded C2 follow-up: lazy NY resolution, parser-attribute guard, read_at passthrough,
+# and the owner agreement test against engine.price_ladder.terminal_daily_ohlc_contract_v1().
+
+
+def test_TDM_codec_imports_and_runs_without_tzdata_in_isolated_subprocess(tmp_path):
+    """tzdata absent must not block the import or the codec helpers; only the binder's
+    America/New_York resolution needs the system catalog."""
+    golden_path = ROOT / "tests" / "terminal_materialization_golden.json"
+    golden = json.loads(golden_path.read_text())
+    probe = tmp_path / "probe_no_tzdata.py"
+    probe.write_text(
+        "import sys, json, pathlib\n"
+        "from zoneinfo import ZoneInfoNotFoundError\n"
+        "import zoneinfo as _z\n"
+        "_z.ZoneInfo = lambda key: (_ for _ in ()).throw(ZoneInfoNotFoundError(key))\n"
+        "import lib.dataos.terminal_materialization as tdm\n"
+        f"golden = json.loads(pathlib.Path({str(golden_path)!r}).read_text())\n"
+        "out = []\n"
+        "for rows, encoded, digest in [\n"
+        "    (golden['document']['bars'], golden['encoded_hex'], golden['bars_sha256']),\n"
+        "    (golden['portable_rows'], golden['portable_encoded_hex'], golden['portable_sha256'])]:\n"
+        "    got = tdm.encode_terminal_rows(rows)\n"
+        "    assert got.hex() == encoded, (got.hex(), encoded)\n"
+        "    assert tdm.terminal_rows_sha256(rows) == digest\n"
+        "out.append('OK')\n"
+        "sys.stdout.write('\\n'.join(out))\n"
+    )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT)
+    completed = subprocess.run([sys.executable, str(probe)], cwd=str(ROOT),
+                               env=env, capture_output=True, text=True, timeout=60)
+    assert completed.returncode == 0, (completed.stdout, completed.stderr)
+    assert "OK" in completed.stdout
+
+
+def test_TDM_binder_refuses_clock_when_tzdata_unavailable(monkeypatch):
+    """A missing NY catalog must surface as typed MATERIALIZATION_CLOCK_INVALID, not escape."""
+    from zoneinfo import ZoneInfoNotFoundError
+
+    def missing_zone(key):
+        raise ZoneInfoNotFoundError(key)
+
+    monkeypatch.setattr(tdm, "ZoneInfo", missing_zone)
+    document, arguments, _ = _tdm_case()
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result == {"status": "refused", "view": None,
+                      "refusal_reasons": ["MATERIALIZATION_CLOCK_INVALID"]}
+
+
+@pytest.mark.parametrize("bad_return", [
+    {"country": "US", "mic": "XNYS"},
+    "US-XNYS-ZQXA",
+    None,
+    42,
+    object(),
+])
+def test_TDM_binder_refuses_identity_for_malformed_parser_return(bad_return):
+    """A non-ListingKey parser return must refuse typed, never leak an AttributeError."""
+    document, arguments, _ = _tdm_case()
+    arguments["parse_listing_key"] = lambda _: bad_return
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result == {"status": "refused", "view": None,
+                      "refusal_reasons": ["MATERIALIZATION_IDENTITY_UNRESOLVED"]}
+
+
+def test_TDM_binder_passes_read_at_verbatim_and_invents_no_clock_field():
+    """The leaf records the adapter's read_at byte-for-byte and never derives an age."""
+    document, arguments, _ = _tdm_case()
+    original_read_at = arguments["reference"]["read_at"]
+    before_reference = deepcopy(arguments["reference"])
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    assert result["status"] == "bound"
+    identity_reference = result["view"]["contract"]["materialization"]["identity_reference"]
+    assert identity_reference["read_at"] == original_read_at
+    assert arguments["reference"] == before_reference
+    assert set(identity_reference) == {"files_sha256", "read_at", "generation_id",
+                                       "generation_attested", "historical_availability"}
+    for node in (identity_reference, result["view"]["contract"]["materialization"],
+                 result["view"]["contract"]["evidence_mode"]):
+        for forbidden in ("observed_age_seconds", "reference_age_seconds",
+                          "stale", "is_fresh", "upstream_freshness",
+                          "publication_generation_clock", "stale_after_seconds"):
+            assert forbidden not in node
+
+
+def test_TDM_binder_agrees_with_engine_factory_on_shared_invariants():
+    """Direct-Yahoo contract shares the documented invariants and declares its divergences."""
+    document, arguments, _ = _tdm_case()
+    result = tdm.bind_terminal_yahoo_materialization(document, **arguments)
+    contract = result["view"]["contract"]
+    factory = terminal_daily_ohlc_contract_v1()
+    # Identical invariants
+    for key in ("schema", "purpose", "identity_namespace", "venues",
+                "field_units", "store_vendor"):
+        assert contract[key] == factory[key], (key, contract[key], factory[key])
+    # adjustment_reference: same except the deliberately specific readout
+    for key in ("basis", "action_revision_set_id", "as_at", "vintage", "executable"):
+        assert contract["adjustment_reference"][key] == factory["adjustment_reference"][key]
+    assert contract["adjustment_reference"]["readout"] != factory["adjustment_reference"]["readout"]
+    assert contract["adjustment_reference"]["readout"] == "vendor total-return proxy — not a printed price"
+    # evidence_mode: shared keys; documented differences
+    for key in ("mode", "output_registry_row", "dependency_generation_ids",
+                "generation_attested"):
+        assert contract["evidence_mode"][key] == factory["evidence_mode"][key]
+    assert contract["evidence_mode"]["clock"] != factory["evidence_mode"]["clock"]
+    assert contract["evidence_mode"]["registry_row"] != factory["evidence_mode"]["registry_row"]
+    assert contract["evidence_mode"]["code_version"] != factory["evidence_mode"]["code_version"]
