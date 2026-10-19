@@ -43,6 +43,7 @@ THESIS_STATES = ("INTACT", "DAMAGED", "CONTRADICTED", "UNKNOWN")
 SETUP_STATES = ("WATCH", "RESET", "REBUILDING", "RE_IGNITION", "EXTENDED", "INVALIDATED")
 BREAK_CLASSES = ("FAILED_BREAK", "STRUCTURAL_BREAK", "REPAIRED_TREND", "UNRESOLVED")
 PHASES = ("ACTIVE", "DAMAGED", "REPAIRED", "FAILED")
+ROSTER_COUNT_STATES = PHASES + ("NO_PRIOR_LEADER", "UNAVAILABLE")  # every descriptor state; roster counts sum to coverage.issuers
 LADDER = (
     "higher_low_confirmed_on",        # R1  price: closes hold above the frozen trough
     "reclaim_50d_on",                 # R2  price: confirmed closes above the fast average
@@ -848,7 +849,7 @@ def lineage_chip(descriptor: Mapping) -> dict:
 
 def lineage_roster(descriptors: Mapping[str, Mapping], coverage: Mapping, *, as_of: str) -> dict:
     """Flatten a universe of descriptors into the ship-merge roster shape. Counts every
-    PHASES key (zero when absent); every episode gets its ladder reclaim dates surfaced.
+    ROSTER_COUNT_STATES key (zero when absent), so counts sum to the issuer census; every episode gets its ladder reclaim dates surfaced.
     Raises ``ValueError("mixed_definition_digest")`` when descriptors disagree on
     ``definition_sha256``; falls back to ``LineageSpec().digest`` when ``descriptors`` is empty."""
     spec_default = LineageSpec()
@@ -860,7 +861,7 @@ def lineage_roster(descriptors: Mapping[str, Mapping], coverage: Mapping, *, as_
             raise ValueError("mixed_definition_digest")
         definition_sha256 = next(iter(digests))
 
-    counts = {k: 0 for k in PHASES}
+    counts = {k: 0 for k in ROSTER_COUNT_STATES}
     for desc in descriptors.values():
         state = desc.get("state")
         if state in counts:

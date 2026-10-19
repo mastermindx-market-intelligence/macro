@@ -624,6 +624,9 @@ def test_lineage_roster_key_set_flattened_episodes_and_counts():
     for k in mod.PHASES:
         assert k in roster["counts"]
         assert isinstance(roster["counts"][k], int)
+    assert mod.ROSTER_COUNT_STATES == mod.PHASES + ("NO_PRIOR_LEADER", "UNAVAILABLE")
+    assert set(roster["counts"]) == set(mod.ROSTER_COUNT_STATES)
+    assert sum(roster["counts"].values()) == len(descs) == coverage["issuers"]
 
     # mixed digest -> raise
     bad = dict(descs)
@@ -639,6 +642,23 @@ def test_lineage_roster_key_set_flattened_episodes_and_counts():
                                        "with_pivot": 0}, as_of=as_of.isoformat())
     assert empty_roster["definition_sha256"] == LineageSpec().digest
     assert all(empty_roster["counts"][k] == 0 for k in mod.PHASES)
+    assert set(empty_roster["counts"]) == set(mod.ROSTER_COUNT_STATES)
+    assert sum(empty_roster["counts"].values()) == 0
+
+
+def test_lineage_roster_counts_every_state_once():
+    from engine.leader_lineage import lineage_roster
+    descs = {t: {"state": s, "definition_sha256": SPEC.digest, "episodes": []}
+             for t, s in (("A", "ACTIVE"), ("B", "NO_PRIOR_LEADER"), ("C", "UNAVAILABLE"),
+                          ("D", "FAILED"), ("E", "NO_PRIOR_LEADER"))}
+    cov = {"issuers": 5, "with_peer_basket": 0, "with_fundamentals": 0,
+           "with_volume_demand": 0, "with_pivot": 0}
+    roster = lineage_roster(descs, cov, as_of="2026-10-14")
+    assert roster["counts"] == {"ACTIVE": 1, "DAMAGED": 0, "REPAIRED": 0, "FAILED": 1,
+                                "NO_PRIOR_LEADER": 2, "UNAVAILABLE": 1}
+    assert list(roster["counts"]) == ["ACTIVE", "DAMAGED", "REPAIRED", "FAILED",
+                                      "NO_PRIOR_LEADER", "UNAVAILABLE"]
+    assert sum(roster["counts"].values()) == cov["issuers"]
 
 
 # T7 bit-for-bit sequential basket mean (kills fsum / total-minus-self mutants).

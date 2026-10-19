@@ -624,10 +624,9 @@ def test_lc4_flag_on_express_is_additive_and_display_only(tmp_path, caplog):
     coverage, counts = roster["coverage"], roster["counts"]
     assert coverage["issuers"] == len(rows) == 2
     states = [row["display_chips"]["leader_lineage"]["state"] for row in rows]
-    # counts tallies exactly the rows whose state is one of the roster's own
-    # count keys, and can never exceed the issuer census.
-    assert sum(counts.values()) == sum(1 for state in states if state in counts)
-    assert sum(counts.values()) <= coverage["issuers"]
+    # counts covers every lineage state, so it sums to the issuer census.
+    assert sum(counts.values()) == len(rows) == coverage["issuers"]
+    assert all(counts[state] >= 1 for state in states)
     # a fresh authority per chip: mutating one row cannot reach another
     rows[0]["display_chips"]["leader_lineage"]["authority"]["may_rank"] = True
     assert rows[1]["display_chips"]["leader_lineage"]["authority"]["may_rank"] is False
