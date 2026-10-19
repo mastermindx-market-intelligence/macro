@@ -37,6 +37,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -1907,6 +1910,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -2841,6 +2847,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -5295,6 +5304,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
@@ -6634,6 +6646,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/entry_radar/replay/__init__.py"
@@ -8924,6 +8938,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -10841,6 +10858,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "scripts/calibrate_rate_inflation.py"
       # Connected Research Factory import closure (PR9463).
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -12104,6 +12123,9 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
@@ -12297,6 +12319,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "lib/quote_native_metadata.py"
       - "collectors/edgar_8k.py"
@@ -16064,6 +16089,9 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/delisted_symbols.yml"
       - "config/issuer_group_allowlist.yml"
@@ -17168,6 +17196,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - engine/fundamental_forensics/__init__.py
       - engine/fundamental_forensics/pipeline.py
       - engine/fundamental_forensics/sec_companyfacts.py
@@ -19356,6 +19387,9 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
@@ -19599,6 +19633,9 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve all 36 suites while removing unrelated opaque fallback fanout.
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "config/issuer_group_allowlist.yml"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
@@ -20141,6 +20178,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/entry_radar/replay/__init__.py"
@@ -20929,6 +20968,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/entry_radar/replay/__init__.py"
@@ -22461,6 +22502,9 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json"
       - "research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md"
@@ -22952,6 +22996,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -24537,7 +24584,7 @@ jobs:
       # see the gitignored narrative_flare history the probe reads locally. TZ=UTC to match the
       # rest of this job; nothing in the suite is clock-dependent by construction.
       - name: theme exposure probe — beta/causal shift, share denominator, coverage floor, era
-        run: TZ=UTC python -m pytest tests/test_theme_exposure_probe.py -q
+        run: TZ=UTC python -m pytest tests/test_theme_exposure_probe.py tests/test_theme_state_w2_qualification.py -q
       - name: theme graph — W-C6 hierarchy_paths read-time composition (as-of, rights receipts, vendor-parent refusal)
         run: TZ=UTC python -m pytest tests/test_theme_graph_hierarchy_paths.py -q
       # The guard on the COMMITTED store, not only on its fixtures: --selftest proves it
@@ -24651,6 +24698,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/price_pressure/__init__.py"
@@ -25438,6 +25487,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/entry_radar/replay/__init__.py"
@@ -26560,6 +26611,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "lib/quote_native_metadata.py"
       - "scripts/calibrate_rate_inflation.py"
@@ -27892,6 +27946,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "scripts/calibrate_rate_inflation.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -30859,6 +30916,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "research/theme_graph/sec_h20_20261019/H20_REPORTED_EVENT_OWNER_DECISION.json"
       - "research/theme_graph/sec_h20_20261019/SEC_H20_REPORTED_EVENT_FACT_USE.json"
       - "engine/entry_radar/replay/__init__.py"
@@ -31373,6 +31432,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -34386,6 +34448,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/theme_graph/theme_state_w2_qualification.py"
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "app/company_supplier_research.py"
       - "engine/company_intelligence/h20_reported_event.py"
@@ -35920,6 +35985,8 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
+      - "scripts/probe_theme_exposure_axes.py"
       - "scripts/calibrate_rate_inflation.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"

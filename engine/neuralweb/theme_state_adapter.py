@@ -854,7 +854,7 @@ def compose_state_only_from_owner_bundle(bundle: OwnerBundle, *, generated_at: s
                                      **snapshot["query"], generated_at=generated_at, previous=previous)
 
 
-def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None) -> dict:
+def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previous=None, w2_beta_inputs=None) -> dict:
     snapshot = bundle.snapshot()
     _clock(generated_at, precise=True)
     if _clock(generated_at, precise=True) < _clock(snapshot["observed_at"], precise=True):
@@ -866,11 +866,20 @@ def compose_from_owner_bundle(bundle: OwnerBundle, *, generated_at: str, previou
     candidate = legacy_projection_for_owner(state, bundle)
     limits = sorted({d["reason_code"] for subject in dispositions.values() for d in subject.values()
                      if d["status"] != "ADAPTED_RECOMMENDED_SUBSET"})
-    return {"state": state, "legacy_baseline": baseline, "legacy_candidate": candidate,
+    result = {"state": state, "legacy_baseline": baseline, "legacy_candidate": candidate,
             "native_observations": native_observations, "source_dispositions": dispositions,
             "bundle_sha256": bundle.bundle_sha256,
             "shadow": compare_shadow(baseline, state, candidate, bundle), "compiler_limits": limits,
             "publication_allowed": False, "native_qualification": "UNAVAILABLE_UNLESS_SEPARATE_OWNER_RECEIPTS_SUPPLIED"}
+    if w2_beta_inputs is not None:
+        # Explicit research composition only. The ordinary writer/default path
+        # must not import the SciPy-dependent W2 probe or acquire any new inputs.
+        from engine.theme_graph.theme_state_w2_qualification import compose_internal_w2_h1, MEASUREMENT_KEY
+        result["internal_measurements"] = {
+            MEASUREMENT_KEY: compose_internal_w2_h1(state, bundle=bundle, inputs=w2_beta_inputs),
+        }
+    return result
+
 
 
 def _production_code_refs():
