@@ -37,6 +37,17 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
@@ -1859,6 +1870,17 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
       - "collectors/edgar_8k.py"
       - "collectors/edgar_dilution.py"
@@ -2744,6 +2766,17 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
       - "collectors/edgar_8k.py"
@@ -6473,6 +6506,13 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -8737,6 +8777,20 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "templates/institutional_holding_research.js"
+      - "templates/institutional_holding_research.css"
+      - "site/institutional_holding_research.js"
+      - "site/institutional_holding_research.css"
+      - "tests/institutional_holding_research.test.mjs"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "lib/institutional_intelligence.py"
+      - "tests/test_institutional_catalog_scope.py"
+      - "app/institutional_research.py"
+      - "engine/institutional_census/**"
+      - "lib/institutional_13f_adapter.py"
+      - "tests/test_institutional_research_api.py"
+      - "tests/test_institutional_research_context.py"
+      - "tests/test_institutional_census_k3e_projection.py"
       - "engine/government_revenue/public_agreement.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
       - "collectors/edgar_8k.py"
@@ -9665,6 +9719,9 @@ jobs:
           tests/test_fundamental_forensics_acquisition.py
           tests/test_fundamental_forensics_admitted_filing_package.py
           tests/test_fundamental_forensics_api_client.py
+          tests/test_institutional_research_api.py
+          tests/test_institutional_research_context.py
+          tests/test_institutional_catalog_scope.py
           tests/test_fundamental_forensics_attestation_admission.py
           tests/test_fundamental_forensics_attested_history_reader.py
           tests/test_fundamental_forensics_attested_query_snapshots.py
@@ -9741,7 +9798,7 @@ jobs:
       - name: FIF P2 evidence-capture suite (code half)
         run: python -m pytest tests/test_fif_p2_evidence_capture.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/institutional_holding_research.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -18771,6 +18828,13 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # Connected Research Factory import closure (PR9463).
@@ -19529,6 +19593,13 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -21517,6 +21588,17 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
       - "collectors/edgar_8k.py"
@@ -23165,6 +23247,13 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "tests/__init__.py"
       - "tests/test_government_program_public_agreement.py"
       - "engine/market_ontology/__init__.py"
@@ -23945,6 +24034,13 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29331,6 +29427,13 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -29815,6 +29918,17 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
@@ -32771,6 +32885,17 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/institutional_research.py"
+      - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
+      - "engine/institutional_census/__init__.py"
+      - "engine/institutional_census/catalog.py"
+      - "engine/institutional_census/catalog_scope.py"
+      - "engine/institutional_census/k3e_projection.py"
+      - "engine/institutional_census/models.py"
+      - "engine/institutional_census/research_context.py"
+      - "engine/institutional_census/storage.py"
+      - "lib/institutional_13f_adapter.py"
+      - "lib/institutional_intelligence.py"
       - "engine/government_revenue/public_agreement.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       # cs-v2 U1a (2026-10-19): app/capital_structure.py's module-load closure grew with the state-bundle API.
