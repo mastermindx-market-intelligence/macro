@@ -605,6 +605,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -2432,6 +2434,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -3306,6 +3310,8 @@ jobs:
       - "engine/neuralweb/market_memory_retained_legacy_guard.py"
       - "engine/neuralweb/market_memory_retained_saved.py"
       - "engine/neuralweb/market_memory_retained_use.py"
+      - "engine/neuralweb/market_memory_retained_cohort_cache.py"
+      - "engine/neuralweb/market_memory_retained_cohort_reuse.py"
       - "engine/neuralweb/market_memory_trusted.py"
       - "engine/neuralweb/market_packet.py"
       - "engine/neuralweb/metabolism.py"
@@ -8883,6 +8889,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
@@ -12200,6 +12208,8 @@ jobs:
       - "engine/research_factory/market_memory_e0_*.py"
       - "engine/research_factory/market_memory_contextual_registration.py"
       - "tests/test_market_memory_e0_*.py"
+      - "scripts/inspect_market_memory_e0_control.py"
+      - "tests/test_inspect_market_memory_e0_control.py"
       - "tests/fixtures/market_memory_e0/**"
       - "contracts/market_memory/**"
       - "config/market_memory_canary.v1.json"
@@ -12245,7 +12255,17 @@ jobs:
           tests/test_market_memory_e0_critical_claims.py
           tests/test_market_memory_e0_reservations.py
           tests/test_market_memory_e0_baselines.py
+          tests/test_market_memory_e0_task_evidence.py
+          tests/test_market_memory_e0_registered_method.py
+          tests/test_market_memory_e0_condition_evidence.py
           tests/test_market_memory_e0_allocation.py
+          tests/test_market_memory_e0_allocation_resolution.py
+          tests/test_market_memory_e0_reserved_read.py
+          tests/test_market_memory_e0_access_history.py
+          tests/test_market_memory_e0_installed_control.py
+          tests/test_market_memory_e0_selected_task_inputs.py
+          tests/test_market_memory_e0_source_identity.py
+          tests/test_inspect_market_memory_e0_control.py
           -q
 
   research-codegen-runtime-qualification:
@@ -21700,6 +21720,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       - app/__init__.py
@@ -30062,6 +30084,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex.py
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - engine/neuralweb/market_memory_retrieval.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - tests/test_market_memory_operating_cortex_service.py
@@ -32968,6 +32992,8 @@ jobs:
       - engine/neuralweb/market_memory_operating_cortex_service.py
       - engine/neuralweb/market_memory_retained_context_cohort.py
       - engine/neuralweb/market_memory_retained_use.py
+      - engine/neuralweb/market_memory_retained_cohort_cache.py
+      - engine/neuralweb/market_memory_retained_cohort_reuse.py
       - research/licenses/MARKET_MEMORY_HOUSE_MACRO_REUSE_2026-10-13.md
       - engine/neuralweb/market_memory_lineage.py
       # Native DailyBrief registration/producer import closure (PR #9037).
