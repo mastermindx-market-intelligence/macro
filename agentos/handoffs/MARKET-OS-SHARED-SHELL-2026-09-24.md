@@ -34,6 +34,12 @@ changed:
 - path: mockups/evidence/shared-shell-css-20261019
   what: Actual canonical 16-cell CSS evidence, exact three-key receipt, PNGs, measured limitations and
     indexed provenance; no new application bytes or renderer.
+- path: .github/ci/legacy-jobs.yml; site/etfs.html; site/special_situations.html; site/us_stocks.html;
+    incoming main integration
+  what: 'Source merge b4255da8c14a14d5654a03b466ebabe943f2c24e integrates incoming fe7fd78a9d63d6df0d707a4adee31b6fdddd46fd.
+    Exactly four conflicts resolved: seven additive CI path-list regions retain both sides; three generated
+    pages retain incoming bytes plus exact incumbent adapters/block and existing content-version references.
+    Original source proof pack extended.'
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file
@@ -118,6 +124,19 @@ verified:
   result: All16 accepted capture browsers closed; focused diagnostic browser closed. At11:42:29Z original
     fixture launcher20799, Macro server20698 and known Next child20822 were verified absent after exact
     guarded SIGTERM. No broad kill.
+- claim: Fresh-main source integration preserves both intents and passes its focused gates.
+  command: Original merge-tree/stage1-2-3 byte checks; normalized CI delta and path-union checks; existing
+    injection/Node/pair/asset/UI/inventory/whitespace validators recorded in fresh-main-* evidence.
+  result: Source tree584015252eddaf9ec25a74da2fb2e0afe136b9ef:34 Python passed with2 cleanup warnings;78
+    Node passed;129 template/site pairs;asset references and visual guard exit0;327 existing CI jobs validated
+    without executing the whole inventory. Index unchanged through validation; actual merge source333
+    PR paths; no host effect.
+- claim: Incoming main does not invalidate the narrow captured CSS suppression behavior.
+  command: Git blob comparisons across22 relevant captured-b2ff/integrated-b425 paths plus bounded read-only
+    complete-tree counsel; fresh-main-capture-scope.json and counsel record.
+  result: All22 authored/capture/style/About/Sector paths identical. Generated Macro content changes;
+    original PNG/source/fixture/metrics retained as b2ff evidence, not relabeled exact current page acceptance.
+    All About limitations remain.
 unverified:
 - claim: Current-head Macro CI, review, landing and generated publication.
   what_would_verify: 'Consume actual new-head merge-ref CI and independent review on #7949, including
@@ -137,11 +156,12 @@ unverified:
     then. About retains its explicit light-only landing canvas and existing 16px mobile English footer
     overflow; narrow shell CSS evidence does not approve a redesign or erase those findings.
 unresolved:
-- 'Programme OPEN. Original #7949 is unarmed; source b2ff is published, and this new evidence-only update
-  awaits commit/push and current hosted CI. Historical b2ff run39232626567 had one missing-visual-evidence
-  regression; local guard now passes.'
-- 'Terminal #1062 is OPEN at b4fc1744b38431871b0f6873e62472664d842eb2 with run39242269802 in progress.
-  Existing controller owns protected landing. No actual protected R or beta entry yet.'
+- 'Programme OPEN. Evidence commit0905751badd88752cbab19ffedac51e610488035 is published. Local source
+  merge b4255da8c14a14d5654a03b466ebabe943f2c24e and this proof update await normal push/current hosted
+  CI at this pre-push snapshot. Original #7949 remains unarmed.'
+- 'Terminal #1062 is OPEN at b4fc1744b38431871b0f6873e62472664d842eb2. At12:09 all12 constituent jobs
+  in39242269802 passed; required aggregate118049530176 was queued. Protected master last50e27adf4439e65df9e6e733665ba58e0fdf5f51.
+  No actual protected R or beta re-entry claimed.'
 - 'Latest host baseline remains10:46:10.299104Z: beta inactive/sourceA/no accepted pointer, productione8a25a2
   PID1689899, hold absent, root38.72GB free. This historical observation must be refreshed before any
   beta effect.'
@@ -153,8 +173,10 @@ unresolved:
 - Session Bridge target lookup had returned backend_unavailable; no replacement execution worker or new
   watcher is claimed.
 next_actions:
-- 'Commit and normally push the new actual evidence through original #7949; consume current-head hosted
-  CI and resolve concrete failures. Arm last after admission, then remain through actual landing/publication.'
+- Normally publish the original branch containing b425 and this proof update; consume exact current-head
+  hosted CI. Keep Macro unarmed until source admission AND protected-R bootstrap A has a durably accepted
+  healthy beta, because existing macro-update installs the reviewed Caddy configuration automatically.
+  Then land through the incumbent owner.
 - 'Consume actual protected #1062 merge from its existing controller; verify full exact R script bytes
   and fresh beta/production baseline before the sole reviewed script-only R bootstrap entrance for applicationA=e45bde2.'
 - After healthy beta admission, complete DNSPod direct-A/CaddyTLS through the original owners, verify
@@ -172,7 +194,7 @@ do_not_redo:
 - Preserve all six Sector Central views and nested sector-to-basket behavior while Paper remains REVISE.
   C4 comments6255134033 through6255716294 and the driver metadata proposal remain SPEC_ONLY/UNAPPLIED/UNRUN.
 - Do not create another PR, renderer, source carrier, watcher or substitute execution worker; do not arm
-  Macro before its final admitted source.
+  Macro before its final admitted source and durably accepted healthy beta.
 - Do not blindly retry bootstrap, mutate production, steal/delete shared holds, erase unknown disk contents,
   rewrite source receipts, or treat a source marker as accepted runtime.
 - 'Do not modify/adopt/retire the separately existing #1063 presentation candidate or unpublished shared-shell-beta-hardlinks
@@ -195,6 +217,10 @@ danger_areas:
   quarantine do not prove rollback acceptance.
 - 'Canonical HTTP>=400 count0 does not mean no network failures: the actual fixture records88 blocked
   requests and24 blocked streams. Preview4bfca is unadopted and is not applicationA or beta acceptance.'
+- Macro updater automatically installs/reloads the reviewed Caddyfile without a beta-health gate; healthy
+  accepted beta must precede Macro arm. Caddy installation and ordinary generated-main/served-document
+  publication are separate observations. DNS may expose the route immediately if already direct; reconcile
+  actual resolution before arming.
 prs:
 - 7949
 ---
@@ -954,3 +980,14 @@ Macro captured source b2ff80dfb558ea05d6c749391ca37b8ea4ad6df4 remained clean, i
 Supabase live URL configuration was read through the fresh signed-in browser at 11:41:30.903Z: Site URL https://www.mastermind-x.com, 13 redirect URLs, including https://beta.mastermind-x.com/auth/callback and https://beta.mastermind-x.com/auth/callback?next=**. No setting changed or auth flow executed. Fresh DNSPod browser still shows Tencent Cloud sign-in and is retained for account handoff.
 
 Terminal #1062 remains OPEN at b4fc1744b38431871b0f6873e62472664d842eb2; current run 39242269802 is pending. Existing controller owns it. No protected R, bootstrap, host cleanup or production mutation this continuation. #859 remains merged/browser-qualified and is not redone. Six-view Sector and sector-to-basket scope remain; Paper REVISE. C4 overlay/history and provenance suggestions remain SPEC_ONLY/UNAPPLIED/UNRUN. Next: commit/push this receipt on the same Macro carrier, consume current CI and land through the existing owner; consume actual protected Terminal R and fresh beta-entry gates, then public DNS/TLS/auth/navigation/error/rollback acceptance. This paragraph is a pre-publication snapshot, not merge or live proof.
+
+
+## Attended continuation — 2026-10-19 12:10 UTC — fresh main and publication ordering
+
+Same programme/root/parent/PR/worktree. Source merge **b4255da8c14a14d5654a03b466ebabe943f2c24e** has parents0905751badd88752cbab19ffedac51e610488035 and incomingfe7fd78a9d63d6df0d707a4adee31b6fdddd46fd, exact tree584015252eddaf9ec25a74da2fb2e0afe136b9ef. It resolved four real conflicts; both CI declaration intents and complete incoming generated bytes are retained. Focused validation passed34 Python/78 Node/129 pairs, asset references, existing visual guard,327-job inventory validation and whitespace. These checks are not hosted admission.
+
+The original CSS16-cell receipt remains exact b2ff evidence. Twenty-two relevant authored/capture/About/style/Sector blobs are identical after integration. Macro generated content differs, so its new pixels, wrapping and measurements are not claimed. About light-only styling, two mobile English footer-overflow cells,88 fixture request/console failures and24 blocked streams remain disclosed. Six Sector views/Paper REVISE and all C4 SPEC_ONLY boundaries remain.
+
+**Publication ordering:** keep Macro unarmed until protected-R bootstrap of applicationA has a durably accepted healthy beta. The existing macro-update owner automatically installs the reviewed Caddy configuration when source reaches main and provides no beta-health precondition. Afterwards consume existing renderer/generated-main and actual served identities separately; verify live DNS before exposure. No new installer/renderer/watch is created. Terminal initial-install containment has no previous accepted runtime to restore; no standalone rollback command exists and Caddy/DNS recovery is separate.
+
+This is a pre-push snapshot. Original PR checkpoint6264440177 records the later exact publication/CI/host frontier. All merge inputs, normalized-delta/reconstruction proofs, validation outputs, bounded counsel and source-scope decisions are indexed in the existing research/market_os/evidence/shared-shell-continuation-20261019/MANIFEST.json. Programme OPEN.
