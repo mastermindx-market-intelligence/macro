@@ -6,8 +6,7 @@ import pytest
 from engine.neuralweb import market_memory_episode_features as features
 from engine.neuralweb import market_memory_episode_retrieval as retrieval
 from engine.research_factory import market_memory_e0_baselines as baselines
-from tests.test_market_memory_episode_features import Policy
-from tests.test_market_memory_retained_context_cohort import capture, owner, load, CUTOFF
+from tests.market_memory_e0_fixtures import Policy, capture, owner, load, CUTOFF
 
 METHOD = retrieval.RetainedContextMethodSpec(0, 0, "historical_hypothetical")
 
