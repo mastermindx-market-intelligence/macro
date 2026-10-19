@@ -431,6 +431,8 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
 
     captured: dict[str, tuple[bytes, dict, str, Any]] = {}
     made = used = 0
+    print(json.dumps({"event": "capture_started", "session": cfg.session,
+                      "symbols": len(symbols), "budgets": manifest["budgets"]}), file=sys.stderr, flush=True)
     for index, symbol in enumerate(symbols):
         if not _capture_budget_ok(cfg, made, used):
             manifest["not_requested"].extend(symbols[index:])
@@ -471,9 +473,14 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
             manifest["not_requested"].extend(symbols[index + 1:])
             break
         captured[symbol] = (raw, saved, path, parsed)
+        if made % 100 == 0:
+            print(json.dumps({"event": "capture_progress", "attempted": made,
+                              "archived": len(captured), "bytes": used}), file=sys.stderr, flush=True)
 
     manifest["requests"] = {"made": made, "limit": cfg.max_requests}
     manifest["bytes"] = {"used": used, "limit": cfg.max_total_bytes}
+    print(json.dumps({"event": "capture_complete", "attempted": made,
+                      "archived": len(captured), "bytes": used}), file=sys.stderr, flush=True)
     receipt_days = {day for _doc, refs, _raw in prior.values() for day, _ in (refs or [])}
     receipt_days.update(str(saved.get("observed_at_utc", started))[:10]
                         for _raw, saved, _path, _parsed in captured.values())

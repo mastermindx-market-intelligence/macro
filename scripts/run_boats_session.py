@@ -22,7 +22,9 @@ BOUNDS (all enforced before and during the run):
   * every segment is passed to the incumbent with
     ``max_seconds <= 3600`` and ``max_messages <= 10_000_000`` (the
     incumbent's own bounds) and the seconds re-clamped against the real
-    time remaining until 04:00 ET before each segment;
+    time remaining until 04:00 ET before each segment. Socket cleanup and
+    final archival may finish later; the incumbent emits only empty
+    invalidations outside the overnight window, never an eligible trade;
   * the total message budget is an explicit required input (``--publish``)
     and is capped at 80,000,000. A returned segment's actual
     ``raw_messages`` count consumes the night budget;
@@ -74,8 +76,7 @@ from typing import Any, Callable, Optional
 from zoneinfo import ZoneInfo
 
 _REPO = Path(__file__).resolve().parent.parent
-if str(_REPO) not in sys.path:
-    sys.path.insert(0, str(_REPO))
+sys.path.insert(0, str(_REPO))
 
 from lib.nyse_calendar import ET
 from scripts.build_ext_quotes import boats_session_date
@@ -275,8 +276,8 @@ def prepare_archive(archive_root: str) -> dict[str, Any]:
 def load_and_validate_symbols(symbols_file: str) -> list[str]:
     """Read coverage through the existing helper, validate via the incumbent."""
     from scripts.tiingo_ingest import load_symbols
-    from scripts.build_ext_quotes import BoatsLastTrade
-    symbols = load_symbols("", symbols_file)
+    from scripts.build_ext_quotes import BoatsLastTrade, MAX_BOATS_SYMBOLS
+    symbols = load_symbols("", symbols_file, limit=MAX_BOATS_SYMBOLS)
     if not symbols:
         raise SessionRefused("symbols file produced no coverage; refusing to default")
     # The incumbent constructor enforces bounded, unique, path-safe, uppercase
