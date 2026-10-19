@@ -14,6 +14,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
+from scripts.boats_history_window import CONSTANTS
 
 MODULE = Path(__file__).resolve().parents[1] / "scripts" / "refresh_boats_history.py"
 _spec = importlib.util.spec_from_file_location("refresh_boats_history_under_test", MODULE)
@@ -74,9 +75,9 @@ class Fetcher:
 
 
 def default_payload(symbol, refs):
-    return {"schema": HISTORY_SCHEMA, "symbol": symbol, "complete": False,
+    return {**CONSTANTS, "symbol": symbol,
             "receipts": [{"receipt_id": rid} for _, rid in refs],
-            "bars": [[1791511200 + 60 * i, 1.0, 2.0, 0.5, 1.5, 7.0] for i in range(len(refs))],
+            "bars": [[1792371600 + 60 * i, 1.0, 2.0, 0.5, 1.5, 7.0] for i in range(len(refs))],
             "bar_receipt_ids": [[rid] for _, rid in refs]}
 
 
@@ -96,7 +97,11 @@ class Builder:
         fail = self.fail.get(symbol) if isinstance(self.fail, dict) else self.fail
         if fail is not None:
             raise fail
-        return self.payload_for(symbol, refs)
+        payload = self.payload_for(symbol, refs)
+        payload["receipts"] = [{k: json.loads(Path(receipt_paths[ref]).read_text())[k]
+                                 for k in ("receipt_id", "raw_sha256", "observed_at_utc", "request_path")}
+                                for ref in refs]
+        return payload
 
 
 def make_cfg(tmp_path, symbols, *, capture=True, name="out", max_requests=None,
@@ -143,9 +148,9 @@ def seed_receipt(root, symbol, day, observed):
 
 
 def write_prior_history(history_dir, symbol, refs, bars=None):
-    doc = {"schema": HISTORY_SCHEMA, "symbol": symbol, "complete": False,
+    doc = {**CONSTANTS, "symbol": symbol,
            "receipts": [{"receipt_id": rid, "raw_sha256": "0" * 64,
-                         "observed_at_utc": f"{day}T05:00:00Z", "request_path": ""}
+                         "observed_at_utc": f"{day}T05:00:00Z", "request_path": f"/boats/{symbol}/prices?resampleFreq=1min"}
                         for day, rid in refs],
            "bars": bars if bars is not None else [[1791511200, 10.0, 12.0, 9.0, 11.0, 13.0]],
            "bar_receipt_ids": [[rid for _, rid in refs]]}
@@ -247,7 +252,7 @@ def test_dry_run_reports_plan_and_performs_no_effect(tmp_path):
 # Capture ordering, rebuild lineage and preservation.                         #
 # --------------------------------------------------------------------------- #
 
-def test_rebuild_uses_exact_prior_receipts_plus_new_receipt_hints_once(tmp_path, monkeypatch):
+def test_rebuild_uses_one_new_receipt_and_preserves_prior_bar_lineage(tmp_path, monkeypatch):
     archive, fetcher = FakeArchive(tmp_path / "archive"), Fetcher()
     hist = tmp_path / "history"
     hist.mkdir()
@@ -271,14 +276,14 @@ def test_rebuild_uses_exact_prior_receipts_plus_new_receipt_hints_once(tmp_path,
     assert counted["n"] == 1, "receipt index must be resolved once per capture day"
     symbol, refs, hints = builder.calls[0]
     assert symbol == "AMD"
-    assert refs[:2] == [ref1, ref2] and len(refs) == 3
-    assert refs[2][0] == "2026-10-19" and len(refs[2][1]) == 64
-    assert hints[ref1] == path1 and hints[ref2] == path2
+    assert len(refs) == 1 and refs[0][0] == "2026-10-19" and len(refs[0][1]) == 64
+    assert set(hints) == set(refs)
     out = cfg.output_dir / "AMD.json"
-    assert out.read_bytes() == (json.dumps(builder.payload_for("AMD", refs),
-                                           separators=(",", ":")) + "\n").encode()
+    result = json.loads(out.read_text())
+    assert result["bars"][0] == json.loads(prior_bytes)["bars"][0]
+    assert result["bar_receipt_ids"][0] == [ref1[1], ref2[1]]
     entry = manifest["outputs"][0]
-    assert entry["status"] == "rebuilt" and entry["bars"] == 3
+    assert entry["status"] == "rebuilt" and entry["bars"] == 2
     assert entry["sha256"] == hashlib.sha256(out.read_bytes()).hexdigest()
     assert manifest["complete_history"] is False and manifest["activated"] is False
     # The immutable input tree kept every byte, including the prior history file.
@@ -314,7 +319,8 @@ def test_conflicting_revision_refusal_keeps_prior_and_other_symbols(tmp_path):
     fetcher = Fetcher()
     hist = tmp_path / "history"
     hist.mkdir()
-    prior_bytes = write_prior_history(hist, "AMD", [])
+    ref, _ = seed_receipt(tmp_path / "archive", "AMD", "2026-10-15", "2026-10-15T05:00:00Z")
+    prior_bytes = write_prior_history(hist, "AMD", [ref])
     builder = Builder(fail={"AMD": ValueError("conflicting BOATS revisions require explicit resolution")})
     cfg = make_cfg(tmp_path, ["AMD", "NVDA"])
     manifest, code = refresh.run_refresh(cfg, make_deps(archive, fetcher, builder))
@@ -343,12 +349,13 @@ def test_provider_failure_stops_new_calls_and_reports_partial(tmp_path):
     assert manifest["requests"] == {"made": 2, "limit": 3}
 
 
-def test_empty_response_preserves_prior_bytes_and_marks_vendor_empty(tmp_path):
+def test_empty_response_preserves_other_windows_and_marks_vendor_empty(tmp_path):
     archive = FakeArchive(tmp_path / "archive")
     fetcher = Fetcher(payloads={"AMD": b"[]", "NVDA": b"[]"})
     hist = tmp_path / "history"
     hist.mkdir()
-    prior_bytes = write_prior_history(hist, "AMD", [])
+    ref, _ = seed_receipt(tmp_path / "archive", "AMD", "2026-10-15", "2026-10-15T05:00:00Z")
+    prior_bytes = write_prior_history(hist, "AMD", [ref])
     materialized = []
     builder = Builder()
     cfg = make_cfg(tmp_path, ["AMD", "NVDA"])
@@ -359,9 +366,10 @@ def test_empty_response_preserves_prior_bytes_and_marks_vendor_empty(tmp_path):
     assert code == 0 and manifest["status"] == "complete"
     assert sorted(materialized) == ["AMD", "NVDA"]
     kept = cfg.output_dir / "AMD.json"
-    assert kept.read_bytes() == prior_bytes, "prior file must be preserved byte-for-byte"
-    assert manifest["outputs"][0]["status"] == "preserved_prior"
-    assert manifest["outputs"][0]["sha256"] == hashlib.sha256(prior_bytes).hexdigest()
+    assert json.loads(kept.read_bytes())["bars"] == json.loads(prior_bytes)["bars"]
+    assert (hist / "AMD.json").read_bytes() == prior_bytes
+    assert manifest["outputs"][0]["status"] == "refreshed_empty_window"
+    assert manifest["outputs"][0]["sha256"] == hashlib.sha256(kept.read_bytes()).hexdigest()
     assert not (cfg.output_dir / "NVDA.json").exists()
     assert len(manifest["outputs"][1]["new_receipt"]) == 64
     assert manifest["outputs"][1]["status"] == "vendor_empty"
@@ -496,6 +504,45 @@ def test_unavailable_ticker_does_not_retry_or_suppress_other_tickers(tmp_path):
     assert [o["symbol"] for o in manifest["outputs"]] == ["AMD", "TSLA"]
     assert manifest["not_requested"] == []
     assert [o["symbol"] for o in manifest["unavailable"]] == ["NVDA"]
+
+
+def test_real_same_session_revision_and_cancellation_replace_the_window(tmp_path, monkeypatch):
+    import collectors.tiingo_archive as archive_module
+    monkeypatch.setattr(archive_module, "EXTERNAL_MOUNT", tmp_path)
+    observed = ["2026-10-19T09:00:00Z"]
+    monkeypatch.setattr(archive_module, "utc_now", lambda: observed[0])
+    row = {"date": "2026-10-19T02:00:00Z", "open": 10, "high": 12, "low": 9, "close": 11, "volume": 13}
+    payload = [[row]]
+    deps = refresh.RefreshDeps(
+        archive_factory=lambda root, **_: archive_module.Archive(root, check_mount=False, free_floor=0),
+        fetch=lambda *a, **kw: (json.dumps(payload[0]).encode(), "application/json"), read_key=lambda: "fixture",
+        clock=lambda: datetime.fromisoformat(observed[0].replace("Z", "+00:00")))
+    previous = None
+    for index, volume in enumerate([13, 9, None]):
+        observed[0] = f"2026-10-19T{9 + index:02d}:00:00Z"
+        payload[0] = [] if volume is None else [{**row, "volume": volume}]
+        cfg = make_cfg(tmp_path, ["AMD"], name=f"revision{index}", history_dir=previous)
+        cfg.check_mount = False
+        result, code = refresh.run_refresh(cfg, deps)
+        assert code == 0, result
+        doc = json.loads((cfg.output_dir / "AMD.json").read_text())
+        assert doc["bars"] == ([] if volume is None else [[1792375200, 10., 12., 9., 11., float(volume)]])
+        assert len(doc["receipts"]) == 1
+        previous = cfg.output_dir
+
+
+def test_attempt_is_durable_before_call_and_crash_cannot_replay(tmp_path):
+    cfg = make_cfg(tmp_path, ["AMD"])
+    archive = FakeArchive(cfg.root)
+    def interrupted(path, key, **kwargs):
+        assert json.loads((cfg.output_dir / "attempt-00001.json").read_text())["request_path"] == path
+        raise KeyboardInterrupt()
+    with pytest.raises(KeyboardInterrupt):
+        refresh.run_refresh(cfg, make_deps(archive, interrupted))
+    assert (cfg.output_dir / "start-receipt.json").exists()
+    assert not (cfg.output_dir / "captured-00001.json").exists()
+    with pytest.raises(refresh.RefreshRefused, match="no silent replay"):
+        refresh.run_refresh(cfg, make_deps(archive, Fetcher()))
 
 
 def test_real_pipeline_empty_then_nonempty_then_append_preserves_prior(tmp_path, monkeypatch):

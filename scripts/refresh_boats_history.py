@@ -5,8 +5,8 @@ most one archived provider request per explicitly selected symbol for that
 session's overnight BOATS window (20:00 ET prior day .. 04:00 ET session day,
 which falls inside the session's UTC date under both EST and EDT), retains the
 immutable raw response through the existing archive collector first, and only
-then rebuilds each symbol's private history file from exact prior receipt
-identities plus the new receipt via the existing offline builder.
+then builds the exact new receipt and selects its whole session window over
+the prior private history. Older windows and immutable raw vintages remain intact.
 
 No scheduler, publication, activation, retry or substitute collector logic
 lives here. Existing private inputs are never modified. Every effect lands in
@@ -29,6 +29,8 @@ from datetime import date, datetime, time as dt_time, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 from zoneinfo import ZoneInfo
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 SCHEMA = "terminal.tiingo_boats_history_refresh.v1"
 HISTORY_SCHEMA = "terminal.tiingo_boats_history.v1"
@@ -438,6 +440,11 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
             manifest["not_requested"].extend(symbols[index:])
             break
         path = deps.request_path(symbol, cfg.session)
+        # Reserve each attempt before calling the provider. A restart leaves an
+        # explicit uncertain request instead of losing the in-flight boundary.
+        _write_private(cfg.output_dir / f"attempt-{index + 1:05d}.json", (
+            json.dumps({"symbol": symbol, "request_path": path, "ordinal": index + 1},
+                       separators=(",", ":")) + "\n").encode())
         made += 1  # a provider attempt consumes the request budget, failure or not
         try:
             raw, mime = deps.fetch(path, key, max_bytes=cfg.max_response_bytes)
@@ -472,6 +479,9 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
                                             "stage": "capture"})
             manifest["not_requested"].extend(symbols[index + 1:])
             break
+        _write_private(cfg.output_dir / f"captured-{index + 1:05d}.json", (
+            json.dumps({"symbol": symbol, "request_path": path, **saved},
+                       separators=(",", ":")) + "\n").encode())
         captured[symbol] = (raw, saved, path, parsed)
         if made % 100 == 0:
             print(json.dumps({"event": "capture_progress", "attempted": made,
@@ -507,28 +517,17 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
         doc, prior_refs, prior_bytes = prior[symbol]
         if prior_refs is None:  # prior history refused: already listed at input stage
             continue
-        if not parsed:  # vendor reported no bars for this session window
-            if doc is not None:
-                # Empty update: preserve the prior file byte-for-byte, no fake candle.
-                _write_private(cfg.output_dir / f"{symbol}.json", prior_bytes)
-                manifest["outputs"].append(
-                    {"symbol": symbol, "file": f"{symbol}.json", "status": "preserved_prior",
-                     "bars": len(doc.get("bars", [])), "prior_receipts": len(prior_refs),
-                     "new_receipt": rid, "sha256": hashlib.sha256(prior_bytes).hexdigest(),
-                     "bytes": len(prior_bytes)})
-            else:
-                # Empty receipts have no materialized bar view. Keep their
-                # evidence in this manifest, never in future builder inputs.
-                manifest["outputs"].append(
-                    {"symbol": symbol, "status": "vendor_empty", "bars": 0,
-                     "prior_receipts": 0, "new_receipt": rid})
+        if not parsed and doc is None:
+            manifest["outputs"].append(
+                {"symbol": symbol, "status": "vendor_empty", "bars": 0,
+                 "prior_receipts": 0, "new_receipt": rid})
             continue
         new_day = str(receipt.get("observed_at_utc", ""))[:10]
         if not DAY.fullmatch(new_day):
             manifest["unavailable"].append({"symbol": symbol, "reason": "new_receipt_day_invalid",
                                             "stage": "normalize"})
             continue
-        refs = list(prior_refs) + [(new_day, rid)]
+        refs = [(new_day, rid)]
         hints: dict[tuple[str, str], Path] = {}
         for ref in refs:
             located = index.get(ref[1])
@@ -540,8 +539,15 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
             hints[ref] = located
         else:
             try:
-                result = deps.build_history(symbol, refs, root=cfg.root,
-                                            check_mount=cfg.check_mount, receipt_paths=hints)
+                from scripts.boats_history_window import CONSTANTS, merge_session_window
+                if parsed:
+                    update = deps.build_history(symbol, refs, root=cfg.root,
+                                                check_mount=cfg.check_mount, receipt_paths=hints)
+                else:
+                    update = {**CONSTANTS, "symbol": symbol, "bars": [], "bar_receipt_ids": [],
+                              "receipts": [{k: receipt[k] for k in
+                                           ("receipt_id", "raw_sha256", "observed_at_utc", "request_path")}]}
+                result = merge_session_window(doc, update, cfg.session)
                 payload = (json.dumps(result, separators=(",", ":"),
                                       allow_nan=False) + "\n").encode()
                 _write_private(cfg.output_dir / f"{symbol}.json", payload)
@@ -552,7 +558,7 @@ def _run_capture(cfg: RefreshConfig, deps: RefreshDeps, symbols: list[str],
                      "stage": "normalize"})
                 continue
             manifest["outputs"].append(
-                {"symbol": symbol, "file": f"{symbol}.json", "status": "rebuilt",
+                {"symbol": symbol, "file": f"{symbol}.json", "status": "rebuilt" if parsed else "refreshed_empty_window",
                  "bars": len(result.get("bars", [])), "complete": bool(result.get("complete", False)),
                  "prior_receipts": len(prior_refs), "new_receipt": rid,
                  "receipts": len(result.get("receipts", [])),
