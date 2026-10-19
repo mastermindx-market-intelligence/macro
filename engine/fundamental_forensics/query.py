@@ -5152,12 +5152,19 @@ class BitemporalMetricQueryEngine:
         # construction — an empty class policy admits every issuer, and
         # formula=None keeps the denominator branch out of this stage (the
         # formula is qualified in _evaluate_formula once its dependency values
-        # exist).
+        # exist).  Period-first precedence: the receipt validators weigh a
+        # period-contract rejection above an issuer-class refusal, so when the
+        # requested period violates the contract this stage stands down and
+        # the direct/formula period-rejection paths below emit the cell.
         issuer_class = (
             issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
         )
-        qualification = qualify_metric(contract, None, issuer_class, {})
-        if qualification.state != "applicable":
+        qualification = (
+            None
+            if self._period_contract_error(contract, period) is not None
+            else qualify_metric(contract, None, issuer_class, {})
+        )
+        if qualification is not None and qualification.state != "applicable":
             reason = qualification.reason
             provenance_overrides: dict[str, Any] = {}
             if issuer_class is not None:

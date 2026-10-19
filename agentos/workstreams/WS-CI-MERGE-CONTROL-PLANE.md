@@ -237,6 +237,21 @@ waves:
       across client behavior, and projects the caller's PR branch identity into
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
+  - id: W-THROUGHPUT-20261019
+    title: Measured CI pack throughput and bounded duplicate-traversal trial
+    status: in_progress
+    note: >
+      Chairman's October 19 commission is assigned to Codex session
+      01a153e8-3c85-7bb2-af63-7f477b570512. The 40-run baseline retains 22
+      noncancelled first attempts, 17 cancellations and one separate rerun.
+      Successful first-attempt run-to-gate p50/p95 is 3196/4074 seconds.
+      Initial trial removes duplicate named-suite closure traversal within one
+      planner command; twelve packs and all semantic/gate contracts remain.
+      Existing PR 8126 is already delivered and PR 8094 remains separate.
+      Research and limitations: research/ci_pack_throughput_20261019/README.md.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
+      Local candidate verification, hosted proof and natural-traffic improvement
+      remain distinct obligations; no fleet improvement is claimed yet.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

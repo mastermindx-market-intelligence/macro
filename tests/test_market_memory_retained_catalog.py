@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import json
+import logging
+from datetime import datetime, timezone
+from types import SimpleNamespace
 import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
@@ -10,6 +13,94 @@ from engine.neuralweb import market_memory_retained_catalog as catalog
 from engine.neuralweb import market_memory_retained_use as use
 from engine.neuralweb import market_memory_trusted as trusted
 from tests.test_market_memory_retained_consumer import original
+
+
+STAGES = ['authorization', 'authorization', 'generation_pin', 'receipt_authorization',
+          'projections', 'response_projection', 'final_authorization']
+
+
+def _freeze_catalog_clock(monkeypatch):
+    class FrozenClock:
+        @staticmethod
+        def now(_timezone):
+            return datetime(2026, 10, 19, tzinfo=timezone.utc)
+    monkeypatch.setattr(catalog, 'datetime', FrozenClock)
+
+
+def test_stage_events_correlate_without_changing_catalog_bytes(original, monkeypatch, caplog):
+    _freeze_catalog_clock(monkeypatch)
+    expected = catalog.read_catalog(original[0], user_id='member', mode='historical_hypothetical',
+                                    offset=0, limit=8)
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    assert discover(original) == expected
+    events = [r.args for r in caplog.records if r.getMessage().startswith('market_memory.read.')]
+    stages = [fields for event, fields in events if event == 'stage']
+    seq = next(fields['seq'] for event, fields in events if event == 'start')
+    assert [r['stage'] for r in stages] == STAGES
+    assert all(set(r) == {'tag', 'seq', 'stage', 'elapsed_ms', 'thread_cpu_ms'} for r in stages)
+    assert all(r['seq'] == seq and r['tag'] == 'retained_catalog'
+               and r['elapsed_ms'] >= 0 and r['thread_cpu_ms'] >= 0 for r in stages)
+    assert next(fields for event, fields in events if event == 'finish')['success'] is True
+    assert not api._read_observation_active
+
+
+def test_stage_durations_attribute_owner_work_without_wallclock_sleep(original, monkeypatch):
+    clocks = [100.0, 20.0]
+    monkeypatch.setattr(catalog, 'time', SimpleNamespace(
+        monotonic=lambda: clocks[0], thread_time=lambda: clocks[1]))
+    for name, wall, cpu in [('read_pinned_generation', 0.017, 0.007),
+                            ('read_pinned_capture_projections', 0.031, 0.011)]:
+        actual = getattr(trusted.TrustedFileAsKnownAtReader, name)
+        def measured(*args, _actual=actual, _wall=wall, _cpu=cpu, **kwargs):
+            value = _actual(*args, **kwargs)
+            clocks[0] += _wall
+            clocks[1] += _cpu
+            return value
+        monkeypatch.setattr(trusted.TrustedFileAsKnownAtReader, name, measured)
+    events = []
+    value = catalog.read_catalog(original[0], user_id='member', mode='historical_hypothetical',
+        offset=0, limit=8, stage_observer=lambda *args: events.append(args))
+    assert value['selection']['total'] == 5
+    timing = {name: (wall, cpu) for name, wall, cpu in events}
+    assert timing['generation_pin'] == pytest.approx((17, 7))
+    assert timing['projections'] == pytest.approx((31, 11))
+
+
+@pytest.mark.parametrize('failure', ['logger', 'clock', 'callback'])
+def test_observation_failures_preserve_actual_catalog_result_and_permits(
+        original, monkeypatch, failure):
+    _freeze_catalog_clock(monkeypatch)
+    expected = discover(original)
+    def fail(*args, **kwargs):
+        raise RuntimeError('private observer failure')
+    if failure == 'logger':
+        monkeypatch.setattr(api._read_observation_log, 'info', fail)
+    elif failure == 'callback':
+        monkeypatch.setattr(api, '_read_observation_stage', fail)
+    else:
+        monkeypatch.setattr(catalog, 'time', SimpleNamespace(monotonic=fail, thread_time=fail))
+    assert discover(original) == expected
+    assert not api._read_observation_active
+    assert api._playback_slots.acquire(False)
+    assert api._playback_slots.acquire(False)
+    api._playback_slots.release()
+    api._playback_slots.release()
+
+
+def test_failed_projection_keeps_original_refusal_and_identifies_stage(original, monkeypatch, caplog):
+    def fail(*args, **kwargs):
+        from engine.neuralweb import market_memory_pit as pit
+        raise pit.MarketMemoryStoreError('private source detail')
+    monkeypatch.setattr(trusted.TrustedFileAsKnownAtReader, 'read_pinned_capture_projections', fail)
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    with pytest.raises(HTTPException) as error:
+        discover(original)
+    assert error.value.status_code == 503
+    assert error.value.detail == {'state': 'EXACT_CATALOG_UNAVAILABLE'}
+    stages = [r.args[1]['stage'] for r in caplog.records if '.stage ' in r.getMessage()]
+    assert stages == STAGES[:5]
+    assert "'success': False" in caplog.text and 'private source detail' not in caplog.text
+    assert not api._read_observation_active
 
 
 def discover(original, **spec):
@@ -43,7 +134,8 @@ def test_supported_cutoff_is_actual_maximum_clock_then_consumes_real_refs(origin
 
 
 @pytest.mark.parametrize("spec", [{"offset": 1}, {"limit": True}, {"limit": 21}, {"offset": "01"},
-    {"user_id": "admin"}, {"subject_id": "guessed"}, {"mode": "live"}, {"generation_id": "bad"}])
+    {"user_id": "admin"}, {"subject_id": "guessed"}, {"mode": "live"}, {"generation_id": "bad"},
+    {"stage_observer": "caller supplied"}])
 def test_invalid_catalog_request_denied_before_owner(original, monkeypatch, spec):
     monkeypatch.setattr(trusted, "TrustedFileAsKnownAtReader", lambda *a, **k: pytest.fail("opened owner"))
     with pytest.raises(HTTPException) as exc:

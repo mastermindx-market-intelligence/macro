@@ -1908,7 +1908,10 @@ def _cadence_git_root(tmp_path, branch="main"):
     data.mkdir(parents=True)
     for name in ("fms_collection_receipts.jsonl", "fms_observations.jsonl", "fms_projection_state.json", "fms_case_graph.json"):
         (data / name).write_text("{}\n")
-    git("add", "data", cwd=checkout)
+    helper = checkout / "scripts/ci/fms_persist.py"
+    helper.parent.mkdir(parents=True)
+    helper.write_bytes((Path(__file__).resolve().parents[1] / "scripts/ci/fms_persist.py").read_bytes())
+    git("add", "data", "scripts/ci/fms_persist.py", cwd=checkout)
     git("commit", "-m", "initial", cwd=checkout)
     git("push", "origin", f"HEAD:{branch}", cwd=checkout)
     return checkout, origin, git
@@ -1917,7 +1920,8 @@ def _cadence_git_root(tmp_path, branch="main"):
 def _run_cadence_step(step_id, checkout, tmp_path, ref="main", **extra_env):
     import os, subprocess
     step = next(s for s in _cadence_workflow()["jobs"]["acquire"]["steps"] if s.get("id") == step_id)
-    env = dict(os.environ, FMS_TARGET_REF=ref, GITHUB_OUTPUT=str(tmp_path / "outputs"), GITHUB_STEP_SUMMARY=str(tmp_path / "summary"), **extra_env)
+    env = dict(os.environ, FMS_TARGET_REF=ref, GITHUB_OUTPUT=str(tmp_path / "outputs"), GITHUB_STEP_SUMMARY=str(tmp_path / "summary"), RUNNER_TEMP=str(tmp_path), GITHUB_RUN_ID="local-cadence", GITHUB_RUN_ATTEMPT="1", **extra_env)
+    env.pop("PYTHONPATH", None)  # Execute the committed fixture helper, not the outer repository.
     return subprocess.run(["bash", "-e", "-o", "pipefail", "-c", step["run"]], cwd=checkout, env=env, capture_output=True, text=True)
 
 
@@ -1926,7 +1930,8 @@ def test_fms_cadence_publishes_only_selected_literal_branch(tmp_path, branch):
     checkout, origin, git = _cadence_git_root(tmp_path, branch)
     assert _run_cadence_step("validate_target", checkout, tmp_path, branch).returncode == 0
     before = git("rev-parse", "HEAD", cwd=checkout)
-    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    observations = checkout / "data/government_revenue/fms_observations.jsonl"
+    observations.write_text(observations.read_text() + '{"new":true}\n')
     result = _run_cadence_step("persist", checkout, tmp_path, branch)
     assert result.returncode == 0, result.stderr
     after = git("rev-parse", f"refs/heads/{branch}", cwd=origin)
@@ -2015,7 +2020,8 @@ def test_fms_publisher_handoff_reuses_existing_owner_without_parent_lock():
 ])
 def test_fms_publisher_handoff_requires_committed_production_ref(tmp_path, target, workflow_ref, default_branch, expected):
     checkout, origin, git = _cadence_git_root(tmp_path, target)
-    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    observations = checkout / "data/government_revenue/fms_observations.jsonl"
+    observations.write_text(observations.read_text() + '{"new":true}\n')
     result = _run_cadence_step("persist", checkout, tmp_path, target,
         GITHUB_REF=workflow_ref, FMS_DEFAULT_BRANCH=default_branch)
     assert result.returncode == 0, result.stderr
@@ -2080,7 +2086,8 @@ def test_fms_publisher_handoff_does_not_publish_after_failed_push(tmp_path):
     hook = origin / "hooks/pre-receive"
     hook.write_text("#!/bin/sh\nexit 1\n")
     hook.chmod(0o700)
-    (checkout / "data/government_revenue/fms_observations.jsonl").write_text('{"new":true}\n')
+    observations = checkout / "data/government_revenue/fms_observations.jsonl"
+    observations.write_text(observations.read_text() + '{"new":true}\n')
     result = _run_cadence_step("persist", checkout, tmp_path, GITHUB_REF="refs/heads/main", FMS_DEFAULT_BRANCH="main")
     assert result.returncode != 0
     assert _fms_step_outputs(tmp_path).get("publish_default") != "true"

@@ -142,19 +142,17 @@ decisions:
   - DEC:FIF-PARSER-FINGERPRINT-BINDS-ACCEPTED-OUTPUT
   - DEC:FIF-X2-SAVED-VIEW-BINDS-EXPORT-CONTRACT
 next_action: >
-  Wave 3 merged (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-14-fif-e2e-wave3):
-  C0-c #9047, D1-ext C #9056, D1X B'2 #9095, X1-p #9052, X2-n #9069, X2-s
-  #9068, CA-RK2 #9192 and the A0 chain #9116/#9203/#9214/#9221 (typed
-  per-issuer exclusion). A five-issuer publish now exits 0 but only AAPL
-  reconstructs; GOOGL/SNOW (ragged grid), BAC (retained parent-company role,
-  table-of-contents capture) and CAT (10-K year-row header, title phrase) are
-  typed exclusions. Next: #9246 Lane A hand merge → Lane B P5B (R1–R3) →
-  Lane C CAT R4/R5 → BAC retained-role re-mint ruling → five-issuer publish
-  repro → A0 gate (VPS FIF_FINANCIAL_DATASET_MODE=production flip held for
-  the Chairman or a Sol-delegated root; A45 entitled-browser receipts;
-  schedule-born production proof) → G1–G4 → A1 → C2/E2/K1–K4/Q1/Q2/V0/V1 →
-  coverage tiers (250-deep, then 1,000-core) → independent acceptance.
-  Merge by hand with --match-head-commit on concluded green; never arm.
+  Option B (handoff FINANCIAL-INTELLIGENCE-FABRIC-2026-10-18-fif-option-b-statement-refusals,
+  #9609): typed per-statement refusals (12 pinned rows, 11 BAC + 1 CAT),
+  A35-W1 cohort withholding and desk withheld blocks; BAC and CAT publish
+  instead of whole-issuer exclusion. C2 coverage census frozen
+  (FIF_C2_COVERAGE_FREEZE.md, 250 deep / 1,000 core, measured tier proposal).
+  Next: A0 gate (VPS FIF_FINANCIAL_DATASET_MODE=production flip, held for the
+  Chairman or a Sol-delegated root; never read VPS secrets; A45 entitled-browser
+  receipts; schedule-born production proof) → A1 → 12 specialist packs (K1–K4
+  prep-only until A1) → API/Excel → coverage tiers per the C2 freeze →
+  independent acceptance. Merge by hand with --match-head-commit on concluded
+  green; never arm.
 landmines:
   - >
     Core catalog is consolidated_only. Company Facts conversion sets
@@ -303,6 +301,12 @@ do_not_redo:
     X2-s, CA-RK2 or the A0 chain (#9116/#9203/#9214/#9221); do not
     re-diagnose the four five-issuer exclusions; do not fix CAT capture-side,
     because retained packages keep their minted statement_roles.
+  - >
+    Option B (2026-10-18): do not rebuild typed per-statement refusals, the
+    refusal pin or its classification order (ruling v3.1), A35-W1 cohort
+    withholding or the desk withheld blocks; do not re-mint the BAC
+    parent-company income role or rewrite BAC parent-only manifests; do not
+    re-run the C2 census without cause.
 waves:
   - id: FIF-0
     title: Program reset — land masterplan, naming, and collision map

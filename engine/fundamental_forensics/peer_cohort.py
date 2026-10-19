@@ -38,6 +38,7 @@ class MetricObservation:
     period_end: date | None
     period_basis: str
     applicable: bool
+    withheld: bool = False
     period_start: date | None = None
     unit: str | None = None
     metric_version: str | None = None
@@ -213,10 +214,12 @@ def _emit_metric(
     anchor_obs = _lookup(observations, anchor_id, metric_id)
     if anchor_obs is None and definition.anchor_issuer_id != anchor_id:
         anchor_obs = _lookup(observations, definition.anchor_issuer_id, metric_id)
+    # A withheld anchor still sets the reference month (it is excluded
+    # itself as W1); only an anchor with no reference period is unusable.
     anchor_usable = (
         anchor_obs is not None
         and anchor_obs.applicable
-        and anchor_obs.value is not None
+        and (anchor_obs.value is not None or anchor_obs.withheld)
         and anchor_obs.period_end is not None
     )
 
@@ -321,6 +324,13 @@ def _evaluate_member(
             metric_id=metric_id,
             code="A35-B1",
             reason="metric_not_applicable",
+        )
+    if observation.withheld:
+        return None, Exclusion(
+            issuer_id=member.issuer_id,
+            metric_id=metric_id,
+            code="A35-W1",
+            reason="statement_withheld",
         )
     if observation.value is None:
         return None, Exclusion(

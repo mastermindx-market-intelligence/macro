@@ -29,7 +29,8 @@
 .drawer-backdrop{position:fixed;z-index:990;inset:0;background:rgba(3,8,14,.6);backdrop-filter:blur(4px)}
 .evidence-drawer{position:fixed;z-index:991;right:0;top:0;bottom:0;width:min(520px,92vw);background:var(--panel);border-left:1px solid var(--gr-line2);box-shadow:-30px 0 80px -42px rgba(0,0,0,.9);overflow:auto}
 .drawer-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 18px;border-bottom:1px solid var(--gr-line);background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(18px)}
-.drawer-head strong{font-size:12px}
+.drawer-head strong{font-size:12px;min-width:0;overflow-wrap:anywhere}
+.drawer-head .tool-btn{flex-shrink:0;white-space:nowrap}
 .drawer-body{padding:17px 18px 35px}
 .receipt{padding:12px 0;border-bottom:1px solid var(--gr-line)}
 .receipt:first-child{padding-top:0}

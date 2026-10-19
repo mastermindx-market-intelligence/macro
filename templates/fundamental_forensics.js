@@ -2537,6 +2537,29 @@
     return sourceControlHtml(control);
   }
 
+  var STATEMENT_WITHHELD_COPY = pair(
+    'We couldn\'t rebuild this statement line by line from this filing yet, so it isn\'t shown here.',
+    '我们暂时无法从该财报逐行重建此报表，因此此处未显示。'
+  );
+  var ACCESSION_ALL_REFUSED_COPY = pair(
+    'We couldn\'t rebuild this filing\'s statements line by line yet. The normalized table below still covers its figures.',
+    '我们暂时无法逐行重建该财报的报表。下方的标准化表格仍涵盖其数据。'
+  );
+
+  function statementTypeHeading(statement) {
+    var kind = String(statement.statement_type || '');
+    if (kind === 'income_statement') return pair('Income statement', '利润表');
+    if (kind === 'balance_sheet') return pair('Balance sheet', '资产负债表');
+    if (kind === 'cash_flow') return pair('Cash flow statement', '现金流量表');
+    return pair(statement.title || 'Statement', statement.title || '报表');
+  }
+
+  function withheldStatementBlock(statement) {
+    return '<section class="ff-statement-block ff-statement-block--withheld"><h3>' +
+      statementTypeHeading(statement) + '</h3><p class="ff-statement-withheld-copy">' +
+      STATEMENT_WITHHELD_COPY + '</p></section>';
+  }
+
   // S0 as-reported labels lead; spans come from each cell's source_receipt.
   function renderStatementTree() {
     if (!ui.statements) return;
@@ -2565,7 +2588,21 @@
       return;
     }
     state.statementCells = [];
-    var blocks = statements.statements.map(function (statement) {
+    var payloadStatements = statements.statements.filter(objectValue);
+    var allRefused = payloadStatements.length === 3 &&
+      payloadStatements.every(function (statement) { return objectValue(statement.refusal); });
+    if (allRefused) {
+      var target = company() || {};
+      renderStatements(target);
+      ui.statements.insertAdjacentHTML('afterbegin',
+        '<section class="ff-statement-block ff-statement-block--withheld ff-statement-block--notice">' +
+        '<p class="ff-statement-withheld-copy">' + ACCESSION_ALL_REFUSED_COPY + '</p></section>');
+      return;
+    }
+    var blocks = payloadStatements.map(function (statement) {
+      if (objectValue(statement.refusal)) {
+        return withheldStatementBlock(statement);
+      }
       var columns = Array.isArray(statement.columns) ? statement.columns.filter(objectValue) : [];
       var rows = Array.isArray(statement.rows) ? statement.rows.filter(objectValue) : [];
       var header = '<th>' + pair('Line item / 报表项目', 'Line item / 报表项目') + '</th>' + columns.map(function (column) {
@@ -2596,9 +2633,16 @@
     'A35-I1': ['Same company, another share class', '同一公司的另一类股份'],
     'A35-X1': ['No observation in this package', '本数据包中无观察值'],
     'A35-B1': ['This metric does not apply', '该指标不适用'],
+    'A35-W1': ['Statement not rebuilt from this filing', '未能从该财报重建此报表'],
     'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
     'A35-P2': ['Shifted period', '期间已平移']
   };
+
+  function peerExclusionCopy(code) {
+    var known = PEER_EXCLUSIONS[code];
+    if (!known) return { en: 'Excluded', zh: '已排除' };
+    return { en: known[0], zh: known[1] };
+  }
 
   function peerCohort() {
     var cohort = objectValue(state.payload && state.payload.peer_cohort);
@@ -5831,6 +5875,8 @@
       loadHealth: loadHealth,
       ensureFinancialData: ensureFinancialData,
       ensureStatements: ensureStatements,
+      renderStatementTree: renderStatementTree,
+      peerExclusionCopy: peerExclusionCopy,
       financialPost: financialPost,
       renderRevisions: renderRevisions,
       setAsofControlsFromState: setAsofControlsFromState
