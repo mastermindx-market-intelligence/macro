@@ -247,6 +247,33 @@ def _trusted_file_number_provenance(
     }
 
 
+def _file_number_absent(event: Mapping[str, Any] | None) -> bool:
+    """Whether a superseded version genuinely carried no SEC file number.
+
+    Absent means the empty file number is not hiding richer evidence: the
+    filing's provenance must be missing entirely (legacy rows predate the
+    field) or be exactly the collector's typed unavailable-empty shape.  An
+    ambiguous observation — several candidate values that disagreed, so the
+    collector nulled the key and recorded the candidates — is richer
+    evidence, not absence, so a later version that observes a single value
+    is a group change, never an enrichment.
+    """
+    if event is None:
+        return False
+    filing = event.get("filing") or {}
+    if str(filing.get("file_number") or "").strip():
+        return False
+    provenance = filing.get("file_number_provenance")
+    if provenance is None:
+        return True
+    return provenance == {
+        "state": "unavailable",
+        "value": None,
+        "candidate_values": [],
+        "sources": [],
+    }
+
+
 def _is_file_number_enrichment(
     *,
     current_event: Mapping[str, Any],
@@ -257,6 +284,7 @@ def _is_file_number_enrichment(
     current_file: str,
     target_file: str,
     family_proven_same: bool,
+    target_event: Mapping[str, Any] | None,
 ) -> bool:
     """Whether a correction pair only adds a trusted SEC file number.
 
@@ -265,7 +293,9 @@ def _is_file_number_enrichment(
     for the same issuer and the same proven registration family.  Anything
     else that changed — issuer, family, relationship, lifecycle form role,
     a replaced or removed file number, or a file number without one trusted
-    provenance value — keeps the pair blocked.
+    provenance value — keeps the pair blocked.  A superseded version whose
+    empty file number hides an ambiguous observation (several disagreeing
+    candidates) is not absent either: the pair stays blocked.
     """
     return (
         current_candidate
@@ -274,6 +304,7 @@ def _is_file_number_enrichment(
         and bool(target_issuer)
         and current_issuer == target_issuer
         and not target_file
+        and _file_number_absent(target_event)
         and bool(current_file)
         and family_proven_same
         and _trusted_file_number_provenance(
@@ -779,6 +810,7 @@ def compile_registration_lifecycles(
                         current_file=current_file,
                         target_file=target_file,
                         family_proven_same=family_proven_same,
+                        target_event=correction_target,
                     )
                     and (
                         not current_candidate
@@ -1294,8 +1326,11 @@ def compile_registration_lifecycles(
                     # exactly the resolved target's observed SEC file number:
                     # the omitted value on the old version is not a group
                     # change, so the locked edge keeps its resolved target.
+                    # An old version whose empty file number hides an
+                    # ambiguous observation is not an enrichment surface.
                     file_number_enriched = (
                         not old_file
+                        and _file_number_absent(old_target)
                         and old_issuer == target_key[0]
                         and old_route.registration_family == target_key[2]
                         and _trusted_file_number_provenance(

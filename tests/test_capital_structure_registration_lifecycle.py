@@ -1159,3 +1159,186 @@ def test_parentless_pos_am_enrichment_defers_missing_lifecycle_edge_only():
     assert {item["reason"] for item in bundle["deferred"]} == {
         "missing_lifecycle_edge"
     }
+
+
+def _ambiguous_predecessor(suffix: int) -> dict:
+    original = _event(
+        suffix, "S-3", accepted_at="2026-08-01T10:00:00Z", file_number=None
+    )
+    original["filing"]["file_number_provenance"] = {
+        "state": "ambiguous",
+        "value": None,
+        "candidate_values": ["333-B", "333-C"],
+        "sources": ["sec_header_file_number"],
+    }
+    return _rehash_event(original)
+
+
+def test_ambiguous_predecessor_file_number_is_not_an_enrichment():
+    original = _ambiguous_predecessor(121)
+    correction = _event(
+        121,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-A",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="ambiguous-predecessor",
+    )
+    effect = _event(
+        122,
+        "EFFECT",
+        accepted_at="2026-08-02T10:00:00Z",
+        file_number="333-A",
+    )
+    lifecycle_edge = _edge(effect, original, "effectuates")
+    correction_edge = _edge(
+        correction,
+        original,
+        "supersedes",
+        observed_at="2026-08-04T10:00:00Z",
+    )
+
+    bundle = _compile(
+        [original, effect, correction],
+        [correction_edge, lifecycle_edge],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert "correction_group_changed" in {
+        item["reason"] for item in bundle["deferred"]
+    }
+
+
+def test_unavailable_empty_predecessor_file_number_still_enriches():
+    original = _event(
+        123, "S-3", accepted_at="2026-08-01T10:00:00Z", file_number=None
+    )
+    assert original["filing"]["file_number_provenance"] == {
+        "state": "unavailable",
+        "value": None,
+        "candidate_values": [],
+        "sources": [],
+    }
+    correction = _event(
+        123,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-A",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="unavailable-empty-predecessor",
+    )
+    effect = _event(
+        124,
+        "EFFECT",
+        accepted_at="2026-08-02T10:00:00Z",
+        file_number="333-A",
+    )
+    lifecycle_edge = _edge(effect, original, "effectuates")
+    correction_edge = _edge(
+        correction,
+        original,
+        "supersedes",
+        observed_at="2026-08-04T10:00:00Z",
+    )
+
+    bundle = _compile(
+        [original, effect, correction],
+        [correction_edge, lifecycle_edge],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["deferred"] == []
+    assert len(bundle["records"]) == 1
+    assert bundle["records"][0]["registration"]["file_number"] == "333-A"
+
+
+def test_legacy_predecessor_without_provenance_key_still_enriches():
+    original = _event(
+        125,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        file_number=None,
+        trusted_file_number=False,
+    )
+    assert "file_number_provenance" not in original["filing"]
+    correction = _event(
+        125,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-A",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="legacy-predecessor",
+    )
+    effect = _event(
+        126,
+        "EFFECT",
+        accepted_at="2026-08-02T10:00:00Z",
+        file_number="333-A",
+    )
+    lifecycle_edge = _edge(effect, original, "effectuates")
+    correction_edge = _edge(
+        correction,
+        original,
+        "supersedes",
+        observed_at="2026-08-04T10:00:00Z",
+    )
+
+    bundle = _compile(
+        [original, effect, correction],
+        [correction_edge, lifecycle_edge],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["deferred"] == []
+    assert len(bundle["records"]) == 1
+    assert bundle["records"][0]["registration"]["file_number"] == "333-A"
+
+
+def test_locked_edge_with_ambiguous_old_target_defers_the_group():
+    original = _ambiguous_predecessor(127)
+    effect = _event(
+        128,
+        "EFFECT",
+        accepted_at="2026-08-02T10:00:00Z",
+        file_number="333-A",
+    )
+    correction = _event(
+        127,
+        "S-3",
+        accepted_at="2026-08-01T10:00:00Z",
+        seen_at="2026-08-04T10:00:00Z",
+        file_number="333-A",
+        correction_version=2,
+        correction_of=original["event_id"],
+        source_suffix="ambiguous-locked-edge",
+    )
+    lifecycle_edge = _edge(effect, original, "effectuates")
+    correction_edge = _edge(
+        correction,
+        original,
+        "supersedes",
+        observed_at="2026-08-04T10:00:00Z",
+    )
+
+    bundle = _compile(
+        [original, effect, correction],
+        [lifecycle_edge, correction_edge],
+        as_of="2026-08-05T00:00:00Z",
+    )
+
+    assert bundle["records"] == []
+    assert "correction_group_changed" in {
+        item["reason"] for item in bundle["deferred"]
+    }
+    assert all(
+        "333-A"
+        != (record.get("registration") or {}).get("file_number")
+        for record in bundle["records"]
+    )
