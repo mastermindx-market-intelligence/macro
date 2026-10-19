@@ -599,3 +599,22 @@ if(invalid.verdict!=='—'||invalid.ad!=='—'||invalid.hilo!=='—'||
         capture_output=True, text=True, timeout=15,
     )
     assert result.returncode == 0, result.stderr
+
+
+
+def test_stale_snapshot_copy_has_no_current_clock_promises():
+    # Static readers may see the page long after its source session; even an
+    # inaccessible JS payload must not imply a live feed or a nightly refresh.
+    fallback = _render_page(None)
+    assert "Action board unavailable until a coherent, source-verified snapshot" in fallback
+    assert "No current calls." in fallback
+    assert "Only source-verified lanes carry graded calls." in fallback
+
+    src = PAGE_TPL.read_text(encoding="utf-8")
+    assert "LAST RECORDED HANDOFF" in src
+    assert "awaiting a source-verified session" in src
+    assert "No qualifying early reading in this snapshot." in src
+    assert "acceleration over the measured session window ending at this snapshot" in src
+    assert "check back after tonight" not in src.lower()
+    assert "awaiting tonight" not in src.lower()
+    assert "No early reading to show today" not in src
