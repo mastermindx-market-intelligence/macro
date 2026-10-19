@@ -41,7 +41,10 @@ from engine.capital_structure.source_ledger_io import (  # noqa: E402
     source_ledger_path,
 )
 from engine.capital_structure.state_bundle import (  # noqa: E402
+    DOCUMENT_LEDGER_FILENAME,
+    _parse_instant,
     build_state_bundle,
+    read_document_terms_ledger,
     validate_state_bundle,
 )
 from engine.capital_structure.verified_projection_generation import (  # noqa: E402
@@ -108,7 +111,31 @@ def build_from_disk(
         Path(rule_pack_path) if rule_pack_path is not None else None
     )
     manifests = read_source_ledger(source_ledger_path(root))
-    cutoff = as_of or _iso_z(telemetry.get("as_of"), "telemetry.as_of")
+    # DEC:CS-V2-U1C-BUNDLE-AS-OF-COVERS-SEALED-INPUTS: the bundle as_of is the
+    # latest system-availability instant among the inputs it seals.  With no
+    # explicit as_of the cutoff therefore covers a fee ledger whose rows became
+    # available after the event compiler ran; an explicit as_of is honoured
+    # unchanged, and rows available after it simply stay invisible.  A row's own
+    # timestamps are never moved.
+    document_terms = None
+    ledger_path = root / DOCUMENT_LEDGER_FILENAME
+    if ledger_path.exists():
+        document_terms = read_document_terms_ledger(ledger_path)
+    cutoff = as_of
+    if cutoff is None:
+        telemetry_as_of = _iso_z(telemetry.get("as_of"), "telemetry.as_of")
+        cutoff = telemetry_as_of
+        if document_terms is not None:
+            _, ledger_rows = document_terms
+            latest = max(
+                _parse_instant(
+                    (row.get("point_in_time") or {}).get("available_at"),
+                    "document_terms.point_in_time.available_at",
+                )
+                for row in ledger_rows
+            )
+            if latest > _parse_instant(telemetry_as_of, "telemetry.as_of"):
+                cutoff = latest.isoformat().replace("+00:00", "Z")
     produced = generated_at or _now_iso()
 
     bundle = build_state_bundle(
@@ -120,6 +147,7 @@ def build_from_disk(
         generated_at=produced,
         projection_sha256=projection_sha256,
         source_manifests=manifests,
+        document_terms=document_terms,
     )
     validate_state_bundle(bundle)
     payload = (
