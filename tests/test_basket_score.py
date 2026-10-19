@@ -223,3 +223,30 @@ def test_market_concentration_absent_or_invalid_source_session_is_unmeasured(mon
     )
     monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: bad)
     assert bs.market_concentration("us") == {}
+
+
+
+def test_unmeasured_breadth_never_becomes_a_mixed_verdict(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    incomplete = pd.DataFrame(
+        {
+            "adv": [90.0],
+            "dec": [100.0],
+            "pct_above_50": [np.nan],
+            "pct_above_200": [float("inf")],
+            "nh": [np.nan],
+            "nl": [7],
+        },
+        index=pd.DatetimeIndex(["2026-10-15"]),
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: incomplete)
+    actual = bs.market_concentration("us")
+    assert actual["source_as_of"] == "2026-10-15"
+    assert actual["pct_above_50"] is None
+    assert actual["pct_above_200"] is None
+    assert actual["nh"] is None
+    assert actual["nl"] == 7
+    assert actual.get("verdict") is None
+    assert actual["directional"] is False
