@@ -77,12 +77,6 @@ from engine.capital_structure.saved_scenarios import (
     result_digest_of,
     result_substance_digest_of,
 )
-from engine.capital_structure.saved_scenario_store import (
-    READ_OK,
-    READ_OK_ZERO,
-    READ_UNAVAILABLE,
-)
-from engine.capital_structure import saved_scenario_store as store
 from engine.capital_structure.scenario_export import (
     ScenarioExportError,
     export_filename,
@@ -1723,6 +1717,20 @@ def _stored_record(row: Mapping[str, Any]) -> dict[str, Any]:
     return value
 
 
+def _saved_store():
+    """The saved-scenario store, imported on first use.
+
+    The store reads through the alert-delivery lane
+    (``engine.alert_delivery_drain``), which depends on ``lib``.  Importing it
+    here rather than at module load keeps this router's import closure inside
+    ``engine`` and ``contracts``: the closure the parser-authority cold-export
+    tests pin in ``tests/test_capital_structure_document_terms.py``.
+    """
+    from engine.capital_structure import saved_scenario_store
+
+    return saved_scenario_store
+
+
 def _saved_from_record(record: Mapping[str, Any]) -> SavedScenario:
     """A stored record as a ``SavedScenario``, contract-checked on the way.
 
@@ -1974,10 +1982,11 @@ def _restore_answer(user_id: str, issuer_id: str, saved_id: str) -> _Restored:
     Every outcome of the re-run is typed and 200; another user's or an absent
     ``saved_id`` is 404, never 403; identity drift is the typed 503.
     """
+    store = _saved_store()
     result = store.read_one(user_id, saved_id)
-    if result.state == READ_UNAVAILABLE:
+    if result.state == store.READ_UNAVAILABLE:
         raise _unavailable(_STORE_UNAVAILABLE)
-    if result.state != READ_OK or not result.rows:
+    if result.state != store.READ_OK or not result.rows:
         raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
     row = result.rows[0]
     if str(row.get("user_id") or "") != user_id:
@@ -2179,7 +2188,7 @@ async def issuer_scenario_save(
         )
     except ContractViolation as exc:
         raise _private_error(422, {"contract_error": str(exc)}) from exc
-    write = store.upsert(saved)
+    write = _saved_store().upsert(saved)
     if write.state != "ok":
         raise _unavailable(_STORE_UNAVAILABLE)
     return JSONResponse(
@@ -2204,8 +2213,9 @@ def issuer_scenario_saved_list(
     """
     _private(response)
     user_id = _caller_id(_user)
+    store = _saved_store()
     result = store.read_for_user(user_id, after_id=after, limit=limit + 1)
-    if result.state == READ_UNAVAILABLE:
+    if result.state == store.READ_UNAVAILABLE:
         raise _unavailable(_STORE_UNAVAILABLE)
     if result.error_class == "partition_violation":
         # The adapter caught the store serving another user's row: the typed
@@ -2255,10 +2265,11 @@ def issuer_scenario_delete(
     """Remove one of the caller's saved scenarios, scoped to both keys."""
     _private(response)
     user_id = _caller_id(_user)
+    store = _saved_store()
     result = store.read_one(user_id, saved_id)
-    if result.state == READ_UNAVAILABLE:
+    if result.state == store.READ_UNAVAILABLE:
         raise _unavailable(_STORE_UNAVAILABLE)
-    if result.state != READ_OK or not result.rows:
+    if result.state != store.READ_OK or not result.rows:
         raise _private_error(404, _SAVED_SCENARIO_NOT_FOUND)
     row = result.rows[0]
     if str(row.get("user_id") or "") != user_id:
