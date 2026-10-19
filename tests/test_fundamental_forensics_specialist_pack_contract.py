@@ -240,6 +240,32 @@ def _specified_catalogue() -> dict:
     return schema
 
 
+def _unspecified_catalogue(pack_id: str = "PK01") -> dict:
+    """The pre-freeze shape of a pack catalogue.
+
+    The envelope-contract tests below were written against PK01 while every
+    catalogue was unspecified. After PK01 freezes they keep that premise
+    through this synthetic copy instead of the frozen file.
+    """
+    schema = load_pack_schema(pack_id)
+    schema["catalogue_state"] = "unspecified"
+    schema["fields"] = []
+    schema["checks"] = []
+    schema["reason_codes"] = []
+    return schema
+
+
+@pytest.fixture
+def unspecified_pk01(monkeypatch: pytest.MonkeyPatch) -> None:
+    real = pack_contract.load_pack_schema
+    fake = _unspecified_catalogue("PK01")
+    monkeypatch.setattr(
+        pack_contract,
+        "load_pack_schema",
+        lambda pack_id: deepcopy(fake) if pack_id == "PK01" else real(pack_id),
+    )
+
+
 # --- FIF K1-K4 pack freeze: frozen catalogue pins -------------------------
 #
 # One entry lands per pack-freeze PR, in the frozen order PK06, PK01, PK02,
@@ -338,6 +364,56 @@ _FROZEN_PACKS = {
         ),
         "pack_specific_codes": (),
     },
+    "PK01": {
+        "digest": "850fb0e262c38605590ed121d7854e055b31a855c41ca929adbff9766d3302c7",
+        "fields": (
+            "short_term_debt",
+            "long_term_debt_current",
+            "long_term_debt",
+            "total_debt",
+            "debt_maturity_y1",
+            "debt_maturity_y2",
+            "debt_maturity_y3",
+            "debt_maturity_y4",
+            "debt_maturity_y5",
+            "debt_maturity_after_5y",
+            "debt_carrying_amount_total",
+            "debt_carrying_amount_by_instrument",
+            "debt_fair_value",
+            "revolver_undrawn_capacity",
+            "covenant_term_observation",
+            "liquidity_total_cash_and_securities",
+            "cash_and_cash_equivalents",
+            "short_term_investments",
+            "current_assets",
+            "current_liabilities",
+            "current_ratio",
+            "working_capital",
+        ),
+        "required": (
+            "total_debt",
+        ),
+        "checks": (
+            "maturity_ladder_vs_carrying",
+            "debt_components_vs_total",
+            "instrument_rows_vs_total",
+            "covenant_span_present",
+        ),
+        "reason_codes": (
+            "applicability_rule_satisfied",
+            "form_outside_pack_forms",
+            "missing_standard_fact",
+            "extension_concept_unaliased",
+            "disallowed_dimension",
+            "missing_dependency",
+            "division_by_zero",
+            "unit_mismatch",
+            "numeric_value_in_narrative_only",
+            "issuer_class_unknown",
+            "industrial_basis_excluded_for_financial_institution",
+        ),
+        "pack_specific_codes": (),
+    },
 }
 _FROZEN_IDS = sorted(_FROZEN_PACKS)
 
@@ -360,6 +436,7 @@ def test_minimal_valid_result_per_pack(pack_id: str) -> None:
     assert validate_pack_result(_minimal_result(pack_id)) == []
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_unknown_pack_id_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["pack_id"] = "PK99"
@@ -368,6 +445,7 @@ def test_unknown_pack_id_rejected() -> None:
     assert any("pack_id" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_extra_top_level_property_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["unexpected"] = True
@@ -376,6 +454,7 @@ def test_extra_top_level_property_rejected() -> None:
     assert any("unexpected" in item or "Additional properties" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_field_row_missing_quality_state_rejected() -> None:
     obj = _minimal_result("PK01")
     row = _field_row()
@@ -386,6 +465,7 @@ def test_field_row_missing_quality_state_rejected() -> None:
     assert any("quality_state" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_authority_display_only_false_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["authority"] = {"class": "context_only", "display_only": False}
@@ -394,6 +474,7 @@ def test_authority_display_only_false_rejected() -> None:
     assert any("display_only" in item or "False" in item or "false" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_empty_limitations_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["limitations"] = []
@@ -402,6 +483,7 @@ def test_empty_limitations_rejected() -> None:
     assert any("limitations" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_wrong_pack_schema_digest_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["pack_schema_digest"] = _ZERO_SHA
@@ -418,6 +500,7 @@ def test_pack_schema_digest_is_deterministic() -> None:
     assert first != pack_schema_digest("PK02")
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_pack_schema_id_pattern_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["pack_schema_id"] = "PACK.pk01/v1"
@@ -426,6 +509,7 @@ def test_pack_schema_id_pattern_rejected() -> None:
     assert any("pack_schema_id" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_checks_kind_enum_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["checks"] = [
@@ -482,6 +566,7 @@ def test_pack_ids_match_envelope_enum() -> None:
     assert ENVELOPE_PATH.is_file()
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valid_field_row_and_check_row_accepted() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row()]
@@ -505,10 +590,12 @@ def test_unknown_pack_schema_load_raises() -> None:
         load_pack_schema("PK99")
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_referencing_registry_validates_minimal_result() -> None:
     assert validate_pack_result(_minimal_result("PK01")) == []
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_bad_evidence_kind_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(evidence_kind="none")]
@@ -517,6 +604,7 @@ def test_bad_evidence_kind_rejected() -> None:
     assert any("evidence_kind" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_bad_type_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(type="string")]
@@ -525,6 +613,7 @@ def test_bad_type_rejected() -> None:
     assert any(".type" in item or item.startswith("type") or "type" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_row_with_null_value_rejected() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [_valued_row(value=None)]
@@ -534,6 +623,7 @@ def test_valued_row_with_null_value_rejected() -> None:
     assert any("fields.0.value" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_typed_absence_row_with_value_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(value="1.0")]
@@ -543,6 +633,7 @@ def test_typed_absence_row_with_value_rejected() -> None:
     assert any("fields.0.value" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_absence_mismatched_non_value_state_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(non_value_state="not_evaluable")]
@@ -552,6 +643,7 @@ def test_absence_mismatched_non_value_state_rejected() -> None:
     assert any("fields.0.non_value_state" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_numeric_row_with_text_value_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(text_value="not-numeric")]
@@ -561,6 +653,7 @@ def test_numeric_row_with_text_value_rejected() -> None:
     assert any("fields.0.text_value" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_text_row_valued_via_text_value_accepted() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [
@@ -580,6 +673,7 @@ def test_text_row_valued_via_text_value_accepted() -> None:
     assert validate_pack_result(obj) == []
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_xbrl_fact_without_occurrence_ids_rejected() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [_valued_row(source_occurrence_ids=[])]
@@ -589,6 +683,7 @@ def test_valued_xbrl_fact_without_occurrence_ids_rejected() -> None:
     assert any("fields.0.source_occurrence_ids" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_text_span_without_source_span_rejected() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [
@@ -610,6 +705,7 @@ def test_valued_text_span_without_source_span_rejected() -> None:
     assert any("fields.0.source_span" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_table_cell_without_table_id_rejected() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [
@@ -627,6 +723,7 @@ def test_valued_table_cell_without_table_id_rejected() -> None:
     assert any("fields.0.table_cell" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_formula_without_rule_id_rejected() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     operand = _field_row(field_id="operand_field")
@@ -646,6 +743,7 @@ def test_valued_formula_without_rule_id_rejected() -> None:
     assert any("formula_rule_id" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_dangling_dependency_field_id_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row(dependency_field_ids=["ghost_field"])]
@@ -655,6 +753,7 @@ def test_dangling_dependency_field_id_rejected() -> None:
     assert any("dependency_field_ids" in item and "ghost_field" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_dangling_check_evidence_field_id_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row()]
@@ -675,6 +774,7 @@ def test_dangling_check_evidence_field_id_rejected() -> None:
     assert any("evidence_field_ids" in item and "ghost_field" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_duplicate_check_id_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row()]
@@ -694,6 +794,7 @@ def test_duplicate_check_id_rejected() -> None:
     assert any("duplicate check_id" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_coverage_mismatch_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["fields"] = [_field_row()]
@@ -703,6 +804,7 @@ def test_coverage_mismatch_rejected() -> None:
     assert any("coverage.missing_fields: declared 0, rows 1" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_valued_row_under_not_applicable_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["applicability"] = {
@@ -719,6 +821,7 @@ def test_valued_row_under_not_applicable_rejected() -> None:
     assert any("quality_state" in item and "not_applicable" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_tampered_content_digest_rejected() -> None:
     obj = _minimal_result("PK01")
     obj["limitations"] = ["tampered limitation text"]
@@ -727,6 +830,7 @@ def test_tampered_content_digest_rejected() -> None:
     assert any("pack_content_sha256" in item for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_pack_content_digest_deterministic_under_key_reordering() -> None:
     obj = _minimal_result("PK01")
     first = pack_content_digest(obj)
@@ -744,7 +848,7 @@ def test_catalogue_errors_empty_for_pack_files(pack_id: str) -> None:
 
 
 def test_specified_catalogue_with_zero_fields_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake = load_pack_schema("PK01")
+    fake = _unspecified_catalogue()
     fake["catalogue_state"] = "specified"
     monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
     errors = catalogue_errors("PK01")
@@ -753,7 +857,7 @@ def test_specified_catalogue_with_zero_fields_rejected(monkeypatch: pytest.Monke
 
 
 def test_unspecified_catalogue_with_a_field_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    fake = load_pack_schema("PK01")
+    fake = _unspecified_catalogue()
     fake["fields"] = [_catalogue_field()]
     monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
     errors = catalogue_errors("PK01")
@@ -886,6 +990,7 @@ def test_module_source_has_no_refresolver_or_fallback_flag() -> None:
     assert "_HAS_REFERENCING" not in source
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_envelope_validator_and_validate_pack_result_raise_no_deprecation_warning() -> None:
     with warnings.catch_warnings():
         warnings.simplefilter("error", DeprecationWarning)
@@ -893,6 +998,7 @@ def test_envelope_validator_and_validate_pack_result_raise_no_deprecation_warnin
         assert validate_pack_result(_minimal_result("PK01")) == []
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_cross_document_packet_ref_resolves_through_registry() -> None:
     # Construction reused from test_absence_mismatched_non_value_state_rejected.
     # The violated enum lives in financial_intelligence_packet.schema.json and is
@@ -1029,6 +1135,7 @@ def test_reason_code_well_formed_specified_result_accepted(
     assert validate_pack_result(obj) == []
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 def test_rk4_numeric_text_span_valued_row_rejected_on_unspecified_catalogue() -> None:
     obj = _set_applicable(_minimal_result("PK01"))
     obj["fields"] = [
@@ -1046,6 +1153,7 @@ def test_rk4_numeric_text_span_valued_row_rejected_on_unspecified_catalogue() ->
     assert any(item.startswith("fields.0.evidence_kind:") for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 @pytest.mark.parametrize("null_key", ["row", "column"])
 def test_rk4_valued_table_cell_without_row_or_column_rejected(null_key: str) -> None:
     cell = {"table_id": "tbl-1", "row": 0, "column": 1}
@@ -1094,7 +1202,7 @@ def test_reason_code_catalogue_numeric_field_allowing_text_span_rejected(
 def test_reason_code_meta_schema_unspecified_with_reason_codes_rejected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fake = load_pack_schema("PK01")
+    fake = _unspecified_catalogue()
     fake["reason_codes"] = [
         _reason_code("missing_dependency", None, "a formula/check operand is not valued")
     ]
@@ -1267,6 +1375,7 @@ def test_reason_code_pass_fail_check_with_non_member_reason_rejected(
     assert any(item.startswith("checks.0.reason:") for item in errors)
 
 
+@pytest.mark.usefixtures("unspecified_pk01")
 @pytest.mark.parametrize("row_type", ["integer", "ratio", "shares"])
 def test_r5_numeric_text_span_valued_row_rejected_for_every_numeric_type(
     row_type: str,
@@ -1410,7 +1519,7 @@ def test_r8_pack_schema_unknown_catalogue_state_refused(
 ) -> None:
     # RULING R-8: validate_pack_result fails closed on an unknown catalogue
     # state instead of silently skipping the specified-catalogue gates.
-    fake = load_pack_schema("PK01")
+    fake = _unspecified_catalogue()
     fake["catalogue_state"] = "Specified"
     monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
     obj = _minimal_result("PK01")
@@ -1427,7 +1536,7 @@ def test_r8_pack_schema_missing_catalogue_state_refused(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # RULING R-8, missing key: absent is not unspecified.
-    fake = load_pack_schema("PK01")
+    fake = _unspecified_catalogue()
     del fake["catalogue_state"]
     monkeypatch.setattr(pack_contract, "load_pack_schema", lambda pack_id: deepcopy(fake))
     obj = _minimal_result("PK01")
