@@ -2292,3 +2292,127 @@ def test_qledger_carve_custody_restores_on_a_deferred_only_night(
         f"deferred-only: step summary missing the snapshot id {snapshot}; "
         f"got: {summary!r}"
     )
+
+
+# ── Negative control: a failed custody snapshot must fail CLOSED on publication ──
+# (#9556 review comments 2026-10-19 05:56Z / 06:01Z). Without a snapshot the park
+# and restore steps are skipped, so if commitdata still committed, `push market
+# data` (gated on committed only) would run with the dirty qledger bytes riding
+# its --autostash unprotected. The step must instead withhold the market commit.
+
+_WITHHELD_ERROR = "::error title=market publication withheld (qledger carve snapshot failed)::"
+
+
+def _eval_commitdata_gate(cond, outputs, *, cancelled):
+    """Evaluate a collect-step `if:` that reads ONLY commitdata outputs plus
+    always()/cancelled(). Fails loudly if the gate grew any other reference."""
+    expr = re.sub(
+        r"steps\.commitdata\.outputs\.([A-Za-z0-9_]+)",
+        lambda m: repr(outputs.get(m.group(1), "")),
+        str(cond),
+    )
+    expr = (
+        expr.replace("always()", "True")
+        .replace("cancelled()", "True" if cancelled else "False")
+        .replace("&&", " and ")
+        .replace("||", " or ")
+    )
+    assert "steps." not in expr and "${{" not in expr and "!" not in expr.replace("!=", ""), (
+        f"gate grew a reference this evaluator does not model: {cond!r}"
+    )
+    return bool(eval(expr, {"__builtins__": {}}, {}))  # noqa: S307 - literal gate text only
+
+
+def test_qledger_carve_snapshot_failure_withholds_market_publication(
+    tmp_path, collect_steps, monkeypatch,
+):
+    """Shim ONLY `git commit-tree` to fail (simulated snapshot I/O refusal; every
+    other git call passes through) and run the real commitdata body with the real
+    .gitattributes and a committable market change. The step must exit 0 (collect
+    stays green for capital_structure / government_revenue_projection), write no
+    committed=true and no qledger_snapshot, write qledger_withheld=true, emit the
+    withheld ::error + summary, and leave HEAD and the collected bytes untouched,
+    so no push / salvage / park / restore gate can open."""
+    real_git = shutil.which("git")
+    assert real_git, "git not on PATH"
+    shim_dir = tmp_path / "commit_tree_refused"
+    shim_dir.mkdir()
+    (shim_dir / "git").write_text(
+        "#!/usr/bin/env bash\n"
+        "for a in \"$@\"; do\n"
+        "  if [ \"$a\" = \"commit-tree\" ]; then\n"
+        "    echo \"shim: commit-tree refused (simulated snapshot failure)\" >&2\n"
+        "    exit 128\n"
+        "  fi\n"
+        "done\n"
+        f"exec \"{real_git}\" \"$@\"\n"
+    )
+    (shim_dir / "git").chmod(0o755)
+    monkeypatch.setenv("PATH", f"{shim_dir}:{os.environ.get('PATH', '')}")
+    summary_path = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary_path))
+
+    watched = (
+        "data/qledger/claims.jsonl",
+        "site/qledger/track_record.json",
+        "data/baskets/ohlcv/NVDA.parquet",
+    )
+    before = {}
+
+    def mutate(repo):
+        (repo / "data" / "baskets" / "ohlcv" / "NVDA.parquet").write_bytes(b"v2")
+        _grow(repo / "data" / "qledger" / "claims.jsonl", _LIMIT + 4096)
+        (repo / "site" / "qledger" / "track_record.json").write_bytes(b'{"n":1}')
+        (repo / "data" / "capital_structure" / "source_manifest.jsonl").write_bytes(b"m2\n")
+        (repo / "data" / "hk" / "x.csv").write_bytes(b"h2\n")
+        before["HEAD"] = _git(repo, "rev-parse", "HEAD").stdout.strip()
+        for rel in watched:
+            before[rel] = _git(repo, "hash-object", "--no-filters", "--", rel).stdout.strip()
+
+    proc, outputs, repo = _run_market_commit(
+        tmp_path, collect_steps, mutate, seed=_carve_seed_gitattributes,
+    )
+    assert proc.returncode == 0, (
+        f"commitdata must not fail the collect job: stdout={proc.stdout!r} stderr={proc.stderr!r}"
+    )
+    assert outputs.get("committed") != "true", (
+        "commitdata committed the market data although the carve snapshot failed; "
+        "`push market data` would then run with the dirty qledger bytes riding its "
+        f"--autostash unprotected (outputs={outputs!r})"
+    )
+    assert "qledger_snapshot" not in outputs, f"no snapshot may be advertised: {outputs!r}"
+    assert outputs.get("qledger_withheld") == "true", f"qledger_withheld missing: {outputs!r}"
+    assert _git(repo, "rev-parse", "HEAD").stdout.strip() == before["HEAD"], (
+        "a market commit was made on the withheld path"
+    )
+
+    # No publication gate downstream of commitdata can open on these outputs.
+    push_cond = collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)].get("if")
+    assert _eval_commitdata_gate(push_cond, {"committed": "true"}, cancelled=False), (
+        f"evaluator sanity: the push gate should open on committed=true: {push_cond!r}"
+    )
+    for name, cancelled in (
+        (MARKET_PUSH_STEP, False),
+        (SALVAGE_PUSH_STEP, True),
+        (QLEDGER_PARK_STEP, False),
+        (QLEDGER_RESTORE_STEP, False),
+    ):
+        cond = collect_steps[_index_of(collect_steps, name)].get("if")
+        assert not _eval_commitdata_gate(cond, outputs, cancelled=cancelled), (
+            f"{name!r} would run on the withheld path: if={cond!r} outputs={outputs!r}"
+        )
+
+    # Collected bytes are left untouched (claims + twin + the market change).
+    for rel in watched:
+        now = _git(repo, "hash-object", "--no-filters", "--", rel).stdout.strip()
+        assert now == before[rel], f"{rel} changed on the withheld path ({before[rel]} -> {now})"
+    assert (repo / "data" / "qledger" / "claims.jsonl").stat().st_size == _LIMIT + 4096
+
+    # Loud and honest: the ::error names BOTH planes; the summary says the same.
+    assert _WITHHELD_ERROR in proc.stdout, f"withheld ::error missing: {proc.stdout!r}"
+    assert "NEITHER market data NOR data/qledger + site/qledger is published" in proc.stdout
+    assert "data/qledger/claims.jsonl" in proc.stdout
+    summary = summary_path.read_text() if summary_path.exists() else ""
+    assert "### Market publication withheld: qledger carve snapshot failed" in summary, (
+        f"step summary missing the withheld block: {summary!r}"
+    )

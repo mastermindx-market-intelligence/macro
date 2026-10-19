@@ -786,13 +786,28 @@ jobs:
             # the steps around `push market data` park these paths at HEAD and restore
             # them from this snapshot afterwards (#9556 review 5566188238).
             qledger_snapshot=$(git commit-tree "$(git write-tree)" -p HEAD -m "qledger carve custody snapshot (runner-local; never pushed)" 2>/dev/null) || qledger_snapshot=""
+            if [ -z "$qledger_snapshot" ]; then
+              # FAIL CLOSED ON PUBLICATION: with no snapshot, park/restore cannot run and the
+              # push loop's --autostash would carry the dirty qledger bytes unprotected. So
+              # withhold the WHOLE market commit (committed stays false: neither push step
+              # runs), leave index + worktree untouched, and keep collect green.
+              echo "qledger_withheld=true" >> "$GITHUB_OUTPUT"
+              echo "::error title=market publication withheld (qledger carve snapshot failed)::could not snapshot the carved qledger bytes:${qledger_over}; NEITHER market data NOR data/qledger + site/qledger is published by this run (no market commit, no push). The collected bytes are left untouched in this runner workspace (runner-local; gone at the next clean checkout)."
+              if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+                {
+                  echo "### Market publication withheld: qledger carve snapshot failed"
+                  echo ""
+                  echo "- oversize qledger blob(s):${qledger_over}"
+                  echo "- market data: NOT committed and NOT pushed by this run"
+                  echo "- data/qledger + site/qledger: NOT published; collected bytes left untouched in this runner workspace (runner-local)"
+                  echo "- owner: qledger publication program"
+                } >> "$GITHUB_STEP_SUMMARY" || true
+              fi
+              exit 0
+            fi
             git reset -q -- data/qledger site/qledger
             echo "qledger_carved=true" >> "$GITHUB_OUTPUT"
-            if [ -n "$qledger_snapshot" ]; then
-              echo "qledger_snapshot=$qledger_snapshot" >> "$GITHUB_OUTPUT"
-            else
-              echo "::error title=qledger carve snapshot failed::could not snapshot the carved data/qledger + site/qledger bytes; they stay dirty and ride the push loop's --autostash unprotected (a conflicted re-apply discards them)."
-            fi
+            echo "qledger_snapshot=$qledger_snapshot" >> "$GITHUB_OUTPUT"
             echo "::warning title=qledger carved out of market commit::staged qledger blob(s) within ${qledger_margin}B of GitHub's ${qledger_limit}B file limit:${qledger_over}; this run's data/qledger + site/qledger are NOT published (owner: qledger publication program); the market commit, if any, excludes them."
           fi
           if git diff --cached --quiet; then echo "no market data changes to commit"; exit 0; fi
