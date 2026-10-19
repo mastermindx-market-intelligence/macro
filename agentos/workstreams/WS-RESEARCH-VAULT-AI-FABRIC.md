@@ -124,7 +124,11 @@ waves:
     title: Shared read_runtime composition root (zero-arg build_read_service in production)
     status: todo
     depends_on: [F5-M]
-    next_action: "Merges only at >= 95% F5-M coverage (ruling F12-Q-L4-2 (f))."
+    next_action: >
+      Guarded dedicated-reader backend libraries may follow normal protected source
+      delivery under DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING. Ordinary
+      Brain F11 wiring and activation remain held until >=95% common-generation
+      coverage; preserve selected-reader/writer/auth and original-operation guards.
   - id: F12
     title: ChatGPT MCP read surface (Mastermind) - L1 contracts, L1.1 v1.1, L2 entitlement, L3 SDK app, L4 port adapter + runtime, L5 ops
     status: in_progress
@@ -148,7 +152,9 @@ next_action: >
   release carriers. Compose full-body/cache/intelligence source in #9646 with the
   hermetic Vault suite in the PR code gate. Retain actual failed resource probes;
   measure the repaired source on M2, then install the exact protected source pair
-  and qualify known writers plus >=95% common generation before F11 #9177 merges.
+  and qualify known writers plus >=95% common generation before ordinary Brain F11
+  wiring/activation. The guarded backend source exception is recorded in
+  DEC:RESEARCH-VAULT-GUARDED-BACKEND-SOURCE-ORDERING; source delivery is not runtime admission.
   Preserve original uncertain/refused operations and the pending Auth0/C4 human
   authentication steps. Finish installed reader and actual ChatGPT/Deep Research
   ingestion, read, citation reopen, correction and denial acceptance.

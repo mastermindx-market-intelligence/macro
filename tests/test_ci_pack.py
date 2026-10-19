@@ -2965,6 +2965,31 @@ def test_plan_is_deterministic() -> None:
     assert any(first.pack_jobs)
 
 
+def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Calibration changes the attested assignment, never the work it proves."""
+    calibrated = _full_plan()
+    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+    heuristic = _full_plan()
+
+    assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.pack_count == heuristic.pack_count == 12
+    assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
+    assert calibrated.pack_jobs != heuristic.pack_jobs
+    assert calibrated.plan_sha256 != heuristic.plan_sha256
+    before = {job.logical_job_id: job for job in heuristic.semantic_jobs}
+    for job in calibrated.semantic_jobs:
+        assert job.job_exec_sha256 == before[job.logical_job_id].job_exec_sha256
+        assert job.steps == before[job.logical_job_id].steps
+    flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
+    assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
+    assert set(flattened) == set(calibrated.eligible_job_ids)
+    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
+
+
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
     """The hash is what makes twelve independent derivations one decision."""
     plan = _full_plan()
@@ -5058,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_618),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_634),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5092,6 +5117,21 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
     only the measured 5,618. Job counts, the other two weight ceilings,
     all suites and the ten-pack ceiling remain unchanged.
+
+    Guarded dedicated-reader backend composition (2026-10-19) adds six
+    backend suites to research-vault's existing canonical command: exactly
+    twelve estimator units. Fund only the affected build_free_content probe's
+    5,618 -> 5,630 increase. Job counts, other probe ceilings, selectors and
+    the ten-pack bound remain unchanged; ordinary Brain F11 suites remain held.
+
+    Retained SEC13D research composition (2026-10-19, PR9789) adds three
+    explicit SEC suites to dataos-identity-seams: estimator weight21 ->27.
+    Hosted contract-delta39318414980/job118285830478 measured the same134
+    selected jobs and ten packs, base5628 -> head5634, with no new entrant.
+    Fresh canonical-main composition235b8704/6cb3ba9 independently measures
+    exactly134 jobs /5634 weight /10 packs. Fund only the four-unit excess
+    over5630, to5634. Every suite, selector, job/pack bound and both other
+    probe weight ceilings remain unchanged; no coverage is dropped.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
