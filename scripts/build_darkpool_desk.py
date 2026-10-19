@@ -611,7 +611,8 @@ def _emit_pane_json(
 # Builder main
 # ---------------------------------------------------------------------------
 
-def main() -> int:
+def main(*, render_only: bool = False) -> int:
+    """Render the existing desk; render-only lanes never advance context ledgers."""
     cfg = config.load()
     dp_cfg = cfg.get("darkpool", {}) or {}
     if not dp_cfg.get("enabled", True):
@@ -761,7 +762,7 @@ def main() -> int:
              "lag_note": ats_lag_note,
              "lag_days": ats_lag_days},
             asof=panel_latest, built=built, root=config.ROOT,
-            gauge=gauge, coverage=coverage,
+            gauge=gauge, coverage=coverage, write=not render_only,
         )
     except Exception as e:  # noqa: BLE001
         log.warning("darkpool_context build failed (non-fatal): %s", e)
@@ -811,4 +812,9 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--render-only", action="store_true",
+                        help="Render site artifacts without advancing context or forward ledgers")
+    sys.exit(main(render_only=parser.parse_args().render_only))

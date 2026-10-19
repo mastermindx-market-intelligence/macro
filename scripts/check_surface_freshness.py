@@ -69,6 +69,9 @@ _ARTIFACTS: list[ArtifactSpec] = [
     ArtifactSpec("site/flow/index.json", "asof"),
     # FINRA daily files have a later, source-owned 18:30 ET availability clock.
     ArtifactSpec("site/darkpool_eod.json", "asof", "finra"),
+    # A newly built but incomplete index is not a fresh observation. This field
+    # carries the last covered session, never the expected-current placeholder.
+    ArtifactSpec("site/darkflow_latest.json", "observed_asof", "finra"),
     # hk-discovery wave: the HK Lane-B discovery-challenger freshness receipt
     # is DELIBERATELY NOT registered here (build commission R1/F1+F10). It
     # has its own specialized check (check_hk_discovery_freshness below) with

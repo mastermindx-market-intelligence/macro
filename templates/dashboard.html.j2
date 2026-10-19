@@ -2347,6 +2347,10 @@
 {% include "_risk_envelope_band.css.j2" %}
 </style>
 {% endif %}
+{% if mode != 'stocks' %}
+<link rel="stylesheet" href="darkflow.css">
+<script defer src="darkflow.js"></script>
+{% endif %}
 </head>
 <body class="{{ 'page-stocks' if mode == 'stocks' else 'page-macro mx4-grid' }}">
 {% if mode != 'stocks' %}
@@ -8759,6 +8763,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     })();
     </script>
     {% endif %}{# /if market_state — v2 hero #}
+    {% if mode != 'stocks' %}{% set df_compact = true %}{% include '_darkflow_panel.html.j2' %}{% endif %}
   {% if mode != 'stocks' %}
   {# ── MX5 Popover system — mx5TogglePop / mx5CloseAllPopovers ── #}
   {# NOTE: fn named mx5TogglePop per spec §3.3 — NEVER a native HTMLElement method name.

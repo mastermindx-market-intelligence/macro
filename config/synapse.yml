@@ -12656,6 +12656,82 @@ artifacts:
       page and every consumer fail-open to an honest null. Promotion to any
       authority needs its own pre-registered gauntlet and an operator ruling.
 
+  darkflow-index-latest:
+    path: site/darkflow_latest.json
+    format: json
+    producer: scripts/build_darkflow_index.py
+    known_extra_writers: []
+    owner_program: signal-commons
+    cadence: daily-engine
+    storage: git
+    asof_field: observed_asof
+    freshness_sla_hours: 36
+    schema: darkflow_index.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - templates/darkflow.js
+    external_consumers: []
+    notes: >
+      Independent short-marked traded-dollar share over historical S&P 500
+      membership. Reuses FINRA and the restored unadjusted-price mirror. Current
+      expected session and latest complete display session remain distinct.
+      Ratios, sector breakdowns, trajectory and exact attribution are display-only;
+      no institutional-intent claim, score, alert, risk gate or trade authority.
+      Summary and deferred history share one generation hash. Missing sources
+      preserve the prior publication; the client checks next_due_at independently.
+
+  darkflow-index-history:
+    path: site/darkflow_history.json
+    format: json
+    producer: scripts/build_darkflow_index.py
+    known_extra_writers: []
+    owner_program: signal-commons
+    cadence: daily-engine
+    storage: git
+    asof_field: observed_asof
+    freshness_sla_hours: 36
+    schema: darkflow_index.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - templates/darkflow.js
+    external_consumers: []
+    notes: >
+      Deferred market and sector history plus dated constituent ratios, joined
+      only to an identical latest-summary generation. Historical values are
+      reconstructed from the current source vintage and sectors use current
+      classifications; neither is represented as original point-in-time evidence.
+      The compact Macro card fetches this only after user expansion.
+
+  darkflow-index-observations:
+    path: data/darkpool/ledger/index_observations.jsonl
+    format: jsonl
+    producer: engine/darkflow_observations.py
+    known_extra_writers: []
+    owner_program: signal-commons
+    cadence: daily-engine
+    storage: git
+    asof_field: asof
+    freshness_sla_hours: 36
+    schema: darkflow_observation.v1
+    tier: display
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers: []
+    external_consumers: []
+    notes: >
+      First-observed input snapshots in the existing Dark Pool ledger namespace.
+      The existing nightly gate is the sole advancer; replay clocks, missing
+      current-session coverage and corrupt retained data cannot originate rows.
+      Keep-first on corrections. No backfilled live evidence, outcomes, forecasts,
+      alerts or score authority. Absent until the first eligible nightly record.
+
   darkpool-context-latest:
     path: data/darkpool/context/latest.json
     format: json
