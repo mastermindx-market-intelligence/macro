@@ -8,7 +8,5 @@ html[data-mmx-shared-shell="1"] .landing-nav {
   display: none !important;
 }
 html[data-mmx-shared-shell="1"] {
-  --nav-offset: 0px;
-  --nav-height: 0px;
   --mmx-shared-shell-css-ready: 1;
 }
