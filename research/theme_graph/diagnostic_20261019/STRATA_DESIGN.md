@@ -40,7 +40,7 @@ All counts recomputed on 2026-10-19 from `origin/main:data/reference/security_ma
 
 **Securities per country (recomputed):** US 1,939 · CN 1,019 · HK 147 · CA 0 · INT_UK 0 · INT_JP 0 · INT_EU 0. Total 3,105.
 
-**`issuer_state` counts per country (recomputed):**
+**`issuer_state` counts per country, counted in securities (recomputed):**
 
 | Country | RESOLVED | NO_ISSUER_EVIDENCE | EVIDENCE_CONFLICT | DEFERRED_IDENTITY_EXCEPTION |
 |---|---|---|---|---|
@@ -52,7 +52,7 @@ All counts recomputed on 2026-10-19 from `origin/main:data/reference/security_ma
 
 **Fillability verdicts** (orchestrator reading, each number verified above; any difference would be reported as a GAP — none was found):
 
-- **US: FILLABLE at issuer level.** 1,939 securities; 1,931 RESOLVED issuers. The 8 non-RESOLVED US rows are 5 NO_ISSUER_EVIDENCE, 2 EVIDENCE_CONFLICT and 1 DEFERRED_IDENTITY_EXCEPTION (NYSE GOLD).
+- **US: FILLABLE at issuer level.** 1,939 securities; 1,931 RESOLVED securities belonging to 1,927 distinct RESOLVED issuers (four dual-class issuers carry two US lines each: `ISS:US-XNAS-FOX`, `ISS:US-XNAS-GOOG`, `ISS:US-XNAS-NWS`, `ISS:US-XNYS-UAA`). The 8 non-RESOLVED US rows are 5 NO_ISSUER_EVIDENCE, 2 EVIDENCE_CONFLICT and 1 DEFERRED_IDENTITY_EXCEPTION (NYSE GOLD).
 - **CN: security-level only; issuer cells UNFILLABLE today.** 1,019 securities, all NO_ISSUER_EVIDENCE; no issuer-evidence route is installed for mainland China.
 - **HK: UNFILLABLE at issuer level.** 147 securities, all NO_ISSUER_EVIDENCE; HKEX scraping is banned, so no lawful issuer-evidence route exists.
 - **CA: UNFILLABLE** as a primary-listing stratum — the TSX list route returned 403 and the master has 0 CA rows — **except Canadian issuers cross-listed in the US**, e.g. Cameco via NYSE CCJ (present: `SEC:US-XNYS-CCJ`, RESOLVED).
