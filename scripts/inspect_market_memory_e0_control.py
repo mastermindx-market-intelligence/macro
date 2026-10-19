@@ -15,6 +15,10 @@ import resource
 import signal
 import sys
 
+# Pin file-path execution without importing product code. The installed-entry
+# checks below still precede every project import and every private read.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 sys.dont_write_bytecode = True
 _INSTALLED = Path("/opt/macro/scripts/inspect_market_memory_e0_control.py")
 _OUTPUT_LIMIT = 32768
@@ -54,7 +58,6 @@ def main(argv=None):
             parser = Parser(add_help=False, allow_abbrev=False)
             parser.add_argument("--study-id", required=True)
             args = parser.parse_args(sys.argv[1:] if argv is None else argv)
-            sys.path.insert(0, "/opt/macro")
             from engine.research_factory.market_memory_e0_installed_control import inspect_selected_control
             result = inspect_selected_control(args.study_id)
             rc = 0
