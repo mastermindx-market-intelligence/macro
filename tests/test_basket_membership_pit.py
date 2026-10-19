@@ -417,7 +417,8 @@ def test_a_corrupt_store_answers_unreadable_never_current(data_root):
 def test_a_read_failure_after_a_pit_hit_never_leaves_a_pit_flag(data_root, monkeypatch):
     """The handler RESETS the answer it may already have half-filled: an
     exception after ``out`` was marked pit=True must land on
-    basis=membership_unreadable with no members and no pit flag."""
+    basis=membership_unreadable with no members and no pit flag.
+    The half-fill also stamps ``source_shape``, so its reset is pinned too."""
     _write_membership(data_root, THS, _doc({"ths_ai": [_m("A.SZ")]}))
     assert pit.append_snapshot(THS, asof="2026-07-08", lane="asia")["written"]
     # append_snapshot stamps versioned (member.v2) rows, so the covered path is
@@ -427,8 +428,10 @@ def test_a_read_failure_after_a_pit_hit_never_leaves_a_pit_flag(data_root, monke
 
     def boom(out, covered, date):
         out.update(pit=True, basis="pit_snapshot", snapshot_date=date,
-                   members=["SYNTH.X"])
+                   members=["SYNTH.X"], source_shape=pit.SHAPE_MEMBERSHIP)
         raise RuntimeError("boom")
+
+    assert pit.SHAPE_MEMBERSHIP is not None
 
     monkeypatch.setattr(pit, "_members_asof_versioned", boom)
     got = pit.members_asof("ths_ai", "2026-07-08", suite=THS)
