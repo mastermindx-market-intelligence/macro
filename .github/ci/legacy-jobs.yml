@@ -7491,6 +7491,7 @@ jobs:
           tests/test_stretch_oracle_contract.py
           tests/test_opex.py
           tests/test_opex_risk.py
+          tests/test_strategies_build.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
           tests/test_research_priority_ordering.py -q

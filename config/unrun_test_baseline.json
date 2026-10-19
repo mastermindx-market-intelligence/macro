@@ -764,7 +764,6 @@
     "tests/test_stock_view.py",
     "tests/test_stooq_fallback.py",
     "tests/test_strategic_reserves.py",
-    "tests/test_strategies_build.py",
     "tests/test_strategy_lab.py",
     "tests/test_strategy_signals.py",
     "tests/test_sue.py",
