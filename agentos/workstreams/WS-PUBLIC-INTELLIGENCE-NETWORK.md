@@ -21,7 +21,7 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: 9209 protected663dbf1f installed bffaa414 fully accepted. SAME follow-on pushed2a807b258328;922checks,45groups,26sources,contract0/0,282release files with235historical snapshots retained by tag/on disk.14:33capacity9+0/cap8 so noPR. Next eligible admission create one follow-onPR then protected install.9455/9464 green but controller-stale. Preserve44refs/five drafts/Chrome/Fabric001/publication0of10.
+next_action: Deliver current date-role fix4864e85c and reviewed exact-draft workflow promotion through one protected PR. Crop revision3 has deterministic/editorialPASS with0manualedits; three calls14208of24000tokens, full prior histories preserved. Chris autonomous-completion directive supersedes the old retry approval stop. Publish exact reviewed bytes; then continue issuer-linked story qualification. No new article live yet.
 artifacts:
   - https://github.com/mastermindx-market-intelligence/macro/pull/9464
   - https://github.com/mastermindx-market-intelligence/macro/pull/9455
