@@ -1499,6 +1499,59 @@
   }
   if (portfolioRoot) portfolioRoot.addEventListener("ontology-consumer-ready", deliverPortfolioReading);
 
+  function validTargetPredicate(p) {
+    var count = 0;
+    function text(v,n) { return typeof v === "string" && v.length > 0 && v.length <= n && !/[\x00-\x1f]/.test(v); }
+    function scalar(v) { return v === null || typeof v === "boolean" || typeof v === "number" && isFinite(v) || text(v,128); }
+    function test(t,depth) {
+      if (++count > 64 || depth > 8 || !t || typeof t !== "object" || Array.isArray(t)) return false;
+      var keys=Object.keys(t), groups=keys.filter(function(k){return k === "all" || k === "any";});
+      if (groups.length) return groups.length === 1 && keys.length === 1 && Array.isArray(t[groups[0]])
+        && t[groups[0]].length > 0 && t[groups[0]].length <= 64
+        && t[groups[0]].every(function(child){return test(child,depth+1);});
+      if (!keys.every(function(k){return ["path","series","metric","window","lookback","vs","ratio","op","value"].includes(k);})
+          || !["gt","gte","lt","lte","eq","ne","is_true","is_false","in","in_contains"].includes(t.op)
+          || (Object.hasOwn(t,"path") === Object.hasOwn(t,"series"))) return false;
+      if (t.op !== "is_true" && t.op !== "is_false" && !Object.hasOwn(t,"value")) return false;
+      if (Object.hasOwn(t,"value") && !(Array.isArray(t.value) ? t.value.length > 0 && t.value.length <= 64 && t.value.every(scalar) : scalar(t.value))) return false;
+      if (Object.hasOwn(t,"series") && (!["ret","ret_bp","ma_slope","rs","ratio_ret","off_high_bp"].includes(t.metric)
+          || !Number.isInteger(t.window) || t.window <= 0 || t.window > 100000
+          || (Object.hasOwn(t,"vs") !== (t.metric === "rs")) || (Object.hasOwn(t,"ratio") !== (t.metric === "ratio_ret")))) return false;
+      return keys.every(function(k){return k === "value" || k === "window" || k === "lookback"
+        ? k !== "lookback" || Number.isInteger(t[k]) && t[k] > 0 && t[k] <= 100000 : text(t[k],128);});
+    }
+    return p && Object.keys(p).sort().join(",") === "node_id,src,test" && text(p.node_id,128) && text(p.src,64) && test(p.test,0);
+  }
+
+  function targetPredicateSentence(t) {
+    var p=el("div"),group=t.all?"all":t.any?"any":null;
+    if (group) {
+      p.appendChild(group === "all" ? say("All conditions must hold:","以下条件须全部满足：") : say("At least one condition must hold:","以下条件至少须满足一项："));
+      var list=el("ul");t[group].forEach(function(child){var li=el("li");li.appendChild(targetPredicateSentence(child));list.appendChild(li);});p.appendChild(list);return p;
+    }
+    var paths={"state.rates.direction":["Real-yield direction","实际收益率方向"],
+      "state.rates.real_10y_chg_63d_bp":["63-observation change in the real 10-year yield (bp)","实际10年期收益率63期变动（基点）"],
+      "dollar_desk.trend":["Dollar trend","美元趋势"],"dollar_desk.usd_pos_pctile":["Dollar positioning percentile","美元持仓百分位"],
+      "transmission.usd_dir":["Dollar transmission direction","美元传导方向"],"transmission.headwind_for":["Declared headwind list","声明的逆风列表"]};
+    if (t.path) p.appendChild(Object.prototype.hasOwnProperty.call(paths,t.path) ? say.apply(null,paths[t.path]) : say("Declared field "+t.path,"声明字段 "+t.path));
+    else {
+      var metrics={ret:["change (%)","变动（%）"],ret_bp:["change (bp)","变动（基点）"],rs:["relative return (pp)","相对回报（百分点）"],
+        ratio_ret:["ratio change (%)","比率变动（%）"],ma_slope:["moving-average slope","均线斜率"],off_high_bp:["distance below high (bp)","距高点幅度（基点）"]};
+      p.appendChild(document.createTextNode(t.series+(t.vs?" vs "+t.vs:t.ratio?" / "+t.ratio:"")+" · "));
+      p.appendChild(say(t.window+"-observation "+metrics[t.metric][0],t.window+"期"+metrics[t.metric][1]));
+      if (t.lookback) p.appendChild(say(" · slope lookback: "+t.lookback+" observations"," · 斜率回看："+t.lookback+"期"));
+    }
+    var names={up:["up","向上"],rising:["rising","上升"],strengthening:["strengthening","走强"],"EM equities":["EM equities","新兴市场股票"]};
+    p.appendChild(document.createTextNode(" "));
+    if (t.op === "is_true" || t.op === "is_false") p.appendChild(t.op === "is_true" ? say("must be true","须为真") : say("must be false","须为假"));
+    else {
+      p.appendChild(t.op === "in_contains" ? say("must include ","须包含 ") : t.op === "in" ? say("must be one of ","须为以下之一 ") : document.createTextNode((_opGlyph(t.op)||t.op)+" "));
+      var values=Array.isArray(t.value)?t.value:[t.value];values.forEach(function(v,i){if(i)p.appendChild(document.createTextNode(", "));
+        p.appendChild(Object.prototype.hasOwnProperty.call(names,v) ? say.apply(null,names[v]) : document.createTextNode(String(v)));});
+    }
+    return p;
+  }
+
   function renderTransmissionGap(snapshot) {
     var box = card("Transmission gap", "传导缺口");
     box.setAttribute("data-transmission-gap", "");
@@ -1552,7 +1605,9 @@
       var hop = hops.find(function(h) { return h.hop_id === p?.hop_id; });
       var target = legs.find(function(n) { return n.node_id === p?.to; });
       if (!p || !hop || !target || p.from !== hop.from || p.to !== hop.to || !same(p.lag_d,hop.lag_d)
-          || !same(p.expected_condition,hop.condition) || !Array.isArray(p.lag_d) || p.lag_d.length !== 2
+          || !validTargetPredicate(p.expected_target) || !same(p.expected_target,target.declared_predicate)
+          || p.expected_target.node_id !== target.node_id || p.expected_target.src !== target.src
+          || !same(p.applicability_assumption,hop.condition) || !Array.isArray(p.lag_d) || p.lag_d.length !== 2
           || !p.lag_d.every(function(n){return typeof n === "number" && isFinite(n);}) || p.lag_d[0] < 0 || p.lag_d[1] < p.lag_d[0]
           || p.elapsed_basis !== "native_calendar_days" || !calendar(p.anchor_asof) || p.anchor_asof > src.asof
           || !Number.isInteger(p.elapsed_calendar_days) || p.elapsed_calendar_days !== (Date.parse(src.asof)-Date.parse(p.anchor_asof))/86400000
@@ -1575,8 +1630,10 @@
     note("TXI conditions only. This is an instrument reading, not a verdict on the market thesis.",
       "仅反映 TXI 条件。这是仪表读数，不是对市场论点的裁定。");
     if (p) {
-      var named = el("p"); named.appendChild(bi(target.title)); named.appendChild(document.createTextNode(" — "));
-      named.appendChild(hop.condition ? bi(hop.condition) : say("Expected-condition wording unavailable", "预期条件描述不可用")); box.appendChild(named);
+      var named = el("p"); named.appendChild(bi(target.title)); box.appendChild(named);
+      var assumption=el("p","ox-note");assumption.setAttribute("data-gap-applicability","");
+      assumption.appendChild(say("Applicability assumption: ","适用前提："));
+      assumption.appendChild(p.applicability_assumption ? bi(p.applicability_assumption) : say("Not declared","未声明"));box.appendChild(assumption);
       note("Declared lag: "+p.lag_d[0]+"–"+p.lag_d[1]+" calendar days. Elapsed: "+p.elapsed_calendar_days+" calendar days since "+p.anchor_asof+".",
         "声明滞后："+p.lag_d[0]+"–"+p.lag_d[1]+" 个日历日。自 "+p.anchor_asof+" 起已过 "+p.elapsed_calendar_days+" 个日历日。");
       if (!p.minimum_lag_elapsed) note("The declared minimum lag has not elapsed.", "声明的最短滞后尚未届满。");
@@ -1589,7 +1646,13 @@
     function readings(receipts) { var kv=el("dl","ox-kv"); (receipts || []).forEach(function(r){var dt=el("dt"),dd=el("dd");
       dt.appendChild(receiptLabel(r));dd.appendChild(receiptValue(r));kv.appendChild(dt);kv.appendChild(dd);});d.appendChild(kv); }
     if (g.initiating_observation) { row("Initiating observation","起始观测",g.initiating_observation.asof);readings(g.initiating_observation.receipts); }
-    if (p) { row("Target observation","目标观测",p.target_observation.asof);readings(target.receipts); }
+    if (p) {
+      var declared=el("div");declared.setAttribute("data-gap-target-predicate","");
+      var title=el("p");title.appendChild(say("Expected target condition","预期目标条件"));declared.appendChild(title);
+      declared.appendChild(targetPredicateSentence(p.expected_target.test));d.appendChild(declared);
+      row("Native source adapter","原生来源适配器",p.expected_target.src);
+      row("Target observation","目标观测",p.target_observation.asof);readings(target.receipts);
+    }
     if (g.condition_stop) { row("Condition stopped on","条件停止日期",g.condition_stop.asof);readings(g.condition_stop.receipts); }
     if (snapshot.invalidators.length) {
       var watch = el("p","ox-note");watch.appendChild(say("Watched conditions: ","观察条件："));

@@ -348,6 +348,11 @@ def _open(
         reduced_motion="reduce",
     )
     page = context.new_page()
+    # Hermetic fixture: static source assets are local, never a network fallback.
+    page.route("http://ontology.test/**", lambda route: route.abort())
+    page.route("http://ontology.test/fonts/*", lambda route: route.fulfill(
+        status=200, content_type="font/woff2",
+        path=str(ROOT / "templates/fonts" / route.request.url.rsplit("/",1)[-1])))
     # The canonical theme imports the shared navigation-icon stylesheet.
     # Serve that real paired asset locally: an unresolved import causes Chromium
     # to reject add_style_tag before any product assertion can execute.
@@ -1111,7 +1116,7 @@ def native_gap_snapshot(tmp_path, *, state='waiting_inside_window'):
     (root/'data/transmission/chain_episodes.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in ledger))
     result=compose_snapshot(root,chain=slug,now=datetime(2026,2,1,tzinfo=UTC))
     assert result['transmission_gap']['state']==state
-    return result
+    return json.loads(json.dumps(result))
 
 @pytest.mark.parametrize('state',['waiting_inside_window','stalled','contradicted','condition_stopped','owner_expired','source_unavailable'])
 @pytest.mark.parametrize('language',['en','zh'])
@@ -1125,7 +1130,8 @@ def test_native_gap_states_are_distinct_on_assembled_macro(browser,tmp_path,stat
         if state!='source_unavailable':
             gap.locator('summary').click();text=gap.inner_text()
             assert '2026-01-01' in text and snapshot['source']['source_manifest_hash'] in text
-            assert ('Expected-condition wording unavailable' if language=='en' else '预期条件描述不可用') in text
+            assert ('Applicability assumption' if language=='en' else '适用前提') in text
+            assert ('Expected target condition' if language=='en' else '预期目标条件') in text
             assert ('calendar days' if language=='en' else '日历日') in text
             assert ('not historical point-in-time evidence' if language=='en' else '不是历史时点证据') in text
             gap.locator('button').click()
@@ -1144,6 +1150,8 @@ def test_native_gap_states_are_distinct_on_assembled_macro(browser,tmp_path,stat
     ('observation.asof','2026-01-06'),('ledger.sha256','0'*64),
     ('pending_hop.elapsed_calendar_days',99),('pending_hop.lag_d',[0,1]),
     ('pending_hop.target_observation.confirmed',True),('market_thesis_verdict','false'),
+    ('pending_hop.expected_target.test.op','is_false'),('pending_hop.expected_target.src','foreign'),
+    ('pending_hop.applicability_assumption',{'en':'Invented assumption','zh':'虚构前提'}),
     ('state','stalled'),('current_contradiction',{'invented':True}),
 ])
 def test_gap_view_withholds_foreign_generations_and_reinterpreted_conditions(browser,tmp_path,mutation):
@@ -1212,3 +1220,74 @@ def test_native_transmission_return_keeps_selected_path_revision_and_step(browse
         assert focus not in page.locator('#tx-from').inner_text()
     finally:
         ctx.close()
+
+
+
+@pytest.mark.parametrize('theme',['dark','light'])
+@pytest.mark.parametrize('language',['en','zh'])
+@pytest.mark.parametrize('width',[390,1440])
+def test_gap_target_predicate_and_assumption_remain_distinct_in_existing_themes(browser,tmp_path,theme,language,width):
+    snapshot=native_gap_snapshot(tmp_path)
+    pending=snapshot['transmission_gap']['pending_hop']
+    pending['applicability_assumption']={'en':'Synthetic applicability only','zh':'仅为合成适用前提'}
+    snapshot['path']['hops'][0]['condition']=pending['applicability_assumption']
+    ctx,page=_open(browser,snapshot,width=width,height=900)
+    try:
+        page.evaluate("([theme,lang])=>{document.documentElement.dataset.theme=theme;document.documentElement.dataset.lang=lang;}",[theme,language])
+        gap=page.locator('[data-transmission-gap]')
+        assert gap.get_attribute('data-gap-state')=='waiting_inside_window'
+        assumption=gap.locator('[data-gap-applicability]')
+        assert ('Synthetic applicability only' if language=='en' else '仅为合成适用前提') in assumption.inner_text()
+        gap.locator('summary').click()
+        target=gap.locator('[data-gap-target-predicate]')
+        assert ('Expected target condition' if language=='en' else '预期目标条件') in target.inner_text()
+        assert ('must be true' if language=='en' else '须为真') in target.inner_text()
+        assert 'n1' in target.inner_text() and 'Synthetic applicability only' not in target.inner_text()
+        assert ('not a verdict on the market thesis' if language=='en' else '不是对市场论点的裁定') in gap.inner_text()
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'), page.evaluate("Array.from(document.querySelectorAll('body *')).filter(e=>e.getBoundingClientRect().right>innerWidth+1).map(e=>[e.tagName,e.className,e.textContent.slice(0,100),e.getBoundingClientRect().width]).slice(0,10)")
+        assert page.evaluate('window.__fetchCount')==1
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('mutation',['src','predicate','assumption','nested_body','mixed_group'])
+def test_gap_target_predicate_refuses_misbinding_and_non_native_payloads(browser,tmp_path,mutation):
+    import copy
+    snapshot=native_gap_snapshot(tmp_path);pending=snapshot['transmission_gap']['pending_hop']
+    if mutation=='src':pending['expected_target']['src']='foreign'
+    elif mutation=='predicate':pending['expected_target']['test']['op']='is_false'
+    elif mutation=='assumption':pending['applicability_assumption']={'en':'Invented','zh':'虚构'}
+    else:
+        test={'path':'n1','op':'is_true','private_body':'DO_NOT_EXPORT'} if mutation=='nested_body' else {'all':[{'path':'n1','op':'is_true'}],'any':[{'path':'n1','op':'is_true'}]}
+        pending['expected_target']['test']=test
+        snapshot['path']['legs'][1]['declared_predicate']=copy.deepcopy(pending['expected_target'])
+    ctx,page=_open(browser,snapshot,width=390,height=900)
+    try:
+        gap=page.locator('[data-transmission-gap]')
+        assert gap.get_attribute('data-gap-state')=='source_unavailable'
+        assert gap.locator('button, details').count()==0 and 'DO_NOT_EXPORT' not in gap.inner_text()
+    finally:ctx.close()
+
+
+@pytest.mark.parametrize('language',['en','zh'])
+def test_gap_target_predicate_renders_boolean_structure_and_zero_threshold(browser,tmp_path,language):
+    import copy
+    snapshot=native_gap_snapshot(tmp_path);target=snapshot['path']['legs'][1]
+    # Explicitly synthetic renderer vector; never a new production declaration.
+    target['src']='forex_state'
+    target['declared_predicate']={'node_id':target['node_id'],'src':target['src'],'test':{'all':[
+        {'path':'dollar_desk.trend','op':'eq','value':'up'},
+        {'any':[{'series':'FXI','vs':'SPY','metric':'rs','window':63,'op':'lt','value':0},
+                {'path':'transmission.headwind_for','op':'in_contains','value':'EM equities'}]}]}}
+    snapshot['transmission_gap']['pending_hop']['expected_target']=copy.deepcopy(target['declared_predicate'])
+    ctx,page=_open(browser,snapshot,width=390,height=900)
+    try:
+        page.evaluate("lang=>document.documentElement.dataset.lang=lang",language)
+        gap=page.locator('[data-transmission-gap]');gap.locator('summary').click()
+        predicate=gap.locator('[data-gap-target-predicate]');text=predicate.inner_text()
+        assert ('All conditions must hold' if language=='en' else '条件须全部满足') in text
+        assert ('At least one condition must hold' if language=='en' else '条件至少须满足一项') in text
+        assert 'FXI vs SPY' in text and '< 0' in text and '63' in text
+        assert ('relative return' if language=='en' else '相对回报') in text
+        assert ('must include' if language=='en' else '须包含') in text
+        assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    finally:ctx.close()

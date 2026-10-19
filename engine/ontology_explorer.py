@@ -841,6 +841,61 @@ def _read_leg_verdict(node_id: str, seen: dict,
     return verdict, "observed"
 
 
+def _declared_predicate(node_id: str, spec: dict) -> dict | None:
+    """Closed native declaration, never a re-evaluation or inferred response.
+
+    The owner's grammar validates meaning; local bounds/closed keys prevent
+    arbitrary YAML metadata from becoming a response or browser instruction.
+    """
+    from engine import transmission_chains as txi
+    count = 0
+    def text(v, limit=128):
+        if type(v) is not str or not 0 < len(v) <= limit or any(ord(c) < 32 for c in v):
+            raise ValueError('predicate text')
+        return v
+    def scalar(v):
+        if v is None or type(v) is bool:
+            return v
+        if type(v) in (int, float) and math.isfinite(v):
+            return v
+        return text(v)
+    def test(raw, depth=0):
+        nonlocal count
+        count += 1
+        if count > 64 or depth > 8 or type(raw) is not dict:
+            raise ValueError('predicate bound')
+        groups = set(raw) & {'all', 'any'}
+        if groups:
+            if len(groups) != 1 or set(raw) != groups:
+                raise ValueError('predicate keys')
+            key = next(iter(groups)); children = raw[key]
+            if type(children) is not list or not 0 < len(children) <= 64:
+                raise ValueError('predicate group')
+            return {key: [test(child, depth + 1) for child in children]}
+        allowed = {'path', 'series', 'metric', 'window', 'lookback', 'vs', 'ratio', 'op', 'value'}
+        if set(raw) - allowed:
+            raise ValueError('predicate keys')
+        txi._validate_test(raw, 'ontology native target')
+        out = {}
+        for key, value in raw.items():
+            if key in {'window', 'lookback'}:
+                if type(value) is not int or not 0 < value <= 100000:
+                    raise ValueError('predicate window')
+                out[key] = value
+            elif key == 'value':
+                if type(value) is list:
+                    if not 0 < len(value) <= 64:raise ValueError('predicate threshold')
+                    out[key] = [scalar(v) for v in value]
+                else:out[key] = scalar(value)
+            else:out[key] = text(value)
+        return out
+    try:
+        return {'node_id': text(node_id), 'src': text(spec.get('src'), 64),
+                'test': test(spec.get('test'))}
+    except (TypeError, ValueError, OverflowError, RecursionError, txi.ChainSchemaError):
+        return None
+
+
 def _legs(sequence: list[str], declared: dict, observed: dict,
           gaps: list[dict]) -> list[dict[str, Any]]:
     legs: list[dict[str, Any]] = []
@@ -864,6 +919,7 @@ def _legs(sequence: list[str], declared: dict, observed: dict,
                 gaps=gaps,
                 fallback={"en": f"Step {index}", "zh": f"\u7b2c {index} \u73af\u8282"}),
             "src": spec.get("src"),
+            "declared_predicate": _declared_predicate(node_id, spec),
             "observation": observation,
             "confirmed": confirmed,
             "receipts": receipts,
@@ -1136,9 +1192,12 @@ def _transmission_gap(state_doc: dict, observed: dict,
         target = next((leg for leg in legs if leg["node_id"] == hops[k]["to"]), None)
         if target is None or not target["receipts"]:
             return unavailable("target_observation_unavailable")
+        if target.get("declared_predicate") is None:
+            return unavailable("target_predicate_unavailable")
         result["pending_hop"] = {
             "hop_id": hops[k]["hop_id"], "from": hops[k]["from"], "to": hops[k]["to"],
-            "expected_condition": hops[k]["condition"], "lag_d": lag,
+            "expected_target": target["declared_predicate"],
+            "applicability_assumption": hops[k]["condition"], "lag_d": lag,
             "elapsed_calendar_days": elapsed, "elapsed_basis": "native_calendar_days",
             "minimum_lag_elapsed": elapsed >= lag[0],
             "anchor_asof": anchor["asof"],

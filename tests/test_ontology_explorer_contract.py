@@ -2071,3 +2071,63 @@ def test_gap_native_arm_with_already_true_target_is_not_stalled(tmp_path):
     assert gap['turn_watch']['stalling'] is True
     assert gap['pending_hop']['target_observation']['confirmed'] is True
     assert gap['status'] == 'unavailable' and gap['reason'] == 'owner_transition_unsettled'
+
+
+def test_gap_declares_exact_target_and_separates_applicability_without_evaluation(tmp_path,monkeypatch):
+    import yaml
+    from engine import transmission_chains as txi
+    root,_,chain,_=_native_gap_root(tmp_path)
+    chain['hops'][0]['condition']={'en':'Synthetic applicability only','zh':'仅为合成适用前提'}
+    (root/'knowledge/transmission/synth_chain.yaml').write_text(yaml.safe_dump(chain))
+    def forbidden(*args,**kwargs):raise AssertionError('consumer re-evaluated owner')
+    monkeypatch.setattr(txi,'evaluate_chain',forbidden)
+    monkeypatch.setattr(txi,'eval_node',forbidden)
+    snapshot=_native_gap(root);pending=snapshot['transmission_gap']['pending_hop']
+    assert pending['expected_target']=={'node_id':'n1','src':'synth','test':chain['nodes']['n1']['test']}
+    assert pending['expected_target']==snapshot['path']['legs'][1]['declared_predicate']
+    assert pending['applicability_assumption']==chain['hops'][0]['condition']
+    assert 'expected_condition' not in pending
+    assert pending['lag_d']==[0,10] and snapshot['transmission_gap']['state']=='waiting_inside_window'
+
+
+@pytest.mark.parametrize('slug',['oil_inflation_duration_derate','dollar_spike_em_multinational'])
+def test_gap_predicate_projection_preserves_native_declared_thresholds_and_groups(slug):
+    import yaml
+    chain=yaml.safe_load((Path(__file__).resolve().parents[1]/f'knowledge/transmission/{slug}.yaml').read_text())
+    for node,spec in chain['nodes'].items():
+        before=copy.deepcopy(spec)
+        assert explorer._declared_predicate(node,spec)=={'node_id':node,'src':spec['src'],'test':spec['test']}
+        assert spec==before
+    if slug.startswith('oil'):
+        assert chain['nodes']['breakeven_rise']['test']=={'series':'T10YIE','metric':'ret_bp','window':22,'op':'gt','value':15}
+        assert 'all' in chain['nodes']['yield_rise']['test']
+    else:
+        assert chain['nodes']['em_derate']['test']=={'series':'FXI','vs':'SPY','metric':'rs','window':63,'op':'lt','value':0}
+        assert 'all' in chain['nodes']['usd_transmission_on']['test']
+
+
+@pytest.mark.parametrize('test',[
+    {'path':'n1','op':'is_true','private_body':'DO_NOT_EXPORT'},
+    {'all':[{'path':'n1','op':'is_true'}],'any':[{'path':'n2','op':'is_true'}]},
+    {'all':[{'path':'n1','op':'is_true'}]*65},
+    {'series':'T10YIE','metric':'ret_bp','window':-1,'op':'gt','value':15},
+    {'path':'n1','op':'eq','value':{'private_body':'DO_NOT_EXPORT'}},
+    {'path':'n1','op':'gt','value':10**1000},
+])
+def test_gap_refuses_unprojectable_target_declaration_instead_of_guessing(tmp_path,test):
+    import yaml
+    root,_,chain,_=_native_gap_root(tmp_path)
+    chain['nodes']['n1']['test']=test
+    (root/'knowledge/transmission/synth_chain.yaml').write_text(yaml.safe_dump(chain))
+    snapshot=_native_gap(root);gap=snapshot['transmission_gap']
+    assert gap['status']=='unavailable' and gap['reason']=='target_predicate_unavailable'
+    assert gap['pending_hop'] is None and 'DO_NOT_EXPORT' not in json.dumps(snapshot)
+
+
+def test_gap_predicate_revision_cannot_replace_selected_owner_revision(tmp_path):
+    import yaml
+    root,_,chain,_=_native_gap_root(tmp_path)
+    chain['rev']+=1
+    chain['nodes']['n1']['test']={'path':'other','op':'is_true'}
+    (root/'knowledge/transmission/synth_chain.yaml').write_text(yaml.safe_dump(chain))
+    with pytest.raises(explorer.SourceIncoherent,match='rev_mismatch'):_native_gap(root)
