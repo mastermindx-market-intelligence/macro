@@ -29,6 +29,7 @@ from lib.institutional_13f_adapter import (
 
 
 SCHEMA = "institutional_13f.k3e_reported_holding_context.v1"
+ACCESSION_SCOPE_SCHEMA = "institutional_13f.reported_holding_accession_context.v1"
 
 
 def _clock(value: object) -> datetime | None:
@@ -81,7 +82,7 @@ def _base() -> dict:
 
 def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
     clocks = generation.manifest.clocks
-    return {
+    result = {
         "generation_id": generation.generation_id,
         "report_period": clocks.report_period,
         "source_cutoff_at": clocks.source_cutoff_at,
@@ -89,6 +90,16 @@ def _generation_projection(generation: PublishedCatalogGeneration) -> dict:
         "current_generation_id": generation.current_generation_id,
         "superseded": generation.superseded,
     }
+    if getattr(generation, "validation_scope", None) == "accession_bucket":
+        result["pointer"] = {
+            "state": "not_read" if generation.current_generation_id is None else "verified",
+        }
+        result["validation_scope"] = {
+            "kind": "accession_bucket",
+            "verified_roles": list(generation.validated_roles),
+            "whole_generation_verified": False,
+        }
+    return result
 
 
 def _reporting_structure(
@@ -140,6 +151,7 @@ def project_reported_holding(
     infotable_sk: object,
     decision_cutoff: object,
     generation_id: str | None = None,
+    accession_scope: bool = False,
 ) -> dict:
     """Read and project one owner-verified immutable holding row.
 
@@ -149,6 +161,8 @@ def project_reported_holding(
     institutional 13F read adapter.
     """
     out = _base()
+    if accession_scope:
+        out["schema"] = ACCESSION_SCOPE_SCHEMA
 
     if isinstance(store, PublishedCatalogGeneration) or not callable(
         getattr(store, "get_bytes_strict_bounded", None)
@@ -181,12 +195,25 @@ def project_reported_holding(
         return out
 
     try:
-        generation = resolve_generation(
-            store,
-            report_period=report_period,
-            cutoff=cutoff,
-            generation_id=generation_id,
-        )
+        if accession_scope:
+            from .catalog_scope import (
+                CatalogScopeNotAvailableAtCutoff, load_catalog_accession_scope,
+            )
+            try:
+                generation = load_catalog_accession_scope(
+                    store, report_period=report_period, accession=accession,
+                    generation_id=generation_id, decision_cutoff=decision_cutoff,
+                )
+            except CatalogScopeNotAvailableAtCutoff:
+                out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
+                return out
+        else:
+            generation = resolve_generation(
+                store,
+                report_period=report_period,
+                cutoff=cutoff,
+                generation_id=generation_id,
+            )
     except PilotRefusal as refusal:
         if refusal.reason == GENERATION_NOT_KNOWABLE_AT_CUTOFF:
             out["refusals"].append("GENERATION_NOT_AVAILABLE_AT_CUTOFF")
