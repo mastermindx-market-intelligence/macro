@@ -1,0 +1,19 @@
+{
+  "schema": "intl_country_release_catalogue.v1",
+  "releases": [
+    {
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "information_cutoff": "2026-10-01",
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
+      "format": "weo_statistical_tables",
+      "parser_version": "weo_tables_2026_v1",
+      "year": 2026,
+      "max_bytes": 4000000
+    }
+  ]
+}

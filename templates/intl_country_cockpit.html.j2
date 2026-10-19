@@ -17,8 +17,8 @@
 
   {% if a.world_brief %}{% set w = a.world_brief %}
   <article class="imc-world" id="imc-world">
-    <div class="imc-world-label"><p class="imc-kicker">{{ pair('WORLD BRIEF', '全球简报') }}</p><span>{{ w.year }} → {{ w.next_year }}</span></div>
-    <div><h2>{{ pair(w.title_en,w.title_zh) }}</h2><p>{{ pair(w.read_en,w.read_zh) }}</p></div>
+    <div class="imc-world-label"><p class="imc-kicker">{{ pair('WORLD BRIEF', '全球简报') }}</p><span>{{ w.year }}{% if w.next_year %} → {{ w.next_year }}{% endif %}</span></div>
+    <div><h2>{{ pair(w.title_en,w.title_zh) }}</h2><p>{{ pair(w.read_en,w.read_zh) }}{% if w.mechanism_en %} {{ pair(w.mechanism_en,w.mechanism_zh) }}{% endif %}</p>{% if w.information_cutoff %}<small class="imc-world-cutoff">{{ pair('Information through ', '信息截至 ') }}{{ w.information_cutoff|e }}</small>{% endif %}</div>
     <a href="{{ w.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ w.source|e }}<span>{{ w.published|e }} ↗</span></a>
   </article>
   {% endif %}
@@ -36,32 +36,85 @@
         <summary>
           <span class="imc-identity"><span class="imc-country-code">{{ c.cc|e }}</span><span><strong>{{ pair(c.name_en, c.name_zh) }}</strong><small>{% if c.cc == 'EZ' %}{{ pair('European equity proxy: ', '欧洲股市参考：') }}{% endif %}{{ c.index|e }}</small></span></span>
           <span class="imc-country-thesis">{{ pair(c.title_en, c.title_zh) }}</span>
-          <span class="imc-row-forecast">{% if c.forecast %}<b>{{ '%.1f'|format(c.forecast.current) }}% <span aria-hidden="true">→</span> {{ '%.1f'|format(c.forecast.next) }}%</b><small>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.year }} → {{ c.forecast.next_year }} · {{ pair('GDP forecast', 'GDP预测') }}</small>{% else %}<b>—</b><small>{{ pair('Outlook unavailable', '暂无增长展望') }}</small>{% endif %}</span>
+          <span class="imc-row-forecast">{% if c.forecast %}<b>{{ '%.1f'|format(c.forecast.current) }}%{% if c.forecast.next is not none %} <span aria-hidden="true">→</span> {{ '%.1f'|format(c.forecast.next) }}%{% endif %}</b><small>{{ c.forecast.year_label }}{% if c.forecast.next_label %} → {{ c.forecast.next_label }}{% endif %} · {{ pair('GDP forecast', 'GDP预测') }}</small>{% else %}<b>—</b><small>{{ pair('Outlook unavailable', '暂无增长展望') }}</small>{% endif %}</span>
           <span class="imc-market-state imc-{{ c.market.tone|e }}">{{ pair(c.market.label_en, c.market.label_zh) }}</span>
           <span class="imc-disclosure" aria-hidden="true">+</span>
         </summary>
         <div class="imc-country-body">
-          <div class="imc-assessment-heading"><div>{% if c.research %}<p>{{ pair(c.research.read[0], c.research.read[1]) }}</p><p class="imc-source-line"><a href="{{ c.research.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.research.provider|e }} ↗</a> · {{ c.research.published|e }}</p>{% else %}<p>{{ pair(c.read_en, c.read_zh) }}</p>{% endif %}</div><span>{{ pair('Market observations · ', '市场观测 · ') }}{{ c.market.as_of|default('—',true)|e }}</span></div>
+          <div class="imc-assessment-heading"><div><p>{{ pair(c.outlook.summary_en or c.read_en, c.outlook.summary_zh or c.read_zh) }}</p>{% if c.research %}<p class="imc-source-line">{{ pair('Country thesis based on ', '国家研判依据 ') }}<a href="{{ c.research.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.research.provider|e }} ↗</a> · {{ c.research.published|e }}</p>{% endif %}</div><span>{{ pair('Market observations · ', '市场观测 · ') }}{{ c.market.as_of|default('—',true)|e }}</span></div>
           <div class="imc-country-grid">
             <div class="imc-main-column">
               <section class="imc-outlook-panel" aria-labelledby="imc-outlook-{{ c.cc }}">
-                <div class="imc-subhead"><h3 id="imc-outlook-{{ c.cc }}">{{ pair('Published growth path', '机构增长预测') }}</h3><span>{{ pair('SOURCED OUTLOOK', '机构展望') }}</span></div>
-                {% if c.forecast %}
+                <div class="imc-subhead"><h3 id="imc-outlook-{{ c.cc }}">{{ pair('Path ahead', '未来路径') }}</h3><span>{{ pair('OFFICIAL PROJECTIONS', '机构预测') }}</span></div>
+                {% if c.forecast %}{% set f = c.forecast %}
                 <div class="imc-forecast-path">
-                  <div><span>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.year }}</span><strong>{{ '%.1f'|format(c.forecast.current) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
+                  <div><span>{{ f.year_label }}</span><strong>{{ '%.1f'|format(f.current) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
+                  {% if f.next is not none %}
                   <div class="imc-path-arrow" aria-hidden="true"><svg viewBox="0 0 120 24" fill="none"><path d="M1 12h112m-9-8 9 8-9 8" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4"/></svg></div>
-                  <div><span>{% if c.forecast.period_basis == 'fiscal_year' %}FY{% endif %}{{ c.forecast.next_year }}</span><strong>{{ '%.1f'|format(c.forecast.next) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
-                  <p>{{ pair(c.forecast.path_en,c.forecast.path_zh) }}</p>
+                  <div><span>{{ f.next_label }}</span><strong>{{ '%.1f'|format(f.next) }}<small>%</small></strong><small>{{ pair('Real GDP growth', '实际GDP增长') }}</small></div>
+                  {% endif %}
+                  <p>{{ pair(f.path_en,f.path_zh) }}</p>
                 </div>
-                <p class="imc-forecast-interpretation">{{ pair(c.read_en,c.read_zh) }}</p>
-                <p class="imc-source-line"><a href="{{ c.forecast.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.forecast.provider|e }} <span aria-hidden="true">↗</span></a> · {{ pair('Published ', '发布于 ') }}{{ c.forecast.published|e }} · {% if c.forecast.period_basis == 'fiscal_year' %}{{ pair('Fiscal years', '财政年度') }}{% else %}{{ pair('Calendar years', '日历年度') }}{% endif %}</p>
+                {% if c.outlook.chart %}{% set chart = c.outlook.chart %}
+                <figure class="imc-growth-chart">
+                  <svg viewBox="0 0 440 155" role="img" aria-labelledby="imc-chart-title-{{ c.cc }}">
+                    <title id="imc-chart-title-{{ c.cc }}">Real GDP growth / 实际GDP增长: {{ chart.description_en|e }}</title>
+                    <line x1="30" x2="410" y1="{{ chart.zero_y }}" y2="{{ chart.zero_y }}" class="imc-chart-grid"/>
+                    <line x1="30" x2="410" y1="32" y2="32" class="imc-chart-grid"/>
+                    <text x="5" y="35" class="imc-chart-scale">{{ '%.0f'|format(chart.high) }}%</text>
+                    {% if chart.historical_line %}<polyline points="{{ chart.historical_line }}" class="imc-chart-history"/>{% endif %}
+                    {% if chart.projection_line %}<polyline points="{{ chart.projection_line }}" class="imc-chart-projection"/>{% endif %}
+                    {% for point in chart.points %}
+                    <circle cx="{{ point.x }}" cy="{{ point.y }}" r="3.3" class="{{ 'imc-chart-future-point' if point.projected else 'imc-chart-past-point' }}"/>
+                    <text x="{{ point.x }}" y="{{ point.y - 10 }}" text-anchor="middle" class="imc-chart-value">{{ '%.1f'|format(point.value) }}</text>
+                    <text x="{{ point.x }}" y="140" text-anchor="middle" class="imc-chart-year">{{ point.display_label }}</text>
+                    {% endfor %}
+                  </svg>
+                  <figcaption><span>{{ pair('Published history', '机构历史数据') }}</span><span>{{ pair('Projection', '预测') }}</span></figcaption>
+                </figure>
+                {% endif %}
+                {% if c.outlook.inflation %}{% set pi = c.outlook.inflation %}
+                <div class="imc-inflation-path"><div><strong>{{ pair('Inflation path', '通胀路径') }}</strong><small>{{ pair('Annual average', '全年平均') }}</small></div>
+                  <div><span>{{ pi.year_label }}</span><b>{{ '%.1f'|format(pi.current) }}%</b></div>
+                  {% if pi.next is not none %}<span class="imc-inflation-arrow" aria-hidden="true">→</span><div><span>{{ pi.next_label }}</span><b>{{ '%.1f'|format(pi.next) }}%</b></div>{% endif %}
+                </div>
+                {% if pi.edition != f.edition or pi.provider != f.provider %}<p class="imc-source-line">{{ pi.provider|e }} · {{ pi.published|e }}</p>{% endif %}
+                {% endif %}
+                <div class="imc-revision-strip">{% for year, revision in f.revisions.items() if revision %}
+                  <span><b>{{ revision.target_label }}</b> {{ '%+.1f'|format(revision.delta_pp) }} {{ pair('pp vs ', '个百分点，较 ') }}{{ revision.prior_edition|e }}</span>
+                {% endfor %}</div>
+                {% if c.outlook.policy_en %}<p class="imc-forecast-interpretation"><strong>{{ pair('Interpretation · ', '解读 · ') }}</strong>{{ pair(c.outlook.policy_en,c.outlook.policy_zh) }}</p>{% endif %}
+                {% if c.outlook.tension_en %}<p class="imc-horizon-note">{{ pair(c.outlook.tension_en,c.outlook.tension_zh) }}</p>{% endif %}
+                <p class="imc-source-line"><a href="{{ f.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ f.provider|e }} ↗</a> · {{ pair('Published ', '发布于 ') }}{{ f.published|e }}{% if f.information_cutoff %} · {{ pair('Information through ', '信息截至 ') }}{{ f.information_cutoff|e }}{% endif %}</p>
                 {% else %}
                 <p class="imc-missing">{{ pair('A dated growth projection is not available for this country.', '该经济体目前没有可用的带日期增长预测。') }}</p>
                 {% endif %}
               </section>
-              <div class="imc-vitals">
-                {% for m in c.metrics if m.key in ['inflation','policy','gdp'] %}
-                <div class="{% if not m.current %}imc-vital-dated{% endif %}">
+              {% if c.policy_decision %}{% set pd = c.policy_decision %}
+              <section class="imc-policy-decision" aria-labelledby="imc-policy-{{ c.cc }}">
+                <div class="imc-subhead"><h3 id="imc-policy-{{ c.cc }}">{{ pair('Latest verified decision', '最近核验的政策决定') }}</h3><span>{{ pd.provider|e }}</span></div>
+                {% if pd.state in ['verified','dated'] %}
+                <div class="imc-policy-value"><strong>{{ '%.2f'|format(pd.value) }}<small>%</small></strong><div><b>{{ pair(pd.instrument_en,pd.instrument_zh) }}</b><span>{{ pair('Held', '维持不变') if pd.action == 'hold' else pair('Raised', '上调') if pd.action == 'increase' else pair('Lowered', '下调') }} · {{ pd.decision_date|e }}</span></div></div>
+                {% if pd.state == 'dated' %}<p>{{ pair('This decision is dated; a newer policy setting has not been verified.', '该决定已较早，尚未核验更新的政策设定。') }}</p>{% endif %}
+                {% elif pd.state == 'announced' %}<p>{{ pair('A policy change is announced for ', '政策调整已宣布，将于 ') }}{{ pd.effective_date|e }}{{ pair('.', ' 生效。') }}</p>
+                {% else %}<p>{{ pair('The policy evidence conflicts. A current setting needs reconciliation.', '政策证据存在冲突，需要核实当前设定。') }}</p>{% endif %}
+                {% if pd.state in ['verified','dated'] %}<p class="imc-policy-rationale">{{ pair(pd.rationale_en,pd.rationale_zh) }}</p>{% endif %}
+                <p class="imc-source-line"><a href="{{ pd.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Read the decision', '阅读政策决定') }} ↗</a> · {{ pair('Published ', '发布于 ') }}{{ pd.published|e }}</p>
+              </section>
+              {% endif %}
+              {% if c.outlook.balances %}
+              <section class="imc-balances" aria-labelledby="imc-balances-{{ c.cc }}">
+                <div class="imc-subhead"><h3 id="imc-balances-{{ c.cc }}">{{ pair('External & fiscal position', '外部与财政状况') if c.outlook.balances|length > 1 else pair('External position', '外部状况') }}</h3><span>{{ pair('% OF GDP', '占GDP百分比') }}</span></div>
+                {% for balance in c.outlook.balances %}
+                <div class="imc-balance-row"><div><h4>{{ pair(balance.label_en,balance.label_zh) }}</h4><p>{{ pair(balance.reading_en,balance.reading_zh) }}</p></div>
+                  <div class="imc-balance-values"><span><small>{{ balance.year_label }}</small><b>{{ '%.1f'|format(balance.current) }}%</b></span>{% if balance.next is not none %}<i aria-hidden="true">→</i><span><small>{{ balance.next_label }}</small><b>{{ '%.1f'|format(balance.next) }}%</b></span>{% endif %}</div>
+                </div>
+                {% endfor %}
+              </section>
+              {% endif %}
+              <div class="imc-observations-label">{{ pair('LATEST REPORTED OBSERVATIONS', '最新可用观测') }}</div>
+              <div class="imc-vitals{% if c.policy_decision and c.policy_decision.current %} imc-vitals-two{% endif %}">
+                {% for m in c.metrics if m.key in ['inflation','policy','gdp'] and not (m.key == 'policy' and c.policy_decision and c.policy_decision.current) %}                <div class="{% if not m.current %}imc-vital-dated{% endif %}">
                   <span>{{ pair(m.label_en,m.label_zh) }}</span>
                   <strong>{% if m.value is not none %}{{ '%.2f'|format(m.value) }}<small>%</small>{% else %}—{% endif %}</strong>
                   <small>{% if m.period %}{{ m.period|e }}{% if m.key in ['inflation','gdp'] %} · {{ pair('year over year','同比') }}{% endif %}{% else %}{{ pair('No current observation','暂无当前观测') }}{% endif %}</small>
@@ -78,11 +131,12 @@
                   <div><span>{{ pair('From recent high', '距近期高点') }}</span><strong>{% if c.market.drawdown is not none %}{{ '%.1f'|format(c.market.drawdown) }}%{% else %}—{% endif %}</strong></div>
                   <div><span>{{ c.currency|e }} · {{ pair('3-month change', '3个月变化') }}</span><strong class="{% if c.market.fx_3m is not none %}imc-{{ 'up' if c.market.fx_3m >= 0 else 'down' }}{% endif %}">{% if c.market.fx_3m is not none %}{{ '%+.2f'|format(c.market.fx_3m) }}%{% else %}—{% endif %}</strong></div>
                 </div>
+                {% if c.outlook.market_divergence_en %}<p class="imc-market-divergence">{{ pair(c.outlook.market_divergence_en,c.outlook.market_divergence_zh) }}</p>{% endif %}
                 <p class="imc-market-explanation">
-                  {% if c.market.state == 'pressure' %}{{ pair('The index is below its 50- and 200-observation averages. Both the shorter and longer price trends remain weak.', '指数低于最近50次与200次收盘均值，较短期与较长期价格趋势均偏弱。') }}
-                  {% elif c.market.state == 'uptrend' %}{{ pair('The index is above its 50- and 200-observation averages. Both price trends point upward; these measures do not identify the cause.', '指数高于最近50次与200次收盘均值，两条价格趋势均向上；这些指标本身不说明原因。') }}
-                  {% elif c.market.state == 'pullback' %}{{ pair('The index is below its 50-observation average but above its 200-observation average. Recent price weakness has not yet broken the longer trend.', '指数低于最近50次收盘均值，但高于200次收盘均值；近期走弱尚未破坏较长期趋势。') }}
-                  {% elif c.market.state == 'rebound' %}{{ pair('The index is above its 50-observation average and below its 200-observation average. The shorter price trend has improved; the longer trend remains weak.', '指数高于最近50次收盘均值、低于200次收盘均值；较短期价格趋势改善，较长期趋势仍弱。') }}
+                  {% if c.market.state == 'pressure' %}{{ pair('The index is below its 50- and 200-observation averages.', '指数低于最近50次与200次收盘均值。') }}
+                  {% elif c.market.state == 'uptrend' %}{{ pair('The index is above its 50- and 200-observation averages.', '指数高于最近50次与200次收盘均值。') }}
+                  {% elif c.market.state == 'pullback' %}{{ pair('The index is below its 50-observation average but above its 200-observation average.', '指数低于最近50次收盘均值，但高于200次收盘均值。') }}
+                  {% elif c.market.state == 'rebound' %}{{ pair('The index is above its 50-observation average and below its 200-observation average.', '指数高于最近50次收盘均值、低于200次收盘均值。') }}
                   {% else %}{{ pair('The available price evidence does not establish a complete trend reading.', '现有价格证据尚不足以形成完整的趋势判断。') }}{% endif %}
                 </p>
               </section>
@@ -95,8 +149,9 @@
             <aside class="imc-paths">
               <p class="imc-kicker">{{ pair('CONDITIONS TO WATCH', '需要观察的条件') }}</p><h3>{{ pair('What changes the view', '什么会改变判断') }}</h3>
               <p class="imc-path-type">{{ pair('How the outlook could change', '前景可能如何变化') }}</p>
-              <section><span class="imc-path-number">01</span><div><h4>{{ pair('A stronger path', '更强的路径') }}</h4><p>{{ pair(c.profile.upside[0],c.profile.upside[1]) }}</p></div></section>
-              <section><span class="imc-path-number">02</span><div><h4>{{ pair('A weaker path', '更弱的路径') }}</h4><p>{{ pair(c.profile.downside[0],c.profile.downside[1]) }}</p></div></section>
+              <section><span class="imc-path-number">01</span><div><h4>{{ pair('A stronger path', '更强的路径') }}</h4><p>{{ pair(c.conditions[0].text_en,c.conditions[0].text_zh) }}</p></div></section>
+              <section><span class="imc-path-number">02</span><div><h4>{{ pair('A weaker path', '更弱的路径') }}</h4><p>{{ pair(c.conditions[1].text_en,c.conditions[1].text_zh) }}</p></div></section>
+              {% if c.research and not (c.policy_decision and c.policy_decision.current) %}<div class="imc-policy-assessment"><p class="imc-kicker">{{ pair('CENTRAL BANK ASSESSMENT', '央行研判') }}</p><p>{{ pair(c.research.read[0],c.research.read[1]) }}</p><p class="imc-source-line"><a href="{{ c.research.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ c.research.provider|e }} ↗</a> · {{ c.research.published|e }}</p></div>{% endif %}
               <div class="imc-next-test"><p class="imc-kicker">{{ pair('WHAT TO WATCH', '关注重点') }}</p><p>{{ pair(c.profile.watch[0],c.profile.watch[1]) }}</p></div>
               {% if c.profile.route %}<a class="imc-text-link" href="{{ c.profile.route|e }}">{{ pair('Open country research', '打开地区研究') }} <span aria-hidden="true">↗</span></a>{% endif %}
             </aside>
@@ -104,12 +159,19 @@
           <details class="imc-evidence">
             <summary>{{ pair('Sources, dates & interpretation', '来源、日期与解读方法') }} <span aria-hidden="true">+</span></summary>
             <div>
+              {% if 'fiscal_balance' in c.outlook.missing_series or 'government_debt' in c.outlook.missing_series %}<p>{{ pair('Fiscal projections have not been verified for this country.', '该经济体的财政预测尚未核验。') }}</p>{% endif %}
               <p>{{ pair('The economic path is an attributed forecast. The near-term paths are conditional interpretations, without assigned probabilities or price targets.', '经济路径为有出处的预测。近期路径是条件解读，不附加概率或价格目标。') }}</p>
               <p>{{ pair('Equity trends use the most recent 50 and 200 observed closes. Currency strength is measured against the US dollar and carries its own observation date.', '股市趋势采用最近50次与200次收盘。汇率强弱以美元为基准，并保留其独立的观测日期。') }}</p>
               <p>{{ pair('Recent high reference: ', '近期高点参考：') }}{% if c.market.high_window_observations %}{{ c.market.high_window_observations }} {{ pair('observed closes, ', '次收盘，') }}{{ c.market.high_window_start|e }} → {{ c.market.as_of|e }}{% else %}{{ pair('Observation window unavailable', '暂无完整观测窗口') }}{% endif %}. {{ pair('Currency observation: ', '汇率观测：') }}{{ c.market.fx_as_of|default('—',true)|e }}.</p>
               <div class="imc-table-wrap"><table><caption>{{ pair('Observation ledger', '观测记录') }}</caption><thead><tr><th>{{ pair('Measure','指标') }}</th><th>{{ pair('Observation','观测') }}</th><th>{{ pair('Period','时期') }}</th><th>{{ pair('Source','来源') }}</th></tr></thead><tbody>
               {% for m in c.metrics %}<tr><td>{{ pair(m.label_en,m.label_zh) }}</td><td>{% if m.value is not none %}{{ '%.2f'|format(m.value) }} {{ m.unit|e }}{% else %}—{% endif %}</td><td>{{ m.period|default('—',true)|e }}</td><td>{% if m.source_url %}<a href="{{ m.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ m.source|e }} ↗</a>{% else %}{{ m.source|default('—',true)|e }}{% endif %}</td></tr>{% endfor %}
               </tbody></table></div>
+              <div class="imc-table-wrap"><table><caption>{{ pair('Projection sources', '预测来源') }}</caption><thead><tr><th>{{ pair('Measure','指标') }}</th><th>{{ pair('Edition','版本') }}</th><th>{{ pair('Reporting period','报告期') }}</th><th>{{ pair('Source table','来源表格') }}</th></tr></thead><tbody>
+              {% for key, series in c.outlook.series.items() %}<tr><td>{{ pair(series.label_en,series.label_zh) }}</td><td>{{ series.provider|e }} · {{ series.published|e }}</td><td>{{ series.year_label }}{% if series.next_label %} / {{ series.next_label }}{% endif %}</td><td>{% if series.dataset_url %}<a href="{{ series.dataset_url|e }}{% if series.source_page %}#page={{ series.source_page }}{% endif %}" target="_blank" rel="noopener noreferrer">{{ series.source_table|default('Data',true)|e }} ↗</a>{% else %}<a href="{{ series.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Release','公告') }} ↗</a>{% endif %}</td></tr>{% endfor %}
+              </tbody></table></div>
+              <p>{{ pair('Revision figures compare the same provider, measure and target period across identified editions. A difference between forecasters is a separate published view. Annual inflation uses an annual average; monthly inflation observations use year-over-year rates.', '预测修订比较同一机构、同一指标与同一目标期的不同版本。不同机构的预测另列为独立观点。全年通胀采用年度平均；月度通胀观测采用同比增幅。') }}</p>
+              {% for alternative in c.outlook.alternatives %}<p><strong>{{ pair('Other published view: ', '其他已发布预测：') }}{{ alternative.provider|e }} · {{ alternative.published|e }}</strong><br>{{ alternative.year_label }}: {{ '%.2f'|format(alternative.current) }}%{% if alternative.next is not none %} · {{ alternative.next_label }}: {{ '%.2f'|format(alternative.next) }}%{% endif %} · <a href="{{ alternative.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Source','来源') }} ↗</a></p>{% endfor %}
+              {% for balance in c.outlook.balances if balance.coverage_note %}<p>{{ balance.label_en|e }}: {{ balance.coverage_note|e }}</p>{% endfor %}
               <p>{{ pair('BIS statistics are attributed to the Bank for International Settlements. Chinese translations are not official BIS translations. No endorsement is implied.', 'BIS统计数据来源于国际清算银行。中文翻译并非BIS官方译文，亦不代表其认可。') }}</p>
             </div>
           </details>

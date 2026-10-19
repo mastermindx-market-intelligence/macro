@@ -1083,6 +1083,8 @@ def main() -> int:
             latest, today=datetime.now(timezone.utc).date(),
             official=country_inputs.get("official"), forecasts=country_inputs.get("forecasts"),
             commentary=country_inputs.get("commentary"),
+            forecast_archive=country_inputs.get("forecast_archive"),
+            policy_decisions=country_inputs.get("policy_decisions"),
         )
 
         vm = {

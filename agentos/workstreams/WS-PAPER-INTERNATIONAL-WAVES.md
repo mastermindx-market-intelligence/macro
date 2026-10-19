@@ -61,6 +61,16 @@ owns_paths:
 - templates/intl_country_cockpit.css
 - templates/intl_country_cockpit.js
 - tests/test_intl_country_cockpit.py
+- collectors/intl_weo.py
+- collectors/intl_policy_sources.py
+- config/intl_country_releases.json
+- lib/intl_forecast_vintages.py
+- lib/intl_policy_evidence.py
+- lib/intl_country_outlook.py
+- tests/test_intl_forecast_vintages.py
+- tests/test_intl_policy_evidence.py
+- tests/test_intl_outlook_interpretation.py
+- tests/fixtures/intl_weo_october_2026_tables.json
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
@@ -141,11 +151,14 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Obtain the Studio Direct installer owner’s accepted C2 Personal repository-aware publisher
-  migration, then publish the owned R11 country-analysis branch through the original typed carrier. Independent
-  source/data/publisher review, hosted CI, merge and served production acceptance remain required. Preserve the
-  earlier PR8754 carrier and its unresolved release, rights, browser and Saved migration holds.
+next_action: Publish the verified R12 country-outlook increment through the original typed operation into
+  existing draft PR9596. The repository-aware publisher is repaired; local and remote parent are 9eb4082.
+  Resolve hosted CI, independent release review and served production acceptance. Retain the earlier PR8754
+  carrier and its separate release, rights, browser and Saved migration obligations.
 artifacts:
+- research/paper_international_wave1_wave2/COUNTRY_OUTLOOK_R12_20261019.md
+- research/paper_international_wave1_wave2/paper_r12_receipt.json
+- research/paper_international_wave1_wave2/country_outlook_verification_20261019.json
 - research/paper_international_wave1_wave2/COUNTRY_ANALYSIS_REBRIEF_20261018.md
 - research/paper_international_wave1_wave2/paper_r11_receipt.json
 - research/paper_international_wave1_wave2/country_verification_receipt.json
@@ -198,3 +211,19 @@ Final local verification: 77 targeted Python cases pass; 12 integrated Chrome wi
 The one typed Git publication status call refused with TYPED_GIT_PRECHECK_REFUSED / INVALID_ARGUMENT / NOT_APPLIED. Read-only runtime diagnosis found C2 Personal’s legacy Mastermind-only publisher; same-environment canonical Macro registration succeeds. The current inspected installer has no proved migration admitting this Personal generation to the closed repository publisher. Its fleet-only and Business-only flags do not apply. The installer owner needs the exact Personal compatibility migration and installed/native readback. No publisher retry, alternate source-publication channel, commit, push, new PR, merge or deploy has occurred.
 
 Complete source, data-provenance limits, Paper effect receipt, final verification fingerprints and the exact runtime-owner handoff are linked in this workstream’s artifacts. These records preserve the reviewable result; they do not grant a scheduler wake, source lease, publication or runtime mutation.
+
+## 2026-10-19 — R12 outlook, national policy and Paper completion
+
+This is the current continuation. The earlier publisher refusal is historical. The repaired typed publisher reports local and remote parent `9eb408279e7ea8de99a667e296c4b0ddebfd799b` for the original operation `intl-country-cockpit-20261018`. Existing draft Macro PR #9596 is the delivery carrier; its current source increment is being verified and published on the same branch.
+
+The country data model now includes 37 archived publications: earlier growth editions, the October WEO's growth/inflation/current-account and available fiscal/debt paths, the true world GDP aggregate, and separate CBC forecasts. Two typed national decisions retain the UK's Bank Rate and Taiwan's discount rate, their dates, votes where available, and distinct policy explanations. A national forecast is not called an IMF revision. Historical replay uses each record's own custody clock.
+
+Reviewed national mechanisms lead the country thesis. Growth and inflation remain separately attributed quantitative paths. Country conditions identify the proposition and evidence records they test and are requalified at every build. Known policy conflicts, stale commentary and corrected world records cannot silently preserve the old dependent thesis. Market copy describes measured positions relative to moving averages; fiscal copy describes GDP ratios.
+
+The October table parser validates publication identity, annual columns, units, fiscal-year treatment and coverage notes. Registered national release parsers fail independently on changed or ambiguous statements. Existing source receipts and accepted records survive partial refreshes. CBC values were verified on the full official page; its raw host download failed certificate validation, so no CBC raw-byte hash is claimed.
+
+Paper R12 is complete at file `01M3P1TW5Y3XWQC37ADDS8K5AG`, page `p-G-0`: four evolved overview references plus UK and Taiwan detail states. All 67 effects were observed applied and native finish was observed. The dated R11 receipt remains historical. The R12 receipt records target IDs, effects, visual reviews and fixes.
+
+The affected Python suite passes 160 cases in nine files. The final principal re-review closed the alternate-URL/bank-alias conflict and unmeasured policy-stance findings. Integrated Chrome passes 12 viewport/theme/language states and 10 journeys, including all country paths, source and period distinctions, national decisions, mobile chart legibility, keyboard/history, denied legacy assets, no-JavaScript disclosures and the incumbent assistant. Generated evidence HTML is normalized to remove whitespace-only lines before final fingerprints. These are isolated local served fixtures, not authenticated production acceptance.
+
+Fiscal/debt coverage remains unverified for KR/TW/IN/AU. A newer RBI decision was not admitted without sufficient primary evidence. The old separate carrier PR8754 and its source/access, Saved and release obligations remain independent. Current gates are exact-content publication to PR9596, hosted CI, required independent release review and real served-page acceptance. The accompanying R12 research contract and final verification receipt contain the precise source and proof limits.

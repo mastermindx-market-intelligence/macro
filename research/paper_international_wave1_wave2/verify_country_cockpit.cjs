@@ -60,6 +60,67 @@ let activeBrowser;
   receipts.push({width,theme,lang,...geometry,errors,file});
   await context.close();
  }
+ // All seven economic paths and the fiscal/reporting-period details are readable.
+ {
+  const {context,page,errors}=await fixture(browser);
+  await page.goto('http://intl.test/intl.html');
+  const world=await page.locator('#imc-world').innerText();
+  assert.ok(world.includes('3.1%') && world.includes('3.4%'),'world brief must use the IMF world aggregate');
+  assert.ok(world.includes('2026-10-01'),'world information cutoff is visible');
+  assert.ok((await page.locator('#imc-world a[href]').getAttribute('href')).includes('imf.org'));
+  for(const [cc,value] of [['JP','0.7'],['KR','3.3'],['TW','10.7'],['IN','7.0'],['AU','1.9'],['GB','1.3'],['EZ','1.1']]){
+   await page.locator('.imc-country-rail [data-imc-country="'+cc+'"]').click();
+   const panel=page.locator('#imc-country-'+cc);
+   assert.ok((await panel.locator('.imc-outlook-panel').innerText()).includes(value));
+   assert.ok((await panel.locator('.imc-inflation-path').innerText()).includes('Annual average'));
+   assert.ok((await panel.locator('.imc-outlook-panel').innerText()).includes('2026-10-13'));
+  }
+  await page.locator('.imc-country-rail [data-imc-country="IN"]').click();
+  assert.ok((await page.locator('#imc-country-IN .imc-forecast-path').innerText()).includes('FY2026/27'));
+  await page.locator('.imc-country-rail [data-imc-country="JP"]').click();
+  assert.equal(await page.locator('#imc-country-JP .imc-balance-row').count(),3);
+  assert.ok((await page.locator('#imc-country-JP .imc-balances').innerText()).includes('199.4%'));
+  await page.locator('.imc-country-rail [data-imc-country="TW"]').click();
+  await page.locator('#imc-country-TW .imc-evidence > summary').click();
+  assert.ok((await page.locator('#imc-country-TW .imc-evidence').innerText()).includes('DGBAS'));
+  assert.ok((await page.locator('#imc-country-TW .imc-evidence').innerText()).includes('CBC'));
+  for(const [cc,instrument,value,source] of [['GB','Bank Rate','3.75','bankofengland.co.uk'],['TW','Discount rate','2.00','cbc.gov.tw']]){
+   await page.locator('.imc-country-rail [data-imc-country="'+cc+'"]').click();
+   const policy=page.locator('#imc-country-'+cc+' .imc-policy-decision');
+   const content=await policy.innerText();
+   assert.ok(content.includes(instrument) && content.includes(value) && content.includes('2026-09-17'));
+   assert.ok((await policy.locator('a').getAttribute('href')).includes(source));
+   assert.equal(await page.locator('#imc-country-'+cc+' .imc-vitals > div').count(),2,'latest policy replaces the duplicate historical policy vital');
+  }
+  assert.equal(errors.length,0);
+  receipts.push({journey:'world-country-paths-fiscal-basis-independent-forecasts-national-decisions',passed:true});
+  await context.close();
+ }
+ // Inspect the actual narrow-screen analysis, below the opening viewport.
+ for(const [width,theme,cc] of [[320,'dark','KR'],[390,'light','TW'],[390,'dark','GB']]){
+  const {context,page,errors}=await fixture(browser,{width});
+  await page.goto('http://intl.test/intl.html');
+  await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+  await page.locator('.imc-country-rail [data-imc-country="'+cc+'"]').click();
+  const panel=page.locator('#imc-country-'+cc);
+  const chart=panel.locator('.imc-growth-chart');
+  const labels=await chart.locator('.imc-chart-value,.imc-chart-year').evaluateAll(nodes=>nodes.map(el=>{
+   const box=el.getBoundingClientRect(), svg=el.ownerSVGElement.getBoundingClientRect();
+   return {text:el.textContent,pixels:parseFloat(getComputedStyle(el).fontSize)*svg.width/440,left:box.left,right:box.right};
+  }));
+  assert.ok(labels.every(x=>x.pixels>=10 && x.left>=0 && x.right<=width),'chart labels must be readable and within the viewport');
+  const outlookFile='analysis_'+width+'_'+theme+'_'+cc+'.png';
+  await panel.locator('.imc-outlook-panel').screenshot({path:path.join(output,outlookFile)});
+  let policyFile=null;
+  if(cc!=='KR'){
+   policyFile='policy_'+width+'_'+theme+'_'+cc+'.png';
+   await panel.locator('.imc-policy-decision').screenshot({path:path.join(output,policyFile)});
+  }
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);
+  assert.equal(errors.length,0);
+  receipts.push({journey:'mobile-analysis-legibility',width,theme,cc,labels,outlookFile,policyFile,passed:true});
+  await context.close();
+ }
  // The real country selection, keyboard focus and browser history journey.
  {
   const {context,page,errors}=await fixture(browser);
@@ -124,7 +185,9 @@ let activeBrowser;
   await page.locator('#imc-country-JP > summary').click();
   assert.equal(await page.locator('#imc-country-JP').getAttribute('open'),'');
   await page.locator('#imc-country-JP .imc-evidence > summary').click();
-  assert.ok(await page.locator('#imc-country-JP .imc-evidence table').isVisible());
+  assert.equal(await page.locator('#imc-country-JP .imc-evidence table').count(),2);
+  assert.ok(await page.locator('#imc-country-JP .imc-evidence table').nth(0).isVisible());
+  assert.ok(await page.locator('#imc-country-JP .imc-evidence table').nth(1).isVisible());
   receipts.push({journey:'no-javascript-country-and-evidence',passed:true});
   await context.close();
  }

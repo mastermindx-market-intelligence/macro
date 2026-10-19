@@ -13,6 +13,13 @@ import io
 import math
 import re
 from copy import deepcopy
+import json
+from pathlib import Path
+from datetime import timezone
+from lib.intl_forecast_vintages import merge_publications, select_publications
+from lib.intl_policy_evidence import merge_policy_decisions
+from collectors.intl_policy_sources import collect_registered_policy
+from collectors.intl_weo import collect_registered_weo
 from zipfile import ZipFile, BadZipFile
 
 SCHEMA = "intl_country_inputs.v1"
@@ -162,8 +169,7 @@ def parse_imf_workbook(blob, *, retrieved_at):
         if set(output) != set(COUNTRY_LABELS.values()):
             raise ValueError("incomplete_imf_country_table")
         return output
-    finally:
-        workbook.close()
+    finally:        workbook.close()
 
 
 def parse_taiwan_release(html, *, retrieved_at):
@@ -199,7 +205,7 @@ def parse_taiwan_release(html, *, retrieved_at):
     }}
 
 
-def collect_country_inputs(fetch_bytes, *, retrieved_at):
+def collect_country_inputs(fetch_bytes, *, retrieved_at, releases=None):
     """Partial independent sources, with explicit errors and no manufactured data."""
     official, forecasts, series, errors, sources = {}, {}, {}, [], []
     for kind, url in (("inflation", BIS_CPI), ("policy", BIS_POLICY)):
@@ -210,7 +216,7 @@ def collect_country_inputs(fetch_bytes, *, retrieved_at):
                 official.setdefault(cc, {})[kind] = item
             if kind == "inflation":
                 series = parsed["series"]
-            sources.append({"url": url, "sha256": sha256(blob).hexdigest(), "status": "read"})
+            sources.append({"url": url, "sha256": sha256(blob).hexdigest(), "status": "read", "retrieved_at": retrieved_at})
         except (ValueError, OSError, KeyError, csv.Error, BadZipFile) as exc:
             errors.append({"source": kind, "error": type(exc).__name__})
     for key, url, parser in (("imf", IMF_XLSX, parse_imf_workbook), ("taiwan", TW_PAGE, parse_taiwan_release)):
@@ -218,12 +224,25 @@ def collect_country_inputs(fetch_bytes, *, retrieved_at):
             blob = fetch_bytes(url, max_bytes=4_000_000)
             argument = blob.decode("utf-8") if key == "taiwan" else blob
             forecasts.update(parser(argument, retrieved_at=retrieved_at))
-            sources.append({"url": url, "sha256": sha256(blob).hexdigest(), "status": "read"})
+            sources.append({"url": url, "sha256": sha256(blob).hexdigest(), "status": "read", "retrieved_at": retrieved_at})
         except (ValueError, OSError, KeyError, UnicodeError, BadZipFile) as exc:
             errors.append({"source": key, "error": type(exc).__name__})
+    if releases is None:
+        try:
+            catalogue = json.loads((Path(__file__).resolve().parents[1] / "config/intl_country_releases.json").read_text())
+            if catalogue.get("schema") != "intl_country_release_catalogue.v1":
+                raise ValueError("invalid_release_catalogue_schema")
+            releases = catalogue["releases"]
+        except (OSError, ValueError, KeyError) as exc:
+            releases = []
+            errors.append({"source": "WEO release catalogue", "error": type(exc).__name__})
+    current = collect_registered_weo(fetch_bytes, releases=releases, retrieved_at=retrieved_at)
+    policy = collect_registered_policy(fetch_bytes, retrieved_at=retrieved_at)
     return {"schema": SCHEMA, "retrieved_at": retrieved_at,
             "official": official, "forecasts": forecasts,
-            "cpi_series": series, "sources": sources, "errors": errors}
+            "forecast_archive": current["forecast_archive"] + policy["forecast_archive"], "cpi_series": series,
+            "policy_decisions": policy["policy_decisions"],
+            "sources": sources + current["sources"] + policy["sources"], "errors": errors + current["errors"] + policy["errors"]}
 
 def _mapping(value):
     return value if type(value) is dict else {}
@@ -262,37 +281,75 @@ def _valid_incoming(value, *, cc, metric=None):
             and sum(str(k).isdigit() for k in values) >= 2)
 
 
-def merge_country_inputs(previous, incoming):
-    """Preserve last good sources independently, even after malformed refreshes."""
+def merge_country_inputs(previous, incoming, *, today=None):
+    """Retain publications, then select each country; never replace by arrival."""
+    today = today or date.today()
     result = deepcopy(previous) if type(previous) is dict and previous.get("schema") == SCHEMA else {}
     incoming = incoming if type(incoming) is dict and incoming.get("schema") == SCHEMA else {}
     result["schema"] = SCHEMA
-    for section, clock in (("official", "period"), ("forecasts", "published")):
-        result[section] = {cc: deepcopy(value) for cc, value in _mapping(result.get(section)).items()
-                           if cc in AREAS.values() and type(value) is dict}
-        for cc, value in _mapping(incoming.get(section)).items():
-            if cc not in AREAS.values() or type(value) is not dict:
+    result["official"] = {cc: deepcopy(value) for cc, value in _mapping(result.get("official")).items()
+                          if cc in AREAS.values() and type(value) is dict}
+    for cc, values in _mapping(incoming.get("official")).items():
+        if cc not in AREAS.values() or type(values) is not dict:
+            continue
+        existing = result["official"].setdefault(cc, {})
+        for key, observation in values.items():
+            if key not in ("inflation", "policy") or not _valid_incoming(observation, cc=cc, metric=key):
                 continue
-            if section == "official":
-                existing = result[section].setdefault(cc, {})
-                for key, observation in value.items():
-                    if key not in ("inflation", "policy") or not _valid_incoming(observation, cc=cc, metric=key):
-                        continue
-                    current = _mapping(existing.get(key))
-                    current_clock = _source_clock(current.get(clock), monthly=True) or ""
-                    if observation[clock] >= current_clock:
-                        existing[key] = deepcopy(observation)
-            elif _valid_incoming(value, cc=cc):
-                current = _mapping(result[section].get(cc))
-                current_clock = _source_clock(current.get(clock)) or ""
-                if value[clock] >= current_clock:
-                    result[section][cc] = deepcopy(value)
+            current = _mapping(existing.get(key))
+            current_clock = _source_clock(current.get("period"), monthly=True) or ""
+            if observation["period"] >= current_clock:
+                existing[key] = deepcopy(observation)
+    def publications(envelope):
+        records = deepcopy(envelope.get("forecast_archive")) if type(envelope.get("forecast_archive")) is list else []
+        records.extend(value for cc, value in _mapping(envelope.get("forecasts")).items()
+                       if cc in AREAS.values() and type(value) is dict)
+        return records
+    observed_at = datetime.now(timezone.utc).isoformat()
+    archive, diagnostics = merge_publications(publications(result), publications(incoming), observed_at=observed_at)
+    result["forecast_archive"] = archive
+    result["policy_decisions"] = merge_policy_decisions(result.get("policy_decisions"), incoming.get("policy_decisions"), observed_at=observed_at)
+    result["forecast_diagnostics"] = diagnostics
+    result["forecasts"] = {}
+    for cc in set(AREAS.values()):
+        eligible = select_publications(archive, cc, today=today)
+        if eligible:
+            result["forecasts"][cc] = deepcopy(eligible[0])
     result["cpi_series"] = deepcopy(_mapping(result.get("cpi_series")))
     for cc, series in _mapping(incoming.get("cpi_series")).items():
         if cc in AREAS.values() and type(series) is dict and series:
             result["cpi_series"][cc] = deepcopy(series)
-    for key in ("retrieved_at", "errors", "sources"):
-        if key in incoming:
-            result[key] = deepcopy(incoming[key])
-    # Do not turn a successful request for one source into a new date on another.
+    # Each receipt belongs to one artifact. Replaying a partial cache must not
+    # erase a newer source, nor let a page build refresh another source's clock.
+    receipts = {}
+    for envelope in (result, incoming):
+        for item in envelope.get("sources", []) if type(envelope.get("sources")) is list else []:
+            if type(item) is not dict:
+                continue
+            url = item.get("dataset_url") or item.get("url") or item.get("source_url")
+            digest = item.get("sha256")
+            if not isinstance(url, str) or not url.startswith("https://") or not isinstance(digest, str):
+                continue
+            identity = (url, digest)
+            previous_receipt = receipts.get(identity, {})
+            combined = {**deepcopy(previous_receipt), **deepcopy(item)}
+            clocks = [x.get("retrieved_at") for x in (previous_receipt, item)
+                      if isinstance(x.get("retrieved_at"), str)]
+            if clocks:
+                combined["retrieved_at"] = max(clocks)
+            receipts[identity] = combined
+    if len(receipts) > 100:
+        raise ValueError("country_source_receipt_capacity")
+    result["sources"] = [receipts[key] for key in sorted(receipts)]
+    clocks = [envelope.get("retrieved_at") for envelope in (result, incoming)
+              if isinstance(envelope.get("retrieved_at"), str)]
+    if clocks:
+        result["retrieved_at"] = max(clocks)
+    if "errors" in incoming and type(incoming["errors"]) is list:
+        result["errors"] = deepcopy(incoming["errors"])
+        result["errors_observed_at"] = incoming.get("errors_observed_at", incoming.get("retrieved_at"))
+    # Match the reader's serialized input budget; never publish an unreadable
+    # archive or silently prune accepted history to make it fit.
+    if len(json.dumps(result, ensure_ascii=False, allow_nan=False, indent=2).encode("utf-8")) > 1_500_000:
+        raise ValueError("country_input_byte_capacity")
     return result

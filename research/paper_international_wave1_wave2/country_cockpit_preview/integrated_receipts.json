@@ -8,7 +8,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 392,
+    "countryTop": 438,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(13, 16, 24)",
@@ -26,7 +26,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 392,
+    "countryTop": 417,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(13, 16, 24)",
@@ -44,7 +44,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 392,
+    "countryTop": 438,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(232, 235, 241)",
@@ -62,7 +62,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 392,
+    "countryTop": 417,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(232, 235, 241)",
@@ -80,7 +80,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 448,
+    "countryTop": 491,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(13, 16, 24)",
@@ -98,7 +98,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 430,
+    "countryTop": 473,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(13, 16, 24)",
@@ -116,7 +116,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 448,
+    "countryTop": 491,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(232, 235, 241)",
@@ -134,7 +134,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 430,
+    "countryTop": 473,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(232, 235, 241)",
@@ -152,7 +152,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 468,
+    "countryTop": 529,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(13, 16, 24)",
@@ -170,7 +170,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 430,
+    "countryTop": 491,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(13, 16, 24)",
@@ -188,7 +188,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 468,
+    "countryTop": 529,
     "countryPadding": "0px",
     "firstCountryTitle": "Export strength meets higher rates",
     "background": "rgb(232, 235, 241)",
@@ -206,7 +206,7 @@
     "countryCount": 7,
     "openCountry": "imc-country-KR",
     "toolsOpen": false,
-    "countryTop": 430,
+    "countryTop": 491,
     "countryPadding": "0px",
     "firstCountryTitle": "出口强劲，政策利率上升",
     "background": "rgb(232, 235, 241)",
@@ -214,6 +214,223 @@
     "assistantAfterResearch": true,
     "errors": [],
     "file": "integrated_320_light_zh.png"
+  },
+  {
+    "journey": "world-country-paths-fiscal-basis-independent-forecasts-national-decisions",
+    "passed": true
+  },
+  {
+    "journey": "mobile-analysis-legibility",
+    "width": 320,
+    "theme": "dark",
+    "cc": "KR",
+    "labels": [
+      {
+        "text": "1.5",
+        "pixels": 12.440909090909091,
+        "left": 47.953880310058594,
+        "right": 66.5320053100586
+      },
+      {
+        "text": "2023",
+        "pixels": 12.440909090909091,
+        "left": 42.633567810058594,
+        "right": 71.8523178100586
+      },
+      {
+        "text": "2.2",
+        "pixels": 12.440909090909091,
+        "left": 99.33240509033203,
+        "right": 117.91053009033203
+      },
+      {
+        "text": "2024",
+        "pixels": 12.440909090909091,
+        "left": 94.05897521972656,
+        "right": 123.18397521972656
+      },
+      {
+        "text": "1.1",
+        "pixels": 12.440909090909091,
+        "left": 150.7109375,
+        "right": 169.2890625
+      },
+      {
+        "text": "2025",
+        "pixels": 12.440909090909091,
+        "left": 145.4375,
+        "right": 174.5625
+      },
+      {
+        "text": "3.3",
+        "pixels": 12.440909090909091,
+        "left": 202.08946228027344,
+        "right": 220.66758728027344
+      },
+      {
+        "text": "2026",
+        "pixels": 12.440909090909091,
+        "left": 196.64414978027344,
+        "right": 226.11289978027344
+      },
+      {
+        "text": "2.8",
+        "pixels": 12.440909090909091,
+        "left": 253.46798706054688,
+        "right": 272.0461120605469
+      },
+      {
+        "text": "2027",
+        "pixels": 12.440909090909091,
+        "left": 248.45236206054688,
+        "right": 277.061767578125
+      }
+    ],
+    "outlookFile": "analysis_320_dark_KR.png",
+    "policyFile": null,
+    "passed": true
+  },
+  {
+    "journey": "mobile-analysis-legibility",
+    "width": 390,
+    "theme": "light",
+    "cc": "TW",
+    "labels": [
+      {
+        "text": "1.1",
+        "pixels": 14.7,
+        "left": 51,
+        "right": 73
+      },
+      {
+        "text": "2023",
+        "pixels": 14,
+        "left": 45.375,
+        "right": 78.625
+      },
+      {
+        "text": "5.3",
+        "pixels": 14.7,
+        "left": 117.5,
+        "right": 139.5
+      },
+      {
+        "text": "2024",
+        "pixels": 14,
+        "left": 111.8671875,
+        "right": 145.1328125
+      },
+      {
+        "text": "8.8",
+        "pixels": 14.7,
+        "left": 184,
+        "right": 206
+      },
+      {
+        "text": "2025",
+        "pixels": 14,
+        "left": 178.4375,
+        "right": 211.5625
+      },
+      {
+        "text": "10.7",
+        "pixels": 14.7,
+        "left": 245.96095275878906,
+        "right": 277.0390625
+      },
+      {
+        "text": "2026",
+        "pixels": 14,
+        "left": 244.81251525878906,
+        "right": 278.1875
+      },
+      {
+        "text": "4.3",
+        "pixels": 14.7,
+        "left": 317,
+        "right": 339
+      },
+      {
+        "text": "2027",
+        "pixels": 14,
+        "left": 311.78125,
+        "right": 344.21875
+      }
+    ],
+    "outlookFile": "analysis_390_light_TW.png",
+    "policyFile": "policy_390_light_TW.png",
+    "passed": true
+  },
+  {
+    "journey": "mobile-analysis-legibility",
+    "width": 390,
+    "theme": "dark",
+    "cc": "GB",
+    "labels": [
+      {
+        "text": "0.4",
+        "pixels": 14.7,
+        "left": 51,
+        "right": 73
+      },
+      {
+        "text": "2023",
+        "pixels": 14,
+        "left": 45.375,
+        "right": 78.625
+      },
+      {
+        "text": "1.1",
+        "pixels": 14.7,
+        "left": 117.5,
+        "right": 139.5
+      },
+      {
+        "text": "2024",
+        "pixels": 14,
+        "left": 111.8671875,
+        "right": 145.1328125
+      },
+      {
+        "text": "1.2",
+        "pixels": 14.7,
+        "left": 184,
+        "right": 206
+      },
+      {
+        "text": "2025",
+        "pixels": 14,
+        "left": 178.4375,
+        "right": 211.5625
+      },
+      {
+        "text": "1.3",
+        "pixels": 14.7,
+        "left": 250.50001525878906,
+        "right": 272.5
+      },
+      {
+        "text": "2026",
+        "pixels": 14,
+        "left": 244.81251525878906,
+        "right": 278.1875
+      },
+      {
+        "text": "1.2",
+        "pixels": 14.7,
+        "left": 317,
+        "right": 339
+      },
+      {
+        "text": "2027",
+        "pixels": 14,
+        "left": 311.78125,
+        "right": 344.21875
+      }
+    ],
+    "outlookFile": "analysis_390_dark_GB.png",
+    "policyFile": "policy_390_dark_GB.png",
+    "passed": true
   },
   {
     "journey": "country-select-history-keyboard-sources-tools",

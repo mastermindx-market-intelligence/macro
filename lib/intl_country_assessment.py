@@ -7,9 +7,14 @@ Market trends never stand in for economic growth or consumer-price evidence.
 from __future__ import annotations
 
 from calendar import monthrange
-from datetime import date
+from datetime import date, datetime, timezone
 from math import isfinite
+from hashlib import sha256
+import json
 from urllib.parse import urlparse
+from lib.intl_forecast_vintages import merge_publications, select_publications, publication_view
+from lib.intl_country_outlook import build_country_outlook
+from lib.intl_policy_evidence import INSTRUMENTS, select_policy_decision
 
 SCHEMA = "intl_country_assessment.v1"
 ORDER = ("JP", "KR", "TW", "IN", "AU", "GB", "EZ")
@@ -179,7 +184,6 @@ def _https(value):
 def _mapping(value):
     return value if type(value) is dict else {}
 
-
 def _metric(key, record, official, today):
     fields = {
         "inflation": ("cpi_yoy", "cpi_yoy", "Inflation", "通胀", "% y/y", 105),
@@ -218,32 +222,12 @@ def _metric(key, record, official, today):
     }
 
 
-def _forecast(raw, cc, today):
-    if type(raw) is not dict or raw.get("cc") != cc:
-        return None
-    vintage = _day(raw.get("published"))
-    if (vintage is None or not 0 <= (today - vintage).days <= 270
-            or raw.get("kind") != "sourced_forecast" or raw.get("unit") != "percent"
-            or raw.get("period_basis") not in ("calendar_year", "fiscal_year")
-            or not _https(raw.get("source_url")) or not raw.get("provider")):
-        return None
-    values = raw.get("values")
-    if type(values) is not dict:
-        return None
-    current = _number(values.get(str(today.year)))
-    following = _number(values.get(str(today.year + 1)))
-    if current is None or following is None or not -100 < current < 100 or not -100 < following < 100:
-        return None
-    previous = _number(values.get(str(today.year - 1)))
-    return {
-        "kind": "sourced_forecast", "provider": raw["provider"],
-        "source_url": raw["source_url"], "published": raw["published"],
-        "period_basis": raw["period_basis"], "year": today.year,
-        "next_year": today.year + 1, "current": current, "next": following,
-        "previous": previous, "change": round(following - current, 3),
-        "revision": _number(raw.get("revision_current_pp")),
-        "revision_from": raw.get("revision_from") if _period_end(raw.get("revision_from")) else None,
-    }
+def _forecast(raw, cc, today, archive=None):
+    if archive is None:
+        archive, _ = merge_publications([raw] if type(raw) is dict else [], [],
+                                        observed_at=datetime.now(timezone.utc).isoformat())
+    eligible = select_publications(archive, cc, today=today)
+    return publication_view(eligible[0], archive, today=today) if eligible else None
 
 
 def _market(record, today):
@@ -275,107 +259,74 @@ def _market(record, today):
 
 
 def _path_label(forecast):
+    if forecast["next"] is None:
+        return ("One forecast period available", "本版提供一个预测期间")
     if forecast["next"] < 0:
         return ("Contraction projected", "预计经济收缩")
     if forecast["current"] < 0 < forecast["next"]:
         return ("A return to expansion is projected", "预计恢复扩张")
     if forecast["next"] == 0:
         return ("No growth projected", "预计零增长")
-    if forecast["change"] > 0.05:
+    if forecast["change"] > 0.15:
         return ("Faster growth projected", "预计增长加快")
-    if forecast["change"] < -0.05:
+    if forecast["change"] < -0.15:
         return ("Slower growth projected", "预计增长放缓")
     return ("Broadly steady growth projected", "预计增长大致平稳")
 
 
 def _headlines(cc, forecast, metrics):
-    """Make a specific reading from admitted facts, never infer a price cause."""
-    by_key = {m["key"]: m for m in metrics}
-    inflation, policy = by_key["inflation"], by_key["policy"]
-    rate_change = policy["change_3m_pp"]
-    higher_rates = rate_change is not None and rate_change > 0.05
-    steady_rates = rate_change is not None and abs(rate_change) <= 0.05
-    rising_inflation = inflation["change_3m_pp"] is not None and inflation["change_3m_pp"] > 0.25
     if not forecast:
-        if higher_rates:
-            title = ("Higher policy rates shape the next phase", "政策利率上升影响下一阶段")
-        elif inflation["current"]:
-            title = ("Inflation and activity set the policy trade-off", "通胀与经济活动决定政策权衡")
-        else:
-            title = ("The economic outlook needs fresh evidence", "经济前景有待新数据")
-        return (*title, "Follow the dated observations and the conditions affecting demand.",
-                "结合带日期的观测，研判影响需求的条件。")
-    if forecast["next"] < 0:
-        title = ("A contraction is projected", "预计经济收缩")
-    elif forecast["current"] > 8 and forecast["change"] < -1:
-        title = ("Exceptional growth is forecast to cool", "高速增长预计降温")
-    elif forecast["revision"] is not None and forecast["revision"] >= 0.3 and higher_rates:
-        title = ("A growth upgrade alongside higher rates", "增长预测上调，政策利率上升")
-    elif higher_rates and forecast["change"] < -0.05:
-        title = ("Higher rates, a slower growth path", "政策利率上升，增长路径放缓")
-    elif higher_rates and forecast["current"] <= 1:
-        title = ("Modest growth alongside rising rates", "增长温和，政策利率上升")
-    elif rising_inflation and forecast["change"] > 0.05:
-        title = ("Faster growth projected as inflation rises", "增长预计加快，通胀同时上升")
-    elif steady_rates and forecast["change"] > 0.05:
-        title = ("A gradual pickup, with policy rates steady", "预计逐步加快，政策利率稳定")
-    else:
-        title = _path_label(forecast)
-    fy = "FY" if forecast["period_basis"] == "fiscal_year" else ""
-    year, following = f'{fy}{forecast["year"]}', f'{fy}{forecast["next_year"]}'
-    provider, first, second = forecast["provider"], forecast["current"], forecast["next"]
+        return ("The outlook needs fresh evidence", "经济前景有待新证据",
+                "Use the dated observations below while a current country forecast is unavailable.",
+                "当前暂无可用的地区预测，可参考下方带日期的观测。")
+    title = _path_label(forecast)
+    first, second = forecast["current"], forecast["next"]
+    year, following, provider = forecast["year_label"], forecast["next_label"], forecast["provider"]
+    read_en = f"{provider} projects {first:.1f}% real GDP growth in {year}"
+    read_zh = f"{provider}预计{year}实际GDP增长{first:.1f}%"
+    if second is not None:
+        read_en += f" and {second:.1f}% in {following}"
+        read_zh += f"，{following}为{second:.1f}%"
+    read_en += "."
+    read_zh += "。"
     revision = forecast["revision"]
     if revision is not None and forecast["revision_from"] and abs(revision) >= 0.05:
-        verb, verb_zh = ("raised", "上调") if revision > 0 else ("lowered", "下调")
-        read_en = (f'{provider} {verb} its {year} growth forecast by {abs(revision):.1f} percentage points '
-                   f'from its {forecast["revision_from"]} edition, to {first:.1f}%; '
-                   f'it projects {second:.1f}% for {following}.')
-        read_zh = (f'{provider}将{year}年增长预测较{forecast["revision_from"]}版'
-                   f'{verb_zh}{abs(revision):.1f}个百分点至{first:.1f}%，预计{following}年为{second:.1f}%。')
-    else:
-        read_en = f'{provider} projects real GDP growth of {first:.2f}% in {year} and {second:.2f}% in {following}.'
-        read_zh = f'{provider}预计{year}年实际GDP增长{first:.2f}%，{following}年为{second:.2f}%。'
-    if policy["current"] and rate_change is not None:
-        if abs(rate_change) > 0.05:
-            direction, direction_zh = ("above", "高于") if rate_change > 0 else ("below", "低于")
-            read_en += (f' The {policy["period"]} policy rate was {policy["value"]:.2f}%, '
-                        f'{abs(rate_change):.2f} points {direction} three months earlier.')
-            read_zh += (f'{policy["period"]}政策利率为{policy["value"]:.2f}%，'
-                        f'{direction_zh}三个月前{abs(rate_change):.2f}个百分点。')
-        else:
-            read_en += f' The {policy["period"]} policy rate was {policy["value"]:.2f}%, unchanged over three months.'
-            read_zh += f'{policy["period"]}政策利率为{policy["value"]:.2f}%，较三个月前不变。'
-    elif inflation["current"]:
-        read_en += f' Inflation was {inflation["value"]:.2f}% year over year in {inflation["period"]}.'
-        read_zh += f'{inflation["period"]}通胀同比为{inflation["value"]:.2f}%。'
+        verb, verb_zh = ("higher", "上调") if revision > 0 else ("lower", "下调")
+        read_en += f' The {year} forecast is {abs(revision):.1f} percentage points {verb} than the {forecast["revision_from"]} edition.'
+        read_zh += f'{year}预测较{forecast["revision_from"]}版{verb_zh}{abs(revision):.1f}个百分点。'
     return (*title, read_en, read_zh)
 
 
-def _world_brief(countries):
-    eligible = [c for c in countries if c["forecast"]
-                and c["forecast"]["period_basis"] == "calendar_year"]
+def _world_brief(countries, archive, today):
+    eligible = select_publications(archive, "WORLD", today=today)
     if not eligible:
         return None
-    featured = min(eligible, key=lambda c: c["forecast"]["change"])
-    f = featured["forecast"]
-    if f["change"] < -1 and f["next"] > 0:
-        title = (f'{featured["name_en"]}’s growth is forecast to cool sharply in {f["next_year"]}.', f'{featured["name_zh"]}{f["next_year"]}年增长预计将明显放缓。')
-        read = (f'{f["provider"]} projects {f["current"]:.2f}% growth in {f["year"]}, '
-                f'moderating to {f["next"]:.2f}% in {f["next_year"]}.',
-                f'{f["provider"]}预计{f["year"]}年增长{f["current"]:.2f}%，'
-                f'{f["next_year"]}年放缓至{f["next"]:.2f}%。')
+    f = publication_view(eligible[0], archive, today=today)
+    if f["next"] is None:
+        title = ("The published global growth outlook", "已发布的全球增长展望")
+        reading = (f'{f["provider"]} projects {f["current"]:.1f}% world growth in {f["year"]}.',
+                   f'{f["provider"]}预计{f["year"]}年全球增长{f["current"]:.1f}%。')
     else:
-        title = ("The published growth paths", "已发布的增长路径")
-        read = (f'{featured["name_en"]}: {f["current"]:.1f}% in {f["year"]}, '
-                f'{f["next"]:.1f}% in {f["next_year"]}, according to {f["provider"]}.',
-                f'{f["provider"]}预计{featured["name_zh"]}{f["year"]}年增长{f["current"]:.1f}%，'
-                f'{f["next_year"]}年增长{f["next"]:.1f}%。')
-    return {"title_en": title[0], "title_zh": title[1], "read_en": read[0], "read_zh": read[1],
+        verb, verb_zh = ("contract", "收缩") if f["next"] < 0 else ("strengthen", "加快") if f["change"] > 0.15 else ("slow", "放缓") if f["change"] < -0.15 else ("hold broadly steady", "大致平稳")
+        title = (f'Global growth is forecast to {verb} in {f["next_year"]}.',
+                 f'{f["next_year"]}年全球增长预计{verb_zh}。')
+        reading = (f'{f["provider"]} projects {f["current"]:.1f}% growth in {f["year"]} and {f["next"]:.1f}% in {f["next_year"]}.',
+                   f'{f["provider"]}预计{f["year"]}年全球增长{f["current"]:.1f}%，{f["next_year"]}年为{f["next"]:.1f}%。')
+    mechanism = None
+    if f["record_id"] == "71d3f4c854d8671a3f19:dfd4f47c95806d555157:0":
+        # This reviewed narrative is bound to the exact admitted world series.
+        # A corrected or later release needs review before inheriting it.
+        mechanism = ("AI investment supports technology supply chains; expensive energy weighs on purchasing power. Countries can face both forces.",
+                     "AI投资支持科技供应链；高能源成本削弱购买力。同一经济体可能同时受到两股力量影响。")
+    return {"title_en": title[0], "title_zh": title[1], "read_en": reading[0], "read_zh": reading[1],
+            "mechanism_en": mechanism[0] if mechanism else None, "mechanism_zh": mechanism[1] if mechanism else None,
             "source_url": f["source_url"], "source": f["provider"], "published": f["published"],
-            "cc": featured["cc"], "year": f["year"], "next_year": f["next_year"]}
+            "information_cutoff": f["information_cutoff"], "record_id": f["record_id"],
+            "cc": "WORLD", "year": f["year"], "next_year": f["next_year"],
+            "current": f["current"], "next": f["next"]}
 
 
-def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None):
+def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None, forecast_archive=None, policy_decisions=None):
     """Build a deterministic, non-mutating view from a single publication input."""
     today = today or date.today()
     if type(today) is not date or type(latest) is not dict:
@@ -394,13 +345,18 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
     official = official if type(official) is dict else {}
     forecasts = forecasts if type(forecasts) is dict else {}
     commentary = _mapping(commentary)
+    records_for_archive = list(forecast_archive) if type(forecast_archive) is list else []
+    records_for_archive.extend(value for value in forecasts.values() if type(value) is dict)
+    archive, archive_diagnostics = merge_publications(records_for_archive, [],
+                                      observed_at=datetime.now(timezone.utc).isoformat())
     countries = []
     for cc in ORDER:
         if cc not in by_cc:
             continue
         record = by_cc[cc]
         market = _market(record, today)
-        forecast = _forecast(forecasts.get(cc), cc, today)
+        forecast = _forecast(forecasts.get(cc), cc, today, archive)
+        policy = select_policy_decision(policy_decisions, cc, today=today, monthly=_mapping(official.get(cc)).get("policy"))
         metrics = [_metric(key, record, official.get(cc, {}), today)
                    for key in ("gdp", "inflation", "policy", "unemployment")]
         title_en, title_zh, read_en, read_zh = _headlines(cc, forecast, metrics)
@@ -413,6 +369,17 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
         research_ok = (research.get("kind") == "attributed_assessment"
                        and published is not None and 0 <= (today - published).days <= 120
                        and bool(_https(research.get("source_url"))) and bool(research.get("provider")))
+        policy_host = INSTRUMENTS[(cc, policy["instrument"])][1] if policy else None
+        research_host = urlparse(research["source_url"]).hostname if research_ok else None
+        # Provider display names may differ. The qualified country instrument and
+        # its official domain identify the bank across alternative release URLs.
+        same_policy_bank = policy and research_ok and (
+            policy["provider"] == research["provider"] or research_host == policy_host or
+            research_host.endswith("." + policy_host))
+        if (research_ok and policy and (
+                policy["published"] > research["published"] or
+                (policy["state"] == "conflict" and same_policy_bank))):
+            research_ok = False
         if research_ok:
             for key in ("theme", "driver", "upside", "downside", "watch", "title", "read"):
                 pair = research.get(key)
@@ -421,16 +388,40 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
             if research_ok:
                 for key in ("theme", "driver", "upside", "downside", "watch"):
                     profile[key] = research[key][:]
-                title_en, title_zh = research["title"]
         research = research if research_ok else None
+        outlook = build_country_outlook(cc, archive, today=today, growth=forecast, metrics=metrics, market=market, policy_decision=policy)
+        if outlook["title_en"]:
+            title_en, title_zh = outlook["title_en"], outlook["title_zh"]
+        thesis = next((p for p in reversed(outlook["propositions"])
+                       if p["id"] in (cc + ":country_thesis", cc + ":growth_prices")), None)
+        if research:
+            title_en, title_zh = research["title"]
+            reviewed = {k: research[k] for k in ("published", "provider", "source_url",
+                         "title", "read", "theme", "driver", "upside", "downside", "watch")}
+            research_id = "research:" + sha256(json.dumps(reviewed, sort_keys=True,
+                            ensure_ascii=False).encode()).hexdigest()[:24]
+            dependencies = [research_id]
+            if policy and policy["source_url"] == research["source_url"]:
+                dependencies.append(policy["record_id"])
+            thesis = {"id": cc + ":national_thesis", "classification": "source_attributed_assessment",
+                      "text_en": title_en, "text_zh": title_zh, "dependencies": dependencies,
+                      "evidence": [{"record_id": research_id, "source_url": research["source_url"],
+                                    "provider": research["provider"], "published": research["published"]}],
+                      "derivation": "Reviewed country mechanism; requalified from current evidence on every build."}
+            outlook["propositions"].append(thesis)
+        conditions = [{"id": cc + ":" + key, "proposition_id": thesis["id"] if thesis else None,
+                       "dependencies": list(thesis["dependencies"]) if thesis else [],
+                       "classification": "conditional_interpretation" if thesis else "structural_framework",
+                       "text_en": profile[key][0], "text_zh": profile[key][1],
+                       "requalified_each_build": True} for key in ("upside", "downside")]
         countries.append({
             "cc": cc, "name_en": name_en, "name_zh": name_zh,
             "index": index, "currency": currency, "market": market,
             "forecast": forecast, "metrics": metrics,
             "title_en": title_en, "title_zh": title_zh,
             "read_en": read_en, "read_zh": read_zh,
-            "profile": profile,
-            "research": research,
+            "profile": profile, "thesis": thesis, "conditions": conditions,
+            "research": research, "outlook": outlook, "policy_decision": policy,
             "scope_note_en": "Equities use STOXX Europe 600, which includes markets outside the Euro Area." if cc == "EZ" else None,
             "scope_note_zh": "股票采用STOXX欧洲600指数，覆盖范围包含欧元区以外市场。" if cc == "EZ" else None,
             "macro_current_count": sum(m["current"] for m in metrics),
@@ -442,9 +433,10 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
     focus = min(under_pressure, key=lambda x: x["market"]["drawdown"] if x["market"]["drawdown"] is not None else 0) if under_pressure else (countries[0] if countries else None)
     return {
         "schema": SCHEMA, "evaluated_at": today.isoformat(), "source_as_of": latest.get("date"),
+        "forecast_archive_count": len(archive), "forecast_diagnostics": archive_diagnostics,
         "countries": countries, "count": len(countries),
         "display_countries": ([focus] + [c for c in countries if c is not focus]) if focus else [],
-        "world_brief": _world_brief(countries),
+        "world_brief": _world_brief(countries, archive, today),
         "expansion_count": len(growth_forecasts), "forecast_count": sum(bool(x["forecast"]) for x in countries),
         "pressure_count": len(under_pressure), "uptrend_count": len(uptrends),
         "qualified_market_count": qualified_market_count,

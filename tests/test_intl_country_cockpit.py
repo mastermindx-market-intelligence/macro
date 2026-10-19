@@ -31,6 +31,7 @@ def record(cc="KR"):
 def forecast(cc="KR", **changes):
     value={"cc":cc,"kind":"sourced_forecast","provider":"IMF",
            "source_url":"https://www.imf.org/en/Publications/WEO","published":"2026-07-08",
+           "retrieved_at":"2026-10-18T00:00:00+00:00","first_observed_at":"2026-10-18T00:00:00+00:00","admitted_at":"2026-10-18T00:00:00+00:00",
            "unit":"percent","period_basis":"calendar_year",
            "values":{"2026":2.6,"2027":2.5},"revision_current_pp":0.7,"revision_from":"2026-04"}
     value.update(changes)
@@ -204,7 +205,7 @@ def test_conflicting_source_observation_is_rejected():
 
 def test_bad_archive_does_not_stop_other_sources():
     result=collect_country_inputs(lambda url,**kw:b"invalid",retrieved_at="2026-10-18")
-    assert len(result["errors"])==4
+    assert len(result["errors"])==7
     assert result["official"]=={} and result["forecasts"]=={}
 
 
@@ -229,12 +230,16 @@ def test_country_template_has_complete_native_content():
     source=load_country_inputs(ROOT/"data",ROOT)
     model=build_country_assessments({"records":[record()]},today=TODAY,
                                   official=source["official"],forecasts=source["forecasts"],
-                                  commentary=source["commentary"])
+                                  commentary=source["commentary"], forecast_archive=source["forecast_archive"])
     env=Environment(loader=FileSystemLoader(ROOT/"templates"))
     env.globals.update(t=i18n.t,td=i18n.td,tr=i18n.tr)
     html=env.get_template("intl_country_cockpit.html.j2").render(intl_analysis=model)
     assert 'id="imc-country-KR"' in html
     assert "Export strength meets higher rates" in html
+    assert "Country thesis based on" in html
+    assert "3.3" in html and "2.8" in html
+    assert "Inflation path" in html and "Current account" in html
+    assert "+0.7" in html and "2026-07" in html
     assert "Bank of Korea" in html and "2026-09-10" in html
     assert "From recent high" in html
     assert "52-week high" not in html
@@ -248,7 +253,8 @@ def test_malformed_refresh_sections_cannot_destroy_last_good_sources(section, ma
                 "forecasts": {"KR": forecast()}}
     result = merge_country_inputs(previous, {"schema": SCHEMA, section: malformed})
     assert result["official"]["KR"]["inflation"] == previous["official"]["KR"]["inflation"]
-    assert result["forecasts"]["KR"] == previous["forecasts"]["KR"]
+    assert all(result["forecasts"]["KR"][key] == previous["forecasts"]["KR"][key]
+               for key in ("cc", "provider", "published", "source_url", "unit", "period_basis", "values"))
 
 
 def test_newer_malformed_values_cannot_displace_valid_source_vintage():
@@ -259,7 +265,8 @@ def test_newer_malformed_values_cannot_displace_valid_source_vintage():
                 "forecasts": {"KR": forecast(published="2026-10-01", values={"2026": 2.0, "2027": None})}}
     result = merge_country_inputs(previous, incoming)
     assert result["official"]["KR"]["inflation"] == previous["official"]["KR"]["inflation"]
-    assert result["forecasts"]["KR"] == previous["forecasts"]["KR"]
+    assert all(result["forecasts"]["KR"][key] == previous["forecasts"]["KR"][key]
+               for key in ("cc", "provider", "published", "source_url", "unit", "period_basis", "values"))
 
 
 def test_input_loader_contains_malformed_nested_json(tmp_path):

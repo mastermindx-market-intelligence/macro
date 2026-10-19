@@ -137,6 +137,74 @@
         "Energy prices, real household incomes, investment spending and bank lending.",
         "能源价格、家庭实际收入、投资支出与银行信贷。"
       ]
+    },
+    "GB": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-17",
+      "provider": "Bank of England",
+      "source_url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026",
+      "title": [
+        "Energy-price risks complicate policy as labour softens",
+        "劳动力市场偏软，能源价格风险令政策更复杂"
+      ],
+      "read": [
+        "The MPC held Bank Rate at 3.75%; three members preferred an increase. It sees greater inflation risk from persistent energy costs, while soft labour conditions and higher borrowing costs should restrain prices.",
+        "货币政策委员会维持基准利率3.75%，三名委员倾向加息。能源成本持续偏高增大通胀风险，而劳动力市场偏软及借贷成本上升有望抑制物价。"
+      ],
+      "theme": [
+        "Energy pass-through versus labour demand",
+        "能源价格传导与劳动需求"
+      ],
+      "driver": [
+        "The key tension is whether energy costs spread into wage and service prices before softer employment weakens demand.",
+        "关键在于能源成本是否会在就业走软削弱需求之前，先传导至工资与服务价格。"
+      ],
+      "upside": [
+        "If later MPC evidence finds energy pass-through contained while labour conditions stabilise, the case for further restraint would weaken.",
+        "若后续央行证据显示能源价格传导受控且劳动市场企稳，进一步紧缩的必要性将减弱。"
+      ],
+      "downside": [
+        "If wage and service-price persistence increases while employment weakens, policy would face a more difficult growth–inflation trade-off.",
+        "若工资与服务价格的持续性增强，同时就业走弱，政策将面临更棘手的增长与通胀权衡。"
+      ],
+      "watch": [
+        "Private-sector pay, services prices, employment and the next MPC assessment of second-round effects.",
+        "私营部门工资、服务价格、就业及央行下一次对第二轮效应的评估。"
+      ]
+    },
+    "TW": {
+      "kind": "attributed_assessment",
+      "published": "2026-09-17",
+      "provider": "Central Bank of Taiwan",
+      "source_url": "https://www.cbc.gov.tw/en/cp-448-192883-c5fa1-2.html",
+      "title": [
+        "AI demand supports expansion beyond a strong 2026",
+        "AI需求支持强劲2026年之后的持续扩张"
+      ],
+      "read": [
+        "The CBC expects AI exports and investment to sustain growth, with a higher comparison base slowing the annual rate in 2027. It held the discount rate at 2%; market borrowing costs can still rise with funding demand.",
+        "台湾央行预计AI出口与投资持续支持增长，而较高比较基数使2027年全年增速下降。贴现率维持2%，但融资需求增加仍可能推高市场借贷成本。"
+      ],
+      "theme": [
+        "AI demand, investment and financing",
+        "AI需求、投资与融资"
+      ],
+      "driver": [
+        "Export orders and capacity investment support activity. Higher funding demand and energy costs can offset part of that support through borrowing costs and margins.",
+        "出口订单与产能投资支持经济活动；融资需求与能源成本上升可能通过借贷成本及利润率抵消部分支持。"
+      ],
+      "upside": [
+        "If orders remain strong and investment spreads beyond leading exporters, domestic activity could broaden despite slower annual GDP growth.",
+        "若订单持续强劲且投资扩散至龙头出口企业之外，即使全年GDP增速放缓，国内活动仍可能扩大。"
+      ],
+      "downside": [
+        "If a later CBC outlook cuts its own growth forecast because AI orders weaken, the export-support thesis would need revising.",
+        "若后续台湾央行因AI订单走弱而下调自身增长预测，就需修正出口支撑的判断。"
+      ],
+      "watch": [
+        "AI export orders, production, capital spending and subsequent CBC growth revisions.",
+        "AI出口订单、生产、资本支出与台湾央行后续增长预测修订。"
+      ]
     }
   }
 }
