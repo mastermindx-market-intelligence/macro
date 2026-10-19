@@ -2,14 +2,14 @@
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
   "as_of": "2026-10-14",
-  "generated_utc": "2026-10-18T09:54:04Z",
+  "generated_utc": "2026-10-19T06:59:21Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 14,
-    "n_eff": 4.77,
+    "n": 11,
+    "n_eff": 4.38,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 14 candidates \u2248 4.77 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 11 candidates \u2248 4.38 independent bets."
   },
   "same_thesis_groups": [
     {
@@ -18,10 +18,9 @@
         "CME",
         "CVX",
         "DVN",
-        "TALO",
-        "XOM"
+        "TALO"
       ],
-      "size": 6,
+      "size": 5,
       "basis": "membership-jaccard",
       "label": "Energy"
     },
@@ -29,10 +28,9 @@
       "members": [
         "ABBV",
         "CAH",
-        "CNC",
-        "WST"
+        "CNC"
       ],
-      "size": 4,
+      "size": 3,
       "basis": "membership-jaccard",
       "label": "us_sector_health"
     }
@@ -65,7 +63,7 @@
           "same_earnings_week": false
         },
         {
-          "ticker": "XOM",
+          "ticker": "CVX",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": 0.0,
@@ -81,8 +79,7 @@
           "CAH",
           "CNC",
           "CVX",
-          "EDU",
-          "XOM"
+          "EDU"
         ],
         "has_data": true
       },
@@ -116,7 +113,7 @@
           "same_earnings_week": false
         },
         {
-          "ticker": "XOM",
+          "ticker": "CVX",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
@@ -153,15 +150,6 @@
           "same_earnings_week": false
         },
         {
-          "ticker": "XOM",
-          "combined": 0.7087,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.7087,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
           "ticker": "APA",
           "combined": 0.5598,
           "membership_jaccard": 0.0,
@@ -169,97 +157,31 @@
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": false
+        },
+        {
+          "ticker": "DVN",
+          "combined": 0.5374,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.5374,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
         "next_date": "2026-10-21",
-        "same_week_peers": [
-          "WST"
-        ],
+        "same_week_peers": [],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as CVX \u2014 shared factor profile (similarity 80%).",
       "why_zh": "\u4e0e CVX \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 80%\uff09\u3002"
     },
-    "XOM": {
-      "verdict": "duplicate",
-      "max_similarity": 1.0,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "CVX",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:energy_complex",
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "DVN",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": 0.9686,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:energy_complex",
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "APA",
-          "combined": 0.9776,
-          "membership_jaccard": 0.6667,
-          "factor_cosine": 0.9776,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-30",
-        "same_week_peers": [
-          "ABBV",
-          "CAH",
-          "CNC",
-          "CVX",
-          "EDU",
-          "EL"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as CVX \u2014 energy_complex, us_sector_energy, Energy (similarity 100%).",
-      "why_zh": "\u4e0e CVX \u62bc\u6ce8\u76f8\u540c \u2014 energy_complex\u3001us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
-    },
     "CVX": {
       "verdict": "duplicate",
       "max_similarity": 1.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
-        {
-          "ticker": "XOM",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:energy_complex",
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": true
-        },
         {
           "ticker": "DVN",
           "combined": 1.0,
@@ -284,6 +206,17 @@
             "sector:Energy"
           ],
           "same_earnings_week": false
+        },
+        {
+          "ticker": "TALO",
+          "combined": 0.88,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.88,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Energy"
+          ],
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
@@ -293,75 +226,19 @@
           "CAH",
           "CNC",
           "EDU",
-          "EL",
-          "XOM"
+          "EL"
         ],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as XOM \u2014 energy_complex, us_sector_energy, Energy (similarity 100%).",
-      "why_zh": "\u4e0e XOM \u62bc\u6ce8\u76f8\u540c \u2014 energy_complex\u3001us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
-    },
-    "FAST": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.19<0.2",
-      "nearest": [
-        {
-          "ticker": "EL",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.19<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COKE",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.06<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "CME",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.19<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-14",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer EL at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 EL\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Same bet as DVN \u2014 energy_complex, us_sector_energy, Energy (similarity 100%).",
+      "why_zh": "\u4e0e DVN \u62bc\u6ce8\u76f8\u540c \u2014 energy_complex\u3001us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
     "DVN": {
       "verdict": "duplicate",
       "max_similarity": 1.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
-        {
-          "ticker": "XOM",
-          "combined": 1.0,
-          "membership_jaccard": 1.0,
-          "factor_cosine": 0.9686,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:energy_complex",
-            "basket:us_sector_energy",
-            "sector:Energy"
-          ],
-          "same_earnings_week": false
-        },
         {
           "ticker": "CVX",
           "combined": 1.0,
@@ -386,6 +263,17 @@
             "sector:Energy"
           ],
           "same_earnings_week": true
+        },
+        {
+          "ticker": "TALO",
+          "combined": 0.9872,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.9872,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Energy"
+          ],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
@@ -398,8 +286,8 @@
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as XOM \u2014 energy_complex, us_sector_energy, Energy (similarity 100%).",
-      "why_zh": "\u4e0e XOM \u62bc\u6ce8\u76f8\u540c \u2014 energy_complex\u3001us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+      "why_en": "Same bet as CVX \u2014 energy_complex, us_sector_energy, Energy (similarity 100%).",
+      "why_zh": "\u4e0e CVX \u62bc\u6ce8\u76f8\u540c \u2014 energy_complex\u3001us_sector_energy\u3001Energy\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
     "APA": {
       "verdict": "duplicate",
@@ -430,10 +318,10 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "XOM",
-          "combined": 0.9776,
+          "ticker": "CVX",
+          "combined": 0.9412,
           "membership_jaccard": 0.6667,
-          "factor_cosine": 0.9776,
+          "factor_cosine": 0.9412,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [
             "basket:us_sector_energy",
@@ -485,16 +373,13 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "WST",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
+          "ticker": "EL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.13<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
+          "shared_groups": [],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
@@ -504,8 +389,7 @@
           "CNC",
           "CVX",
           "EDU",
-          "EL",
-          "XOM"
+          "EL"
         ],
         "has_data": true
       },
@@ -553,8 +437,7 @@
           "CAH",
           "CNC",
           "CVX",
-          "EL",
-          "XOM"
+          "EL"
         ],
         "has_data": true
       },
@@ -592,16 +475,13 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "WST",
-          "combined": 0.6667,
-          "membership_jaccard": 0.6667,
+          "ticker": "EL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
+          "shared_groups": [],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
@@ -611,8 +491,7 @@
           "CNC",
           "CVX",
           "EDU",
-          "EL",
-          "XOM"
+          "EL"
         ],
         "has_data": true
       },
@@ -650,16 +529,13 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "WST",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
+          "ticker": "EL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
           "factor_cosine": null,
           "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
+          "shared_groups": [],
+          "same_earnings_week": true
         }
       ],
       "earnings_leg": {
@@ -669,8 +545,7 @@
           "CAH",
           "CVX",
           "EDU",
-          "EL",
-          "XOM"
+          "EL"
         ],
         "has_data": true
       },
@@ -706,10 +581,10 @@
           "same_earnings_week": true
         },
         {
-          "ticker": "XOM",
-          "combined": 0.9328,
+          "ticker": "CVX",
+          "combined": 0.88,
           "membership_jaccard": 0.3333,
-          "factor_cosine": 0.9328,
+          "factor_cosine": 0.88,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [
             "sector:Energy"
@@ -729,59 +604,6 @@
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
       "why_en": "Same bet as APA \u2014 Energy (similarity 99%).",
       "why_zh": "\u4e0e APA \u62bc\u6ce8\u76f8\u540c \u2014 Energy\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "WST": {
-      "verdict": "duplicate",
-      "max_similarity": 0.6667,
-      "basis": "membership-only:r2=0.12<0.2",
-      "nearest": [
-        {
-          "ticker": "CAH",
-          "combined": 0.6667,
-          "membership_jaccard": 0.6667,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "ABBV",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.13<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "CNC",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [
-            "basket:us_sector_health",
-            "sector:Health Care"
-          ],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-22",
-        "same_week_peers": [
-          "CME"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as CAH \u2014 us_sector_health, Health Care (similarity 67%).",
-      "why_zh": "\u4e0e CAH \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_health\u3001Health Care\uff08\u76f8\u4f3c\u5ea6 67%\uff09\u3002"
     }
   },
   "pair_basis": {
@@ -801,25 +623,11 @@
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "EL__XOM": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0,
-      "combined": 0.0,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
     "EL__CVX": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.0,
       "combined": 0.0,
       "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "EL__FAST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
     "EL__DVN": {
@@ -871,13 +679,6 @@
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "EL__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
     "COKE__CME": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -885,21 +686,7 @@
       "factor_basis": "beta-read-thin:r2=0.06<0.2",
       "shared_groups": []
     },
-    "COKE__XOM": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
     "COKE__CVX": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
-    "COKE__FAST": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
@@ -955,32 +742,11 @@
       "factor_basis": "beta-read-thin:r2=0.06<0.2",
       "shared_groups": []
     },
-    "COKE__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.06<0.2",
-      "shared_groups": []
-    },
-    "CME__XOM": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.7087,
-      "combined": 0.7087,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
     "CME__CVX": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.8014,
       "combined": 0.8014,
       "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "CME__FAST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
     "CME__DVN": {
@@ -1030,103 +796,6 @@
       "factor_cosine": 0.4403,
       "combined": 0.4403,
       "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "CME__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
-    "XOM__CVX": {
-      "membership_jaccard": 1.0,
-      "factor_cosine": 0.9897,
-      "combined": 1.0,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "basket:energy_complex",
-        "basket:us_sector_energy",
-        "sector:Energy"
-      ]
-    },
-    "XOM__FAST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "XOM__DVN": {
-      "membership_jaccard": 1.0,
-      "factor_cosine": 0.9686,
-      "combined": 1.0,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "basket:energy_complex",
-        "basket:us_sector_energy",
-        "sector:Energy"
-      ]
-    },
-    "XOM__APA": {
-      "membership_jaccard": 0.6667,
-      "factor_cosine": 0.9776,
-      "combined": 0.9776,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "basket:us_sector_energy",
-        "sector:Energy"
-      ]
-    },
-    "XOM__ABBV": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.13<0.2",
-      "shared_groups": []
-    },
-    "XOM__EDU": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:insufficient-factors",
-      "shared_groups": []
-    },
-    "XOM__CAH": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "XOM__CNC": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "XOM__TALO": {
-      "membership_jaccard": 0.3333,
-      "factor_cosine": 0.9328,
-      "combined": 0.9328,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Energy"
-      ]
-    },
-    "XOM__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
-    "CVX__FAST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
       "shared_groups": []
     },
     "CVX__DVN": {
@@ -1187,69 +856,6 @@
         "sector:Energy"
       ]
     },
-    "CVX__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
-    "FAST__DVN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__APA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__ABBV": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__EDU": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__CAH": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__CNC": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__TALO": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
-    "FAST__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.19<0.2",
-      "shared_groups": []
-    },
     "DVN__APA": {
       "membership_jaccard": 0.6667,
       "factor_cosine": 0.9968,
@@ -1297,13 +903,6 @@
         "sector:Energy"
       ]
     },
-    "DVN__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
     "APA__ABBV": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1341,13 +940,6 @@
         "sector:Energy"
       ]
     },
-    "APA__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
     "ABBV__EDU": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1382,16 +974,6 @@
       "factor_basis": "beta-read-thin:r2=0.13<0.2",
       "shared_groups": []
     },
-    "ABBV__WST": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": null,
-      "combined": 0.5,
-      "factor_basis": "beta-read-thin:r2=0.13<0.2",
-      "shared_groups": [
-        "basket:us_sector_health",
-        "sector:Health Care"
-      ]
-    },
     "EDU__CAH": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
@@ -1413,13 +995,6 @@
       "factor_basis": "beta-read-thin:insufficient-factors",
       "shared_groups": []
     },
-    "EDU__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
-      "shared_groups": []
-    },
     "CAH__CNC": {
       "membership_jaccard": 0.6667,
       "factor_cosine": null,
@@ -1437,38 +1012,11 @@
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
       "shared_groups": []
     },
-    "CAH__WST": {
-      "membership_jaccard": 0.6667,
-      "factor_cosine": null,
-      "combined": 0.6667,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": [
-        "basket:us_sector_health",
-        "sector:Health Care"
-      ]
-    },
     "CNC__TALO": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
       "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "CNC__WST": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": null,
-      "combined": 0.5,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": [
-        "basket:us_sector_health",
-        "sector:Health Care"
-      ]
-    },
-    "TALO__WST": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.12<0.2",
       "shared_groups": []
     }
   },
@@ -1481,7 +1029,7 @@
   },
   "n_eff_by_lane": {
     "entry_open": 4.8,
-    "setting_up": 2.0
+    "setting_up": 1.0
   },
   "source_passport": {
     "factor_betas": {

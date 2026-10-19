@@ -1,5 +1,8 @@
-# Sector Central — design and delivery contract
-packet-id: MP-20261018-sector-central
+# Sector Central — draft design and delivery plan
+
+> Draft planning only. This candidate has no approved RIG receipt and is not an executable migration packet. Preserve the existing Sector Central owner and all recorded holds. Before a builder consumes it as a migration contract, that owner must complete the reference review and publish the approved packet under `research/migration_packets/` with its real `RIG-RECEIPT:`.
+
+candidate-id: MP-20261018-sector-central
 Date: 2026-10-18
 Parent: macro#7646 · sector-central-redesign-20260921-sol-001
 State: DESIGN/INTEGRATION CANDIDATE — NOT RELEASED; NOT APPLIED TO PAPER
@@ -115,7 +118,7 @@ The six original hashes are compatibility entry points, not six unrelated produc
 | Intraday versus settled tape | Existing tape depth | State and clock are explicit; settled data is never labeled Live |
 | Regional slots | Shared region selector / current regional routes | Do not infer that US semantics or validation applies to China/HK/other universes |
 
-The existing 92-capability R3A binding/disposition pack remains a preservation input. The companion [92-capability crosswalk](MP-20261018-sector-central-capability-crosswalk.md) gives every archived capability an explicit new home and migration constraint. This is a design ruling over the current commission, not a claim that all 92 features have shipped or that the archived audit has been replaced.
+The existing 92-capability R3A binding/disposition pack remains a preservation input. The companion [92-capability crosswalk](SECTOR_CENTRAL_20261018_CAPABILITY_CROSSWALK_DRAFT.md) gives every archived capability an explicit new home and migration constraint. This is a design ruling over the current commission, not a claim that all 92 features have shipped or that the archived audit has been replaced.
 
 ### Required prominence and shell ownership
 

@@ -99,7 +99,7 @@
         "listing_key": "US-XNAS-AAPL",
         "mic": "XNAS",
         "security_id": "SEC:US-XNAS-AAPL",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "3571",
@@ -229,7 +229,7 @@
         "listing_key": "US-XNYS-SNOW",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-SNOW",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "7372",
@@ -360,7 +360,7 @@
         "listing_key": "US-XNYS-CAT",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-CAT",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "3531",
@@ -490,7 +490,7 @@
         "listing_key": "US-XNYS-BAC",
         "mic": "XNYS",
         "security_id": "SEC:US-XNYS-BAC",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "6021",
@@ -620,7 +620,7 @@
         "listing_key": "US-XNAS-GOOGL",
         "mic": "XNAS",
         "security_id": "SEC:US-XNAS-GOOGL",
-        "security_master_blob": "85ef75104840b6b5be3aceeac21f1dbfabad6472",
+        "security_master_blob": "452fe313fa8d1904539128edbc8fb2fdd7d861d1",
         "security_state": null
       },
       "sic": "7370",
