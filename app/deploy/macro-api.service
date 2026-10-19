@@ -29,6 +29,12 @@ Environment=MM_TICKER_NEWS_RIGHTS=/etc/macro-ticker-news-rights.json
 Environment=MM_TICKER_NEWS_HEALTH=/var/lib/macro-ticker-news/health.json
 # Integrated Answer v0 read API (app/integrated_answer.py _require_enabled): flag-on; route 404s when unset.
 Environment=MACRO_INTEGRATED_ANSWER_ENABLED=1
+# FIF A0 dataset mode (app/forensics.py _financial_dataset_mode,
+# DEC:FIF-D3-DATASET-MODE-SELECTOR): serve the immutable published FIF datasets
+# from the private research-store family, never the golden corpus. Rollback is
+# reverting this line: unset is the golden corpus byte for byte. A value in
+# /etc/macro-api.env would override this line (EnvironmentFile wins).
+Environment=FIF_FINANCIAL_DATASET_MODE=production
 StateDirectory=macro-codex macro-codex-2 macro-codex-3
 StateDirectoryMode=0700
 # ── Site Access Gate env (all optional; safe defaults apply when absent) ─────
