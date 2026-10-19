@@ -1,0 +1,2408 @@
+{
+ "schema": "fif.g_pack/v1",
+ "cik10": "0001640147",
+ "entity_id": "ISS:US-XNYS-SNOW",
+ "legal_name": "Snowflake Inc.",
+ "security_ids": [
+  "SEC:US-XNYS-SNOW"
+ ],
+ "listing_keys": [
+  "US-XNYS-SNOW"
+ ],
+ "issuer_class": "software",
+ "attested": false,
+ "historical_attestation": "unavailable_until_d2_admission",
+ "admission_state": "admitted",
+ "admitted_accessions": [
+  "0001640147-26-000037",
+  "0001640147-26-000030",
+  "0001640147-26-000008",
+  "0001640147-25-000052"
+ ],
+ "packet_basis": {
+  "view": "as_filed",
+  "source_accession": "0001640147-26-000037",
+  "knowledge_time": "2026-09-05T00:06:23.000Z",
+  "knowledge_time_source": "sec_submissions_witness.json:acceptanceDateTime"
+ },
+ "gold_source": {
+  "lane": "fif-ggold-20261013/r2",
+  "files": {
+   "SNOW/SNOW_gold_sheet.md": "115794209604c28bf519ba596e29bbc196e4b08ae96a8ac39874a7aee10c6c86",
+   "SNOW/expected_financial_intelligence_packet_v1.draft.json": "c3cafa0bab18c4fa2c676c05eed426ae6b6cfa4c48c87c3e7d32e9890fb80bd6",
+   "SNOW/expected_run_v1.draft.json": "4794a94fc510bc7e50ca7b07079889cb3e4cdf6daa9ed1eabc61c220a33c405f",
+   "SNOW/gold_facts.jsonl": "80d105ff51e2bd86730000fd42a55d8db0550fa9ca7e907c814dc4b45d82a7d2",
+   "SNOW/statement_roles.json": "dbbd0745efb4fdfe6e6132e05572caad953d36114f99fae85553658501ddfe7f",
+   "SNOW/tagged_facts.jsonl": "924efa6720902c5bb12e86eca39eeb92076061e3e759e1637eda1cf965d79beb"
+  }
+ },
+ "pins": [
+  {
+   "type": "kpi_vintages",
+   "ruling": "R5 amendment (G_PACK_FROZEN_SPEC §4 gate additions; R4); ERRATA E5",
+   "metric_label": "Customers with trailing 12-month product revenue greater than $1 million",
+   "vintages": [
+    {
+     "accession": "0001640147-24-000101",
+     "admitted": false,
+     "member_file": "snow-20240131.htm",
+     "member_sha256": "b2ea12cbc6ad67efcb33a644c4d3cf392a3a804342a288a7f3a173ea434e9493",
+     "byte_offset": 672666,
+     "value_byte_offset": 673164,
+     "row_label": "Customers with trailing 12-month product revenue greater than $1 million(3)",
+     "column_headers": [
+      "January 31, 2024",
+      "January 31, 2023",
+      "January 31, 2022"
+     ],
+     "row_values": [
+      "461",
+      "331",
+      "186"
+     ],
+     "value_column_header": "January 31, 2024",
+     "value": "461"
+    },
+    {
+     "accession": "0001640147-25-000052",
+     "admitted": true,
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 758379,
+     "value_byte_offset": 759288,
+     "row_label": "Customers with trailing 12-month product revenue greater than $1 million(4)",
+     "column_headers": [
+      "January 31, 2025",
+      "January 31, 2024",
+      "January 31, 2023"
+     ],
+     "row_values": [
+      "580",
+      "455",
+      "329"
+     ],
+     "value_column_header": "January 31, 2024",
+     "value": "455"
+    },
+    {
+     "accession": "0001640147-26-000008",
+     "admitted": true,
+     "member_file": "snow-20260131.htm",
+     "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+     "byte_offset": 817866,
+     "value_byte_offset": 819165,
+     "row_label": "Customers with trailing 12-month product revenue greater than $1 million(4)",
+     "column_headers": [
+      "January 31, 2026",
+      "January 31, 2025",
+      "January 31, 2024"
+     ],
+     "row_values": [
+      "733",
+      "576",
+      "449"
+     ],
+     "value_column_header": "January 31, 2024",
+     "value": "449"
+    }
+   ],
+   "splice_refused": true,
+   "evidence_note": "FY2024 column re-read from the staged member bytes this lane: 449 at byte 819165 of snow-20260131.htm (row 733/576/449 under headers Jan 31 2026/2025/2024). The r2 gold sheet §8.1 table printed 576 for this row -- that is the FY2025 column; its own summary line (449) is what the bytes say for FY2024."
+  },
+  {
+   "type": "decimals_precision",
+   "ruling": "R3/R4; A25 (served as tagged, never corrected from prose)",
+   "concept": "us-gaap:RevenueRemainingPerformanceObligation",
+   "period_key": [
+    "instant",
+    "2026-01-31"
+   ],
+   "source_accession": "0001640147-26-000008",
+   "contextRef": "c-4",
+   "value_exact": "9800000000",
+   "decimals": "-8",
+   "scale": "9",
+   "member_file": "snow-20260131.htm",
+   "member_sha256": "729e02a5c711ed375f7a6e90317c75f528d08b4870212161947e1020218db82d",
+   "byte_offset": 1904556,
+   "prose_value_not_used": "$9,771.5 million (MD&A metrics table)"
+  },
+  {
+   "type": "decimals_precision",
+   "ruling": "R3/R4; A25 (served as tagged, never corrected from prose)",
+   "concept": "us-gaap:RevenueRemainingPerformanceObligation",
+   "period_key": [
+    "instant",
+    "2025-01-31"
+   ],
+   "source_accession": "0001640147-25-000052",
+   "contextRef": "c-4",
+   "value_exact": "6900000000",
+   "decimals": "-8",
+   "scale": "9",
+   "member_file": "snow-20250131.htm",
+   "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+   "byte_offset": 1810126,
+   "prose_value_not_used": "$6,867.5 million (MD&A metrics table)"
+  },
+  {
+   "type": "decimals_precision",
+   "ruling": "R3/R4; A25 (served as tagged, never corrected from prose)",
+   "concept": "us-gaap:RevenueRemainingPerformanceObligation",
+   "period_key": [
+    "instant",
+    "2024-01-31"
+   ],
+   "source_accession": "0001640147-24-000101",
+   "contextRef": "c-4",
+   "value_exact": "5200000000",
+   "decimals": "-8",
+   "scale": "9",
+   "member_file": "snow-20240131.htm",
+   "member_sha256": "b2ea12cbc6ad67efcb33a644c4d3cf392a3a804342a288a7f3a173ea434e9493",
+   "byte_offset": 1619055,
+   "prose_value_not_used": "$5,174.7 million (MD&A metrics table)"
+  },
+  {
+   "type": "negative_mapping",
+   "ruling": "R3 (G0-f; ERRATA §2 R3: AllocatedShareBasedCompensationExpense never aliased)",
+   "metric_id": "share_based_compensation_expense",
+   "forbidden_concept": "us-gaap:AllocatedShareBasedCompensationExpense"
+  },
+  {
+   "type": "negative_mapping",
+   "ruling": "R3 (G0-f; ProfitLoss never aliased to net_income_loss)",
+   "metric_id": "net_income_loss",
+   "forbidden_concept": "us-gaap:ProfitLoss"
+  },
+  {
+   "type": "negative_mapping",
+   "ruling": "R3 (candidate_not_aliased: ConvertibleDebtNoncurrent)",
+   "metric_id": "long_term_debt",
+   "forbidden_concept": "us-gaap:ConvertibleDebtNoncurrent"
+  },
+  {
+   "type": "negative_mapping",
+   "ruling": "R3 (candidate_not_aliased: AvailableForSaleSecuritiesDebtSecuritiesCurrent)",
+   "metric_id": "short_term_investments",
+   "forbidden_concept": "us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent"
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "R3 (candidate_not_aliased); the gold cells carry this code",
+   "errata": "R3",
+   "metric_id": "long_term_debt",
+   "code": "missing_standard_fact",
+   "candidate_concept": "us-gaap:ConvertibleDebtNoncurrent",
+   "accession": "0001640147-26-000008"
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "R3 (candidate_not_aliased); the gold cells carry this code",
+   "errata": "R3",
+   "metric_id": "short_term_investments",
+   "code": "missing_standard_fact",
+   "candidate_concept": "us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+   "accession": "0001640147-26-000008"
+  },
+  {
+   "type": "errata_absence",
+   "ruling": "ERRATA E2 (total_debt never derived from a partial input set)",
+   "errata": "E2",
+   "metric_id": "total_debt",
+   "code": "missing_dependency"
+  }
+ ],
+ "gold_corrections": [
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "verification_state",
+   "op": "set",
+   "r2_value": "typed_absence_verified",
+   "corrected_value": "verified_from_bytes",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "concept",
+   "op": "add",
+   "corrected_value": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "value_exact",
+   "op": "add",
+   "corrected_value": "0",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "code",
+   "op": "remove",
+   "r2_value": "missing_standard_fact",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "remove",
+   "r2_value": "MISSING_CONCEPT",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "detail",
+   "op": "remove",
+   "r2_value": "as-filed zero-hit in 0001640147-25-000052: no dimension-free fact for any of the 1 mapped concepts this period; tagged elsewhere in package: us-gaap:PaymentsForRepurchaseOfCommonStock (concept_absent / not_reported_by_issuer); concept tagged nil/dash for this period (no value reported)",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "nil_facts_for_period",
+   "op": "remove",
+   "r2_value": [
+    {
+     "accession": "0001640147-25-000052",
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "byte_offset": 1582980
+    }
+   ],
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "as_filed",
+    "source_accession": "0001640147-25-000052",
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "trace",
+   "op": "add",
+   "corrected_value": {
+    "accession": "0001640147-25-000052",
+    "member_file": "snow-20250131.htm",
+    "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+    "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+    "contextRef": "c-13",
+    "unitRef": "usd",
+    "decimals": "-3",
+    "scale": "3",
+    "sign": null,
+    "format": "ixt:fixed-zero"
+   },
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0001"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "verification_state",
+   "op": "set",
+   "r2_value": "typed_absence_verified",
+   "corrected_value": "verified_from_bytes",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "concept",
+   "op": "add",
+   "corrected_value": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "value_exact",
+   "op": "add",
+   "corrected_value": "0",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "code",
+   "op": "remove",
+   "r2_value": "missing_standard_fact",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "remove",
+   "r2_value": "MISSING_CONCEPT",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "detail",
+   "op": "remove",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of common_stock_repurchases for this period (concepts searched: us-gaap:PaymentsForRepurchaseOfCommonStock)",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "searched_accessions",
+   "op": "remove",
+   "r2_value": [
+    "0001640147-26-000037",
+    "0001640147-26-000030",
+    "0001640147-26-000008",
+    "0001640147-25-000052"
+   ],
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "source_accession",
+   "op": "set",
+   "r2_value": null,
+   "corrected_value": "0001640147-25-000052",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "knowledge_time",
+   "op": "set",
+   "r2_value": null,
+   "corrected_value": "2025-03-22T00:19:20.000Z",
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "also_reported_by",
+   "op": "add",
+   "corrected_value": [],
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "restatement_observed",
+   "op": "add",
+   "corrected_value": false,
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "common_stock_repurchases",
+    "period_key": [
+     "duration",
+     "2022-02-01",
+     "2023-01-31"
+    ]
+   },
+   "field": "trace",
+   "op": "add",
+   "corrected_value": {
+    "accession": "0001640147-25-000052",
+    "member_file": "snow-20250131.htm",
+    "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+    "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+    "contextRef": "c-13",
+    "unitRef": "usd",
+    "decimals": "-3",
+    "scale": "3",
+    "sign": null,
+    "format": "ixt:fixed-zero"
+   },
+   "evidence": {
+    "filed_location": {
+     "accession": "0001640147-25-000052",
+     "member_file": "snow-20250131.htm",
+     "member_sha256": "516c7fc913f21fe346ceeef6638b7d6c3c5c18eee9c1715dc7c235103cad4c13",
+     "byte_offset": 1582980,
+     "raw_text": "&#8212;",
+     "format": "ixt:fixed-zero"
+    },
+    "kr_ids": [
+     "SNOW-C7_kernel_value_gold_absence-0018"
+    ],
+    "byte_confirm": {
+     "concept": "us-gaap:PaymentsForRepurchaseOfCommonStock",
+     "contextRef": "c-13",
+     "unitRef": "usd",
+     "decimals": "-3",
+     "scale": "3",
+     "format": "ixt:fixed-zero",
+     "glyph": "&#8212;",
+     "byte_offset": 1582980,
+     "context_period": [
+      "duration",
+      "2022-02-01",
+      "2023-01-31"
+     ],
+     "context_dimension_free": true
+    }
+   },
+   "reason": "ixt:fixed-zero is a filed zero (the displayed dash is the glyph of an explicit zero transform), so the cell is a valued zero, not a missing concept and not a zero stand-in",
+   "ruling": "R-G-5"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-03-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0038"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-233",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:StreamlitIncMember"
+       },
+       "byte_offset": 2236120
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-03-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0038"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-233",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:StreamlitIncMember"
+       },
+       "byte_offset": 2236120
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-03-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0038"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-233",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:StreamlitIncMember"
+       },
+       "byte_offset": 2236120
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-03-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0038"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-233",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:StreamlitIncMember"
+       },
+       "byte_offset": 2236120
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-09-23"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0039"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-227",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:ApplicaSpZooMember"
+       },
+       "byte_offset": 2214826
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-09-23"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0039"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-227",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:ApplicaSpZooMember"
+       },
+       "byte_offset": 2214826
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-09-23"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0039"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-227",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:ApplicaSpZooMember"
+       },
+       "byte_offset": 2214826
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2022-09-23"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0039"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-227",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:ApplicaSpZooMember"
+       },
+       "byte_offset": 2214826
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-02-10"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0040"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-266",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2313603
+      },
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-268",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2328302
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-216",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2173028
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-218",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2186941
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-02-10"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0040"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-266",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2313603
+      },
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-268",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2328302
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-216",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2173028
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-218",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2186941
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-02-10"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0040"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-266",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2313603
+      },
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-268",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2328302
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-216",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2173028
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-218",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2186941
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-02-10"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0040"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-266",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2313603
+      },
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-268",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2328302
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-216",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:MountainUSCorporationFormerlyKnownAsMobilizeNetCorporationMember"
+       },
+       "byte_offset": 2173028
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-218",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:LeapYearTechnologiesIncMember"
+       },
+       "byte_offset": 2186941
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-07-31"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0041"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-264",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2299944
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-214",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2160271
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-07-31"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0041"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-264",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2299944
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-214",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2160271
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-07-31"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0041"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-264",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2299944
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-214",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2160271
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-07-31"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0041"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-264",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2299944
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-214",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:NeevaIncAndItsEquityInvesteeMember"
+       },
+       "byte_offset": 2160271
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-12-20"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0042"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-259",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2285475
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-211",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2146415
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-12-20"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0042"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-259",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2285475
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-211",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2146415
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-12-20"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0042"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-259",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2285475
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-211",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2146415
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2023-12-20"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0042"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-259",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2285475
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-211",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:SamoohaInc.Member"
+       },
+       "byte_offset": 2146415
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2024-11-25"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0044"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-246",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2242242
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-197",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2102433
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2024-11-25"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0044"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-246",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2242242
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-197",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2102433
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2024-11-25"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0044"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-246",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2242242
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-197",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2102433
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2024-11-25"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0044"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-246",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2242242
+      },
+      {
+       "accession": "0001640147-25-000052",
+       "member_file": "snow-20250131.htm",
+       "contextRef": "c-197",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:DatavoloInc.Member"
+       },
+       "byte_offset": 2102433
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2025-06-06"
+    ]
+   },
+   "field": "code",
+   "op": "set",
+   "r2_value": "missing_standard_fact",
+   "corrected_value": "disallowed_dimension",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0046"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-234",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:CrunchyDataSolutionsInc.Member"
+       },
+       "byte_offset": 2203182
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2025-06-06"
+    ]
+   },
+   "field": "r1_code",
+   "op": "set",
+   "r2_value": "MISSING_CONCEPT",
+   "corrected_value": "NOT_EVALUABLE_DIMENSION",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0046"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-234",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:CrunchyDataSolutionsInc.Member"
+       },
+       "byte_offset": 2203182
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2025-06-06"
+    ]
+   },
+   "field": "detail",
+   "op": "set",
+   "r2_value": "zero-hit search across every admitted package: no dimension-free fact for any mapped concept of goodwill for this period (concepts searched: us-gaap:Goodwill)",
+   "corrected_value": "facts exist only on dimensioned contexts in this package; G0-c allowed axes do not apply to the headline cell",
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0046"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-234",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:CrunchyDataSolutionsInc.Member"
+       },
+       "byte_offset": 2203182
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  },
+  {
+   "row_key": {
+    "view": "latest_known_as_of",
+    "source_accession": null,
+    "metric_id": "goodwill",
+    "period_key": [
+     "instant",
+     "2025-06-06"
+    ]
+   },
+   "field": "axes_seen",
+   "op": "add",
+   "corrected_value": [
+    "us-gaap:BusinessAcquisitionAxis"
+   ],
+   "evidence": {
+    "kr_ids": [
+     "SNOW-C4b_dimension_vs_missing-0046"
+    ],
+    "byte_reread": {
+     "contexts": [
+      {
+       "accession": "0001640147-26-000008",
+       "member_file": "snow-20260131.htm",
+       "contextRef": "c-234",
+       "members": {
+        "us-gaap:BusinessAcquisitionAxis": "snow:CrunchyDataSolutionsInc.Member"
+       },
+       "byte_offset": 2203182
+      }
+     ],
+     "dimension_free_fact_found": false
+    }
+   },
+   "reason": "every fact for a mapped concept in this period sits on a dimensioned context; the headline cell is a dimension refusal, not a missing concept",
+   "ruling": "R-G-2"
+  }
+ ],
+ "packet_corrections": [],
+ "defects": []
+}
