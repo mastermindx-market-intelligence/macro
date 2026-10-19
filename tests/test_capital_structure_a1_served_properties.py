@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import calendar
 import dataclasses
+import hashlib
 import json
 import re
 from datetime import date, timedelta
@@ -36,16 +37,20 @@ pytest.importorskip("httpx", reason="FastAPI TestClient needs httpx")
 # discovers them here exactly as in the originating suite, and importing this
 # module never re-collects the U1B tests.
 from tests.test_capital_structure_state_api import (  # noqa: E402
+    AS_OF,
     EVALUATE_PATH,
+    GENERATED_AT,
     HORIZON_END,
     HORIZON_START,
     ISSUER_ONE,
     SCENARIO_ASSUMPTIONS,
     SCENARIO_PRICE,
     SS,
+    STATE_GENERATED_AT,
     _checked,
     _earliest_bound,
     _fixture_entries,
+    _fixture_rows,
     _inputs_bundle_record,
     _scenario_body,
     _shift,
@@ -56,11 +61,32 @@ from tests.test_capital_structure_state_api import (  # noqa: E402
     served,
     with_inputs,
 )
+from app import capital_structure as api  # noqa: E402
 from engine.capital_structure.issuer_state_contracts import (  # noqa: E402
     AUTHORITY,
     FORBIDDEN_PROPERTY_PATTERN,
 )
+from engine.capital_structure.projection import build_projection_bundle  # noqa: E402
+from engine.capital_structure.rule_applicability import (  # noqa: E402
+    load_rule_applicability_pack,
+)
 from engine.capital_structure.scenario_inputs import CAPACITY_INPUTS_FILENAME  # noqa: E402
+from engine.capital_structure.state_bundle import (  # noqa: E402
+    build_state_bundle,
+    validate_state_bundle,
+)
+from engine.capital_structure.verified_projection_generation import (  # noqa: E402
+    VerifiedProjectionGeneration,
+)
+from tests.test_build_capital_structure_projection import _manifest  # noqa: E402
+from tests.test_capital_structure_registration_lifecycle import (  # noqa: E402
+    _edge,
+    _event,
+)
+from tests.test_capital_structure_state_bundle import (  # noqa: E402
+    HEALTH,
+    _telemetry,
+)
 
 # ---------------------------------------------------------------------------
 # Fixture-world constants, read from the contracts (never assumed)
@@ -141,6 +167,7 @@ _SERVED_TESTS = (
     "test_a1_unknown_route_limit_gives_floor_and_open_ceiling",
     "test_a1_unknown_share_count_never_zero_or_unlimited",
     "test_a1_missing_input_family_returns_typed_409_with_components",
+    "test_a1_active_route_serves_conditional_and_names_why_the_joint_status_stays_unknown",
 )
 _WALKER_TEST = "test_a1_zz_no_forbidden_vocabulary_in_any_served_body"
 
@@ -686,7 +713,9 @@ def test_a1_boundary_zero_headroom(
 
     A float of $30,000,000 caps the pool at exactly $10,000,000.00 (one third,
     no rounding remnant).  Proving the served binding/slack flip needs a
-    fixture with an active route; that gap is carried to A1-1.
+    fixture with an active route; that gap is carried to A1-1.  The active-route
+    world is built and served in
+    ``test_a1_active_route_serves_conditional_and_names_why_the_joint_status_stays_unknown``.
     """
     cases = [
         ("binding", format(Decimal(_ZERO_HEADROOM_LIMIT), "f")),
@@ -1030,6 +1059,219 @@ def test_a1_missing_input_family_returns_typed_409_with_components(
         "available": ["instruments", "share_basis", "financials", "rules"],
     }
     assert "result" not in json.dumps(response.json())
+
+
+# ---------------------------------------------------------------------------
+# §3.5b — the active-route world (A1-1): the served joint status gate
+# ---------------------------------------------------------------------------
+
+
+def _publish_active_route_world(served: Any, built: Any, monkeypatch: Any) -> dict[str, Any]:
+    """Build and publish the world in which issuer A's shelf route is ACTIVE.
+
+    The rows are the state-API suite's own ``_fixture_rows()`` (fresh copies,
+    never the pristine module fixture) plus the one event the base world lacks:
+    an EFFECT notice that effectuates issuer A's S-3 (``file_number 333-999``),
+    built with the same ``_event``/``_edge`` builders that suite uses.  The
+    projection and the state bundle are rebuilt by the real producers exactly
+    as the state-API ``built`` fixture builds them, validated by the real
+    contract, written next to the served artifacts, and the generation loader
+    is repointed at the new generation.  Nothing here hand-writes a record:
+    the ``conditional`` classification is produced by
+    ``integrate_registration_paths`` inside ``build_state_bundle``.
+    """
+    events, edges = _fixture_rows()
+    shelf_rows = [
+        event
+        for event in events
+        if str(event["filing"]["form"]) == "S-3"
+        and str(event["issuer"]["issuer_id"]) == ISSUER_ONE
+    ]
+    assert len(shelf_rows) == 1, (
+        "expected exactly one issuer-A S-3 row to effectuate, got "
+        f"{[str(row['filing']['file_number']) for row in shelf_rows]}"
+    )
+    shelf = shelf_rows[0]
+    effect = _event(
+        72,
+        "EFFECT",
+        accepted_at="2026-08-07T10:00:00Z",
+        seen_at="2026-08-07T12:00:00Z",
+        file_number=shelf["filing"]["file_number"],
+    )
+    edges = [*edges, _edge(effect, shelf, "effectuates")]
+    events = [*events, effect]
+
+    telemetry = _telemetry(events, edges)
+    telemetry["counts"] = {
+        "event_versions": len(events),
+        "event_edges": len(edges),
+        "review_queue": 0,
+    }
+    generation = VerifiedProjectionGeneration(tuple(events), tuple(edges), (), telemetry)
+    projection = build_projection_bundle(
+        list(events), list(edges), (), telemetry, as_of=AS_OF, generated_at=GENERATED_AT
+    )
+    projection_body = json.dumps(projection, indent=2, sort_keys=True) + "\n"
+    first = events[0]["evidence"][0]
+    row = _manifest(role="primary")
+    resolved_row = {
+        **row,
+        "manifest_id": first["manifest_id"],
+        "spans": [
+            {
+                **row["spans"][0],
+                "span_id": first["span_id"],
+                "text_sha256": first["text_sha256"],
+            }
+        ],
+    }
+    bundle = build_state_bundle(
+        generation=generation,
+        projection=projection,
+        health=HEALTH,
+        rule_pack=load_rule_applicability_pack(),
+        as_of=AS_OF,
+        generated_at=STATE_GENERATED_AT,
+        projection_sha256=hashlib.sha256(projection_body.encode("utf-8")).hexdigest(),
+        source_manifests=(resolved_row,),
+    )
+    validate_state_bundle(bundle)
+    record = _inputs_bundle_record(
+        built,
+        as_of=AS_OF,
+        state_generation_id=str(bundle["generation_id"]),
+    )
+    parent = served.state_path.parent
+    served.projection_path.write_text(projection_body, encoding="utf-8")
+    served.state_path.write_text(
+        json.dumps(bundle, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (parent / CAPACITY_INPUTS_FILENAME).write_text(
+        json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(api, "_load_generation", lambda: generation)
+    served.reset()
+    return bundle
+
+
+def test_a1_active_route_serves_conditional_and_names_why_the_joint_status_stays_unknown(
+    client: Any, served: Any, built: Any, with_inputs: Any, monkeypatch: Any
+) -> None:
+    """The active-route world: a ``conditional`` route is served, and the joint
+    status of a KNOWN pool still serves ``unknown`` — because the one bound no
+    builder of this fixture family can produce (the fee-table document term)
+    keeps the joint optimum undetermined.
+
+    The world is issuer A's S-3 (``333-999``) effectuated on 2026-08-07 and
+    never withdrawn, published through the real producers (see the helper
+    above); at the state cutoff it sits inside its Rule 415(a)(5) window, so
+    the registration path integrates ``conditional`` and the served envelope
+    no longer names ``no_active_route``.
+
+    The carried A1-1 gap, pinned here on the served path: the removal-rule
+    oracle for the binding/slack flip needs a second KNOWN bound on the active
+    route (another shared pool or the route's own limit).  Every candidate is
+    the registered pool or the route limit derived from it, and its bound is
+    the gross registered amount — a fee-table document-term record
+    (capacity.py ``_fee_table``, 1413-1458) that the served state cannot
+    carry, because the state builder seals exactly one family per issuer
+    (state_bundle.py:399, ``families=(reg.family_state(),)``).  An
+    unknown-bound pool shared by the active route leaves the exact joint
+    kernel undetermined (its unknown-pools gate, lines 299 and 345-353 of the
+    kernel module), so
+    capacity.py ``_constraints`` (3466-3471) serves ``unknown`` for every pool
+    even with a route active and the baby-shelf bound known to the cent.
+    Both cases below prove exactly that, and the exact cent bounds are still
+    served through the known pool bound.
+    """
+    _publish_active_route_world(served, built, monkeypatch)
+
+    #: A $60,000,000 float caps the one-third pool at exactly $20,000,000.00;
+    #: $10,000,000.00 of trailing sales leaves the bound at exactly
+    #: $10,000,000.00 — known to the cent, with no rounding remnant.
+    body = _scenario_body()
+    body["unknown_resolutions"] = [
+        _resolution_body(_FLOAT_RESOLUTION_ID, "60000000.00"),
+        _resolution_body(_SOLD_RESOLUTION_ID, "10000000.00"),
+    ]
+    answer = _serve(client, body)
+    envelope = _envelope(answer)
+    blockers = list(envelope.get("blockers") or ())
+    assert "no_active_route" not in blockers, (
+        f"the active-route world must not name no_active_route: {blockers!r}"
+    )
+    conditional = [
+        route
+        for route in envelope.get("routes") or ()
+        if route.get("status") == "conditional"
+    ]
+    assert conditional, (
+        "no conditional route served on the active world: "
+        f"{json.dumps(envelope.get('routes'), sort_keys=True)[:800]}"
+    )
+    assert [route.get("route_kind") for route in conditional] == ["shelf_takedown"]
+    active_route_id = str(conditional[0]["route_id"])
+    #: The route's own limit is the registered amount: unknown, for the same
+    #: fee-table reason the pool below names.
+    assert conditional[0]["limit"]["status"] == "unknown", conditional[0]
+    assert envelope["aggregate_bound"]["status"] == "unknown", envelope["aggregate_bound"]
+
+    pools = _pools_by_rule(envelope, _BABY_SHELF_RULES)
+    assert pools, (
+        "no baby-shelf pool served on the active world: "
+        f"{json.dumps(envelope, sort_keys=True)[:800]}"
+    )
+    pool = pools[0]
+    assert _decimal_value(pool["bound"]) == Decimal("10000000.00"), pool
+    assert active_route_id in (pool.get("shared_by") or ()), pool
+    #: The served joint status gate: with an active route and this pool's bound
+    #: known, the status would be ``binding``/``slack`` if the joint solution
+    #: were determined.  It is not, and the envelope names the reason.
+    assert pool["status"] == "unknown", pool
+    registered = [
+        constraint
+        for constraint in envelope.get("shared_pools") or ()
+        if str(constraint.get("constraint_id", "")).startswith("registered:")
+    ]
+    assert registered, f"no registered pool served: {json.dumps(envelope)[:600]}"
+    assert registered[0]["bound"]["status"] == "unknown", registered[0]
+    assert registered[0]["constraint_id"] in (envelope.get("unknown_constraints") or ()), (
+        envelope.get("unknown_constraints")
+    )
+    named = [
+        unknown
+        for unknown in envelope.get("unknowns") or ()
+        if str(unknown.get("unknown_id", "")).startswith("registered_amount:")
+    ]
+    assert named, (
+        "the envelope must name the gross-registered-amount unknown: "
+        f"{json.dumps(envelope.get('unknowns'), sort_keys=True)[:800]}"
+    )
+    assert "fee-table row" in str(named[0].get("description") or ""), named[0]
+
+    #: Zero headroom on the same active world: sold == the one-third limit
+    #: exactly serves bound ``0`` — and the joint status stays ``unknown`` for
+    #: the same reason.  At a zero pool-local gap the removal rule would make
+    #: the pool binding if any positive known bound R existed on the route;
+    #: the served joint status does not flip at the pool-local zero gap, and
+    #: on this fixture family it cannot flip at any B, because R is never
+    #: known (the docstring above).
+    zero = _scenario_body()
+    zero["unknown_resolutions"] = [
+        _resolution_body(_FLOAT_RESOLUTION_ID, _ZERO_HEADROOM_FLOAT),
+        _resolution_body(_SOLD_RESOLUTION_ID, _ZERO_HEADROOM_LIMIT),
+    ]
+    zero_answer = _serve(client, zero)
+    zero_envelope = _envelope(zero_answer)
+    assert "no_active_route" not in (zero_envelope.get("blockers") or ())
+    zero_pool = _pools_by_rule(zero_envelope, _BABY_SHELF_RULES)
+    assert zero_pool, (
+        f"no baby-shelf pool served at zero headroom: "
+        f"{json.dumps(zero_envelope, sort_keys=True)[:600]}"
+    )
+    assert _decimal_value(zero_pool[0]["bound"]) == Decimal("0"), zero_pool[0]
+    assert zero_pool[0]["status"] == "unknown", zero_pool[0]
 
 
 # ---------------------------------------------------------------------------
