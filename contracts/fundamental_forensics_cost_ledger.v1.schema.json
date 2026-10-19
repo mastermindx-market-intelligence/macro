@@ -191,6 +191,12 @@
           "items": {
             "enum": ["source", "licence", "storage", "parse", "inference", "review"]
           }
+        },
+        "reason": {
+          "oneOf": [
+            {"type": "null"},
+            {"enum": ["queries_window_absent"]}
+          ]
         }
       }
     },

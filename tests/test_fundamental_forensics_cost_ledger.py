@@ -1291,6 +1291,92 @@ def test_top_level_complete_false_when_only_query_window_incomplete(
     assert ledger["complete"] is False
 
 
+# ── 7c. the incomplete query-window total names its reason (r5) ──────────────
+
+
+def _total_line(text: str, period: str) -> str:
+    for line in text.splitlines():
+        if line.startswith(f"total {period}:"):
+            return line
+    raise AssertionError(f"no total line for {period}")
+
+
+def test_no_window_query_window_total_carries_queries_window_absent() -> None:
+    # r5: with no declared queries window a measured inference total moves
+    # to undeclared_window; the incomplete query-window total must say why.
+    ledger = _build_ledger()
+    total = ledger["totals"]["query_window"]
+    assert total["known_usd"] is None
+    assert total["complete"] is False
+    assert total["incomplete_components"] == ["inference"]
+    assert total["reason"] == "queries_window_absent"
+    # The other period totals never carry a reason.
+    assert ledger["totals"]["one_time"]["reason"] is None
+    assert ledger["totals"]["per_month"]["reason"] is None
+    # The moved component itself is measured with a known cost: its cost is
+    # known, just not attributable to a window.
+    inference = ledger["components"]["inference"]
+    assert inference["basis_period"] == "undeclared_window"
+    assert inference["cost_status"] == "measured"
+    assert inference["incomplete_reason"] is None
+    # per_unit.queries is unchanged by r5.
+    queries = ledger["per_unit"]["queries"]
+    assert queries["reason"] == "queries_window_absent"
+    assert queries["components"] == []
+    # And the printed total line shows the reason, while the other totals'
+    # lines carry no reason token at all.
+    text = render_print(ledger)
+    assert _total_line(text, "query_window").endswith("reason=queries_window_absent")
+    assert "reason=" not in _total_line(text, "one_time")
+    assert "reason=" not in _total_line(text, "per_month")
+
+
+def test_declared_window_query_window_total_reason_is_null() -> None:
+    inference = Quantity(2.5, "usd", MEASURED, counts={"declared_window": _QUERIES_WINDOW})
+    ledger = _build_ledger(
+        quantities={**_base_quantities(), "inference": inference},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    assert ledger["totals"]["query_window"]["reason"] is None
+    assert ledger["totals"]["one_time"]["reason"] is None
+    assert ledger["totals"]["per_month"]["reason"] is None
+    assert _total_line(render_print(ledger), "query_window").endswith("reason=none")
+
+
+def test_unmeasured_inference_without_window_carries_no_total_reason() -> None:
+    # r5: an UNMEASURED inference under no declared window is the ordinary
+    # unmeasured-component fact, not a windowing one — the total carries no
+    # reason even though it is still incomplete.
+    inference = Quantity(None, "usd", UNMEASURED, notes=("inference_rows_absent",))
+    ledger = _build_ledger(quantities={**_base_quantities(), "inference": inference})
+    assert ledger["totals"]["query_window"]["reason"] is None
+    assert ledger["totals"]["query_window"]["incomplete_components"] == ["inference"]
+    assert _total_line(render_print(ledger), "query_window").endswith("reason=none")
+
+
+def test_period_total_reasons_conform_to_contract() -> None:
+    # The reason field is part of the period_totals contract: every ledger
+    # shape — no-window, declared-window, unmeasured inference — validates.
+    validator = Draft202012Validator(json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
+    no_window = _build_ledger()
+    declared = _build_ledger(
+        quantities={**_base_quantities(), "inference": _windowed_inference(_QUERIES_WINDOW)},
+        denominators=_denominators(
+            queries={"value": 10, "source": "coverage proof", "window": _QUERIES_WINDOW}
+        ),
+    )
+    unmeasured = _build_ledger(
+        quantities={
+            **_base_quantities(),
+            "inference": Quantity(None, "usd", UNMEASURED, notes=("inference_rows_absent",)),
+        }
+    )
+    for ledger in (no_window, declared, unmeasured):
+        assert list(validator.iter_errors(ledger)) == []
+
+
 # ── 8. render ────────────────────────────────────────────────────────────────
 
 

@@ -26,8 +26,8 @@ queries window), and a window whose start does not precede its end is
 refused (``window_inverted``).  With no declared queries window an
 inference total is a lifetime figure: it is labelled
 ``undeclared_window``, excluded from the ``query_window`` group (which is
-then incomplete), and the printed per-unit lines carry only the groups in
-their basis.
+then incomplete, with reason ``queries_window_absent`` on its total), and
+the printed per-unit lines carry only the groups in their basis.
 
 Purity
 ------
@@ -971,6 +971,17 @@ def build_cost_ledger(
         periods[components_out[component]["basis_period"]].append(
             (component, components_out[component])
         )
+    # r5 (2026-10-19): the incomplete query-window total names why — a
+    # measured or estimated inference quantity was moved to
+    # undeclared_window because no queries window was declared.  An
+    # unmeasured inference carries no reason: its incompleteness is the
+    # ordinary unmeasured-component fact, not a windowing one.
+    query_window_reason = (
+        "queries_window_absent"
+        if not queries_window_declared
+        and quantities["inference"].status in (MEASURED, ESTIMATED)
+        else None
+    )
     totals: dict[str, dict] = {}
     for period in ("one_time", "per_month", "query_window"):
         members = periods[period]
@@ -1001,6 +1012,7 @@ def build_cost_ledger(
             "known_usd": sum(known) if known else None,
             "complete": not incomplete,
             "incomplete_components": incomplete,
+            "reason": query_window_reason if period == "query_window" else None,
         }
     complete = all(
         totals[period]["complete"] for period in ("one_time", "per_month", "query_window")
@@ -1107,10 +1119,21 @@ def render_print(ledger: Mapping[str, Any]) -> str:
         period_totals = ledger["totals"][period]
         known = _fmt_quotient(period_totals["known_usd"], period_totals["complete"])
         incomplete = ",".join(period_totals["incomplete_components"])
-        lines.append(
+        line = (
             f"total {period}: known_usd={known}"
             f" complete={period_totals['complete']} incomplete_components=[{incomplete}]"
         )
+        if period == "query_window":
+            # r5: only this total can carry a typed reason (the queries
+            # window being absent) and the line ends with it; the other
+            # totals' lines are unchanged.
+            reason = (
+                period_totals["reason"]
+                if period_totals["reason"] is not None
+                else "none"
+            )
+            line = f"{line} reason={reason}"
+        lines.append(line)
     for key in _DENOMINATOR_KEYS:
         entry = ledger["per_unit"][key]
         denominator = ledger["denominators"][key]["value"]
