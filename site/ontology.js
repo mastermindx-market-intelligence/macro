@@ -25,6 +25,25 @@
   if (!root) return;
   var LEG_DETAIL_ID = "ox-steps";
   var legDetail = null;
+  var readingEpoch = 0;
+  var activeRequest = null;
+  var canonicalOwner = null;
+  try { canonicalOwner = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); }
+  catch (e) { canonicalOwner = null; }
+  canonicalOwner = canonicalOwner && canonicalOwner.id || null;
+
+  function invalidateReading() {
+    readingEpoch += 1;
+    if (activeRequest) activeRequest.abort();
+    activeRequest = null;
+    selectedPathRef = null;
+    returnFocusRef = null;
+    returnScrollX = returnScrollY = null;
+    brainContextRevision += 1;
+    var company = document.getElementById("ox-company");
+    if (company) company.dispatchEvent(new CustomEvent("ontology-source-changed"));
+  }
+
   /* Selected-path context is transient page state, not a fifth F04 object and
      not browser persistence. It binds the current chain/leg to the existing
      Mastermind Brain and remembers the exact control that should regain focus. */
@@ -185,18 +204,26 @@
     return false;
   }
 
-  function withAuth(headers) {
+  async function withAuth(headers) {
     headers = headers || {};
-    if (!(window.MDXAuth && window.MDXAuth.client)) return Promise.resolve(headers);
-    return window.MDXAuth.client()
-      .then(function (client) { return client.auth.getSession(); })
-      .then(function (result) {
-        var token = result && result.data && result.data.session
-          && result.data.session.access_token;
-        if (token) headers.Authorization = "Bearer " + token;
-        return headers;
-      })
-      .catch(function () { return headers; });
+    if (!(window.MDXAuth && window.MDXAuth.client)) return { headers: headers, identity: null };
+    var client = await window.MDXAuth.client();
+    var result = await client.auth.getSession();
+    var session = result && result.data && result.data.session;
+    var user = window.MDXAuth.user && window.MDXAuth.user();
+    if (!session || !session.user || !user || typeof user.id !== "string" || !user.id
+        || user.id !== session.user.id || typeof session.access_token !== "string" || !session.access_token) {
+      return { headers: headers, identity: null };
+    }
+    headers.Authorization = "Bearer " + session.access_token;
+    return { headers: headers, identity: { id: user.id, token: session.access_token } };
+  }
+
+  async function sameReadingOwner(identity) {
+    // Authenticated responses must still belong to the same canonical account.
+    if (!identity) return false;
+    var latest = await withAuth({});
+    return !!latest.identity && latest.identity.id === identity.id && latest.identity.token === identity.token;
   }
 
   /* aria-busy must be cleared on every terminal state, success or failure. A
@@ -1117,23 +1144,79 @@
     var screens = snapshot.exposure_screens || [];
     if (!screens.length) return null;
     var d = detail("What this path bears on", "该路径涉及什么");
+    d.setAttribute("data-exposure-membership", "true");
     var lead = el("p", "ox-note");
     lead.appendChild(say(
-      "The owners flag these as the exposures this path would run through. They are "
-      + "descriptions of where the mechanism lands, not a list of names, a screen you "
-      + "can run, or a suggestion to act.",
-      "所有者将以下项标注为该路径可能传导至的敞口类别。它们是机制落点的描述，"
-      + "并非标的名单、可直接运行的筛选器，也不构成任何操作建议。"));
+      "These are the owner's exposure screens. Any company names are the recorded screen membership, not an impact estimate, ranking or suggestion to act. Companies the owner could not evaluate remain outside that conclusion.",
+      "以下为来源提供的敞口筛选。公司名单仅代表已记录的筛选成员，并非影响估计、排名或操作建议。来源无法评估的公司不包含在该结论之内。"));
     d.appendChild(lead);
+    function count(value) { return Number.isSafeInteger(value) && value >= 0 ? String(value) : "—"; }
     screens.forEach(function (screen) {
       var box = el("div", "ox-leg");
-      var h = el("h3");
-      h.appendChild(bi(screen.label));
-      box.appendChild(h);
-      if (screen.note) {
-        var note = el("p", "ox-note");
-        note.appendChild(bi(screen.note));
-        box.appendChild(note);
+      var h = el("h3"); h.appendChild(bi(screen.label)); box.appendChild(h);
+      if (screen.note) { var note = el("p", "ox-note"); note.appendChild(bi(screen.note)); box.appendChild(note); }
+      var companies = screen.companies;
+      if (companies && Array.isArray(companies.linked) && Array.isArray(companies.unlinked)) {
+        var coverage = el("p", "ox-note");
+        coverage.appendChild(say("Recorded members: ", "已记录成员："));
+        coverage.appendChild(document.createTextNode(count(screen.n)));
+        coverage.appendChild(say(" · Could not evaluate: ", " · 无法评估："));
+        coverage.appendChild(document.createTextNode(count(screen.unevaluable)));
+        box.appendChild(coverage);
+        var clock = el("p", "ox-note");
+        clock.appendChild(say("Membership date: ", "成员名单日期："));
+        clock.appendChild(document.createTextNode(snapshot.source.asof || "—"));
+        clock.appendChild(say(" · Substrate date: ", " · 基础数据日期："));
+        var range = snapshot.source.substrate_asof;
+        var start = range && typeof range.min === "string" ? range.min : null;
+        var end = range && typeof range.max === "string" ? range.max : null;
+        var dates = start && end ? (start === end ? start : start + " – " + end) : null;
+        clock.appendChild(document.createTextNode(dates || "—"));
+        box.appendChild(clock);
+        var list = el("ul", "ox-exposure-members");
+        var epoch = readingEpoch;
+        companies.linked.forEach(function (entry) {
+          if (!entry || typeof entry.symbol !== "string" || typeof entry.security_id !== "string") return;
+          var row = el("li"); row.appendChild(el("strong", null, entry.symbol));
+          var company = document.getElementById("ox-company");
+          if (company) {
+            var button = el("button", "ox-cta secondary"); button.type = "button";
+            button.appendChild(say("Inspect company disclosures", "查看公司披露"));
+            function readiness() { button.disabled = company.dataset.companyReady !== "true"; }
+            readiness();
+            if (button.disabled) company.addEventListener("ontology-company-ready", readiness, { once: true });
+            button.addEventListener("click", function () {
+              if (epoch !== readingEpoch || !document.contains(button) || button.disabled) return;
+              company.dispatchEvent(new CustomEvent("ontology-select-company", { detail: {
+                symbol: entry.symbol, security_id: entry.security_id,
+                asof: snapshot.source.asof, manifest_hash: snapshot.source.source_manifest_hash
+              }}));
+            });
+            row.appendChild(button);
+          }
+          list.appendChild(row);
+        });
+        companies.unlinked.forEach(function (entry) {
+          if (!entry || typeof entry.symbol !== "string") return;
+          var row = el("li"); row.appendChild(el("strong", null, entry.symbol));
+          var refusal = el("span", "ox-note");
+          refusal.appendChild(say("Identity could not be verified for this reading.", "本次读数无法核实其身份。"));
+          row.appendChild(refusal); list.appendChild(row);
+        });
+        if (list.childNodes.length) box.appendChild(list);
+        else { var empty = el("p", "ox-note"); empty.appendChild(say("No company members in this owner reading.", "本次来源读数没有公司成员。")); box.appendChild(empty); }
+        if (screen.cuts && typeof screen.cuts === "object") {
+          var cuts = detail("Owner screen thresholds", "来源筛选阈值");
+          Object.keys(screen.cuts).forEach(function (key) {
+            var line = el("p", "ox-note");
+            line.textContent = key + ": " + JSON.stringify(screen.cuts[key]); cuts.appendChild(line);
+          });
+          box.appendChild(cuts);
+        }
+      } else {
+        var unavailable = el("p", "ox-note");
+        unavailable.appendChild(say("No actionable company membership is established for this reading.", "本次读数尚未确立可继续查看的公司成员名单。"));
+        box.appendChild(unavailable);
       }
       d.appendChild(box);
     });
@@ -1346,55 +1429,74 @@
     settle();
   }
 
-  function load() {
-    withAuth({ Accept: "application/json" })
-      .then(function (headers) {
-        return fetch(API, {
-          credentials: "same-origin",
-          cache: "no-store",
-          headers: headers
-        });
-      })
-      .then(function (response) {
-        if (response.status === 401) {
-          gate("Sign in to see the current path", "登录后查看当前路径",
-            "This page describes the product. The current reading is served only to a "
-            + "signed-in account.",
-            "本页面介绍该产品。当前读数仅向已登录账户提供。",
-            "Sign in", "登录", signinHref());
-          return null;
-        }
-        if (response.status === 403) {
-          gate("Included with full access", "包含于完整访问权限",
-            "Your account is signed in but does not include this desk yet.",
-            "您的账户已登录，但尚未包含此功能。",
-            "See plans", "查看方案", "/plans.html?upgrade=1");
-          return null;
-        }
-        if (!response.ok) {
-          return response.json()
-            .catch(function () { return null; })
-            .then(function (body) {
-              var detail = body && body.detail && typeof body.detail === "object"
-                ? body.detail : {};
-              gateForFailure(detail.code || "request_failed");
-              return null;
-            });
-        }
-        return response.json().then(function (snapshot) {
-          if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
-              || snapshot.schema !== "ontology_explorer_snapshot.v1") {
-            gateForFailure("invalid_snapshot");
-            return null;
-          }
-          return snapshot;
-        });
-      })
-      .then(function (snapshot) { if (snapshot) { render(snapshot); focusFromHash(); } })
-      .catch(function () {
-        gateForFailure("request_failed");
+  async function load() {
+    invalidateReading();
+    var epoch = readingEpoch;
+    root.replaceChildren();
+    root.setAttribute("aria-busy", "true");
+    var request = new AbortController();
+    activeRequest = request;
+    try {
+      var auth = await withAuth({ Accept: "application/json" });
+      if (epoch !== readingEpoch) return;
+      if (!auth.identity) { signedOutGate(); return; }
+      var response = await fetch(API, {
+        credentials: "same-origin", cache: "no-store", headers: auth.headers,
+        signal: request.signal
       });
+      if (epoch !== readingEpoch) return;
+      if (response.status === 401) {
+        signedOutGate();
+        return;
+      }
+      if (response.status === 403) {
+        gate("Included with full access", "包含于完整访问权限",
+          "Your account is signed in but does not include this desk yet.",
+          "您的账户已登录，但尚未包含此功能。",
+          "See plans", "查看方案", "/plans.html?upgrade=1");
+        return;
+      }
+      var snapshot = await response.json().catch(function () { return null; });
+      if (epoch !== readingEpoch) return;
+      if (!response.ok) {
+        var failure = snapshot && snapshot.detail && typeof snapshot.detail === "object" ? snapshot.detail : {};
+        gateForFailure(failure.code || "request_failed");
+        return;
+      }
+      if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
+          || snapshot.schema !== "ontology_explorer_snapshot.v1") {
+        gateForFailure("invalid_snapshot");
+        return;
+      }
+      var sameOwner = await sameReadingOwner(auth.identity);
+      if (epoch !== readingEpoch) return;
+      if (!sameOwner) { signedOutGate(); return; }
+      render(snapshot);
+      focusFromHash();
+    } catch (error) {
+      if (epoch === readingEpoch) gateForFailure("request_failed");
+    } finally {
+      if (activeRequest === request) activeRequest = null;
+    }
   }
+
+  function signedOutGate() {
+    gate("Sign in to see the current path", "登录后查看当前路径",
+      "This page describes the product. The current reading is served only to a signed-in account.",
+      "本页面介绍该产品。当前读数仅向已登录账户提供。",
+      "Sign in", "登录", signinHref());
+  }
+  window.addEventListener("mdx-auth", function (event) {
+    var user = event.detail && event.detail.user;
+    var next = user && typeof user.id === "string" ? user.id : null;
+    if (next === canonicalOwner && (!event.detail || event.detail.event !== "SIGNED_OUT")) return;
+    canonicalOwner = next;
+    invalidateReading();
+    root.replaceChildren();
+    if (next) load(); else signedOutGate();
+  });
+  window.addEventListener("pagehide", function () { invalidateReading(); root.replaceChildren(); });
+  window.addEventListener("pageshow", function (event) { if (event.persisted) load(); });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", load);

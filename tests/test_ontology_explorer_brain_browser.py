@@ -47,6 +47,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
 </style>
 </head>
 <body>
+  <script>
+  window.currentOwner={id:'first'};
+  window.MDXAuth={user:()=>window.currentOwner,client:async()=>({auth:{getSession:async()=>({data:{session:{user:window.currentOwner,access_token:'fixture-first'}}})}})};
+  </script>
   <button id="mmb-boot" type="button">Brain</button>
   <main class="ox-wrap"><div id="ox-root" aria-busy="true"></div></main>
   <div id="mock-brain" tabindex="-1"></div>

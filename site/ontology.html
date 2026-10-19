@@ -39,25 +39,26 @@
 @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url("fonts/Inter-900.woff2") format("woff2");}
 </style>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>WTI Live Path — Mastermind</title>
+<title>Ontology Explorer — Mastermind</title>
 
 <meta name="description" content="A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.">
 <link rel="canonical" href="https://www.mastermind-x.com/ontology.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
-<meta property="og:title" content="WTI Live Path — which step in the oil-to-duration path is actually met | Mastermind">
+<meta property="og:title" content="Ontology Explorer — transmission paths and source-bound company research | Mastermind">
 <meta property="og:description" content="A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.">
 <meta property="og:url" content="https://www.mastermind-x.com/ontology.html">
 <meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="WTI Live Path — which step in the oil-to-duration path is actually met | Mastermind">
+<meta name="twitter:title" content="Ontology Explorer — transmission paths and source-bound company research | Mastermind">
 <meta name="twitter:description" content="A step-by-step read of one transmission path: which conditions are met right now, which step blocks it, what the owners recorded, and what to look at next.">
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="theme.css?v=2e861147">
-<link rel="stylesheet" href="ontology.css?v=a60b5bed">
+<link rel="stylesheet" href="ontology.css?v=61b69acc">
+<link rel="stylesheet" href="ontology-company.css?v=85c2a09d">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 <style>
@@ -365,6 +366,22 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     </ol>
   </div>
 
+
+  <section id="ox-company" class="ox-company" aria-labelledby="ox-company-title">
+    <h2 id="ox-company-title"><span class="l-en">Company research</span><span class="l-zh">公司研究</span></h2>
+    <p class="ox-note"><span class="l-en">Inspect source-announced plans. Selecting a company does not establish a connection to the WTI path above.</span><span class="l-zh">查看来源披露的计划。选择公司并不确立其与上方 WTI 路径的联系。</span></p>
+    <form class="ox-company-form">
+      <label class="ox-company-label" for="ox-company-query"><span class="l-en">Company symbol</span><span class="l-zh">公司代码</span>
+        <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required>
+      </label>
+      <button class="ox-cta" type="submit"><span class="l-en">Inspect company</span><span class="l-zh">查看公司</span></button>
+      <button class="ox-cta secondary" type="button" data-company-clear><span class="l-en">Clear</span><span class="l-zh">清除</span></button>
+    </form>
+    <div data-company-result aria-live="polite" aria-busy="false">
+      <p class="ox-note"><span class="l-en">Choose a company to inspect its source-announced plans.</span><span class="l-zh">选择一家公司，查看其来源披露的计划。</span></p>
+    </div>
+  </section>
+
   <noscript>
     <section class="ox-gate">
       <h2><span class="l-en">This page needs JavaScript</span><span class="l-zh">本页面需要 JavaScript</span></h2>
@@ -381,6 +398,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
 
 <script src="supabase.js?v=8596965f" defer></script>
 <script src="theme.js?v=46939917" defer></script>
-<script src="ontology.js?v=f264f9e2" defer></script>
+<script src="ontology.js?v=dfd9a50d" defer></script>
+<script type="module" src="ontology-company.js?v=0f93164d"></script>
 </body>
 </html>
