@@ -340,6 +340,7 @@ def test_closed_native_output_shapes_fit_custody_at_max_population(native_traini
     result = persistence.retrieval.disclose_fitted_retrieval(cap, policy=policy)
     count = cohort.MAX_CAPTURES
     assert count == 256 and persistence.retrieval.baseline.MAX_K == 32
+    assert persistence.retrieval.distance.MAX_INTEGER_DIGITS == 400
     for value, key in ((parameters, "training_manifest"),
                        (parameters["qualification_report"], "qualified_native_facts"),
                        (index, "rows"), (index["baseline_index"], "inventory"),
