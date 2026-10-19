@@ -19,10 +19,87 @@ from engine.research_factory import market_memory_e0_condition_evidence as sourc
 
 _TOKEN = object()
 _IDENTITY = ("query_id", "context_id", "capture_id", "packet_sha256")
+METHOD_SCHEMA = "research_factory.market_memory_e0_retained_method.v1"
+MAX_METHOD_BYTES = 64 * 1024
 
 
 class E0TaskEvidenceError(ValueError):
     """Declared task bytes or their exact source join were refused."""
+
+
+def _registered_object(body, reference, schema, *, limit=control.MAX_DOMAIN_OBJECT_BYTES):
+    if (type(body) is not bytes or not 0 < len(body) <= limit
+            or reference["schema"] != schema or reference["bytes"] != len(body)
+            or reference["sha256"] != sha256(body).hexdigest()):
+        raise E0TaskEvidenceError("exact_registered_object_bytes_required")
+    value = control._domain_json(body)
+    if (type(value) is not dict or value.get("schema") != schema
+            or value.get("object_id") != reference["object_id"]):
+        raise E0TaskEvidenceError("exact_registered_object_identity_required")
+    return value
+
+
+def resolve_registered_task_inputs(*, registration: bytes, method_manifest: bytes,
+                                   task_manifest: bytes, frozen_membership: bytes):
+    """Resolve supplied registration bytes, without authenticating selection.
+
+    The installed owner must supply its observed selection. No caller flag,
+    digest or successful parse can authenticate that origin or admit a study.
+    Only the exact three prelabel inputs are interpreted; opaque implementation
+    code, labels, reviewer records and arbitrary linked objects are not loaded.
+    """
+    reg = control.parse_e0_control_record(registration, kind="registration")
+    membership_ref = reg["corpus"]["membership_ref"]
+    if (type(frozen_membership) is not bytes
+            or not 0 < len(frozen_membership) <= control.MAX_DOMAIN_OBJECT_BYTES
+            or sha256(frozen_membership).hexdigest() != control._FROZEN_DOMAIN_DIGESTS["membership"]
+            or membership_ref["sha256"] != sha256(frozen_membership).hexdigest()
+            or membership_ref["bytes"] != len(frozen_membership)
+            or membership_ref["schema"] != "market_memory.e0_original_owner_metadata_membership.v1"):
+        raise E0TaskEvidenceError("exact_registered_frozen_membership_required")
+    membership = control._domain_json(frozen_membership)
+    if any(membership["owner"][key] != reg["corpus"][key]
+           for key in ("profile", "store_id", "generation_id", "generation_sha256")):
+        raise E0TaskEvidenceError("registered_corpus_owner_mismatch")
+    manifest = _registered_object(task_manifest, reg["tasks_ref"], control._TASK_SCHEMA)
+    control._validate_task_bindings(manifest, task_manifest, membership)
+    declared = _registered_object(method_manifest, reg["implementation"]["method_ref"],
+                                  METHOD_SCHEMA, limit=MAX_METHOD_BYTES)
+    if (set(declared) != {"schema", "object_id", "authority", "study_id", "tasks_ref", "method_spec"}
+            or declared["authority"] != "display_only" or declared["study_id"] != reg["study_id"]
+            or declared["tasks_ref"] != reg["tasks_ref"]
+            or cohort.canonical(declared) != method_manifest
+            or type(declared["method_spec"]) is not dict):
+        raise E0TaskEvidenceError("registered_method_declaration_mismatch")
+    specification = declared["method_spec"]
+    try:
+        method = retrieval.RetainedContextMethodSpec(
+            specification["purge_calendar_days"], specification["embargo_calendar_days"],
+            specification["mode"])
+    except (KeyError, retrieval.EpisodeRetrievalError) as exc:
+        raise E0TaskEvidenceError("registered_native_method_parameters_required") from exc
+    # Full native disclosure binds implementation, descriptor, grouping and
+    # source bytes as well as finite parameters. A method name is insufficient.
+    if (cohort.canonical(specification) != cohort.canonical(method.disclosure())
+            or any(task["mode"] != method.mode for task in manifest["tasks"])):
+        raise E0TaskEvidenceError("registered_native_method_identity_mismatch")
+    return method, {"registration_ref": control._record_ref(reg, "registration"),
+                    "registered_method_ref": reg["implementation"]["method_ref"],
+                    "registered_tasks_ref": reg["tasks_ref"],
+                    "registered_membership_ref": membership_ref}
+
+
+def build_registered_task_condition_evidence(selection, reader, generation, *, registration: bytes,
+        method_manifest: bytes, task_manifest: bytes, frozen_membership: bytes, task_id: str, policy):
+    """Trusted executor composition, still not a selected-owner authorization API."""
+    method, references = resolve_registered_task_inputs(registration=registration,
+        method_manifest=method_manifest, task_manifest=task_manifest, frozen_membership=frozen_membership)
+    cap = build_task_condition_evidence(selection, reader, generation, task_manifest=task_manifest,
+        frozen_membership=frozen_membership, task_id=task_id, expected_method=method, policy=policy)
+    audit = disclose_task_condition_audit(cap, policy=policy)
+    result = E0TaskConditionEvidence({**audit["binding"], **references}, cap._sources, _key=_TOKEN)
+    disclose_task_condition_audit(result, policy=policy)
+    return result
 
 
 def _task_binding(task_manifest, frozen_membership, task_id, selected):
