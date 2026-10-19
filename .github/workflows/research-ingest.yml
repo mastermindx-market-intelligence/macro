@@ -262,8 +262,8 @@ jobs:
                 # Verified archives live under commit-named roots, as required
                 # by the incumbent verifier. Resolve only a bounded manifest's
                 # strict commit identifier; never source config or fall back.
-                mastermind_commit="$("$pinned_python" -I -B - "$bundle/manifest.json" <<'PYCOMMIT'
-          import json, re, sys
+                mastermind_commit="$("$pinned_python" -I -B - "$bundle/manifest.json" "$PRODUCER_RELEASE" <<'PYCOMMIT'
+          import hashlib, json, re, sys
           def unique(pairs):
               result = {}
               for key, value in pairs:
@@ -274,7 +274,8 @@ jobs:
           try:
               with open(sys.argv[1], 'rb') as stream:
                   raw = stream.read(4 * 1024 * 1024 + 1)
-              if len(raw) > 4 * 1024 * 1024:
+              if (len(raw) > 4 * 1024 * 1024
+                      or hashlib.sha256(raw).hexdigest() != sys.argv[2]):
                   raise ValueError()
               document = json.loads(raw, object_pairs_hook=unique)
               if (type(document) is not dict

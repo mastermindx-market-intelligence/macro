@@ -705,3 +705,26 @@ def test_old_flat_launcher_is_never_a_layout_fallback(tmp_path):
     assert _output_rcs(env) == ['1']
     assert _argv_calls(Path(env['PINNED_STUB_ARGV_LOG'])) == []
     assert _argv_calls(Path(env['LEGACY_STUB_ARGV_LOG'])) == []
+
+
+
+def test_locator_rejects_manifest_replaced_after_shell_hash(tmp_path):
+    bundle = _make_bundle(tmp_path)
+    replacement = tmp_path / 'replacement-manifest.json'
+    replacement.write_text(json.dumps({'schema': 'mastermind.research_read_stage.v1',
+        'state': 'INERT_CANDIDATE', 'mastermind_commit': 'b' * 40}))
+    alternate = bundle / ('mastermind/' + 'b' * 40 + '/ops/research_producer/launch.py')
+    alternate.parent.mkdir(parents=True)
+    alternate.write_text('# different commit-root entry\n')
+    interpreter = _install_root(tmp_path) / INTERPRETER_SUBPATH
+    stub = interpreter.read_text()
+    command = '  exec ' + shlex.quote(sys.executable) + ' "$@"'
+    assert stub.count(command) == 1
+    interpreter.write_text(stub.replace(command,
+        '  cp ' + shlex.quote(str(replacement)) + ' "$4"\n' + command))
+    env = _make_env(tmp_path, producer_release=VALID_DIGEST)
+    proc = _run_ingest(tmp_path, env)
+    assert PREPARATION_REFUSAL in proc.stdout
+    assert _output_rcs(env) == ['1']
+    assert _argv_calls(Path(env['PINNED_STUB_ARGV_LOG'])) == []
+    assert _argv_calls(Path(env['LEGACY_STUB_ARGV_LOG'])) == []
