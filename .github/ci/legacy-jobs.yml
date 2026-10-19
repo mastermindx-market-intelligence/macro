@@ -16986,9 +16986,9 @@ jobs:
       - name: unsubscribe page + per-matcher serving boundary (templates/unsubscribe.html.j2)
         run: python -m pytest tests/test_unsubscribe_page.py -v
       - name: pinned alert email message type (app/mailer.py alert template)
-        run: python -m pytest tests/test_mailer_alert_template.py -v
+        run: python -m pytest tests/test_mailer_alert_template.py tests/test_mailer_held_material.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
-        run: python -m pytest tests/test_alert_delivery_drain.py -v
+        run: python -m pytest tests/test_alert_delivery_drain.py tests/test_held_material_entitlement.py -v
       - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
         run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
@@ -26980,6 +26980,8 @@ jobs:
     scope: exclusive
     paths:
       - "tests/test_foresight_cascade.py"
+      - "engine/power_scarcity.py"
+      - "tests/test_power_scarcity.py"
       - "tests/test_fda_shortages_generation.py"
       - "tests/test_fda_supply_probes.py"
       - "tests/test_fda_supply_probes_t02r.py"
@@ -27036,6 +27038,8 @@ jobs:
       - "collectors/yahoo.py"
       - "lib/stooq.py"
       - "lib/ticker_aliases.py"
+      - "tests/test_thesis_monitor.py"
+      - "engine/thesis_monitor.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -27046,7 +27050,7 @@ jobs:
       - name: install deps for the FDA supply suites
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
-        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
@@ -27059,6 +27063,11 @@ jobs:
         run: python -m pytest tests/test_healthcare_observation_split.py -q
       - name: Healthcare FDA record lines under the chips
         run: python -m pytest tests/test_healthcare_fda_details.py -q
+      # This job owns scripts/build_foresight.py and engine/foresight_health.py, the
+      # consumers of compute_thesis_monitor, so it is the home of the LLM thesis
+      # kill-condition attribution suite.
+      - name: Foresight thesis monitor kill conditions
+        run: python -m pytest tests/test_thesis_monitor.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
