@@ -42,7 +42,7 @@ from __future__ import annotations
 
 import dataclasses
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from fractions import Fraction
 from typing import Any, Mapping, Sequence
@@ -349,12 +349,16 @@ class _ActionIndex:
     route_kinds: Mapping[str, str]
     consumes: Mapping[str, tuple[str, ...]]
     blockers: tuple[str, ...]
+    #: SPEC_C2D §5: the outside actions whose shared-pool consumption capacity
+    #: modelled, keyed by route id (empty before C2d or when none is modelled).
+    modelled: Mapping[str, dict[str, Any]] = field(default_factory=dict)
 
 
 def _index_actions(evaluation: Any, scenario: FinancingScenario) -> _ActionIndex:
     inputs = evaluation.inputs
     applied = {item["route_id"]: item for item in inputs.get("actions_applied", ())}
     outside = {item["route_id"]: item for item in inputs.get("non_capacity_actions", ())}
+    modelled = {item["route_id"]: item for item in inputs.get("outside_consumption", ())}
     selections = {action.route_id: action for action in scenario.actions}
     route_ids = tuple(sorted(selections))
     # Capacity partitions every scenario action into exactly these two records
@@ -364,15 +368,23 @@ def _index_actions(evaluation: Any, scenario: FinancingScenario) -> _ActionIndex
             (route_id in applied) != (route_id in outside),
             f"action_route_unaccounted:{route_id}",
         )
+    # SPEC_C2D §1.3: a modelled outside action is still an outside action (no
+    # route, no plan); capacity only states which shared pools it consumes.
+    for route_id in modelled:
+        _require(route_id in outside, f"action_route_unaccounted:{route_id}")
     routes = {route.route_id: route for route in evaluation.envelope.routes}
+    consumes = {route_id: tuple(route.consumes) for route_id, route in routes.items()}
+    for route_id, item in modelled.items():
+        consumes[route_id] = tuple(item["pools"])
     return _ActionIndex(
         route_ids=route_ids,
         selections=selections,
         applied=applied,
         outside=outside,
         route_kinds={route_id: route.route_kind for route_id, route in routes.items()},
-        consumes={route_id: tuple(route.consumes) for route_id, route in routes.items()},
+        consumes=consumes,
         blockers=tuple(evaluation.envelope.blockers),
+        modelled=modelled,
     )
 
 
@@ -451,6 +463,38 @@ def _action_check(index: _ActionIndex, route_id: str) -> ActionCheck:
         owner in ("supply", "funding_only", "capacity_unmodelled"),
         f"action_owner_unrecognised:{owner}",
     )
+    refused = f"{INELIGIBLE_PREFIX}{route_id}" in index.blockers
+    if owner == "capacity_unmodelled" and (route_id in index.modelled or refused):
+        # SPEC_C2D §1.5/§2.3: capacity now answers for this outside action -- it
+        # either consumed the shared pools the action draws on, or refused the
+        # declared registration path as ineligible.  Its status is capacity's.
+        both, branch, ineligible = _action_blockers(index, route_id)
+        blockers = tuple(sorted(set((*both, *branch, *ineligible))))
+        if ineligible:
+            status = "ineligible_route"
+        elif both:
+            status = "infeasible"
+        elif branch:
+            status = "infeasible_on_price_branch"
+        else:
+            status = "within_capacity"
+        note = (
+            "capacity applied the asserted quantity as a fixed consumption of the shared "
+            "pools this action draws on; the action's own limit belongs to its funding owner"
+            if route_id in index.modelled
+            else "capacity refused the declared registration path as ineligible and applied no consumption"
+        )
+        return ActionCheck(
+            route_id=route_id,
+            action=record["action"],
+            settlement=record["settlement"],
+            status=status,
+            owner="capacity",
+            fixed=bool(record["fixed"]),
+            blocker_ids=blockers,
+            unknown_ids=(),
+            note=note,
+        )
     status = "not_modelled" if owner == "capacity_unmodelled" else "not_a_capacity_route"
     unknown_ids: tuple[str, ...] = ()
     if status == "not_modelled" and record["fixed"]:
@@ -490,6 +534,8 @@ def _joint_check(index: _ActionIndex, checks: Sequence[ActionCheck], evaluation:
     aggregate = envelope.aggregate_bound
     statuses = {check.status for check in checks}
     applied = {route_id for route_id, record in index.applied.items() if record["fixed"] and record["applied"]}
+    # SPEC_C2D §5: a modelled outside action is a fixed use capacity applied too.
+    applied |= set(index.modelled)
     fixed_unmodelled = any(check.status == "not_modelled" and check.fixed for check in checks)
     any_fixed = any(check.fixed for check in checks)
     # SPEC_S0 §3 chains these four in this order: an infeasibility first, then an

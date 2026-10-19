@@ -82,7 +82,11 @@ def test_a0_identities_match_the_reference_pack():
         assert str(spec["cik"]) == identity.cik, ticker
         assert spec["registry_name"] == identity.registry_name, ticker
         assert spec["binding_status"] == identity.qualification, ticker
-        assert spec["ticker"] == identity.ticker == ticker, ticker
+        # A dossier is keyed by its archetype.  A renamed registrant (G0-S
+        # requalification, QNCX -> primary IRLA) keeps the archetype's ticker as
+        # one the registry still lists for the same CIK.
+        assert spec["ticker"] == identity.archetype == ticker, ticker
+        assert ticker in tuple(identity.details.get("all_tickers") or (identity.ticker,)), ticker
 
 
 def test_a0_expected_values_are_decimal_strings_with_unit_and_pack_rule():

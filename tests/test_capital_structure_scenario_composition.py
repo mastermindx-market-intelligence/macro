@@ -584,7 +584,9 @@ def test_s0_a_component_input_error_is_wrapped_by_type_only(
         (CB.OTHER_ROUTE, "other", "cash", "250000", "not_a_capacity_route", "funding_only"),
         (CB.EQUITY_LINE_ROUTE, "equity_line", "cash", None, "not_modelled", "capacity_unmodelled"),
         (CB.DIRECT_ROUTE, "registered_direct", "cash", "1000000", "not_modelled", "capacity_unmodelled"),
-        (CB.PIPE_ROUTE, "pipe", "cash", "3000000", "not_modelled", "capacity_unmodelled"),
+        # SPEC_C2D: capacity models a fixed cash PIPE's shared-pool consumption,
+        # so its status is capacity's own answer, not an unmodelled Unknown.
+        (CB.PIPE_ROUTE, "pipe", "cash", "3000000", "within_capacity", "capacity"),
     ],
 )
 def test_s0_the_action_check_table_reads_the_owner_from_capacity(
@@ -665,12 +667,28 @@ def test_s0_the_joint_check_reports_no_witness_of_its_own() -> None:
 
 
 def test_s0_a_fixed_unmodelled_action_leaves_the_joint_indeterminate() -> None:
-    result = compose(actions=[CB.action(CB.PIPE_ROUTE, "pipe", "cash", "3000000")])
+    # An undeclared registered direct stays unmodelled after C2d (SPEC_C2D §0.6).
+    result = compose(actions=[CB.action(CB.DIRECT_ROUTE, "registered_direct", "cash", "1000000")])
     check(result)
-    assert checks_of(result)[CB.PIPE_ROUTE].status == "not_modelled"
+    assert checks_of(result)[CB.DIRECT_ROUTE].status == "not_modelled"
     assert result.joint_check.status == "indeterminate"
     assert result.joint_check.aggregate_status == "unknown"
     assert result.coverage[0].status == "indeterminate"
+
+
+def test_s0_a_modelled_outside_action_reads_capacity_and_carries_no_unknown() -> None:
+    """SPEC_C2D §5: once capacity models a fixed cash PIPE, S0 copies its answer."""
+    result = compose(actions=[CB.action(CB.PIPE_ROUTE, "pipe", "cash", "3000000")])
+    check(result)
+    entry = checks_of(result)[CB.PIPE_ROUTE]
+    assert (entry.status, entry.owner, entry.fixed) == ("within_capacity", "capacity", True)
+    assert entry.unknown_ids == ()
+    assert f"action_route_not_modelled:{CB.PIPE_ROUTE}" not in {
+        item.unknown_id for item in result.capacity_envelope.unknowns
+    }
+    assert result.joint_check.aggregate_status == result.capacity_envelope.aggregate_bound.status
+    if result.joint_check.aggregate_status == "known":
+        assert result.joint_check.status == "feasible"
 
 
 def test_s0_one_scenario_carries_capacity_and_instrument_actions_together() -> None:

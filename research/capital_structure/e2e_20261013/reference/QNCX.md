@@ -10,7 +10,7 @@ schema: capital_structure.reference_dossier.v1
 ticker: QNCX
 issuer_id: sec:cik:0001662774
 cik: "0001662774"
-registry_name: Quince Therapeutics, Inc.
+registry_name: IRulya Therapeutics Inc.
 binding_status: qualified
 verdict_hint: accept
 gap_ids: []
@@ -68,9 +68,13 @@ negatives:
 ## Identity
 
 `identity_for(pack, "QNCX")`: ticker QNCX, CIK 0001662774, issuer_id
-sec:cik:0001662774, registry name `Quince Therapeutics, Inc.` (submissions
-name identical), Nasdaq, ticker as of 2026-10-13, label_drift false,
-case_supply supplied, qualification `qualified`.
+sec:cik:0001662774, registry name `IRulya Therapeutics Inc.` (submissions
+name identical), Nasdaq, ticker as of 2026-10-13, label_drift true,
+case_supply supplied, qualification `qualified`. Reference pack 1.1.0
+(G0-S requalification) records the registrant rename: `Quince Therapeutics,
+Inc.` is a former name to 2026-10-09, the primary ticker is now IRLA and
+QNCX is retained. The in-policy anchors were re-derived unchanged, so the
+expectations below are unaffected.
 
 ## Source packet
 
