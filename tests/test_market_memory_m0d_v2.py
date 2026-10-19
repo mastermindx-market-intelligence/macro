@@ -2939,3 +2939,196 @@ def test_missing_or_nonfalse_adjustment_cannot_enter_seal(mm_envelope_modules, a
     assert owner._fetch_spy_daily_bar(_ENVELOPE_SESSION, lambda path, params: payload) == ("malformed", [])
     observations, cache = _collect_envelope_fixture(owner, payload)
     assert cache == {} and all(o.status == "malformed" for o in observations)
+# Native v2 population diagnostics use hermetic owner fixtures, not private data.
+@pytest.fixture
+def v2_population_owner(tmp_path):
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    from engine.neuralweb import market_memory_population as population
+    from engine.neuralweb import market_memory_population_v2 as census
+    source, stored, session = _binding_source(tmp_path)
+    tech_root, _ = _binding_capture(source, session)
+    _binding_experience(source, tech_root, session)
+    repository = tmp_path / "repository"
+    (repository / "config").mkdir(parents=True)
+    (repository / "lib").mkdir()
+    (repository / "lib/nyse_calendar.py").write_bytes((ROOT / "lib/nyse_calendar.py").read_bytes())
+    reg_name = "market_memory_spy_experience_registration.v2.json"
+    (repository / "config" / reg_name).write_bytes((ROOT / "config" / reg_name).read_bytes())
+    registration = json.loads((repository / "config" / reg_name).read_bytes())
+    calls = []
+    class Policy:
+        def authorize_population_manifest(self, **request):
+            calls.append(request)
+            assert request["repository_root"] == str(repository)
+            assert request["experience_root"] == str(source.parent / "experience-v2")
+            assert request["store_id"] is None  # no invented v2 store identity
+            return population.PopulationAccessGrant(
+                population.POPULATION_ACCESS_POLICY_VERSION, "operator.test_v2_census", True,
+                registration_id=request["registration_id"])
+    kwargs = dict(repository_root=repository, experience_root=source.parent / "experience-v2",
+                  source_root=source, technicals_v2_root=tech_root,
+                  through_session=session.isoformat(), policy=Policy())
+    return census, kwargs, calls, stored, registration
+
+
+def test_native_v2_population_closes_actual_owner_bytes_without_values_or_writes(v2_population_owner, monkeypatch):
+    census, kwargs, calls, stored, registration = v2_population_owner
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+    before = {p: hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in kwargs["source_root"].parent.rglob("*") if p.is_file()}
+    monkeypatch.setattr(exp, "accrue_spy_experience_v2", lambda *a, **k: pytest.fail("reader accrued"))
+    monkeypatch.setattr(exp, "_write_create_once_v2", lambda *a, **k: pytest.fail("reader wrote"))
+    value = census.read_population_v2(**kwargs)
+    assert value["registration_id"] == registration["registration_id"]
+    assert value["expected_sessions"] == ["2026-08-21"]
+    assert value["counts"] == dict(expected=1, recorded=1, admitted=1, abstained=0, unrecorded=0)
+    assert value["rows"][0]["source_generation_id"] == stored.generation_id
+    assert value["rows"][0]["source_closure"] == "published_exact_pin_and_projection_validated"
+    assert [c["registration_id"] for c in calls] == [None, registration["registration_id"], registration["registration_id"]]
+    assert all(v is False for k, v in value["claims"].items() if k.endswith("eligible") or k.endswith("authenticated") or k == "operational_admission")
+    encoded = json.dumps(value)
+    assert '"feature"' not in encoded and '"bar"' not in encoded and '"outcome"' not in encoded
+    assert "590.25" not in encoded
+    assert before == {p: hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in kwargs["source_root"].parent.rglob("*") if p.is_file()}
+
+
+def test_native_v2_population_denominator_is_not_v1_pilot_or_present_records(v2_population_owner):
+    census, kwargs, *_ = v2_population_owner
+    kwargs["through_session"] = "2026-08-24"
+    value = census.read_population_v2(**kwargs)
+    assert value["expected_sessions"] == ["2026-08-21", "2026-08-24"]
+    assert value["counts"]["unrecorded"] == 1
+    assert value["rows"][-1]["disposition"] == "unrecorded"
+    assert value["activation"]["basis"] == "existing_v2_owner_excludes_install_calendar_day"
+    assert value["activation"]["strict_open_rule_conformance_authenticated"] is False
+    assert value["activation"]["registration_publication_clock_authenticated"] is False
+
+
+@pytest.mark.parametrize("policy", [None, True, {}, "site_entitlement"])
+def test_native_v2_population_rejects_nonpolicy_before_owner_io(v2_population_owner, monkeypatch, policy):
+    census, kwargs, *_ = v2_population_owner
+    from engine.neuralweb import market_memory_population as population
+    kwargs["policy"] = policy
+    monkeypatch.setattr(census.kernel, "_read_bounded", lambda *a, **k: pytest.fail("unauthorized owner read"))
+    monkeypatch.setattr(census, "_safe_parents", lambda *a, **k: pytest.fail("unauthorized owner inspection"))
+    with pytest.raises(population.MarketMemoryPopulationAccessError):
+        census.read_population_v2(**kwargs)
+
+
+@pytest.mark.parametrize("field,leaf", [("experience_root", "experience-v1"),
+    ("source_root", "sources"), ("technicals_v2_root", "technicals-v1")])
+def test_native_v2_population_refuses_v1_roots_before_policy(v2_population_owner, field, leaf):
+    census, kwargs, calls, *_ = v2_population_owner
+    kwargs[field] = kwargs[field].parent / leaf
+    with pytest.raises(census.PopulationV2Error, match="wrong native"):
+        census.read_population_v2(**kwargs)
+    assert calls == []
+
+
+@pytest.mark.parametrize("change", ["registration", "feature", "clock", "source_pin", "capture_pin", "label", "extra", "noncanonical"])
+def test_native_v2_population_rejects_record_drift(v2_population_owner, change):
+    census, kwargs, *_ = v2_population_owner
+    path = kwargs["experience_root"] / "records/2026-08-21.json"
+    record = json.loads(path.read_bytes())
+    if change == "registration": record["registration_id"] = "mmspyexpreg_" + "0" * 64
+    elif change == "feature": record["feature"]["price_raw_close_ratio_20_sessions"] = 1.0
+    elif change == "clock": record["recorded_at"] = "2026-08-22T04:45:00Z"
+    elif change == "source_pin": record["source_generation_id"] = "mmsgen_" + "0" * 64
+    elif change == "capture_pin": record["technical_capture_id"] = "mmtechv2cap_" + "0" * 64
+    elif change == "label": record["outcome_label"] = "forbidden"
+    elif change == "extra": record["feature"]["additional"] = True
+    body = census.kernel._canonical_bytes(record)
+    path.write_bytes(body + b"\n" if change == "noncanonical" else body)
+    with pytest.raises(census.PopulationV2Error): census.read_population_v2(**kwargs)
+
+
+@pytest.mark.parametrize("name", ["registration_id", "content_sha256", "content_bytes", "spec"])
+def test_native_v2_population_registration_identity_is_not_schema_only(v2_population_owner, name):
+    census, kwargs, *_ = v2_population_owner
+    path = kwargs["repository_root"] / "config/market_memory_spy_experience_registration.v2.json"
+    value = json.loads(path.read_bytes())
+    value[name] = False if name in {"spec", "content_bytes"} else "wrong"
+    path.write_text(json.dumps(value))
+    with pytest.raises(census.PopulationV2Error): census.read_population_v2(**kwargs)
+
+
+@pytest.mark.parametrize("when", [2, 3])
+def test_native_v2_population_rechecks_bound_current_permission(v2_population_owner, when):
+    census, kwargs, *_ = v2_population_owner
+    from engine.neuralweb import market_memory_population as population
+    base = kwargs["policy"].authorize_population_manifest
+    calls = []
+    def authorize(**request):
+        calls.append(request)
+        if len(calls) == when: raise PermissionError("current diagnostic grant revoked")
+        return base(**request)
+    kwargs["policy"].authorize_population_manifest = authorize
+    with pytest.raises(population.MarketMemoryPopulationAccessError): census.read_population_v2(**kwargs)
+
+
+@pytest.mark.parametrize("kind", ["record", "marker", "head", "symlink", "oversized"])
+def test_native_v2_population_bounded_inputs_and_midread_drift(v2_population_owner, monkeypatch, kind):
+    census, kwargs, *_ = v2_population_owner
+    record = kwargs["experience_root"] / "records/2026-08-21.json"
+    if kind == "symlink":
+        target = record.with_suffix(".copy"); record.rename(target); record.symlink_to(target)
+    elif kind == "oversized": record.write_bytes(b"x" * (census.MAX_RECORD_BYTES + 1))
+    else:
+        original = census.technical.validate_capture_source_binding
+        def mutate(*a, **k):
+            original(*a, **k)
+            path = record if kind == "record" else kwargs["experience_root"] / (
+                ".v2_install_verified" if kind == "marker" else "EXP_V2_HEAD.json")
+            path.write_bytes(path.read_bytes() + b" ")
+        monkeypatch.setattr(census.technical, "validate_capture_source_binding", mutate)
+    with pytest.raises(census.PopulationV2Error): census.read_population_v2(**kwargs)
+
+
+def test_native_v2_population_historical_abstention_does_not_reprove_absence(v2_population_owner, monkeypatch):
+    census, kwargs, *_ = v2_population_owner
+    path = kwargs["experience_root"] / "records/2026-08-21.json"
+    value = json.loads(path.read_bytes())
+    value = {k: v for k, v in value.items() if k in census._BASE}
+    value.update(disposition="abstained", reason="no_technicals_v2_capture")
+    path.write_bytes(census.kernel._canonical_bytes(value))
+    head = kwargs["experience_root"] / "EXP_V2_HEAD.json"
+    data = json.loads(head.read_bytes()); data["latest_disposition"] = "abstained"
+    head.write_bytes(census.kernel._canonical_bytes(data))
+    monkeypatch.setattr(census.sources, "read_verified_spy_rest_bar", lambda *a, **k: pytest.fail("historical absence inferred from current owner"))
+    result = census.read_population_v2(**kwargs)
+    assert result["rows"][0]["source_closure"] == "historical_absence_not_reproven"
+    assert result["counts"]["abstained"] == 1
+
+
+def test_native_v2_population_preserves_original_pin_after_later_source_correction(v2_population_owner):
+    census, kwargs, _, stored, _ = v2_population_owner
+    _binding_source(kwargs["source_root"].parent.parent, close=591.0)
+    result = census.read_population_v2(**kwargs)
+    assert result["rows"][0]["source_generation_id"] == stored.generation_id
+
+
+def test_native_v2_population_absent_record_race_is_detected(v2_population_owner, monkeypatch):
+    census, kwargs, *_ = v2_population_owner
+    kwargs["through_session"] = "2026-08-24"
+    original = census.kernel._read_bounded
+    def appearing(path, **kw):
+        value = original(path, **kw)
+        if kw["label"] == "v2 population final input":
+            (kwargs["experience_root"] / "records/2026-08-24.json").write_bytes(b"{}")
+        return value
+    monkeypatch.setattr(census.kernel, "_read_bounded", appearing)
+    with pytest.raises(census.PopulationV2Error, match="appeared"):
+        census.read_population_v2(**kwargs)
+
+
+def test_native_v2_population_calendar_bytes_and_denominator_bound(v2_population_owner):
+    census, kwargs, *_ = v2_population_owner
+    calendar = kwargs["repository_root"] / "lib/nyse_calendar.py"
+    before = calendar.read_bytes(); calendar.write_bytes(before + b"\n")
+    with pytest.raises(census.PopulationV2Error, match="calendar source"):
+        census.read_population_v2(**kwargs)
+    calendar.write_bytes(before)
+    (kwargs["experience_root"] / ".v2_install_verified").write_text("2000-01-01T00:00:00Z\n")
+    with pytest.raises(census.PopulationV2Error, match="work bound"):
+        census.read_population_v2(**kwargs)
