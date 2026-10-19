@@ -67,6 +67,14 @@ SIX_PACKAGE_ROLES = (
 )
 STATEMENTS = ("income_statement",)
 PACKS = ("PK01",)
+# The four orphan reason keys every report carries, zeros included (ruling
+# V1-a r4, R2).
+R4_ORPHAN_REASONS = {
+    "cik_not_member": 0,
+    "period_outside_windows": 0,
+    "windowless_period_on_windowed_family": 0,
+    "deep_component_not_deep_member": 0,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -1265,7 +1273,7 @@ def test_census_identity_blockers_individually() -> None:
     assert report["census_identity"]["draft_identity"] == declared_identity
     assert (
         report["census_identity"]["draft_identity_basis"]
-        == "declared_manifest_draft_sha256"
+        == "declared_unverified"
     )
     assert report["acceptance_blockers"] == ["census_identity_mismatch"]
     assert report["manifest_sha256"] == report["manifest"]["sha256"]
@@ -1414,9 +1422,8 @@ def test_probe_p5_orphans_and_rollup_mismatch_block() -> None:
 
     assert report["orphan_cells"] == 1
     assert report["orphan_reasons"] == {
+        **R4_ORPHAN_REASONS,
         "cik_not_member": 1,
-        "period_outside_windows": 0,
-        "package_not_deep_member": 0,
     }
     assert report["manifest_rollup_mismatch"]
     assert report["acceptance_eligible"] is False
@@ -1434,9 +1441,8 @@ def test_out_of_window_metric_cell_is_an_orphan() -> None:
 
     assert report["orphan_cells"] == 2
     assert report["orphan_reasons"] == {
-        "cik_not_member": 0,
+        **R4_ORPHAN_REASONS,
         "period_outside_windows": 2,
-        "package_not_deep_member": 0,
     }
     assert report["acceptance_eligible"] is False
     assert report["acceptance_blockers"] == ["orphan_cells"]
@@ -1722,8 +1728,14 @@ def test_attested_manifest_without_declared_draft_sha256_is_blocked() -> None:
     del manifest["manifest_draft_sha256"]
     report = run_proof(manifest, small_thresholds_for(manifest))
     assert report["census_identity"]["draft_identity"] is None
+    # Ruling V1-a r4 (R3): every non-draft's basis is declared_unverified —
+    # with or without a well-formed declaration; the r3 three-way split is
+    # gone and the null identity plus the pin mismatch carry the absence.
     assert report["census_identity"]["draft_identity_basis"] == (
-        "absent_manifest_draft_sha256"
+        "declared_unverified"
+    )
+    assert report["census_identity"]["draft_identity_trust"] == (
+        "attestation_required"
     )
     assert report["census_identity"]["mismatched_fields"] == [
         "manifest_draft_sha256_prefix"
@@ -1739,7 +1751,7 @@ def test_attested_manifest_with_matching_declared_sha_is_not_blocked() -> None:
     report = run_proof(manifest, small_thresholds_with_prefix(declared[:20]))
     assert report["census_identity"]["draft_identity"] == declared
     assert report["census_identity"]["draft_identity_basis"] == (
-        "declared_manifest_draft_sha256"
+        "declared_unverified"
     )
     assert report["census_identity"]["mismatched_fields"] == []
     assert report["manifest"]["manifest_draft_sha256"] == declared
@@ -1747,13 +1759,14 @@ def test_attested_manifest_with_matching_declared_sha_is_not_blocked() -> None:
 
 
 def test_package_cell_on_core_only_member_is_an_orphan() -> None:
-    """M5: a package cell on a member that is not deep is an orphan."""
+    """M5 (r3) as generalized by ruling V1-a r4 (R2): a package cell on a
+    member that is not deep is an orphan under deep_component_not_deep_member."""
     members = standard_members()
     manifest = build_manifest(members, draft=False, attested=True)
     manifest["cells"].append(cell("0000000003", "A1", "package:primary"))
     report = run_proof(manifest)
     assert report["orphan_cells"] == 1
-    assert report["orphan_reasons"]["package_not_deep_member"] == 1
+    assert report["orphan_reasons"]["deep_component_not_deep_member"] == 1
     assert report["acceptance_eligible"] is False
     assert report["acceptance_blockers"] == ["orphan_cells"]
 
@@ -1763,7 +1776,7 @@ def test_legacy_spelled_package_cell_on_core_member_is_an_orphan() -> None:
     manifest = build_manifest(members, draft=False, attested=True)
     manifest["cells"].append(cell("0000000003", "A1", "package.label"))
     report = run_proof(manifest)
-    assert report["orphan_reasons"]["package_not_deep_member"] == 1
+    assert report["orphan_reasons"]["deep_component_not_deep_member"] == 1
     assert "orphan_cells" in report["acceptance_blockers"]
     # The legacy spelling also trips the alias blocker; both block.
     assert "legacy_field_id_alias" in report["acceptance_blockers"]
@@ -1779,7 +1792,7 @@ def test_package_cell_outside_windows_is_an_orphan() -> None:
     report = run_proof(manifest)
     assert report["orphan_cells"] == 1
     assert report["orphan_reasons"]["period_outside_windows"] == 1
-    assert report["orphan_reasons"]["package_not_deep_member"] == 0
+    assert report["orphan_reasons"]["deep_component_not_deep_member"] == 0
     assert report["acceptance_blockers"] == ["orphan_cells"]
 
 
@@ -1798,15 +1811,259 @@ def test_real_draft_package_shape_gives_zero_orphans() -> None:
     assert all(item["cik"] in {"0000000001", "0000000002"} for item in package_a2_i2)
     report = run_proof(manifest)
     assert report["orphan_cells"] == 0
-    assert report["orphan_reasons"] == {
-        "cik_not_member": 0,
-        "period_outside_windows": 0,
-        "package_not_deep_member": 0,
-    }
+    assert report["orphan_reasons"] == dict(R4_ORPHAN_REASONS)
 
 
 # ---------------------------------------------------------------------------
-# 18. Source hygiene scan
+# 18. Review-lane rulings V1-a r4 (2026-10-19): R1 wildcard escape, R2
+#     deep-only families, R3 declared-unverified identity
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "field_id",
+    ["metric:alpha", "package:primary", "statement:income_statement"],
+)
+def test_wildcard_period_on_windowed_family_is_an_orphan(field_id: str) -> None:
+    """R1: a metric, package or statement cell with period_id "*" is an
+    orphan under windowless_period_on_windowed_family, never a counted cell."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    # build_manifest's own rollup for member 1 excludes the appended cell, so
+    # a proof that (wrongly) counts it would also report a present_cells
+    # rollup mismatch of 39 vs 40.
+    manifest["cells"].append(cell("0000000001", "*", field_id))
+    report = run_proof(manifest)
+
+    assert report["orphan_cells"] == 1
+    assert report["orphan_reasons"] == {
+        **R4_ORPHAN_REASONS,
+        "windowless_period_on_windowed_family": 1,
+    }
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["orphan_cells"]
+    # Not counted in present_cells: no present_cells mismatch appears for the
+    # member and the tier's present totals are untouched.
+    assert [
+        item
+        for item in report["manifest_rollup_mismatch"]
+        if item["cik"] == "0000000001" and item["field"] == "present_cells"
+    ] == []
+    assert report["tiers"]["deep"]["fields"]["present"] == 48
+    assert report["tiers"]["core"]["fields"]["present"] == 36
+
+
+def test_probe_wildcard_metric_cell_passes_r2_fails_base_passes_head() -> None:
+    """R1 reviewer probe: green at r2, red at r3 BASE, green at HEAD.
+
+    A wildcard-period metric cell on a deep member was an orphan at r2 (the
+    wildcard period sits outside the member's windows); r3 BASE exempted
+    every "*" cell from the window test, so the cell was silently counted in
+    present_cells (the reviewer's 38 became 39); HEAD orphans it again under
+    windowless_period_on_windowed_family.  The probe asserts the r2/HEAD
+    shared invariant — an orphan, never counted — not the reason key, which
+    r2 spelled period_outside_windows.  The TypeError arm runs the same
+    scenario through r2's call shape (a parsed manifest plus the caller's
+    sha256), which r3 removed."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"].append(cell("0000000001", "*", "metric:alpha"))
+    thresholds = small_thresholds_for(manifest)
+    payload = manifest_bytes(manifest)
+    try:
+        report = prove_coverage(
+            payload, thresholds, DIRECT_IDS, FORMULA_IDS, proved_at=PROVED_AT
+        )
+    except TypeError:
+        report = prove_coverage(
+            manifest,
+            hashlib.sha256(payload).hexdigest(),
+            thresholds,
+            DIRECT_IDS,
+            FORMULA_IDS,
+            proved_at=PROVED_AT,
+        )
+
+    assert report["orphan_cells"] == 1
+    # Not counted in present_cells: the manifest's own rollup (39 for member
+    # 1, without the appended cell) agrees with the proof, and the tier's
+    # present totals are untouched.  At r3 BASE the proof counted the cell,
+    # producing a 39-vs-40 present_cells mismatch here.
+    assert [
+        item
+        for item in report["manifest_rollup_mismatch"]
+        if item["cik"] == "0000000001" and item["field"] == "present_cells"
+    ] == []
+    assert report["tiers"]["deep"]["fields"]["present"] == 48
+    assert report["tiers"]["core"]["fields"]["present"] == 36
+
+
+def test_wildcard_period_on_windowless_families_stays_exempt() -> None:
+    """R1: packet, journey and specialist cells keep their wildcard periods
+    and stay exempt from the window test."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    wildcard_families = {
+        item["field_id"]
+        for item in manifest["cells"]
+        if item["period_id"] == "*"
+    }
+    assert wildcard_families == {"specialist:PK01", "packet", "journey"}
+    report = run_proof(manifest)
+    assert report["orphan_cells"] == 0
+    assert report["orphan_reasons"] == dict(R4_ORPHAN_REASONS)
+    assert report["acceptance_blockers"] == []
+    # The wildcard cells are counted present on the deep members, not orphaned.
+    assert report["tiers"]["deep"]["pass"] == 2
+
+
+@pytest.mark.parametrize(
+    "field_id,period",
+    [
+        ("package:primary", "A1"),
+        ("statement:income_statement", "A1"),
+        ("specialist:PK01", "*"),
+        ("packet", "*"),
+        ("journey", "*"),
+    ],
+)
+def test_deep_only_family_cell_on_core_member_is_an_orphan(
+    field_id: str, period: str
+) -> None:
+    """R2: every deep-only family (package, statement, specialist, packet,
+    journey — the frozen deep tier's own component set) on a member that is
+    not deep is an orphan under deep_component_not_deep_member."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"].append(cell("0000000003", period, field_id))
+    report = run_proof(manifest)
+
+    assert report["orphan_cells"] == 1
+    assert report["orphan_reasons"] == {
+        **R4_ORPHAN_REASONS,
+        "deep_component_not_deep_member": 1,
+    }
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["orphan_cells"]
+    # The orphaned cell never reaches the rollup comparison.
+    assert report["manifest_rollup_mismatch"] == []
+
+
+def test_metric_cell_on_core_only_member_is_not_an_orphan() -> None:
+    """R2: metric is not a deep-only family; an in-window metric cell on a
+    core-only member is counted present, never orphaned."""
+    members = standard_members()
+    manifest = build_manifest(members, draft=False, attested=True)
+    manifest["cells"] = [
+        item
+        for item in manifest["cells"]
+        if not (
+            item["cik"] == "0000000003"
+            and item["period_id"] == "A1"
+            and item["field_id"] == "metric:alpha"
+        )
+    ]
+    manifest["cells"].append(cell("0000000003", "A1", "metric:alpha"))
+    report = run_proof(manifest)
+
+    assert report["orphan_cells"] == 0
+    assert report["orphan_reasons"] == dict(R4_ORPHAN_REASONS)
+    assert report["acceptance_eligible"] is True
+    assert report["acceptance_blockers"] == []
+    # Counted present: the re-added cell keeps every rollup in agreement.
+    assert report["manifest_rollup_mismatch"] == []
+
+
+def test_real_draft_shape_gives_zero_deep_component_orphans() -> None:
+    """R2: the real census draft puts its deep-only components on deep
+    members only; a fixture in that shape reports zero orphans of the new
+    reason (also covered by test_real_draft_package_shape_gives_zero_orphans,
+    which now asserts the full four-key zero map)."""
+    report = run_proof(build_manifest(standard_members(), draft=False, attested=True))
+    assert report["orphan_reasons"]["deep_component_not_deep_member"] == 0
+    assert report["orphan_cells"] == 0
+
+
+def test_attested_manifest_identity_is_declared_unverified() -> None:
+    """R3: a non-draft's draft identity is declared, never proved; the basis
+    says so and the report asks for the attestation (non-blocking field)."""
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    declared = manifest["manifest_draft_sha256"]
+    report = run_proof(manifest, small_thresholds_with_prefix(declared[:20]))
+    identity = report["census_identity"]
+    assert identity["draft_identity"] == declared
+    assert identity["draft_identity_basis"] == "declared_unverified"
+    assert identity["draft_identity_trust"] == "attestation_required"
+    assert identity["mismatched_fields"] == []
+    assert report["acceptance_blockers"] == []
+
+
+def test_draft_identity_basis_is_bytes_and_carries_no_trust_field() -> None:
+    """R3: only a draft's identity is proved from its bytes; the trust field
+    belongs to the declared basis alone."""
+    manifest = build_manifest(standard_members())  # a draft
+    report = run_proof(manifest, small_thresholds_for(manifest))
+    identity = report["census_identity"]
+    assert identity["draft_identity_basis"] == "manifest_bytes_sha256"
+    assert identity["draft_identity"] == hashlib.sha256(
+        manifest_bytes(manifest)
+    ).hexdigest()
+    assert "draft_identity_trust" not in identity
+
+
+def test_declared_prefix_differing_from_pin_blocks() -> None:
+    """R3: a manifest that declares its own manifest_draft_sha256_prefix
+    must declare the thresholds' pin exactly; a difference is its own
+    mismatched field and blocks through census_identity_mismatch."""
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    thresholds = small_thresholds_for(manifest)
+    manifest["manifest_draft_sha256_prefix"] = "f" * 20
+    report = run_proof(manifest, thresholds)
+
+    assert report["census_identity"]["mismatched_fields"] == [
+        "manifest_draft_sha256_prefix_declared"
+    ]
+    assert (
+        report["census_identity"]["manifest"]["manifest_draft_sha256_prefix"]
+        == "f" * 20
+    )
+    assert report["acceptance_eligible"] is False
+    assert report["acceptance_blockers"] == ["census_identity_mismatch"]
+
+
+def test_declared_prefix_equal_to_pin_does_not_block() -> None:
+    """R3: a declared prefix equal to the thresholds' pin adds nothing."""
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    thresholds = small_thresholds_for(manifest)
+    manifest["manifest_draft_sha256_prefix"] = (
+        thresholds.census_identity["manifest_draft_sha256_prefix"]
+    )
+    report = run_proof(manifest, thresholds)
+
+    assert report["census_identity"]["mismatched_fields"] == []
+    assert report["acceptance_eligible"] is True
+    assert report["acceptance_blockers"] == []
+
+
+def test_forged_padded_draft_sha_still_passes_pin_but_is_marked_unverified() -> None:
+    """R3: the reviewer's forgery — the pinned prefix padded with zeros —
+    still satisfies the prefix pin (bytes cannot disprove it), but the report
+    now names the trust boundary instead of implying a proved identity."""
+    manifest = build_manifest(standard_members(), draft=False, attested=True)
+    pin = small_thresholds_for(manifest).census_identity[
+        "manifest_draft_sha256_prefix"
+    ]
+    manifest["manifest_draft_sha256"] = pin + "0" * 44
+    report = run_proof(manifest, small_thresholds_with_prefix(pin))
+    identity = report["census_identity"]
+    assert identity["draft_identity"] == pin + "0" * 44
+    assert identity["draft_identity_basis"] == "declared_unverified"
+    assert identity["draft_identity_trust"] == "attestation_required"
+    assert identity["mismatched_fields"] == []
+
+
+# ---------------------------------------------------------------------------
+# 19. Source hygiene scan
 # ---------------------------------------------------------------------------
 
 

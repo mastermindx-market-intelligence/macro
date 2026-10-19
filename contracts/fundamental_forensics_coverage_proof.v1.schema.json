@@ -107,7 +107,8 @@
             "enum": [
               "source_generation_id",
               "cutoff_at",
-              "manifest_draft_sha256_prefix"
+              "manifest_draft_sha256_prefix",
+              "manifest_draft_sha256_prefix_declared"
             ]
           }
         },
@@ -124,9 +125,12 @@
         "draft_identity_basis": {
           "enum": [
             "manifest_bytes_sha256",
-            "declared_manifest_draft_sha256",
-            "absent_manifest_draft_sha256"
+            "declared_unverified"
           ]
+        },
+        "draft_identity_trust": {
+          "description": "Present only when draft_identity_basis is declared_unverified (ruling V1-a r4, R3): the declared draft identity is not proved by these bytes and needs the attestation.",
+          "const": "attestation_required"
         }
       }
     },

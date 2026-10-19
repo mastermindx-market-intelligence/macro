@@ -59,10 +59,26 @@ reports, so a caller-supplied hash is never trusted; the draft identity is
 the manifest bytes' sha256 for a draft and the declared top-level
 ``manifest_draft_sha256`` (64 lowercase hex) otherwise, and the thresholds'
 ``manifest_draft_sha256_prefix`` must always prefix it — the pin check is
-never skipped; and the orphan window check covers every field family (a
-wildcard-period cell is windowless by declaration, not out of window), with
-a package cell on a member that is not deep an orphan under the new reason
-``package_not_deep_member``.
+never skipped; and the orphan window check covers every field family, with
+a package cell on a member that is not deep an orphan.
+
+Review-lane rulings (V1-a r4, 2026-10-19) close a wildcard escape, widen
+the deep-only orphan rule and mark the attestation trust boundary.  Only the
+windowless families — packet, journey and specialist — are exempt from the
+window test: a metric, package or statement cell carrying the wildcard
+period is an orphan under ``windowless_period_on_windowed_family``.  The
+deep-only families are package, statement, specialist, packet and journey —
+the frozen deep tier's own component set — and any of their cells on a
+member that is not deep is an orphan under ``deep_component_not_deep_member``
+(generalizing r3's package-only reason, which was never merged).  A
+non-draft manifest's draft identity is declared, never proved: bytes alone
+cannot show which draft an attestation covers, so the basis reports
+``declared_unverified`` for every non-draft with
+``draft_identity_trust: "attestation_required"`` — the attestation is what
+must carry the proof — and a manifest that declares its own
+``manifest_draft_sha256_prefix`` must declare the thresholds' pin exactly, a
+difference being the ``manifest_draft_sha256_prefix_declared`` census
+identity mismatch.
 """
 from __future__ import annotations
 
@@ -102,7 +118,8 @@ REASON_CELL_MISSING = "cell_missing"
 REASON_FORMULA_INPUTS_ABSENT = "formula_inputs_absent"
 REASON_ORPHAN_CIK = "cik_not_member"
 REASON_ORPHAN_WINDOW = "period_outside_windows"
-REASON_ORPHAN_PACKAGE = "package_not_deep_member"
+REASON_ORPHAN_WINDOWLESS = "windowless_period_on_windowed_family"
+REASON_ORPHAN_DEEP_COMPONENT = "deep_component_not_deep_member"
 NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
 COMPLETE_BAND = "complete"
 
@@ -599,17 +616,35 @@ def _is_canonical_field_id(field_id: str) -> bool:
     )
 
 
-def _is_package_field_id(field_id: Any) -> bool:
-    """True for a package cell in either accepted spelling.
+def _is_windowless_field_id(field_id: Any) -> bool:
+    """True for the windowless families: packet, journey and specialist.
 
-    Ruling V1-a r3 (M5) orphans a package cell on a member that is not deep.
-    Both the canonical ``package:<role>`` and the accepted legacy
-    ``package.<role>`` spelling name a package cell; by the time cells reach
-    the orphan scan, ``_index_cells`` has already refused every dotted
-    spelling whose role is not one of the thresholds' alias roles.
+    Ruling V1-a r4 (R1): these three families — and only they — are exempt
+    from the window test; their cells carry the wildcard period by
+    cell-shape law.
     """
     return isinstance(field_id, str) and (
-        field_id.startswith("package:") or field_id.startswith(LEGACY_PACKAGE_ALIAS_PREFIX)
+        field_id in _BARE_FIELDS or field_id.startswith("specialist:")
+    )
+
+
+def _is_deep_only_field_id(field_id: Any) -> bool:
+    """True for the five deep-only component families (ruling V1-a r4, R2).
+
+    The frozen deep tier is assembled from package roles, statements,
+    specialist packs, packet and journey; the core tier declares periods
+    only, so a cell of any of these families on a member that is not deep is
+    a deep component outside its tier.  Package is matched in both the
+    canonical ``package:<role>`` and the accepted legacy ``package.<role>``
+    spelling; by the time cells reach the orphan scan, ``_index_cells`` has
+    already refused every dotted spelling whose role is not one of the
+    thresholds' alias roles.
+    """
+    return isinstance(field_id, str) and (
+        field_id.startswith("package:")
+        or field_id.startswith(LEGACY_PACKAGE_ALIAS_PREFIX)
+        or field_id.startswith("statement:")
+        or _is_windowless_field_id(field_id)
     )
 
 
@@ -915,7 +950,8 @@ def prove_coverage(
     orphan_reasons: dict[str, int] = {
         REASON_ORPHAN_CIK: 0,
         REASON_ORPHAN_WINDOW: 0,
-        REASON_ORPHAN_PACKAGE: 0,
+        REASON_ORPHAN_WINDOWLESS: 0,
+        REASON_ORPHAN_DEEP_COMPONENT: 0,
     }
     status_normalised: dict[str, int] = {}
     cell_generation_counts: dict[str, int] = {}
@@ -952,20 +988,28 @@ def prove_coverage(
             orphan_reasons[REASON_ORPHAN_CIK] += 1
             continue
         period_id = cell.get("period_id")
-        if period_id != WILDCARD_PERIOD and period_id not in member_windows[cik]:
-            # Ruling V1-a r3 (M5): every cell family is window-checked — a
-            # cell outside the member's declared windows is an orphan,
-            # never silently counted.  A wildcard-period cell (packet,
-            # journey, specialist) is windowless by declaration, so it is
-            # not "outside" any window.
+        field_id = cell.get("field_id")
+        if not _is_windowless_field_id(field_id):
+            # Ruling V1-a r4 (R1): only the windowless families — packet,
+            # journey and specialist — are exempt from the window test.  A
+            # metric, package or statement cell carrying the wildcard period
+            # is an orphan, and so is a windowed period outside the member's
+            # declared windows (ruling V1-a r3, M5) — neither is ever
+            # silently counted.
+            if period_id == WILDCARD_PERIOD:
+                orphan_cells += 1
+                orphan_reasons[REASON_ORPHAN_WINDOWLESS] += 1
+                continue
+            if period_id not in member_windows[cik]:
+                orphan_cells += 1
+                orphan_reasons[REASON_ORPHAN_WINDOW] += 1
+                continue
+        if _is_deep_only_field_id(field_id) and cik not in deep_cik_set:
+            # Ruling V1-a r4 (R2): a deep-only component (package,
+            # statement, specialist, packet or journey, either accepted
+            # package spelling) on a member that is not deep is an orphan.
             orphan_cells += 1
-            orphan_reasons[REASON_ORPHAN_WINDOW] += 1
-            continue
-        if _is_package_field_id(cell.get("field_id")) and cik not in deep_cik_set:
-            # Ruling V1-a r3 (M5): a package cell (either accepted spelling)
-            # on a member that is not deep is an orphan.
-            orphan_cells += 1
-            orphan_reasons[REASON_ORPHAN_PACKAGE] += 1
+            orphan_reasons[REASON_ORPHAN_DEEP_COMPONENT] += 1
             continue
         issuer_cell_states[cik][state] += 1
 
@@ -1262,18 +1306,23 @@ def prove_coverage(
     def verbatim(key: str) -> Any:
         return manifest.get(key)
 
-    # Ruling V1-a r3 (M4): the manifest's census identity is byte-bound.  The
-    # draft identity is the sha256 this function computed from the manifest
-    # bytes when the manifest is a draft; otherwise it is the manifest's
-    # declared top-level ``manifest_draft_sha256`` — the attestation step's
-    # record of which draft it attests — which must be 64 lowercase hex
-    # characters.  A non-draft manifest without a valid declaration has no
-    # draft identity.  The thresholds' ``manifest_draft_sha256_prefix`` must
-    # be a prefix of that identity, and the check always runs: it is never
-    # skipped on a declaration's absence.  ``cutoff_at`` and
-    # ``source_generation_id`` are still compared against the manifest's
-    # top-level fields; every disagreement is an acceptance blocker instead
-    # of a refusal, and the proof still runs and reports.
+    # Ruling V1-a r3 (M4) plus r4 (R3): the manifest's census identity is
+    # byte-bound for a draft and declared — never proved — for anything
+    # else.  For a draft the draft identity is the sha256 this function
+    # computed from the manifest bytes.  For a non-draft it is the
+    # manifest's declared top-level ``manifest_draft_sha256`` (64 lowercase
+    # hex): bytes alone cannot show which draft an attestation covers, so
+    # the basis marks every non-draft identity ``declared_unverified`` and
+    # the report asks for the attestation that carries the proof.  A
+    # non-draft without a well-formed declaration has no draft identity and
+    # fails the prefix pin below.  The thresholds'
+    # ``manifest_draft_sha256_prefix`` must prefix that identity and the
+    # check always runs; a manifest that declares its own
+    # ``manifest_draft_sha256_prefix`` must declare the thresholds' pin
+    # exactly.  ``cutoff_at`` and ``source_generation_id`` are still
+    # compared against the manifest's top-level fields; every disagreement
+    # is an acceptance blocker instead of a refusal, and the proof still
+    # runs and reports.
     thresholds_identity = dict(thresholds.census_identity)
     manifest_identity = {
         "source_generation_id": manifest.get("source_generation_id"),
@@ -1284,15 +1333,18 @@ def prove_coverage(
     if manifest.get("draft") is True:
         draft_identity = manifest_sha256
         draft_identity_basis = "manifest_bytes_sha256"
-    elif (
-        isinstance(declared_draft_sha256, str)
-        and _SHA256_HEX.fullmatch(declared_draft_sha256)
-    ):
-        draft_identity = declared_draft_sha256
-        draft_identity_basis = "declared_manifest_draft_sha256"
     else:
-        draft_identity = None
-        draft_identity_basis = "absent_manifest_draft_sha256"
+        # Ruling V1-a r4 (R3): a non-draft's identity is declared, never
+        # proved — whatever it declares stays unverified until the
+        # attestation is checked, and an absent or ill-typed declaration
+        # leaves the identity null and fails the pin check below.
+        draft_identity = (
+            declared_draft_sha256
+            if isinstance(declared_draft_sha256, str)
+            and _SHA256_HEX.fullmatch(declared_draft_sha256)
+            else None
+        )
+        draft_identity_basis = "declared_unverified"
     identity_mismatched_fields = [
         field
         for field in ("source_generation_id", "cutoff_at")
@@ -1305,6 +1357,15 @@ def prove_coverage(
         )
     ):
         identity_mismatched_fields.append("manifest_draft_sha256_prefix")
+    declared_prefix = manifest_identity["manifest_draft_sha256_prefix"]
+    if (
+        declared_prefix is not None
+        and declared_prefix
+        != thresholds_identity["manifest_draft_sha256_prefix"]
+    ):
+        # Ruling V1-a r4 (R3): a manifest-declared prefix that disagrees
+        # with the thresholds' pin is its own mismatched field.
+        identity_mismatched_fields.append("manifest_draft_sha256_prefix_declared")
     manifest_generation = manifest_identity["source_generation_id"]
     mixed_source_generations = any(
         generation != manifest_generation for generation in cell_generation_counts
@@ -1318,6 +1379,10 @@ def prove_coverage(
         "draft_identity": draft_identity,
         "draft_identity_basis": draft_identity_basis,
     }
+    if draft_identity_basis == "declared_unverified":
+        # Ruling V1-a r4 (R3): non-blocking — the declared identity needs
+        # the attestation, and the report says so.
+        census_identity_block["draft_identity_trust"] = "attestation_required"
 
     # Rulings V1-a r3 (M1/M2): ``freeze_ref`` is resolved inside the
     # repository root and only the declared relative path, its validity, its
