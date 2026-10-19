@@ -569,7 +569,7 @@ _FROZEN_PACKS = {
         "pack_specific_codes": (),
     },
     "PK09": {
-        "digest": "7e816d8242b277d5bfb4cfe089c3384a9033adcb6124d0c9a65ad0a93e21b3fa",
+        "digest": "45071a8dc968ade912aed8a4824a794613a4cc824c8c5fd4278121e4d29c40b9",
         "fields": (
             "icfr_management_conclusion",
             "disclosure_controls_effective",
@@ -594,9 +594,13 @@ _FROZEN_PACKS = {
             "form_outside_pack_forms",
             "missing_dependency",
             "filer_category_unbound",
+            "narrative_span_not_located",
+            "governing_section_not_supplied",
         ),
         "pack_specific_codes": (
             "filer_category_unbound",
+            "narrative_span_not_located",
+            "governing_section_not_supplied",
         ),
     },
     "PK07": {
@@ -2028,6 +2032,35 @@ def test_frozen_pack_removing_a_field_breaks_the_digest_pin(
         "pack_schema_digest: value does not equal the recomputed pack schema digest" in item
         for item in errors
     ), errors
+
+
+def test_pk09_narrative_span_not_located_is_a_missing_row() -> None:
+    """K-PK09-R1: the governing section was read in full and holds no satisfying span."""
+    obj = _frozen_applicable_result("PK09")
+    obj["coverage"]["disclosure_coverage_state"] = "present"
+    row = next(r for r in obj["fields"] if r["field_id"] == "remediation_span")
+    row.update(
+        quality_state="missing",
+        non_value_state="missing",
+        reason="narrative_span_not_located",
+    )
+    _finish(obj)
+    assert validate_pack_result(obj) == []
+    # The code takes no parameter: a section-qualified form is refused.
+    row["reason"] = "narrative_span_not_located:item-9a"
+    _finish(obj)
+    errors = validate_pack_result(obj)
+    assert any("takes none" in item for item in errors), errors
+
+
+def test_pk09_governing_section_not_supplied_is_a_not_evaluable_row() -> None:
+    """K-PK09-R1: the package lacks the section the field reads; absence is not established."""
+    obj = _frozen_applicable_result("PK09")
+    row = next(r for r in obj["fields"] if r["field_id"] == "auditor_opinion_fs")
+    row["reason"] = "governing_section_not_supplied"
+    _finish(obj)
+    assert (row["quality_state"], row["non_value_state"]) == ("not_evaluable", "not_evaluable")
+    assert validate_pack_result(obj) == []
 
 
 @pytest.mark.parametrize("pack_id", _FROZEN_IDS)
