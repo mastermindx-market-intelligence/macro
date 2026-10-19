@@ -54,7 +54,9 @@ import pytest
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from engine.neuralweb import brain_gateway as gw  # noqa: E402
-from tests.test_brain_gateway import _MockBlock, _MockResponse, _sse  # noqa: E402
+from tests.test_brain_gateway import (  # noqa: E402
+    _MockBlock, _MockResponse, _ScriptedStreamCtx, _ThinkBlock, _sse,
+)
 
 
 CEILING_EN = (
@@ -2432,3 +2434,84 @@ def test_r7_a_kept_html_blank_is_one_paragraph_break():
     """m2 (NEW, cosmetic): a kept HTML-made blank next to a real one left a triple newline."""
     raw = "G.<br>\n\nSources: Desk read\n\nRisks\n- Oil shock"
     assert gw._research_strip_model_trailer(raw, R7_CORPUS) == "G.\n\nRisks\n- Oil shock"
+
+
+# ---------------------------------------------------------------------------
+# r8 execution boundaries — malformed provider responses and raw-context conflicts
+# ---------------------------------------------------------------------------
+
+class _BoundaryClient(_CapClient):
+    """Return one scripted response, then an answer if a forbidden extra round runs."""
+
+    def __init__(self, response):
+        super().__init__()
+        self.response = response
+
+    def _next(self, kw):
+        self._snap(kw)
+        if len(self.calls) == 1:
+            return self.response
+        return _MockResponse([_MockBlock("text", ANSWER)], "end_turn")
+
+    def create(self, **kw):
+        return self._next(kw)
+
+    def stream(self, **kw):
+        return _ScriptedStreamCtx(self._next(kw))
+
+
+def _boundary_response(kind):
+    tool = _MockBlock("tool_use", name="read_artifact",
+                      input_={"path": "excluded-source"}, id_="unexpected-read")
+    if kind == "tool-use":
+        return _MockResponse([_MockBlock("text", ANSWER), tool], "tool_use")
+    if kind == "tool-use-no-block":
+        return _MockResponse([_MockBlock("text", ANSWER)], "tool_use")
+    if kind == "tool-in-end-turn":
+        return _MockResponse([_MockBlock("text", ANSWER), tool], "end_turn")
+    if kind in {"thinking", "redacted_thinking"}:
+        return _MockResponse([_ThinkBlock(type_=kind)], "max_tokens")
+    return _MockResponse([], "end_turn")
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+@pytest.mark.parametrize("kind", ["tool-use", "tool-use-no-block", "tool-in-end-turn",
+                                 "thinking", "redacted_thinking", "empty-end-turn"])
+def test_r8_execution_grounded_response_cannot_dispatch_or_recover(tmp_path, stream, kind):
+    """Offering no tools is insufficient: the server must reject them and stay one round."""
+    client = _BoundaryClient(_boundary_response(kind))
+    turn = _drive(tmp_path, stream=stream, context=GROUNDED_CTX, client=client)
+    assert turn.spies["dispatch"].call_count == 0
+    assert len(turn.calls) == 1, "grounded turns cannot enter general synthesis/recovery"
+    assert not [e for e in turn.events if e.get("type") in {"tool", "command", "chart", "annotate"}]
+    assert not [e for e in turn.events if e.get("phase") == "synthesis"]
+    assert turn.reply.startswith(NULL_EN) and NULL_ZH in turn.reply
+    _assert_grounded(turn)
+    if stream:
+        assert any(e.get("type") == "done" for e in turn.events)
+        # No unfinalized narration or tool-adjacent prose escapes the hold-all stream.
+        assert [e["text"] for e in turn.events if e.get("type") == "delta"] == [turn.reply]
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r8_execution_global_research_keeps_tool_round_and_synthesis(tmp_path, stream):
+    client = _BoundaryClient(_boundary_response("tool-use"))
+    turn = _drive(tmp_path, stream=stream, context=COMPANY_CTX, client=client)
+    assert turn.spies["dispatch"].call_count == 1
+    assert len(turn.calls) == 2
+    _assert_global_deep_research(turn)
+
+
+@pytest.mark.parametrize("stream", [False, True], ids=["chat", "chat_stream"])
+def test_r8_execution_typed_thesis_never_reads_conflicting_raw_ontology(tmp_path, stream):
+    context = {**GROUNDED_CTX, "page": "ontology", "panel": "evidence",
+               "ontology_selection": {"forged": "selection"}}
+    with patch.object(gw, "_ontology_grounding_digest",
+                      side_effect=gw._OntologySelectionUnavailable("probe")) as reader:
+        turn = _drive(tmp_path, stream=stream, context=context)
+    reader.assert_not_called()
+    assert len(turn.calls) == 1
+    _assert_grounded(turn)
+    assert turn.reply.startswith("The daily briefing says")
+    if stream:
+        assert any(e.get("type") == "done" for e in turn.events)

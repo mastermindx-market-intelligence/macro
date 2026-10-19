@@ -8282,8 +8282,8 @@ def _run_brain_loop(
 
     # Chart-command tools gated to terminal page; internals tools gated to allowlisted sessions
     if f11_grounded:
-        # Spec item 8: an F11-grounded turn offers NO tools, so none can be dispatched —
-        # the model answers from the closed corpus carried in source_prompt, one round.
+        # Spec item 8: offer no tools; the response boundary below also refuses an
+        # unexpected tool request before dispatch. The closed-corpus turn gets one round.
         tool_schemas = []
     else:
         tool_schemas = _all_brain_tool_schemas(
@@ -8365,7 +8365,7 @@ def _run_brain_loop(
     )
     ambient_citations = _earnings_call_citations(ambient_call)
     ontology_digest = ""
-    if safe_page == "ontology":
+    if safe_page == "ontology" and not f11_grounded:
         try:
             ontology_digest = _ontology_grounding_digest(
                 root, selection_ref=(context or {}).get("ontology_selection"),
@@ -8464,6 +8464,17 @@ def _run_brain_loop(
                 answer_text = block.text
 
         stop_reason = getattr(resp, "stop_reason", None)
+        if f11_grounded:
+            # An empty offered tool list is not execution authorization. Discard the
+            # entire unexpected tool response, including adjacent prose, before any
+            # tool dispatch/evidence repair. The outer grounded postprocessor supplies
+            # its normal null/ceiling/used-list for a rejected or textless response.
+            if stop_reason == "tool_use" or any(
+                    getattr(block, "type", "") == "tool_use" for block in resp.content):
+                answer_text = ""
+                messages[-1] = {"role": "assistant", "content": []}
+            _timing_round(timing, _round_model_ms, _round_tools)
+            break
         if stop_reason == "end_turn":
             receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
             if not evidence_gate_issued and _evidence_coverage_missing(receipt):
@@ -8555,12 +8566,12 @@ def _run_brain_loop(
     # out with the model still mid-investigation (stop_reason == tool_use), the last
     # text block is narration ("Let me also check…"), not an answer. Nudge ONE final
     # no-more-tools synthesis turn so chat() returns a real answer.
-    thinking_limited = _thinking_only_token_limit(last_resp)
+    thinking_limited = not f11_grounded and _thinking_only_token_limit(last_resp)
     recovery_usage = getattr(last_resp, "usage", None) if thinking_limited else None
     if thinking_limited:
         messages.pop()  # Keep completed reads, discard unfinished reasoning.
         answer_text = ""  # Earlier tool-round narration is not a final answer.
-    if last_resp is not None and (
+    if not f11_grounded and last_resp is not None and (
         getattr(last_resp, "stop_reason", None) == "tool_use" or thinking_limited
     ):
         _synth_t0 = time.monotonic()
@@ -9331,7 +9342,7 @@ def _run_brain_loop_stream(
     )
     ambient_citations = _earnings_call_citations(ambient_call)
     ontology_digest = ""
-    if safe_page == "ontology":
+    if safe_page == "ontology" and not f11_grounded:
         try:
             ontology_digest = _ontology_grounding_digest(
                 root, selection_ref=(context or {}).get("ontology_selection"),
@@ -9569,6 +9580,16 @@ def _run_brain_loop_stream(
         thinking_trace.extend(
             _thinking_segments(resp.content, tool_call_count + 1, "tool", model))
         stop_reason = getattr(resp, "stop_reason", None)
+        if f11_grounded:
+            # Reject unexpected tool requests before events or dispatch. The hold-all
+            # gate has emitted no prose; finalization below supplies the grounded null
+            # instead of replaying adjacent narration or entering a recovery round.
+            if stop_reason == "tool_use" or any(
+                    getattr(block, "type", "") == "tool_use" for block in resp.content):
+                last_resp_content = []
+                messages[-1] = {"role": "assistant", "content": []}
+            _timing_round(timing, _round_model_ms, _round_tools)
+            break
 
         # W5.1: the round narrated PAST the horizon and then called tools after all (or
         # came back tool_use with no block at all, which sends the turn to Phase 2). What
@@ -9699,14 +9720,14 @@ def _run_brain_loop_stream(
     usage_dict: dict = {}
     _synth_stop: str | None = None   # synthesis stop_reason, for the degraded-stub log
 
-    thinking_limited = not _leak_tripped and _thinking_only_token_limit(resp)
+    thinking_limited = not f11_grounded and not _leak_tripped and _thinking_only_token_limit(resp)
     recovery_usage = getattr(resp, "usage", None) if thinking_limited else None
     if thinking_limited:
         # ONE no-tool answer pass with bounded headroom, using the existing
         # candidates, thinking policy, evidence receipt, and final screens.
         messages.pop()
         last_resp_content = []
-    need_synthesis = last_stop == "tool_use" or thinking_limited
+    need_synthesis = not f11_grounded and (last_stop == "tool_use" or thinking_limited)
     synthesis_max_tokens = max_tokens * 2 if thinking_limited else max_tokens
     if need_synthesis:
         _synth_t0 = time.monotonic()
