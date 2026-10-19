@@ -558,10 +558,11 @@ def test_engine_construction_failure_fails_ledger(
 
     The real kernel must raise: one ``filing_metadata`` entry for a ledger
     accession gets its ``filed_at`` moved past that accession's fact
-    acceptance (the kernel's own bitemporal guard then refuses the engine at
-    construction, engine/fundamental_forensics/query.py:4694-4696); no
-    ``_build_engine`` stand-in is involved.  The harness reports the failure
-    (exit-1 semantics via ``all_checks_passed`` false), keeps the carried
+    acceptance, past the kernel's filed_at-versus-acceptance guard in
+    engine/fundamental_forensics/query.py, which then refuses the engine at
+    construction; no ``_build_engine`` stand-in is involved.  The harness
+    reports the failure (exit-1 semantics via ``all_checks_passed`` false),
+    keeps the carried
     journey codes and the unavailable causes object, renders the coverage
     census as ``unavailable`` instead of a never-computed 0, and resolves the
     journey metric ids so no ``None`` reaches the MD metric column.
@@ -587,7 +588,9 @@ def test_engine_construction_failure_fails_ledger(
             and event.accepted_at is not None
         ]
         assert accepted, "fixture ledger has no accepted_at for the target accession"
-        late_filed_at = max(accepted).date() + timedelta(days=1)
+        # 10 calendar days is beyond any EDGAR next-business-day roll (at most
+        # 5 calendar days), so the kernel refuses under either filed_at bound.
+        late_filed_at = max(accepted).date() + timedelta(days=10)
         entry = payloads["filing_metadata"][target_accession]
         if dataclasses.is_dataclass(entry):
             # content_sha256 is re-derived in __post_init__; passing None lets
@@ -625,9 +628,10 @@ def test_engine_construction_failure_fails_ledger(
     assert kernel_row["issuer"] == "AAPL"
     assert kernel_row["status"] == "fail"
     assert kernel_row["detail"].startswith("QueryValidationError")
-    assert kernel_row["detail"] == (
-        "QueryValidationError: filing metadata filed_at follows source acceptance"
+    assert kernel_row["detail"].startswith(
+        "QueryValidationError: filing metadata filed_at follows "
     )
+    assert kernel_row["detail"].endswith("source acceptance")
 
     # R1/R3: the carried journey codes and unavailable causes are unchanged,
     # and every journey row resolves its metric id from the pinned catalog.
