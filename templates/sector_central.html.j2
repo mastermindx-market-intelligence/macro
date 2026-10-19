@@ -2620,7 +2620,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
     <p class="rvx-sec-sub" id="internals-sub">{{ t('Breadth tells you whether the rotation is a broad tide or a narrow few. Be selective when it is narrow.', '广度告诉你这是全面上涨还是少数领涨。领涨面窄时应精挑细选。') }}</p>
     {# Source scope is S&P 500 in engine.basket_score.market_concentration("us"),
        not a full verified S&P 1500 union of large, mid and small members. #}
-    <p class="rvx-sec-sub" id="si-breadth-scope">{{ t('Current US breadth here covers S&P 500 members only; S&P 400/600 aggregate participation is not yet qualified.', '此处美国市场广度目前仅覆盖标普500成分股；标普400/600合并参与度尚未经核验。') }}</p>
+    <p class="rvx-sec-sub" id="si-breadth-scope">{{ t('Current US breadth here covers S&P 500 members only; S&P 400/600 aggregate participation is not yet qualified. Historical membership is not point-in-time verified. Moving-average percentages exclude members without sufficient history; their eligible counts are not yet published.', '此处美国市场广度目前仅覆盖标普500成分股；标普400/600合并参与度尚未经核验。历史成分股名单未完成时点验证；均线以上占比仅涵盖具备足够历史数据的股票，合格样本数尚未发布。') }}</p>
     <div class="rvx-internals">
       <div class="rvx-gcard verdict"><div class="gl">{{ t('MARKET BREADTH', '市场广度') }}</div><div class="gbig" id="mkt-breadth">—</div><div class="gm" id="mkt-breadth-sub"></div></div>
       <div class="rvx-gcard"><div class="gl">{{ t('Advancers / Decliners', '上涨 / 下跌') }}</div><div class="gv" id="mkt-ad">—</div><div class="gm" id="mkt-ad-sub"></div><div class="rvx-minibar"><i id="mkt-ad-bar"></i></div></div>
