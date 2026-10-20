@@ -6468,6 +6468,146 @@ def test_rf9_calculation_children_conflict_names_the_conflict() -> None:
     ]
 
 
+def _produce_pack_with_ledger(
+    monkeypatch, pack_id: str, pack_input: PackInput, occurrences: list
+) -> dict:
+    ledger = _RawFactLedger(tuple(occurrences))
+    report = _ixbrl.ConversionReport(
+        filings=(), ledger_sha256="0" * 64, source_namespace_families=()
+    )
+    monkeypatch.setattr(
+        _ixbrl,
+        "parse_and_convert_golden_packages",
+        lambda packages: (ledger, {}, report),
+    )
+    return produce_pack(pack_id, pack_input)
+
+
+def test_pk04_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: the grouped resolver's per-member conflict row must
+    # name the duplicate facts exactly as the plain FactMapping path does.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    us_member = "{http://xbrl.sec.gov/country/2025}US"
+    first = _probe_occurrence(
+        key="geo-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((GEOGRAPHICAL_LEDGER_AXIS, us_member),),
+    )
+    second = _probe_occurrence(
+        key="geo-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((GEOGRAPHICAL_LEDGER_AXIS, us_member),),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK04", _pk04_input(), [first, second]
+    )
+    row = _row(result, "revenue_disaggregated")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "revenue_disaggregated",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk03_grouped_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: same disclosure on a PK03 dimensioned segment field.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    americas = _aapl_member("AmericasSegmentMember")
+    first = _probe_occurrence(
+        key="seg-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=(
+            (SEGMENT_LEDGER_AXIS, americas),
+            (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+        ),
+    )
+    second = _probe_occurrence(
+        key="seg-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=(
+            (SEGMENT_LEDGER_AXIS, americas),
+            (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+        ),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK03", _pk03_input(), [first, second]
+    )
+    row = _row(result, "segment_revenue")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "segment_revenue",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_allowlist_conflict_names_the_duplicate_facts(monkeypatch) -> None:
+    # R-F9 sink repair F1: the allowlist dimensioned resolver (PK03's
+    # unallocated_corporate_and_eliminations) discloses the same conflict.
+    revenue = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    corporate = "us-gaap:CorporateNonSegmentMember"
+    first = _probe_occurrence(
+        key="elim-dup-a",
+        concept=revenue,
+        value=Decimal("800000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((CONSOLIDATION_ITEMS_LEDGER_AXIS, corporate),),
+    )
+    second = _probe_occurrence(
+        key="elim-dup-b",
+        concept=revenue,
+        value=Decimal("900000000"),
+        start=_date(2024, 9, 29),
+        end=POR,
+        dimensions=((CONSOLIDATION_ITEMS_LEDGER_AXIS, corporate),),
+    )
+    result = _produce_pack_with_ledger(
+        monkeypatch, "PK03", _pk03_input(), [first, second]
+    )
+    row = _row(result, "unallocated_corporate_and_eliminations")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "unallocated_corporate_and_eliminations",
+            ((first, "800000000"), (second, "900000000")),
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
 def test_rf10_form_rank_beats_newer_interim_and_overflow_raises() -> None:
     ten_k = load_golden_aapl_package(ROOT, accession=ACCESSION)
     ten_q = load_golden_aapl_package(ROOT, accession="0000320193-26-000020")
