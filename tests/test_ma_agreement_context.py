@@ -80,6 +80,8 @@ def test_source_and_index_custody_are_both_required(source, premium, field, valu
     "subject to the satisfaction of certain customary conditions to funding",
     "on or prior to September 28, 2026",
     "Superior Proposal received from an Excluded Party",
+    "prior to such termination an Acquisition Proposal",
+    "publicly announced or publicly disclosed and not publicly withdrawn",
     "within 12 months following such termination",
     "Subject to certain limitations and cure provisions",
     "ready, willing and able",

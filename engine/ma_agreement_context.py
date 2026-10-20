@@ -81,6 +81,8 @@ def parse_agreement(content: bytes) -> dict:
             ("on or prior to September 28, 2026", company),
             ("Superior Proposal received from an Excluded Party", company),
             ("Recommendation Change", company),
+            ("prior to such termination an Acquisition Proposal", company),
+            ("publicly announced or publicly disclosed and not publicly withdrawn", company),
             ("within 12 months following such termination", company),
             ("Subject to certain limitations and cure provisions", parent),
             ("failure to effect the Closing when required", parent),
