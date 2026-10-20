@@ -26,9 +26,12 @@ from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import urlsplit
 
+from engine.marketing import intelligence_history
+
 
 PACKET_SCHEMA = "intelligence.story_packet/v1"
 DESK_SCHEMA = "intelligence.desk/v1"
+ACCEPTANCE_SCHEMA = "intelligence.acceptance_receipt/v1"
 
 DEFAULT_DB_PATHS: tuple[str, ...] = (
     "/var/lib/macro-live/state/intelligence/intelligence.db",
@@ -822,12 +825,22 @@ class IntelligenceStore:
         with self.db:
             self.db.execute("INSERT INTO desk_metadata(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", ("source_health", json.dumps(rows, ensure_ascii=False)))
 
+    def source_health(self) -> list:
+        row = self.db.execute("SELECT value FROM desk_metadata WHERE key='source_health'").fetchone()
+        try:
+            value = json.loads(row[0]) if row else []
+        except (TypeError, ValueError):
+            return []
+        return value if isinstance(value, list) else []
+
     def close(self) -> None:
         self.db.close()
 
     def upsert(self, packets: Iterable[dict], *, now: datetime,
-               timeline_max: int = DEFAULT_TIMELINE_MAX) -> int:
+               timeline_max: int = DEFAULT_TIMELINE_MAX,
+               acceptance_receipts: dict | None = None) -> int:
         count = 0
+        submitted, receipts = {}, {}
         with self.db:
             for packet in packets:
                 if not isinstance(packet, dict) or packet.get("schema") != PACKET_SCHEMA:
@@ -845,6 +858,11 @@ class IntelligenceStore:
                     except (TypeError, ValueError):
                         old = None
                 if packet.get("purpose") == "research":
+                    if not all(isinstance(packet.get(key), str) and packet[key]
+                               for key in ("id", "feed_id", "source_revision")):
+                        raise ValueError("invalid research acceptance identity")
+                    submitted[sid] = {"feed_id": packet["feed_id"],
+                                      "submitted_revision": packet["source_revision"]}
                     merged = _merge_research_packet(old, packet, now=now, timeline_max=timeline_max)
                 else:
                     if old and old.get("purpose") == "research":
@@ -873,6 +891,22 @@ class IntelligenceStore:
                     ),
                 )
                 count += 1
+            # Observe the final row for each submitted identity while the batch
+            # transaction is still open and before rolling retention can evict
+            # an intentionally accepted row. This includes idempotent replays.
+            for sid, incoming in submitted.items():
+                row = self.db.execute("SELECT packet_json FROM stories WHERE story_id=?", (sid,)).fetchone()
+                current = json.loads(row[0])
+                accepted = intelligence_history._at(current.get("accepted_revision_at"))
+                receipts[sid] = {
+                    **incoming,
+                    "source_revision": current["source_revision"],
+                    "accepted_revision_at": _iso(accepted) if accepted and accepted <= _utc(now) else "",
+                    "disposition": ("current" if current["source_revision"] == incoming["submitted_revision"]
+                                    else "superseded"),
+                }
+        if acceptance_receipts is not None:
+            acceptance_receipts.update(receipts)
         return count
 
     def prune(self, *, now: datetime, retention_h: float = 72.0,
@@ -897,6 +931,8 @@ class IntelligenceStore:
                  confirmed_max: int = 0, research_max: int = 0) -> dict:
         now = _utc(now)
         pace = _pace_cfg(pace_cfg)
+        source_health = self.source_health()
+        research_scope = intelligence_history.display_scope(source_health)
         cutoff = _iso(now - timedelta(hours=max(1.0, active_h)))
         rows = self.db.execute(
             """
@@ -913,6 +949,9 @@ class IntelligenceStore:
             except (TypeError, ValueError):
                 continue
             if isinstance(packet, dict):
+                if (packet.get("purpose") == "research"
+                        and not intelligence_history.is_displayable(packet, research_scope)):
+                    continue
                 stories.append(_served_packet(
                     packet, now=now, pace_cfg=pace,
                     market_stale_min=market_stale_min,
@@ -970,16 +1009,15 @@ class IntelligenceStore:
                     if key:
                         source_keys.add(key)
 
+        accepted_clocks = [_parse_iso(p.get("accepted_revision_at")) for p in stories]
         newest = max(
-            (_parse_iso(p.get("accepted_revision_at")) for p in stories),
+            (at for at in accepted_clocks if at is not None and at <= now),
             default=None,
             key=lambda value: value or datetime.min.replace(tzinfo=timezone.utc),
         )
         state = "quiet"
         if newest and (_utc(now) - newest) <= timedelta(minutes=15):
             state = "live"
-        health_row = self.db.execute("SELECT value FROM desk_metadata WHERE key='source_health'").fetchone()
-        source_health = json.loads(health_row[0]) if health_row else []
         return {
             "source_health": source_health,
             "schema": DESK_SCHEMA,
@@ -996,6 +1034,43 @@ class IntelligenceStore:
             },
             "stories": stories,
         }
+
+    def retained_history(self, *, now: datetime, source_health: list,
+                         retention_h: float = 72.0, max_stories: int = 1500,
+                         pace_cfg: dict | None = None) -> dict:
+        """Project the existing retained owner rows; no new store or read writer."""
+        # Match the incumbent aggregate's whole-second export clock exactly.
+        now = _utc(now).replace(microsecond=0)
+        retention = max(1.0, min(intelligence_history.MAX_RETENTION_HOURS, retention_h))
+        cap = max(1, min(intelligence_history.MAX_STORIES, max_stories))
+        cutoff = _iso(now - timedelta(hours=retention))
+        rows = self.db.execute(
+            """
+            SELECT CASE WHEN length(CAST(packet_json AS BLOB)) <= ? THEN packet_json ELSE NULL END,
+                   length(CAST(packet_json AS BLOB))
+            FROM stories WHERE updated_at >= ?
+            ORDER BY updated_at DESC, story_id ASC LIMIT ?
+            """, (intelligence_history.MAX_BYTES, cutoff, cap),
+        )
+        packets, read_bytes = [], 0
+        pace = _pace_cfg(pace_cfg)
+        for raw, size in rows:
+            read_bytes += size
+            if raw is None or read_bytes > intelligence_history.MAX_BYTES:
+                raise intelligence_history.HistoryArtifactError("retained read byte cap")
+            try:
+                packet = json.loads(raw)
+            except (TypeError, ValueError):
+                packet = None
+            packets.append(_served_packet(packet, now=now, pace_cfg=pace,
+                                          market_stale_min=DEFAULT_MARKET_STALE_MIN)
+                           if isinstance(packet, dict) else None)
+        projection = intelligence_history.build_projection(
+            packets, source_health=source_health, as_of=now,
+            retention_hours=retention, max_stories=cap,
+        )
+        intelligence_history.encode(projection)  # preflight before either publication
+        return projection
 
 
 def _first_usable_path(candidates: Iterable[str], *, root: Path) -> Path | None:
@@ -1071,33 +1146,101 @@ def _quarantine_db(path: Path, *, now: datetime, exc: BaseException) -> None:
     )
 
 
+def _receipt_source_health(rows: list, previous: list, items: dict, *, now: datetime) -> tuple[list, dict]:
+    """Replace proposed acceptance claims with committed owner observations."""
+    prior, duplicates = {}, set()
+    for row in previous:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            continue
+        if row["id"] in prior:
+            duplicates.add(row["id"])
+        prior[row["id"]] = row
+    groups: dict[str, list] = {}
+    for item in items.values():
+        groups.setdefault(item["feed_id"], []).append(item)
+    feeds = {}
+    for feed_id, group in groups.items():
+        previous_at = prior.get(feed_id, {}).get("last_accepted_at") if feed_id not in duplicates else None
+        clocks = [intelligence_history._at(previous_at)]
+        clocks.extend(intelligence_history._at(item["accepted_revision_at"]) for item in group)
+        last = max((at for at in clocks if at is not None and at <= _utc(now)), default=None)
+        accepted_count = sum(item["disposition"] == "current" for item in group)
+        feeds[feed_id] = {
+            "accepted_item_count": accepted_count,
+            "superseded_item_count": len(group) - accepted_count,
+            "last_accepted_at": _iso(last) if last else "",
+            "last_outcome": "accepted" if accepted_count else "unchanged",
+        }
+    corrected = []
+    for row in rows:
+        if not isinstance(row, dict):
+            corrected.append(row)
+            continue
+        result = dict(row)
+        accepted = feeds.get(row.get("id")) if isinstance(row.get("id"), str) else None
+        if accepted is not None:
+            result.update(last_changed_item_count=accepted["accepted_item_count"],
+                          last_accepted_at=accepted["last_accepted_at"],
+                          last_outcome=accepted["last_outcome"], last_acceptance_error="")
+        corrected.append(result)
+    return corrected, feeds
+
+
 def _store_cycle(db_target: Path, packets: list[dict], *, now: datetime,
-                 cfg: dict) -> dict:
+                 cfg: dict) -> tuple[dict, dict | None, dict]:
     """One full store tick: merge, prune, snapshot. Always closes the store."""
     store = IntelligenceStore(db_target)
     try:
+        previous_health = store.source_health()
+        receipts = {}
         store.upsert(
             packets, now=now,
             timeline_max=int(cfg.get("timeline_max", DEFAULT_TIMELINE_MAX)),
+            acceptance_receipts=receipts,
         )
-        if isinstance(cfg.get("source_health"), list):
-            store.set_source_health(cfg["source_health"])
+        supplied_health = cfg.get("source_health")
+        health, feeds = _receipt_source_health(
+            supplied_health if isinstance(supplied_health, list) else previous_health,
+            previous_health, receipts, now=now,
+        )
+        receipt = {"schema": ACCEPTANCE_SCHEMA, "items": receipts, "feeds": feeds}
+        if isinstance(supplied_health, list) or receipts:
+            store.set_source_health(health)
         store.prune(
             now=now,
             retention_h=float(cfg.get("retention_h", 72.0)),
             max_stories=int(cfg.get("max_stories", 1500)),
         )
-        return store.snapshot(
-            now=now,
-            active_h=float(cfg.get("active_h", 48.0)),
-            max_items=int(cfg.get("snapshot_max_items", 80)),
-            pace_cfg=cfg.get("pace"),
-            market_stale_min=float(
-                cfg.get("market_stale_min", DEFAULT_MARKET_STALE_MIN)
-            ),
-            confirmed_max=int(cfg.get("snapshot_confirmed_max", 0) or 0),
-            research_max=int(cfg.get("snapshot_research_max", 0) or 0),
-        )
+        # The same owner connection observes one coherent committed generation.
+        # This transaction contains SELECTs only and creates no API DB access.
+        store.db.execute("BEGIN")
+        try:
+            payload = store.snapshot(
+                now=now,
+                active_h=float(cfg.get("active_h", 48.0)),
+                max_items=int(cfg.get("snapshot_max_items", 80)),
+                pace_cfg=cfg.get("pace"),
+                market_stale_min=float(
+                    cfg.get("market_stale_min", DEFAULT_MARKET_STALE_MIN)
+                ),
+                confirmed_max=int(cfg.get("snapshot_confirmed_max", 0) or 0),
+                research_max=int(cfg.get("snapshot_research_max", 0) or 0),
+            )
+            try:
+                retained = store.retained_history(
+                    now=now, source_health=payload["source_health"],
+                    retention_h=float(cfg.get("retention_h", 72.0)),
+                    max_stories=int(cfg.get("max_stories", 1500)), pace_cfg=cfg.get("pace"),
+                )
+                payload["retained_history"] = intelligence_history.descriptor(retained)
+            except (ValueError, TypeError, OverflowError, RecursionError):
+                # A bounded optional projection must not stall primary intake.
+                # SQLite errors still reach the incumbent quarantine/retry owner.
+                retained = None
+                payload["retained_history"] = intelligence_history.unavailable("projection_invalid")
+            return payload, retained, receipt
+        finally:
+            store.db.rollback()
     finally:
         try:
             store.close()
@@ -1113,13 +1256,24 @@ def update_intelligence_desk(
     cfg: dict | None = None,
     db_path: Path | str | None = None,
     snapshot_path: Path | str | None = None,
+    history_path: Path | str | None = None,
+    acceptance_receipt: dict | None = None,
 ) -> dict:
     """Merge a tick and publish a new desk snapshot. Returns the payload.
 
     Explicit paths are the test/development seam. Production chooses the first
     writable path from the configured candidates, with the gitignored repo path
     as its last fallback.
+
+    An optional receipt dict is cleared before effects and populated only after
+    successful aggregate publication. It contains actual owner acknowledgements
+    for the submitted research IDs, observed before retention pruning; it is
+    never included in either published artifact.
     """
+    if acceptance_receipt is not None:
+        if not isinstance(acceptance_receipt, dict):
+            raise TypeError("acceptance_receipt must be a dict")
+        acceptance_receipt.clear()
     root = Path(root)
     cfg = cfg or {}
     db_candidates = cfg.get("db_paths") or DEFAULT_DB_PATHS
@@ -1138,12 +1292,37 @@ def update_intelligence_desk(
     # generator would hand the second attempt an empty tick.
     batch = [p for p in packets]
     try:
-        payload = _store_cycle(db_target, batch, now=now, cfg=cfg)
+        payload, retained, receipt = _store_cycle(db_target, batch, now=now, cfg=cfg)
     except sqlite3.DatabaseError as exc:
         _quarantine_db(db_target, now=now, exc=exc)
         # Exactly ONE retry. A second failure is not a corrupt file — it is a
         # broken host (read-only mount, full disk) — and it must reach the
         # daemon's log rather than be swallowed into a silently empty desk.
-        payload = _store_cycle(db_target, batch, now=now, cfg=cfg)
+        payload, retained, receipt = _store_cycle(db_target, batch, now=now, cfg=cfg)
+    if retained is not None:
+        try:
+            # Explicit DB tests stay beside that DB, even if production config
+            # was supplied. A private history override remains explicit.
+            configured = (history_path if history_path is not None else
+                          db_target.with_name(intelligence_history.FILENAME) if db_path is not None else
+                          cfg.get("history_snapshot_path") or db_target.with_name(intelligence_history.FILENAME))
+            history_target = Path(configured)
+            if not history_target.is_absolute():
+                history_target = root / history_target
+            resolved = history_target.resolve()
+            protected = (db_target.resolve(), sink_target.resolve())
+            public_roots = (Path("/var/lib/macro-live/public"), root.resolve() / "site", root.resolve() / "public")
+            if (resolved in protected or any(resolved.is_relative_to(base) for base in public_roots)
+                    or any(history_target.exists() and target.exists()
+                           and os.path.samefile(history_target, target) for target in (db_target, sink_target))):
+                raise ValueError("history path is not private")
+            intelligence_history.atomic_write(history_target, retained)
+        except (OSError, ValueError, TypeError, OverflowError, RecursionError):
+            # Publishing this descriptor invalidates any older private artifact.
+            # A later main-file failure also fails closed through the revision
+            # handshake instead of pretending the two files commit atomically.
+            payload["retained_history"] = intelligence_history.unavailable("publish_failed")
     _atomic_json(sink_target, payload)
+    if acceptance_receipt is not None:
+        acceptance_receipt.update(receipt)
     return payload

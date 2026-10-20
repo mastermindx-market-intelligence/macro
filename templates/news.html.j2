@@ -16,6 +16,9 @@
 {% elif name == 'plus' %}<path d="M12 5v14M5 12h14"/>
 {% elif name == 'arrow' %}<path d="M5 12h14m-5-5 5 5-5 5"/>
 {% elif name == 'keyboard' %}<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/>
+{% elif name == 'compare' %}<path d="M3 5h7v14H3zM14 5h7v14h-7zM6 9h1m-1 4h1m10-4h1m-1 4h1"/>
+{% elif name == 'folder' %}<path d="M3 6h7l2 3h9v11H3z"/>
+{% elif name == 'inbox' %}<path d="M5 4h14l2 11v5H3v-5L5 4m-2 11h5l2 3h4l2-3h5"/>
 {% else %}<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>{% endif %}</svg>
 {%- endmacro %}
 {% set FEED = ((news_feed if news_feed is iterable and news_feed is not string else [])|select('mapping')|list) %}
@@ -34,7 +37,7 @@
     <div><p class="nd-eyebrow">{{ t('Intelligence / Global coverage','情报 / 全球报道') }}</p><h1>{{ t('News intelligence','新闻情报') }}</h1></div>
     <div class="nd-header-tools">
       <span class="nd-status dtp-asof" id="ndConnection" data-state="connecting">{{ t('Connecting','正在连接') }}</span>
-      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台">{{ icon('bookmark') }}</button>
+      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" id="ndWorkspaceOpen" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台">{{ icon('bookmark') }}<i class="nd-workspace-dot" id="ndWorkspaceUpdates" aria-hidden="true" hidden></i></button>
       <button type="button" class="nd-btn nd-btn-quiet" id="ndCoverageOpen" aria-label="Coverage and freshness" data-label-zh="覆盖范围与时效">{{ icon('globe') }}<span>{{ t('Coverage','覆盖范围') }}</span></button>
       <button type="button" class="nd-btn" id="ndDensity" aria-pressed="false" aria-label="Reading view" data-label-zh="阅读视图">{{ icon('news') }}<span>{{ t('Reading view','阅读视图') }}</span></button>
     </div>
@@ -48,6 +51,9 @@
       </div>
       <div><h2 class="nd-nav-heading">{{ t('Your workspace','你的工作台') }}</h2>
         <button type="button" class="nd-category" id="ndSavedStories" aria-pressed="false">{{ icon('bookmark') }}{{ t('Saved stories','已收藏报道') }}</button>
+        <button type="button" class="nd-category" id="ndInvestigationsOpen">{{ icon('folder') }}{{ t('Investigations','研究专题') }}</button>
+        <button type="button" class="nd-category" id="ndHistoryOpen">{{ icon('clock') }}{{ t('Retained reports','近期留存报道') }}</button>
+        <button type="button" class="nd-category" id="ndMonitorOpen">{{ icon('inbox') }}{{ t('Updates inbox','更新收件箱') }}<span class="nd-monitor-count" id="ndMonitorCount" hidden></span></button>
         <button type="button" class="nd-category" data-company-news="">{{ icon('company') }}{{ t('Company news','公司新闻') }}</button>
         <div id="ndSavedViews"></div>
         <button type="button" class="nd-side-link" id="ndSaveView">{{ icon('plus') }}{{ t('Save this view','保存当前视图') }}</button>
@@ -83,6 +89,10 @@
       <div class="nd-banner" id="ndBanner" hidden><span id="ndBannerText"></span><a href="/?signin=1&amp;ret=news.html" id="ndSignIn" hidden>{{ t('Sign in','登录') }}</a><button type="button" class="nd-btn nd-btn-quiet" id="ndRetry" hidden>{{ t('Retry','重试') }}</button></div>
       <div class="nd-list-top"><span id="ndResultCount">{{ t('Latest reporting','最新报道') }}</span><span id="ndFreshness"></span><label><input type="checkbox" id="ndAutoFollow">{{ t('Follow live','跟随最新') }}</label><span class="nd-status nd-connection-mobile" id="ndConnectionMobile" data-state="connecting">{{ t('Connecting','正在连接') }}</span></div>
       <button type="button" class="nd-update-bar" id="ndUpdates" hidden></button>
+      <div class="nd-compare-tray" id="ndCompareTray" hidden aria-label="Selected reports" data-label-zh="已选报道">
+        <span id="ndCompareCount"></span><button type="button" class="nd-btn" id="ndCompareOpen">{{ icon('compare') }}{{ t('Compare','对照阅读') }}</button>
+        <button type="button" class="nd-btn nd-btn-quiet" id="ndCompareClear">{{ t('Clear selection','清除选择') }}</button>
+      </div>
       <div class="nd-feed-scroll" id="ndFeedPanel" role="tabpanel" aria-labelledby="ndTabLatest" tabindex="0">
         <ol class="nd-feed" id="ndFeed">
           {% for h in FEED[:30] %}{% set url = h.url if h.url is string else '' %}
@@ -114,6 +124,69 @@
 </dialog>
 <dialog class="nd-dialog" id="ndCoverage" aria-labelledby="ndCoverageTitle"><div class="nd-dialog-header"><h2 id="ndCoverageTitle">{{ t('Coverage & freshness','覆盖范围与时效') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close coverage" data-label-zh="关闭覆盖范围">{{ icon('close') }}</button></div><div class="nd-dialog-body" id="ndCoverageBody"></div></dialog>
 <dialog class="nd-dialog" id="ndViewDialog" aria-labelledby="ndViewTitle"><div class="nd-dialog-header"><h2 id="ndViewTitle">{{ t('Save this view','保存当前视图') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close saved view" data-label-zh="关闭保存视图">{{ icon('close') }}</button></div><form class="nd-dialog-body" id="ndViewForm"><p>{{ t('Keep these filters on this browser for your next visit.','在此浏览器中保留这些筛选条件，方便下次使用。') }}</p><div class="nd-form-row"><label for="ndViewName">{{ t('View name','视图名称') }}</label><input id="ndViewName" required maxlength="40" placeholder="Morning macro"></div><button type="submit" class="nd-btn">{{ t('Save view','保存视图') }}</button></form></dialog>
+<dialog class="nd-dialog nd-comparison" id="ndCompare" aria-labelledby="ndCompareTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow">{{ t('Your reading set','你的阅读组合') }}</p><h2 id="ndCompareTitle">{{ t('Compare reports','对照阅读报道') }}</h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close comparison" data-label-zh="关闭对照阅读">{{ icon('close') }}</button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note">{{ t('You chose these reports. A shared topic or source does not establish independent confirmation. Use the original evidence to examine the relationship.','这些报道由你选择。共同主题或来源并不代表独立核实，请结合原始依据研究其关系。') }}</p>
+    <div class="nd-research-controls"><div class="nd-form-row"><label for="ndCompareRelation">{{ t('Relationship to examine','待研究的关系') }}</label><select id="ndCompareRelation"><option value="question" data-en="Open question" data-zh="开放问题">Open question</option><option value="topic" data-en="Shared topic" data-zh="共同主题">Shared topic</option><option value="accounts" data-en="Different accounts" data-zh="不同叙述">Different accounts</option><option value="connection" data-en="Possible connection" data-zh="可能的关联">Possible connection</option></select></div><button type="button" class="nd-btn" id="ndCompareSave">{{ icon('folder') }}{{ t('Keep in an investigation','加入研究专题') }}</button></div>
+    <div class="nd-comparison-grid" id="ndCompareReports"></div>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-investigations" id="ndInvestigations" aria-labelledby="ndInvestigationsTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow">{{ t('Your workspace','你的工作台') }}</p><h2 id="ndInvestigationsTitle">{{ t('Investigations','研究专题') }}</h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close investigations" data-label-zh="关闭研究专题">{{ icon('close') }}</button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note">{{ t('Keep a named set of report references on this browser. Available reports follow current corrections; references remain when reporting leaves the current feed.','在此浏览器保存有名称的报道引用组合。可用报道随最新修订更新；离开当前新闻流后仍保留引用。') }}</p>
+    <p class="nd-research-selection" id="ndInvestigationPending" hidden></p>
+    <form class="nd-research-create" id="ndInvestigationForm"><div class="nd-form-row"><label for="ndInvestigationName">{{ t('New investigation','新建研究专题') }}</label><input id="ndInvestigationName" required maxlength="60" placeholder="Energy supply questions" data-placeholder-zh="能源供应问题"></div><button type="submit" class="nd-btn">{{ t('Create','创建') }}</button></form>
+    <div class="nd-investigation-grid"><nav class="nd-investigation-list" id="ndInvestigationList" aria-label="Your investigations" data-label-zh="你的研究专题"></nav>
+      <section id="ndInvestigationCurrent" hidden aria-labelledby="ndInvestigationCurrentTitle">
+        <h3 id="ndInvestigationCurrentTitle" class="nd-research-title"></h3>
+        <form class="nd-research-create" id="ndInvestigationRenameForm"><div class="nd-form-row"><label for="ndInvestigationRename">{{ t('Investigation name','专题名称') }}</label><input id="ndInvestigationRename" required maxlength="60"></div><button type="submit" class="nd-btn nd-btn-quiet">{{ t('Rename','重命名') }}</button></form>
+        <div class="nd-form-row"><label for="ndInvestigationRelation">{{ t('Relationship to examine · chosen by you','待研究的关系 · 由你选择') }}</label><select id="ndInvestigationRelation"><option value="question" data-en="Open question" data-zh="开放问题">Open question</option><option value="topic" data-en="Shared topic" data-zh="共同主题">Shared topic</option><option value="accounts" data-en="Different accounts" data-zh="不同叙述">Different accounts</option><option value="connection" data-en="Possible connection" data-zh="可能的关联">Possible connection</option></select></div>
+        <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndInvestigationAdd">{{ t('Add selected reports','加入已选报道') }}</button><button type="button" class="nd-btn" id="ndInvestigationCompare">{{ t('Compare selection','对照阅读已选报道') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationWatch" aria-pressed="false">{{ t('Monitor changes','关注变化') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationHistory">{{ t('Search retained reports','搜索留存报道') }}</button></div>
+        <p class="nd-note" id="ndInvestigationAvailability"></p><ol class="nd-investigation-reports" id="ndInvestigationReports"></ol>
+        <button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationDelete">{{ t('Delete investigation','删除研究专题') }}</button>
+      </section>
+    </div>
+    <p class="nd-note">{{ t('Only names, preferences and report references are saved. Report text is loaded from the current desk when you have access. Up to 12 investigations, with 100 references each.','仅保存名称、偏好和报道引用。拥有访问权限时，报道内容从当前新闻台载入。最多12个专题，每个保留100条引用。') }}</p>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-monitor" id="ndMonitor" aria-labelledby="ndMonitorTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow">{{ t('Your workspace','你的工作台') }}</p><h2 id="ndMonitorTitle">{{ t('Updates inbox','更新收件箱') }}</h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close updates inbox" data-label-zh="关闭更新收件箱">{{ icon('close') }}</button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note">{{ t('Check saved views and investigations as updates reach this open page. Enabling monitoring starts from the current reporting. Quiet mode keeps updates here without announcements.','此页面打开时，根据收到的更新检查已保存视图和研究专题。启用时从当前报道开始；安静模式保留更新，但不播报。') }}</p>
+    <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndMonitorEnable" aria-pressed="false">{{ t('Enable monitoring','启用关注更新') }}</button><button type="button" class="nd-btn" id="ndMonitorQuiet" aria-pressed="true">{{ t('Quiet mode','安静模式') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndMonitorReadAll">{{ t('Mark all read','全部标为已读') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndMonitorReset">{{ t('Clear inbox & restart','清空并重新开始') }}</button></div>
+    <p class="nd-note" id="ndMonitorStatus"></p>
+    <section class="nd-monitor-choices" aria-labelledby="ndMonitorSourcesTitle"><h3 id="ndMonitorSourcesTitle" class="nd-research-title">{{ t('Choose what to monitor','选择关注对象') }}</h3><div id="ndMonitorChoices"></div></section>
+    <div id="ndMonitorItems"></div>
+    <p class="nd-note">{{ t('Updates record when this page observed a change, not when a publisher released it. Leaving the current feed may mean a withdrawal or a rolling window change. Reports that match a monitored search stay followed until its history is restarted. The latest 100 updates are kept on this browser; no messages are sent elsewhere.','更新时间表示本页面观察到变化的时刻，并非发布者的发布时间。离开当前新闻流可能源于撤回或滚动范围变化。匹配搜索的报道将持续受关注，直到重新开始监测记录。此浏览器保留最近100条更新，不向其他地方发送消息。') }}</p>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-history" id="ndHistory" aria-labelledby="ndHistoryTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow">{{ t('Research beyond the live feed','在实时新闻流之外继续研究') }}</p><h2 id="ndHistoryTitle">{{ t('Retained reports','近期留存报道') }}</h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close retained reports" data-label-zh="关闭留存报道">{{ icon('close') }}</button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note" id="ndHistoryBounds"></p>
+    <form id="ndHistoryForm" class="nd-history-form">
+      <div class="nd-research-create"><div class="nd-form-row"><label for="ndHistoryQuery">{{ t('Literal text or phrase','原样文字或短语') }}</label><input type="search" id="ndHistoryQuery" maxlength="256" placeholder="Energy supply" data-placeholder-zh="能源供应" aria-describedby="ndHistorySearchNote"></div><button type="submit" class="nd-btn" id="ndHistorySearch">{{ icon('search') }}{{ t('Search','搜索') }}</button></div>
+      <p class="nd-note" id="ndHistorySearchNote">{{ t('Text is matched literally, ignoring case. Search operators and OR have no special meaning here.','文字按原样匹配，不区分大小写。搜索运算符及 OR 在此没有特殊含义。') }}</p>
+      <details class="nd-history-filters"><summary>{{ t('Refine the search','细化搜索') }}</summary><div class="nd-form-grid">
+        <div class="nd-form-row"><label for="ndHistorySource">{{ t('Publisher or host · exact match','发布者或网站主机名 · 精确匹配') }}</label><input id="ndHistorySource" maxlength="160" placeholder="Publisher name" data-placeholder-zh="发布者名称"></div>
+        <div class="nd-form-row"><label for="ndHistoryFeed">{{ t('Collection feed','采集新闻流') }}</label><select id="ndHistoryFeed"><option value="" data-en="Any feed" data-zh="所有新闻流">Any feed</option></select></div>
+        <div class="nd-form-row"><label for="ndHistoryCategory">{{ t('Category','分类') }}</label><select id="ndHistoryCategory">{% for key,ic,en,zh in CATS %}<option value="{{ '' if key == 'all' else key }}" data-en="{{ en }}" data-zh="{{ zh }}">{{ en }}</option>{% endfor %}</select></div>
+        <div class="nd-form-row"><label for="ndHistoryLanguage">{{ t('Report language','报道语言') }}</label><input id="ndHistoryLanguage" maxlength="32" placeholder="en" data-placeholder-zh="zh"></div>
+        <div class="nd-form-row"><label for="ndHistoryFrom">{{ t('Recorded from · your local time','收录起始 · 你的本地时间') }}</label><input type="datetime-local" id="ndHistoryFrom"></div>
+        <div class="nd-form-row"><label for="ndHistoryTo">{{ t('Recorded before · your local time','收录截止（不含）· 你的本地时间') }}</label><input type="datetime-local" id="ndHistoryTo"></div>
+      </div></details>
+    </form>
+    <p class="nd-note">{{ t('Dates filter recorded acceptance, falling back to first seen. The lower bound is included; the upper bound is excluded. Retention follows the desk’s last stored update.','日期筛选按报道变更收录时间计算，缺失时使用首次收录时间。包含起始时刻，不包含截止时刻；保留时间范围按新闻台最近保存更新计算。') }}</p>
+    <div class="nd-history-status" id="ndHistoryStatus" role="status" aria-live="polite"></div>
+    <p class="nd-note" id="ndHistoryQuerySummary" hidden></p>
+    <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndHistoryCompare">{{ t('Compare selection','对照阅读已选报道') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndHistoryKeep">{{ t('Keep selected reports','保存已选报道') }}</button><button type="button" class="nd-btn nd-btn-quiet" id="ndHistoryRestart" hidden>{{ t('Restart search','重新搜索') }}</button></div>
+    <div id="ndHistoryResults"></div>
+    <button type="button" class="nd-btn" id="ndHistoryMore" hidden>{{ t('Load more matching reports','载入更多匹配报道') }}</button>
+    <p class="nd-note">{{ t('Search returns retained current versions only. Older editions, removed reports and complete publication histories may be unavailable. This search does not create live-feed alerts.','搜索仅返回留存的当前版本。更早版本、已移除报道及完整发布历史可能不可用。此搜索不会创建实时新闻流提醒。') }}</p>
+  </div>
+</dialog>
 <dialog class="nd-dialog" id="ndHelp" aria-labelledby="ndHelpTitle"><div class="nd-dialog-header"><h2 id="ndHelpTitle">{{ t('Move through the news','高效浏览新闻') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close help" data-label-zh="关闭帮助">{{ icon('close') }}</button></div><div class="nd-dialog-body"><div class="nd-shortcuts"><span>{{ t('Search the feed','搜索新闻') }}</span><kbd>/</kbd><span>{{ t('Next / previous story','下一条 / 上一条') }}</span><kbd>J / K</kbd><span>{{ t('Close story or dialog','关闭报道或对话框') }}</span><kbd>Esc</kbd><span>{{ t('Save the selected story','收藏当前报道') }}</span><kbd>S</kbd></div><hr><p><code>"Federal Reserve" -speech</code><br>{{ t('Find an exact phrase and exclude a word.','匹配完整短语，并排除指定关键词。') }}</p><p><code>ticker:NVDA source:Reuters</code><br>{{ t('Combine an exact ticker with a source filter.','组合精确股票代码与来源筛选。') }}</p><p><code>oil OR energy -rumor</code><br>{{ t('Match either term. Exclusions apply across all alternatives.','匹配任一关键词；排除词对所有选项生效。') }}</p><p class="nd-note">{{ t('Saved views, following terms and read markers stay on this browser.','已保存视图、关注词与已读标记保留在此浏览器中。') }}</p></div></dialog>
 
 <dialog class="nd-dialog nd-dialog-wide" id="ndImpact" aria-labelledby="ndImpactTitle"><div class="nd-dialog-header"><h2 id="ndImpactTitle">{{ t('Event impact','事件影响') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close event impact" data-label-zh="关闭事件影响">{{ icon('close') }}</button></div><div class="nd-dialog-body">
@@ -228,6 +301,9 @@
 </div></dialog>
 <dialog class="nd-dialog" id="ndWorkspace" aria-labelledby="ndWorkspaceTitle"><div class="nd-dialog-header"><h2 id="ndWorkspaceTitle">{{ t('Your workspace','你的工作台') }}</h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close workspace" data-label-zh="关闭工作台">{{ icon('close') }}</button></div><div class="nd-dialog-body nd-workspace-tools">
 <button type="button" class="nd-btn" id="ndSavedStoriesMobile">{{ icon('bookmark') }}{{ t('Saved stories','已收藏报道') }}</button>
+<button type="button" class="nd-btn" id="ndInvestigationsOpenMobile">{{ icon('folder') }}{{ t('Investigations','研究专题') }}</button>
+<button type="button" class="nd-btn" id="ndHistoryOpenMobile">{{ icon('clock') }}{{ t('Retained reports','近期留存报道') }}</button>
+<button type="button" class="nd-btn" id="ndMonitorOpenMobile">{{ icon('inbox') }}{{ t('Updates inbox','更新收件箱') }}<span class="nd-monitor-count" id="ndMonitorCountMobile" hidden></span></button>
 <button type="button" class="nd-btn" data-company-news="">{{ icon('company') }}{{ t('Company news','公司新闻') }}</button>
 <button type="button" class="nd-btn" data-open-panel="ndCalendar">{{ icon('clock') }}{{ t('Economic calendar','经济日历') }}</button>
 <button type="button" class="nd-btn" data-open-panel="ndImpact">{{ icon('chart') }}{{ t('Event impact','事件影响') }}</button>
@@ -249,4 +325,4 @@
 
 <script type="application/json" id="ndSeed">{{ {'stories':FEED, 'updated_at':((macro_news or {}).get('fetched_at','') if macro_news is mapping else '')}|tojson }}</script>
 {% endblock %}
-{% block body_scripts %}<script>{% include "news_desk.js" %}</script><script>{% include "news_company.js" %}</script>{% endblock %}
+{% block body_scripts %}<script>{% include "news_research.js" %}</script><script>{% include "news_desk.js" %}</script><script>{% include "news_company.js" %}</script>{% endblock %}

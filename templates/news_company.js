@@ -37,6 +37,7 @@
     var $=function(id){return doc.getElementById(id);},zh=function(){return doc.documentElement.dataset.lang==="zh";},tx=function(en,cn){return zh()?cn:en;};
     var state={ticker:"",cursor:null,packet:null,visible:[],pending:0,reordered:false,status:["Choose a company","选择一家公司"],mode:"idle"};
     var generation=0,requests=new Set(),groupRequests=new Map(),jobs=new Map(),stream=null,refreshing=false,dirty=false,streamFailures=0,streamRetryAt=0,disposed=false,lastTrigger=null;
+    var rateLimitResumeAt=0;
     function node(tag,cls,value){var n=doc.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n;}
     function button(label,fn,cls){var n=node("button",cls||"nd-btn",label);n.type="button";n.addEventListener("click",fn);return n;}
     function at(value){var n=Date.parse(value);return Number.isFinite(n)?new Intl.DateTimeFormat(zh()?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short"}).format(n):tx("Time not supplied","未提供时间");}
@@ -48,15 +49,21 @@
     function purge(){state.packet=null;state.visible=[];state.pending=0;state.reordered=false;$("ndCompanyRows").replaceChildren();$("ndCompanyFlow").replaceChildren();$("ndCompanyHealth").textContent="";$("ndCompanyMore").hidden=true;$("ndCompanyUpdates").hidden=true;}
     function abortGroups(card){card.querySelectorAll(".nd-company-group").forEach(function(details){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);});}
     function status(mode,en,cn){state.mode=mode;state.status=[en,cn];$("ndCompanyStatus").dataset.state=mode;$("ndCompanyStatus").textContent=tx(en,cn);}
+    function resume(){
+      if(!dialog.open||disposed||doc.hidden||!state.ticker)return;
+      var id=generation,remaining=Math.max(0,rateLimitResumeAt-Date.now());
+      if(remaining){later("retry",function(){if(id===generation)resume();},remaining);return;}
+      rateLimitResumeAt=0;refresh(true);
+    }
     function errorState(error){
       stop();purge();
-      var code=error&&error.status;$("ndCompanySignIn").hidden=code!==401;$("ndCompanyRetry").hidden=code===401||code===404;
+      var code=error&&error.status;rateLimitResumeAt=code===429?Date.now()+60000:0;$("ndCompanySignIn").hidden=code!==401;$("ndCompanyRetry").hidden=code===401||code===404;
       if(code===401)status("restricted","Sign in to open company news.","请登录以打开公司新闻。");
       else if(code===403)status("restricted","Company news requires an eligible account and source access.","公司新闻需要符合条件的账户与来源访问权限。");
       else if(code===404)status("unavailable","This ticker is outside the available company news universe.","此股票代码不在可用公司新闻范围内。");
       else if(code===429)status("degraded","Request limit reached. Retry in a minute.","已达到请求上限，请在一分钟后重试。");
       else status("unavailable","Company reporting is unavailable. The feed or its display permission could not be confirmed.","公司报道暂不可用，无法确认新闻源或其展示权限。");
-      if(dialog.open&&!doc.hidden&&state.ticker&&code!==401&&code!==403&&code!==404)later("retry",function(){refresh(true);},code===429?60000:30000);
+      if(dialog.open&&!doc.hidden&&state.ticker&&code!==401&&code!==403&&code!==404){if(code===429)resume();else later("retry",function(){refresh(true);},30000);}
     }
     async function accessToken(signal){
       if(!win.MDXAuth||typeof win.MDXAuth.client!=="function"){var absent=new Error("auth");absent.status=401;throw absent;}
@@ -192,7 +199,7 @@
     }
     async function refresh(reconnect){
       if(!state.ticker||!dialog.open||disposed||doc.hidden)return;
-      if(refreshing){dirty=true;return;}refreshing=true;dirty=false;cancel("retry");cancel("poll");var id=generation,first=!state.packet;
+      if(refreshing){dirty=true;return;}refreshing=true;dirty=false;rateLimitResumeAt=0;cancel("retry");cancel("poll");var id=generation,first=!state.packet;
       $("ndCompanyRetry").hidden=true;$("ndCompanySignIn").hidden=true;
       if(first)status("connecting","Loading company reporting…","正在载入公司报道…");
       try{
@@ -204,7 +211,7 @@
       }catch(error){if(active(id))errorState(error);}
       finally{if(id===generation){refreshing=false;if(dirty&&active(id))later("change",function(){refresh(false);},1000);}}
     }
-    function start(symbol,cursor){stop();purge();state.ticker=symbol;state.cursor=cursor===undefined?null:cursor;streamFailures=0;streamRetryAt=0;$("ndCompanyTicker").value=symbol;refresh(true);}
+    function start(symbol,cursor){stop();purge();rateLimitResumeAt=0;state.ticker=symbol;state.cursor=cursor===undefined?null:cursor;streamFailures=0;streamRetryAt=0;$("ndCompanyTicker").value=symbol;refresh(true);}
     function open(symbol,trigger){
       lastTrigger=trigger||doc.activeElement;
       var parent=lastTrigger&&lastTrigger.closest("dialog");if(parent&&parent!==dialog&&parent.open)parent.close();
@@ -212,7 +219,7 @@
       var normalized=ticker(symbol);if(normalized)start(normalized);else if(!state.ticker)status("idle","Choose a company to explore its reporting and news activity.","选择一家公司，浏览报道与新闻活跃度。");
       $("ndCompanyTicker").focus();
     }
-    function close(){stop();purge();state.ticker="";state.cursor=null;$("ndCompanyTicker").value="";if(lastTrigger&&lastTrigger.isConnected)lastTrigger.focus();}
+    function close(){stop();purge();rateLimitResumeAt=0;state.ticker="";state.cursor=null;$("ndCompanyTicker").value="";if(lastTrigger&&lastTrigger.isConnected)lastTrigger.focus();}
     doc.addEventListener("click",function(event){var trigger=event.target.closest&&event.target.closest("[data-company-news]");if(trigger)open(trigger.dataset.companyNews,trigger);});
     $("ndCompanyForm").addEventListener("submit",function(event){event.preventDefault();var symbol=ticker($("ndCompanyTicker").value);if(!symbol){$("ndCompanyTicker").setCustomValidity(tx("Enter a supported ticker, such as NVDA.","请输入支持的股票代码，例如NVDA。"));$("ndCompanyTicker").reportValidity();return;}start(symbol);});
     $("ndCompanyTicker").addEventListener("input",function(){this.setCustomValidity("");});
@@ -222,16 +229,16 @@
     $("ndCompanyUpdates").addEventListener("click",function(){if(!state.packet)return;state.visible=state.packet.rows.slice();state.pending=0;state.reordered=false;render();$("ndCompanyRows").scrollTop=0;});
     dialog.addEventListener("close",close);
     doc.addEventListener("langchange",function(){if(dialog.open){$("ndCompanyRows").querySelectorAll("[data-revision]").forEach(function(n){n.dataset.revision="";});render();}});
-    doc.addEventListener("visibilitychange",function(){if(doc.hidden){stop();purge();status("paused","Paused in background","后台已暂停");}else if(dialog.open&&state.ticker)refresh(true);});
+    doc.addEventListener("visibilitychange",function(){if(doc.hidden){stop();purge();status("paused","Paused in background","后台已暂停");}else if(dialog.open&&state.ticker)resume();});
     win.addEventListener("pagehide",function(){disposed=true;stop();purge();});
     win.addEventListener("mdx-auth",function(event){
       var detail=event.detail||{};if(detail.event==="PREFS_SAVED")return;
       if(!dialog.open||!state.ticker)return;
-      stop();purge();
+      stop();purge();rateLimitResumeAt=0;
       if(!detail.user){$("ndCompanySignIn").hidden=false;status("restricted","Sign in to open company news.","请登录以打开公司新闻。");}
       else later("auth",function(){refresh(true);},0);
     });
-    win.addEventListener("pageshow",function(event){if(event.persisted){disposed=false;if(dialog.open&&state.ticker)refresh(true);}});
+    win.addEventListener("pageshow",function(event){if(event.persisted){disposed=false;if(dialog.open&&state.ticker)resume();}});
     return {open:open,accept:accept,getState:function(){return {ticker:state.ticker,cursor:state.cursor,mode:state.mode,pending:state.pending,ids:state.visible.map(function(r){return r.story_id;})};}};
   }
   return {ticker:ticker,safeURL:safeURL,validSnapshot:validSnapshot,streamParser:streamParser,mount:mount};

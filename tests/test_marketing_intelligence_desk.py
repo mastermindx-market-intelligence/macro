@@ -32,6 +32,28 @@ ROOT = Path(__file__).resolve().parent.parent
 NOW = datetime(2026, 7, 29, 18, 0, tzinfo=timezone.utc)
 
 
+def _history_packet(sid="retained-one", *, at=NOW, content_use="attributed_feed_excerpt"):
+    stamp = at.isoformat().replace("+00:00", "Z")
+    return {"schema": PACKET_SCHEMA, "id": sid, "purpose": "research", "stage": "reported",
+            "status": "reported", "headline": "Policy rate decision", "brief": "Attributed feed excerpt",
+            "source_name": "Official Source", "feed_id": "official", "source_item_id": sid,
+            "source_revision": sid + "-r1", "content_use": content_use, "language": "en",
+            "category": "economy", "lane": "policy", "url": "https://example.gov/" + sid,
+            "published_at": stamp, "first_seen": stamp, "accepted_revision_at": stamp,
+            "updated_at": stamp, "evidence": [{"name": "Official Source", "url": "https://example.gov/" + sid}],
+            "timeline": [], "revision_history": [], "drafts": [], "content_routes": []}
+
+
+def _history_health(*, content_use="attributed_feed_excerpt"):
+    return [{"id": "official", "enabled": True, "status": "observed", "content_use": content_use}]
+
+
+def _history_projection(rows, *, at=NOW, health=None):
+    from engine.marketing import intelligence_history as history
+    return history.build_projection(rows, source_health=_history_health() if health is None else health,
+                                    as_of=at, retention_hours=72, max_stories=1500)
+
+
 def _item(iid: str, source: str, url: str, *, salience: float = 82.0) -> dict:
     return {
         "id": iid,
@@ -1927,3 +1949,419 @@ def test_shipped_config_bounds_the_confirmed_group():
     assert 0 < cap < max_items, (
         "the confirmed bound only reserves developing slots while it is "
         "strictly inside the snapshot cap")
+
+
+def test_history_projection_recursively_excludes_marketing_and_private_payloads():
+    from engine.marketing import intelligence_history as history
+    packet = _history_packet()
+    packet.update(drafts=[{"text": "secret outbound draft"}], content_routes=["secret route"],
+                  market={"label": "secret market"}, stance="secret stance", _private="secret private")
+    packet["evidence"][0]["internal"] = "secret evidence"
+    packet["context"] = {"evidence": "Source report", "pace": "New", "raw": "secret context"}
+    packet["timeline"] = [{"at": packet["first_seen"], "kind": "reported", "raw": "secret timeline"}]
+    packet["revision_history"] = [{"revision": "old", "headline": "Prior headline", "draft": "secret revision"}]
+    projection = _history_projection([packet])
+    assert "secret" not in history.encode(projection).decode()
+    assert projection["stories"][0]["context"] == {"evidence": "Source report", "pace": "New"}
+    assert "updated_at" not in projection["stories"][0]
+    assert packet["drafts"] == [{"text": "secret outbound draft"}]
+
+
+def test_history_source_grants_are_current_unique_and_exact():
+    allowed = _history_packet()
+    for health in ([], [{"id": "official", "enabled": True}],
+                   [dict(_history_health()[0], enabled=False)],
+                   [dict(_history_health()[0], status="held")],
+                   [dict(_history_health()[0], hold_reason="Permission pending")],
+                   _history_health() * 2,
+                   _history_health(content_use="attributed_headline_link")):
+        projection = _history_projection([allowed], health=health)
+        assert projection["displayable_count"] == 0
+        assert projection["excluded_count"] == 1
+    assert _history_projection([allowed])["displayable_count"] == 1
+    for field in ("feed_id", "content_use"):
+        malformed = dict(allowed, **{field: []})
+        assert _history_projection([malformed])["displayable_count"] == 0
+
+
+def test_history_headline_only_grant_never_carries_a_retained_excerpt():
+    from engine.marketing import intelligence_history as history
+    packet = _history_packet(content_use="attributed_headline_link")
+    packet["brief_zh"] = "An old translated excerpt"
+    projection = _history_projection([packet], health=_history_health(content_use="attributed_headline_link"))
+    row = projection["stories"][0]
+    assert "brief" not in row and "brief_zh" not in row
+    assert history.decode(history.encode(projection)) == projection
+
+
+def test_history_legacy_public_packet_is_allowed_but_unknown_purpose_and_stages_are_not():
+    packet = _packet("legacy", "Official Source", "https://example.gov/legacy")
+    rows = [packet, dict(packet, id="unknown-purpose", purpose="internal"),
+            dict(packet, id="unknown-stage", stage="draft"),
+            dict(packet, id="unsafe-link", evidence=[{"url": "javascript:alert(1)"}])]
+    projection = _history_projection(rows, health=[])
+    assert [row["id"] for row in projection["stories"]] == [packet["id"]]
+    assert projection["excluded_count"] == 3
+
+
+def test_history_clock_refresh_and_editorial_touch_do_not_reset_cursors():
+    from engine.marketing import intelligence_history as history
+    rows = [_history_packet("a"), _history_packet("b")]
+    old = _history_projection(rows)
+    refreshed = _history_projection([dict(row, updated_at="2026-07-29T18:01:00Z") for row in rows],
+                                    at=NOW + timedelta(minutes=1))
+    assert history.revision(old) == history.revision(refreshed)
+    query = history.normalize_query(limit=1)
+    first = history.page(old, query=query)
+    following = history.page(refreshed, query=query, cursor=first["next_cursor"])
+    assert [row["id"] for row in first["stories"] + following["stories"]] == ["a", "b"]
+    assert following["next_cursor"] is None
+
+
+def test_history_future_record_becoming_eligible_changes_revision_before_page_order():
+    from engine.marketing import intelligence_history as history
+    future = _history_packet("future", at=NOW + timedelta(minutes=1))
+    old = _history_projection([_history_packet("current"), future])
+    assert [row["id"] for row in old["stories"]] == ["current"]
+    new = _history_projection([_history_packet("current"), future], at=NOW + timedelta(minutes=2))
+    assert history.revision(old) != history.revision(new)
+    assert history.page(new, query=history.normalize_query())["stories"][0]["id"] == "future"
+
+
+def test_history_corrections_removals_and_scope_changes_invalidate_cursor():
+    import pytest
+    from engine.marketing import intelligence_history as history
+    rows = [_history_packet(sid) for sid in ("a", "b", "c")]
+    original = _history_projection(rows)
+    query = history.normalize_query(limit=1)
+    cursor = history.page(original, query=query)["next_cursor"]
+    for changed in (_history_projection([dict(rows[0], headline="Amended report"), *rows[1:]]),
+                    _history_projection(rows[1:]), _history_projection(rows, health=[])):
+        with pytest.raises(history.HistoryRevisionChanged):
+            history.page(changed, query=query, cursor=cursor)
+
+
+def test_history_query_is_literal_and_clock_basis_is_recorded_acceptance():
+    from engine.marketing import intelligence_history as history
+    row = _history_packet()
+    row.update(headline="  ＰＯＬＩＣＹ   rate decision", published_at="2026-07-28T01:00:00Z")
+    projection = _history_projection([row])
+    query = history.normalize_query(q=" POLICY rate ", source=" EXAMPLE.GOV ", category=" POLICY ",
+                                    language=" EN ", feed_id="official", from_at="2026-07-29T19:00:00+01:00",
+                                    to_at="2026-07-29T19:00:00Z", limit=1)
+    page = history.page(projection, query=query)
+    assert page["returned_count"] == 1
+    assert query == {"q": "POLICY rate", "source": "EXAMPLE.GOV", "category": "policy", "language": "en",
+                     "feed_id": "official", "from_at": "2026-07-29T18:00:00Z", "to_at": "2026-07-29T19:00:00Z", "limit": 1}
+    assert history.page(projection, query=history.normalize_query(q="[policy.*]"))["matched_count"] == 0
+    assert history.page(projection, query=history.normalize_query(to_at="2026-07-29T18:00:00Z"))["matched_count"] == 0
+
+
+def test_history_unknown_recorded_dates_sort_last_and_do_not_pass_date_filter():
+    from engine.marketing import intelligence_history as history
+    unknown = dict(_history_packet("unknown"), accepted_revision_at="", first_seen="invalid")
+    projection = _history_projection([unknown, _history_packet("known")])
+    assert [row["id"] for row in history.page(projection, query=history.normalize_query())["stories"]] == ["known", "unknown"]
+    assert history.page(projection, query=history.normalize_query(from_at="2026-07-28T00:00:00Z"))["matched_count"] == 1
+
+
+def test_history_cursor_is_bounded_canonical_and_tied_to_query():
+    import base64
+    import pytest
+    from engine.marketing import intelligence_history as history
+    projection = _history_projection([_history_packet(sid) for sid in ("a", "b", "c")])
+    query = history.normalize_query(limit=1)
+    cursor = history.page(projection, query=query)["next_cursor"]
+    decoded = json.loads(base64.urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)))
+    mutations = [dict(decoded, offset=True), dict(decoded, offset=-1), dict(decoded, offset=1501),
+                 dict(decoded, offset=3), dict(decoded, v=2), dict(decoded, extra="unknown")]
+    bad = ["", "!", "x" * 1025, cursor + "="]
+    for value in mutations:
+        bad.append(base64.urlsafe_b64encode(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).rstrip(b"=").decode())
+    for value in bad:
+        with pytest.raises(history.HistoryCursorError):
+            history.page(projection, query=query, cursor=value)
+    with pytest.raises(history.HistoryCursorError):
+        history.page(projection, query=history.normalize_query(q="Policy", limit=1), cursor=cursor)
+
+
+def test_history_invalid_dates_and_limits_are_rejected_before_query():
+    import pytest
+    from engine.marketing import intelligence_history as history
+    for args in ({"q": "x" * 257}, {"limit": 0}, {"limit": True}, {"limit": 101},
+                 {"from_at": "2026-07-29T12:00:00"}, {"from_at": "not-a-date"},
+                 {"from_at": "2026-07-29T18:00:00Z", "to_at": "2026-07-29T18:00:00Z"}):
+        with pytest.raises(history.HistoryQueryError):
+            history.normalize_query(**args)
+    assert history.normalize_query(from_at="", to_at=" ")["from_at"] is None
+
+
+def test_history_publication_preflights_byte_cap_and_keeps_exact_old_file(tmp_path):
+    import pytest
+    from engine.marketing import intelligence_history as history
+    target = tmp_path / "private-history.json"
+    old = _history_projection([_history_packet()])
+    history.atomic_write(target, old)
+    original = target.read_bytes()
+    oversized = _history_projection([dict(_history_packet(), headline="X" * history.MAX_BYTES)])
+    with pytest.raises(history.HistoryArtifactError):
+        history.atomic_write(target, oversized)
+    assert target.read_bytes() == original
+    assert target.stat().st_mode & 0o777 == 0o600
+    with pytest.raises(history.HistoryArtifactError):
+        history.decode(b" " * (history.MAX_BYTES + 1))
+
+
+def test_history_decoder_rejects_private_keys_duplicates_and_inconsistent_counts():
+    import copy
+    import pytest
+    from engine.marketing import intelligence_history as history
+    valid = _history_projection([_history_packet()])
+    invalid = []
+    private = copy.deepcopy(valid)
+    private["stories"][0]["drafts"] = [{"text": "private"}]
+    invalid.append(private)
+    invalid.append(dict(valid, displayable_count=0))
+    invalid.append(dict(valid, stories=valid["stories"] * 2, retained_count=2, displayable_count=2))
+    invalid.append(dict(valid, bounds={**valid["bounds"], "max_stories": 1501}))
+    for value in invalid:
+        with pytest.raises(history.HistoryArtifactError):
+            history.decode(json.dumps(value).encode())
+    raw = history.encode(valid).replace(b'"retained_count":1', b'"retained_count":1,"retained_count":1')
+    with pytest.raises(history.HistoryArtifactError):
+        history.decode(raw)
+
+
+def test_owner_history_reaches_retained_rows_outside_the_active_projection(tmp_path):
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    then = NOW - timedelta(hours=55)
+    update_intelligence_desk([_history_packet("old", at=then)], root=tmp_path, now=then,
+                            cfg={"source_health": _history_health()}, db_path=db, snapshot_path=sink)
+    payload = update_intelligence_desk([], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    projection = history.decode((tmp_path / history.FILENAME).read_bytes())
+    assert payload["stories"] == []
+    assert [row["id"] for row in projection["stories"]] == ["old"]
+    assert payload["retained_history"] == history.descriptor(projection)
+    assert projection["bounds"] == {"retention_hours": 72.0, "max_stories": 1500, "retention_basis": "owner_updated_at"}
+    assert not list(tmp_path.glob("*history*.db"))
+
+
+def test_owner_history_keeps_incumbent_retention_and_count_bounds(tmp_path):
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    cfg = {"source_health": _history_health(), "max_stories": 2, "retention_h": 6}
+    update_intelligence_desk([_history_packet("expired", at=NOW - timedelta(hours=7))],
+                            root=tmp_path, now=NOW - timedelta(hours=7), cfg=cfg, db_path=db, snapshot_path=sink)
+    payload = update_intelligence_desk([_history_packet(sid) for sid in ("one", "two", "three")],
+                                      root=tmp_path, now=NOW, cfg=cfg, db_path=db, snapshot_path=sink)
+    projection = history.decode((tmp_path / history.FILENAME).read_bytes())
+    assert projection["retained_count"] == 2
+    assert all(row["id"] != "expired" for row in projection["stories"])
+    assert payload["retained_history"]["bounds"]["retention_hours"] == 6
+    assert payload["retained_history"]["bounds"]["max_stories"] == 2
+
+
+def test_owner_live_and_history_both_remove_revoked_research_but_keep_editorial(tmp_path):
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    rows = [_history_packet(), _packet("legacy", "Official Source", "https://example.gov/legacy")]
+    update_intelligence_desk(rows, root=tmp_path, now=NOW, cfg={"source_health": _history_health()},
+                            db_path=db, snapshot_path=sink)
+    payload = update_intelligence_desk([], root=tmp_path, now=NOW + timedelta(minutes=1),
+                                      cfg={"source_health": []}, db_path=db, snapshot_path=sink)
+    projection = history.decode((tmp_path / history.FILENAME).read_bytes())
+    assert [row["id"] for row in payload["stories"]] == ["story-fed-hold"]
+    assert [row["id"] for row in projection["stories"]] == ["story-fed-hold"]
+    assert payload["stories"][0]["drafts"]  # legacy editorial contract is intact
+    assert "drafts" not in projection["stories"][0]
+
+
+def test_owner_history_write_failure_marks_new_descriptor_unavailable(tmp_path, monkeypatch):
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    cfg = {"source_health": _history_health()}
+    update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW, cfg=cfg, db_path=db, snapshot_path=sink)
+    original = (tmp_path / history.FILENAME).read_bytes()
+    def failed(*args, **kwargs):
+        raise OSError("fixture disk failure")
+    monkeypatch.setattr(history, "atomic_write", failed)
+    payload = update_intelligence_desk([], root=tmp_path, now=NOW + timedelta(minutes=1), cfg=cfg, db_path=db, snapshot_path=sink)
+    assert payload["retained_history"] == history.unavailable("publish_failed")
+    assert json.loads(sink.read_text())["retained_history"]["state"] == "unavailable"
+    assert (tmp_path / history.FILENAME).read_bytes() == original
+
+
+def test_owner_history_path_must_not_overwrite_public_or_database_artifacts(tmp_path):
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    for path in (db, sink, tmp_path / "site" / history.FILENAME):
+        payload = update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW,
+                                          cfg={"source_health": _history_health()}, db_path=db,
+                                          snapshot_path=sink, history_path=path)
+        assert payload["retained_history"] == history.unavailable("publish_failed")
+        assert db.read_bytes().startswith(b"SQLite format 3")
+        assert json.loads(sink.read_text())["schema"] == DESK_SCHEMA
+    assert not (tmp_path / "site" / history.FILENAME).exists()
+
+
+def test_explicit_db_test_path_cannot_select_production_history_config(tmp_path):
+    from engine.marketing import intelligence_history as history
+    forbidden = tmp_path / "must-not-create" / "production.json"
+    update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW,
+                            cfg={"history_snapshot_path": str(forbidden), "source_health": _history_health()},
+                            db_path=tmp_path / "intelligence.db", snapshot_path=tmp_path / "intelligence.json")
+    assert not forbidden.exists()
+    assert (tmp_path / history.FILENAME).is_file()
+
+
+def test_owner_snapshot_and_history_share_one_read_transaction(tmp_path, monkeypatch):
+    import sqlite3
+    from engine.marketing import intelligence_history as history
+    db, sink = tmp_path / "intelligence.db", tmp_path / "intelligence.json"
+    cfg = {"source_health": _history_health()}
+    update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW, cfg=cfg, db_path=db, snapshot_path=sink)
+    original_snapshot = IntelligenceStore.snapshot
+    def interleaved(store, **kwargs):
+        payload = original_snapshot(store, **kwargs)
+        with sqlite3.connect(db) as other:
+            raw = other.execute("SELECT packet_json FROM stories").fetchone()[0]
+            changed = json.loads(raw)
+            changed["headline"] = "Concurrent owner correction"
+            other.execute("UPDATE stories SET packet_json=?", (json.dumps(changed),))
+        return payload
+    monkeypatch.setattr(IntelligenceStore, "snapshot", interleaved)
+    payload = update_intelligence_desk([], root=tmp_path, now=NOW + timedelta(minutes=1), cfg=cfg, db_path=db, snapshot_path=sink)
+    projection = history.decode((tmp_path / history.FILENAME).read_bytes())
+    assert payload["stories"][0]["headline"] == projection["stories"][0]["headline"] == "Policy rate decision"
+    assert payload["retained_history"] == history.descriptor(projection)
+
+
+def test_owner_history_export_clock_matches_main_even_with_subsecond_tick(tmp_path):
+    from engine.marketing import intelligence_history as history
+    now = NOW.replace(microsecond=712345)
+    payload = update_intelligence_desk([_history_packet()], root=tmp_path, now=now,
+                                      cfg={"source_health": _history_health()},
+                                      db_path=tmp_path / "intelligence.db", snapshot_path=tmp_path / "intelligence.json")
+    projection = history.decode((tmp_path / history.FILENAME).read_bytes())
+    assert projection["as_of"] == payload["updated_at"] == "2026-07-29T18:00:00Z"
+
+
+def test_owner_receipt_corrects_health_before_publication_and_stays_private(tmp_path):
+    from unittest.mock import patch
+    from engine.marketing import intelligence_desk as owner
+    from engine.marketing import intelligence_history as history
+    stamp = "2026-07-29T18:00:00Z"
+    health = [dict(_history_health()[0], last_accepted_at="2026-07-29T19:00:00Z",
+                   last_changed_item_count=99, last_outcome="accepted")]
+    receipt = {"stale": "must be cleared before effects"}
+    publish = owner._atomic_json
+    private_publish = history.atomic_write
+    observed = []
+    def check_private(path, payload):
+        assert receipt == {}
+        assert owner.ACCEPTANCE_SCHEMA not in json.dumps(payload)
+        observed.append("private")
+        private_publish(path, payload)
+    def check_main(path, payload):
+        assert receipt == {} and observed == ["private"]
+        row = payload["source_health"][0]
+        assert row["last_accepted_at"] == stamp
+        assert row["last_changed_item_count"] == 1 and row["last_outcome"] == "accepted"
+        assert owner.ACCEPTANCE_SCHEMA not in json.dumps(payload)
+        observed.append("main")
+        publish(path, payload)
+    with patch.object(owner, "_atomic_json", check_main), patch.object(history, "atomic_write", check_private):
+        result = update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW,
+                                         cfg={"source_health": health}, acceptance_receipt=receipt,
+                                         db_path=tmp_path / "desk.db", snapshot_path=tmp_path / "desk.json")
+    assert observed == ["private", "main"]
+    assert receipt["schema"] == owner.ACCEPTANCE_SCHEMA
+    item = receipt["items"]["retained-one"]
+    assert item == {"feed_id": "official", "submitted_revision": "retained-one-r1",
+                    "source_revision": "retained-one-r1", "accepted_revision_at": stamp, "disposition": "current"}
+    assert receipt["feeds"]["official"] == {"accepted_item_count": 1, "superseded_item_count": 0,
+                                            "last_accepted_at": stamp, "last_outcome": "accepted"}
+    assert "acceptance_receipt" not in result
+    assert health[0]["last_changed_item_count"] == 99  # caller's proposal is not mutated
+
+
+def test_owner_receipt_failed_export_replays_the_original_acceptance_clock(tmp_path):
+    from unittest import TestCase
+    from unittest.mock import patch
+    from engine.marketing import intelligence_desk as owner
+    cfg = {"source_health": _history_health()}
+    db, sink = tmp_path / "desk.db", tmp_path / "desk.json"
+    receipt = {"stale": True}
+    with patch.object(owner, "_atomic_json", side_effect=OSError("fixture export failure")):
+        with TestCase().assertRaises(OSError):
+            update_intelligence_desk([_history_packet()], root=tmp_path, now=NOW, cfg=cfg,
+                                     db_path=db, snapshot_path=sink, acceptance_receipt=receipt)
+    assert receipt == {} and not sink.exists()
+    replay = _history_packet(at=NOW + timedelta(minutes=2))
+    # Source revision identity is unchanged; ingestion timestamps are not a new report.
+    result = update_intelligence_desk([replay], root=tmp_path, now=NOW + timedelta(minutes=2), cfg=cfg,
+                                     db_path=db, snapshot_path=sink, acceptance_receipt=receipt)
+    stamp = "2026-07-29T18:00:00Z"
+    assert receipt["items"]["retained-one"]["accepted_revision_at"] == stamp
+    assert receipt["items"]["retained-one"]["disposition"] == "current"
+    assert receipt["feeds"]["official"]["accepted_item_count"] == 1
+    assert result["source_health"][0]["last_accepted_at"] == stamp
+    assert result["stories"][0]["accepted_revision_at"] == stamp
+
+
+def test_owner_receipt_superseded_input_does_not_refresh_health_or_ack_count(tmp_path):
+    cfg = {"source_health": _history_health()}
+    db, sink = tmp_path / "desk.db", tmp_path / "desk.json"
+    current = dict(_history_packet(), source_revision="r2", headline="Current R2",
+                   source_updated_at="2026-07-29T17:59:00Z")
+    update_intelligence_desk([current], root=tmp_path, now=NOW, cfg=cfg, db_path=db, snapshot_path=sink)
+    old = dict(current, source_revision="r1", headline="Superseded R1", source_updated_at="2026-07-29T17:55:00Z")
+    proposed = {"source_health": [dict(_history_health()[0], last_outcome="accepted",
+                                      last_changed_item_count=1, last_accepted_at="2026-07-29T18:02:00Z")]}
+    receipt = {}
+    result = update_intelligence_desk([old], root=tmp_path, now=NOW + timedelta(minutes=2), cfg=proposed,
+                                     db_path=db, snapshot_path=sink, acceptance_receipt=receipt)
+    item = receipt["items"]["retained-one"]
+    assert item["submitted_revision"] == "r1" and item["source_revision"] == "r2"
+    assert item["disposition"] == "superseded" and item["accepted_revision_at"] == "2026-07-29T18:00:00Z"
+    assert receipt["feeds"]["official"]["accepted_item_count"] == 0
+    assert receipt["feeds"]["official"]["superseded_item_count"] == 1
+    health = result["source_health"][0]
+    assert health["last_outcome"] == "unchanged" and health["last_changed_item_count"] == 0
+    assert health["last_accepted_at"] == "2026-07-29T18:00:00Z"
+    assert result["stories"][0]["headline"] == "Current R2"
+
+
+def test_owner_receipt_observes_acceptance_before_intentional_rolling_eviction(tmp_path):
+    receipt = {}
+    payload = update_intelligence_desk([_history_packet(sid) for sid in ("a", "b", "c")],
+                                      root=tmp_path, now=NOW, cfg={"source_health": _history_health(), "max_stories": 1},
+                                      db_path=tmp_path / "desk.db", snapshot_path=tmp_path / "desk.json",
+                                      acceptance_receipt=receipt)
+    assert set(receipt["items"]) == {"a", "b", "c"}
+    assert all(item["disposition"] == "current" for item in receipt["items"].values())
+    assert receipt["feeds"]["official"]["accepted_item_count"] == 3
+    assert payload["source_health"][0]["last_changed_item_count"] == 3
+    assert len(payload["stories"]) == payload["retained_history"]["retained_count"] == 1
+
+
+def test_owner_receipt_failed_batch_exposes_no_partial_acknowledgement(tmp_path):
+    from unittest import TestCase
+    cfg = {"source_health": _history_health()}
+    db, sink = tmp_path / "desk.db", tmp_path / "desk.json"
+    original = dict(_history_packet(), source_revision="r2", source_updated_at="2026-07-29T17:59:00Z")
+    update_intelligence_desk([original], root=tmp_path, now=NOW, cfg=cfg, db_path=db, snapshot_path=sink)
+    before = sink.read_bytes()
+    receipt = {"stale": True}
+    ambiguous = dict(original, source_revision="r3", headline="Ambiguous same-source-clock revision")
+    with TestCase().assertRaises(ValueError):
+        update_intelligence_desk([_history_packet("new"), ambiguous], root=tmp_path,
+                                 now=NOW + timedelta(minutes=1), cfg=cfg, db_path=db,
+                                 snapshot_path=sink, acceptance_receipt=receipt)
+    assert receipt == {} and sink.read_bytes() == before
+    store = IntelligenceStore(db)
+    try:
+        assert store.db.execute("SELECT count(*) FROM stories WHERE story_id='new'").fetchone()[0] == 0
+    finally:
+        store.close()

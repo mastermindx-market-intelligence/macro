@@ -810,6 +810,9 @@ wire:
     snapshot_paths:
       - "/var/lib/macro-live/public/live/intelligence.json"
       - "data/marketing/press/intelligence.json"
+    # Private, bounded display projection from the same retained story owner.
+    # The protected history API reads this file, never the writer's live DB.
+    history_snapshot_path: "/var/lib/macro-live/state/intelligence/intelligence-history.json"
     # ── V2 (INTELLIGENCE_DESK_V2_BY_FABLE.md) ────────────────────────────────
     # Claim-registry aliasing: the deterministic clustering floor when the story
     # spine's optional backends (datasketch / local encoder) are absent. Same
@@ -1079,6 +1082,36 @@ research_rss:
       content_use: permission_required
       terms_url: https://www.bbc.co.uk/usingthebbc/terms/can-i-use-bbc-content-for-my-business/
       hold_reason: Business RSS display permission has not been established for this product.
+    # Institutional text only. Official terms and bounded live feed responses
+    # were independently checked 2026-10-19; no article-page scraping.
+    - id: rba_media
+      enabled: true
+      publisher: Reserve Bank of Australia
+      url: https://www.rba.gov.au/rss/rss-cb-media-releases.xml
+      allowed_hosts: [www.rba.gov.au, rba.gov.au]
+      allowed_path_prefixes: [/media-releases/]
+      category: central_banks
+      coverage_regions: [asia, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: "Source: Reserve Bank of Australia 2026. Original information is available free from the RBA. Feed excerpt; shortened for display."
+      terms_url: https://www.rba.gov.au/copyright/
+    - id: eu_council
+      enabled: true
+      publisher: Council of the European Union / European Council
+      url: https://www.consilium.europa.eu/en/rss/pressreleases.ashx
+      allowed_hosts: [www.consilium.europa.eu, consilium.europa.eu]
+      allowed_path_prefixes: [/en/press/press-releases/]
+      category: geopolitics
+      coverage_regions: [europe, global]
+      language: en
+      poll_seconds: 180
+      source_type: official
+      content_use: attributed_feed_excerpt
+      attribution: "Council of the European Union / European Council — © European Union, 2026. Feed excerpt; shortened for display."
+      terms_url: https://www.consilium.europa.eu/en/about-site/copyright/
     - id: gdelt_world
       enabled: true
       publisher: GDELT worldwide reporting

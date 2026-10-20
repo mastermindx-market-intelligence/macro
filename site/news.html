@@ -286,6 +286,72 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 }
 @media(max-width:1050px){.nd-mobile-only{display:inline-flex}}
 @media(max-width:760px){.nd-shell{height:calc(100dvh - 210px)}.nd-dialog .nx-rel-grid{grid-template-columns:1fr}.nd-dialog .nx-depth-summary{flex-wrap:wrap}.nd-calendar-row{grid-template-columns:100px 1fr}}
+/* Reader-owned comparisons, investigations and a quiet update inbox. */
+.nd-dialog *{box-sizing:border-box}
+.nd-report-pick{position:relative;z-index:1;margin-left:auto;min-height:26px;padding:3px 7px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:transparent;color:var(--muted);font-size:var(--fs-label,11px)!important;white-space:nowrap}
+.nd-report-pick:hover,.nd-report-pick[aria-pressed="true"]{color:var(--text);background:var(--nd-select)}
+.nd-compare-tray{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:var(--fs-label,11px)}
+.nd-compare-tray>span{margin-right:auto;font-variant-numeric:tabular-nums}
+.nd-compare-tray .nd-btn{min-height:32px;padding:5px 9px}
+.nd-monitor-count{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;min-width:21px;min-height:21px;padding:1px 5px;border:1px solid var(--line);border-radius:var(--r-pill,999px);background:var(--panel2);color:var(--text);font:var(--fs-label,11px) var(--font-mono,monospace);font-variant-numeric:tabular-nums}
+#ndWorkspaceOpen{position:relative}.nd-workspace-dot{position:absolute;right:8px;top:8px;width:5px;height:5px;border-radius:var(--r-pill,999px);background:var(--text)}
+.nd-comparison{width:min(1180px,calc(100vw - 48px))}.nd-investigations{width:min(1000px,calc(100vw - 48px))}.nd-monitor{width:min(800px,calc(100vw - 48px))}
+.nd-comparison,.nd-investigations,.nd-monitor{max-height:90dvh}
+.nd-comparison[open],.nd-investigations[open],.nd-monitor[open]{display:flex;flex-direction:column}
+.nd-comparison>.nd-dialog-header,.nd-investigations>.nd-dialog-header,.nd-monitor>.nd-dialog-header{position:static;flex:none}
+.nd-comparison>.nd-dialog-body,.nd-investigations>.nd-dialog-body,.nd-monitor>.nd-dialog-body{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.nd-dialog-header .nd-eyebrow{font-size:var(--fs-micro,10px);margin:0 0 3px}
+.nd-research-controls,.nd-research-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.nd-research-controls{align-items:flex-end}.nd-research-controls .nd-form-row{margin:0 auto 0 0;min-width:220px;max-width:100%}
+.nd-dialog .nd-btn:disabled,.nd-report-pick:disabled{opacity:.5;cursor:default}
+.nd-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);margin:22px -8px 0}
+.nd-comparison-grid:has(>.nd-comparison-report:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
+.nd-comparison-report{min-width:0;padding:20px 18px;border-right:1px solid var(--line);overflow-wrap:anywhere}
+.nd-comparison-report:last-of-type{border-right:0}.nd-research-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.nd-research-card-head .nd-eyebrow{margin:0}.nd-research-card-head .nd-btn{min-height:30px;padding:4px 7px}
+.nd-comparison-report>h3{margin:0 0 12px;font-size:var(--fs-h2,17px);line-height:1.55;font-weight:600;letter-spacing:-.015em;color:var(--text)}
+.nd-comparison-report .nd-research-source{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:0 0 7px}
+.nd-comparison-report>.nd-btn{padding-left:0;margin-bottom:15px}
+.nd-research-clocks{margin:0 0 24px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:var(--fs-label,11px);line-height:1.6}
+.nd-research-clocks>div{display:grid;grid-template-columns:minmax(88px,.8fr) minmax(0,1fr);gap:8px;padding:3px 0}.nd-research-clocks dt{color:var(--muted)}.nd-research-clocks dd{margin:0;color:var(--text);font-variant-numeric:tabular-nums}
+.nd-comparison-report .nd-section h3,.nd-comparison-report .nd-section h4{font-size:var(--fs-label,11px);color:var(--muted);letter-spacing:.06em;font-weight:600;margin:0 0 10px;text-transform:uppercase}
+.nd-comparison-report .nd-section p{font-size:var(--fs-body,14px);line-height:1.8}.nd-comparison-report .nd-receipt{padding:11px}.nd-comparison-report .nd-receipt a{font-size:var(--fs-sm,12.5px)}
+.nd-research-history{border-top:1px solid var(--line);padding:12px 0;margin:0 0 16px}.nd-research-history>summary{cursor:pointer;min-height:36px;color:var(--text);font-size:var(--fs-sm,12.5px)}
+.nd-research-version{padding:12px 0;border-top:1px solid var(--line)}.nd-research-version small{color:var(--muted);font-size:var(--fs-label,11px)}.nd-dialog .nd-research-version p{font-size:var(--fs-sm,12.5px);line-height:1.7;color:var(--text);margin:6px 0 0}
+.nd-research-create{display:flex;align-items:flex-end;gap:10px;margin:0 0 22px}.nd-research-create .nd-form-row{flex:1;min-width:0;margin:0}.nd-research-create>.nd-btn{flex:none;min-height:40px}
+.nd-dialog .nd-research-selection{padding:10px 12px;background:var(--panel2);border-radius:var(--r-ctl,8px);color:var(--text);font-size:var(--fs-sm,12.5px)}
+.nd-investigation-grid{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;margin:24px 0;border-top:1px solid var(--line);padding-top:22px}
+.nd-investigation-list{min-width:0;display:flex;flex-direction:column;gap:5px;align-self:start;max-height:55dvh;overflow:auto;scrollbar-width:thin}
+.nd-investigation-choice{display:block;width:100%;min-width:0;padding:12px;text-align:left;border:1px solid transparent;border-radius:var(--r-ctl,8px);background:transparent;color:var(--text);font-size:var(--fs-sm,12.5px)!important;line-height:1.6;overflow-wrap:anywhere}
+.nd-investigation-choice[aria-current="true"],.nd-investigation-choice:hover{border-color:var(--line);background:var(--panel2)}.nd-investigation-choice small{display:block;margin-top:5px;color:var(--muted);font-size:var(--fs-label,11px)}
+.nd-research-title{margin:0 0 16px;font-size:var(--fs-h2,17px);font-weight:600;line-height:1.55;overflow-wrap:anywhere}
+.nd-investigation-reports{list-style:none;padding:0;margin:20px 0}.nd-investigation-report{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:17px 0;border-top:1px solid var(--line)}.nd-investigation-report>div{min-width:0;flex:1}.nd-investigation-report>.nd-btn{flex:none;white-space:normal;text-align:right;max-width:110px;min-height:36px;font-size:var(--fs-label,11px)!important}
+.nd-investigation-report h4{margin:0 0 8px;font-size:var(--fs-body,14px);line-height:1.7;font-weight:550;overflow-wrap:anywhere}.nd-investigation-report .nd-note{margin-bottom:9px}.nd-investigation-report .nd-research-actions{margin:0;gap:5px}.nd-investigation-report .nd-research-actions .nd-btn{font-size:var(--fs-label,11px)!important;padding:5px 8px}
+.nd-monitor-choices{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;margin:20px 0}.nd-monitor-choices .nd-research-title{font-size:var(--fs-body,14px);margin-bottom:12px}
+#ndMonitorChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;max-height:220px;overflow:auto;scrollbar-width:thin}
+.nd-dialog .nd-monitor-choice{display:flex;align-items:flex-start;gap:9px;margin:0;padding:9px 0;cursor:pointer;color:var(--text);font-size:var(--fs-sm,12.5px)}.nd-monitor-choice input{flex:none;accent-color:var(--link);margin-top:5px}.nd-monitor-choice>span{min-width:0;overflow-wrap:anywhere}.nd-monitor-choice small{display:block;color:var(--muted);font-size:var(--fs-label,11px);margin-top:2px}
+.nd-research-empty{padding:30px 0 34px}.nd-research-empty h3{font-size:var(--fs-h2,17px);font-weight:550;margin:0 0 8px}.nd-research-empty p{font-size:var(--fs-sm,12.5px);max-width:42em}
+.nd-monitor-list{list-style:none;margin:0 0 22px;padding:0}.nd-monitor-item{padding:18px 14px;border-bottom:1px solid var(--line)}.nd-monitor-item[data-read="false"]{background:var(--panel2)}.nd-monitor-item h3{font-size:var(--fs-body,14px);line-height:1.7;font-weight:550;margin:9px 0 7px;overflow-wrap:anywhere}.nd-monitor-item[data-read="true"] h3{font-weight:400}
+.nd-monitor-item-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:var(--fs-label,11px)}.nd-monitor-item-meta strong{color:var(--text);font-weight:550}.nd-monitor-item-meta time{font-variant-numeric:tabular-nums}.nd-monitor-item .nd-note{margin-bottom:10px}.nd-monitor-item .nd-research-actions{margin:0}
+@media(max-width:900px){.nd-comparison-grid:has(>.nd-comparison-report:nth-child(3)){grid-template-columns:1fr}.nd-comparison-grid:has(>.nd-comparison-report:nth-child(3))>.nd-comparison-report{border-right:0;border-bottom:1px solid var(--line)}}
+@media(max-width:760px){
+.nd-report-pick{min-height:44px;padding:6px 8px}.nd-compare-tray{padding:9px 12px;gap:5px 8px}.nd-compare-tray>span{flex-basis:100%;font-size:var(--fs-label,11px)}.nd-compare-tray .nd-btn{min-height:44px}
+.nd-comparison,.nd-investigations,.nd-monitor{inset:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}
+.nd-comparison-grid,.nd-comparison-grid:has(>.nd-comparison-report:nth-child(3)){grid-template-columns:1fr;margin:18px 0 0}.nd-comparison-report{border-right:0;border-bottom:1px solid var(--line);padding:21px 0}.nd-comparison-report>h3{font-size:var(--fs-h2,17px)}.nd-research-clocks{font-size:var(--fs-sm,12.5px)}
+.nd-research-create{gap:6px;margin-bottom:18px}.nd-research-create .nd-form-row input,.nd-research-controls .nd-form-row select,#ndInvestigationRelation{font-size:var(--fs-h2,17px);min-height:44px}.nd-research-controls{gap:7px}.nd-research-controls .nd-form-row{flex-basis:100%;min-width:0;margin:0 0 5px}.nd-research-controls>.nd-btn{white-space:normal;text-align:left}
+.nd-investigation-grid{grid-template-columns:1fr;gap:20px;margin-top:18px;padding-top:18px}.nd-investigation-list{flex-direction:row;max-height:150px;gap:7px;overscroll-behavior:contain}.nd-investigation-choice{flex:0 0 155px}.nd-investigation-report{flex-direction:column;gap:2px}.nd-investigation-report>.nd-btn{align-self:flex-end;max-width:none}.nd-investigation-report .nd-research-actions .nd-btn{min-height:44px}
+#ndMonitorChoices{grid-template-columns:1fr;max-height:230px}.nd-monitor-item{padding:17px 10px}.nd-monitor-item-meta{gap:5px}.nd-monitor-item-meta time{flex-basis:100%}.nd-research-history>summary{min-height:44px}.nd-research-card-head .nd-btn{min-height:44px}
+}
+.nd-history{width:min(900px,calc(100vw - 48px));max-height:90dvh}.nd-history[open]{display:flex;flex-direction:column}.nd-history>.nd-dialog-header{position:static;flex:none}.nd-history>.nd-dialog-body{min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.nd-history-form{margin:20px 0}.nd-history-form .nd-research-create{margin-bottom:9px}.nd-history-filters{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:15px 0}.nd-history-filters>summary{min-height:40px;padding:8px 0;cursor:pointer;color:var(--text);font-size:var(--fs-sm,12.5px)}.nd-history-filters .nd-form-grid{margin-top:14px;gap:0 16px}
+.nd-history-status{font-size:var(--fs-sm,12.5px);line-height:1.8;padding:13px 0;color:var(--text);font-variant-numeric:tabular-nums}.nd-history-row{padding:21px 0;border-top:1px solid var(--line)}.nd-history-row>h3{font-size:var(--fs-md,15px);line-height:1.65;font-weight:550;margin:8px 0 13px;overflow-wrap:anywhere}.nd-history-row .nd-history-meta{font-size:var(--fs-label,11px);margin:0;color:var(--muted);font-variant-numeric:tabular-nums}
+.nd-history-report>summary{cursor:pointer;color:var(--text);font-size:var(--fs-sm,12.5px);min-height:36px;padding:5px 0}.nd-history-report-body{padding:16px 0 0}.nd-history-report-body .nd-section h4{font-size:var(--fs-label,11px);color:var(--muted);font-weight:600;margin:0 0 9px;text-transform:uppercase}.nd-history-report-body .nd-section p{font-size:var(--fs-body,14px);line-height:1.8}.nd-history-report .nd-research-clocks{max-width:540px}
+#ndHistoryMore{margin:8px 0 20px}.nd-coverage-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:20px 0}.nd-coverage-overview>div{display:flex;flex-direction:column;gap:4px;min-width:0}.nd-coverage-overview strong{font-size:var(--fs-h1,28px);line-height:1.2;font-weight:500;font-variant-numeric:tabular-nums}.nd-coverage-overview span{font-size:var(--fs-label,11px);color:var(--muted)}
+.nd-coverage-cohorts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 20px;margin:20px 0}.nd-coverage-cohort{border-top:1px solid var(--line);min-width:0}.nd-coverage-cohort>summary,.nd-coverage-source-details>summary{cursor:pointer;font-size:var(--fs-sm,12.5px);min-height:36px;padding:7px 0;color:var(--text)}.nd-coverage-source-details{margin-top:10px}.nd-coverage-source-details .nd-coverage-row{font-size:var(--fs-label,11px)}.nd-coverage-row{overflow-wrap:anywhere}
+@media(max-width:760px){.nd-history{inset:0;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border:0;border-radius:0}.nd-history-form .nd-form-row input,.nd-history-form .nd-form-row select{font-size:var(--fs-h2,17px);min-height:44px}.nd-history-filters>summary,.nd-history-report>summary,.nd-coverage-cohort>summary,.nd-coverage-source-details>summary{min-height:44px}.nd-coverage-cohorts{grid-template-columns:1fr}.nd-coverage-overview{gap:10px}.nd-coverage-overview strong{font-size:var(--fs-h2,17px)}}
+@media(max-width:760px){
+#ndInvestigationForm>.nd-btn,#ndInvestigationRenameForm>.nd-btn,.nd-investigation-report>.nd-btn{min-height:44px}
+:is(.nd-comparison,.nd-investigations,.nd-monitor,.nd-history)>.nd-dialog-header>[data-close-dialog]{min-width:44px}
+}
 </style>
 
 
@@ -564,8 +630,8 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     <div><p class="nd-eyebrow"><span class="l-en">Intelligence / Global coverage</span><span class="l-zh">情报 / 全球报道</span></p><h1><span class="l-en">News intelligence</span><span class="l-zh">新闻情报</span></h1></div>
     <div class="nd-header-tools">
       <span class="nd-status dtp-asof" id="ndConnection" data-state="connecting"><span class="l-en">Connecting</span><span class="l-zh">正在连接</span></span>
-      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/>
-</svg></button>
+      <button type="button" class="nd-btn nd-btn-quiet nd-mobile-only" id="ndWorkspaceOpen" data-open-panel="ndWorkspace" aria-label="Your workspace" data-label-zh="你的工作台"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/>
+</svg><i class="nd-workspace-dot" id="ndWorkspaceUpdates" aria-hidden="true" hidden></i></button>
       <button type="button" class="nd-btn nd-btn-quiet" id="ndCoverageOpen" aria-label="Coverage and freshness" data-label-zh="覆盖范围与时效"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18"/>
 </svg><span><span class="l-en">Coverage</span><span class="l-zh">覆盖范围</span></span></button>
       <button type="button" class="nd-btn" id="ndDensity" aria-pressed="false" aria-label="Reading view" data-label-zh="阅读视图"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/>
@@ -604,6 +670,12 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       <div><h2 class="nd-nav-heading"><span class="l-en">Your workspace</span><span class="l-zh">你的工作台</span></h2>
         <button type="button" class="nd-category" id="ndSavedStories" aria-pressed="false"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/>
 </svg><span class="l-en">Saved stories</span><span class="l-zh">已收藏报道</span></button>
+        <button type="button" class="nd-category" id="ndInvestigationsOpen"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v11H3z"/>
+</svg><span class="l-en">Investigations</span><span class="l-zh">研究专题</span></button>
+        <button type="button" class="nd-category" id="ndHistoryOpen"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+</svg><span class="l-en">Retained reports</span><span class="l-zh">近期留存报道</span></button>
+        <button type="button" class="nd-category" id="ndMonitorOpen"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14l2 11v5H3v-5L5 4m-2 11h5l2 3h4l2-3h5"/>
+</svg><span class="l-en">Updates inbox</span><span class="l-zh">更新收件箱</span><span class="nd-monitor-count" id="ndMonitorCount" hidden></span></button>
         <button type="button" class="nd-category" data-company-news=""><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14v18M9 7h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M3 21h18"/>
 </svg><span class="l-en">Company news</span><span class="l-zh">公司新闻</span></button>
         <div id="ndSavedViews"></div>
@@ -646,6 +718,11 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       <div class="nd-banner" id="ndBanner" hidden><span id="ndBannerText"></span><a href="/?signin=1&amp;ret=news.html" id="ndSignIn" hidden><span class="l-en">Sign in</span><span class="l-zh">登录</span></a><button type="button" class="nd-btn nd-btn-quiet" id="ndRetry" hidden><span class="l-en">Retry</span><span class="l-zh">重试</span></button></div>
       <div class="nd-list-top"><span id="ndResultCount"><span class="l-en">Latest reporting</span><span class="l-zh">最新报道</span></span><span id="ndFreshness"></span><label><input type="checkbox" id="ndAutoFollow"><span class="l-en">Follow live</span><span class="l-zh">跟随最新</span></label><span class="nd-status nd-connection-mobile" id="ndConnectionMobile" data-state="connecting"><span class="l-en">Connecting</span><span class="l-zh">正在连接</span></span></div>
       <button type="button" class="nd-update-bar" id="ndUpdates" hidden></button>
+      <div class="nd-compare-tray" id="ndCompareTray" hidden aria-label="Selected reports" data-label-zh="已选报道">
+        <span id="ndCompareCount"></span><button type="button" class="nd-btn" id="ndCompareOpen"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h7v14H3zM14 5h7v14h-7zM6 9h1m-1 4h1m10-4h1m-1 4h1"/>
+</svg><span class="l-en">Compare</span><span class="l-zh">对照阅读</span></button>
+        <button type="button" class="nd-btn nd-btn-quiet" id="ndCompareClear"><span class="l-en">Clear selection</span><span class="l-zh">清除选择</span></button>
+      </div>
       <div class="nd-feed-scroll" id="ndFeedPanel" role="tabpanel" aria-labelledby="ndTabLatest" tabindex="0">
         <ol class="nd-feed" id="ndFeed">
 
@@ -740,6 +817,75 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 </svg></button></div><div class="nd-dialog-body" id="ndCoverageBody"></div></dialog>
 <dialog class="nd-dialog" id="ndViewDialog" aria-labelledby="ndViewTitle"><div class="nd-dialog-header"><h2 id="ndViewTitle"><span class="l-en">Save this view</span><span class="l-zh">保存当前视图</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close saved view" data-label-zh="关闭保存视图"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
 </svg></button></div><form class="nd-dialog-body" id="ndViewForm"><p><span class="l-en">Keep these filters on this browser for your next visit.</span><span class="l-zh">在此浏览器中保留这些筛选条件，方便下次使用。</span></p><div class="nd-form-row"><label for="ndViewName"><span class="l-en">View name</span><span class="l-zh">视图名称</span></label><input id="ndViewName" required maxlength="40" placeholder="Morning macro"></div><button type="submit" class="nd-btn"><span class="l-en">Save view</span><span class="l-zh">保存视图</span></button></form></dialog>
+<dialog class="nd-dialog nd-comparison" id="ndCompare" aria-labelledby="ndCompareTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow"><span class="l-en">Your reading set</span><span class="l-zh">你的阅读组合</span></p><h2 id="ndCompareTitle"><span class="l-en">Compare reports</span><span class="l-zh">对照阅读报道</span></h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close comparison" data-label-zh="关闭对照阅读"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
+</svg></button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note"><span class="l-en">You chose these reports. A shared topic or source does not establish independent confirmation. Use the original evidence to examine the relationship.</span><span class="l-zh">这些报道由你选择。共同主题或来源并不代表独立核实，请结合原始依据研究其关系。</span></p>
+    <div class="nd-research-controls"><div class="nd-form-row"><label for="ndCompareRelation"><span class="l-en">Relationship to examine</span><span class="l-zh">待研究的关系</span></label><select id="ndCompareRelation"><option value="question" data-en="Open question" data-zh="开放问题">Open question</option><option value="topic" data-en="Shared topic" data-zh="共同主题">Shared topic</option><option value="accounts" data-en="Different accounts" data-zh="不同叙述">Different accounts</option><option value="connection" data-en="Possible connection" data-zh="可能的关联">Possible connection</option></select></div><button type="button" class="nd-btn" id="ndCompareSave"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v11H3z"/>
+</svg><span class="l-en">Keep in an investigation</span><span class="l-zh">加入研究专题</span></button></div>
+    <div class="nd-comparison-grid" id="ndCompareReports"></div>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-investigations" id="ndInvestigations" aria-labelledby="ndInvestigationsTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow"><span class="l-en">Your workspace</span><span class="l-zh">你的工作台</span></p><h2 id="ndInvestigationsTitle"><span class="l-en">Investigations</span><span class="l-zh">研究专题</span></h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close investigations" data-label-zh="关闭研究专题"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
+</svg></button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note"><span class="l-en">Keep a named set of report references on this browser. Available reports follow current corrections; references remain when reporting leaves the current feed.</span><span class="l-zh">在此浏览器保存有名称的报道引用组合。可用报道随最新修订更新；离开当前新闻流后仍保留引用。</span></p>
+    <p class="nd-research-selection" id="ndInvestigationPending" hidden></p>
+    <form class="nd-research-create" id="ndInvestigationForm"><div class="nd-form-row"><label for="ndInvestigationName"><span class="l-en">New investigation</span><span class="l-zh">新建研究专题</span></label><input id="ndInvestigationName" required maxlength="60" placeholder="Energy supply questions" data-placeholder-zh="能源供应问题"></div><button type="submit" class="nd-btn"><span class="l-en">Create</span><span class="l-zh">创建</span></button></form>
+    <div class="nd-investigation-grid"><nav class="nd-investigation-list" id="ndInvestigationList" aria-label="Your investigations" data-label-zh="你的研究专题"></nav>
+      <section id="ndInvestigationCurrent" hidden aria-labelledby="ndInvestigationCurrentTitle">
+        <h3 id="ndInvestigationCurrentTitle" class="nd-research-title"></h3>
+        <form class="nd-research-create" id="ndInvestigationRenameForm"><div class="nd-form-row"><label for="ndInvestigationRename"><span class="l-en">Investigation name</span><span class="l-zh">专题名称</span></label><input id="ndInvestigationRename" required maxlength="60"></div><button type="submit" class="nd-btn nd-btn-quiet"><span class="l-en">Rename</span><span class="l-zh">重命名</span></button></form>
+        <div class="nd-form-row"><label for="ndInvestigationRelation"><span class="l-en">Relationship to examine · chosen by you</span><span class="l-zh">待研究的关系 · 由你选择</span></label><select id="ndInvestigationRelation"><option value="question" data-en="Open question" data-zh="开放问题">Open question</option><option value="topic" data-en="Shared topic" data-zh="共同主题">Shared topic</option><option value="accounts" data-en="Different accounts" data-zh="不同叙述">Different accounts</option><option value="connection" data-en="Possible connection" data-zh="可能的关联">Possible connection</option></select></div>
+        <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndInvestigationAdd"><span class="l-en">Add selected reports</span><span class="l-zh">加入已选报道</span></button><button type="button" class="nd-btn" id="ndInvestigationCompare"><span class="l-en">Compare selection</span><span class="l-zh">对照阅读已选报道</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationWatch" aria-pressed="false"><span class="l-en">Monitor changes</span><span class="l-zh">关注变化</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationHistory"><span class="l-en">Search retained reports</span><span class="l-zh">搜索留存报道</span></button></div>
+        <p class="nd-note" id="ndInvestigationAvailability"></p><ol class="nd-investigation-reports" id="ndInvestigationReports"></ol>
+        <button type="button" class="nd-btn nd-btn-quiet" id="ndInvestigationDelete"><span class="l-en">Delete investigation</span><span class="l-zh">删除研究专题</span></button>
+      </section>
+    </div>
+    <p class="nd-note"><span class="l-en">Only names, preferences and report references are saved. Report text is loaded from the current desk when you have access. Up to 12 investigations, with 100 references each.</span><span class="l-zh">仅保存名称、偏好和报道引用。拥有访问权限时，报道内容从当前新闻台载入。最多12个专题，每个保留100条引用。</span></p>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-monitor" id="ndMonitor" aria-labelledby="ndMonitorTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow"><span class="l-en">Your workspace</span><span class="l-zh">你的工作台</span></p><h2 id="ndMonitorTitle"><span class="l-en">Updates inbox</span><span class="l-zh">更新收件箱</span></h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close updates inbox" data-label-zh="关闭更新收件箱"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
+</svg></button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note"><span class="l-en">Check saved views and investigations as updates reach this open page. Enabling monitoring starts from the current reporting. Quiet mode keeps updates here without announcements.</span><span class="l-zh">此页面打开时，根据收到的更新检查已保存视图和研究专题。启用时从当前报道开始；安静模式保留更新，但不播报。</span></p>
+    <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndMonitorEnable" aria-pressed="false"><span class="l-en">Enable monitoring</span><span class="l-zh">启用关注更新</span></button><button type="button" class="nd-btn" id="ndMonitorQuiet" aria-pressed="true"><span class="l-en">Quiet mode</span><span class="l-zh">安静模式</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndMonitorReadAll"><span class="l-en">Mark all read</span><span class="l-zh">全部标为已读</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndMonitorReset"><span class="l-en">Clear inbox & restart</span><span class="l-zh">清空并重新开始</span></button></div>
+    <p class="nd-note" id="ndMonitorStatus"></p>
+    <section class="nd-monitor-choices" aria-labelledby="ndMonitorSourcesTitle"><h3 id="ndMonitorSourcesTitle" class="nd-research-title"><span class="l-en">Choose what to monitor</span><span class="l-zh">选择关注对象</span></h3><div id="ndMonitorChoices"></div></section>
+    <div id="ndMonitorItems"></div>
+    <p class="nd-note"><span class="l-en">Updates record when this page observed a change, not when a publisher released it. Leaving the current feed may mean a withdrawal or a rolling window change. Reports that match a monitored search stay followed until its history is restarted. The latest 100 updates are kept on this browser; no messages are sent elsewhere.</span><span class="l-zh">更新时间表示本页面观察到变化的时刻，并非发布者的发布时间。离开当前新闻流可能源于撤回或滚动范围变化。匹配搜索的报道将持续受关注，直到重新开始监测记录。此浏览器保留最近100条更新，不向其他地方发送消息。</span></p>
+  </div>
+</dialog>
+<dialog class="nd-dialog nd-history" id="ndHistory" aria-labelledby="ndHistoryTitle">
+  <div class="nd-dialog-header"><div><p class="nd-eyebrow"><span class="l-en">Research beyond the live feed</span><span class="l-zh">在实时新闻流之外继续研究</span></p><h2 id="ndHistoryTitle"><span class="l-en">Retained reports</span><span class="l-zh">近期留存报道</span></h2></div><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close retained reports" data-label-zh="关闭留存报道"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
+</svg></button></div>
+  <div class="nd-dialog-body">
+    <p class="nd-note" id="ndHistoryBounds"></p>
+    <form id="ndHistoryForm" class="nd-history-form">
+      <div class="nd-research-create"><div class="nd-form-row"><label for="ndHistoryQuery"><span class="l-en">Literal text or phrase</span><span class="l-zh">原样文字或短语</span></label><input type="search" id="ndHistoryQuery" maxlength="256" placeholder="Energy supply" data-placeholder-zh="能源供应" aria-describedby="ndHistorySearchNote"></div><button type="submit" class="nd-btn" id="ndHistorySearch"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>
+</svg><span class="l-en">Search</span><span class="l-zh">搜索</span></button></div>
+      <p class="nd-note" id="ndHistorySearchNote"><span class="l-en">Text is matched literally, ignoring case. Search operators and OR have no special meaning here.</span><span class="l-zh">文字按原样匹配，不区分大小写。搜索运算符及 OR 在此没有特殊含义。</span></p>
+      <details class="nd-history-filters"><summary><span class="l-en">Refine the search</span><span class="l-zh">细化搜索</span></summary><div class="nd-form-grid">
+        <div class="nd-form-row"><label for="ndHistorySource"><span class="l-en">Publisher or host · exact match</span><span class="l-zh">发布者或网站主机名 · 精确匹配</span></label><input id="ndHistorySource" maxlength="160" placeholder="Publisher name" data-placeholder-zh="发布者名称"></div>
+        <div class="nd-form-row"><label for="ndHistoryFeed"><span class="l-en">Collection feed</span><span class="l-zh">采集新闻流</span></label><select id="ndHistoryFeed"><option value="" data-en="Any feed" data-zh="所有新闻流">Any feed</option></select></div>
+        <div class="nd-form-row"><label for="ndHistoryCategory"><span class="l-en">Category</span><span class="l-zh">分类</span></label><select id="ndHistoryCategory"><option value="" data-en="All coverage" data-zh="全部报道">All coverage</option><option value="markets" data-en="Markets" data-zh="市场">Markets</option><option value="economy" data-en="Economy" data-zh="经济">Economy</option><option value="central_banks" data-en="Central banks" data-zh="央行">Central banks</option><option value="companies" data-en="Companies" data-zh="公司">Companies</option><option value="geopolitics" data-en="Geopolitics" data-zh="地缘政治">Geopolitics</option><option value="energy" data-en="Energy &amp; materials" data-zh="能源与原料">Energy &amp; materials</option><option value="technology" data-en="Technology" data-zh="科技">Technology</option></select></div>
+        <div class="nd-form-row"><label for="ndHistoryLanguage"><span class="l-en">Report language</span><span class="l-zh">报道语言</span></label><input id="ndHistoryLanguage" maxlength="32" placeholder="en" data-placeholder-zh="zh"></div>
+        <div class="nd-form-row"><label for="ndHistoryFrom"><span class="l-en">Recorded from · your local time</span><span class="l-zh">收录起始 · 你的本地时间</span></label><input type="datetime-local" id="ndHistoryFrom"></div>
+        <div class="nd-form-row"><label for="ndHistoryTo"><span class="l-en">Recorded before · your local time</span><span class="l-zh">收录截止（不含）· 你的本地时间</span></label><input type="datetime-local" id="ndHistoryTo"></div>
+      </div></details>
+    </form>
+    <p class="nd-note"><span class="l-en">Dates filter recorded acceptance, falling back to first seen. The lower bound is included; the upper bound is excluded. Retention follows the desk’s last stored update.</span><span class="l-zh">日期筛选按报道变更收录时间计算，缺失时使用首次收录时间。包含起始时刻，不包含截止时刻；保留时间范围按新闻台最近保存更新计算。</span></p>
+    <div class="nd-history-status" id="ndHistoryStatus" role="status" aria-live="polite"></div>
+    <p class="nd-note" id="ndHistoryQuerySummary" hidden></p>
+    <div class="nd-research-controls"><button type="button" class="nd-btn" id="ndHistoryCompare"><span class="l-en">Compare selection</span><span class="l-zh">对照阅读已选报道</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndHistoryKeep"><span class="l-en">Keep selected reports</span><span class="l-zh">保存已选报道</span></button><button type="button" class="nd-btn nd-btn-quiet" id="ndHistoryRestart" hidden><span class="l-en">Restart search</span><span class="l-zh">重新搜索</span></button></div>
+    <div id="ndHistoryResults"></div>
+    <button type="button" class="nd-btn" id="ndHistoryMore" hidden><span class="l-en">Load more matching reports</span><span class="l-zh">载入更多匹配报道</span></button>
+    <p class="nd-note"><span class="l-en">Search returns retained current versions only. Older editions, removed reports and complete publication histories may be unavailable. This search does not create live-feed alerts.</span><span class="l-zh">搜索仅返回留存的当前版本。更早版本、已移除报道及完整发布历史可能不可用。此搜索不会创建实时新闻流提醒。</span></p>
+  </div>
+</dialog>
 <dialog class="nd-dialog" id="ndHelp" aria-labelledby="ndHelpTitle"><div class="nd-dialog-header"><h2 id="ndHelpTitle"><span class="l-en">Move through the news</span><span class="l-zh">高效浏览新闻</span></h2><button type="button" class="nd-btn nd-btn-quiet" data-close-dialog aria-label="Close help" data-label-zh="关闭帮助"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/>
 </svg></button></div><div class="nd-dialog-body"><div class="nd-shortcuts"><span><span class="l-en">Search the feed</span><span class="l-zh">搜索新闻</span></span><kbd>/</kbd><span><span class="l-en">Next / previous story</span><span class="l-zh">下一条 / 上一条</span></span><kbd>J / K</kbd><span><span class="l-en">Close story or dialog</span><span class="l-zh">关闭报道或对话框</span></span><kbd>Esc</kbd><span><span class="l-en">Save the selected story</span><span class="l-zh">收藏当前报道</span></span><kbd>S</kbd></div><hr><p><code>"Federal Reserve" -speech</code><br><span class="l-en">Find an exact phrase and exclude a word.</span><span class="l-zh">匹配完整短语，并排除指定关键词。</span></p><p><code>ticker:NVDA source:Reuters</code><br><span class="l-en">Combine an exact ticker with a source filter.</span><span class="l-zh">组合精确股票代码与来源筛选。</span></p><p><code>oil OR energy -rumor</code><br><span class="l-en">Match either term. Exclusions apply across all alternatives.</span><span class="l-zh">匹配任一关键词；排除词对所有选项生效。</span></p><p class="nd-note"><span class="l-en">Saved views, following terms and read markers stay on this browser.</span><span class="l-zh">已保存视图、关注词与已读标记保留在此浏览器中。</span></p></div></dialog>
 
@@ -1117,6 +1263,12 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
 </svg></button></div><div class="nd-dialog-body nd-workspace-tools">
 <button type="button" class="nd-btn" id="ndSavedStoriesMobile"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/>
 </svg><span class="l-en">Saved stories</span><span class="l-zh">已收藏报道</span></button>
+<button type="button" class="nd-btn" id="ndInvestigationsOpenMobile"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 3h9v11H3z"/>
+</svg><span class="l-en">Investigations</span><span class="l-zh">研究专题</span></button>
+<button type="button" class="nd-btn" id="ndHistoryOpenMobile"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+</svg><span class="l-en">Retained reports</span><span class="l-zh">近期留存报道</span></button>
+<button type="button" class="nd-btn" id="ndMonitorOpenMobile"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14l2 11v5H3v-5L5 4m-2 11h5l2 3h4l2-3h5"/>
+</svg><span class="l-en">Updates inbox</span><span class="l-zh">更新收件箱</span><span class="nd-monitor-count" id="ndMonitorCountMobile" hidden></span></button>
 <button type="button" class="nd-btn" data-company-news=""><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V3h14v18M9 7h1m4 0h1m-6 4h1m4 0h1m-6 4h1m4 0h1M3 21h18"/>
 </svg><span class="l-en">Company news</span><span class="l-zh">公司新闻</span></button>
 <button type="button" class="nd-btn" data-open-panel="ndCalendar"><svg class="nd-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
@@ -1157,15 +1309,146 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     <span class="l-en">Follow @mastermindx001</span><span class="l-zh">关注 @mastermindx001</span></a></div>
 
 </footer>
-<script>/* News Desk: private live delivery, read-stable presentation and local view preferences.
+<script>/* Browser-local research preferences over the existing authorized News snapshot.
+ * Pure projection only: no requests, timers, source ownership or story-body cache.
+ */
+(function(root,factory){
+  "use strict";
+  var api=factory();
+  if(typeof module==="object"&&module.exports)module.exports=api;
+  if(root.document)root.NewsDeskResearch=api;
+})(typeof window!=="undefined"?window:globalThis,function(){
+  "use strict";
+  var LIMITS={investigations:12,reports:100,watches:24,records:1500,updates:100};
+  var RELATIONS=["question","topic","accounts","connection"];
+  function label(value,max){return typeof value==="string"?value.replace(/[\u0000-\u001f\u007f]/g," ").trim().slice(0,max):"";}
+  function id(value){return typeof value==="string"&&value.trim()&&value.length<=300?value:"";}
+  function ids(values,max){return Array.from(new Set((Array.isArray(values)?values:[]).map(id).filter(Boolean))).slice(0,max);}
+  function key(value){return typeof value==="string"&&/^[vi]:[a-zA-Z0-9_-]{1,80}$/.test(value)?value:"";}
+  function marker(value){
+    // Two independent 32-bit change checks; never an identity or access decision.
+    var input=String(value),a=2166136261,b=2654435769;
+    for(var i=0;i<input.length;i++){var c=input.charCodeAt(i);a=Math.imul(a^c,16777619);b=Math.imul(b^c,2246822519);}
+    return "m1-"+(a>>>0).toString(16).padStart(8,"0")+(b>>>0).toString(16).padStart(8,"0");
+  }
+  function validMarker(value){return typeof value==="string"&&/^m1-[0-9a-f]{16}$/.test(value);}
+  function cleanFilters(raw,defaults){
+    raw=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
+    var f=Object.assign({},defaults),options={
+      view:["latest","important","following","world"],category:["all","markets","economy","central_banks","companies","geopolitics","energy","technology"],
+      time:["24","72","168","all"],region:["all","americas","europe","asia","middle_east","africa"],kind:["all","official","reporting","social"]
+    };
+    Object.keys(options).forEach(function(k){if(options[k].includes(raw[k]))f[k]=raw[k];});
+    f.query=label(raw.query,300);f.source=label(raw.source,100);
+    ["unread","social","saved"].forEach(function(k){f[k]=raw[k]===true;});
+    return f;
+  }
+  function cleanViews(raw,defaults){
+    var used=new Set();
+    return (Array.isArray(raw)?raw:[]).slice(0,12).filter(function(v){return v&&typeof v==="object"&&label(v.name,40);}).map(function(v,index){
+      var identity=/^[a-zA-Z0-9_-]{1,80}$/.test(v.id||"")?v.id:"view-"+index;
+      if(used.has(identity)){var suffix=0;do{identity="legacy-view-"+index+"-"+suffix++;}while(used.has(identity));}used.add(identity);
+      return{id:identity,name:label(v.name,40),filters:cleanFilters(v.filters,defaults)};
+    });
+  }
+  function cleanState(raw){
+    raw=raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
+    var seen=new Set(),state={version:1,investigations:[],watching:[],enabled:raw.enabled===true,quiet:raw.quiet!==false,sequence:0,records:[],updates:[]};
+    (Array.isArray(raw.investigations)?raw.investigations:[]).slice(0,LIMITS.investigations).forEach(function(item){
+      if(!item||typeof item!=="object"||!/^[a-zA-Z0-9_-]{1,80}$/.test(item.id||"")||seen.has(item.id)||!label(item.name,60))return;
+      seen.add(item.id);state.investigations.push({id:item.id,name:label(item.name,60),storyIds:ids(item.storyIds,LIMITS.reports),relation:RELATIONS.includes(item.relation)?item.relation:"question"});
+    });
+    state.watching=Array.from(new Set((Array.isArray(raw.watching)?raw.watching:[]).map(key).filter(Boolean))).slice(0,LIMITS.watches);
+    var watched=new Set(state.watching),recordIds=new Set();
+    (Array.isArray(raw.records)?raw.records:[]).slice(0,LIMITS.records).forEach(function(r){
+      if(!r||!id(r.id)||recordIds.has(r.id)||!(validMarker(r.mark)||r.mark===""&&r.available===false))return;
+      recordIds.add(r.id);state.records.push({id:r.id,mark:r.mark,available:r.available===true,targets:ids(r.targets,LIMITS.watches).filter(function(k){return watched.has(k);})});
+    });
+    state.sequence=Number.isSafeInteger(raw.sequence)&&raw.sequence>=0?raw.sequence:0;
+    var updateIds=new Set();
+    (Array.isArray(raw.updates)?raw.updates:[]).slice(0,LIMITS.updates).forEach(function(u){
+      if(!u||!id(u.id)||!Number.isSafeInteger(u.n)||u.n<1||updateIds.has(u.n)||!["arrival","amendment","removal","return"].includes(u.kind)||!Number.isFinite(u.at)||u.at<0||u.at>8640000000000000)return;
+      var targets=ids(u.targets,LIMITS.watches).filter(function(k){return watched.has(k);});if(!targets.length)return;
+      updateIds.add(u.n);state.sequence=Math.max(state.sequence,u.n);
+      state.updates.push({n:u.n,id:u.id,kind:u.kind,targets:targets,at:u.at,read:u.read===true});
+    });
+    return state;
+  }
+  function prune(state,allowed){
+    var keep=new Set(allowed),watching=state.watching.filter(function(k){return keep.has(k);}),enabled=new Set(watching);
+    return Object.assign({},state,{watching:watching,
+      records:state.records.map(function(r){return Object.assign({},r,{targets:r.targets.filter(function(k){return enabled.has(k);})});}),
+      updates:state.updates.map(function(u){return Object.assign({},u,{targets:u.targets.filter(function(k){return enabled.has(k);})});}).filter(function(u){return u.targets.length;})});
+  }
+  function advance(state,rows,memberships,options){
+    options=options||{};
+    if(!state.enabled||!state.watching.length)return{state:Object.assign({},state,{records:[]}),added:0};
+    var baseline=options.baseline===true,watched=new Set(state.watching),before=new Map(state.records.map(function(r){return[r.id,r];}));
+    var present=new Set(),membership=new Map(),next=[],missing=[],events=[],sequence=state.sequence;
+    memberships.forEach(function(m){if(!watched.has(m.key))return;ids(m.ids,1000).forEach(function(identity){var list=membership.get(identity)||[];if(!list.includes(m.key))list.push(m.key);membership.set(identity,list);});});
+    function targets(identity,old){return Array.from(new Set((baseline?[]:old&&old.targets||[]).concat(membership.get(identity)||[]))).filter(function(k){return watched.has(k);});}
+    function event(identity,kind,related){
+      if(baseline||!related.length)return;
+      sequence++;events.push({n:sequence,id:identity,kind:kind,targets:related,at:options.now,read:false});
+    }
+    rows.slice(0,1000).forEach(function(row){
+      if(!id(row.id)||!validMarker(row.mark)||present.has(row.id))return;
+      present.add(row.id);var old=before.get(row.id),related=targets(row.id,old);
+      if(!old)event(row.id,"arrival",related);
+      else if(!old.available)event(row.id,"return",related);
+      else if(old.mark!==row.mark||options.changedIds&&options.changedIds.has(row.id))event(row.id,"amendment",related);
+      next.push({id:row.id,mark:row.mark,available:true,targets:related});
+    });
+    if(!baseline)state.records.forEach(function(old){
+      if(present.has(old.id))return;var related=targets(old.id,old);if(!related.length)return;
+      if(old.available)event(old.id,"removal",related);
+      missing.push({id:old.id,mark:old.mark,available:false,targets:related});
+    });
+    var missingIds=new Set(missing.map(function(r){return r.id;}));
+    membership.forEach(function(related,identity){
+      if(!present.has(identity)&&!missingIds.has(identity)){missingIds.add(identity);missing.push({id:identity,mark:"",available:false,targets:related});}
+    });
+    // Present rows take priority; older missing references are bounded markers.
+    next=next.concat(missing).slice(0,LIMITS.records);
+    return{state:Object.assign({},state,{records:next,updates:events.reverse().concat(state.updates).slice(0,LIMITS.updates),sequence:sequence}),added:events.length};
+  }
+  function historyDescriptor(raw){
+    var unavailable={state:"unavailable"};
+    if(!raw||raw.state!=="available"||raw.schema!=="intelligence.retained_history/v1"||!/^([0-9a-f]{64})$/.test(raw.revision||""))return unavailable;
+    var b=raw.bounds;if(!b||!Number.isFinite(b.retention_hours)||b.retention_hours<=0||b.retention_hours>72||!Number.isSafeInteger(b.max_stories)||b.max_stories<1||b.max_stories>1500||b.retention_basis!=="owner_updated_at")return unavailable;
+    if(![raw.retained_count,raw.displayable_count,raw.excluded_count].every(function(n){return Number.isSafeInteger(n)&&n>=0&&n<=b.max_stories;})||raw.displayable_count+raw.excluded_count!==raw.retained_count)return unavailable;
+    return{state:"available",revision:raw.revision,bounds:{retention_hours:b.retention_hours,max_stories:b.max_stories,retention_basis:b.retention_basis},retained_count:raw.retained_count,displayable_count:raw.displayable_count,excluded_count:raw.excluded_count};
+  }
+  function historyQuery(raw){
+    raw=raw||{};var query={},caps={q:256,source:160,feed_id:160,category:64,language:32},valid=true;
+    Object.keys(caps).forEach(function(k){var value=raw[k]===undefined?"":raw[k];if(typeof value!=="string"||value.length>caps[k]){valid=false;return;}query[k]=value.trim();if(k==="category"||k==="language")query[k]=query[k].toLowerCase();});
+    ["from_at","to_at"].forEach(function(k){var value=raw[k];if(value===undefined||value===null||value===""){query[k]=null;return;}if(typeof value!=="string"||value.length>80||!/(?:Z|[+-]\d\d:\d\d)$/i.test(value)||!Number.isFinite(Date.parse(value))){valid=false;return;}query[k]=new Date(value).toISOString();});
+    query.limit=raw.limit===undefined?50:raw.limit;if(!Number.isSafeInteger(query.limit)||query.limit<1||query.limit>100)valid=false;
+    if(query.from_at&&query.to_at&&Date.parse(query.from_at)>=Date.parse(query.to_at))valid=false;
+    return valid?query:null;
+  }
+  function validHistoryPage(page,descriptor,query){
+    if(!page||!descriptor||descriptor.state!=="available"||!query||page.schema!=="intelligence.history_page/v1"||page.revision!==descriptor.revision||page.collection!=="retained_current_packets"||page.order!=="recorded_acceptance_desc_then_id"||typeof page.as_of!=="string"||page.as_of.length>80||!/(?:Z|[+-]\d\d:\d\d)$/i.test(page.as_of)||!Number.isFinite(Date.parse(page.as_of)))return false;
+    var b=page.bounds;if(!b||["retention_hours","max_stories","retention_basis"].some(function(k){return b[k]!==descriptor.bounds[k];}))return false;
+    if(["retained_count","displayable_count","excluded_count"].some(function(k){return page[k]!==descriptor[k];}))return false;
+    if(!Number.isSafeInteger(page.matched_count)||page.matched_count<0||page.matched_count>descriptor.displayable_count||!Array.isArray(page.stories)||page.stories.length>query.limit||page.returned_count!==page.stories.length||page.returned_count>page.matched_count)return false;
+    if(!(page.next_cursor===null||typeof page.next_cursor==="string"&&page.next_cursor.length<=1024&&/^[A-Za-z0-9_-]+$/.test(page.next_cursor))||page.next_cursor!==null&&!page.stories.length)return false;
+    var seen=new Set();if(!page.stories.every(function(r){return r&&typeof r==="object"&&!Array.isArray(r)&&id(r.id)&&!seen.has(r.id)&&(seen.add(r.id),true);}))return false;
+    if(!page.query||typeof page.query!=="object"||Array.isArray(page.query)||["q","source","feed_id","category","language","from_at","to_at","limit"].some(function(k){return !Object.prototype.hasOwnProperty.call(page.query,k);}))return false;
+    var echo=historyQuery(page.query);if(!echo)return false;
+    return ["q","source","feed_id","category","language","limit"].every(function(k){return echo[k]===query[k];})&&["from_at","to_at"].every(function(k){return echo[k]===null?query[k]===null:query[k]!==null&&Date.parse(echo[k])===Date.parse(query[k]);});
+  }
+  return{limits:LIMITS,relations:RELATIONS,label:label,id:id,marker:marker,cleanFilters:cleanFilters,cleanViews:cleanViews,cleanState:cleanState,prune:prune,advance:advance,historyDescriptor:historyDescriptor,historyQuery:historyQuery,validHistoryPage:validHistoryPage};
+});</script><script>/* News Desk: private live delivery, read-stable presentation and local view preferences.
  * Source and story identity remain with the existing news owners. No vendor calls.
  */
 (function (root, factory) {
   "use strict";
-  var api = factory();
+  var research = typeof module === "object" && module.exports ? require("./news_research.js") : root.NewsDeskResearch;
+  var api = factory(research);
   if (typeof module === "object" && module.exports) module.exports = api;
   if (root.document) api.mount(root.document, root);
-})(typeof window !== "undefined" ? window : globalThis, function () {
+})(typeof window !== "undefined" ? window : globalThis, function (research) {
   "use strict";
   var CATEGORY = {
     all:["All coverage","全部报道"], markets:["Markets","市场"], economy:["Economy","经济"],
@@ -1212,7 +1495,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     var primary=ev[0]||{};
     var url=safeURL(r.url||primary.url), host=domain(url)||text(r.domain);
     var name=strip(r.source_name||r.source||primary.name||host)||"Source unavailable";
-    var published=text(r.published_at||r.ts||primary.published_at);
+    var published=[r.published_at,r.ts,primary.published_at].map(text).find(function(value){return stamp(value)!==null;})||"";
     var sourceUpdated=text(r.source_updated_at),indexed=text(r.provider_indexed_at||r.seendate);
     var received=text(r.received_at||r.first_seen);
     var updated=text(r.updated_at||published);
@@ -1309,10 +1592,12 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     var $=function(id){return doc.getElementById(id);};
     var zh=function(){return doc.documentElement.getAttribute("data-lang")==="zh";};
     var tx=function(en,cn){return zh()?(cn||en):en;};
-    var prefs={saved:[],read:[],following:[],views:[],density:"compact"},seed={},filters=Object.assign({},DEFAULT_FILTERS);
-    try {var stored=JSON.parse(win.localStorage.getItem("mm.newsDesk.preferences.v1")||"{}");["saved","read","following","views"].forEach(function(k){if(Array.isArray(stored[k]))prefs[k]=stored[k].slice(0,k==="views"?12:500);});if(stored.density==="reading")prefs.density="reading";}catch(_){}
+    var prefs={saved:[],read:[],following:[],views:[],density:"compact"},seed={},stored={},filters=Object.assign({},DEFAULT_FILTERS);
+    try {stored=JSON.parse(win.localStorage.getItem("mm.newsDesk.preferences.v1")||"{}")||{};["saved","read","following","views"].forEach(function(k){if(Array.isArray(stored[k]))prefs[k]=stored[k].slice(0,k==="views"?12:500);});if(stored.density==="reading")prefs.density="reading";}catch(_){}
     try{seed=JSON.parse($("ndSeed").textContent||"{}");}catch(_){}
     ["saved","read","following"].forEach(function(k){prefs[k]=prefs[k].filter(function(v){return typeof v==="string"&&v.length<=300;});});
+    prefs.views=research.cleanViews(prefs.views,DEFAULT_FILTERS);prefs.research=research.cleanState(stored.research);stored={};
+    prefs.research=research.prune(prefs.research,prefs.views.map(function(v){return "v:"+v.id;}).concat(prefs.research.investigations.map(function(v){return "i:"+v.id;})));
     var deskAliases=new Set();
     function combinedRows(rows){return combine(rows,(seed.stories||[]).filter(function(raw){var r=normalize(raw,"edition");return r&&!deskAliases.has(r.id)&&!deskAliases.has(canonicalURL(r.url))&&!deskAliases.has(r.title.toLowerCase());}));}
     var latest=[],visible=combine([],seed.stories),selected=null,shown=[],limit=60,pending=0,lastFocus=null,detailTab="brief",requestedStoryId=null;
@@ -1320,6 +1605,8 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     root.dataset.density=prefs.density;$("ndDensity").setAttribute("aria-pressed",String(prefs.density==="reading"));
     var liveReady=false,health={},sourceHealth=[],stream=null,timer=0,inflight=false,disposed=false,authPaused=false,mode="connecting",lastTransportAt=0,failures=0,generation=0,handshake=0,streamAvailable=true,streamFailures=0,streamRetryAt=0;
     var connectionLabel=["Connecting","正在连接"];
+    var compareIds=[],compareRelation="question",investigationId=null,pendingInvestigationIds=[],researchWarmed=false,researchSequence=0,researchReturns=new Map(),researchIndex=new Map();
+    var retained={descriptor:{state:"unavailable"},generation:0,controller:null,loading:false,status:"unavailable",query:null,rows:[],index:new Map(),matched:0,next:null,waitingRevision:null};
     function persist(){try{win.localStorage.setItem("mm.newsDesk.preferences.v1",JSON.stringify(prefs));}catch(_){announce(tx("This browser could not save your preferences.","此浏览器无法保存偏好设置。"));}}
     function el(tag,cls,value){var n=doc.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n;}
     function button(label,handler,cls){var n=el("button",cls||"nd-btn",label);n.type="button";n.addEventListener("click",handler);return n;}
@@ -1366,7 +1653,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       if(mode==="connected"&&lastTransportAt&&ms-lastTransportAt>45000){closeStream();setConnection("degraded","Reconnecting","正在重连");banner(tx("The connection stopped responding. Recovering the latest available reporting.","连接已停止响应，正在恢复最新可用报道。"),false,true);schedule(0);}
     }
     function render(){
-      var panel=$("ndFeedPanel"),oldScroll=panel.scrollTop,active=doc.activeElement,focused=panel.contains(active),focusRow=focused&&active.closest(".nd-row"),focusId=focusRow&&focusRow.dataset.id;
+      var panel=$("ndFeedPanel"),oldScroll=panel.scrollTop,active=doc.activeElement,focused=panel.contains(active),focusRow=focused&&active.closest(".nd-row"),focusId=focusRow&&focusRow.dataset.id,focusPick=focused&&active.classList.contains("nd-report-pick");
       var panelTop=panel.getBoundingClientRect().top,anchor=Array.from($("ndFeed").children).find(function(n){return n.getBoundingClientRect().bottom>panelTop;}),anchorId=anchor&&anchor.dataset.id,anchorOffset=anchor?anchor.getBoundingClientRect().top-panelTop:0;
       shown=filterRows(visible,filters,prefs,Date.now());var rows=shown.slice(0,limit),fragment=doc.createDocumentFragment();
       rows.forEach(function(r){
@@ -1386,7 +1673,9 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
         if(r.kind==="social")meta.appendChild(el("span","nd-row-tag",tx("Statement","声明")));
         if(r.kind==="official")meta.appendChild(el("span","",tx("Official","官方")));
         if(/correct|retract|delet|withdraw|amend/i.test(r.status))meta.appendChild(el("span","nd-row-tag",tx("Updated","已更新")));
-        r.tickers.slice(0,2).forEach(function(t){meta.appendChild(el("span","nd-ticker",t));});body.appendChild(meta);row.append(gutter,body);fragment.appendChild(row);
+        r.tickers.slice(0,2).forEach(function(t){meta.appendChild(el("span","nd-ticker",t));});
+        if(researchStory(r.id)){var pick=button(compareIds.includes(r.id)?tx("Selected","已选择"):tx("Compare","对照阅读"),function(){toggleCompare(r.id);},"nd-report-pick");pick.setAttribute("aria-pressed",String(compareIds.includes(r.id)));pick.setAttribute("aria-label",tx("Select for comparison: ","选择报道进行对照阅读：")+title(r));pick.dataset.researchFocus="feed-pick-"+r.id;meta.appendChild(pick);}
+        body.appendChild(meta);row.append(gutter,body);fragment.appendChild(row);
       });
       $("ndFeed").replaceChildren(fragment);$("ndEmpty").hidden=shown.length>0;$("ndMore").hidden=shown.length<=limit;
       $("ndResultCount").textContent=shown.length+" "+tx("stories","条报道")+(filters.saved?" · "+tx("Saved","已收藏"):"");
@@ -1397,8 +1686,8 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       panel.scrollTop=oldScroll;
       var restoredAnchor=Array.from($("ndFeed").children).find(function(n){return n.dataset.id===anchorId;});
       if(restoredAnchor)panel.scrollTop+=restoredAnchor.getBoundingClientRect().top-panelTop-anchorOffset;
-      if(focused){var restoredRow=Array.from($("ndFeed").children).find(function(n){return n.dataset.id===focusId;}),target=restoredRow&&restoredRow.querySelector("button")||panel;target.focus({preventScroll:true});}
-      syncControls();freshness();
+      if(focused){var restoredRow=Array.from($("ndFeed").children).find(function(n){return n.dataset.id===focusId;}),target=restoredRow&&restoredRow.querySelector(focusPick?".nd-report-pick":".nd-title")||panel;target.focus({preventScroll:true});}
+      syncControls();freshness();renderResearchSummary();
     }
     function applyLatest(resetScroll){
       visible=latest.length||liveReady?combinedRows(latest):visible;pending=0;$("ndUpdates").hidden=true;render();
@@ -1418,7 +1707,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       parent.appendChild(sec);
     }
     function renderDetail(changeNotice){
-      var r=latest.find(function(x){return x.id===selected;})||visible.find(function(x){return x.id===selected;});if(!r)return;
+      var r=researchIndex.get(selected)||latest.find(function(x){return x.id===selected;})||visible.find(function(x){return x.id===selected;});if(!r)return;
       var body=$("ndDetailBody"),scroll=body.scrollTop,fragment=doc.createDocumentFragment(),hadFocus=body.contains(doc.activeElement),focusAction=hadFocus?doc.activeElement.dataset.action:null;
       var k=el("div","nd-detail-kicker",tx.apply(null,CATEGORY[r.category])+" · "+tx(r.kind==="official"?"Official source":r.kind==="social"?"Social statement":"News reporting",r.kind==="official"?"官方来源":r.kind==="social"?"社交声明":"新闻报道"));
       var h=articleLanguage(el("h2","",title(r)),r,!!r.titleZh);h.id="ndStoryTitle";fragment.append(k,h);
@@ -1428,6 +1717,10 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       if(r.url)actions.appendChild(link(tx("Read original ↗","阅读原文 ↗"),r.url,"nd-btn"));
       actions.appendChild(button(prefs.saved.includes(r.id)?tx("Saved","已收藏"):tx("Save story","收藏报道"),function(){toggleSaved(r.id);}));
       actions.appendChild(button(tx("Copy link","复制链接"),async function(){try{var u=new URL(win.location.href);u.hash="story="+encodeURIComponent(r.id);await win.navigator.clipboard.writeText(u.href);announce(tx("Story link copied","已复制报道链接"));}catch(_){announce(tx("Copy the address from your browser to share this view.","复制浏览器地址以分享此视图。"));}},"nd-btn nd-btn-quiet"));
+      if(researchStory(r.id)){
+        var compare=button(compareIds.includes(r.id)?tx("Selected to compare","已选入对照阅读"):tx("Select to compare","选择对照阅读"),function(){toggleCompare(r.id);});compare.setAttribute("aria-pressed",String(compareIds.includes(r.id)));actions.appendChild(compare);
+        actions.appendChild(button(tx("Add to investigation","加入研究专题"),function(e){openInvestigations([r.id],e.currentTarget);},"nd-btn nd-btn-quiet"));
+      }
       Array.from(actions.children).forEach(function(n,i){n.dataset.action="detail-action-"+i;});
       fragment.appendChild(actions);
       var tabs=el("div","nd-detail-tabs");tabs.setAttribute("role","tablist");tabs.setAttribute("aria-label",tx("Story sections","报道分区"));
@@ -1488,7 +1781,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     }
     function syncDetailModal(){
       var panel=$("ndDetail"),modal=panel.dataset.open==="true"&&win.matchMedia("(max-width:760px)").matches;
-      if(modal){panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",tx("Story workspace","报道工作区"));if(!panel.contains(doc.activeElement))$("ndDetailClose").focus();}
+      if(modal){panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",tx("Story workspace","报道工作区"));if(!panel.contains(doc.activeElement)&&!Array.from(doc.querySelectorAll('dialog[open]')).some(blockingDialog))$("ndDetailClose").focus();}
       else{panel.removeAttribute("role");panel.removeAttribute("aria-modal");panel.removeAttribute("aria-labelledby");}
     }
     function closeStory(){
@@ -1505,23 +1798,250 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       prefs.saved=prefs.saved.slice(-500);persist();renderDetail();if(filters.saved)render();
       announce(prefs.saved.includes(id)?tx("Story saved on this browser","已在此浏览器收藏报道"):tx("Story removed from saved","已取消收藏"));
     }
+    // Research resolves references against the same accepted, authorized model as
+    // the desk. Local preferences never retain a headline, brief or source body.
+    function researchRows(){return liveReady?Array.from(researchIndex.values()):[];}
+    function researchStory(id){return liveReady?researchIndex.get(id)||(retained.descriptor.state==="available"?retained.index.get(id):null):null;}
+    function localId(prefix){researchSequence++;return prefix+"-"+Date.now().toString(36)+"-"+researchSequence.toString(36)+"-"+Math.random().toString(36).slice(2,9);}
+    function relationName(value){return tx.apply(null,{question:["Open question","开放问题"],topic:["Shared topic","共同主题"],accounts:["Different accounts","不同叙述"],connection:["Possible connection","可能的关联"]}[value]||["Open question","开放问题"]);}
+    function researchFocus(node,key){node.dataset.researchFocus=key;return node;}
+    function researchLinks(parent,prefix){Array.from(parent.querySelectorAll("a")).forEach(function(node,index){if(!node.dataset.researchFocus)researchFocus(node,prefix+"-source-"+index);});}
+    function rebuildResearch(container,build){
+      var active=doc.activeElement,owns=container.contains(active),key=owns&&active.dataset.researchFocus,scroll=container.scrollTop,scroller=container.closest(".nd-dialog-body"),dialogScroll=scroller&&scroller.scrollTop;
+      var open=new Set(Array.from(container.querySelectorAll("details[open][data-research-focus]")).map(function(n){return n.dataset.researchFocus;}));
+      var fragment=doc.createDocumentFragment();build(fragment,open);container.replaceChildren(fragment);container.scrollTop=scroll;if(scroller)scroller.scrollTop=dialogScroll;
+      container.querySelectorAll("details[data-research-focus]").forEach(function(n){if(open.has(n.dataset.researchFocus))n.open=true;});
+      if(owns){var restored=Array.from(container.querySelectorAll("[data-research-focus]")).find(function(n){return n.dataset.researchFocus===key;});var dialog=container.closest("dialog");(restored||dialog&&dialog.querySelector("[data-close-dialog]")||$("ndFeedPanel")).focus({preventScroll:true});}
+    }
+    function renderResearchSummary(){
+      $("ndCompareTray").hidden=!compareIds.length;$("ndCompareCount").textContent=compareIds.length+" "+tx("selected · up to 3 reports","条已选 · 最多 3 条报道");
+      $("ndCompareOpen").disabled=compareIds.length<2||!liveReady;
+      var unread=prefs.research.updates.filter(function(u){return !u.read;}).length;
+      ["ndMonitorCount","ndMonitorCountMobile"].forEach(function(id){$(id).textContent=String(unread);$(id).hidden=!unread;});$("ndWorkspaceUpdates").hidden=!unread;
+      $("ndMonitorEnable").textContent=prefs.research.enabled?tx("Pause monitoring","暂停监测"):tx("Enable monitoring","启用监测");$("ndMonitorEnable").setAttribute("aria-pressed",String(prefs.research.enabled));
+      $("ndMonitorQuiet").textContent=tx("Quiet mode","安静模式");$("ndMonitorQuiet").setAttribute("aria-pressed",String(prefs.research.quiet));
+      $("ndMonitorReadAll").disabled=!unread;$("ndMonitorReset").disabled=!prefs.research.updates.length&&!prefs.research.records.length;
+      var count=prefs.research.watching.length,status=!prefs.research.enabled?tx("Monitoring is off. Choose a saved search or investigation, then enable it.","监测已关闭。请选择已保存搜索或研究专题，然后启用监测。"):!count?tx("Choose a saved search or investigation to monitor.","请选择要监测的已保存搜索或研究专题。"):!liveReady?tx("Waiting for an authorized live feed. Existing reports will form a silent starting point.","等待已授权的实时新闻流。现有报道将作为静默起点。"):tx("Watching ","正在监测 ")+count+tx(" selections. "," 项。 ")+(mode==="degraded"||mode==="paused"?tx("Updates will resume with the desk connection.","更新将随新闻台连接恢复。"):prefs.research.quiet?tx("New changes are collected here quietly.","新变化将在此安静汇集。"):tx("New changes are announced on this page.","新变化将在本页提示。"));
+      $("ndMonitorStatus").textContent=status;
+    }
+    function toggleCompare(id){
+      if(compareIds.includes(id))compareIds=compareIds.filter(function(value){return value!==id;});
+      else if(researchStory(id)&&compareIds.length<3){if(!compareIds.length)compareRelation="question";compareIds.push(id);}
+      else{announce(tx("Compare up to three reports. Clear one selection to add another.","最多可对照三条报道。请先取消一条选择。"));return;}
+      render();if(selected)renderDetail();renderResearch();announce(compareIds.length+" "+tx("reports selected for comparison","条报道已选入对照阅读"));
+    }
+    function clockList(parent,r){
+      var clocks=el("dl","nd-research-clocks");
+      [[tx("Published","发布"),r.publishedAt],[tx("Publisher updated","发布者更新"),r.sourceUpdatedAt],[tx("Provider indexed","供应商收录"),r.indexedAt],[tx("First seen by desk","新闻台首次收录"),r.receivedAt],[tx("Latest change accepted","最近收录变更"),r.raw.accepted_revision_at]].forEach(function(pair){var row=el("div","");row.append(el("dt","",pair[0]),el("dd","",fullTime(pair[1])));clocks.appendChild(row);});parent.appendChild(clocks);
+    }
+    function comparisonHistory(parent,r){
+      var box=researchFocus(el("details","nd-research-history"),"history-"+r.id),summary=researchFocus(el("summary","",tx("Retained changes and earlier versions","保留的变更与此前版本")),"history-toggle-"+r.id);box.appendChild(summary);
+      var entries=r.timeline.filter(function(e){return e&&typeof e==="object";}).slice(0,40);
+      entries.forEach(function(e){var line=el("div","nd-research-version");line.append(el("small","",fullTime(e.ts||e.at)),el("p","",strip(zh()&&e.label_zh?e.label_zh:e.label_en)||(e.kind==="amendment"?tx("Source amendment received","已收录来源修订"):e.kind==="first_report"?tx("Report first received","首次收录报道"):strip(e.kind)||tx("Retained event","保留事件"))));box.appendChild(line);});
+      var versions=(Array.isArray(r.raw.revision_history)?r.raw.revision_history:[]).filter(function(v){return v&&typeof v==="object";}).slice(0,12);
+      versions.forEach(function(v){var line=el("div","nd-research-version");line.append(el("small","",tx("Earlier version · ","此前版本 · ")+fullTime(v.accepted_at)),el("p","",strip(zh()&&v.headline_zh?v.headline_zh:v.headline)||tx("Headline not retained","未保留标题")));box.appendChild(line);});
+      box.appendChild(el("p","nd-note",entries.length||versions.length?tx("Only changes supplied with the current report are shown. This is not a complete publication history.","仅展示随当前报道提供的变更，并非完整发布历史。"):tx("No separate change history was supplied for this report.","此报道未提供独立变更记录。")));parent.appendChild(box);
+    }
+    function renderComparison(){
+      $("ndCompareRelation").value=compareRelation;$("ndCompareSave").disabled=!compareIds.length||!liveReady;
+      rebuildResearch($("ndCompareReports"),function(fragment){
+        compareIds.forEach(function(id,index){
+          var r=researchStory(id),card=el("article","nd-comparison-report");card.dataset.storyId=id;
+          var head=el("div","nd-research-card-head");head.appendChild(el("span","nd-eyebrow",tx("Report ","报道 ")+(index+1)));head.appendChild(researchFocus(button(tx("Remove","移除"),function(){toggleCompare(id);},"nd-btn nd-btn-quiet"),"compare-remove-"+id));card.appendChild(head);
+          if(!r){card.append(el("h3","",tx("Report outside the current feed","报道不在当前新闻流中")),el("p","nd-note",tx("The reference is kept, but no report is available in the live feed or loaded retained results. This does not establish a withdrawal; search retained reporting to look for a current version.","引用仍保留，但实时新闻流及已载入留存结果中均无此报道。这并不能证明报道已被撤回；可搜索留存报道，查找当前版本。")));fragment.appendChild(card);return;}
+          card.appendChild(articleLanguage(el("h3","",title(r)),r,!!r.titleZh));card.appendChild(el("p","nd-research-source",r.source));
+          if(!researchIndex.has(id))card.appendChild(el("p","nd-note",tx("From the current retained search","来自当前留存搜索")));
+          if(r.url)card.appendChild(researchFocus(link(tx("Read original ↗","阅读原文 ↗"),r.url,"nd-btn nd-btn-quiet"),"compare-original-"+id));
+          clockList(card,r);
+          var brief=zh()&&r.briefZh?r.briefZh:r.brief,briefBox=el("section","nd-section");briefBox.appendChild(el("h4","",tx("Available brief","现有简报")));briefBox.appendChild(articleLanguage(el("p","",brief&&brief!==title(r)?brief:tx("A separate brief is not available. Read the original for the full account.","暂无独立简报。请阅读原文了解完整内容。")),r,!!r.briefZh));card.appendChild(briefBox);
+          if(r.why||r.whyZh){var context=el("section","nd-section");context.append(el("h4","",tx("Desk context · analysis","新闻台解读 · 分析")),articleLanguage(el("p","",zh()&&r.whyZh?r.whyZh:r.why),r,!!r.whyZh));card.appendChild(context);}
+          evidence(card,r);comparisonHistory(card,r);
+          if(r.raw.attribution)card.appendChild(el("p","nd-note",strip(r.raw.attribution)));
+          var terms=safeURL(r.raw.source_use_url);if(terms)card.appendChild(researchFocus(link(tx("Source terms","来源条款"),terms,"nd-note"),"compare-terms-"+id));
+          researchLinks(card,"compare-"+id);
+          fragment.appendChild(card);
+        });
+        if(compareIds.length<2)fragment.appendChild(el("p","nd-note",tx("Select two or three reports from the feed to compare their reporting.","请从新闻流中选择两到三条报道，进行对照阅读。")));
+      });
+    }
+    function openComparison(){if(compareIds.length<2||!liveReady)return;renderComparison();openDialog("ndCompare");}
+    function currentInvestigation(){return prefs.research.investigations.find(function(item){return item.id===investigationId;});}
+    function selectedReferences(){return Array.from(new Set(pendingInvestigationIds.length?pendingInvestigationIds:compareIds)).slice(0,3);}
+    function openInvestigations(ids,trigger){pendingInvestigationIds=Array.isArray(ids)?Array.from(new Set(ids)).slice(0,3):[];if(!currentInvestigation())investigationId=prefs.research.investigations[0]&&prefs.research.investigations[0].id;renderInvestigations();openDialog("ndInvestigations",trigger);}
+    function renderInvestigations(){
+      var items=prefs.research.investigations,current=currentInvestigation(),references=selectedReferences();
+      $("ndInvestigationPending").hidden=!references.length;$("ndInvestigationPending").textContent=references.length+" "+tx("selected reports. Create a new investigation or add them to one below.","条已选报道。可创建新专题，或加入下方现有专题。");
+      $("ndInvestigationForm").querySelector('button[type="submit"]').disabled=items.length>=research.limits.investigations;
+      rebuildResearch($("ndInvestigationList"),function(fragment){
+        items.forEach(function(item){var b=researchFocus(button(item.name,function(){investigationId=item.id;renderInvestigations();},"nd-investigation-choice"),"investigation-"+item.id);b.setAttribute("aria-current",String(item.id===investigationId));b.appendChild(el("small","",item.storyIds.length+" "+tx("references","条引用")+" · "+relationName(item.relation)));fragment.appendChild(b);});
+        if(!items.length)fragment.appendChild(el("p","nd-note",tx("Start with a question. Add reports as you read.","从一个问题开始，在阅读时加入报道。")));
+      });
+      $("ndInvestigationCurrent").hidden=!current;if(!current){$("ndInvestigationReports").replaceChildren();return;}
+      $("ndInvestigationCurrentTitle").textContent=current.name;
+      if(doc.activeElement!==$("ndInvestigationRename"))$("ndInvestigationRename").value=current.name;
+      $("ndInvestigationRelation").value=current.relation;
+      $("ndInvestigationAdd").textContent=tx("Add selected reports","加入已选报道")+(references.length?" ("+references.length+")":"");$("ndInvestigationAdd").disabled=!liveReady||!references.length||current.storyIds.length>=research.limits.reports;
+      $("ndInvestigationCompare").disabled=compareIds.length<2||!liveReady;
+      $("ndInvestigationCompare").textContent=tx("Compare selection","对照阅读已选报道")+(compareIds.length?" ("+compareIds.length+")":"");
+      var watching=prefs.research.watching.includes("i:"+current.id);$("ndInvestigationWatch").setAttribute("aria-pressed",String(watching));$("ndInvestigationWatch").textContent=watching?tx("In monitoring list","已加入监测"):tx("Monitor this investigation","监测此专题");
+      var available=current.storyIds.filter(function(id){return !!researchStory(id);}).length,live=current.storyIds.filter(function(id){return researchIndex.has(id);}).length;
+      $("ndInvestigationAvailability").textContent=available+" / "+current.storyIds.length+" "+tx("available","条可用")+" · "+live+" "+tx("in the live feed","条实时报道")+" · "+(available-live)+" "+tx("in the loaded retained search. Missing references keep their place without saved report text.","条来自已载入留存搜索。缺失引用将保留位置，不保存报道内容。");
+      rebuildResearch($("ndInvestigationReports"),function(fragment){
+        current.storyIds.forEach(function(id,index){var r=researchStory(id),row=el("li","nd-investigation-report"),content=el("div","");row.dataset.storyId=id;
+          if(r){content.appendChild(articleLanguage(el("h4","",title(r)),r,!!r.titleZh));content.appendChild(el("p","nd-note",r.source+" · "+clockLabel(r)+fullTime(r.clockAt)));var actions=el("div","nd-research-actions");actions.appendChild(researchFocus(button(tx("Read report","阅读报道"),function(){readResearchStory(id);},"nd-btn nd-btn-quiet"),"investigation-read-"+id));var pick=researchFocus(button(compareIds.includes(id)?tx("Selected","已选择"):tx("Select to compare","选择对照阅读"),function(){toggleCompare(id);},"nd-btn nd-btn-quiet"),"investigation-pick-"+id);pick.setAttribute("aria-pressed",String(compareIds.includes(id)));actions.appendChild(pick);content.appendChild(actions);}
+          else{content.append(el("h4","",tx("Saved report ","已保存报道 ")+(index+1)),el("p","nd-note",liveReady?tx("Outside the live feed and loaded retained results. The reference remains; withdrawal and retention limits cannot be distinguished here.","不在实时新闻流及已载入留存结果中。引用仍保留，此处无法区分报道撤回与保留范围限制。"):tx("Sign in and connect to resolve this saved reference.","请登录并连接新闻流以查看此引用。")));}
+          row.appendChild(content);row.appendChild(researchFocus(button(tx("Remove reference","移除引用"),function(){current.storyIds=current.storyIds.filter(function(value){return value!==id;});resetResearchBaseline();renderInvestigations();},"nd-btn nd-btn-quiet"),"investigation-remove-"+id));fragment.appendChild(row);
+        });
+        if(!current.storyIds.length)fragment.appendChild(el("li","nd-note",tx("Select reports in the feed, then add them to this investigation.","请在新闻流中选择报道，再加入此专题。")));
+      });
+    }
+    function watchName(key){var list=key.startsWith("v:")?prefs.views:prefs.research.investigations,item=list.find(function(v){return v.id===key.slice(2);});return item?item.name:tx("Saved selection","已保存选择");}
+    function observeResearch(baseline,changedIds){
+      if(!liveReady)return;
+      var rows=researchRows(),memberships=prefs.views.map(function(v){return{key:"v:"+v.id,ids:filterRows(rows,v.filters,prefs,Date.now()).map(function(r){return r.id;})};}).concat(prefs.research.investigations.map(function(item){return{key:"i:"+item.id,ids:item.storyIds};}));
+      var before=JSON.stringify(prefs.research),result=research.advance(prefs.research,rows.map(function(r){return{id:r.id,mark:research.marker(fingerprint(r))};}),memberships,{baseline:baseline===true,changedIds:changedIds,now:Date.now()});
+      prefs.research=result.state;researchWarmed=true;if(before!==JSON.stringify(prefs.research))persist();
+      if(result.added&&!prefs.research.quiet)announce(result.added+" "+tx("updates in your monitoring inbox","条监测收件箱更新"));
+    }
+    function resetResearchBaseline(){
+      prefs.research=research.prune(research.cleanState(prefs.research),prefs.views.map(function(v){return "v:"+v.id;}).concat(prefs.research.investigations.map(function(v){return "i:"+v.id;})));
+      prefs.research.records=[];researchWarmed=false;if(liveReady)observeResearch(true);persist();renderResearch();
+    }
+    function toggleWatch(key){
+      var watching=prefs.research.watching;if(watching.includes(key))prefs.research.watching=watching.filter(function(v){return v!==key;});else if(watching.length<research.limits.watches)prefs.research.watching.push(key);
+      resetResearchBaseline();
+    }
+    function updateName(kind){return tx.apply(null,{arrival:["Arrived in the feed","进入新闻流"],amendment:["Report amended","报道已修订"],removal:["Left the current feed","离开当前新闻流"],return:["Available again","再次可用"]}[kind]);}
+    function renderMonitor(){
+      renderResearchSummary();
+      rebuildResearch($("ndMonitorChoices"),function(fragment){
+        [[prefs.views,"v:",tx("Saved search","已保存搜索")],[prefs.research.investigations,"i:",tx("Investigation","研究专题")]].forEach(function(group){group[0].forEach(function(item){var row=el("label","nd-monitor-choice"),check=researchFocus(el("input",""),"watch-"+group[1]+item.id);check.type="checkbox";check.checked=prefs.research.watching.includes(group[1]+item.id);check.addEventListener("change",function(){toggleWatch(group[1]+item.id);});var text=el("span","",item.name);text.appendChild(el("small","",group[2]));row.append(check,text);fragment.appendChild(row);});});
+        if(!prefs.views.length&&!prefs.research.investigations.length)fragment.appendChild(el("p","nd-note",tx("Save a search or create an investigation to choose what matters here.","保存搜索或创建研究专题，选择在此关注的内容。")));
+      });
+      rebuildResearch($("ndMonitorItems"),function(fragment){
+        if(!prefs.research.updates.length){var empty=el("div","nd-research-empty");empty.append(el("h3","",tx("A quiet starting point","安静的起点")),el("p","",tx("Existing reports do not create alerts. Changes to your monitored selections will appear here as the desk receives them.","现有报道不会触发提醒。新闻台收到所监测内容的变化时，更新将出现在这里。")));fragment.appendChild(empty);return;}
+        var list=el("ol","nd-monitor-list");prefs.research.updates.forEach(function(update){
+          var r=researchStory(update.id),row=el("li","nd-monitor-item");row.dataset.updateId=String(update.n);row.dataset.storyId=update.id;row.dataset.kind=update.kind;row.dataset.read=String(update.read);
+          var meta=el("div","nd-monitor-item-meta");meta.append(el("strong","",updateName(update.kind)),el("time","",fullTime(new Date(update.at).toISOString())));meta.lastChild.dateTime=new Date(update.at).toISOString();row.appendChild(meta);
+          row.appendChild(r?articleLanguage(el("h3","",title(r)),r,!!r.titleZh):el("h3","",tx("Report reference unavailable","报道引用暂不可用")));
+          row.appendChild(el("p","nd-note",update.targets.map(watchName).join(" · ")));
+          if(update.kind==="removal")row.appendChild(el("p","nd-note",tx("The report left a feed update. This does not establish a withdrawal; it may have left the retained window.","此报道离开了已接收的新闻流。这并不证明报道已被撤回，也可能是超出保留时间范围。")));
+          else if(!r)row.appendChild(el("p","nd-note",tx("This reference has no report text in the current authorized feed.","当前已授权新闻流中没有此引用的报道内容。")));
+          var actions=el("div","nd-research-actions");if(r)actions.appendChild(researchFocus(button(researchIndex.has(update.id)?tx("Read current report","阅读当前报道"):tx("Read retained report","阅读留存报道"),function(){readResearchStory(update.id);},"nd-btn nd-btn-quiet"),"update-open-"+update.n));
+          actions.appendChild(researchFocus(button(update.read?tx("Mark unread","标为未读"):tx("Mark read","标为已读"),function(){update.read=!update.read;persist();renderMonitor();},"nd-btn nd-btn-quiet"),"update-read-"+update.n));row.appendChild(actions);list.appendChild(row);
+        });fragment.appendChild(list);
+      });
+    }
+    function clearHistory(status,dropDescriptor){
+      retained.generation++;if(retained.controller)retained.controller.abort();retained.controller=null;retained.loading=false;retained.rows=[];retained.index.clear();retained.matched=0;retained.next=null;retained.status=status;retained.waitingRevision=null;
+      if(dropDescriptor){retained.descriptor={state:"unavailable"};retained.query=null;$("ndHistoryForm").reset();$("ndHistoryFeed").replaceChildren(el("option","",tx("Any feed","所有新闻流")));$("ndHistoryFeed").firstChild.value="";["ndHistoryBounds","ndHistoryStatus","ndHistoryQuerySummary"].forEach(function(id){$(id).textContent="";});$("ndHistoryQuerySummary").hidden=true;}
+      $("ndHistoryResults").replaceChildren();$("ndHistoryMore").hidden=true;$("ndHistoryMore").disabled=true;
+    }
+    function acceptHistoryDescriptor(raw){
+      var next=research.historyDescriptor(raw),before=retained.descriptor,changed=JSON.stringify(before)!==JSON.stringify(next),used=!!retained.query||retained.loading||retained.rows.length;
+      if(changed){clearHistory(next.state==="available"?(used?"stale":"idle"):"unavailable");retained.descriptor=next;}
+      else if(retained.waitingRevision&&next.state==="available"){retained.waitingRevision=null;retained.status="stale";} // A fresh accepted snapshot permits a deliberate retry, including a reverted collection.
+    }
+    function historyFormQuery(){
+      function date(id){var value=$(id).value;if(!value)return null;var n=Date.parse(value);return Number.isFinite(n)?new Date(n).toISOString():"invalid";}
+      return research.historyQuery({q:$("ndHistoryQuery").value,source:$("ndHistorySource").value,feed_id:$("ndHistoryFeed").value,category:$("ndHistoryCategory").value,language:$("ndHistoryLanguage").value,from_at:date("ndHistoryFrom"),to_at:date("ndHistoryTo"),limit:50});
+    }
+    async function fetchHistory(more){
+      if(!liveReady||authPaused||retained.descriptor.state!=="available"||retained.waitingRevision)return;
+      var query=more?retained.query:historyFormQuery(),cursor=more?retained.next:null;if(more&&(!cursor||retained.loading))return;
+      if(!query){clearHistory("invalid");renderResearch();return;}
+      if(!more)clearHistory("loading");else{retained.generation++;if(retained.controller)retained.controller.abort();}
+      var issued=retained.generation,descriptor=retained.descriptor,controller=new win.AbortController();retained.controller=controller;retained.query=query;retained.loading=true;retained.status="loading";
+      var params=new URLSearchParams();Object.keys(query).forEach(function(key){if(query[key]!==null&&query[key]!=="")params.set(key,String(query[key]));});if(cursor)params.set("cursor",cursor);renderResearch();
+      try{
+        var page=await getProtectedJSON("/api/news-desk/history?"+params.toString(),null,controller);
+        if(issued!==retained.generation||disposed)return;
+        if(typeof page.revision==="string"&&/^[0-9a-f]{64}$/.test(page.revision)&&page.revision!==descriptor.revision){var waiting=page.revision;clearHistory("stale");retained.waitingRevision=waiting;renderResearch();return;}
+        if(!research.validHistoryPage(page,descriptor,query))throw new Error("history schema");
+        var rows=page.stories.map(function(raw){return normalize(raw,"retained");});if(rows.some(function(r,index){return !r||r.id!==page.stories[index].id;}))throw new Error("history display");
+        if(more&&(rows.some(function(r){return retained.index.has(r.id);})||page.next_cursor===cursor||page.matched_count!==retained.matched))throw new Error("history cursor");
+        var total=(more?retained.rows.length:0)+rows.length;
+        if(total>descriptor.bounds.max_stories||total>page.matched_count||page.next_cursor===null&&total!==page.matched_count)throw new Error("history size");
+        retained.rows=more?retained.rows.concat(rows):rows;retained.index=new Map(retained.rows.map(function(r){return[r.id,r];}));retained.next=page.next_cursor;retained.matched=page.matched_count;retained.status=retained.rows.length?"ready":"empty";
+      }catch(e){
+        if(issued!==retained.generation||disposed)return;
+        if(e.status===401||e.status===403){authPaused=true;closeStream();win.clearTimeout(timer);timer=0;clearProtected();setConnection("restricted","Sign in for live","登录查看实时新闻");banner(tx("Sign in again to read protected reporting.","请重新登录以阅读需要授权的报道。"),true,false);return;}
+        clearHistory(e.status===409||e.status===400?"stale":e.status===503?"unavailable":"error");renderResearch();
+      }finally{if(issued===retained.generation){retained.loading=false;retained.controller=null;renderResearch();}}
+    }
+    function historyReportBody(parent,r){
+      clockList(parent,r);var brief=zh()&&r.briefZh?r.briefZh:r.brief;
+      var sectionNode=el("section","nd-section");sectionNode.append(el("h4","",tx("Available brief","现有简报")),articleLanguage(el("p","",brief&&brief!==title(r)?brief:tx("A separate brief is not available. Read the original for the full account.","暂无独立简报。请阅读原文了解完整内容。")),r,!!r.briefZh));parent.appendChild(sectionNode);
+      evidence(parent,r);comparisonHistory(parent,r);if(r.raw.attribution)parent.appendChild(el("p","nd-note",strip(r.raw.attribution)));var terms=safeURL(r.raw.source_use_url);if(terms)parent.appendChild(link(tx("Source terms","来源条款"),terms,"nd-note"));researchLinks(parent,"retained-"+r.id);
+    }
+    function renderHistory(){
+      var descriptor=retained.descriptor,available=liveReady&&descriptor.state==="available",count=compareIds.length;
+      $("ndHistoryBounds").textContent=available?tx("A rolling collection: up to ","滚动保留范围：最多 ")+descriptor.bounds.retention_hours+tx(" hours and "," 小时、")+descriptor.bounds.max_stories+tx(" reports. "," 条报道。 ")+descriptor.displayable_count+tx(" can currently be displayed; "," 条当前可展示；")+descriptor.excluded_count+tx(" cannot be displayed."," 条不可展示。"):tx("Retained reporting is not currently available. Its collection and display limits will be shown when the desk supplies them.","近期留存报道当前不可用。新闻台提供数据后，将显示保留范围与展示限制。");
+      var messages={idle:["Choose a phrase or filters, then search the retained collection.","选择短语或筛选条件，然后搜索留存报道。"],loading:["Searching retained reporting…","正在搜索留存报道…"],stale:["Retained reporting changed. Restart the search to read the current versions.","留存报道已发生变化。请重新搜索以阅读当前版本。"],unavailable:["The retained collection is unavailable. Try again when the desk is available.","留存报道当前不可用。请在新闻台恢复后重试。"],error:["The search could not be completed. Check the connection and try again.","搜索未能完成。请检查连接并重试。"],invalid:["Check the filters and date range. The start must be earlier than the end.","请检查筛选条件及日期范围。起始时间必须早于截止时间。"],restricted:["Sign in again to search retained reporting.","请重新登录以搜索留存报道。"],paused:["Search paused. Submit it again when you are ready.","搜索已暂停。准备好后可重新提交。"],empty:["No retained reports match this search.","没有匹配此搜索的留存报道。"]};
+      $("ndHistoryStatus").textContent=retained.waitingRevision?tx("A newer collection is available. Waiting for the live feed before you can restart this search.","已有更新的留存报道。等待实时新闻流同步后，即可重新搜索。"):retained.status==="ready"?retained.rows.length+" / "+retained.matched+" "+tx("matching reports loaded","条匹配报道已载入"):tx.apply(null,messages[retained.status]||messages.idle);
+      $("ndHistorySearch").disabled=!available||!!retained.waitingRevision;$("ndHistoryMore").hidden=!retained.next;$("ndHistoryMore").disabled=retained.loading||!available||!!retained.waitingRevision;
+      $("ndHistoryRestart").hidden=!["stale","error","unavailable","paused"].includes(retained.status);$("ndHistoryRestart").disabled=!available||!!retained.waitingRevision;
+      $("ndHistoryCompare").disabled=count<2||!liveReady;$("ndHistoryCompare").textContent=tx("Compare selection","对照阅读已选报道")+(count?" ("+count+")":"");$("ndHistoryKeep").disabled=!count||!liveReady;
+      var query=retained.query;$("ndHistoryQuerySummary").hidden=!query;$("ndHistoryQuerySummary").textContent="";if(query){var pieces=[];if(query.q)pieces.push(tx("Literal text: ","原样文字：")+query.q);if(query.source)pieces.push(tx("Publisher or host: ","发布者或主机名：")+query.source);if(query.feed_id)pieces.push(tx("Feed: ","新闻流：")+query.feed_id);if(query.category)pieces.push(tx("Category: ","分类：")+(CATEGORY[query.category]?tx.apply(null,CATEGORY[query.category]):query.category));if(query.language)pieces.push(tx("Language: ","语言：")+query.language);if(query.from_at)pieces.push(tx("Recorded from ","收录起始 ")+fullTime(query.from_at));if(query.to_at)pieces.push(tx("Recorded before ","收录截止（不含）")+fullTime(query.to_at));$("ndHistoryQuerySummary").textContent=pieces.join(" · ")||tx("All available retained reports","所有可用留存报道");}
+      var feed=$("ndHistoryFeed");if(doc.activeElement!==feed){var chosen=feed.value,seen=new Set(),options=[{id:"",label:tx("Any feed","所有新闻流")}];sourceHealth.forEach(function(item){if(!item||typeof item.id!=="string"||!item.id||item.id.length>160||seen.has(item.id))return;seen.add(item.id);options.push({id:item.id,label:strip(item.label||item.name||item.publisher)||item.id});});if(chosen&&!seen.has(chosen))options.push({id:chosen,label:chosen});feed.replaceChildren();options.forEach(function(item){var option=el("option","",item.label);option.value=item.id;feed.appendChild(option);});feed.value=chosen;}
+      rebuildResearch($("ndHistoryResults"),function(fragment,opened){
+        retained.rows.forEach(function(r){
+          var row=el("article","nd-history-row");row.dataset.storyId=r.id;row.appendChild(el("p","nd-history-meta",r.source+" · "+tx("Recorded ","收录 ")+fullTime(r.raw.accepted_revision_at||r.receivedAt)));row.appendChild(articleLanguage(el("h3","",title(r)),r,!!r.titleZh));
+          var actions=el("div","nd-research-actions"),pick=researchFocus(button(compareIds.includes(r.id)?tx("Selected to compare","已选入对照阅读"):tx("Select to compare","选择对照阅读"),function(){toggleCompare(r.id);},"nd-btn"),"history-pick-"+r.id);pick.setAttribute("aria-pressed",String(compareIds.includes(r.id)));actions.appendChild(pick);actions.appendChild(researchFocus(button(tx("Keep reference","保存引用"),function(){openInvestigations([r.id]);},"nd-btn nd-btn-quiet"),"history-keep-"+r.id));if(r.url)actions.appendChild(researchFocus(link(tx("Read original ↗","阅读原文 ↗"),r.url,"nd-btn nd-btn-quiet"),"history-original-"+r.id));row.appendChild(actions);
+          var details=researchFocus(el("details","nd-history-report"),"history-report-"+r.id),summary=researchFocus(el("summary","",tx("Brief, sources and changes","简报、来源与变更")),"history-details-"+r.id),content=el("div","nd-history-report-body");details.append(summary,content);
+          details.addEventListener("toggle",function(){if(details.open&&retained.index.get(r.id)===r&&!content.childNodes.length)historyReportBody(content,r);else if(!details.open)content.replaceChildren();});
+          if(opened.has(details.dataset.researchFocus)){details.open=true;historyReportBody(content,r);}row.appendChild(details);fragment.appendChild(row);
+        });
+      });
+    }
+    function openHistory(id){renderHistory();openDialog("ndHistory");if(id){var row=Array.from($("ndHistoryResults").children).find(function(n){return n.dataset.storyId===id;});if(row){row.querySelector("details").open=true;row.querySelector("summary").focus({preventScroll:true});row.scrollIntoView({block:"nearest",behavior:"auto"});}}}
+    function renderResearch(){renderResearchSummary();if($("ndCompare").open)renderComparison();if($("ndInvestigations").open)renderInvestigations();if($("ndMonitor").open)renderMonitor();if($("ndHistory").open)renderHistory();}
+    function readResearchStory(id){if(!researchStory(id))return;var live=researchIndex.has(id);["ndMonitor","ndInvestigations","ndCompare","ndHistory"].forEach(function(dialog){if($(dialog).open)closeDialog($(dialog));});if(live)openStory(id,win.matchMedia("(max-width:1050px)").matches?$("ndWorkspaceOpen"):$("ndInvestigationsOpen"));else openHistory(id);}
+    function researchDialog(d){return ["ndCompare","ndInvestigations","ndMonitor","ndHistory"].includes(d.id);}
+    function finishResearchDialog(d){
+      if(!researchDialog(d)||d.open)return;
+      var returnTo=researchReturns.get(d.id);researchReturns.delete(d.id);
+      if(d.id==="ndCompare")$("ndCompareReports").replaceChildren();
+      if(d.id==="ndInvestigations"){$("ndInvestigationList").replaceChildren();$("ndInvestigationReports").replaceChildren();$("ndInvestigationAvailability").textContent="";$("ndInvestigationCurrent").hidden=true;pendingInvestigationIds=[];}
+      if(d.id==="ndMonitor"){$("ndMonitorItems").replaceChildren();$("ndMonitorChoices").replaceChildren();}
+      if(d.id==="ndHistory"){if(retained.loading){retained.generation++;if(retained.controller)retained.controller.abort();retained.controller=null;retained.loading=false;retained.status="paused";}$("ndHistoryResults").replaceChildren();}
+      if(returnTo){var target=returnTo.node;if(!target||!target.isConnected||target.closest("dialog")&&!target.closest("dialog").open){target=returnTo.key&&Array.from(doc.querySelectorAll("[data-research-focus]")).find(function(n){return n.dataset.researchFocus===returnTo.key&&(!n.closest("dialog")||n.closest("dialog").open);});}
+        if(!target&&returnTo.action)target=Array.from($("ndDetailBody").querySelectorAll("[data-action]")).find(function(n){return n.dataset.action===returnTo.action;});
+        if(!target&&returnTo.storyId){var row=Array.from(doc.querySelectorAll(".nd-row")).find(function(n){return n.dataset.id===returnTo.storyId;});target=row&&row.querySelector(".nd-title");}
+        (target||$("ndDetail").getAttribute("aria-modal")==="true"&&$("ndDetailClose")||$("ndFeedPanel")).focus({preventScroll:true});}
+    }
+    function clearResearchProtected(){
+      compareIds=[];pendingInvestigationIds=[];researchIndex.clear();researchWarmed=false;prefs.research.records=[];prefs.research.updates=[];persist();
+      clearHistory("restricted",true);["ndHistory","ndMonitor","ndInvestigations","ndCompare"].forEach(function(id){var dialog=$(id);if(dialog.open)closeDialog(dialog);else finishResearchDialog(dialog);});researchReturns.clear();
+    }
+    function blockingDialog(n){
+      if(n.id==="ndDetail"||n.hidden||n.getAttribute("aria-hidden")==="true")return false;
+      var style=win.getComputedStyle(n);return style.display!=="none"&&style.visibility!=="hidden"&&style.visibility!=="collapse";
+    }
     function renderConnection(){
       var label=tx.apply(null,connectionLabel);
       ["ndConnection","ndConnectionMobile"].forEach(function(id){var node=$(id);if(node){node.dataset.state=mode;node.textContent=label;}});
+      renderResearchSummary();
+      if($("ndCoverage").open)renderCoverage();
     }
     function setConnection(state,en,cn){mode=state;connectionLabel=[en,cn];renderConnection();}
     function banner(message,auth,retry){$("ndBanner").hidden=!message;$("ndBannerText").textContent=message||"";$("ndSignIn").hidden=!auth;$("ndRetry").hidden=!retry;}
     function accept(payload){
       if(!validSnapshot(payload))throw new Error("schema");
+      // A saved stable ID must not disappear merely because feed display merges
+      // two reports with the same URL or headline. This index is session-only.
+      var priorResearch=researchIndex;researchIndex=new Map();payload.stories.forEach(function(raw){var r=normalize(raw,"desk");if(r&&research.id(raw.id)===r.id)researchIndex.set(r.id,r);});
       var previous=latest,first=!liveReady;latest=combine(payload.stories,[]);health=payload.health||{};sourceHealth=Array.isArray(payload.source_health)?payload.source_health:[];liveReady=true;
       var priorById=new Map(previous.map(function(r){return[r.id,r];})),changedIds=new Set(latest.filter(function(r){var old=priorById.get(r.id);return old&&fingerprint(old)!==fingerprint(r);}).map(function(r){return r.id;}));
+      researchIndex.forEach(function(r,id){var old=priorResearch.get(id);if(old&&fingerprint(old)!==fingerprint(r))changedIds.add(id);});
+      acceptHistoryDescriptor(payload.retained_history);
       if(changedIds.size){prefs.read=prefs.read.filter(function(id){return !changedIds.has(id);});persist();}
       latest.forEach(function(r){deskAliases.add(r.id);deskAliases.add(canonicalURL(r.url));deskAliases.add(r.title.toLowerCase());});
       var combined=combinedRows(latest);pending=difference(visible,combined);
       var currentById=new Map(combined.map(function(r){return[r.id,r];}));
       visible=visible.filter(function(r){return !deskAliases.has(r.id)||currentById.has(r.id);}).map(function(r){return currentById.get(r.id)||r;});
       if(selected){
-        var old=previous.find(function(r){return r.id===selected;}),current=latest.find(function(r){return r.id===selected;});
+        var old=priorResearch.get(selected)||previous.find(function(r){return r.id===selected;}),current=researchIndex.get(selected)||latest.find(function(r){return r.id===selected;});
         if(old&&!current){
           $("ndDetailBody").replaceChildren(el("div","nd-change-note",tx("This story is no longer in the current feed. It may have been withdrawn or left the active window. Open a current story to continue.","此报道已不在当前新闻流中，可能已撤回或超出有效时间范围。请选择当前报道继续。")));
         }else if(old&&current&&fingerprint(old)!==fingerprint(current)){renderDetail(tx("This story has changed while you were reading. The latest available evidence is shown below.","你阅读期间，此报道已发生变化。下方展示最新可用依据。"));}
@@ -1532,23 +2052,28 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       $("ndUpdates").hidden=pending===0;
       if(pending){$("ndUpdates").textContent=pending+" "+tx("updates · Show latest","条更新 · 显示最新");announce(pending+" "+tx("news updates available","条新闻更新可用"));}
       lastTransportAt=Date.now();freshness();
+      observeResearch(first||!researchWarmed,changedIds);renderResearch();
+      if($("ndCoverage").open)renderCoverage();
       if(requestedStoryId){
-        if(combined.some(function(r){return r.id===requestedStoryId;}))openStory(requestedStoryId);
+        if(researchIndex.has(requestedStoryId)||combined.some(function(r){return r.id===requestedStoryId;}))openStory(requestedStoryId);
         else if(first){$("ndDetail").dataset.open="true";$("ndDetailBody").replaceChildren(el("div","nd-empty",tx("This shared story is outside the loaded window or no longer available. Search for its subject or open another current report.","此分享报道已超出载入范围或不可用。请搜索相关主题或打开当前报道。")));syncDetailModal();}
       }
       if(!requestedStoryId&&!selected&&shown.length&&!win.matchMedia("(max-width:760px)").matches)openStory(shown[0].id);
     }
     function schedule(ms){win.clearTimeout(timer);if(!disposed&&!authPaused&&!doc.hidden)timer=win.setTimeout(function(){timer=0;connect();},ms);}
     function closeStream(){generation++;win.clearTimeout(handshake);if(stream){stream.close();stream=null;}}
-    async function getSnapshot(url){
-      var controller=new AbortController(),timeout=win.setTimeout(function(){controller.abort();},10000);
-      try{
+    async function getProtectedJSON(url,validate,controller){
+      controller=controller||new win.AbortController();var timeout;
+      var deadline=new Promise(function(resolve,reject){timeout=win.setTimeout(function(){controller.abort();reject(new Error("request deadline"));},10000);});
+      var request=(async function(){
         var response=await win.fetch(url,{credentials:"same-origin",cache:"no-store",signal:controller.signal,headers:{Accept:"application/json"}});
         if(!response.ok){var error=new Error("http");error.status=response.status;throw error;}
         var content=await response.text();if(content.length>4194304)throw new Error("size");
-        var p=JSON.parse(content);if(!validSnapshot(p))throw new Error("schema");return p;
-      }finally{win.clearTimeout(timeout);}
+        var p=JSON.parse(content);if(validate&&!validate(p))throw new Error("schema");return p;
+      })();
+      try{return await Promise.race([request,deadline]);}finally{win.clearTimeout(timeout);}
     }
+    async function getSnapshot(url){return getProtectedJSON(url,validSnapshot);}
     async function connect(){
       if(inflight||disposed||authPaused||doc.hidden)return;inflight=true;closeStream();var issued=generation;
       try{
@@ -1574,35 +2099,52 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
         if(!auth)schedule(Math.min(30000,3000*Math.pow(2,Math.min(failures,4))));
       }finally{inflight=false;if(issued!==generation&&!doc.hidden&&!disposed&&!authPaused&&!stream&&!timer)schedule(0);}
     }
-    function clearProtected(){latest=[];health={};sourceHealth=[];lastTransportAt=0;closeStory();liveReady=false;visible=combine([],seed.stories);pending=0;$("ndUpdates").hidden=true;selected=null;$("ndDetailBody").replaceChildren(el("div","nd-empty",tx("Sign in again to read live desk stories.","请重新登录以阅读实时新闻台报道。")));render();if($("ndCoverage").open)renderCoverage();}
-    function openDialog(id){var d=$(id);if(d.open)return;if(typeof d.showModal==="function")d.showModal();else d.setAttribute("open","");}
-    function closeDialog(d){if(typeof d.close==="function")d.close();else d.removeAttribute("open");}
+    function clearProtected(){latest=[];health={};sourceHealth=[];deskAliases.clear();lastTransportAt=0;liveReady=false;clearResearchProtected();closeStory();lastFocus=null;visible=combine([],seed.stories);pending=0;$("ndUpdates").hidden=true;selected=null;$("ndDetailBody").replaceChildren(el("div","nd-empty",tx("Sign in again to read live desk stories.","请重新登录以阅读实时新闻台报道。")));$("ndCoverageBody").replaceChildren();render();if($("ndCoverage").open)renderCoverage();}
+    function openDialog(id,trigger){var d=$(id);if(d.open){if(researchDialog(d)){var stack=Array.from(researchReturns.keys());stack.slice(stack.indexOf(id)+1).reverse().forEach(function(above){if($(above).open)closeDialog($(above));});d.querySelector("[data-close-dialog]").focus();}return;}if(researchDialog(d)){var active=trigger||doc.activeElement,row=active.closest&&active.closest(".nd-row");researchReturns.set(id,{node:active,key:active.dataset.researchFocus,action:active.dataset.action,storyId:row&&row.dataset.id});}if(typeof d.showModal==="function")d.showModal();else d.setAttribute("open","");if(researchDialog(d))d.querySelector("[data-close-dialog]").focus();}
+    function closeDialog(d){if(typeof d.close==="function")d.close();else d.removeAttribute("open");finishResearchDialog(d);}
     function renderCoverage(){
-      var body=$("ndCoverageBody");body.replaceChildren();
+      rebuildResearch($("ndCoverageBody"),function(body){
       section(body,tx("Delivery connection","传输连接"),$("ndConnection").textContent);
       body.appendChild(el("p","nd-note",tx("A connected stream means this page can receive desk changes. Publisher timing, collection cadence and source availability determine how fresh the reporting is.","新闻流已连接表示页面能够接收新闻台的变化。报道时效取决于发布者时间、采集频率与来源可用性。")));
       section(body,tx("Latest source publication","最新来源发布时间"),$("ndFreshness").textContent);
-      var rows=combinedRows(latest),counts=new Map();rows.forEach(function(r){counts.set(r.source,(counts.get(r.source)||0)+1);});
+      var rows=liveReady?researchRows():combine([],seed.stories),counts=new Map(),feedCounts=new Map();rows.forEach(function(r){counts.set(r.source,(counts.get(r.source)||0)+1);var feed=strip(r.raw.feed_id);if(feed)feedCounts.set(feed,(feedCounts.get(feed)||0)+1);});
+      var overview=el("div","nd-coverage-overview");[[rows.length,liveReady?tx("Live reports loaded","已载入实时报道"):tx("Edition reports loaded","已载入版本报道")],[counts.size,tx("Publisher labels","发布者标签")],[feedCounts.size,tx("Named collection feeds","已标识采集新闻流")]].forEach(function(pair){var box=el("div","");box.append(el("strong","",pair[0]),el("span","",pair[1]));overview.appendChild(box);});body.appendChild(overview);
+      var cohorts=el("div","nd-coverage-cohorts");
+      [["language",tx("Reported languages","所报语言")],["category",tx("Reported categories","所报分类")],["feed_id",tx("Collection feeds","采集新闻流")],["timestamp_quality",tx("Timestamp labels","时间戳标签")]].forEach(function(pair){var values=new Map();rows.forEach(function(r){var value=strip(r.raw[pair[0]])||tx("Not supplied","未提供");values.set(value,(values.get(value)||0)+1);});var detail=researchFocus(el("details","nd-coverage-cohort"),"coverage-"+pair[0]);detail.appendChild(researchFocus(el("summary","",pair[1]),"coverage-toggle-"+pair[0]));Array.from(values).sort(function(a,b){return b[1]-a[1];}).slice(0,40).forEach(function(entry){var line=el("div","nd-coverage-row");line.append(el("span","",entry[0]),el("span","",entry[1]));detail.appendChild(line);});if(!values.size)detail.appendChild(el("p","nd-note",tx("No loaded reports","尚未载入报道")));cohorts.appendChild(detail);});body.appendChild(cohorts);
       var heading=el("h3","nd-nav-heading",tx("Sources in the loaded window","已载入时间范围内的来源"));body.appendChild(heading);
       Array.from(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,40).forEach(function(e){var row=el("div","nd-coverage-row");row.append(el("span","",e[0]),el("span","",e[1]+" "+tx("stories","条报道")));body.appendChild(row);});
       body.appendChild(el("p","nd-note",tx("These are sources represented in the loaded feed, not a count of connected or independently verified sources. Paid source availability follows the existing account and display permissions.","此处列出已载入新闻流中的来源，并非已连接或已独立核实的来源数量。付费来源的可用性遵循现有账户与展示权限。")));
       if(sourceHealth.length){
         body.appendChild(el("h3","nd-nav-heading",tx("Collection health","采集健康状态")));
         sourceHealth.forEach(function(item){
+          if(!item||typeof item!=="object")return;
           var card=el("div","nd-receipt"),checked=stamp(item.last_fetch_success_at),stale=checked!==null&&Date.now()-checked>Math.max(900000,Number(item.poll_seconds||120)*4000);
-          var state=item.status==="held"?tx("Permission pending","等待授权"):item.status==="degraded"?tx("Fetch failed","采集失败"):stale?tx("Check overdue","检查已延迟"):checked!==null?tx("Checked","已检查"):tx("Unknown","未知");
-          card.appendChild(el("strong","",strip(item.publisher)));card.appendChild(el("small","",state+(checked!==null?" · "+age(item.last_fetch_success_at,Date.now(),zh()):"")));
+          var state=item.enabled===false||item.status==="held"?tx("Not collecting","未在采集"):item.status==="degraded"?tx("Collection needs attention","采集需要关注"):checked!==null&&checked<=Date.now()?(stale?tx("Previous check is old","上次检查已较久"):tx("Previously checked","此前已检查")):tx("Unknown","未知");
+          card.appendChild(el("strong","",strip(item.publisher)||strip(item.id)||tx("Source not supplied","未提供来源")));card.appendChild(el("small","",state+(checked!==null?" · "+age(item.last_fetch_success_at,Date.now(),zh()):"")));
           if(item.last_accepted_at)card.appendChild(el("small","",tx("Last new or amended report ","最近新增或修订报道 ")+fullTime(item.last_accepted_at)));
+          var outcomes={accepted:["New or amended reporting accepted","已收录新增或修订报道"],unchanged:["No reporting changes","报道未变化"],empty:["Empty source response","来源响应为空"],filtered:["No eligible reports","无符合条件的报道"],fetch_failed:["Fetch failed","采集失败"],rejected:["Response rejected","响应被拒绝"],acceptance_failed:["Reporting could not be accepted","报道未能收录"],unknown:["Outcome unknown","结果未知"]};
+          card.appendChild(el("small","",tx("Last outcome · ","最近结果 · ")+tx.apply(null,Object.keys(outcomes).includes(item.last_outcome)?outcomes[item.last_outcome]:outcomes.unknown)));
+          var detail=researchFocus(el("details","nd-coverage-source-details"),"coverage-source-"+item.id);detail.appendChild(researchFocus(el("summary","",tx("Collection details","采集详情")),"coverage-source-toggle-"+item.id));
+          function valueLine(label,value){var line=el("div","nd-coverage-row");line.append(el("span","",label),el("span","",value));detail.appendChild(line);}
+          valueLine(tx("Loaded reports for this feed","此新闻流已载入报道"),typeof item.id==="string"&&item.id.trim()?feedCounts.get(item.id)||0:tx("Unknown","未知"));
+          [["last_observed_item_count",tx("Items observed","已观察条目")],["last_eligible_item_count",tx("Eligible items","符合条件条目")],["last_filtered_item_count",tx("Filtered items","已过滤条目")],["last_duplicate_item_count",tx("Duplicate items","重复条目")],["last_changed_item_count",tx("Changed items","变化条目")]].forEach(function(pair){var value=item[pair[0]];valueLine(pair[1],Number.isSafeInteger(value)&&value>=0?value:tx("Unknown","未知"));});
+          [["last_attempt_at",tx("Scheduled check","计划检查时刻")],["last_attempt_started_at",tx("Attempt started","采集开始时刻")],["last_attempt_completed_at",tx("Attempt completed","采集完成时刻")]].forEach(function(pair){valueLine(pair[1],fullTime(item[pair[0]]));});
+          valueLine(tx("Fetch and parse duration","获取与解析耗时"),Number.isFinite(item.last_attempt_duration_ms)&&item.last_attempt_duration_ms>=0?Math.round(item.last_attempt_duration_ms)+" ms":tx("Unknown","未知"));
+          valueLine(tx("Last HTTP response","最近 HTTP 响应"),Number.isSafeInteger(item.last_http_status)&&item.last_http_status>=100&&item.last_http_status<=599?item.last_http_status:tx("Unknown","未知"));
+          if(typeof item.last_error_code==="string"&&/^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(item.last_error_code))valueLine(tx("Collection error code","采集错误代码"),item.last_error_code);
+          var regions=Array.isArray(item.coverage_regions)?item.coverage_regions.filter(function(v){return typeof v==="string";}).slice(0,12):[];if(regions.length)valueLine(tx("Configured regional scope","配置的地区范围"),regions.join(" · "));card.appendChild(detail);
           body.appendChild(card);
         });
+        body.appendChild(el("p","nd-note",tx("A previous check does not establish that a source is online now. Configured regions describe feed or query scope, not measured geographic completeness. Missing outcomes and counters remain unknown.","此前的检查并不能证明来源当前在线。配置地区描述新闻流或查询范围，并非实际地区覆盖完整度。缺失的结果与计数均保留为未知。")));
       }
       if(health.last_source_published_at)section(body,tx("Desk source timestamp","新闻台来源时间"),fullTime(health.last_source_published_at));
+      });
     }
     function renderViews(){
       var box=$("ndSavedViews");box.replaceChildren();$("ndSavedViewsMobile").replaceChildren();
       prefs.views.filter(function(v){return v&&typeof v.name==="string"&&v.filters&&typeof v.filters==="object";}).forEach(function(v,index){
         var line=el("div","nd-saved-view"),b=button(v.name,function(){filters=Object.assign({},DEFAULT_FILTERS,v.filters);limit=60;render();saveFiltersToURL();},"nd-btn nd-btn-quiet");
-        line.appendChild(b);var remove=button("×",function(){prefs.views.splice(index,1);persist();renderViews();},"nd-btn nd-btn-quiet");remove.setAttribute("aria-label",tx("Delete view ","删除视图 ")+v.name);line.appendChild(remove);box.appendChild(line);
+        line.appendChild(b);var remove=button("×",function(){prefs.views.splice(index,1);resetResearchBaseline();renderViews();},"nd-btn nd-btn-quiet");remove.setAttribute("aria-label",tx("Delete view ","删除视图 ")+v.name);line.appendChild(remove);box.appendChild(line);
         $("ndSavedViewsMobile").appendChild(button(v.name,function(){filters=Object.assign({},DEFAULT_FILTERS,v.filters);limit=60;closeDialog($("ndWorkspace"));render();saveFiltersToURL();},"nd-btn"));
       });
     }
@@ -1611,7 +2153,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       doc.querySelectorAll("[data-placeholder-zh]").forEach(function(n){if(!n.dataset.placeholderEn)n.dataset.placeholderEn=n.placeholder;n.placeholder=zh()?n.dataset.placeholderZh:n.dataset.placeholderEn;});
       doc.querySelectorAll("[data-label-zh]").forEach(function(n){if(!n.dataset.labelEn)n.dataset.labelEn=n.getAttribute("aria-label");n.setAttribute("aria-label",zh()?n.dataset.labelZh:n.dataset.labelEn);});
       doc.querySelectorAll("option[data-en]").forEach(function(n){n.textContent=zh()?n.dataset.zh:n.dataset.en;});
-      renderConnection();render();if(selected)renderDetail();if($("ndCoverage").open)renderCoverage();renderViews();
+      renderConnection();render();if(selected)renderDetail();if($("ndCoverage").open)renderCoverage();renderViews();renderResearch();
     }
     $("ndSearch").addEventListener("input",function(){filters.query=this.value;limit=60;render();saveFiltersToURL();});
     $("ndTime").addEventListener("change",function(){filters.time=this.value;render();saveFiltersToURL();});
@@ -1633,21 +2175,52 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     doc.querySelectorAll("[data-open-panel]").forEach(function(b){b.addEventListener("click",function(){var parent=b.closest("dialog");if(parent)closeDialog(parent);openDialog(b.dataset.openPanel);});});
     $("ndHelpOpen").addEventListener("click",function(){openDialog("ndHelp");});
     ["ndSaveView","ndSaveViewMobile"].forEach(function(id){$(id).addEventListener("click",function(){if($("ndFilters").open)closeDialog($("ndFilters"));openDialog("ndViewDialog");$("ndViewName").focus();});});
-    $("ndViewForm").addEventListener("submit",function(e){e.preventDefault();var name=$("ndViewName").value.trim();if(!name)return;prefs.views.push({name:name,filters:Object.assign({},filters)});prefs.views=prefs.views.slice(-12);persist();renderViews();closeDialog($("ndViewDialog"));});
+    $("ndViewForm").addEventListener("submit",function(e){e.preventDefault();var name=research.label($("ndViewName").value,40);if(!name)return;prefs.views.push({id:localId("view"),name:name,filters:research.cleanFilters(filters,DEFAULT_FILTERS)});prefs.views=prefs.views.slice(-12);resetResearchBaseline();renderViews();closeDialog($("ndViewDialog"));});
+    $("ndCompareOpen").addEventListener("click",openComparison);
+    $("ndCompareClear").addEventListener("click",function(){compareIds=[];render();if(selected)renderDetail();renderResearch();announce(tx("Comparison selection cleared","已清除对照阅读选择"));});
+    $("ndCompareRelation").addEventListener("change",function(){compareRelation=research.relations.includes(this.value)?this.value:"question";});
+    $("ndCompareSave").addEventListener("click",function(){openInvestigations(compareIds);});
+    ["ndInvestigationsOpen","ndInvestigationsOpenMobile"].forEach(function(id){$(id).addEventListener("click",function(){if($("ndWorkspace").open){closeDialog($("ndWorkspace"));$("ndWorkspaceOpen").focus();}openInvestigations();});});
+    ["ndMonitorOpen","ndMonitorOpenMobile"].forEach(function(id){$(id).addEventListener("click",function(){if($("ndWorkspace").open){closeDialog($("ndWorkspace"));$("ndWorkspaceOpen").focus();}renderMonitor();openDialog("ndMonitor");});});
+    $("ndInvestigationForm").addEventListener("submit",function(e){
+      e.preventDefault();var name=research.label($("ndInvestigationName").value,60);if(!name||prefs.research.investigations.length>=research.limits.investigations)return;
+      var references=liveReady?selectedReferences():[],relation=references.length>=2&&references.length===compareIds.length&&references.every(function(id){return compareIds.includes(id);})?compareRelation:"question";
+      var item={id:localId("case"),name:name,storyIds:references,relation:relation};prefs.research.investigations.push(item);investigationId=item.id;pendingInvestigationIds=[];$("ndInvestigationName").value="";resetResearchBaseline();renderInvestigations();announce(tx("Investigation created on this browser","已在此浏览器创建研究专题"));
+    });
+    $("ndInvestigationRenameForm").addEventListener("submit",function(e){e.preventDefault();var item=currentInvestigation(),name=research.label($("ndInvestigationRename").value,60);if(!item||!name)return;item.name=name;persist();renderResearch();announce(tx("Investigation renamed","已重命名研究专题"));});
+    $("ndInvestigationRelation").addEventListener("change",function(){var item=currentInvestigation();if(item){item.relation=research.relations.includes(this.value)?this.value:"question";persist();}});
+    $("ndInvestigationAdd").addEventListener("click",function(){var item=currentInvestigation();if(!item||!liveReady)return;var before=item.storyIds.length;item.storyIds=Array.from(new Set(item.storyIds.concat(selectedReferences()))).slice(0,research.limits.reports);pendingInvestigationIds=[];resetResearchBaseline();renderInvestigations();announce((item.storyIds.length-before)+" "+tx("references added","条引用已加入"));});
+    $("ndInvestigationCompare").addEventListener("click",function(){var item=currentInvestigation();if(item)compareRelation=item.relation;openComparison();});
+    $("ndInvestigationHistory").addEventListener("click",function(){openHistory();});
+    $("ndInvestigationWatch").addEventListener("click",function(){var item=currentInvestigation();if(item){toggleWatch("i:"+item.id);announce(prefs.research.enabled?tx("Monitoring selection updated","已更新监测选择"):tx("Selection saved. Enable monitoring in the Updates inbox to begin.","已保存选择。请在更新收件箱中启用监测。"));}});
+    $("ndInvestigationDelete").addEventListener("click",function(){if(!currentInvestigation())return;prefs.research.investigations=prefs.research.investigations.filter(function(item){return item.id!==investigationId;});investigationId=prefs.research.investigations[0]&&prefs.research.investigations[0].id;resetResearchBaseline();renderInvestigations();$("ndInvestigationName").focus();announce(tx("Investigation deleted; the reports are unchanged","已删除研究专题；报道内容未变更"));});
+    $("ndMonitorEnable").addEventListener("click",function(){prefs.research.enabled=!prefs.research.enabled;resetResearchBaseline();});
+    $("ndMonitorQuiet").addEventListener("click",function(){prefs.research.quiet=!prefs.research.quiet;persist();renderResearchSummary();});
+    $("ndMonitorReadAll").addEventListener("click",function(){prefs.research.updates.forEach(function(update){update.read=true;});persist();renderMonitor();});
+    $("ndMonitorReset").addEventListener("click",function(){prefs.research.updates=[];resetResearchBaseline();announce(tx("Inbox cleared. Current reports are the new starting point.","已清空收件箱。当前报道成为新的起点。"));});
+    ["ndHistoryOpen","ndHistoryOpenMobile"].forEach(function(id){$(id).addEventListener("click",function(){if($("ndWorkspace").open){closeDialog($("ndWorkspace"));$("ndWorkspaceOpen").focus();}openHistory();});});
+    $("ndHistoryForm").addEventListener("submit",function(e){e.preventDefault();fetchHistory(false);});
+    $("ndHistoryMore").addEventListener("click",function(){fetchHistory(true);});
+    $("ndHistoryRestart").addEventListener("click",function(){fetchHistory(false);});
+    $("ndHistoryCompare").addEventListener("click",openComparison);
+    $("ndHistoryKeep").addEventListener("click",function(){openInvestigations(compareIds);});
+    ["ndCompare","ndInvestigations","ndMonitor","ndHistory"].forEach(function(id){$(id).addEventListener("close",function(){finishResearchDialog(this);});});
     $("ndRetry").addEventListener("click",function(){win.clearTimeout(timer);connect();});
     doc.querySelectorAll("[data-close-dialog]").forEach(function(b){b.addEventListener("click",function(){closeDialog(b.closest("dialog"));});});
     doc.addEventListener("keydown",function(e){
       var typing=/INPUT|TEXTAREA|SELECT/.test(doc.activeElement&&doc.activeElement.tagName)||doc.activeElement&&doc.activeElement.isContentEditable;
-      var otherDialog=Array.from(doc.querySelectorAll('dialog[open],[role="dialog"]')).some(function(n){
-        if(n.id==="ndDetail"||n.hidden||n.getAttribute("aria-hidden")==="true")return false;
-        var style=win.getComputedStyle(n);
-        return style.display!=="none"&&style.visibility!=="hidden"&&style.visibility!=="collapse";
-      });
+      var otherDialog=Array.from(doc.querySelectorAll('dialog[open],[role="dialog"]')).some(blockingDialog);
       if(e.key==="Escape"){if(!otherDialog&&selected)closeStory();return;}
       if(otherDialog)return;
       if($("ndDetail").getAttribute("aria-modal")==="true"&&e.key==="Tab"){
-        var nodes=Array.from($("ndDetail").querySelectorAll("button,a[href]")).filter(function(n){return !n.hidden;});
-        var first=nodes[0],last=nodes[nodes.length-1];if(!$("ndDetail").contains(doc.activeElement)){e.preventDefault();first.focus();return;}if(e.shiftKey&&doc.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&doc.activeElement===last){e.preventDefault();first.focus();}return;
+        var panel=$("ndDetail");
+        var nodes=Array.from(panel.querySelectorAll("button,a[href]")).filter(function(n){return n.tabIndex>=0&&!n.matches(":disabled")&&!n.hidden&&!n.closest("[hidden],[inert],[aria-hidden='true']");});
+        var first=nodes[0],last=nodes[nodes.length-1];
+        if(!first){e.preventDefault();panel.tabIndex=-1;panel.focus();return;}
+        if(!panel.contains(doc.activeElement)){e.preventDefault();(e.shiftKey?last:first).focus();return;}
+        if(e.shiftKey&&doc.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey&&doc.activeElement===last){e.preventDefault();first.focus();}
+        return;
       }
       if($("ndDetail").getAttribute("aria-modal")==="true"&&e.key!=="s")return;
       if(typing||e.ctrlKey||e.metaKey||e.altKey||otherDialog)return;
@@ -1657,7 +2230,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     });
     var breakpoint=win.matchMedia("(max-width:760px)");if(breakpoint.addEventListener)breakpoint.addEventListener("change",syncDetailModal);
     doc.addEventListener("langchange",refreshLanguage);
-    doc.addEventListener("visibilitychange",function(){if(doc.hidden){closeStream();win.clearTimeout(timer);timer=0;setConnection("paused","Paused in background","后台已暂停");}else connect();});
+    doc.addEventListener("visibilitychange",function(){if(doc.hidden){closeStream();win.clearTimeout(timer);timer=0;if(retained.loading){retained.generation++;if(retained.controller)retained.controller.abort();retained.controller=null;retained.loading=false;retained.status="paused";}setConnection("paused","Paused in background","后台已暂停");}else connect();});
     win.addEventListener("online",connect);
     win.addEventListener("mdx-auth",function(event){
       var detail=event.detail||{};if(detail.event==="PREFS_SAVED")return;
@@ -1665,7 +2238,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       if(authPaused){setConnection("restricted","Sign in for live","登录查看实时新闻");banner(tx("Sign in to connect to live desk updates. Browse the available edition below.","登录以连接实时新闻台；仍可浏览下方已载入报道。"),true,false);}
       else schedule(0);
     });
-    win.addEventListener("pagehide",function(){disposed=true;closeStream();win.clearTimeout(timer);});
+    win.addEventListener("pagehide",function(){disposed=true;closeStream();win.clearTimeout(timer);clearHistory("stale");renderResearch();});
     win.addEventListener("pageshow",function(e){if(e.persisted){disposed=false;connect();}});
     readURL();refreshLanguage();
     if(requestedStoryId&&visible.some(function(r){return r.id===requestedStoryId;}))openStory(requestedStoryId);
@@ -1714,6 +2287,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     var $=function(id){return doc.getElementById(id);},zh=function(){return doc.documentElement.dataset.lang==="zh";},tx=function(en,cn){return zh()?cn:en;};
     var state={ticker:"",cursor:null,packet:null,visible:[],pending:0,reordered:false,status:["Choose a company","选择一家公司"],mode:"idle"};
     var generation=0,requests=new Set(),groupRequests=new Map(),jobs=new Map(),stream=null,refreshing=false,dirty=false,streamFailures=0,streamRetryAt=0,disposed=false,lastTrigger=null;
+    var rateLimitResumeAt=0;
     function node(tag,cls,value){var n=doc.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=String(value);return n;}
     function button(label,fn,cls){var n=node("button",cls||"nd-btn",label);n.type="button";n.addEventListener("click",fn);return n;}
     function at(value){var n=Date.parse(value);return Number.isFinite(n)?new Intl.DateTimeFormat(zh()?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short"}).format(n):tx("Time not supplied","未提供时间");}
@@ -1725,15 +2299,21 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     function purge(){state.packet=null;state.visible=[];state.pending=0;state.reordered=false;$("ndCompanyRows").replaceChildren();$("ndCompanyFlow").replaceChildren();$("ndCompanyHealth").textContent="";$("ndCompanyMore").hidden=true;$("ndCompanyUpdates").hidden=true;}
     function abortGroups(card){card.querySelectorAll(".nd-company-group").forEach(function(details){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);});}
     function status(mode,en,cn){state.mode=mode;state.status=[en,cn];$("ndCompanyStatus").dataset.state=mode;$("ndCompanyStatus").textContent=tx(en,cn);}
+    function resume(){
+      if(!dialog.open||disposed||doc.hidden||!state.ticker)return;
+      var id=generation,remaining=Math.max(0,rateLimitResumeAt-Date.now());
+      if(remaining){later("retry",function(){if(id===generation)resume();},remaining);return;}
+      rateLimitResumeAt=0;refresh(true);
+    }
     function errorState(error){
       stop();purge();
-      var code=error&&error.status;$("ndCompanySignIn").hidden=code!==401;$("ndCompanyRetry").hidden=code===401||code===404;
+      var code=error&&error.status;rateLimitResumeAt=code===429?Date.now()+60000:0;$("ndCompanySignIn").hidden=code!==401;$("ndCompanyRetry").hidden=code===401||code===404;
       if(code===401)status("restricted","Sign in to open company news.","请登录以打开公司新闻。");
       else if(code===403)status("restricted","Company news requires an eligible account and source access.","公司新闻需要符合条件的账户与来源访问权限。");
       else if(code===404)status("unavailable","This ticker is outside the available company news universe.","此股票代码不在可用公司新闻范围内。");
       else if(code===429)status("degraded","Request limit reached. Retry in a minute.","已达到请求上限，请在一分钟后重试。");
       else status("unavailable","Company reporting is unavailable. The feed or its display permission could not be confirmed.","公司报道暂不可用，无法确认新闻源或其展示权限。");
-      if(dialog.open&&!doc.hidden&&state.ticker&&code!==401&&code!==403&&code!==404)later("retry",function(){refresh(true);},code===429?60000:30000);
+      if(dialog.open&&!doc.hidden&&state.ticker&&code!==401&&code!==403&&code!==404){if(code===429)resume();else later("retry",function(){refresh(true);},30000);}
     }
     async function accessToken(signal){
       if(!win.MDXAuth||typeof win.MDXAuth.client!=="function"){var absent=new Error("auth");absent.status=401;throw absent;}
@@ -1869,7 +2449,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     }
     async function refresh(reconnect){
       if(!state.ticker||!dialog.open||disposed||doc.hidden)return;
-      if(refreshing){dirty=true;return;}refreshing=true;dirty=false;cancel("retry");cancel("poll");var id=generation,first=!state.packet;
+      if(refreshing){dirty=true;return;}refreshing=true;dirty=false;rateLimitResumeAt=0;cancel("retry");cancel("poll");var id=generation,first=!state.packet;
       $("ndCompanyRetry").hidden=true;$("ndCompanySignIn").hidden=true;
       if(first)status("connecting","Loading company reporting…","正在载入公司报道…");
       try{
@@ -1881,7 +2461,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       }catch(error){if(active(id))errorState(error);}
       finally{if(id===generation){refreshing=false;if(dirty&&active(id))later("change",function(){refresh(false);},1000);}}
     }
-    function start(symbol,cursor){stop();purge();state.ticker=symbol;state.cursor=cursor===undefined?null:cursor;streamFailures=0;streamRetryAt=0;$("ndCompanyTicker").value=symbol;refresh(true);}
+    function start(symbol,cursor){stop();purge();rateLimitResumeAt=0;state.ticker=symbol;state.cursor=cursor===undefined?null:cursor;streamFailures=0;streamRetryAt=0;$("ndCompanyTicker").value=symbol;refresh(true);}
     function open(symbol,trigger){
       lastTrigger=trigger||doc.activeElement;
       var parent=lastTrigger&&lastTrigger.closest("dialog");if(parent&&parent!==dialog&&parent.open)parent.close();
@@ -1889,7 +2469,7 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
       var normalized=ticker(symbol);if(normalized)start(normalized);else if(!state.ticker)status("idle","Choose a company to explore its reporting and news activity.","选择一家公司，浏览报道与新闻活跃度。");
       $("ndCompanyTicker").focus();
     }
-    function close(){stop();purge();state.ticker="";state.cursor=null;$("ndCompanyTicker").value="";if(lastTrigger&&lastTrigger.isConnected)lastTrigger.focus();}
+    function close(){stop();purge();rateLimitResumeAt=0;state.ticker="";state.cursor=null;$("ndCompanyTicker").value="";if(lastTrigger&&lastTrigger.isConnected)lastTrigger.focus();}
     doc.addEventListener("click",function(event){var trigger=event.target.closest&&event.target.closest("[data-company-news]");if(trigger)open(trigger.dataset.companyNews,trigger);});
     $("ndCompanyForm").addEventListener("submit",function(event){event.preventDefault();var symbol=ticker($("ndCompanyTicker").value);if(!symbol){$("ndCompanyTicker").setCustomValidity(tx("Enter a supported ticker, such as NVDA.","请输入支持的股票代码，例如NVDA。"));$("ndCompanyTicker").reportValidity();return;}start(symbol);});
     $("ndCompanyTicker").addEventListener("input",function(){this.setCustomValidity("");});
@@ -1899,16 +2479,16 @@ html[data-lang="zh"] .nd-header h1,html[data-lang="zh"] .nd-title,html[data-lang
     $("ndCompanyUpdates").addEventListener("click",function(){if(!state.packet)return;state.visible=state.packet.rows.slice();state.pending=0;state.reordered=false;render();$("ndCompanyRows").scrollTop=0;});
     dialog.addEventListener("close",close);
     doc.addEventListener("langchange",function(){if(dialog.open){$("ndCompanyRows").querySelectorAll("[data-revision]").forEach(function(n){n.dataset.revision="";});render();}});
-    doc.addEventListener("visibilitychange",function(){if(doc.hidden){stop();purge();status("paused","Paused in background","后台已暂停");}else if(dialog.open&&state.ticker)refresh(true);});
+    doc.addEventListener("visibilitychange",function(){if(doc.hidden){stop();purge();status("paused","Paused in background","后台已暂停");}else if(dialog.open&&state.ticker)resume();});
     win.addEventListener("pagehide",function(){disposed=true;stop();purge();});
     win.addEventListener("mdx-auth",function(event){
       var detail=event.detail||{};if(detail.event==="PREFS_SAVED")return;
       if(!dialog.open||!state.ticker)return;
-      stop();purge();
+      stop();purge();rateLimitResumeAt=0;
       if(!detail.user){$("ndCompanySignIn").hidden=false;status("restricted","Sign in to open company news.","请登录以打开公司新闻。");}
       else later("auth",function(){refresh(true);},0);
     });
-    win.addEventListener("pageshow",function(event){if(event.persisted){disposed=false;if(dialog.open&&state.ticker)refresh(true);}});
+    win.addEventListener("pageshow",function(event){if(event.persisted){disposed=false;if(dialog.open&&state.ticker)resume();}});
     return {open:open,accept:accept,getState:function(){return {ticker:state.ticker,cursor:state.cursor,mode:state.mode,pending:state.pending,ids:state.visible.map(function(r){return r.story_id;})};}};
   }
   return {ticker:ticker,safeURL:safeURL,validSnapshot:validSnapshot,streamParser:streamParser,mount:mount};

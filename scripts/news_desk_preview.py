@@ -10,9 +10,10 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from app import news_desk
+from engine.marketing import intelligence_history
 
 ROOT = Path(__file__).resolve().parents[1]
-PREVIEW = ROOT / ".tmp" / "news-desk-preview"
+PREVIEW = Path(os.environ.get("NEWS_DESK_PREVIEW_DIR", str(ROOT / ".tmp" / "news-desk-preview")))
 PREVIEW.mkdir(parents=True, exist_ok=True)
 now = datetime.now(timezone.utc)
 fixtures = [
@@ -40,11 +41,44 @@ for i,(title,zh,name,url,category,tickers,brief,why,important) in enumerate(fixt
       "brief":brief,"why_it_matters_en":why,"tickers":tickers,"source_count":1,
       "evidence":[{"event_id":"preview-event-"+str(i),"name":name,"url":url,"headline":title,"published_at":published}]})
 path = PREVIEW / "intelligence.json"
+history_path = PREVIEW / "intelligence-history.json"
 if not path.exists():
+    feed_ids = {name: "specimen-source-" + str(i) for i, name in enumerate(dict.fromkeys(p["source_name"] for p in stories))}
+    for packet in stories:
+        packet.update(feed_id=feed_ids[packet["source_name"]], language="en",
+                      accepted_revision_at=packet["first_seen"])
+    health = [{"id": identity, "publisher": name, "enabled": True,
+               "content_use": "attributed_feed_excerpt", "status": "observed",
+               "coverage_regions": ["global"], "language": "en", "poll_seconds": 120,
+               "last_outcome": "accepted", "last_http_status": 200,
+               "last_attempt_at": (now - timedelta(seconds=45)).isoformat(),
+               "last_fetch_success_at": (now - timedelta(seconds=44)).isoformat(),
+               "last_accepted_at": (now - timedelta(seconds=42)).isoformat(),
+               "last_attempt_duration_ms": 185, "hold_reason": ""}
+              for name, identity in feed_ids.items()]
+    earlier = dict(stories[0])
+    earlier_clock = (now - timedelta(hours=55)).isoformat()
+    earlier.update(id="preview-history-only-0", headline="Earlier energy reporting on shipping capacity and supply routes",
+                   headline_zh="较早的能源报道：航运运力与供应路线", url="https://example.com/retained-energy-report",
+                   brief="Illustrative retained reporting, available through deliberate history search beyond the current feed.",
+                   published_at=earlier_clock, first_seen=earlier_clock, updated_at=earlier_clock,
+                   accepted_revision_at=earlier_clock,
+                   evidence=[{"name": "Example reporting archive", "url": "https://example.com/retained-energy-report",
+                              "published_at": earlier_clock}])
+    projection = intelligence_history.build_projection(stories + [earlier], source_health=health,
+                                                        as_of=now, retention_hours=72, max_stories=1500)
+    intelligence_history.atomic_write(history_path, projection)
     path.write_text(json.dumps({"schema":"intelligence.desk/v1","updated_at":now.isoformat(),
-      "health":{"state":"quiet","last_source_published_at":stories[0]["published_at"]},"stories":stories}))
+      "health":{"state":"quiet","last_source_published_at":stories[0]["published_at"]},
+      "source_health": health, "retained_history": intelligence_history.descriptor(projection), "stories":stories}))
+else:
+    # A resumed specimen uses the same owned snapshot for SSR and live delivery.
+    saved = json.loads(path.read_text())
+    stories = saved["stories"]
+    now = datetime.fromisoformat(saved["updated_at"].replace("Z", "+00:00"))
 os.environ["MM_NEWS_DESK_SNAPSHOT"] = str(path)
-env = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"),autoescape=False)
+os.environ["MM_NEWS_DESK_HISTORY_SNAPSHOT"] = str(history_path)
+env = jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT / "templates"),autoescape=True)
 env.globals.update(td=lambda x:x,tr=lambda x:x)
 app = FastAPI()
 app.include_router(news_desk.router)

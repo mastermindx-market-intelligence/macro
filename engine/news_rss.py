@@ -442,8 +442,16 @@ def _research_fetch(spec: dict, applied: dict) -> dict:
                         body.extend(chunk)
                         if len(body) > _RESEARCH_MAX_BYTES:
                             raise ValueError("feed exceeds size limit")
-                if process.wait(timeout=max(0.01, deadline - time.monotonic())) != 0:
-                    raise OSError("feed request failed")
+                exit_code = process.wait(timeout=max(0.01, deadline - time.monotonic()))
+                if exit_code == 28:
+                    raise TimeoutError("feed total deadline")
+                if exit_code == 63:
+                    raise ValueError("feed exceeds size limit")
+                if exit_code:
+                    # Stable diagnostic categories only; never publish curl's
+                    # raw stderr, destination URLs or environment details.
+                    reason = {6: "dns_failed", 7: "connection_failed", 35: "tls_failed", 60: "tls_failed"}.get(exit_code, "fetch_error")
+                    raise OSError(reason)
             finally:
                 if process.poll() is None:
                     process.kill()
@@ -467,7 +475,8 @@ def _research_fetch(spec: dict, applied: dict) -> dict:
                 "last_modified": response_headers.get("Last-Modified", "")[:1024]}
     raise ValueError("feed redirect limit")
 
-def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
+def _research_parse(raw: bytes, spec: dict, *, now: datetime,
+                    diagnostics: dict | None = None) -> list[dict]:
     """Source identity and revision are separate; absence is never retraction."""
     import hashlib
     import html
@@ -480,7 +489,13 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
     local = root.tag.split("}")[-1].lower()
     if local not in ("rss", "rdf", "feed"):
         raise ValueError("not an RSS or Atom feed")
-    entries = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
+    # RSS 1.0 uses namespaced RDF items. Treat its published entries exactly
+    # like RSS 2.0 items rather than reporting a successfully fetched empty feed.
+    entry_tag = "entry" if local == "feed" else "item"
+    entries = [entry for entry in root.iter() if entry.tag.split("}")[-1] == entry_tag]
+    stats = diagnostics if diagnostics is not None else {}
+    stats.update(observed_item_count=len(entries), eligible_item_count=0,
+                 filtered_item_count=0, duplicate_item_count=0)
     rows = {}
     cutoff = now - timedelta(days=7)
 
@@ -501,6 +516,7 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
         parsed = urlparse(article)
         if (not headline or parsed.scheme not in ("https", "http") or not parsed.hostname
                 or parsed.username or parsed.password):
+            stats["filtered_item_count"] += 1
             continue
         # Some feeds mix institutional releases with authored work. An explicit
         # source path boundary excludes the latter and cannot be satisfied by a
@@ -509,8 +525,10 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
         if prefixes and (parsed.hostname.lower() not in spec.get("allowed_hosts", [])
                          or not any(("/" + parsed.path.lstrip("/")).startswith(part)
                                     for part in prefixes)):
+            stats["filtered_item_count"] += 1
             continue
         if any(part in article for part in spec.get("exclude_url_parts", [])):
+            stats["filtered_item_count"] += 1
             continue
         published = _research_iso(field(entry, ["pubDate", "published", "date"]))
         updated = _research_iso(field(entry, ["updated", "modified"]))
@@ -520,6 +538,7 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
             updated, update_dt = "", None
         known_dates = [d for d in (pub_dt, update_dt) if d and d <= now + timedelta(minutes=5)]
         if known_dates and max(known_dates) < cutoff:
+            stats["filtered_item_count"] += 1
             continue
         timestamp_quality = "published" if published else "unknown"
         if pub_dt and pub_dt > now + timedelta(minutes=5):
@@ -543,6 +562,8 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
         meaningful = [item[k] for k in ("headline", "summary", "url", "published_at", "source_updated_at")]
         item["source_revision"] = hashlib.sha256(json.dumps(meaningful, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
         previous = rows.get(sid)
+        if previous:
+            stats["duplicate_item_count"] += 1
         if previous and previous["source_revision"] != item["source_revision"]:
             old_date, new_date = previous["source_updated_at"], item["source_updated_at"]
             if not old_date or not new_date or old_date == new_date:
@@ -550,29 +571,42 @@ def _research_parse(raw: bytes, spec: dict, *, now: datetime) -> list[dict]:
             if old_date > new_date:
                 continue
         rows[sid] = item
+        stats["eligible_item_count"] = len(rows)
         if len(rows) > _RESEARCH_MAX_ITEMS:
             raise ValueError("eligible feed batch exceeds acceptance bound")
     return list(rows.values())
 
 
-def _research_gdelt(articles: list[dict], spec: dict, *, now: datetime) -> list[dict]:
+def _research_gdelt(articles: list[dict], spec: dict, *, now: datetime,
+                    diagnostics: dict | None = None) -> list[dict]:
     """GDELT metadata only. seendate is indexing time, never publication time."""
     import hashlib
     import json
     from engine.marketing.story_spine import content_key, normalize_url
     items = []
+    stats = diagnostics if diagnostics is not None else {}
+    stats.update(observed_item_count=len(articles), eligible_item_count=0,
+                 filtered_item_count=0, duplicate_item_count=0)
+    if len(articles) > 100:
+        raise ValueError("eligible feed batch exceeds acceptance bound")
+    revisions = {}
     languages = {"english": "en", "chinese": "zh", "japanese": "ja", "korean": "ko", "russian": "ru",
                  "spanish": "es", "french": "fr", "german": "de", "arabic": "ar", "portuguese": "pt",
                  "italian": "it", "turkish": "tr", "ukrainian": "uk", "hindi": "hi", "indonesian": "id",
                  "vietnamese": "vi", "thai": "th", "hebrew": "he", "polish": "pl", "dutch": "nl"}
-    for row in articles[:100]:
+    for row in articles:
+        if not isinstance(row, dict):
+            stats["filtered_item_count"] += 1
+            continue
         url = str(row.get("url") or "")
         domain = _domain_of(url)
         title = _clean(row.get("title"))[:500]
         if not title or urlparse(url).scheme not in ("http", "https") or not domain:
+            stats["filtered_item_count"] += 1
             continue
         # Incumbent publisher-quality policy, not a new source truth ranking.
         if not 0 < nc.source_tier(domain) <= 2:
+            stats["filtered_item_count"] += 1
             continue
         indexed = _research_iso(row.get("seendate", ""))
         timestamp_quality = "indexed_not_published" if indexed else "unknown"
@@ -580,7 +614,7 @@ def _research_gdelt(articles: list[dict], spec: dict, *, now: datetime) -> list[
             indexed = ""
             timestamp_quality = "future_index_stamp"
         identity = content_key({"url": url, "headline": title})
-        items.append({"id": "research:" + spec["id"] + ":" + hashlib.sha256(identity.encode()).hexdigest()[:24],
+        item = {"id": "research:" + spec["id"] + ":" + hashlib.sha256(identity.encode()).hexdigest()[:24],
             "feed_id": spec["id"], "source_item_id": normalize_url(url),
             "source_revision": hashlib.sha256(json.dumps([title, url], ensure_ascii=False).encode()).hexdigest(),
             "headline": title, "summary": "", "url": url, "canonical_url": normalize_url(url),
@@ -590,8 +624,42 @@ def _research_gdelt(articles: list[dict], spec: dict, *, now: datetime) -> list[
             "language": languages.get(str(row.get("language") or "").lower(), "und"), "publisher_country": str(row.get("sourcecountry") or ""),
             "coverage_regions": spec.get("coverage_regions", []),
             "attribution": "Article metadata: The GDELT Project. Reporting belongs to the linked publisher.",
-            "source_use_url": "https://www.gdeltproject.org/", "content_use": "attributed_headline_link"})
+            "source_use_url": "https://www.gdeltproject.org/", "content_use": "attributed_headline_link"}
+        if item["id"] in revisions:
+            stats["duplicate_item_count"] += 1
+            if revisions[item["id"]] != item["source_revision"]:
+                raise ValueError("ambiguous source revisions")
+            continue
+        revisions[item["id"]] = item["source_revision"]
+        items.append(item)
+        stats["eligible_item_count"] = len(items)
     return items
+
+
+def _research_error_code(exc: Exception) -> str:
+    """Expose a bounded reason without copying exception text into the product."""
+    if isinstance(exc, TimeoutError) or type(exc).__name__ == "TimeoutExpired":
+        return "deadline_exceeded"
+    if isinstance(exc, ET.ParseError):
+        return "invalid_feed"
+    message = str(exc)
+    if isinstance(exc, OSError):
+        allowed = {"rate_limited", "query_rejected", "deadline_exceeded", "response_too_large",
+                   "request_too_large", "fetch_error", "dns_failed", "connection_failed", "tls_failed"}
+        if message in allowed:
+            return message
+        return "transport_unavailable" if message == "curl unavailable" else "fetch_error"
+    if isinstance(exc, ValueError):
+        known = {"unsupported feed document": "invalid_feed", "not an RSS or Atom feed": "invalid_feed",
+                 "ambiguous source revisions": "revision_rejected", "eligible feed batch exceeds acceptance bound": "batch_too_large",
+                 "unapproved feed destination": "destination_rejected", "invalid conditional validator": "validator_rejected",
+                 "feed exceeds size limit": "response_too_large", "feed headers too large": "headers_too_large",
+                 "missing feed HTTP response": "invalid_http", "feed redirect limit": "redirect_limit"}
+        if message in known:
+            return known[message]
+        if message.startswith("feed HTTP status "):
+            return "http_error"
+    return "processing_error"
 
 
 def poll_research_feeds(specs: list[dict], applied_state: dict, *, now: datetime,
@@ -600,7 +668,7 @@ def poll_research_feeds(specs: list[dict], applied_state: dict, *, now: datetime
     fetcher = fetcher or _research_fetch
     due = []
     for spec in specs[:30]:
-        if not spec.get("enabled") or spec.get("content_use") not in ("attributed_headline_link", "attributed_feed_excerpt") or not spec.get("terms_url"):
+        if not spec.get("enabled") or spec.get("hold_reason") or spec.get("content_use") not in ("attributed_headline_link", "attributed_feed_excerpt") or not spec.get("terms_url"):
             continue
         state = applied_state.get(spec["id"], {})
         last = _research_iso(state.get("last_attempt_at", ""))
@@ -618,19 +686,39 @@ def poll_research_feeds(specs: list[dict], applied_state: dict, *, now: datetime
         due = [pair for pair in due if pair[0].get("transport") != "gdelt" or pair is chosen]
 
     def poll(pair):
+        import time
         spec, state = pair
-        outcome = {"feed_id": spec["id"], "publisher": spec["publisher"], "observed_at": now.isoformat(), "items": []}
+        start = time.monotonic()
+        outcome = {"feed_id": spec["id"], "publisher": spec["publisher"], "observed_at": now.isoformat(),
+                   "attempt_started_at": datetime.now(timezone.utc).isoformat(), "items": [],
+                   "http_status": None, "observed_item_count": None, "eligible_item_count": None,
+                   "filtered_item_count": None, "duplicate_item_count": None}
+        diagnostics = {}
         try:
             response = fetcher(spec, state)
             status = int(response.get("status", 0))
+            outcome["http_status"] = status if 100 <= status <= 599 else None
             if status not in (200, 304):
                 raise ValueError("feed HTTP status " + str(status))
             outcome.update(status=status, etag=response.get("etag", ""), last_modified=response.get("last_modified", ""))
             if status == 200:
-                outcome["items"] = (_research_gdelt(response["articles"], spec, now=now) if spec.get("transport") == "gdelt" else _research_parse(response["body"], spec, now=now))
+                outcome["items"] = (_research_gdelt(response["articles"], spec, now=now, diagnostics=diagnostics)
+                                    if spec.get("transport") == "gdelt"
+                                    else _research_parse(response["body"], spec, now=now, diagnostics=diagnostics))
             outcome["error"] = ""
+            outcome["error_code"] = ""
+            outcome["outcome"] = ("unchanged" if status == 304 else "eligible" if outcome["items"]
+                                  else "filtered" if diagnostics.get("observed_item_count") else "empty")
         except Exception as exc:  # one source must never stop the other feeds
-            outcome.update(status=0, error=type(exc).__name__)
+            code = _research_error_code(exc)
+            rejected = {"invalid_feed", "revision_rejected", "batch_too_large", "destination_rejected",
+                        "validator_rejected", "response_too_large", "request_too_large", "headers_too_large", "query_rejected"}
+            outcome.update(status=0, error=type(exc).__name__, error_code=code,
+                           outcome="rejected" if code in rejected else "fetch_failed")
+        finally:
+            outcome.update(diagnostics)
+            outcome["attempt_duration_ms"] = round(max(0.0, time.monotonic() - start) * 1000, 3)
+            outcome["attempt_completed_at"] = datetime.now(timezone.utc).isoformat()
         return outcome
 
     if not due:

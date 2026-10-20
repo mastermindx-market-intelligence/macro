@@ -463,6 +463,7 @@ jobs:
       - "engine/market_ontology/bea_gvc_current.py"
       - "engine/market_ontology/exposure_map.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/chart_render.py"
       - "engine/marketing/confluence_source.py"
       - "engine/marketing/logo_cache.py"
@@ -2562,6 +2563,7 @@ jobs:
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "engine/market_ontology/__init__.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/oracle/__init__.py"
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
@@ -3021,6 +3023,7 @@ jobs:
       - "engine/manager_quality.py"
       - "engine/manager_trades.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/chart_render.py"
       - "engine/marketing/confluence_source.py"
       - "engine/marketing/logo_cache.py"
@@ -8920,6 +8923,7 @@ jobs:
       - "engine/manager_quality.py"
       - "engine/manager_trades.py"
       - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/marketing/accounts.py"
       - "engine/marketing/authority.py"
       - "engine/marketing/chart_render.py"
@@ -20752,6 +20756,8 @@ jobs:
       - contracts/theme_graph/theme_state_generation_read.v1.schema.json
       - contracts/theme_graph/theme_state_use_read.v1.schema.json
       - engine/__init__.py
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - engine/_text_scrub.py
       - engine/activist.py
       - engine/ai_desk.py
@@ -28801,6 +28807,7 @@ jobs:
       - engine/fundamental_forensics/__init__.py
       - engine/intelligence_workspace/adapters/__init__.py
       - engine/marketing/__init__.py
+      - "engine/marketing/intelligence_history.py"
       - engine/oracle/__init__.py
       - engine/press/__init__.py
       - engine/seasonality/__init__.py
@@ -31814,6 +31821,8 @@ jobs:
       - "contracts/theme_graph/theme_state_generation_read.v1.schema.json"
       - "contracts/theme_graph/theme_state_use_read.v1.schema.json"
       - "engine/__init__.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/intelligence_history.py"
       - "engine/_text_scrub.py"
       - "engine/activist.py"
       - "engine/ai_desk.py"

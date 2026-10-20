@@ -101,6 +101,30 @@ test("a stream rate limit retains its 60-second retry boundary",async t=>{
  assert.match(h.doc.getElementById("ndCompanyStatus").textContent,/Request limit/);await h.advance(59999);assert.equal(h.calls.length,n);
  await h.advance(1);assert.ok(h.calls.length>n);
 });
+test("automatic 429 retry preserves its deadline after background suspension",async t=>{
+ const h=harness(t);h.setStreamStatus(429);h.app.open("NVDA");await settle();
+ const first=h.calls.length;assert.match(h.doc.getElementById("ndCompanyStatus").textContent,/Request limit/);
+ await h.advance(5000);
+ Object.defineProperty(h.doc,"hidden",{configurable:true,value:true});
+ h.doc.dispatchEvent(new h.win.Event("visibilitychange"));await settle();
+ await h.advance(5000);
+ Object.defineProperty(h.doc,"hidden",{configurable:true,value:false});
+ h.doc.dispatchEvent(new h.win.Event("visibilitychange"));await settle();
+ assert.equal(h.calls.length,first);
+ await h.advance(49999);assert.equal(h.calls.length,first);
+ await h.advance(1);assert.ok(h.calls.length>first);
+});
+test("automatic 429 retry preserves its deadline after BFCache restoration",async t=>{
+ const h=harness(t);h.setStreamStatus(429);h.app.open("NVDA");await settle();
+ const first=h.calls.length;await h.advance(5000);
+ h.win.dispatchEvent(new h.win.Event("pagehide"));await settle();
+ await h.advance(5000);
+ const show=new h.win.Event("pageshow");Object.defineProperty(show,"persisted",{value:true});
+ h.win.dispatchEvent(show);await settle();
+ assert.equal(h.calls.length,first);
+ await h.advance(49999);assert.equal(h.calls.length,first);
+ await h.advance(1);assert.ok(h.calls.length>first);
+});
 test("a missing stream endpoint does not enter a terminal-error retry loop",async t=>{
  const h=harness(t);h.setStreamStatus(404);h.app.open("NVDA");await settle();const n=h.calls.length;
  await h.advance(120000);assert.equal(h.calls.length,n);

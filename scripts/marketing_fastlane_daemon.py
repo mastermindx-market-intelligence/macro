@@ -518,24 +518,29 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
     from engine.marketing.intelligence_desk import build_research_packet, update_intelligence_desk
 
     config = press_cfg.get("research_rss") or {}
-    if not config.get("enabled"):
-        return {"enabled": False}
+    lane_enabled = bool(config.get("enabled"))
     specs = config.get("feeds") or []
     applied = state.setdefault("research_rss", {})
-    outcomes = poll_research_feeds(specs, applied, now=now)
-    if not outcomes:
-        return {"enabled": True, "due": 0}
+    outcomes = poll_research_feeds(specs, applied, now=now) if lane_enabled else []
     packets, proposals = [], {}
     for result in outcomes:
         fid = result["feed_id"]
         entry = applied.setdefault(fid, {})
         entry["last_attempt_at"] = result["observed_at"]
         entry["last_error"] = result["error"]
+        entry["last_error_code"] = result.get("error_code", "")
+        entry["last_outcome"] = result.get("outcome", "fetch_failed" if result["error"] else "unknown")
+        for name in ("http_status", "observed_item_count", "eligible_item_count", "filtered_item_count",
+                     "duplicate_item_count", "attempt_started_at", "attempt_completed_at", "attempt_duration_ms"):
+            entry["last_" + name] = result.get(name)
+        entry["last_changed_item_count"] = None
         entry["failures"] = entry.get("failures", 0) + 1 if result["error"] else 0
         if result["error"]:
             continue
         entry["last_fetch_success_at"] = result["observed_at"]
         if result["status"] == 304:
+            entry["last_changed_item_count"] = 0
+            entry["last_acceptance_error"] = ""
             continue  # fetch success, never evidence of a new report
         versions = dict(entry.get("latest_applied_revision_by_item") or {})
         changed = []
@@ -547,7 +552,10 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
         proposals[fid] = {"applied_etag": result["etag"],
                           "applied_last_modified": result["last_modified"],
                           "latest_applied_revision_by_item": dict(list(versions.items())[-600:]),
-                          "last_applied_at": now.isoformat() if changed else entry.get("last_applied_at", "")}
+                          "last_changed_item_count": len(changed),
+                          "last_applied_at": entry.get("last_applied_at", ""),
+                          "last_outcome": "accepted" if changed else "unchanged" if result["items"] else entry["last_outcome"],
+                          "last_acceptance_error": ""}
     # Persist observed attempts independently of acceptance. A failure cannot
     # restore spend/network history, but it must leave applied validators alone.
     _save_press_state(state)
@@ -555,9 +563,10 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
     for spec in specs:
         entry = dict(applied.get(spec["id"], {}))
         entry.update(proposals.get(spec["id"], {}))
-        health.append({"id": spec["id"], "publisher": spec["publisher"],
-                       "enabled": bool(spec.get("enabled")),
-                       "status": "held" if not spec.get("enabled") else "degraded" if entry.get("last_error") else "observed" if entry.get("last_fetch_success_at") else "unknown",
+        row = {"id": spec["id"], "publisher": spec["publisher"],
+                       "enabled": lane_enabled and bool(spec.get("enabled")),
+                       "content_use": spec.get("content_use", ""),
+                       "status": "held" if not lane_enabled or not spec.get("enabled") or spec.get("hold_reason") else "degraded" if entry.get("last_error") else "observed" if entry.get("last_fetch_success_at") else "unknown",
                        "coverage_regions": spec.get("coverage_regions", []),
                        "language": spec.get("language", "en"),
                        "poll_seconds": spec.get("poll_seconds", 120),
@@ -565,20 +574,52 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
                        "last_fetch_success_at": entry.get("last_fetch_success_at", ""),
                        "last_accepted_at": entry.get("last_applied_at", ""),
                        "last_error": entry.get("last_error", ""),
-                       "hold_reason": spec.get("hold_reason", "")})
+                       "hold_reason": spec.get("hold_reason", "") if lane_enabled else "Research intake is disabled."}
+        for name in ("outcome", "http_status", "observed_item_count", "eligible_item_count", "filtered_item_count",
+                     "duplicate_item_count", "changed_item_count", "attempt_started_at", "attempt_completed_at",
+                     "attempt_duration_ms", "error_code", "acceptance_error"):
+            row["last_" + name] = entry.get("last_" + name)
+        health.append(row)
     desk_cfg = dict((press_cfg.get("wire") or {}).get("intelligence") or {})
     desk_cfg["source_health"] = health
+    # Scope changes are publications even on an idle or disabled intake turn.
+    # The shared writer must not retain yesterday's grant for a held source.
+    receipt = {}
     try:
-        update_intelligence_desk(packets, root=ROOT, now=now, cfg=desk_cfg)
-    except Exception:
+        update_intelligence_desk(packets, root=ROOT, now=now, cfg=desk_cfg,
+                                 acceptance_receipt=receipt)
+    except Exception as exc:
         # SQLite might already be committed if atomic export failed. Leave
         # validators unapplied and replay the same revisions idempotently.
         logger.exception("[research-news] acceptance/export failed; validators retained")
-        return {"enabled": True, "due": len(outcomes), "accepted": False}
+        for fid in proposals:
+            applied[fid]["last_outcome"] = "acceptance_failed"
+            applied[fid]["last_acceptance_error"] = type(exc).__name__
+        _save_press_state(state)
+        return {"enabled": lane_enabled, "due": len(outcomes), "accepted": False}
     for fid, proposal in proposals.items():
+        # A previously applied R2 may reject a stale R1. Only the successful
+        # owner's receipt can acknowledge which revision actually survived.
+        versions = proposal["latest_applied_revision_by_item"]
+        for identity, item in receipt.get("items", {}).items():
+            if item.get("feed_id") == fid:
+                versions[identity] = item["source_revision"]
+        feed_receipt = receipt.get("feeds", {}).get(fid)
+        if feed_receipt:
+            proposal["last_changed_item_count"] = feed_receipt["accepted_item_count"]
+            proposal["last_outcome"] = feed_receipt["last_outcome"]
+            clocks = [applied[fid].get("last_applied_at", ""), feed_receipt.get("last_accepted_at", "")]
+            def clock_key(value):
+                try:
+                    return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+                except (ValueError, AttributeError):
+                    return float("-inf")
+            proposal["last_applied_at"] = max(clocks, key=clock_key)
+        proposal["latest_applied_revision_by_item"] = dict(list(versions.items())[-600:])
         applied[fid].update(proposal)
     _save_press_state(state)
-    return {"enabled": True, "due": len(outcomes), "accepted": True, "revisions": len(packets)}
+    return {"enabled": lane_enabled, "due": len(outcomes), "accepted": True,
+            "revisions": sum(feed.get("accepted_item_count", 0) for feed in receipt.get("feeds", {}).values())}
 
 
 def _run_press_tick(*, dry_run: bool) -> dict:
