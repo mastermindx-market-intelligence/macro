@@ -5089,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_668),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_671),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5205,6 +5205,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     produce 5,668. Fund only that measured seven-unit excess, 5,661 ->
     5,668. Preserve both incoming histories above, all suites, selectors,
     job and pack bounds, and the other two weight ceilings.
+
+    The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
+    2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
+    in unrun-vector-baskets right after W23-L11's (job weight 34 -> 37,
+    measured on the merged run text). Same job, same pure run-text
+    weight, no new entrant: build_free_content rises by exactly 3 on any
+    base that already holds #9819, so fund 5,661 -> 5,664. index.html and
+    plan_book stay under their ceilings even if they select this job
+    (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    Shared Shell/current-main92c51 composition (2026-10-20, PR7949):
+    the four existing scope/packing checks measure index.html 135 jobs /
+    5,796, build_free_content 134 / 5,671, and plan_book 128 / 5,545,
+    all in ten packs. Selected IDs/order match the prior 0f05 composition;
+    each weight rises exactly three with the incoming scorecard step.
+    Incoming command weights on those same IDs are 5,789 / 5,664 / 5,538.
+    The retained Shell data-base-shim +5 and nav-chrome +2 explain the
+    entire seven-unit excess. Fund only 5,664 -> 5,671; keep all previous
+    histories, suites, selectors, job/pack bounds and other ceilings.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

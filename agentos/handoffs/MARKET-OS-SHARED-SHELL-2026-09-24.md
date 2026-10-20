@@ -5,9 +5,8 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: Same original programme. Published69e8566; local intermediate6c preserves f54 merge and its observed
-  budget breach. Current0f05 merge and minimal measured5668 correction pass focused local gates at index252deb9f.
-  Beta originalA accepted under protectedR93; public DNS/TLS/browser and new-head hosted/publication remain distinct.
+state_before: Remote8cc published/contractgreen against73ca. Originalworktree composed92c51 atsourceindex9f468349;
+  exactmeasured5671repair locallyPASS. Newcommit/push/hostedgatesremain. OriginalbetaA recoverycomplete; no retry.
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -53,6 +52,9 @@ changed:
   what: Ordinary f54 then0f05 merges preserve both owners and generated content. Actual5668 measurement funds only
     seven-unit retained Shell command cost; histories/suites/selectors/job/pack bounds preserved. Same proof pack
     retains producing failures/green and browser boundary.
+- path: .github/ci/legacy-jobs.yml; tests/test_ci_pack.py; same evidence and handoff
+  what: Ordinary92c51 merge preservesincomingbond/SECclosure/scorecardstep. Exactly2CI conflictsresolved; actual5671fundsonlyShell7,
+    histories/othergatespreserved.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -193,6 +195,14 @@ verified:
     actual-V2 review.
   result: BetaA/PID2427329/runtime698204ef/HTTP200 stable; productionservice/build/owner stable. Caddy17aefed exactlyincoming0f05
     changed independently. DNSstillEdgeOne/strictTLShostnamefailure. No rerun or mutation.
+- claim: Actual92c51composition passes scopedlocalgates aftermeasuredrepair.
+  command: Existing4scope/packingnodes; packing-onlyafterexactliteral/historychange; three-way/AST/IDproofs.
+  result: 3scopePASS; sole5671>5664reproduced; exact5664->5671thenpackingPASS/indexstable. Rows135/5796/10,134/5671/10,128/5545/10.
+    IndependentreviewsNONBLOCKING; newheadhostednotinferred.
+- claim: Historical8cc hostedcontract passedonactualtestedmerge.
+  command: GitHubjob118461289660/run39371861641 logs/jobmetadata.
+  result: 0introduced/0inherited against73ca,05:04:39. Authority/fencesPASS; packs2/8/11PASS/restpendingatsnapshot.
+    Doesnotqualifynew92ccomposition.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -207,26 +217,20 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Programme OPEN. Current local index252deb9f is awaiting final proof commit/push and exact new-head hosted gates;
-  remotePR7949 last observed69e8566/unarmed.
-- R93 bootstrap/runtime/filesystem acceptance complete. Do not repeat. First-install containment/recovery is supported;
-  previous acceptedruntimeNULL means no executedupgrade rollback is claimed.
-- DNSPod secure choice selectedWeChat but iframeSiteUnavailable; resumedUIunchanged/sign-in. DNS remains EdgeOne
-  and strictTLSfails. No credentials/security setting/DNS edit by root.
-- Incumbent coveringrender/generated-main and actualserved publication remain required after source landing.
-- Six Sector views and sector-to-basket retained; PaperREVISE; C4 SPEC_ONLY/UNAPPLIED/UNRUN.
-- Original SessionBridge backend_unavailable exception retained; bounded consultations are not replacement Fabric
-  workers. Historical SNI artifact consultation unqualified because readneverreturned.
+- ProgrammeOPEN. Local92c51/sourceindex9f468349 awaitsproofcommit/push/currentheadhostedgates; remotePR7949 remains8cc/unarmed.
+- R93 originalbetaA recovery/runtime/filesystemaccepted. No bootstrap/#859redo. PublicDNS/TLS/auth/browser unaccepted;
+  prearmfreshhealthrequired.
+- DNSPodWeChatiframeSiteUnavailable aftersecuremethodchoice; humanloginboundary. NoDNSmutation/securitygrant/TLSbypass.
+- ActualMOGworkflowubuntu-latest supersedesoldguideM2sentence. ArmexistinglabelLAST; staythroughlandedbytes/coveringrender/servedproof.
+- Sector6views/sector-to-basket preserved; PaperREVISE; C4SPEC_ONLY/UNAPPLIED/UNRUN; historicalpixels/Aboutmobilegapunaccepted.
+- SessionBridgebackend_unavailable exceptionretained; advisersboundedconsultations, notreplacementFabricworkers.
+  IncompleteSNI MOGread unqualified; rootclosedinterface read.
 next_actions:
-- Commit/push exact composed source and same proof pack on original branch, inspect actual new-head hostedCI/review,
-  resolve concrete failures only.
-- Refresh actual publication prerequisites and arm existing Macro merge-on-green LAST after final gates; no nativeauto
-  or post-arm push.
-- Consume incumbent render.yml/engine-render covering generated-main and macro-update actualserved asset/capability/header
-  proof.
-- Complete DNSPod user sign-in boundary, original directbetaA/DNS/TLS/auth/public responsive navigation/history/theme/language/nativehandoff/error
-  and applicablefirst-install/rollback acceptance.
-- Persist actual follow-on results into original PR7949 checkpoint/same handoff; programme staysOPEN until accepted.
+- Commit/pushsamebranch/proofpack; inspectactualnewheadhostedCI/review andrepaironlyconcretereds.
+- Refreshbetahealth/DNS/main/testedsurface; armexistingMOG LAST afterfinalgates, no nativeauto/post-armpush.
+- Consumeincumbentcoveringrender andmacro-update generated/servedassets/capabilities/headers; no duplicateowner/watcher.
+- CompleteDNSPodsign-in, reviewedbetaDNS/publicTLS/auth/responsivejourneys/applicablerecovery; persistactualoutcomes
+  inoriginalcheckpoint.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -1148,3 +1152,25 @@ Fresh04:42 read: accepted beta A/PID2427329/start7560285026653/runtimec62950826a
 Public DNS still EdgeOneCNAME with43.159.99.101/43.159.98.106; strictTLS hostname mismatch. DNSPod cloudtab3 remains Tencent sign-in; secure method choice selectedWeChat but its iframe isSiteUnavailable. No authenticated console/DNS change. This is a concrete remaining user sign-in boundary, not public beta acceptance. First-install containment/recovery of originalA is supported; previousruntimeNULL/futurebaseline eligibility does not prove executedA→B→A rollback.
 
 Programme OPEN. This is a precommit proof snapshot; original PR checkpoint records eventual commit/push/head. Current-head hostedCI/review, merge-on-green LAST, incumbent coveringrender/generated-main and actualmacro-update served-tree remain required. DNS/TLS/auth/public1440×900/820×1180/390×844 navigation/history/theme/language/nativehandoff/errors and applicable recovery acceptance remain separate. No duplicate PR/renderer/sourcecarrier/watcher; no production mutation. Preserve overview/map/moving/money/explore/confluence and sector→basket; PaperREVISE; C4comments6255134033…6255716294 SPEC_ONLY/UNAPPLIED/UNRUN. Historical16-cell CSS fixture remains historical, not refreshed generated pixels.
+
+## 2026-10-20 continuation — incoming92c51 composition, same PR7949
+
+Same WS:MARKET-OS/root market-os-shared-shell-design-20260924-sol-001/parent shared-shell-production-20261018-c1; originalbranch/shared-shell-r27. Compatible protectedINDEX/laws065b7fe719bb07407eae965ffb15e300ae2395f6. OriginalbetaA e45bde2cac07ac3b29285ff70c40d68900fad62c remains accepted afterR93 recovery. No bootstrap/#859redo.
+
+Published8ccfa5ddba6770cef48f2f162c08474d023e094e hostedcontract-delta118461289660/run39371861641 passed05:04:39:0introduced/0inherited againstactualbase73ca987b5907034653d33cbdae1577a57e67120e/testmerge0f39b48d. Its rows135/5793/10,134/5668/10,128/5542/10 wereconfirmed. Authority/fencespassed; later snapshotpacks2/8/11successful/restpending. Historical8cc results do notqualifynewsource.
+
+Main92c51f1ff800b36fc63e7869243945996ac7315c addedbond/SEC closure, scorecardstep andsource/generatedpages. Immutablefetch exit0/no warnings. Normalmergebase0f058428/previewb750bc4f/exactly2conflicts. Threeadditive manifesthunks preserveall329IDs/order/fields/pathmultiplicities/parentsubsequences. Testkeepsincoming5664 executablebehavior andbothhistories. SixteenShell/Caddy/updater/access/Sector/checkerbindings unchanged. Candidate receiptbb68045eab58efbd20bc1ad5991dc6ee0a4ffdda729b8c94eaa19997b863f5c7.
+
+Ordinarymerge05:10:21–05:10:40 resolvesexact2files, stage1/2/3pinsmatch, no unmerged/unstagedfiles; index6670398b2e04ee6b571522cf7d2151385386fcf3, only2resolutionsdifferpreview, completeownedwhitespacePASS. ActualPython3.12 four-node run05:11:06.713662–05:14:34.874291Z:3PASS/1FAIL203.68s, sole5671>5664. Rows135/5796/10,134/5671/10,128/5545/10. CompleteIDs/order matchprior0f05, weight+3each; incomingcommandweightsforthosesameIDs5789/5664/5538. OnlyShelljobdeltas+5/+2 explainseven. No independentincoming-selection runclaimed.
+
+Minimal5664->5671 plus10linehistory, allotherexecutableASTequal; patch1807B/SHA52d4d20ec4df2448ace557eee0c71e4309455243522ea9822e037089b4ac393c. Sourcegateindex9f468349fe2bd9b27eede0003fcfd62051f0d25f. Candidate andactualmeasurement/patch reviewsNONBLOCKING, scopesretained; adviser didnotconsume packing-afterresult.
+
+Rootconsumed finalexistingpacking-only: 2026-10-20T05:16:26.041966+00:00 through 2026-10-20T05:18:26.961730+00:00,1PASS/exit0, source/indexunchanged; logSHA9a1ea364ca232b059f99b062c55e08648fc955166e5f292b5baa5cbf34f2c4e5. Prior3scopepassesbindunchangedmanifest. Earlieradapter/boundary resultsremainhistorical withunchangedownerinputs; notrerun. No newfull-localdifferential/currentheadhostedgreenclaimed.
+
+Freshmain3667000ca153496d8ff69e8864b159ac1e7b9de0 adds2unrelatedpanelPRs/sixpaths. Sourcepatchesread: noCI manifest/packingtest/Shell/Caddy/updater/Sector/checkerchanges. No additionalmergechase; finalheadmergeability andactualGitHubtestedmerge remainrequired.
+
+Publicationreview: coalescingrender needs actualsourceancestry/finalguards/finalpushedcommit; workflowgreenalonecanmaskresilientbuilderfailures. macro-update serves site.served byper-filersync; comparecanonicalgeneratedHTML/Shell/linkedassets withstablebeforeafterread. Existing canonicalsite injector --check withPython-B is nonwriting; directsite.served has incorrectnestedprefixsemantics, so willnotbeused. Runtime logo_config.js rewrite isintentional. CurrentMOGworkflow usesubuntu-latest; oldguideM2sentenceisstale. Existinglabelowner only, armLAST/no post-armpush/nativeauto. SNI MOGdiscovery aborted771.3s/nooutput/PID, explicitlyunqualified; rootreadexistingguide/workflow. Captureowner supportsanonymous1440x900/820x1180/390x844; inspecteverymanifestcell, exit0canbepartial; noauthcontextreuse. Caddyverifier isisolatedsourceproof, notpublicheaders.
+
+Latesthost04:42: betaA/PID2427329/runtime698204ef/HTTP200, productionPID2336355/build50a8/globalowner6d05. Caddy17aefed exactlyincoming0f05 changedexternally. DNSstillEdgeOne/strictTLShostnamefailure; DNSPodTencentWeChatiframeSiteUnavailable aftersecuremethodchoice. Human sign-inremainsafterindependentMacrodelivery. First-installcontainment/recovery qualifies; previousruntimeNULL/futurebaseline isnotexecutedupgrade rollback.
+
+Precommit/prepushsnapshot; originalPRcheckpointbindseventualcommit/push/head. ProgrammeOPEN: currentheadhostedCI/review, freshbeta/DNSidentity, existingMOG/coveringrender/actualservedproof, thenDNS/TLS/auth/publicnavigation/history/theme/language/nativehandoff/visibleerrors/applicablerecovery. PreserveSectoroverview/map/moving/money/explore/confluence andsector-to-basket, PaperREVISE. C4comments6255134033..6255716294 SPEC_ONLY/UNAPPLIED/UNRUN. HistoricalCSSfixture/currentgeneratedpixels/AboutLIGHTONLY/mobileEN406overflow remainseparate/unaccepted. No duplicatePR/renderer/sourcecarrier/watcher.

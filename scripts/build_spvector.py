@@ -324,6 +324,8 @@ def build() -> str:
                    "put_absent": put_absent, "capitulation": cap_now, "put_legs": put_legs},
         "sc": sc, "at": at, "bands": bands, "episodes": episodes, "charts": charts,
         "overlay": overlay,
+        "bench_start": spy.index[0].strftime("%b %d, %Y"),
+        "overlay_log": _overlay_log_summary(config.data_dir() / "spvector" / "overlay_log.jsonl"),
     }
 
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
@@ -353,6 +355,42 @@ def main() -> int:
     out = build()
     print(f"[built] {out}")
     return 0
+
+
+def _overlay_log_summary(path: Path) -> dict | None:
+    """Tally the overlay forward log: rows, distinct asof days, veto days, span.
+
+    Pure read; never raises, never writes. Bad lines (non-JSON, non-dict,
+    unparseable asof) are skipped; a day is a veto day when ANY of its rows has
+    veto is True. Returns None when the log is absent or has no valid rows.
+    """
+    try:
+        text = Path(path).read_text(encoding="utf-8")
+    except OSError:
+        return None
+    rows = 0
+    days: set[datetime] = set()
+    veto_days: set[datetime] = set()
+    for line in text.splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(row, dict):
+            continue
+        try:
+            day = datetime.strptime(str(row.get("asof")), "%Y-%m-%d")
+        except ValueError:
+            continue
+        rows += 1
+        days.add(day)
+        if row.get("veto") is True:
+            veto_days.add(day)
+    if not rows:
+        return None
+    return {"rows": rows, "days": len(days), "vetoes": len(veto_days),
+            "first": min(days).strftime("%b %d, %Y"),
+            "last": max(days).strftime("%b %d, %Y")}
 
 
 if __name__ == "__main__":
