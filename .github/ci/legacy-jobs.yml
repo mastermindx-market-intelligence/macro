@@ -14412,6 +14412,31 @@ jobs:
       - name: grader-manifest test suite
         run: python -m pytest tests/test_grader_manifest.py -q
 
+  meta-ceo-fabric-contracts:
+    if: ${{ false }}
+    gate: code
+    # C0/C1/C2 paid-Fabric adoption guidance is tested independently without
+    # broadening the self-mod-fence job selected by unrelated code PRs.
+    scope: exclusive
+    paths:
+      - AGENTS.md
+      - CLAUDE.md
+      - docs/CODEX_META_CEO_FABRIC.md
+      - scripts/__init__.py
+      - scripts/fabric_harness_attribution.py
+      - tests/test_meta_ceo_fabric_contract.py
+      - tests/test_fabric_harness_attribution.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Install deterministic regression dependency
+        run: pip install pytest
+      - name: Assigned Meta-CEO and Fabric parent-attribution contracts
+        run: python -m pytest tests/test_meta_ceo_fabric_contract.py tests/test_fabric_harness_attribution.py -q
+
   self-mod-fence:
     if: ${{ false }}
     gate: code
