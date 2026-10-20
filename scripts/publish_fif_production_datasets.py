@@ -59,6 +59,7 @@ import json
 import shutil
 import sys
 import tempfile
+import time
 import traceback
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
@@ -102,10 +103,12 @@ from engine.fundamental_forensics.models import parse_utc, utc_text  # noqa: E40
 from engine.fundamental_forensics.production_lineage import (  # noqa: E402
     mint_production_lineage_evidence,
 )
+from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry  # noqa: E402
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
     ProductionDatasetError,
     ProductionDatasetMaterial,
     build_production_dataset_store,
+    load_generation,
     load_latest_generation,
     lineage_from_role_payload,
     production_manifest_key,
@@ -118,6 +121,11 @@ from collectors.sec_filing_parser import (  # noqa: E402
     SecFilingParseError,
     parse_sec_filing_document,
 )
+
+# FIF A20: both SEC-paced subcommands build their SecRequestPacer from this
+# single default — 0.5 s = the process-wide share of the <= 2 req/s public
+# EDGAR budget. Explicit --min-interval-seconds still overrides it.
+MIN_INTERVAL_SECONDS_DEFAULT = 0.5
 
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
@@ -135,12 +143,32 @@ EXCLUSION_ONLY_EVENT_PACKAGES = "only_event_packages"
 # per-issuer exclusions; any other StatementGraphError is an unadjudicated
 # engine fault and still fails the WHOLE run (fail closed).
 EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED = "statement_reconstruction_refused"
-_STATEMENT_REFUSAL_SLUGS: tuple[tuple[str, str], ...] = (
-    ("displayed statement layout unsupported:", "displayed_layout_unsupported"),
-    ("displayed statement table is absent", "displayed_table_absent"),
-    ("displayed statement columns are absent", "displayed_columns_absent"),
+STATEMENT_REFUSAL_SLUGS = frozenset(
+    {
+        "displayed_layout_unsupported",
+        "displayed_table_absent",
+        "displayed_columns_absent",
+        "statement_role_not_consolidated",
+    }
 )
-STATEMENT_REFUSAL_SLUGS = frozenset(slug for _, slug in _STATEMENT_REFUSAL_SLUGS)
+_STATEMENT_REFUSAL_PIN_PATH = (
+    _ROOT / "config" / "fundamental_forensics" / "statement_refusals.v1.json"
+)
+# R-B3: an all-refused issuer's exclusion reason is its first refusal in
+# (accession, income/balance/cash_flow) order, and its detail list is in the
+# same order — never alphabetical by statement type.
+_STATEMENT_TYPE_ORDER = {"income_statement": 0, "balance_sheet": 1, "cash_flow": 2}
+
+
+def _refusal_row_order(row: Mapping[str, Any]) -> tuple[str, int, str]:
+    statement_type = str(row["statement_type"])
+    return (
+        str(row["accession"]),
+        _STATEMENT_TYPE_ORDER.get(statement_type, len(_STATEMENT_TYPE_ORDER)),
+        statement_type,
+    )
+
+
 PUBLISHER_ERROR_CODES = frozenset(
     {
         "contract_malformed",
@@ -169,6 +197,7 @@ PUBLISHER_ERROR_CODES = frozenset(
         # statement_reconstruction_refused — the run published nothing, so it
         # fails loudly after writing its report rather than going green empty.
         "statement_reconstruction_refused",
+        "statement_refusal_unpinned",
     }
 )
 
@@ -184,13 +213,267 @@ class PublisherError(RuntimeError):
 
 
 def statement_refusal_slug(exc: BaseException) -> str | None:
-    """Map a StatementGraphError to its closed exclusion slug, or None when the
-    refusal is outside the adjudicated input-layout families (fail closed)."""
-    message = str(exc)
-    for prefix, slug in _STATEMENT_REFUSAL_SLUGS:
-        if message.startswith(prefix):
-            return slug
+    """Return a coded refusal slug from the kernel, or None when uncoded."""
+    return getattr(exc, "refusal_code", None)
+
+
+def _load_statement_refusal_pin() -> tuple[
+    dict[tuple[str, str], str], set[tuple[str, str, str]], frozenset[str]
+]:
+    try:
+        document = json.loads(_STATEMENT_REFUSAL_PIN_PATH.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise PublisherError(
+            f"statement refusal pin is unreadable: {_STATEMENT_REFUSAL_PIN_PATH}",
+            code="publish_failed",
+        ) from exc
+    refusals = document.get("refusals")
+    if not isinstance(refusals, list):
+        _fail("statement refusal pin shape is invalid", code="publish_failed")
+    by_pair: dict[tuple[str, str], str] = {}
+    triples: set[tuple[str, str, str]] = set()
+    for row in refusals:
+        if not isinstance(row, dict):
+            _fail("statement refusal pin row is malformed", code="publish_failed")
+        accession = str(row.get("accession") or "")
+        statement_type = str(row.get("statement_type") or "")
+        code = str(row.get("code") or "")
+        if not accession or not statement_type or not code:
+            _fail("statement refusal pin row is incomplete", code="publish_failed")
+        by_pair[(accession, statement_type)] = code
+        triples.add((accession, statement_type, code))
+    golden_accessions = frozenset(
+        str(item) for item in (document.get("golden_accessions") or []) if str(item)
+    )
+    if not golden_accessions:
+        # A pin without the golden set must never silently disable the
+        # golden_accession rule. The producer stays off the golden layer, so
+        # it refuses here; the pin-to-fixture equality is asserted in tests.
+        _fail("statement refusal pin lacks golden_accessions", code="publish_failed")
+    return by_pair, triples, golden_accessions
+
+
+def _refusal_message_for_statement(package: Any, statement_type: str, registry: Any) -> str:
+    """Re-run one refused statement to recover the kernel's message text.
+
+    Declared cost: one primary-document re-parse plus one reconstruction per
+    refused statement (12 today, one per pinned refusal), on report rows only. The
+    stored refusal entry carries the code but not the message, so this is the
+    only lawful source of the text; it never runs for reconstructed statements.
+    """
+    from engine.fundamental_forensics.statement_graph import reconstruct_statement  # noqa: PLC0415
+
+    primary = package.manifest["primary_document"]
+    parsed = parse_sec_filing_document(package.members[primary], document_name=primary)
+    try:
+        reconstruct_statement(
+            statement_type=statement_type,
+            package=package,
+            parsed_instance=parsed,
+            registry=registry,
+        )
+    except StatementGraphError as exc:
+        return str(exc)
+    return ""
+
+
+def _statement_is_refusal_entry(statement: Mapping[str, Any]) -> bool:
+    refusal = statement.get("refusal")
+    return isinstance(refusal, Mapping) and bool(refusal.get("code"))
+
+
+def _latest_entry_for_statement(
+    latest: Any, accession: str, statement_type: str
+) -> Mapping[str, Any] | None:
+    reconstruction = latest.statement_trees(accession)
+    for statement in reconstruction.get("statements") or []:
+        if isinstance(statement, Mapping) and statement.get("statement_type") == statement_type:
+            return statement
     return None
+
+
+def _classify_statement_refusal(
+    *,
+    ticker: str,
+    cik: str,
+    accession: str,
+    statement_type: str,
+    code: str,
+    latest: Any | None,
+    pin_by_pair: Mapping[tuple[str, str], str],
+    pin_triples: set[tuple[str, str, str]],
+    golden_accessions: frozenset[str],
+) -> bool:
+    """Return pinned True/False or raise ``statement_refusal_unpinned``."""
+    if latest is not None:
+        try:
+            admitted = set(latest.statement_accessions())
+        except Exception as exc:  # noqa: BLE001
+            raise PublisherError(
+                f"latest generation statement accessions unreadable for {cik} "
+                f"(latest_accessions_unreadable): {exc}",
+                code="statement_refusal_unpinned",
+            ) from exc
+        if accession in admitted:
+            try:
+                entry = _latest_entry_for_statement(latest, accession, statement_type)
+            except Exception as exc:  # noqa: BLE001
+                raise PublisherError(
+                    f"latest generation statement trees unreadable for {cik} {accession} "
+                    f"(latest_entry_unreadable): {exc}",
+                    code="statement_refusal_unpinned",
+                ) from exc
+            if entry is not None and not _statement_is_refusal_entry(entry):
+                raise PublisherError(
+                    "statement refusal unpinned: "
+                    f"{ticker} {accession} {statement_type} {code} regressed_from_latest",
+                    code="statement_refusal_unpinned",
+                )
+    triple = (accession, statement_type, code)
+    if triple in pin_triples:
+        return True
+    pinned_code = pin_by_pair.get((accession, statement_type))
+    if pinned_code is not None and pinned_code != code:
+        raise PublisherError(
+            "statement refusal unpinned: "
+            f"{ticker} {accession} {statement_type} {code} pinned_code_changed",
+            code="statement_refusal_unpinned",
+        )
+    if latest is None:
+        raise PublisherError(
+            "statement refusal unpinned: "
+            f"{ticker} {accession} {statement_type} {code} first_publication",
+            code="statement_refusal_unpinned",
+        )
+    if accession in golden_accessions:
+        raise PublisherError(
+            "statement refusal unpinned: "
+            f"{ticker} {accession} {statement_type} {code} golden_accession",
+            code="statement_refusal_unpinned",
+        )
+    try:
+        admitted = set(latest.statement_accessions())
+    except Exception as exc:  # noqa: BLE001
+        raise PublisherError(
+            f"latest generation statement accessions unreadable for {cik} "
+            f"(latest_accessions_unreadable): {exc}",
+            code="statement_refusal_unpinned",
+        ) from exc
+    if accession not in admitted:
+        return False
+    try:
+        entry = _latest_entry_for_statement(latest, accession, statement_type)
+    except Exception as exc:  # noqa: BLE001
+        raise PublisherError(
+            f"latest generation statement trees unreadable for {cik} {accession} "
+            f"(latest_entry_unreadable): {exc}",
+            code="statement_refusal_unpinned",
+        ) from exc
+    if entry is not None and _statement_is_refusal_entry(entry):
+        return False
+    raise PublisherError(
+        "statement refusal unpinned: "
+        f"{ticker} {accession} {statement_type} {code} regressed_from_latest",
+        code="statement_refusal_unpinned",
+    )
+
+
+def _readback_issuer_refusals(
+    scratch_store: Any,
+    plan: "_IssuerPlan",
+    *,
+    registry: Any,
+) -> list[dict[str, Any]]:
+    binding = plan.staged.binding
+    try:
+        generation = load_generation(scratch_store, binding.entity_id, plan.generation_id)
+    except ProductionDatasetError as exc:
+        raise PublisherError(
+            f"scratch statement trees readback failed for {binding.entity_id}: {exc}",
+            code="publish_failed",
+        ) from exc
+    packages = {
+        str(package.manifest["accession"]): package
+        for package in plan.staged.admitted_packages
+    }
+    rows: list[dict[str, Any]] = []
+    for accession in sorted(packages):
+        package = packages[accession]
+        try:
+            reconstruction = generation.statement_trees(accession)
+        except ProductionDatasetError as exc:
+            raise PublisherError(
+                f"scratch statement trees readback failed for {accession}: {exc}",
+                code="publish_failed",
+            ) from exc
+        for statement in reconstruction.get("statements") or []:
+            if not isinstance(statement, Mapping) or not _statement_is_refusal_entry(statement):
+                continue
+            statement_type = str(statement.get("statement_type") or "")
+            code = str((statement.get("refusal") or {}).get("code") or "")
+            rows.append(
+                {
+                    "ticker": binding.ticker,
+                    "cik": binding.cik,
+                    "accession": accession,
+                    "statement_type": statement_type,
+                    "code": code,
+                    "message": _refusal_message_for_statement(package, statement_type, registry),
+                }
+            )
+    return rows
+
+
+def _issuer_all_statements_refused(scratch_store: Any, plan: "_IssuerPlan") -> bool:
+    binding = plan.staged.binding
+    generation = load_generation(scratch_store, binding.entity_id, plan.generation_id)
+    for package in plan.staged.admitted_packages:
+        accession = str(package.manifest["accession"])
+        reconstruction = generation.statement_trees(accession)
+        for statement in reconstruction.get("statements") or []:
+            if not _statement_is_refusal_entry(statement):
+                return False
+    return True
+
+
+def _accessions_all_refused(
+    scratch_store: Any, plan: "_IssuerPlan"
+) -> set[str]:
+    binding = plan.staged.binding
+    generation = load_generation(scratch_store, binding.entity_id, plan.generation_id)
+    all_refused: set[str] = set()
+    for package in plan.staged.admitted_packages:
+        accession = str(package.manifest["accession"])
+        reconstruction = generation.statement_trees(accession)
+        statements = reconstruction.get("statements") or []
+        if statements and all(_statement_is_refusal_entry(item) for item in statements):
+            all_refused.add(accession)
+    return all_refused
+
+
+def _resolved_pin_rows_for_issuer(
+    plan: "_IssuerPlan",
+    pin_triples: set[tuple[str, str, str]],
+    seen_triples: set[tuple[str, str, str]],
+) -> list[dict[str, str]]:
+    binding = plan.staged.binding
+    accessions = {str(package.manifest["accession"]) for package in plan.staged.admitted_packages}
+    resolved: list[dict[str, str]] = []
+    for accession, statement_type, code in sorted(pin_triples):
+        if accession not in accessions:
+            continue
+        if (accession, statement_type, code) in seen_triples:
+            continue
+        resolved.append(
+            {
+                "ticker": binding.ticker,
+                "cik": binding.cik,
+                "accession": accession,
+                "statement_type": statement_type,
+                "code": code,
+            }
+        )
+    return resolved
 
 
 def _fail(message: str, *, code: str) -> None:
@@ -210,6 +493,22 @@ def _error_annotation(title: str, message: str) -> None:
     # stderr is the one every caller leaves visible. Still a bare print with a
     # line-start ``::error``, never a logger.
     print(f"::error title={title}::{message}", file=sys.stderr, flush=True)
+
+
+def _emit_publish_timing(phase: str, ticker: str, started: float) -> None:
+    """One publish-phase duration as a GitHub Actions ``::notice`` (observation
+    only). Same D8 rule as the error annotations: stderr, never stdout —
+    stdout carries this script's JSON report, so a timing line there would
+    corrupt every ``$(...)``-capturing caller. Durations come exclusively from
+    a monotonic ``time.perf_counter()`` delta (never a wall-clock read), and
+    emitting changes no return value, report key, exit code, or store order.
+    """
+    print(
+        f"::notice title=fif_publish_timing::{phase} {ticker} "
+        f"{time.perf_counter() - started:.1f}s",
+        file=sys.stderr,
+        flush=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1221,9 +1520,11 @@ def _build_material(
     admitted_at: datetime,
 ) -> ProductionDatasetMaterial:
     """Build one issuer's material at the GIVEN clock (never now())."""
+    convert_started = time.perf_counter()
     ledger, filing_metadata, _report = _convert_admitted_packages(
         staged.admitted_packages
     )
+    _emit_publish_timing("plan_convert", staged.binding.ticker, convert_started)
     floor = min(staged.capture_clocks)
     # The S2-p seam, DIRECT (spec §3): the module-level import above names
     # ``mint_production_lineage_evidence`` and nothing else — never a mint
@@ -1231,9 +1532,11 @@ def _build_material(
     # the material's admission clock, return landing UNCHANGED. D11: the seam
     # call rides the wrapper so a LineageEvidenceError is typed
     # lineage_mint_failed instead of generic publish_failed.
+    lineage_started = time.perf_counter()
     lineage_evidence = _mint_lineage_evidence(
         ledger, staged.admitted_packages, system_available_at=admitted_at
     )
+    _emit_publish_timing("plan_lineage", staged.binding.ticker, lineage_started)
     binding = staged.binding
     issuer = staged.issuer
     return ProductionDatasetMaterial(
@@ -1271,6 +1574,7 @@ class _IssuerPlan:
     manifest_key: str
     lineage_receipt_count: int
     material: Any = field(repr=False, default=None)
+    comparison: Any = field(repr=False, default=None)
 
     # M1 (reviewer minor, C0-c): the outcome/clock_basis pairing is a
     # programming invariant, enforced at construction. ``published`` pairs
@@ -1342,6 +1646,7 @@ def _plan_issuer(
             code="latest_pointer_unreadable",
         ) from exc
     if latest is not None and floor <= latest.admitted_at:
+        compare_started = time.perf_counter()
         try:
             comparison_material = _build_material(
                 staged,
@@ -1352,7 +1657,11 @@ def _plan_issuer(
             comparison = publish_production_dataset(scratch_store, comparison_material)
         except Exception:  # noqa: BLE001 - treat as CHANGED; the plan below re-raises
             comparison = None
+            _emit_publish_timing("plan_compare_build", binding.ticker, compare_started)
         else:
+            # Emitted before the unchanged early-return so BOTH outcomes of the
+            # comparison pair are timed (an UNCHANGED issuer still paid for it).
+            _emit_publish_timing("plan_compare_build", binding.ticker, compare_started)
             if comparison.generation_id == latest.generation_id:
                 return _IssuerPlan(
                     staged=staged,
@@ -1367,6 +1676,7 @@ def _plan_issuer(
                         tuple(comparison_material.lineage_evidence)
                     ),
                     material=comparison_material,
+                    comparison=comparison,
                 )
     if latest is None or t_c > latest.admitted_at:
         chosen, basis = t_c, "content"
@@ -1382,6 +1692,7 @@ def _plan_issuer(
             "re-stamped to force agreement",
             code="admission_clock_not_after_latest",
         )
+    build_started = time.perf_counter()
     material = _build_material(
         staged,
         registry_payload=registry_payload,
@@ -1389,6 +1700,7 @@ def _plan_issuer(
         admitted_at=chosen,
     )
     scratch_publication = publish_production_dataset(scratch_store, material)
+    _emit_publish_timing("plan_build", binding.ticker, build_started)
     return _IssuerPlan(
         staged=staged,
         outcome="published",
@@ -1594,10 +1906,17 @@ def _run_publish(args: argparse.Namespace) -> int:
     # plan stays all-or-nothing exactly as before.
     plans: list[_IssuerPlan] = []
     refused: dict[str, str] = {}
+    statement_refusals: list[dict[str, Any]] = []
+    statement_refusals_resolved: list[dict[str, str]] = []
+    accession_all_refused: dict[str, bool] = {}
+    pin_by_pair, pin_triples, golden_accessions = _load_statement_refusal_pin()
+    registry = load_core_registry(Path(args.repo_root))
     scratch_dir = tempfile.mkdtemp(prefix="fif-production-plan-")
     try:
         scratch_store = build_production_dataset_store(local_dir=Path(scratch_dir))
+        total_plan_started = time.perf_counter()
         for staged_row in sorted(staged, key=lambda item: item.binding.entity_id):
+            plan_started = time.perf_counter()
             try:
                 plans.append(
                     _plan_issuer(
@@ -1609,23 +1928,93 @@ def _run_publish(args: argparse.Namespace) -> int:
                         recorded_at=recorded_at,
                     )
                 )
-            except StatementGraphError as exc:
-                slug = statement_refusal_slug(exc)
-                if slug is None:
-                    raise
-                ticker = str(staged_row.issuer["ticker"])
-                cik = str(staged_row.binding.cik)
-                reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{slug}"
-                excluded.append(
-                    {"ticker": ticker, "cik": cik, "reason": reason, "detail": str(exc)}
+            except StatementGraphError:
+                raise
+            _emit_publish_timing("plan", staged_row.binding.ticker, plan_started)
+        _emit_publish_timing("total_plan", "-", total_plan_started)
+        surviving_plans: list[_IssuerPlan] = []
+        for plan in plans:
+            refusal_started = time.perf_counter()
+            binding = plan.staged.binding
+            try:
+                latest = load_latest_generation(store, binding.entity_id)
+            except ProductionDatasetError as exc:
+                raise PublisherError(
+                    f"latest.json for {binding.entity_id} exists but cannot be verified "
+                    f"(latest_pointer_unreadable): {exc}",
+                    code="statement_refusal_unpinned",
+                ) from exc
+            except PublisherError:
+                raise
+            except Exception as exc:  # noqa: BLE001
+                raise PublisherError(
+                    f"latest.json transient store read for {binding.entity_id} "
+                    f"({type(exc).__name__}: {exc}) cannot be verified "
+                    "(latest_pointer_unreadable)",
+                    code="statement_refusal_unpinned",
+                ) from exc
+            if _issuer_all_statements_refused(scratch_store, plan):
+                issuer_rows = _readback_issuer_refusals(
+                    scratch_store, plan, registry=registry
                 )
-                refused[cik] = reason
+                ordered = sorted(issuer_rows, key=_refusal_row_order)
+                first = ordered[0]
+                reason = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:{first['code']}"
+                excluded.append(
+                    {
+                        "ticker": binding.ticker,
+                        "cik": binding.cik,
+                        "reason": reason,
+                        "detail": [
+                            {
+                                "accession": row["accession"],
+                                "statement_type": row["statement_type"],
+                                "code": row["code"],
+                            }
+                            for row in ordered
+                        ],
+                    }
+                )
+                refused[binding.cik] = reason
                 print(
                     "::warning title=fif_production_datasets-"
                     f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}::"
-                    + _annotation_message(f"{ticker} ({slug}): {exc}"),
+                    + _annotation_message(
+                        f"{binding.ticker} ({first['code']}): every statement refused; "
+                        f"first {first['accession']} {first['statement_type']}; "
+                        f"{len(ordered)} statement(s) across "
+                        f"{len({row['accession'] for row in ordered})} filing(s)"
+                    ),
+                    file=sys.stderr,
                     flush=True,
                 )
+                _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
+                continue
+            issuer_rows = _readback_issuer_refusals(scratch_store, plan, registry=registry)
+            seen_triples = {
+                (row["accession"], row["statement_type"], row["code"]) for row in issuer_rows
+            }
+            for row in issuer_rows:
+                row["pinned"] = _classify_statement_refusal(
+                    ticker=binding.ticker,
+                    cik=binding.cik,
+                    accession=row["accession"],
+                    statement_type=row["statement_type"],
+                    code=row["code"],
+                    latest=latest,
+                    pin_by_pair=pin_by_pair,
+                    pin_triples=pin_triples,
+                    golden_accessions=golden_accessions,
+                )
+            statement_refusals.extend(issuer_rows)
+            statement_refusals_resolved.extend(
+                _resolved_pin_rows_for_issuer(plan, pin_triples, seen_triples)
+            )
+            for accession in _accessions_all_refused(scratch_store, plan):
+                accession_all_refused[accession] = True
+            surviving_plans.append(plan)
+            _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
+        plans = surviving_plans
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
     coverage = _withhold_coverage(coverage, refused)
@@ -1657,6 +2046,7 @@ def _run_publish(args: argparse.Namespace) -> int:
     published: list[dict[str, Any]] = []
     failed: dict[str, Any] | None = None
     not_attempted: list[dict[str, Any]] = []
+    total_commit_started = time.perf_counter()
     for plan in plans:
         # M3: an UNCHANGED plan needs no real-store write, so it is reported
         # as its unchanged row in ``published`` (same row shape) whether it
@@ -1677,6 +2067,7 @@ def _run_publish(args: argparse.Namespace) -> int:
         if failed is not None:
             not_attempted.append(_issuer_summary(plan))
             continue
+        commit_started = time.perf_counter()
         try:
             publication = publish_production_dataset(store, plan.material)
             # Read-back self-check: the POINTER must NAME the generation just
@@ -1695,6 +2086,9 @@ def _run_publish(args: argparse.Namespace) -> int:
                 "error": f"{type(exc).__name__}: {exc}",
             }
             continue
+        # Emitted ONLY for plans that actually committed (publish + read-back
+        # succeeded); unchanged, skipped and failed plans stay untimed.
+        _emit_publish_timing("commit", plan.staged.binding.ticker, commit_started)
         published.append(
             _report_row(
                 plan,
@@ -1703,6 +2097,7 @@ def _run_publish(args: argparse.Namespace) -> int:
                 admitted_at=publication.admitted_at,
             )
         )
+    _emit_publish_timing("total_commit", "-", total_commit_started)
 
     if failed is not None:
         # MINOR-5: demote coverage before writing the partial report — the
@@ -1741,6 +2136,48 @@ def _run_publish(args: argparse.Namespace) -> int:
         "excluded": excluded,
         "coverage": coverage,
     }
+    if statement_refusals:
+        report["statement_refusals"] = sorted(
+            statement_refusals,
+            key=lambda row: (
+                row["ticker"],
+                row["cik"],
+                row["accession"],
+                row["statement_type"],
+                row["code"],
+            ),
+        )
+        unpinned = sum(1 for row in statement_refusals if not row.get("pinned"))
+        print(
+            "::warning title=fif_production_datasets-statement_refusals::"
+            f"{len(statement_refusals)} statement(s) withheld across "
+            f"{len({row['accession'] for row in statement_refusals})} filing(s); "
+            f"{unpinned} unpinned",
+            file=sys.stderr,
+            flush=True,
+        )
+    if statement_refusals_resolved:
+        report["statement_refusals_resolved"] = sorted(
+            statement_refusals_resolved,
+            key=lambda row: (
+                row["ticker"],
+                row["cik"],
+                row["accession"],
+                row["statement_type"],
+                row["code"],
+            ),
+        )
+        print(
+            "::warning title=fif_production_datasets-statement_refusals_resolved::"
+            f"{len(statement_refusals_resolved)} pinned refusal(s) now rebuild; "
+            "remove their pin rows",
+            file=sys.stderr,
+            flush=True,
+        )
+    if accession_all_refused:
+        report["accession_all_refused"] = {
+            accession: True for accession in sorted(accession_all_refused)
+        }
     if contract_acquire is not None:
         report["contract_acquire"] = contract_acquire
     _write_report(report, args.report_path)
@@ -2039,7 +2476,9 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--archive-root", type=Path, required=True)
     capture.add_argument("--recorded-at", required=True, help="Explicit UTC capture clock")
     capture.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    capture.add_argument("--min-interval-seconds", type=float, default=0.12)
+    capture.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     capture.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # D12: the run budget's single source is the capture module's constant —
     # the publisher carries no second 256 MiB literal.
@@ -2083,7 +2522,9 @@ def build_parser() -> argparse.ArgumentParser:
     acquire.add_argument("--archive-root", type=Path, required=True)
     acquire.add_argument("--recorded-at", required=True, help="Explicit UTC acquisition clock")
     acquire.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    acquire.add_argument("--min-interval-seconds", type=float, default=0.12)
+    acquire.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     acquire.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # E1-c amendment (B): acquire-contract is its own process with its OWN
     # pre-fetch budget; the single source of the number is the capture

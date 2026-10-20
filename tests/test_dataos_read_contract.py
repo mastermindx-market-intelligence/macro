@@ -1300,3 +1300,73 @@ def test_C02_the_account_is_frozen() -> None:
         account.population = ("LST-A",)
     with pytest.raises(TypeError):
         account.counts[Disposition.SERVED] = 2
+
+
+# ── W5 — package root surface: lazy read/view layers, complete export list ───────
+# wire-5 (seat 972d2923, Q03 GAP 1): ``import lib.dataos`` must execute only the six
+# contract modules; ``price_views``/``read_contract``/``basket_read`` resolve on first
+# access.  A fresh interpreter is the only honest witness — this process already holds
+# every module.  ``-I`` keeps the subprocess off this test run's sys.path and env.
+import subprocess
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_W5_PROG = """
+import json, sys
+sys.path.insert(0, sys.argv[1])
+import lib.dataos as d
+loaded = sorted(m for m in sys.modules if m.startswith("lib.dataos."))
+third = sorted(m for m in sys.modules if m.split(".")[0] in ("pandas", "numpy", "pyarrow", "yaml"))
+missing = [n for n in d.__all__ if not hasattr(d, n)]
+after = sorted(m for m in sys.modules if m.startswith("lib.dataos."))
+ns = {}
+exec("from lib.dataos import *", ns)
+print(json.dumps({
+    "n_all": len(d.__all__), "n_unique": len(set(d.__all__)),
+    "loaded_at_import": loaded, "third_party": third, "missing": missing,
+    "loaded_after_touch": after,
+    "star": sorted(k for k in ns if not k.startswith("__")),
+    "dir_has_lazy": "read_basket" in dir(d) and "basket_read" in dir(d),
+    "submodule_attr": d.basket_read.__name__,
+}))
+"""
+
+
+def _w5_fresh_import_report() -> dict:
+    run = subprocess.run(
+        [sys.executable, "-I", "-c", _W5_PROG, str(_REPO_ROOT)],
+        capture_output=True, text=True, cwd=str(_REPO_ROOT), check=False, timeout=120,
+    )
+    assert run.returncode == 0, run.stderr[-2000:]
+    return json.loads(run.stdout)
+
+
+def test_W5_package_import_executes_only_the_contract_modules() -> None:
+    rep = _w5_fresh_import_report()
+    loaded = {m.removeprefix("lib.dataos.") for m in rep["loaded_at_import"]}
+    assert not (loaded & {"price_views", "read_contract", "basket_read"}), sorted(loaded)
+    # The thin lane's closure claim: these six, and nothing third-party.
+    assert {"identity", "temporal", "nulls", "price", "registry", "quality"} <= loaded
+    assert rep["third_party"] == []
+
+
+def test_W5_every_export_resolves_and_star_import_is_complete() -> None:
+    rep = _w5_fresh_import_report()
+    assert rep["missing"] == []
+    assert rep["n_all"] == rep["n_unique"] == 152  # the seat renumbers this per wire
+    assert set(rep["star"]) == set(__import__("lib.dataos", fromlist=["__all__"]).__all__)
+    touched = {m.removeprefix("lib.dataos.") for m in rep["loaded_after_touch"]}
+    assert {"price_views", "read_contract", "basket_read"} <= touched
+    assert rep["dir_has_lazy"] is True
+    assert rep["submodule_attr"] == "lib.dataos.basket_read"
+
+
+def test_W5_the_seven_U04_names_are_exported_and_unknown_names_still_raise() -> None:
+    import lib.dataos as d
+    for name in ("PopulationKind", "EvidenceMode", "BasketRefusalCode", "BasketReadRefusal",
+                 "BasketRead", "read_basket", "population_delta"):
+        assert name in d.__all__
+        assert getattr(d, name) is getattr(d.basket_read, name)
+    with pytest.raises(AttributeError, match="no attribute"):
+        d.no_such_export  # noqa: B018 — the access IS the assertion
+    assert not hasattr(d, "definitely_not_a_dataos_name")

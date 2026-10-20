@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-10-17",
-  "generated_at": "2026-10-17T18:56:22Z",
+  "as_of": "2026-10-20",
+  "generated_at": "2026-10-20T08:10:14Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -302,7 +302,7 @@
           "basket_id": "data_center_power",
           "name_en": "Data-Center Power & Cooling",
           "name_zh": "数据中心电力与散热",
-          "score": 29,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -483,7 +483,7 @@
           "basket_id": "power_grid",
           "name_en": "Power & Grid Buildout",
           "name_zh": "电力与电网",
-          "score": 29,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -786,9 +786,9 @@
       "name_en": "GLP-1 / Obesity",
       "name_zh": "GLP-1与肥胖",
       "foresight": {
-        "stage": "BROADENING (fingerprint)",
+        "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "score": 37.2,
+        "score": 41.1,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -871,7 +871,7 @@
           "basket_id": "payments_fintech",
           "name_en": "Payments & Fintech",
           "name_zh": "支付与金融科技",
-          "score": 39,
+          "score": 38,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1284,7 +1284,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 37.5,
+        "score": 37.6,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1377,11 +1377,19 @@
     }
   ],
   "stale_legs": [
+    "baskets: stale (as_of=2026-10-14)",
+    "radar_enriched: stale (as_of=2026-10-14)",
+    "radar: stale (as_of=2026-10-14)",
+    "narrative_emergence: stale (as_of=2026-10-14)",
+    "subsector_rotation: stale (as_of=2026-10-14)",
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
+    "divergence_log[ai_semiconductors]: stale (as_of=2026-10-14)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-10-09)",
     "divergence_log[glp1_obesity]: stale (as_of=2026-10-04)",
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
+    "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-15)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[solar]: stale (as_of=2026-10-10)"
   ],
@@ -1397,7 +1405,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-17T18:56:23Z",
-  "inputs_hash": "sha256:16a686eeff31138149224632616ec0b9855ce268064d83e48e59d22f26a8ba1d",
+  "produced_at": "2026-10-20T08:10:14Z",
+  "inputs_hash": "sha256:1e6c36bd94ff3b7d1f61d0a1bb8c98666f12d89672f04b109fa2bb70508d24ff",
   "tier": "display"
 }
