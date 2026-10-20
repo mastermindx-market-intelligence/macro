@@ -1675,3 +1675,15 @@ class TestTradeQuoteSchemaV3:
                                  expiration="2026-08-21")
         assert len(seen) == 1 and seen[0]["expiration"] == 20260821
         assert df is not None and len(df) == 1
+
+
+@pytest.mark.parametrize('version',[None,'1'])
+def test_wildcard_greeks_forwards_only_explicit_version(monkeypatch,version):
+ from collectors import thetadata as td
+ monkeypatch.setattr(td,'reachable',lambda:True)
+ calls=[]
+ def windows(path,params,*args,**kwargs):
+  calls.append(dict(params));return pd.DataFrame()
+ monkeypatch.setattr(td,'_concurrent_windows',windows)
+ td.bulk_greeks('SPY',0,'2026-10-16','2026-10-16',order=3,version=version)
+ assert calls==[dict(symbol='SPY',expiration='*',**({} if version is None else {'version':'1'}))]

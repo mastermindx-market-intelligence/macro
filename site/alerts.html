@@ -337,8 +337,8 @@
     <div>
       <div class="score">
         <div class="s act"><div class="n mono">5</div><div class="lab"><span class="l-en">act now</span><span class="l-zh">立即行动</span><span class="help">?<span class="tip"><span class="l-en">Act-tier: a true cross-asset stress or regime call worth sizing around today.</span><span class="l-zh">执行级：值得今日据以调整仓位的真正跨资产压力或机制信号。</span></span></span></div></div>
-        <div class="s watch"><div class="n mono">4</div><div class="lab"><span class="l-en">worth watching</span><span class="l-zh">值得关注</span></div></div>
-        <div class="s"><div class="n mono">27</div><div class="lab"><span class="l-en">re-fired</span><span class="l-zh">重复触发</span><span class="help">?<span class="tip"><span class="l-en">Flags that have fired several times across a span of days rather than once. That is a fact about the LOG — it counts firings, it does not show the condition held continuously in between, so we call it re-fired, never persisting.</span><span class="l-zh">多次触发（而非一次性）的信号，其首末触发相隔数日。这是关于日志的事实 — 它统计触发次数，并不能证明该状态在此期间持续存在，因此我们称之为“重复触发”，而非“持续中”。</span></span></span></div></div>
+        <div class="s watch"><div class="n mono">3</div><div class="lab"><span class="l-en">worth watching</span><span class="l-zh">值得关注</span></div></div>
+        <div class="s"><div class="n mono">29</div><div class="lab"><span class="l-en">re-fired</span><span class="l-zh">重复触发</span><span class="help">?<span class="tip"><span class="l-en">Flags that have fired several times across a span of days rather than once. That is a fact about the LOG — it counts firings, it does not show the condition held continuously in between, so we call it re-fired, never persisting.</span><span class="l-zh">多次触发（而非一次性）的信号，其首末触发相隔数日。这是关于日志的事实 — 它统计触发次数，并不能证明该状态在此期间持续存在，因此我们称之为“重复触发”，而非“持续中”。</span></span></span></div></div>
         <div class="s"><div class="n mono">60</div><div class="lab"><span class="l-en">live alerts</span><span class="l-zh">活跃警报</span></div></div>
       </div>
       
@@ -374,6 +374,22 @@
       </div>
     </button>
   
+    <button type="button" class="story cl-other" data-story="other">
+      <div class="st-top">
+        <span class="st-ic">•</span>
+        <span class="st-name"><span class="l-en">Other</span><span class="l-zh">其他</span></span>
+        <span class="st-cnt">4</span>
+      </div>
+      
+      <div class="st-line"><span class="l-en">🚨 Market risk-state went ELEVATED — drawdown risk is building</span><span class="l-zh">🚨 市场风险状态转为偏高 — 回撤风险上升</span></div>
+      <div class="st-tags">
+        <span class="st-tag act"><svg class="ic-svg fic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.6 19.2c5.2-.4 11.6-3.6 16.6-13"/><polyline points="14.8,5.6 20.6,5.6 20.6,11.4"/></svg> 1 <span class="l-en">act</span><span class="l-zh">执行</span></span>
+        <span class="st-tag act">1 <span class="l-en">critical</span><span class="l-zh">关键</span></span>
+        <span class="st-tag persist">↻ 3 <span class="l-en">re-fired</span><span class="l-zh">重复触发</span></span>
+        
+      </div>
+    </button>
+  
     <button type="button" class="story cl-stress" data-story="stress">
       <div class="st-top">
         <span class="st-ic">🛑</span>
@@ -387,22 +403,6 @@
         
         <span class="st-tag persist">↻ 1 <span class="l-en">re-fired</span><span class="l-zh">重复触发</span></span>
         <span class="asset-chip">credit</span><span class="asset-chip">copper</span><span class="asset-chip">oil</span><span class="asset-chip">silver</span>
-      </div>
-    </button>
-  
-    <button type="button" class="story cl-other" data-story="other">
-      <div class="st-top">
-        <span class="st-ic">•</span>
-        <span class="st-name"><span class="l-en">Other</span><span class="l-zh">其他</span></span>
-        <span class="st-cnt">3</span>
-      </div>
-      
-      <div class="st-line"><span class="l-en">🚨 Market risk-state went ELEVATED — drawdown risk is building</span><span class="l-zh">🚨 市场风险状态转为偏高 — 回撤风险上升</span></div>
-      <div class="st-tags">
-        <span class="st-tag act"><svg class="ic-svg fic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.6 19.2c5.2-.4 11.6-3.6 16.6-13"/><polyline points="14.8,5.6 20.6,5.6 20.6,11.4"/></svg> 1 <span class="l-en">act</span><span class="l-zh">执行</span></span>
-        
-        <span class="st-tag persist">↻ 1 <span class="l-en">re-fired</span><span class="l-zh">重复触发</span></span>
-        
       </div>
     </button>
   
@@ -718,50 +718,6 @@
         
         
         <span class="help">?<span class="tip"><span class="l-en">No standalone backtest for this alert family — the conviction is documented, not measured as a timing signal.  Validated as: Bond-health drawdown gauge.  See Signal Lab for the full battery.</span><span class="l-zh">该警报族无独立回测 — 信念有据可查，但未作为择时信号度量。  验证为：Bond-health drawdown gauge。  详见信号实验室。</span></span></span>
-        <a class="lnk" href="signal_lab.html"><span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span> →</a>
-      </div>
-    </div>
-  </div>
-
-  
-  
-  <div class="ac sev-major" data-sev="major" data-tier="act" data-src="macro"
-       data-cluster="other" data-life="aging" data-emit="2026-09-24"
-       data-board="2026-09-24" data-age="26"
-       data-id="b3a8e752d5f1" data-q="🚨 market risk-state went elevated — drawdown risk is building equity risk-state crossed into elevated (69/100) — positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders macro macro vector risk_state_elevated">
-    <div class="rail">
-      <div class="pr">60</div>
-      <div class="prbar"><i class="bg-major" style="width:60%"></i></div>
-      <div class="prl"><span class="l-en">priority</span><span class="l-zh">优先级</span><span class="help">?<span class="tip"><span class="l-en">Triage priority 0-100 — how much this should grab attention NOW, not a probability it is right. = conviction 40 (act) + severity 18 (major) + recency 2 (older) + cross-asset 0 (neutral).</span><span class="l-zh">分诊优先级 0-100 — 表示此刻该给多少注意力，并非判断正确的概率。= 信念 40 + 严重度 18 + 新鲜度 2 + 跨资产 0。</span></span></span></div>
-    </div>
-    <div class="body">
-      <div class="meta">
-        <span class="src">📊 <span class="l-en">Macro Vector</span><span class="l-zh">宏观向量</span></span>
-        <span class="sevpill bd-major c-major"><span class="dot bg-major"></span><span class="l-en">major</span><span class="l-zh">重要</span></span>
-        <span class="mono">2026-09-24 · 26<span class="l-en">d ago</span><span class="l-zh">天前</span></span>
-        
-        
-        
-      </div>
-      <div class="hl"><span class="l-en">🚨 Market risk-state went ELEVATED — drawdown risk is building</span><span class="l-zh">🚨 市场风险状态转为偏高 — 回撤风险上升</span></div>
-      <div class="dt"><span class="l-en">Equity risk-state crossed into ELEVATED (69/100) — positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders</span><span class="l-zh">股票风险状态进入偏高区（69/100）— 仓位/波动/宽度脆弱性上升；降低敞口、择优入场而非追高</span></div>
-      <div class="row2">
-        
-        <span class="pill a-reduce">→ <span class="l-en">reduce risk</span><span class="l-zh">降低风险</span></span>
-        
-        
-        <a class="lnk sm" href="macro.html#dlg-risk"><span class="l-en">open</span><span class="l-zh">打开</span> →</a>
-      </div>
-      <!-- validation: a measured number ONLY where it exists; quiet & honest otherwise -->
-      <div class="val">
-        
-        
-        <span class="vpill vp-documented"><span class="l-en">not backtested</span><span class="l-zh">未回测</span></span>
-        
-        
-        
-        <span class="muted">— <span class="l-en">High — the equity-internal early-warning the credit gauge misses. De-risk response is sizing, not selection.</span><span class="l-zh">高 — 信用指标看不到的股票内部早期预警。应对是调仓位，而非选股。</span></span>
-        <span class="help">?<span class="tip"><span class="l-en">High — the equity-internal early-warning the credit gauge misses. De-risk response is sizing, not selection.  See Signal Lab for the full battery.</span><span class="l-zh">高 — 信用指标看不到的股票内部早期预警。应对是调仓位，而非选股。  详见信号实验室。</span></span></span>
         <a class="lnk" href="signal_lab.html"><span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span> →</a>
       </div>
     </div>
@@ -3301,7 +3257,7 @@
     <span class="l-en">Sources</span><span class="l-zh">数据源</span>: macro / bonds / forex / vector / commodity / themes / rotation / single-name ·
     <span class="l-en">window</span><span class="l-zh">窗口</span> 30<span class="l-en">d</span><span class="l-zh">天</span> · <span class="l-en">as-of</span><span class="l-zh">截至</span> 2026-10-19 ·
     <span class="l-en">board day</span><span class="l-zh">看板交易日</span> 2026-10-20 (America/New_York)<span class="help">?<span class="tip"><span class="l-en">Three separate clocks. Board day is the New York session this board is reading — what &#39;today&#39; means on a US cross-asset desk. Each alert is dated by when its EVENT happened, not by when we processed it. &#39;Rendered&#39; below is only when this page was built.</span><span class="l-zh">三个互不相同的时钟。看板交易日是本看板所读取的纽约交易日 — 即美股跨资产台面上“今天”的含义。每条警报按其事件发生的时间标注日期，而非我们处理它的时间。下方的“生成”仅表示本页构建的时刻。</span></span></span> ·
-    <span class="l-en">rendered</span><span class="l-zh">生成</span> 2026-10-20 04:33 UTC</p>
+    <span class="l-en">rendered</span><span class="l-zh">生成</span> 2026-10-20 10:11 UTC</p>
 </div>
 
 <script>

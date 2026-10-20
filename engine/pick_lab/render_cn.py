@@ -58,6 +58,8 @@ def _fmt_int(v):
 def _status_badge(status: str | None) -> dict:
     """Return {css, label_en, label_zh} for a status string."""
     s = (status or "accruing").lower()
+    if "scoreable" in s:
+        return {"css": "badge-active", "label_en": "SCOREABLE", "label_zh": "可评分"}
     if "accruing" in s:
         return {"css": "badge-accruing", "label_en": "ACCRUING", "label_zh": "累积中"}
     if "active" in s or "pass" in s:
@@ -99,6 +101,9 @@ def _enrich_pick(pick: dict) -> dict:
     """Add display fields to a pick card dict."""
     p = dict(pick)
     c = p.get("close")
+    if c is None:
+        # builder fire rows carry the pick price as close_at_fire (no "close" key)
+        c = p.get("close_at_fire")
     # CN prices in ¥
     p["close_fmt"] = f"¥{c:.2f}" if c is not None else "—"
     # board chip label for limit state
