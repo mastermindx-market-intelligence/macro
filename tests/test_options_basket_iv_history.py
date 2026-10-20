@@ -14,13 +14,15 @@ SHA='a'*64
 SESSIONS=[day.date() for day in pd.bdate_range(end='2026-10-08',periods=252)]
 CUTOFF=datetime(2026,10,9,3,tzinfo=timezone.utc)
 
-def make_point(day,iv,weights=(.2,.3,.5),factor_ref='house:mag7',def_sha=SHA):
+def make_point(day,iv,weights=(.2,.3,.5),factor_ref='house:mag7',def_sha=SHA,member_sessions=None):
     asof=datetime.combine(day,datetime.min.time(),timezone.utc)+timedelta(hours=22)
     defn=Definition(factor_ref,'fixture:registry',def_sha,datetime(2025,1,1,tzinfo=timezone.utc))
     rows=[Member(root=root,weight=w,iv=iv,observed_at=asof-timedelta(hours=2),
        known_at=asof-timedelta(hours=1),qualified=True,source_ref=f'fixture:greeks:{root}',
        source_sha256=SHA,valid_until=asof+timedelta(hours=2),
-       method='iv30_total_variance_act365f') for root,w in zip(['AAA','BBB','CCC'],weights)]
+       method='iv30_total_variance_act365f',
+       source_session=day if member_sessions is None else member_sessions[i])
+       for i,(root,w) in enumerate(zip(['AAA','BBB','CCC'],weights))]
     return aggregate(rows,definition=defn,asof=asof)
 
 @pytest.fixture
@@ -187,3 +189,123 @@ def test_unchanged_policy_and_method_have_consistent_rank(m,history):
     x=m.summarize_iv_history(history,expected_sessions=SESSIONS,asof=CUTOFF)
     assert x['iv_rank_minmax_pct']==pytest.approx(100)
     assert x['iv_percentile_midrank_pct']==pytest.approx(100*(251.5)/252)
+
+
+# Session identity and availability are independent source facts. All fixtures
+# below are synthetic owner envelopes, not certificates for historical data.
+def _explicit_session_history(history):
+    out=copy.deepcopy(history)
+    for day,point in zip(SESSIONS,out):
+        point['source_session']=day.isoformat()
+        for row in point['inputs']:
+            row['source_session']=day.isoformat()
+    return out
+
+
+def _received_later(point,received):
+    point['asof']=received.isoformat()
+    for row in point['inputs']:
+        row['known_at']=received.isoformat()
+        row['valid_until']=(received+timedelta(hours=4)).isoformat()
+
+
+def test_delayed_eod_receipt_keeps_original_source_session(m,history):
+    points=_explicit_session_history(history)
+    received=datetime(2026,10,10,1,5,tzinfo=timezone.utc)
+    _received_later(points[-1],received)
+    out=m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=received)
+    assert out['coverage']['qualified_sessions']==252
+    assert out['iv_rank_minmax_pct']==pytest.approx(100)
+    assert out['current_source_session']=='2026-10-08'
+    assert out['history_window']['session_key']=='source_session'
+    assert out['asof']==received.isoformat()
+    assert out['authority']['publication'] is False
+    json.dumps(out,allow_nan=False)
+
+
+def test_common_receipt_time_does_not_collapse_distinct_source_sessions(m,history):
+    points=_explicit_session_history(history)
+    received=datetime(2026,10,10,1,5,tzinfo=timezone.utc)
+    for point in points:
+        _received_later(point,received)
+    out=m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=received)
+    assert out['coverage']['qualified_sessions']==252
+    assert out['iv_percentile_midrank_pct']==pytest.approx(100*(251.5)/252)
+
+
+def test_explicit_session_never_backdates_later_receipt(m,history):
+    points=_explicit_session_history(history)
+    received=datetime(2026,10,10,1,5,tzinfo=timezone.utc)
+    _received_later(points[-1],received)
+    with pytest.raises(ValueError,match='future'):
+        m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=received-timedelta(seconds=1))
+
+
+@pytest.mark.parametrize('session',[None,'20261008','2026-10-08T20:00:00+00:00','2026-02-30',8])
+def test_missing_or_noncanonical_session_is_never_inferred_from_asof(m,history,session):
+    points=_explicit_session_history(history)
+    points[-1]['source_session']=session
+    with pytest.raises(ValueError,match='source session'):
+        m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=CUTOFF)
+
+
+@pytest.mark.parametrize('session',[None,'2026-10-07','20261008'])
+def test_member_session_mismatch_withholds_history_instead_of_relabeling(m,history,session):
+    points=_explicit_session_history(history)
+    points[-1]['inputs'][0]['source_session']=session
+    out=m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=CUTOFF)
+    assert out['coverage']['qualified_sessions']==251
+    assert out['iv_rank_minmax_pct'] is None
+    assert out['iv_percentile_midrank_pct'] is None
+    assert 'UNQUALIFIED_POINT' in out['reasons']
+
+
+def test_duplicate_source_session_is_refused_even_with_different_receipt_days(m,history):
+    points=_explicit_session_history(history)
+    duplicate=copy.deepcopy(points[-1])
+    received=datetime(2026,10,10,1,5,tzinfo=timezone.utc)
+    _received_later(duplicate,received)
+    with pytest.raises(ValueError,match='duplicate'):
+        m.summarize_iv_history([*points,duplicate],expected_sessions=SESSIONS,asof=received)
+
+
+def test_session_identity_does_not_use_evaluation_timezone_date(m,history):
+    points=_explicit_session_history(history)
+    # The same accepted instant represented in UTC+14 crosses a calendar day.
+    points[-1]['asof']=datetime.fromisoformat(points[-1]['asof']).astimezone(
+        timezone(timedelta(hours=14))).isoformat()
+    out=m.summarize_iv_history(points,expected_sessions=SESSIONS,asof=CUTOFF)
+    assert out['coverage']['qualified_sessions']==252
+    assert out['current_source_session']=='2026-10-08'
+
+
+def test_aggregate_carries_owner_session_on_envelope_and_members():
+    point=make_point(SESSIONS[-1],.4)
+    assert point['source_session']==SESSIONS[-1].isoformat()
+    assert {row['source_session'] for row in point['inputs']}=={SESSIONS[-1].isoformat()}
+
+
+@pytest.mark.parametrize('sessions',[
+    [None,None,None],
+    [SESSIONS[-1],None,SESSIONS[-1]],
+    [SESSIONS[-1],SESSIONS[-2],SESSIONS[-1]],
+])
+def test_current_descriptor_without_common_session_cannot_become_history(m,sessions):
+    point=make_point(SESSIONS[-1],.4,member_sessions=sessions)
+    assert point['headline_mean_iv']==pytest.approx(.4)
+    assert point['source_session'] is None
+    assert point['hybrid_expected_move'] is None
+    assert point['authority']['publication'] is False
+    with pytest.raises(ValueError,match='source session'):
+        m.summarize_iv_history([point],expected_sessions=SESSIONS,asof=CUTOFF)
+
+
+@pytest.mark.parametrize('invalid_session',[
+    '2026-10-08',
+    datetime(2026,10,8,20,tzinfo=timezone.utc),
+    20261008,
+    True,
+])
+def test_aggregate_refuses_ambiguous_member_session_types(invalid_session):
+    with pytest.raises(ValueError,match='source session'):
+        make_point(SESSIONS[-1],.4,member_sessions=[SESSIONS[-1],invalid_session,SESSIONS[-1]])

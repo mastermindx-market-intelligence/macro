@@ -25,6 +25,17 @@ def _aware(value: object) -> datetime | None:
     return out if out.tzinfo is not None and out.utcoffset() is not None else None
 
 
+def _session(value: object) -> date | None:
+    """Parse only the owner-supplied cash-session label, never a timestamp."""
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        result = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return result if result.isoformat() == value else None
+
+
 def _num(value: object) -> float | None:
     if isinstance(value,bool) or not isinstance(value,Real):return None
     try:
@@ -55,6 +66,8 @@ def _observation(point: Mapping, *, asof: datetime) -> float | None:
     if not isinstance(point.get('factor_ref'),str) or not point['factor_ref']:return None
     source=_aware(point.get('asof'))
     if source is None or source>asof:return None
+    session=_session(point.get('source_session'))
+    if session is None:return None
     definition=point.get('definition')
     if (not isinstance(definition,dict) or not isinstance(definition.get('source_ref'),str)
         or not isinstance(definition.get('sha256'),str) or not _DIGEST.fullmatch(definition['sha256'])):return None
@@ -73,6 +86,7 @@ def _observation(point: Mapping, *, asof: datetime) -> float | None:
         return None
     values={}
     for row in rows:
+        if _session(row.get('source_session')) != session:return None
         if row.get('qualified') is not True:return None
         if row.get('method') not in ('iv30_exact_act365f','iv30_total_variance_act365f'):
             return None
@@ -143,6 +157,9 @@ def summarize_iv_history(points: Sequence[Mapping], *, expected_sessions: Sequen
     """Compute min/max rank and empirical midrank percentile over exactly 252 days.
 
     One expected cash session means one source-comparable basket observation.
+    Its explicit source_session and each constituent's session must agree.
+    Envelope asof is the evaluation/availability clock, not the market date;
+    later receipt never rewrites that date or permits earlier knowledge.
     Without all 252 source-qualified sessions, both headline statistics are
     null and the full original session denominator is retained.
     """
@@ -164,7 +181,8 @@ def summarize_iv_history(points: Sequence[Mapping], *, expected_sessions: Sequen
         recorded=_aware(point.get('asof'))
         if recorded is None:raise ValueError('aware source observation time required')
         if recorded>asof:raise ValueError('future observation as-of leaked into history')
-        day=recorded.date()
+        day=_session(point.get('source_session'))
+        if day is None:raise ValueError('explicit canonical source session required')
         if day not in days:raise ValueError('source observation outside expected calendar')
         if day in byday:raise ValueError('duplicate source history session')
         item=_observation(point,asof=asof)
@@ -214,7 +232,9 @@ def summarize_iv_history(points: Sequence[Mapping], *, expected_sessions: Sequen
             'basis':'full_coverage_constituent_mean_iv_not_traded_basket_iv',
             'factor_ref':next(iter(factor_refs)) if len(factor_refs)==1 else None,
             'asof':asof.isoformat(),
+            'current_source_session':days[-1].isoformat(),
             'history_window':{'cash_sessions':252,'selection':'owner_calendar_strict','includes_current_session':True,
+                              'session_key':'source_session',
                               'tie_convention':'midrank_half_of_equals','rank_convention':'min_max_0_to_100'},
             'coverage':{'qualified_sessions':len(qualified),
                         'expected_sessions':252,'missing_or_unqualified_sessions':252-len(qualified),

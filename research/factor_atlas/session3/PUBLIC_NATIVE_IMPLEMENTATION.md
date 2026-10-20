@@ -74,3 +74,40 @@ not independent evidence of original quote availability, pricing-model
 fitness, distribution rights or point-in-time known-at. These
 limitations also apply to the historical ranking and retrospective
 outcome research.
+
+
+## Market session and availability are separate
+
+The owner-qualified `Member` input can now carry an explicit `source_session`
+date. The aggregate preserves that label on each member and reports a common
+session only when every positive-weight member supplies the same date.
+It never derives an exchange session from the date portion of `observed_at`,
+`known_at` or the envelope's evaluation `asof`.
+
+The history leaf requires that explicit common session and matching member
+sessions before assigning an observation to the existing owner-supplied cash
+calendar. Missing, malformed or duplicate session identity is refused;
+a constituent session mismatch makes the point unqualified. Evaluation and
+availability checks remain independent and unchanged: a later EOD receipt
+cannot be used before its true receipt time. Different source sessions may
+honestly share a capture/evaluation timestamp without collapsing into one day.
+Equivalent timestamp offsets cannot move the market session.
+
+The incumbent calendar/source owner must supply the actual observation
+sessions eligible at the evaluation cutoff. Eligibility is not inferred from
+UTC date equality. A history assembled from information available at query
+as-of is not automatically a historical point-in-time reconstruction.
+
+Current constituent-IV descriptors remain available under their existing
+source/coverage policy when a common history session is unknown. A null common
+session identifies an as-of member snapshot without claiming a synchronized
+market-session measurement. Historical ranks remain withheld. Missing covariance
+continues to withhold modeled risk without suppressing an otherwise qualified
+constituent descriptor.
+This is a source-contract repair, not a new calendar, collector, source
+certificate, redistribution grant or historical known-at reconstruction.
+
+Synthetic regression cases cover later EOD delivery, batch receipt, timezone
+offsets, unavailable/mismatched session identity and duplicate sessions.
+The change does not rerun or replace any previously completed original
+ThetaData historical-source repair.

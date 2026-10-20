@@ -9,7 +9,7 @@ DTOs are a trusted in-process interface, not a public authorization validator.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from math import fsum, isfinite, sqrt
 from numbers import Real
 import re
@@ -41,6 +41,8 @@ class Member:
     method: str | None = None
     tenor_calendar_days: float = 30
     year_basis: str = "ACT/365F"
+    # Owner-supplied exchange session; never derived from an availability clock.
+    source_session: date | None = None
 
 
 @dataclass(frozen=True)
@@ -188,9 +190,14 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
         if row.iv is not None: _number(row.iv, "iv", 0)
         if row.premium is not None: _number(row.premium, "premium", 0)
         if type(row.qualified) is not bool: raise ValueError("qualification must be boolean")
+        if row.source_session is not None and type(row.source_session) is not date:
+            raise ValueError("source session must be an owner-supplied date")
     if abs(fsum(r.weight for r in members)-1) > 1e-12:
         raise ValueError("house weights must sum to one without renormalization")
     active = sorted((r for r in members if r.weight>0), key=lambda r: r.root)
+    sessions = {r.source_session for r in active}
+    source_session = (next(iter(sessions)).isoformat()
+                      if len(sessions) == 1 and None not in sessions else None)
     eligible, excluded = [], []
     for row in active:
         reasons = _source_reasons(row, asof)
@@ -286,6 +293,7 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
                              "premium_dominance":float(policy.premium_dominance),
                              "full_risk_requires_complete_coverage":True},
         "factor_ref":definition.factor_ref, "asof":asof.isoformat(),
+        "source_session":source_session,
         "horizon":{"days":30,"basis":"ACT/365F","unit":"calendar_day"},
         "coverage":{"count":n,"total_count":total,"count_fraction":n/total,
                     "weight":covered_weight,"missing_weight":max(0,1-covered_weight),
@@ -308,6 +316,7 @@ def aggregate(members: Sequence[Member], *, definition: Definition, asof: dateti
                    "method":r.method if isinstance(r.method,str) else None,
                    "tenor_calendar_days":float(r.tenor_calendar_days),
                    "year_basis":r.year_basis if isinstance(r.year_basis,str) else None,
+                   "source_session":r.source_session.isoformat() if r.source_session is not None else None,
                    **_receipt(r)} for r in active],
         "correlation":None if correlation is None else {
             "method":correlation.method if isinstance(correlation.method,str) else None,
