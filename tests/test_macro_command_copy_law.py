@@ -322,10 +322,10 @@ def test_labor_unavailable_copy_preserves_partial_readings() -> None:
     assert not rendered["absent"]
     assert len(rendered["entries"]) == 1
     item = rendered["entries"][0]
-    assert "assessment stays unavailable" in item["text"]["en"]
-    assert "available indicators are still shown" in item["text"]["en"]
-    assert "整体判断仍不可用" in item["text"]["zh"]
-    assert "已有指标仍在下方展示" in item["text"]["zh"]
+    assert "no overall reading is shown" in item["text"]["en"]
+    assert "Missing data is not treated as a neutral reading" in item["text"]["en"]
+    assert "不展示总体读数" in item["text"]["zh"]
+    assert "缺失数据不会被当作中性读数" in item["text"]["zh"]
     for language in ("en", "zh"):
         assert guard.find_violations(f"<p>{item['text'][language]}</p>") == []
     assert item["text_original"] is None
@@ -498,6 +498,28 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
         {"en": "raw_unreviewed_slug has no pair", "zh": "无"})
     assert reading == PLAIN_FALLBACK
     assert original["en"].startswith("raw_unreviewed_slug")
+
+
+def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+
+    source = {
+        "en": "US labor-market state cannot be classified: axis coverage is below "
+              "the disclosed floor. No quadrant is asserted rather than defaulting "
+              "to a neutral state.",
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    before = dict(source)
+    reading, original = apply_plain_producer(source)
+    assert reading is not None and reading != source
+    assert original == before and source == before
+    assert "no overall reading" in reading["en"]
+    assert "not treated as a neutral reading" in reading["en"]
+    html = (f'<p><span class="l-en">{reading["en"]}</span>'
+            f'<span class="l-zh">{reading["zh"]}</span></p>')
+    assert guard.find_violations(html) == []
+    ordinary = {"en": "Payrolls increased this month.", "zh": "本月就业人数增加。"}
+    assert apply_plain_producer(ordinary) == (ordinary, None)
 
 
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:

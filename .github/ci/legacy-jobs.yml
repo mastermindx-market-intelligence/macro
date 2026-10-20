@@ -37,6 +37,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -1887,6 +1891,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -2796,6 +2804,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -6596,6 +6608,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
@@ -8914,6 +8929,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -10682,6 +10701,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/__init__.py"
+      - "engine/china_participation.py"
       - "engine/i18n.py"
       - "lib/__init__.py"
       - "lib/config.py"
@@ -19586,6 +19606,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
@@ -20364,6 +20387,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
@@ -22377,6 +22403,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -24057,6 +24087,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
@@ -24846,6 +24879,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30331,6 +30367,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30828,6 +30867,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
@@ -32920,6 +32963,10 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - engine/options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms_native.py
+      - docs/runbooks/OPTIONS_OCC_CONTRACT_TERMS.md
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -32934,7 +32981,9 @@ jobs:
           python -m pytest
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
-          tests/test_options_alpha_exact_option_outcome.py -q -rs
+          tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_occ_contract_terms.py
+          tests/test_options_occ_contract_terms_native.py -q -rs
 
   product-experience-registry:
     if: ${{ false }}
@@ -33817,6 +33866,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/massive_news.py
       - engine/qbus_news_intake.py
@@ -37690,3 +37743,133 @@ jobs:
         run: |
           python tests/test_options_pilot_study_adapter.py
           python tests/test_options_pilot_chronology.py
+
+  commodities-research-workspace:
+    if: ${{ false }}  # Executed by the required PR pack runner.
+    gate: code
+    scope: exclusive
+    # R3 uses inline fixtures and temporary files; no collector or scoring run.
+    # Retain the complete named import/read closure and ancestor initializers.
+    # This scope adds no packing exception or global-selection threshold.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/commodity_carry.py"
+      - "collectors/fred.py"
+      - "collectors/yahoo.py"
+      - "config.yml"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/dataset_registry.yml"
+      - "config/delisted_symbols.yml"
+      - "config/metabolism_budget.yml"
+      - "config/usgs_mcs_sources.yml"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/china_gold_premium.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/commodity_alerts.py"
+      - "engine/commodity_carry_context.py"
+      - "engine/commodity_confluence.py"
+      - "engine/commodity_conviction.py"
+      - "engine/commodity_coverage_matrix.py"
+      - "engine/commodity_cycle_state.py"
+      - "engine/commodity_decision_workspace.py"
+      - "engine/commodity_index.py"
+      - "engine/commodity_inputs.py"
+      - "engine/commodity_mtf.py"
+      - "engine/commodity_news.py"
+      - "engine/commodity_signals.py"
+      - "engine/commodity_supply_context.py"
+      - "engine/commodity_workspace_adapter.py"
+      - "engine/conditions.py"
+      - "engine/critical_minerals_display.py"
+      - "engine/critical_minerals_supply.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_proxies.py"
+      - "engine/cycles.py"
+      - "engine/event_calendar.py"
+      - "engine/gdelt_client.py"
+      - "engine/hazard_score.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/contracts.py"
+      - "engine/intelligence_workspace/entity.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/ollama_provider.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/provider_health.py"
+      - "engine/rates_command_basis.py"
+      - "engine/sector_cycles.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/transmission_company_continuation.py"
+      - "engine/transmission_publish.py"
+      - "engine/trend_episode.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/forex_link.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_commodities.py"
+      - "scripts/render_commodity_workspace_review.py"
+      - "site/basketdata/critical_minerals_supply.json"
+      - "templates/_commodity_decision_workspace.html.j2"
+      - "templates/commodities.html.j2"
+      - "templates/commodity-workspace.css"
+      - "templates/commodity-workspace.js"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_commodity_supply_context.py"
+      - "tests/test_commodity_workspace_contracts.js"
+    timeout-minutes: 7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+      - name: commodity research projection and physical-balance contracts
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py -q -p no:cacheprovider
+      - name: workspace state, import and company-return contracts
+        run: node tests/test_commodity_workspace_contracts.js
