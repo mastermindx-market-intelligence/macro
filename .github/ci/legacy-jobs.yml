@@ -1020,6 +1020,7 @@ jobs:
       - "collectors/edgar_share_quality.py"
       - "collectors/edgar_stock_quality.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "config.yml"
       - "config/market_memory_canary.v1.json"
       - "engine/__init__.py"
@@ -6580,6 +6581,30 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Qualified joint exposure and the existing Hub publisher share this lane.
+      - "engine/etf_flows.py"
+      - "engine/exposure_math.py"
+      - "engine/grading_stats.py"
+      - "engine/levels_engine.py"
+      - "engine/levels_grade.py"
+      - "engine/levels_publish.py"
+      - "engine/moves_engine.py"
+      - "engine/options_exposure_projection.py"
+      - "engine/intelligence_workspace/options_contract_identity.py"
+      - "tests/test_options_contract_identity.py"
+      - "lib/options_source_receipts.py"
+      - "lib/options_reference_pages.py"
+      - "tests/test_options_reference_pages.py"
+      - "tests/test_options_source_receipts.py"
+      - "tests/test_options_dated_projection.py"
+      - "scripts/massive_entitlement_probe.py"
+      - "engine/options_hub.py"
+      - "engine/vex_engine.py"
+      - "scripts/build_options_hub_nightly.py"
+      - "tests/test_build_options_hub_nightly.py"
+      - "tests/test_options_exposure_projection.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_hub_contract_v2.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "engine/liquidity_currency.py"
@@ -7244,6 +7269,8 @@ jobs:
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
+      - name: qualified joint exposure and legacy Hub publication compatibility
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -9016,6 +9043,7 @@ jobs:
       - "tests/test_fif_pf_health_entity.py"
       - "tests/test_fif_pf_health_pointer.py"
       - "tests/test_fif_a0_production_mode_unit.py"
+      - "tests/test_fif_a18_publish_fault_drill.py"
       - "scripts/fif_coverage_writer.py"
       - "tests/test_fif_coverage_writer.py"
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
@@ -9747,10 +9775,12 @@ jobs:
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
+      - "tests/test_fif_z0_gap_a23_a38.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -9830,12 +9860,15 @@ jobs:
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
+          tests/test_fif_z0_gap_a23_a38.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
           tests/test_fif_pf_health_entity.py
           tests/test_fif_pf_health_pointer.py
           tests/test_fif_a0_production_mode_unit.py
+          tests/test_fif_a18_publish_fault_drill.py
           tests/test_fif_coverage_writer.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
@@ -9880,6 +9913,7 @@ jobs:
           tests/test_fundamental_forensics_ingest.py
           tests/test_fundamental_forensics_kernel_literal_guard.py
           tests/test_fundamental_forensics_latency.py
+          tests/test_fundamental_forensics_mapping_pack_v1_1.py
           tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
@@ -9937,7 +9971,7 @@ jobs:
       - name: FIF G-pack gold and kernel suites (hermetic half)
         run: python -m pytest tests/test_fif_g_pack_gold.py tests/test_fif_g_pack_kernel.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs tests/fundamental_forensics_a24_error_leak.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -10427,6 +10461,102 @@ jobs:
       # install line (numpy arrives with pandas).
       - name: china tushare takeover suites — addons gate + minutes plane + chips (A/B/C)
         run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py -q
+
+  china-altdata-catalysts:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # China Alt-Data event-catalyst cards (W27-L27, 2026-10-20). Inquiry rows carry
+    # secName/secCode, pre-announcement rows pct_change + a Chinese-only type, unlock rows
+    # float_pct; the template read none of them, so names, swings and unlock sizes rendered as
+    # empty spans. Six render tests pin them (jinja2 + engine/i18n; no data/ or site/ read).
+    # tests/test_china_altdata.py leaves config/unrun_test_baseline.json here: its 11 engine
+    # tests ran in no job. Own job, not a step in unrun-template-chips: that step moved the
+    # index-template (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes.
+    # scope: exclusive pins it to its static import closure plus ancestor inits; the probe
+    # ceilings stay fixed.
+    paths:
+      - "templates/china_altdata.html.j2"
+      - "tests/test_china_altdata.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/china_altdata.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/entity_resolver.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/name_resolver.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/smart_money.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
+        run: python -m pytest tests/test_china_altdata.py -q -p no:cacheprovider
 
   china-board-breadth:
     if: ${{ false }}
@@ -13254,6 +13384,71 @@ jobs:
         run: python -m pytest tests/test_finnhub_transcripts.py -q
       - name: stocktwits sentiment collector tests
         run: python -m pytest tests/test_stocktwits.py -q
+
+  china-sector-desk-gate:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # China Sector Desk turn-signature gate row + cohort label (W27-L26, 2026-10-20). The row
+    # read only gate.passed, so an unavailable gate (available=False, passed=True) painted a
+    # tick for checks that never ran; the ZH leg printed the English word "review"; and the h6
+    # band said "setup ~ today" for a top-third cohort that is false today for three of four
+    # sectors. Five render tests pin the pooled n, median percentiles, the CI band, "not run"
+    # and "(not today)". tests/test_china_sector_desk.py leaves config/unrun_test_baseline.json
+    # here; its three older tests read the china_sectors parquet store and SKIP without data/.
+    # Own job, not a step in unrun-template-chips: that step moved the index-template
+    # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes. scope: exclusive
+    # pins it to its static import closure plus ancestor inits; the probe ceilings stay fixed.
+    paths:
+      - "templates/china_sector_desk.html.j2"
+      - "tests/test_china_sector_desk.py"
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/china_sectors.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/china_sector_desk.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/china_sector_pathway_backtest.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/grading_stats.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+      - name: China Sector Desk — turn-signature gate row prints its sample + band; cohort label is the top third
+        run: python -m pytest tests/test_china_sector_desk.py -q -p no:cacheprovider
 
   china-native-w2:
     if: ${{ false }}
@@ -18019,6 +18214,50 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: pick lab liquidity gate regression tests
         run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py -q
+
+  pick-lab-cn-render:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # CN Pick Lab renderer (W28-L28, 2026-10-20). engine/pick_lab/book.py stamps SCOREABLE once
+    # a book clears the PL-R4 sample floor, but the CN/HK status badge had no SCOREABLE entry,
+    # and picks_today cards read a "close" key the builder never writes (its fire rows carry
+    # close_at_fire), so no pick price printed. tests/test_pick_lab_cn_render.py leaves
+    # config/unrun_test_baseline.json here: it ran in no job. Its HK twin stays in
+    # pick-lab-liquidity. Own job, not a path on pick-lab-liquidity's run line: that append
+    # moved the index-template packing probe past its ceiling (5,824 > 5,822). scope: exclusive
+    # pins it to its static import closure, the modules engine/pick_lab/__init__.py imports and
+    # ancestor inits; the probe ceilings stay fixed.
+    paths:
+      - "engine/pick_lab/render_cn.py"
+      - "templates/china_stocks_lab.html.j2"
+      - "tests/test_pick_lab_cn_render.py"
+      - "engine/__init__.py"
+      - "engine/pick_lab/__init__.py"
+      - "engine/pick_lab/candidates.py"
+      - "engine/pick_lab/registry.py"
+      - "engine/pick_lab/signals_1d.py"
+      - "engine/pick_lab/snapshot.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "templates/china.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
+        run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -30543,6 +30782,7 @@ jobs:
       - "collectors/sec_filing_parser.py"
       - "collectors/sec_request_pacer.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "collectors/us_names_zh.py"
       - "collectors/usaspending_awards.py"
       - "collectors/usaspending_idv_graph.py"
