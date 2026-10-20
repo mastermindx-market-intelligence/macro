@@ -1813,6 +1813,16 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    # The low-coverage Labor refusal is display copy, not a new state decision.
+    # apply_plain_pair returns the unmodified source pair for existing provenance consumers.
+    (
+        "US labor-market state cannot be classified: axis coverage is below the disclosed floor.",
+        _pair(
+            "Labor-market data coverage is below the required minimum. Current "
+            "conditions remain unclassified rather than being treated as neutral.",
+            "劳动力市场数据覆盖不足，未达到最低要求。当前状况不予分类，不会被视为中性状态。",
+        ),
+    ),
     (
         "This page publishes no dual-axis state and no headline quadrant: the "
         "frozen Market Ontology architecture document defines twelve macro "

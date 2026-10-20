@@ -4738,3 +4738,25 @@ def test_no_unlisted_identical_png_pairs() -> None:
         if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
             illegal[sha] = uniq
     assert not illegal, illegal
+
+
+def test_labor_coverage_refusal_is_plain_without_changing_source_pair() -> None:
+    """A low-coverage labor snapshot must not leak its technical refusal prose."""
+    from lib import macro_suite_labels as labels
+
+    original = {
+        "en": "US labor-market state cannot be classified: axis coverage is below the disclosed "
+              "floor. No quadrant is asserted rather than defaulting to a neutral state.",
+        "zh": "劳动力市场数据覆盖不足，不能判定当前状态，不默认视为中性。",
+    }
+    raw_before = dict(original)
+    plain, technical = labels.apply_plain_producer(original)
+    assert plain is not None
+    assert "axis" not in plain["en"].lower()
+    assert "coverage" in plain["en"].lower()
+    assert "neutral" in plain["en"].lower()
+    assert plain["zh"] and plain["zh"] != plain["en"]
+    assert technical == raw_before
+    assert original == raw_before
+    html = '<main class="mc-shell"><p>' + plain["en"] + '</p></main>'
+    assert guard.find_violations(html) == []
