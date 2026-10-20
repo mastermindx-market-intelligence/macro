@@ -926,6 +926,7 @@ def _served_metric_cells(
                     max_cells=HARD_MAX_METRICS * QUERY_CHUNK_PERIODS,
                 ),
                 lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
+                source_taxonomy_uris=getattr(dataset, "source_taxonomy_uris", None),
             )
         except Exception:  # noqa: BLE001 - the kernel refused the dataset
             construction_refused = True

@@ -31,11 +31,18 @@ discoveries:
   - DSC:CHART-ENGINE-Q03B-ZOOM-P95-GAP-IS-ACK-PACED-PHASE
   - DSC:CHART-ENGINE-Q03B-FIRST-WHEEL-IS-RENDERER-IDLE-WAKEUP
   - DSC:CHART-ENGINE-Q03B-V2-FIRST-WHEEL-ELEVATION-PERSISTS-WITH-HEARTBEAT
+  - DSC:CHART-ENGINE-Q03B-CDP-WHEEL-HELD-BEHIND-VISUAL-STATE-CALLBACK
+  - DSC:CHART-ENGINE-PERF-C-FRAME-COST-CUT
+  - DSC:CHART-ENGINE-Q03B-NEXT-FRAME-ANSWER-IS-NOT-THE-WHEELS-OWN-FRAME
 blocked_by:
   - >
     The Q03 zoom half is HELD on the VALID FAIL Q03b v2 receipt (mm zoom p95 21.655 / p99
-    42.429 ms vs <= 20 / <= 33.4). P5-DEFAULT-FLIP and P6-LWC-RETIREMENT wait on the
-    Chairman's decision whether to commission a prospective protocol v3 (see next_action).
+    42.429 ms vs <= 20 / <= 33.4). The Chairman commissioned a new protocol on 2026-10-18; its
+    v3 draft failed its own pre-registered B1 check before any receipt, and the Chairman ruled
+    the v4 rule the same day (DEC:CHART-ENGINE-Q03B-PROTOCOL-V4-OWN-FRAME-SWAP-END:
+    own EventLatency frame, forward anchor minus the capped busy bias, GPU swap end).
+    P5-DEFAULT-FLIP and P6-LWC-RETIREMENT wait on the one official v4 mm receipt at a merged
+    master head carrying Terminal PR 1050.
 waves:
   - id: P2-CONTRACT
     title: Portable main-chart contract — api.ts widened, LWC adapter implements it, census + reference-semantics dossier
@@ -82,7 +89,24 @@ waves:
       receipt, merged as master 3c115e5d1 and deployed as ce9. PR 1028 (harness-only readiness
       retry for the navigation race that aborted lwc run 3) merged as master fb72315fa
       (harness-only; shipped inside ce10, no deploy of its own). Not to be re-run; the zoom
-      half moves only through a prospective v3 decision.
+      half moves only through a prospective new-protocol decision.
+  - id: P4-Q03B-PROTOCOL-V4
+    title: Q03b protocol v4 — the wheel's own EventLatency frame to its GPU swap end, anchored at the Browser forward minus the capped main-thread busy bias, with v4 INVALID rules, plus PERF-C frame-cost cut (arithmetic time ticks, streaming line LOD)
+    status: in_progress
+    pr: 1050
+    depends_on: [P4-Q03C-PROTOCOL-V2]
+    next_action: >
+      Ruled by the Chairman 2026-10-18 under DEC:CHART-ENGINE-Q03B-PROTOCOL-V4-OWN-FRAME-SWAP-END
+      (budgets and workload unchanged; the v3 draft was never measured, see
+      DSC:CHART-ENGINE-Q03B-NEXT-FRAME-ANSWER-IS-NOT-THE-WHEELS-OWN-FRAME). The v4 code is on
+      Terminal PR 1050 at d0dc7aa09595 (99 cadence tests, 12 mutations red, independent oracle 0
+      mismatches; audit fail-closed repairs F1-F3 change no diag row; a counts-only mechanism check in receipt categories had 60 marks / 60 mapped
+      / 0 fallbacks / map max 0.023 ms on its VALID-shaped mm attempt). Land PR 1050 (instrument
+      plus PERF-C, no receipt), deploy and live-prove it, then take the official v4 receipt once
+      at the merged master head (mm and lwc, port 3111, load1 < 24, NEXT_PUBLIC_CHART_BENCH=1
+      prod build, headed, dpr 2, 3 runs). An INVALID (q03b-v4) run is repeated unread; a VALID
+      FAIL keeps the hold with no re-run or amendment. Report the INVALID attempt count with
+      the receipt.
   - id: P4-ACCEPTANCE-DARK-LAUNCH
     title: Conformance corpus green on "mm", engine selector dark launch, production crops, rollback drill, acceptance-gap closure (PR 993) and census follow-ups (PR 997)
     status: done
@@ -97,13 +121,18 @@ waves:
   - id: P5-DEFAULT-FLIP
     title: P03 — flip the default engine to "mm" (LWC stays selectable as the rollback for >= 1 release)
     status: todo
-    depends_on: [P4-Q03C-PROTOCOL-V2, P4-ACCEPTANCE-DARK-LAUNCH]
+    depends_on: [P4-Q03B-PROTOCOL-V4, P4-ACCEPTANCE-DARK-LAUNCH]
     next_action: >
-      HELD by DEC:CHART-ENGINE-Q03B-PROTOCOL-V2-WALL-CLOCK-INPUT until an mm zoom receipt
-      passes under protocol v2 (p95 <= 20 / p99 <= 33.4 ms over all 60 wheels). Branch
-      claude/ce-p03-1013 (9576169f9) carries the flip; the pan half is already lifted.
+      HELD by DEC:CHART-ENGINE-Q03B-PROTOCOL-V4-OWN-FRAME-SWAP-END until the official v4 mm zoom
+      receipt passes (VALID and zoom input_to_present p95 <= 20 / p99 <= 33.4 ms); the pan half is already
+      lifted. The flip is carried on claude/ce-p03b-1018 (4fb2c86ae465, superseding
+      claude/ce-p03-1013), which still has two blockers to fix before it can ship: the mm
+      tickMarkFormatter receives the tick weight instead of LWC's TickMarkType
+      (lib/chart-engine/canvas/frame.ts), and ChartPanel attaches SessionShadingPrimitive
+      unguarded, which mm rejects. The ChartPanel edit needs the three evidence recaptures.
       The v2 receipt FAILED (VALID (zoom input_marks 60 = dispatch.scheduled 60, input_unpresented 0, dispatch_dev_max_ms 0.988 <= 2, heartbeat_mode through with leadin_presentations 0) and FAIL: mm zoom input_to_present p95 21.655 ms > 20 and p99 42.429 ms > 33.4 (runs p95 25.8 / 21.7 / 24.6, p99 42.8 / 42.4 / 38.9; median run 2 by pan p95); pan input_to_present p95 8.905 / p99 9.686 PASS. lwc comparator: runs 1-2 zoom p95 25.5 / 25.3, p99 42.6 / 35.7 (both fail the same budgets); run 3 aborted by a bench-harness navigation race ('Execution context was destroyed' in waitReady, bench/chart-engine.cadence.bench.ts:169), so that session wrote no lwc receipt file; the complete ledger-only lwc comparator taken at 2026-10-14T07:57:33Z (same head, port 3111, load1 17.98) failed in all three runs (zoom p95 26.2 / 24.8 / 25.6, p99 41.6 / 52.3 / 47.2; median receipt cadence-lwc-1b7ec6a6b5ed80f49db2b9d4353cadb98a3f79a8-m2studio.json, budget_ok false, not committed) - a ledger comparator, not a ruling input or a condition of the mm ruling receipt), so the hold stands; the next legitimate
-      step is a prospective v3 decision with a new falsifiable diagnosis, not a re-measurement.
+      step was a prospective new-protocol decision with a new falsifiable diagnosis, not a
+      re-measurement (now v4, above).
   - id: P6-LWC-RETIREMENT
     title: P04 — retire the lightweight-charts adapter and dependency
     status: todo
@@ -176,8 +205,13 @@ next_action: >
   (claude/ce-p03-1013 @ 9576169f9) and P04 LWC retirement stay held. Next: the Chairman decides
   whether to commission a prospective Q03b protocol v3 with a new falsifiable diagnosis (stage
   breakdown of the first wheel and per-frame mm zoom cost at equal phase), budgets and workload
-  unchanged. Separately the licence owner decides the lightweight-charts attribution
-  (attributionLogo false at 7 sites, no NOTICE link).
+  unchanged. The Chairman commissioned it on 2026-10-18; the v3 draft failed its own
+  pre-registered B1 check before any receipt, and the Chairman ruled v4 the same day
+  (DEC:CHART-ENGINE-Q03B-PROTOCOL-V4-OWN-FRAME-SWAP-END; wave P4-Q03B-PROTOCOL-V4, Terminal PR 1050).
+  Next: land PR 1050, take the one official v4 receipt, and on a PASS ship P03 then P04. The
+  lightweight-charts attribution (attributionLogo false at 7 sites, no NOTICE link) is DEFERRED
+  by Chairman override 2026-10-18 ("we do it in future when i say so"); do not add it until the
+  Chairman asks.
 ---
 
 # Native Chart Engine

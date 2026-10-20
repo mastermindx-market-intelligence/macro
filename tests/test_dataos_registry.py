@@ -404,3 +404,214 @@ def test_china_gold_source_contracts_are_produced_after_live_acceptance() -> Non
 
     assert sge.schema["rmb_per_g"]["unit"] == "CNY_per_gram"
     assert global_ref.schema["cny_per_oz"]["unit"] == "CNY_per_troy_ounce"
+
+
+# BEA GVC byte staging is Data OS preparation, not source admission.
+# Keep its synthetic tests in this incumbent code-gated Data OS suite so an
+# unrun stand-alone test or a new CI control plane cannot hide a regression.
+from dataclasses import replace as _bea_replace
+import json as _bea_json
+from lib.dataos import bea_gvc_staging as _bea_stage
+
+_BEA_STAGE_GEN = "a" * 64
+
+
+def _bea_staging_receipt(**changes):
+    base = _bea_stage.BEAGVCStageReceipt(
+        source_generation_id=_BEA_STAGE_GEN,
+        candidate_manifest_sha256="b" * 64,
+        candidate_index_sha256="c" * 64,
+        relative_directory="candidate-" + _BEA_STAGE_GEN,
+        source_response_count=72, source_file_count=72,
+        capture_receipt_count=4, industry_count=138,
+        total_industry_rows=138 * 139 * 8,
+    )
+    return _bea_replace(base, **changes)
+
+
+def test_bea_stage_roundtrip_is_explicitly_unadmitted(tmp_path):
+    root = tmp_path.resolve()
+    payload = {
+        "candidate_index.json": b'{"synthetic":true}',
+        "original_responses/Use/" + "b" * 64 + ".json": b'{"fake":true}',
+        "industry_inputs/industry_5241X.jsonl": b'{"row":"synthetic"}\n',
+    }
+    result = _bea_stage._stage_verified_bytes(
+        root, generation=_BEA_STAGE_GEN, files=payload,
+        receipt=_bea_staging_receipt())
+    stage = root / result.relative_directory
+    assert stage.is_dir()
+    for path, value in payload.items():
+        assert (stage / path).read_bytes() == value
+    assert _bea_json.loads((stage / "stage_receipt.json").read_bytes()) == result.as_dict()
+    assert result.state == "STAGED_NOT_INSTALLED"
+    assert all(result.as_dict()[field] is False for field in (
+        "dataos_native_admitted", "may_publish", "may_rank", "may_trade",
+        "historical_pit_eligible"))
+    with pytest.raises(_bea_stage.BEAGVCStageRefused, match="already staged"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN, files=payload,
+            receipt=_bea_staging_receipt())
+
+
+@pytest.mark.parametrize("path", (
+    "../out", "/tmp/out", "a/../../out", "a//b", "./x",
+    "a/./b", "a\\b", "a\x00b",
+))
+def test_bea_stage_rejects_path_escape_before_any_write(tmp_path, path):
+    root = tmp_path.resolve()
+    with pytest.raises(_bea_stage.BEAGVCStageRefused):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN, files={path: b"fake"},
+            receipt=_bea_staging_receipt())
+    assert not tuple(root.iterdir())
+
+
+@pytest.mark.parametrize("changes", (
+    {"may_publish": True}, {"dataos_native_admitted": True},
+    {"may_rank": True}, {"may_trade": True},
+    {"historical_pit_eligible": True}, {"state": "PRODUCED"},
+    {"source_generation_id": "d" * 64},
+    {"relative_directory": "candidate-somewhere-else"},
+))
+def test_bea_stage_refuses_all_authority_and_identity_escalations(tmp_path, changes):
+    root = tmp_path.resolve()
+    with pytest.raises(_bea_stage.BEAGVCStageRefused):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"synthetic.txt": b"fake"},
+            receipt=_bea_staging_receipt(**changes))
+    assert not tuple(root.iterdir())
+
+
+def test_bea_stage_failed_write_rolls_back_partial_directory(tmp_path, monkeypatch):
+    root = tmp_path.resolve()
+    original = _bea_stage._write_exact
+    attempted = []
+
+    def fail_second(base, name, data):
+        attempted.append(name)
+        if len(attempted) == 2:
+            raise OSError("synthetic interrupted stage")
+        return original(base, name, data)
+
+    monkeypatch.setattr(_bea_stage, "_write_exact", fail_second)
+    with pytest.raises(OSError, match="synthetic interrupted stage"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"a.txt": b"a", "b.txt": b"b"},
+            receipt=_bea_staging_receipt())
+    assert not tuple(root.iterdir())
+
+
+def test_bea_stage_symlink_root_and_unbound_source_refuse(tmp_path):
+    root = tmp_path.resolve()
+    actual = root / "actual"
+    actual.mkdir()
+    alias = root / "alias"
+    alias.symlink_to(actual, target_is_directory=True)
+    with pytest.raises(_bea_stage.BEAGVCStageRefused):
+        _bea_stage._stage_verified_bytes(
+            alias, generation=_BEA_STAGE_GEN,
+            files={"a": b"fake"}, receipt=_bea_staging_receipt())
+    with pytest.raises(_bea_stage.BEAGVCStageRefused):
+        _bea_stage.stage_native_bea_gvc_candidate(
+            {"not": "a native candidate"}, root=actual,
+            expected_manifest_sha256="b" * 64,
+            expected_index_sha256="c" * 64)
+    assert not tuple(actual.iterdir())
+
+def test_bea_stage_stays_owner_only_under_permissive_umask(tmp_path):
+    import stat
+    import os
+    root = tmp_path.resolve()
+    previous = os.umask(0)
+    try:
+        output = _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={
+                "nested/synthetic.json": b'{"synthetic":true}',
+                "candidate_manifest.json": b"synthetic",
+            }, receipt=_bea_staging_receipt())
+    finally:
+        os.umask(previous)
+    stage = root / output.relative_directory
+    assert stat.S_IMODE(stage.stat().st_mode) == 0o700
+    for path in stage.rglob("*"):
+        if path.is_file():
+            assert stat.S_IMODE(path.stat().st_mode) == 0o600
+        elif path.is_dir():
+            assert stat.S_IMODE(path.stat().st_mode) == 0o700
+
+
+def test_bea_stage_syncs_all_directories_before_return(tmp_path, monkeypatch):
+    root = tmp_path.resolve()
+    original_sync = _bea_stage._fsync_directory
+    synced = []
+
+    def record_sync(path):
+        synced.append(path)
+        return original_sync(path)
+
+    monkeypatch.setattr(_bea_stage, "_fsync_directory", record_sync)
+    result = _bea_stage._stage_verified_bytes(
+        root, generation=_BEA_STAGE_GEN,
+        files={"nested/a.json": b"a"}, receipt=_bea_staging_receipt())
+    assert synced[-1] == root
+    assert any("nested" in path.parts for path in synced[:-1])
+    assert (root / result.relative_directory / "nested/a.json").read_bytes() == b"a"
+
+
+def test_bea_stage_post_rename_sync_uncertain_effect_cannot_blind_retry(tmp_path, monkeypatch):
+    root = tmp_path.resolve()
+    original_sync = _bea_stage._fsync_directory
+
+    def fail_after_visible_rename(path):
+        if path == root:
+            raise OSError("synthetic directory durability interruption")
+        return original_sync(path)
+
+    monkeypatch.setattr(_bea_stage, "_fsync_directory", fail_after_visible_rename)
+    with pytest.raises(OSError, match="synthetic directory durability interruption"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"candidate_manifest.json": b"synthetic"},
+            receipt=_bea_staging_receipt())
+    observed = root / ("candidate-" + _BEA_STAGE_GEN)
+    assert (observed / "candidate_manifest.json").read_bytes() == b"synthetic"
+    with pytest.raises(_bea_stage.BEAGVCStageRefused, match="already staged"):
+        _bea_stage._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"candidate_manifest.json": b"synthetic"},
+            receipt=_bea_staging_receipt())
+
+
+def test_bea_stage_optional_source_import_only_at_invocation(tmp_path, monkeypatch):
+    calls = []
+
+    def missing_source(name):
+        calls.append(name)
+        raise ModuleNotFoundError("synthetic missing native source", name=name)
+
+    monkeypatch.setattr(_bea_stage, "import_module", missing_source)
+    with pytest.raises(_bea_stage.BEAGVCStageRefused, match="producer unavailable"):
+        _bea_stage.stage_native_bea_gvc_candidate(
+            object(), root=tmp_path.resolve(),
+            expected_manifest_sha256="b" * 64,
+            expected_index_sha256="c" * 64)
+    assert calls == ["collectors.bea_gvc_native"]
+    assert not tuple(tmp_path.iterdir())
+
+
+def test_bea_stage_nested_source_import_failure_is_not_hidden(tmp_path, monkeypatch):
+    def missing_transitive(name):
+        raise ModuleNotFoundError("synthetic transitive failure", name="missing_dependency")
+
+    monkeypatch.setattr(_bea_stage, "import_module", missing_transitive)
+    with pytest.raises(ModuleNotFoundError, match="synthetic transitive failure"):
+        _bea_stage.stage_native_bea_gvc_candidate(
+            object(), root=tmp_path.resolve(),
+            expected_manifest_sha256="b" * 64,
+            expected_index_sha256="c" * 64)
+    assert not tuple(tmp_path.iterdir())
+
