@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_EVEN
 from hashlib import sha256
 from typing import Any, Callable, Mapping, Sequence
 
@@ -90,6 +90,13 @@ class PackSpec:
     applicable_classes: frozenset[str] | None = None
     # Catalogue reason code cited when the issuer class is outside the set.
     inapplicable_class_reason: str = "issuer_class_outside_pack_classes"
+    # A.1 field-level issuer-class exclusions: field_id -> (issuer classes
+    # excluded, catalogue reason code). The framework compares
+    # ``detectors.issuer_class_for_sic`` output against the producer's
+    # frozenset; it never tests a word from configuration.
+    field_class_exclusions: Mapping[str, tuple[frozenset[str], str]] = field(
+        default_factory=dict
+    )
 
 
 @dataclass(frozen=True)
@@ -109,12 +116,93 @@ class FormulaMapping:
     fn: Callable[[Mapping[str, Decimal]], Decimal]
 
 
+# A.6 formula helpers. A ratio quantizes to 6 decimal places with
+# ROUND_HALF_EVEN; a decimal sum/difference keeps the exact Decimal. A zero
+# denominator raises ``ZeroDivisionError`` so the framework emits the
+# ``division_by_zero`` typed absence.
+_RATIO_QUANTUM = Decimal("0.000001")
+
+
+def formula_sum(values: Mapping[str, Decimal]) -> Decimal:
+    """Exact decimal sum of every formula input, in declaration order."""
+    return sum(values.values(), Decimal("0"))
+
+
+def formula_difference(
+    minuend: str, subtrahend: str
+) -> Callable[[Mapping[str, Decimal]], Decimal]:
+    """Build an exact decimal ``minuend - subtrahend`` formula function."""
+
+    def difference(values: Mapping[str, Decimal]) -> Decimal:
+        return values[minuend] - values[subtrahend]
+
+    return difference
+
+
+def formula_ratio(
+    numerator: str, denominator: str
+) -> Callable[[Mapping[str, Decimal]], Decimal]:
+    """Build a ratio formula quantized to 6 dp under ROUND_HALF_EVEN."""
+
+    def ratio(values: Mapping[str, Decimal]) -> Decimal:
+        divisor = values[denominator]
+        if divisor == 0:
+            raise ZeroDivisionError("ratio denominator is zero")
+        return (values[numerator] / divisor).quantize(
+            _RATIO_QUANTUM, rounding=ROUND_HALF_EVEN
+        )
+
+    return ratio
+
+
+@dataclass(frozen=True)
+class DimensionedFactMapping:
+    """A.2: emit one row per admitted explicit-dimension tuple of a concept.
+
+    Admitted facts carry the primary axis and no axis outside
+    ``{primary_axis} ∪ other_axes_allowed``. Dimension tuples whose member
+    local names contain an excluded substring (case-insensitive) are skipped.
+    """
+
+    concept: str
+    primary_axis: str
+    other_axes_allowed: tuple[str, ...] = ()
+    exclude_member_substrings: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class FactOrFormulaMapping:
+    """A.3: the fact wins when it resolves to a valued row, else the formula.
+
+    The row's ``required_evidence_kind`` is ``xbrl_fact``;
+    ``evidence_kind`` reports which branch produced it.
+    """
+
+    fact: FactMapping
+    formula: FormulaMapping
+    # Limitation appended when the formula branch produced the row (e.g. a
+    # sum identity over the same addends becomes tautological).
+    limitation_when_formula: str | None = None
+
+
 @dataclass(frozen=True)
 class TableMapping:
     """Reserved for a later lane: table-cell evidence is never produced here."""
 
 
-FieldMapping = FactMapping | FormulaMapping | TableMapping
+@dataclass(frozen=True)
+class TextSpanMapping:
+    """Reserved for a later lane: span evidence is never produced here."""
+
+
+FieldMapping = (
+    FactMapping
+    | FormulaMapping
+    | DimensionedFactMapping
+    | FactOrFormulaMapping
+    | TableMapping
+    | TextSpanMapping
+)
 
 
 @dataclass(frozen=True)
@@ -311,10 +399,18 @@ def _mapping_digest(mapping: FactMapping) -> str:
 
 @dataclass(frozen=True)
 class _FieldOutcome:
+    """One field's production: its first row, value and any repeated rows.
+
+    ``value`` is the field total a check consumes — for a dimensioned field
+    the sum of every valued member row (A.5). ``extra_rows`` carries the
+    member rows after the first; they keep catalogue order and adjacency.
+    """
+
     row: dict[str, Any]
     value: Decimal | None
     decimals: int | None
     unit: str | None
+    extra_rows: tuple[dict[str, Any], ...] = ()
 
 
 def _base_row(catalogue_field: Mapping[str, Any], por: date) -> dict[str, Any]:
@@ -532,6 +628,182 @@ def _resolve_fact_mapping(
     )
 
 
+def _dimensioned_mapping_digest(mapping: DimensionedFactMapping) -> str:
+    payload = canonical_json(
+        [
+            mapping.concept,
+            mapping.primary_axis,
+            list(mapping.other_axes_allowed),
+            list(mapping.exclude_member_substrings),
+        ]
+    )
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _dimensioned_row(
+    *,
+    catalogue_field: Mapping[str, Any],
+    por: date,
+    mapping: DimensionedFactMapping,
+    occurrences: Sequence[Any],
+) -> _FieldOutcome:
+    """Build one member row for one explicit-dimension tuple (A.2)."""
+    representative = min(occurrences, key=lambda item: item.occurrence_id)
+    row = _base_row(catalogue_field, por)
+    distinct = {str(item.parsed_value) for item in occurrences}
+    if len(distinct) > 1:
+        # Same dimension tuple, different values: the FactMapping conflict rule.
+        units = {_unit_measure(item.unit) for item in occurrences}
+        row["quality_state"] = "not_evaluable"
+        row["non_value_state"] = "not_evaluable"
+        row["coverage_state"] = "unmapped"
+        row["reason"] = "unit_mismatch" if len(units) > 1 else "missing_dependency"
+        row["concept"] = mapping.concept
+        row["source_occurrence_ids"] = sorted(
+            {item.occurrence_id for item in occurrences}
+        )
+        return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["concept"] = mapping.concept
+    row["taxonomy"] = (
+        "extension"
+        if mapping.concept.startswith("{")
+        else mapping.concept.split(":", 1)[0]
+    )
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in occurrences}
+    )
+    row["dimensions"] = [
+        {"axis": axis, "member": str(member)}
+        for axis, member in sorted(representative.context.explicit_dimensions)
+    ]
+    catalogue_unit = catalogue_field.get("unit")
+    row["unit"] = (
+        catalogue_unit
+        if catalogue_unit is not None
+        else _unit_measure(representative.unit)
+    )
+    if catalogue_field["type"] in contract.NUMERIC_TYPES:
+        row["value"] = decimal_text(Decimal(str(representative.parsed_value)))
+    else:
+        token = representative.raw_token
+        row["text_value"] = (
+            token if token is not None else str(representative.parsed_value)
+        )
+    decimals: int | None = None
+    if (
+        representative.decimals is not None
+        and representative.decimals != "INF"
+    ):
+        decimals = int(representative.decimals)
+    return _FieldOutcome(
+        row=row,
+        value=Decimal(str(representative.parsed_value)),
+        decimals=decimals,
+        unit=row["unit"],
+    )
+
+
+def _resolve_dimensioned_fact_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: DimensionedFactMapping,
+    ledger: RawFactLedger,
+    por: date,
+) -> _FieldOutcome:
+    """A.2: one row per admitted explicit-dimension tuple of one concept.
+
+    The outcome's ``value`` is the sum over every valued member row, so a
+    check operand (A.5) reconciles the member rows against the consolidated
+    field. Rows are ordered by the canonical JSON of their ``dimensions``
+    list.
+    """
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    candidates = [
+        occurrence
+        for occurrence in ledger.events
+        if occurrence.concept_qname == mapping.concept
+        and not occurrence.is_nil
+        and _period_matches(occurrence, period_kind, por)
+    ]
+    allowed_axes = {mapping.primary_axis, *mapping.other_axes_allowed}
+    excluded_lower = tuple(
+        substring.lower() for substring in mapping.exclude_member_substrings
+    )
+    groups: dict[tuple[tuple[str, str], ...], list[Any]] = {}
+    foreign_axis_seen = False
+    for occurrence in candidates:
+        context = occurrence.context
+        # ``explicit_dimensions`` is a canonical tuple of (axis, member) pairs.
+        axes = {axis for axis, _member in context.explicit_dimensions} | {
+            axis for axis, _member in context.typed_dimensions
+        }
+        if not axes <= allowed_axes:
+            foreign_axis_seen = True
+            continue
+        if mapping.primary_axis not in axes:
+            continue
+        if any(
+            substring in _local_name(str(member)).lower()
+            for substring in excluded_lower
+            for _axis, member in context.explicit_dimensions
+        ):
+            continue
+        key = tuple(sorted(context.explicit_dimensions))
+        groups.setdefault(key, []).append(occurrence)
+
+    outcomes = [
+        _dimensioned_row(
+            catalogue_field=catalogue_field,
+            por=por,
+            mapping=mapping,
+            occurrences=occurrences,
+        )
+        for _key, occurrences in groups.items()
+    ]
+    outcomes.sort(key=lambda outcome: canonical_json(outcome.row["dimensions"]))
+    if not outcomes:
+        row = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            (
+                "disallowed_dimension"
+                if foreign_axis_seen
+                else f"missing_standard_fact:{mapping.concept}"
+            ),
+            concept=mapping.concept,
+        )
+        row.row["mapping_rule_id"] = f"{pack_id}.{field_id}.dimensioned_fact/v1"
+        row.row["mapping_rule_digest"] = _dimensioned_mapping_digest(mapping)
+        return row
+
+    for outcome in outcomes:
+        outcome.row["mapping_rule_id"] = f"{pack_id}.{field_id}.dimensioned_fact/v1"
+        outcome.row["mapping_rule_digest"] = _dimensioned_mapping_digest(mapping)
+    valued = [outcome for outcome in outcomes if outcome.value is not None]
+    total = (
+        sum((outcome.value for outcome in valued), Decimal("0"))
+        if len(valued) == len(outcomes)
+        else None
+    )
+    decimals_known = [
+        outcome.decimals for outcome in outcomes if outcome.decimals is not None
+    ]
+    return _FieldOutcome(
+        row=outcomes[0].row,
+        value=total,
+        decimals=min(decimals_known) if decimals_known else None,
+        unit=outcomes[0].unit,
+        extra_rows=tuple(outcome.row for outcome in outcomes[1:]),
+    )
+
+
 def _resolve_formula(
     *,
     catalogue_field: Mapping[str, Any],
@@ -614,6 +886,12 @@ class _OperandResolver:
         outcome = self._outcomes.get(name)
         return None if outcome is None else str(outcome.row["quality_state"])
 
+    def reason(self, name: str) -> str | None:
+        if not self.own(name):
+            return None
+        outcome = self._outcomes.get(name)
+        return None if outcome is None else outcome.row.get("reason")
+
     def _foreign_result(self, pack_id: str) -> dict[str, Any] | None:
         from .registry import produce_pack  # deferred: registry imports base
 
@@ -694,7 +972,20 @@ def _evaluate_check(
         operand_decimals.extend(item for _, item, _ in resolved)
         return resolved
 
+    def not_applicable_gate(names: Sequence[str]) -> str | None:
+        # A.1: a check whose operand field is field-level not_applicable is
+        # not_applicable with that field's catalogue reason.
+        for name in names:
+            if resolver.own(name) and resolver.quality(name) == "not_applicable":
+                return resolver.reason(name)
+        return None
+
     def identity(names: Sequence[str], left_count: int) -> None:
+        gate = not_applicable_gate(names)
+        if gate is not None:
+            statuses.append("not_applicable")
+            reasons.append(gate)
+            return
         resolved = resolve_many(names)
         if any(value is None for value, _, _ in resolved):
             statuses.append("not_evaluable")
@@ -727,6 +1018,11 @@ def _evaluate_check(
                 )
             names = [spec.opening, *spec.additions, *spec.reductions, spec.closing]
             own_operands.extend(name for name in names if resolver.own(name))
+            gate = not_applicable_gate(names)
+            if gate is not None:
+                statuses.append("not_applicable")
+                reasons.append(gate)
+                continue
             resolved = resolve_many(names)
             if any(value is None for value, _, _ in resolved):
                 statuses.append("not_evaluable")
@@ -763,6 +1059,11 @@ def _evaluate_check(
             for name in (spec.left, spec.right):
                 if resolver.own(name):
                     own_operands.append(name)
+            gate = not_applicable_gate([spec.left, spec.right])
+            if gate is not None:
+                statuses.append("not_applicable")
+                reasons.append(gate)
+                continue
             resolved = resolve_many([spec.left, spec.right])
             if any(value is None for value, _, _ in resolved):
                 statuses.append("not_evaluable")
@@ -776,6 +1077,11 @@ def _evaluate_check(
             reasons.append(None)
         elif isinstance(spec, Presence):
             own_operands.append(spec.field_id)
+            gate = not_applicable_gate([spec.field_id])
+            if gate is not None:
+                statuses.append("not_applicable")
+                reasons.append(gate)
+                continue
             resolved = resolve_many([spec.field_id])
             value, _, _ = resolved[0]
             if value is not None:
@@ -791,7 +1097,9 @@ def _evaluate_check(
             raise SpecialistPackError(f"unsupported check spec for {check_id}")
 
     status = "pass"
-    if "not_evaluable" in statuses:
+    if "not_applicable" in statuses:
+        status = "not_applicable"
+    elif "not_evaluable" in statuses:
         status = "not_evaluable"
     elif "fail" in statuses:
         status = "fail"
@@ -856,12 +1164,12 @@ def _mint_packet_id(
 
 
 def _unsupported_row(
-    catalogue_field: Mapping[str, Any], por: date
+    catalogue_field: Mapping[str, Any], por: date, evidence_kind: str = "table_cell"
 ) -> _FieldOutcome:
-    # TableMapping is reserved for a later lane.
+    # TableMapping and TextSpanMapping are reserved for later lanes (A.4).
     row = _base_row(catalogue_field, por)
-    row["evidence_kind"] = "table_cell"
-    row["required_evidence_kind"] = "table_cell"
+    row["evidence_kind"] = evidence_kind
+    row["required_evidence_kind"] = evidence_kind
     row["quality_state"] = "unsupported"
     row["non_value_state"] = "unsupported"
     row["coverage_state"] = "unmapped"
@@ -898,6 +1206,10 @@ def produce_pack_result(
     fields_rows: list[dict[str, Any]] = []
     checks_rows: list[dict[str, Any]] = []
     outcomes: dict[str, _FieldOutcome | None] = {}
+    # A.3: the fact half of a FactOrFormulaMapping, kept for the fallback.
+    fact_only_outcomes: dict[str, _FieldOutcome] = {}
+    # B.3-style conditional limitations emitted when a formula branch won.
+    branch_limitations: list[str] = []
 
     if state != "applicable":
         for catalogue_field in catalogue["fields"]:
@@ -915,8 +1227,39 @@ def produce_pack_result(
                     f"{pack_id} producer maps no field: {field_id}"
                 )
             allowed = catalogue_field.get("allowed_evidence_kinds") or []
-            if isinstance(mapping, TableMapping) or allowed == ["table_cell"]:
-                outcomes[field_id] = _unsupported_row(catalogue_field, por)
+            exclusion = spec.field_class_exclusions.get(field_id)
+            if exclusion is not None and (
+                issuer_class == "unknown" or issuer_class in exclusion[0]
+            ):
+                # A.1 field-level issuer-class exclusion (never a silent
+                # industrial default when the class is unknown).
+                if issuer_class == "unknown":
+                    outcomes[field_id] = _absence_row(
+                        catalogue_field, por, "not_evaluable", "issuer_class_unknown"
+                    )
+                else:
+                    outcomes[field_id] = _absence_row(
+                        catalogue_field, por, "not_applicable", exclusion[1]
+                    )
+            elif isinstance(mapping, (TableMapping, TextSpanMapping)) or allowed in (
+                ["table_cell"],
+                ["text_span"],
+            ):
+                outcomes[field_id] = _unsupported_row(
+                    catalogue_field,
+                    por,
+                    "text_span"
+                    if isinstance(mapping, TextSpanMapping) or allowed == ["text_span"]
+                    else "table_cell",
+                )
+            elif isinstance(mapping, DimensionedFactMapping):
+                outcomes[field_id] = _resolve_dimensioned_fact_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping,
+                    ledger=ledger,
+                    por=por,
+                )
             elif isinstance(mapping, FactMapping):
                 outcomes[field_id] = _resolve_fact_mapping(
                     pack_id=pack_id,
@@ -926,23 +1269,26 @@ def produce_pack_result(
                     por=por,
                     extension_prefixes=producer.extension_prefixes,
                 )
+            elif isinstance(mapping, FactOrFormulaMapping):
+                fact_only_outcomes[field_id] = _resolve_fact_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping.fact,
+                    ledger=ledger,
+                    por=por,
+                    extension_prefixes=producer.extension_prefixes,
+                )
             else:
                 outcomes[field_id] = None  # formulas resolve after facts
 
-        def resolve_field(field_id: str) -> _FieldOutcome | None:
-            outcome = outcomes.get(field_id)
-            if outcome is not None:
-                return outcome
-            mapping = producer.field_mappings.get(field_id)
-            if not isinstance(mapping, FormulaMapping):
-                return outcome
+        def _run_formula(field_id: str, mapping: FormulaMapping) -> _FieldOutcome:
             if field_id in resolving:
                 raise SpecialistPackError(
                     f"formula dependency cycle at {field_id}"
                 )
             resolving.add(field_id)
             try:
-                outcome = _resolve_formula(
+                return _resolve_formula(
                     catalogue_field=next(
                         item
                         for item in catalogue["fields"]
@@ -954,6 +1300,27 @@ def produce_pack_result(
                 )
             finally:
                 resolving.discard(field_id)
+
+        def resolve_field(field_id: str) -> _FieldOutcome | None:
+            outcome = outcomes.get(field_id)
+            if outcome is not None:
+                return outcome
+            mapping = producer.field_mappings.get(field_id)
+            if isinstance(mapping, FormulaMapping):
+                outcome = _run_formula(field_id, mapping)
+            elif isinstance(mapping, FactOrFormulaMapping):
+                fact_outcome = fact_only_outcomes.get(field_id)
+                if fact_outcome is not None and fact_outcome.value is not None:
+                    outcome = fact_outcome  # A.3: the fact wins
+                else:
+                    outcome = _run_formula(field_id, mapping.formula)
+                    # A.3: the fact is the required evidence; the formula
+                    # only reports which branch produced the row.
+                    outcome.row["required_evidence_kind"] = "xbrl_fact"
+                    if mapping.limitation_when_formula is not None:
+                        branch_limitations.append(mapping.limitation_when_formula)
+            else:
+                return outcome
             outcomes[field_id] = outcome
             return outcome
 
@@ -966,6 +1333,7 @@ def produce_pack_result(
             outcome = outcomes[catalogue_field["field_id"]]
             assert outcome is not None
             fields_rows.append(outcome.row)
+            fields_rows.extend(outcome.extra_rows)
 
         specs_by_check: dict[str, list[CheckSpec]] = {}
         for check_spec in producer.checks:
@@ -1032,7 +1400,9 @@ def produce_pack_result(
         receipts.append(f"packet_id_basis={minted_basis}")
 
     limitations = list(
-        dict.fromkeys((DISPLAY_ONLY_LIMITATION, *producer.limitations))
+        dict.fromkeys(
+            (DISPLAY_ONLY_LIMITATION, *producer.limitations, *branch_limitations)
+        )
     )[:32]
 
     obj: dict[str, Any] = {
@@ -1072,7 +1442,9 @@ __all__ = [
     "CheckSpec",
     "CrossStatement",
     "DISPLAY_ONLY_LIMITATION",
+    "DimensionedFactMapping",
     "FactMapping",
+    "FactOrFormulaMapping",
     "FieldMapping",
     "FormulaMapping",
     "MAX_DURATION_DAYS",
@@ -1086,6 +1458,10 @@ __all__ = [
     "SpecialistPackError",
     "SumIdentity",
     "TableMapping",
+    "TextSpanMapping",
     "evaluate_applicability",
+    "formula_difference",
+    "formula_ratio",
+    "formula_sum",
     "produce_pack_result",
 ]
