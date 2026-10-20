@@ -479,3 +479,26 @@ def test_raw_clocks_do_not_multiply_legacy_exposure_or_vol_rows(clock, monkeypat
     assert duplicate["exposure_projection"]["population"]["received_rows"] == 3
     assert duplicate["exposure_projection"]["metrics"]["gamma"]["exclusions"]["duplicate_contract_key"] == 1
     assert len(repeated) == 3 and clock in repeated.columns
+
+
+def test_raw_oi_clock_binds_receipt_without_multiplying_legacy_exposure(monkeypatch):
+    from engine import options_hub
+    from engine.vex_engine import compute_vex
+    g, oi, ctx = book()
+    g["vega"] = [.1, .1]
+    oi.loc[0, "open_interest"] = 200
+    oi["timestamp"] = ASOF + "T06:30:00.100"
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
+    assert build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)["metrics"]["gamma"]["qualified"] == 2
+    changed = oi.copy(); changed.loc[0, "timestamp"] = ASOF + "T06:30:00.101"
+    rejected = build_exposure_projection(g, changed, ASOF, "SPY", context=ctx)
+    assert rejected["metrics"]["gamma"]["exclusions"] == {"source_inputs_do_not_match_receipt": 2}
+    repeated = pd.concat([oi, changed.iloc[[0]]], ignore_index=True)
+    monkeypatch.setattr(options_hub, "_flip_and_profile", lambda *args: (None, None))
+    baseline = options_hub.compute_gex(g, oi, ASOF, "SPY")
+    duplicate = options_hub.compute_gex(g, repeated, ASOF, "SPY")
+    assert {k: v for k, v in baseline.items() if k != "exposure_projection"} == {
+        k: v for k, v in duplicate.items() if k != "exposure_projection"}
+    assert compute_vex(g, oi, ASOF, "SPY") == compute_vex(g, repeated, ASOF, "SPY")
+    assert duplicate["exposure_projection"]["metrics"]["gamma"]["exclusions"]["duplicate_contract_key"] == 1
+    assert len(repeated) == 3 and "timestamp" in repeated.columns

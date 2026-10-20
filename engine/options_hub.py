@@ -70,7 +70,7 @@ def _f(x, n: int = 2):
     return round(v, n) if np.isfinite(v) else None
 
 
-def _legacy_greek_rows(frame: pd.DataFrame) -> pd.DataFrame:
+def _legacy_option_rows(frame: pd.DataFrame) -> pd.DataFrame:
     """Preserve the pre-clock EOD row population for legacy analytics.
 
     Native raw clocks are additional provenance, not additional contracts. The
@@ -165,7 +165,7 @@ def compute_vol(
         return _empty_vol(root, asof)
 
     # ── normalise dates ──────────────────────────────────────────────────────
-    df = _legacy_greek_rows(greeks_df)
+    df = _legacy_option_rows(greeks_df)
     df["date"] = pd.to_datetime(df["date"]).dt.date.astype(str)
 
     asof_df = df[df["date"] == asof]
@@ -468,7 +468,7 @@ def compute_gex(
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
         return empty_with_projection()
 
-    g = _legacy_greek_rows(greeks_df)
+    g = _legacy_option_rows(greeks_df)
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:
@@ -482,7 +482,7 @@ def compute_gex(
 
     # ── merge OI[t-1] ────────────────────────────────────────────────────────
     if oi_prev_df is not None and not oi_prev_df.empty:
-        oi = oi_prev_df[["expiration", "strike", "right", "open_interest"]].copy()
+        oi = _legacy_option_rows(oi_prev_df)[["expiration", "strike", "right", "open_interest"]].copy()
         oi["expiration"] = pd.to_datetime(oi["expiration"]).dt.date.astype(str)
         oi["strike"] = oi["strike"].astype(float)
         g["expiration"] = pd.to_datetime(g["expiration"]).dt.date.astype(str)

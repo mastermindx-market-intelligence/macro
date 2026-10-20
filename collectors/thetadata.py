@@ -944,7 +944,9 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
     if "symbol" in df.columns:
         df = df.rename(columns={"symbol": "root"})
 
-    keep = ["root", "expiration", "strike", "right", "date", "open_interest"]
+    # Retain supplied report-observation text without timezone or availability
+    # inference. The legacy analytics view preserves pre-clock row equality.
+    keep = ["root", "expiration", "strike", "right", "date", "open_interest", "timestamp"]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 

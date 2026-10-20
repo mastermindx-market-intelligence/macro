@@ -201,11 +201,17 @@ if they were separate contracts. No collector endpoint or service was activated.
 
 ## Raw-clock compatibility with dated legacy analytics
 
-The qualified projection consumes the original native rows and their retained
+The qualified projection consumes the original native Greek/OI rows and their retained
 raw clocks before any legacy view. Repeated contract keys remain ambiguous and
 refuse qualification even when their numeric Greeks agree. The dated GEX, VEX,
 and volatility calculations use the pre-clock normalized row equality: they
-ignore the two newly retained raw clock columns and collapse otherwise identical
+ignore the retained raw clock columns and collapse otherwise identical
 rows as the original normalizer did. A second clock observation cannot multiply
 a legacy contract exposure. No latest-observation selection, time-zone inference,
 or qualification is created by this compatibility view.
+
+The native OI normalizer also retains supplied raw `timestamp` text. It remains a
+report observation rather than first availability, carries no invented timezone,
+and enters the exact input digest when present. Missing columns remain absent.
+Both GEX and VEX apply the same legacy row equality before merging OI, so a
+repeated OI observation cannot multiply contract exposures.

@@ -577,3 +577,16 @@ def test_native_greek_clock_distinctions_survive_full_row_dedup():
     out = _normalize_greeks_df(raw, order=3)
     assert len(out) == 3 and not out.duplicated().any()
     assert out["date"].dt.date.nunique() == 1
+
+
+def test_native_oi_preserves_raw_report_clock_and_distinct_observations():
+    from collectors.thetadata import _normalize_oi_df
+    base = dict(symbol="SPY", expiration="2026-10-23", strike=100,
+                right="CALL", timestamp="2026-10-15T06:30:00.100", open_interest=100)
+    raw = pd.DataFrame([base, base, {**base, "timestamp": "2026-10-15T06:30:00.101"}])
+    normalized = _normalize_oi_df(raw)
+    assert normalized["timestamp"].tolist() == [base["timestamp"], "2026-10-15T06:30:00.101"]
+    assert normalized["date"].dt.date.astype(str).tolist() == ["2026-10-15"] * 2
+    assert not any("available" in name or "first_seen" in name for name in normalized.columns)
+    missing = _normalize_oi_df(raw.iloc[:1].drop(columns="timestamp"))
+    assert "timestamp" not in missing.columns and missing["date"].isna().all()

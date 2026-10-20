@@ -240,7 +240,7 @@ def exposure_input_digest(greeks_df, oi_df, asof, root):
                 row[field] = _number(r.get(field))
             # Preserve raw observation identity when the native collector carries
             # it. Naive vendor text is not turned into a timezone/availability.
-            for field in ("timestamp", "underlying_timestamp") if greek else ():
+            for field in ("timestamp", "underlying_timestamp") if greek else ("timestamp",):
                 if field in r:
                     value = r[field]
                     row[field] = None if pd.isna(value) else str(value)
