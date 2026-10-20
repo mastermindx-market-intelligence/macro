@@ -184,11 +184,15 @@ def test_tablet_cells_use_the_capture_tool_tablet_preset() -> None:
 
 @pytest.mark.parametrize("set_name", ["populated", "keyboard"])
 def test_no_tablet_clipping_in_the_smell_report(set_name: str) -> None:
-    """No tablet overflow: smells.json pages[].metrics.by_viewport.tablet reports
-    ``horizontal_overflow`` false and ``elements_wider_than_viewport`` == 0 —
-    those two fields are the corpus's overflow/clip smell."""
+    """No overflow on any viewport: smells.json pages[].metrics.by_viewport.<vp>
+    reports ``horizontal_overflow`` false and ``elements_wider_than_viewport``
+    == 0 for desktop, tablet AND mobile — those two fields are the corpus's
+    overflow/clip smell. Tablet is the Z1-named gap; desktop/mobile are pinned
+    too so a regenerated corpus cannot clip anywhere (Z1 re-review F3)."""
     smells = json.loads((CORPUS / set_name / "smells.json").read_text(encoding="utf-8"))
     by_viewport = smells["pages"][0]["metrics"]["by_viewport"]
-    tablet = by_viewport["tablet"]
-    assert tablet["horizontal_overflow"] is False, set_name
-    assert tablet["elements_wider_than_viewport"] == 0, set_name
+    assert set(by_viewport) >= {"desktop", "tablet", "mobile"}, (set_name, sorted(by_viewport))
+    for viewport in ("desktop", "tablet", "mobile"):
+        metrics = by_viewport[viewport]
+        assert metrics["horizontal_overflow"] is False, (set_name, viewport)
+        assert metrics["elements_wider_than_viewport"] == 0, (set_name, viewport)
