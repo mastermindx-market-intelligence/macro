@@ -1054,3 +1054,70 @@ def test_registered_panel_requires_immutable_source_bytes():
     with pytest.raises(PanelInputError, match="raw must be bytes"):
         parse_panel(bytearray(_registered_panel_bytes()),
                     datetime(2026, 5, 1, tzinfo=timezone.utc))
+
+
+# Frozen ALFRED source-panel custody and asof guards (no estimator in these cases).
+import math
+import pandas as pd
+import pytest
+from scripts.local_projection_alfred_panel import assemble_panel
+
+
+def _alfred_frames():
+    cpi = pd.DataFrame([
+        ("1997-12-01", "1998-01-14", 100.),
+        ("1998-01-01", "1998-02-13", 101.),
+        ("1998-01-01", "1998-03-13", 900.),
+        ("1998-02-01", "1998-03-13", 102.),
+        ("1998-02-01", "1998-04-13", 999.),
+    ], columns=["period", "realtime_start", "value"])
+    payroll = pd.DataFrame([
+        ("1998-01-01", "1998-02-06", 1000.),
+        ("1998-01-01", "1998-03-06", 9000.),
+        ("1998-02-01", "1998-03-06", 1005.),
+        ("1998-02-01", "1998-04-03", 9000.),
+    ], columns=cpi.columns)
+    return cpi, payroll
+
+
+def _alfred_run(cpi, payroll):
+    return assemble_panel(cpi, payroll, "1998-01-01", "1998-02-01")
+
+
+def test_alfred_asof_excludes_later_revisions_and_preserves_input():
+    cpi, payroll = _alfred_frames()
+    before = (cpi.copy(deep=True), payroll.copy(deep=True))
+    raw, meta = _alfred_run(cpi, payroll)
+    rows = raw.decode().splitlines()
+    assert len(rows) == 3
+    first = rows[1].split(",")
+    assert first[0] == "1998-02-13"
+    assert float(first[1]) == pytest.approx(math.log(1000))
+    assert float(first[2]) == pytest.approx(100*math.log(101/100))
+    assert first[3] == "1998-02-15T00:00:00+00:00"
+    assert meta["rows"][0]["payroll_vintage"] == "1998-02-06"
+    pd.testing.assert_frame_equal(cpi, before[0])
+    pd.testing.assert_frame_equal(payroll, before[1])
+
+
+@pytest.mark.parametrize("change", ["missing", "late", "duplicate", "nan", "zero", "future_payroll"])
+def test_alfred_invalid_prerequisite_refuses_whole_panel(change):
+    cpi, payroll = _alfred_frames()
+    if change == "missing": cpi = cpi[cpi.period != "1998-02-01"]
+    elif change == "late": cpi.loc[cpi.period == "1998-01-01", "realtime_start"] = "1998-05-13"
+    elif change == "duplicate": cpi = pd.concat([cpi,cpi.iloc[[0]]])
+    elif change == "nan": cpi.loc[1,"value"] = float("nan")
+    elif change == "zero": payroll.loc[0,"value"] = 0.
+    elif change == "future_payroll": payroll.loc[payroll.period == "1998-01-01","realtime_start"] = "1998-05-01"
+    with pytest.raises(ValueError): _alfred_run(cpi,payroll)
+
+
+def test_alfred_intraday_source_precision_is_not_silently_invented():
+    cpi,payroll = _alfred_frames()
+    cpi.loc[1,"realtime_start"] = "1998-02-13T08:30:00"
+    with pytest.raises(ValueError): _alfred_run(cpi,payroll)
+
+
+def test_alfred_every_frozen_month_is_required():
+    cpi,payroll = _alfred_frames()
+    with pytest.raises(ValueError): assemble_panel(cpi,payroll,"1998-01-01","1998-03-01")

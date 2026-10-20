@@ -5069,6 +5069,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "scripts/__init__.py"
+      - "scripts/local_projection_alfred_panel.py"
       - "scripts/run_local_projections.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
@@ -9945,7 +9946,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -10015,7 +10016,7 @@ jobs:
           tests/test_capital_structure_pit.py
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
-          tests/test_capital_structure_page.py
+          tests/test_capital_structure_page.py tests/test_bond_issue_terms.py tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10764,6 +10765,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
@@ -13723,6 +13725,19 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      # Native LP card import/source closure, measured after consumer adoption.
+      - "engine/local_projection_research_card.py"
+      - "engine/local_projections.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json"
+      - "research/local_projections/reproduce_alfred_cpi_payroll_v2.py"
+      - "scripts/local_projection_alfred_panel.py"
+      - "scripts/run_local_projections.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -15972,6 +15987,9 @@ jobs:
     paths:
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -18939,6 +18957,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -25222,6 +25242,15 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
         run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+      # W23-L11 (S&P Vector, 2026-10-20): the chip that read "Dislocation" computes the re-deploy
+      # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
+      - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs
+        run: python -m pytest tests/test_spvector_gate_chips.py -q
+      # W23-L13 (S&P Vector, 2026-10-20): the scorecard states its basis -- backtest window, the
+      # bootstrap CI definition, the Sharpe>0 share and the drawdown CI -- and the overlay card
+      # tallies its forward log (days, builds, veto days). Pure helper + fixture renders.
+      - name: W23-L13 spvector scorecard basis + overlay forward-log tally
+        run: python -m pytest tests/test_spvector_scorecard_basis.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
@@ -25260,6 +25289,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -26604,6 +26636,9 @@ jobs:
     paths:
       # Native IPO terms consumer extends this job's measured import closure.
       - "engine/ipo_prospectus_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -28467,6 +28502,14 @@ jobs:
       # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
       - name: E1c4 regime-outlook publication beside the rates command board
         run: python -m pytest tests/test_build_rates_command_outlook.py -q
+      # W23-L10/L12 (Country cycles, 2026-10-19): scripts/build_country_cycles.py renders four
+      # read-only panels from the model it already holds -- the projection receipt, hazard
+      # availability, the canonical phase read and the currency move. The suites import the
+      # builder's pure helpers (never run main()) and render the template with fixtures. They
+      # ride this data-gated job because the exclusive sanctions-map-page job cannot host the
+      # builder's import closure. Their own step so a wiring regression is named.
+      - name: W23-L10/L12 country cycles - receipt, hazard availability, canonical read, FX move
+        run: python -m pytest tests/test_country_cycles_projection_receipt.py tests/test_country_cycles_hazard_availability.py tests/test_country_cycles_canonical_phase.py tests/test_country_cycles_fx_contribution.py -q
       # RIC B0 (Rates & Inflation Command e2e, 2026-10-14): engine/rates_command_basis.py is the
       # pure basis-aware comparison contract rates_command_basis.v1 (A06: no numerical gap unless
       # basket/index/reference interval/unit/vintage and calculation rule support it). Its first
@@ -28477,6 +28520,15 @@ jobs:
       # contracts/rates_command_basis.v1.schema.json. Paths widened for the suite, module, contract.
       - name: RIC B0 basis-aware comparison contract (rates_command_basis.v1)
         run: python -m pytest tests/test_rates_command_basis.py -q
+      # W23-L9 SPR page (2026-10-19): tests/test_strategic_reserves.py was listed in
+      # config/unrun_test_baseline.json — no `run:` step named it, so engine/strategic_reserves.py,
+      # scripts/build_spr.py and templates/spr.html.j2 could not start CI. It joins this job (the
+      # macro panels) with the two W23-L9 suites: the JODI world-total vintage (as-of month, stale
+      # reporters named) and the zh assess-badge words. All three use inline fixtures and need only
+      # pandas/jinja2 from the install line above. Its own step so an SPR regression is named rather
+      # than masked by the panel step. Paths widened for the suites, builder, engine and template.
+      - name: W23-L9 SPR page — JODI world-total vintage + zh assess badges
+        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -28515,6 +28567,12 @@ jobs:
       - "contracts/rates_command_basis.v1.schema.json"
       - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
+      - "tests/test_country_cycles_projection_receipt.py"
+      - "tests/test_country_cycles_hazard_availability.py"
+      - "tests/test_country_cycles_canonical_phase.py"
+      - "tests/test_country_cycles_fx_contribution.py"
+      - "scripts/build_country_cycles.py"
+      - "templates/country_cycles.html.j2"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
       - "site/bonds.html"
@@ -28522,6 +28580,12 @@ jobs:
       - "engine/commodity_index.py"
       - "templates/commodities.html.j2"
       - "templates/bonds.html.j2"
+      - "tests/test_strategic_reserves.py"
+      - "tests/test_spr_jodi_vintage.py"
+      - "tests/test_spr_assess_badge_zh.py"
+      - "engine/strategic_reserves.py"
+      - "scripts/build_spr.py"
+      - "templates/spr.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
