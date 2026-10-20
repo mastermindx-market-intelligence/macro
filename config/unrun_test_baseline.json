@@ -591,7 +591,6 @@
     "tests/test_pick_lab_benchmark_loaders.py",
     "tests/test_pick_lab_cn_core.py",
     "tests/test_pick_lab_cn_producer.py",
-    "tests/test_pick_lab_cn_render.py",
     "tests/test_pick_lab_hk_core.py",
     "tests/test_pick_lab_hk_producer.py",
     "tests/test_pick_lab_ledger.py",

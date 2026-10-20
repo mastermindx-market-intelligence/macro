@@ -4920,6 +4920,11 @@ CURATED_EXCLUSIVE = {
     # 2 introduced. scope: exclusive pins it to its declared static import
     # closure plus ancestor inits; ceilings stay fixed.
     "c19-wp31-incremental-information",
+    # 2026-10-20 W28-L28: the CN Pick Lab SCOREABLE/close_at_fire render tests.
+    # Appended to pick-lab-liquidity's run line they moved the index-template
+    # packing probe (5,824 > 5,822); its own exclusive job keeps the static
+    # import closure, the engine/pick_lab package imports and ancestor inits.
+    "pick-lab-cn-render",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing
