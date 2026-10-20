@@ -18327,6 +18327,37 @@ jobs:
       - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
         run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
 
+  cn-reversal-sleeve-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China reversal sleeve page display contract (W28E-L32). The suite renders the real
+    # templates/cn_reversal_sleeve.html.j2 (autoescape on) from a synthetic payload shaped
+    # like the committed site/factordata/cn_reversal_sleeve.json; it imports only copy,
+    # pathlib and jinja2 and never runs the builder. It pins the graded-window block (date
+    # span, registered-but-ungraded count, horizon, median excess, overlapping-window note)
+    # and the sizing chip's bilingual dominant driver. Exclusive so the page's own suite does
+    # not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/cn_reversal_sleeve.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_cn_reversal_sleeve_ledger_display.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China reversal sleeve — graded window, overlap note, sizing-chip driver
+        run: python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py -q -p no:cacheprovider
+
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -37337,3 +37368,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  options-pilot-chronology-code:
+    # Synthetic guards must run on source PRs; flow-surface is data-gated.
+    # These are the literal source/reference inputs of the two offline suites.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    scope: exclusive
+    paths:
+      - scripts/options_pilot_study_adapter.py
+      - tests/test_options_pilot_study_adapter.py
+      - tests/test_options_pilot_chronology.py
+      - research/options_intelligence/2026-10-03/pilot-study-spec.v1.json
+      - research/options_intelligence/2026-10-03/pilot-p3-reference.py
+      - research/options_intelligence/2026-10-03/gex-published-board-extract.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: frozen study refusal and chronology guards (no empirical execution)
+        run: |
+          python tests/test_options_pilot_study_adapter.py
+          python tests/test_options_pilot_chronology.py
