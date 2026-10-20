@@ -5681,6 +5681,8 @@ jobs:
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -17184,6 +17186,8 @@ jobs:
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
+      - scripts/_ths_provenance.py
+      - scripts/_ths_turn_annotate.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
       - scripts/build_baskets_china.py
@@ -18352,6 +18356,11 @@ jobs:
     # never runs the builder. It pins the server-rendered construction / history notes on the
     # lite page and the lite page's own canonical, og:url and description. Exclusive so the
     # page's suite does not widen any shared job's inferred scope (the packing-probe ceilings).
+    # W30-L41/L42 add the membership-provenance and sleeve-chip lines and the turn-chip
+    # tooltip: tests/test_baskets_china_ths_provenance.py and
+    # tests/test_baskets_china_ths_turn_days.py import only the stdlib, jinja2 and
+    # scripts/_ths_provenance.py / scripts/_ths_turn_annotate.py, and read the THS builder
+    # as text (never run it).
     scope: exclusive
     paths:
       - "templates/baskets_china_factorwatch.html.j2"
@@ -18362,9 +18371,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "scripts/__init__.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
+      - "scripts/build_baskets_china_ths.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_baskets_china_factorwatch_notes.py"
+      - "tests/test_baskets_china_ths_provenance.py"
+      - "tests/test_baskets_china_ths_turn_days.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18375,7 +18389,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: THS basket browser — build notes, lite canonical and description
-        run: python -m pytest tests/test_baskets_china_factorwatch_notes.py -q -p no:cacheprovider
+        run: >-
+          python -m pytest tests/test_baskets_china_factorwatch_notes.py
+          tests/test_baskets_china_ths_provenance.py
+          tests/test_baskets_china_ths_turn_days.py -q -p no:cacheprovider
 
   narrative-radar-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -23642,6 +23659,8 @@ jobs:
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
+      - scripts/_ths_provenance.py
+      - scripts/_ths_turn_annotate.py
       - scripts/backfill_crypto.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
@@ -28071,6 +28090,8 @@ jobs:
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
+      - "scripts/_ths_provenance.py"
+      - "scripts/_ths_turn_annotate.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
