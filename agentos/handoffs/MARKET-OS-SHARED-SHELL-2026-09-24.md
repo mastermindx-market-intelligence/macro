@@ -5,10 +5,11 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: Remote e2d remains OPEN and unarmed. The interrupted proof commit did not land; exact EOF repair and
-  ordinary N2 merge completed locally as140bd. Incoming main3b49 is now integrated in the original worktree; tested
-  index4e8952 has four actual CI scope/packing passes. New proof commit, same-branch push, hosted admission and
-  existing-owner publication remain.
+state_before: Original b312 commit/push confirmed. Current local ordinary merge6d566 integrates incoming987 on source
+  treeb0f7; all996 composed tests,134 template pairs, P0B closure, whitespace, fresh128-case P0B and8-cell About
+  replay pass. Beta strict stop/start proof failed on failed/failed versus expected inactive/dead; exact stopped
+  effect reconciled and one normal start restored acceptedA, separately recorded without promoting original false
+  proof. Same-pack documentation extension precedes normal original-branch push; MOG remains unarmed.
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -79,6 +80,18 @@ changed:
   what: Preserve all460 earlier indexed files/history, import actual interruption recovery/local commit/current
     merge/test/host receipts, record browser certificate denial and current production baseline without attributing
     external changes.
+- path: templates/landing.css; site/landing.css; seven existing asset references
+  what: Source8b51 repairs actual mobile About footer overflow through existing responsive rule; all8 source-bound
+    browser cells pass after final987 composition.
+- path: lib/macro_suite_labels.py; tests/test_macro_command_copy_law.py; site/macro_labor_markets.html
+  what: Sourceda4 repairs inherited hosted copy-law failure with actual red-before-green regression and preserves
+    refusal meaning; existing owner renders only adopted labor page, no guard/selector/ceiling change.
+- path: Original branch ordinary987 merge, theme/26HTML and existing P0B outputs
+  what: Source6d566 contains complete source integration, whole-generation -merge pages plus exact adapters,103
+    asset raw/index checks, fresh P0B128cases/16screenshots and preserved12-entry history. Sector six views retained.
+- path: research/market_os/evidence/shared-shell-continuation-20261019; existing handoff and workstream
+  what: Append current source/tests/About/P0B and failed beta proof plus successful same-A recovery receipts; preserve
+    prior509 indexed file originals and prior prose history. No production source change.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -277,6 +290,27 @@ verified:
     now PID2975859/deploymentc1ea4ba; global owner matchesR93. Host Macro4b6 is one earnings-catalogue commit beyond3b49.
     Current Caddy/updater match incoming source; no host mutation or actor attribution. Strict public TLS exits60;
     browser acceptance denied on certificate mismatch.
+- claim: Original interrupted commit and push landed.
+  command: Original b312 commit/push receipts plus fresh PR7949 readback.
+  result: Remote b312bc4c08cf7633bf8fd259d2d46ec545fa120f confirmed. Exact hosted run39443974109 had inherited labor2-failure
+    boundary, reproduced on actual base; now locally repaired, hosted new-head gate separate.
+- claim: Original source merge and actual composed gates complete.
+  command: macro-da4d-987-source-commit.json; macro-da4d-987-composed-tests.json.
+  result: 6d566 parentsda4/987, treeb0f7, clean.996 actual tests PASS, P0B closure/134templatepairs/whitespace PASS;
+    source/index frozen. LocalPython3.14.7; no hosted promotion.
+- claim: Fresh P0B actual proof binds composed source.
+  command: Existing render→HK→CA; macro-da4d-987-p0b-actual.json and binding.json.
+  result: 128cases/16screens, all exits0,67 producer inputs stable,56 loaded/construction bindings and actual outputs
+    match index;12 historical entries retained. Synthetic fixture only.
+- claim: Fresh About replay passes at committed6d566.
+  command: Existing fixture/capture owner; macro-da4d-987-about-wrapper.json.
+  result: 8cells at320/390/820/1440 EN/ZH,18 ordered visible-focus Tabtargets/cell, exact53filemanifest/response
+    hashes, no overflow/exceptions. Root viewed390EN/ZH. StandaloneLIGHT_ONLY only.
+- claim: Actual failed beta stop effect reconciled; one normal start recovered sameA.
+  command: beta-same-a-service-proof.json; failed-reconciliation.json; recovery.py and recovery.json.
+  result: One stop exit0 leftfailed/failed/PID0, code1/status143; freshECONNREFUSED. Original prooffalse retained.
+    One start exit0 restoredA/PID3306695/start7622818757695/status200; same receipt/build/unit and comparedproduction.
+    No installer/production operation, clean-shutdown/public/fullhostname/A-to-B-to-A claim.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -291,21 +325,22 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Original PR7949 publication of this merged/proof candidate, exact new-head hosted authority and MOG owner predicate,
-  original render scope=all output and actual macro-update served-tree proof remain.
-- Current production baseline differs from prior history. Before release arm, refresh healthy beta tuple and action-boundary
-  production/owner observations through read-only gates; do not reuse stale production PID/hash assertions.
-- Public beta still resolves through the old EdgeOne CNAME and fails certificate hostname verification. DNSPod sign-in
-  is incomplete; canonical DNS/TLS repair is required for public acceptance. No TLS/browser bypass.
-- Actual public auth/session/history/responsive acceptance and applicable first-install/rollback acceptance remain.
-  Preserve six-view Sector Central while Paper REVISE; C4 overlay suggestions SPEC_ONLY/UNAPPLIED/UNRUN.
+- Exact new-head hosted CI and incumbent MOG admission remain; then protected landing, covering existing render
+  and macro-update served proof. No manual merge, duplicate owner or watcher.
+- Beta A is restored, PID3306695/start7622818757695, same custody/unit/status. Recovery18:53 is sampled evidence,
+  not a reservation. Original strict proof remains false; graceful shutdown, whole-hostname withdrawal and public
+  acceptance are not established.
+- DNSPod/Tencent was last observed signed out. The authenticated domain-owner session is required only for canonical
+  beta DNS repair and ensuing TLS/auth/public browser acceptance; independent Macro work continues.
+- Public auth/session/history/responsive and remaining applicable acceptance remain. No B exists; previous_runtime=null
+  precludes A-to-B-to-A claims. Preserve Sector six views and sector-to-basket; Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN.
 next_actions:
-- Finish original proof/AgentOS/template/P0B/whitespace gates and ordinary3b49 merge commit, push the same branch
-  while unarmed, then attend exact-head hosted CI and fix concrete failures.
-- Use incumbent MOG only after its current clean predicate/hold release/fresh beta gates; attend actual protected
-  landing, existing scope=all render, macro-update and served-source proof.
-- Complete canonical beta DNS/TLS through existing DNSPod owner when authenticated, then actual public browser/auth
-  and applicable rollback acceptance; persist evidence and continue original commission.
+- Validate and commit the same documentation-only proof extension on6d566, normal-push the sole branch and attend
+  exact-head hosted CI, fixing actual failures without weakening gates.
+- Refresh applicable owner/hold/service/CI snapshots at the real gate; use incumbent MOG and then existing covering
+  render/macro-update through served-source proof.
+- Obtain authenticated DNSPod domain-owner access when needed for canonical beta DNS/TLS; complete public auth/browser/history/responsive
+  and remaining acceptance, maintaining exact false-versus-recovered service evidence.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -329,6 +364,10 @@ do_not_redo:
 - Do not repeat Terminal859 qualification or acceptedR93 bootstrap. Do not repeat unchanged334deployment suite or
   actual P0B128case producer solely for3b49 integration; identities remain bound. Do not retry beta browser across
   certificate denial without proper DNS/TLS repair. No new carrier/renderer/watcher.
+- Terminal859 and R93 accepted installer recovery remain COMPLETE/DO_NOT_REDO. Beta same-A availability recovered;
+  preserve original strict prooffalse and linked recoverytrue without rerunning stop/start merely to make it green.
+  Reuse exact source/test/browser evidence while identities match. No speculative C4/Paper adoption, duplicate renderer/carrier/watcher,
+  bootstrap, stale-lock removal or production mutation.
 danger_areas:
 - Production identity and disk capacity changed externally between observations; historical PID or free-space values
   cannot serve as a fresh isolation baseline.
@@ -1302,3 +1341,44 @@ Readonly14:42 host evidence shows accepted betaA e45bde2 still active with ident
 Public beta still fails strict TLS hostname verification through its old EdgeOne CNAME. Connected Chrome reached a Privacy error; automatic approval review denied further access at that unsafe certificate boundary. No bypass, alternate-origin acceptance, authenticated journey or responsive acceptance occurred. DNSPod sign-in remains incomplete. Source/CI/publication work continues independently.
 
 This proof package records source qualification before the new commit/push. Hosted admission, MOG landing, original scope=all rendering, served-tree publication, canonical DNS/TLS, public auth/browser and applicable rollback acceptance are not claimed. Preserve six-view Sector Central/sector-to-basket while Paper REVISE; C4 overlays remain SPEC_ONLY/UNAPPLIED/UNRUN.
+
+
+## 2026-10-20 18:54 UTC continuation: source integrated, actual tests and browser proof, same-A recovery
+
+The original interrupted proof commit and normal push **did land** as `b312bc4c08cf7633bf8fd259d2d46ec545fa120f` on PR #7949's existing branch. Its exact hosted run 39443974109 found two actual inherited labor copy-law assertions; the tested merge and actual base replay both failed those nodes. The complete decoded hosted log is retained. This was repaired in `da4df7d1e1ac709055c6fa1d482304a875e81824`, following the narrow About footer repair `8b51fb46d18739a4d10d1ef07dce3ca0f989f0da`. Both repairs have real red-before-green evidence. No test selector, assertion, CI ceiling, snapshot or guard was relaxed.
+
+The About change adds mobile footer wrapping/width containment through the existing <=680px rule and updates seven existing asset references. The real 390px red capture had 406px document width. The labor change preserves insufficient coverage, no classification and no neutral assumption through the existing bilingual presentation mapping; the original producer text remains available in disclosure. Only the labor page was adopted from the existing 15-page suite renderer. Earlier R1 timing failure and an intermediate-hash clarification remain recorded without rewriting the originals.
+
+### Actual source integration and proof
+
+Original source merge `6d56650ea21395e7ffb0412bde73881b58dd1a66` completed at 18:46:50 UTC. Its parents are `da4df7d1e1ac709055c6fa1d482304a875e81824` and `9875169102cc6f36a64d465fe7c06f6bb8fb0220`; its source tree is `b0f7a0741674509745401aded2c112434e9b4130`. All 30 actual merge conflicts were resolved in the original worktree; 805 changed paths versus incoming main, clean after commit.
+
+The first ordinary merge failed because Git could not obtain incoming blob 4034805e after a promisor-remote error. Its complete failure log and the absence of MERGE_HEAD, unmerged paths or dirty files were reconciled. No abort, reset, shared-Git configuration change or invented object was used. A later complete reachable-object census found zero missing objects, and the exact object was independently read and recomputed. Its arrival has no attributed actor or cause. Only then was the same ordinary merge resumed, producing the expected 30 conflicts. These failed and successful operation records remain distinct.
+
+The existing canonical asset owner emitted the final theme (SHA256 `0dc42187afb63e594a33de9017e0607c32b120ef4d60a364384686994bbbad19`) for incoming mm_brain. Existing page owners adopted 26 HTML paths. The four -merge pages preserve a complete incoming render generation plus exact source-owned adapters, with whole-page forward/inverse checks. All 103 referenced asset raw bytes matched their staged Git blobs. Sector Central retains overview, map, moving, money, explore and confluence, along with sector-to-basket navigation. Paper remains REVISE; no redesign is adopted.
+
+The existing P0B producer actually ran render, Hong Kong and Canada in order, each exit 0 with empty stderr, between 18:33:59 and 18:38:40. Chromium 149.0.7827.55 exercised 128 cases and produced 16 screenshots. All 67 recorded producer inputs stayed unchanged; all 56 loaded/construction inputs and actual outputs were bound to the staged source. The full ten-entry H history is preserved, and complete H/M current extensions were appended, leaving 12 historical entries. Producer SHA256: `b55bef40aa6cae2546122875f3e3d8044b5f1f0015aaa886bfc15b149bd8a6b0`. This is synthetic fixture proof, with production explicitly none.
+
+Actual composed validation completed at 18:45:42: **996 tests passed** (4 existing CI scope/packing, 645 labor/rates/hub, 159 Shell/access, 184 JavaScript and 4 P0B binding cases). P0B closure, 134 template/site pairs and owned whitespace also passed. Source and index stayed frozen. Local Python was 3.14.7; exact-head hosted Python 3.12 admission is separately required. Pytest temporary-browser cleanup warnings are retained; no assertion failed or cleanup effect was attempted.
+
+A fresh About replay against committed 6d566 completed at 18:48:05 using the existing fixture/capture owner and Chrome 151.0.7922.34. All eight cells (320/390/820/1440 by EN/ZH) passed: document width equals viewport, contained visible footer links, all 18 ordered actual Tab targets with focus outline, locale and LIGHT_ONLY checks, no browser exceptions, and exact response-byte hashes against the 53-file manifest. Root inspected the 390px EN and ZH screenshots. The old red/R1/V2 results are retained. This does not establish actual 200% zoom, public beta, authentication or Terminal #859 acceptance. The local fixture server was closed by its owning wrapper.
+
+### Exact beta effect and recovery
+
+Accepted A remains `e45bde2cac07ac3b29285ff70c40d68900fad62c`, with the original R93-installed unit, source/runtime receipt pointers and build identity. Installer recovery was already complete; no bootstrap, archive cleanup, release transaction, unit change or production service operation was performed.
+
+The scoped strict service proof recorded exactly one stop, exit 0 at 18:48:20. Its expected inactive/dead state did not occur: actual state was failed/failed with MainPID 0. The original wrapper stopped before a start intent and retains **pass=false / EFFECT_RECONCILIATION_REQUIRED**. Its generic description of that state as transitional was inaccurate; the later reconciliation preserves the actual stable failed state.
+
+Fresh observations at 18:52 and immediately before recovery at 18:53 recorded Result=exit-code, ExecMainCode=1, ExecMainStatus=143, empty Job/ControlGroup and ControlPID 0. New loopback connections to 127.0.0.1:3001 returned ECONNREFUSED. No graceful shutdown or underlying exit cause is inferred. The recovery predicate independently checked the complete common identity and production checks, rather than ignoring the original inactive-state assertion. Accepted A, both receipt pointers, build, exact loaded unit and hooks, complete sampled owner/hold exclusion, absence of archives/pending/stages and production invariance all passed.
+
+Exactly one normal start of the existing terminal-beta.service returned exit 0 at 18:53:25.930103. Final strict recovery validation completed at 18:53:31.878483: **active/running/enabled, PID 3306695, later start timestamp 7622818757695, HTTP 200 and the exact accepted-A shared-shell protocol/build/version/registry tuple**. Source/runtime/build and loaded unit were unchanged. Compared production observations retained PID 3255147, start 7619423343388 and deployment bbc07037aae3e98597945e23448781a091d15281, with the same R93 owner and Caddy file. Earlier unrelated production advancement is recorded without actor attribution.
+
+The linked recovery receipt is **ACCEPTED_A_RECOVERED_AFTER_FAILED_PROOF / pass_recovery=true**; the original strict proof remains false. This supports observed loopback withdrawal and restored availability of the same A. It does not establish clean shutdown, continuous production invariance between samples, full hostname withdrawal, public DNS/TLS/auth/browser acceptance or A-to-B-to-A rollback. previous_runtime is null. Stopping beta alone leaves candidate Caddy/data and DNS/TLS controls; full hostname withdrawal belongs to their existing owners. No stop retry, reset-failed, enablement, installer or production action followed.
+
+### Current delivery state and next gates
+
+This proof import is a documentation-only delta above 6d566. It preserves all prior indexed files and their decompressed originals, prior handoff body, workstream and README prefix. Raw failed attempts, operation records, scripts, reviews, screenshots and current receipts are losslessly included. The package does not claim its own eventual containing commit or push; the original PR checkpoint supplies those separately observed identities.
+
+Protected Mastermind master was freshly read as `b96dd69efb0588c3a678ee09ddd5408fa5a40b12`; the complete comparison from the compatible 065b pin changes none of the INDEX or nine required laws. Original principal custody continues under the recorded SessionBridge exception. Bounded advisers reviewed the source composition, actual P0B binding and beta recovery without claiming independent native execution or new source authority.
+
+Next: validate and commit this extension, normal-push the sole branch and attend exact-head hosted CI; use only incumbent MOG for landing and existing render.yml/engine-render/macro-update for covering render and served-source proof; complete canonical DNS/TLS/auth/public browser and remaining applicable acceptance. The connected Tencent/DNSPod surface was last observed signed out and the public beta certificate mismatched. An authenticated domain-owner session is required for that DNS repair, not for source, CI or Macro publication. No certificate bypass or alternate-origin public proof is used. Terminal #859 and R93 remain COMPLETE/DO_NOT_REDO; C4 remains SPEC_ONLY/UNAPPLIED/UNRUN; no duplicate PR, renderer, carrier or watcher.
