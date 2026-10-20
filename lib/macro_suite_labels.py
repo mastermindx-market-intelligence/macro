@@ -1814,12 +1814,14 @@ def producer_trips_copy_guard(text: str) -> bool:
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
-        "US labor-market state cannot be classified: axis coverage is below the disclosed "
-        "floor. No quadrant is asserted rather than defaulting to a neutral state.",
+        "US labor-market state cannot be classified: axis coverage is below the "
+        "disclosed floor. No quadrant is asserted rather than defaulting to a "
+        "neutral state.",
         _pair(
-            "There are too few available inputs to classify the US labor market. "
-            "No category is assigned; the missing reading does not mean conditions are neutral.",
-            "可用输入不足，无法判断美国劳动力市场状态。暂不分类；缺少读数不代表情况中性。",
+            "Labor-market data coverage is below the required minimum, so no "
+            "overall reading is shown. Missing data is not treated as a neutral reading.",
+            "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。"
+            "缺失数据不会被当作中性读数。",
         ),
     ),
     (

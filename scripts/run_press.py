@@ -80,6 +80,7 @@ import sys
 import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
@@ -577,6 +578,8 @@ def _stage_preplanned_slots(
     admission_receipt: dict | None = None,
     single_provider_attempt: bool = False,
     admitted_token_cap: bool = False,
+    prepare_slot: Callable[[dict], dict] | None = None,
+    before_write: Callable[[dict], None] | None = None,
 ) -> dict:
     """Write already-selected slots through the normal writer/validator rail.
 
@@ -606,7 +609,7 @@ def _stage_preplanned_slots(
         checkpoint.update(status="in_progress",
                           progress={"phase": "provider_started", "attempt": 0})
         _write_stage_checkpoint(out, checkpoint, create=True)
-        writer_kwargs: dict[str, bool] = {}
+        writer_kwargs: dict = {}
         if single_provider_attempt:
             writer_kwargs["single_provider_attempt"] = True
         if admitted_token_cap:
@@ -616,6 +619,32 @@ def _stage_preplanned_slots(
             if attempt:
                 checkpoint["progress"] = {"phase": "provider_started", "attempt": attempt}
                 _write_stage_checkpoint(out, checkpoint)
+            if prepare_slot is not None or before_write is not None:
+                from engine.press.qbus_news import PrivateNewsUnavailable
+
+                try:
+                    if prepare_slot is not None:
+                        prepared = prepare_slot(slot)
+                        if not isinstance(prepared, dict) or prepared.get("id") != slot["id"]:
+                            raise PrivateNewsUnavailable("source_preparation_changed_slot_identity")
+                        slot = prepared
+                        checkpoint.update(
+                            slot=slot, sources=list(slot.get("sources") or []),
+                            seed_refs=list(slot.get("seed_refs") or []),
+                            source_revisions=dict(slot.get("source_revisions") or {}),
+                        )
+                        _write_stage_checkpoint(out, checkpoint)
+                    # Permission and identity checks run AFTER the provenance
+                    # checkpoint, immediately before each actual writer call.
+                    if before_write is not None:
+                        before_write(slot)
+                except PrivateNewsUnavailable as exc:
+                    attempts.append({"attempt": attempt, "ok": False, "reason": str(exc)})
+                    break
+            if before_write is not None:
+                # Bind the prepared attempt for a final check after provider
+                # construction and at the actual external request boundary.
+                writer_kwargs["private_admission_check"] = lambda prepared=slot: before_write(prepared)
             res = writer.write(slot, cfg, state=state, attempt=attempt,
                                prior_failures=prior or None, **writer_kwargs)
             if not res.get("ok"):
@@ -818,6 +847,77 @@ def run_admitted_earnings_staging(
         admission_receipt=dict(admission_receipt),
         single_provider_attempt=True,
         admitted_token_cap=True,
+    )
+
+
+def run_private_news_staging(
+    root: Path, cfg: dict, *, slot: dict, database, universe_path,
+    receipt_paths, staging_dir: str | Path,
+) -> dict:
+    """Ground one existing Press slot with blog_draft news; never enable emit.
+
+    The private directory is outside all generic staging/content/site paths.
+    Every attempt rebuilds from the original slot and checks admission again
+    after checkpoint IO. Provider fallback and regeneration remain disabled.
+    """
+    import copy
+    from engine.press import qbus_news
+
+    source_slot = copy.deepcopy(slot)
+    candidate = qbus_news.private_slot(source_slot)
+    if _is_canonical_story_slot(source_slot) or _is_private_official_stage({"slot": source_slot}):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_ordinary_press_slot")
+    receipt_paths = tuple(receipt_paths)
+    if not receipt_paths:
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_rights_required")
+    destination = Path(staging_dir).resolve()
+    paths = _paths(cfg, root)
+    forbidden = [
+        paths["staging"].resolve(), paths["content"].resolve(),
+        (root / "content").resolve(), (root / "site").resolve(),
+        (root / "properties").resolve(),
+    ]
+    # Press properties are independently served publication trees, not merely
+    # source inputs. Include actual configured roots as well as canonical roots.
+    for publication in (cfg.get("publications") or {}).values():
+        if isinstance(publication, dict):
+            for key in ("property_tree", "content_dir"):
+                value = publication.get(key)
+                if isinstance(value, str) and value:
+                    forbidden.append((root / value).resolve())
+    if any(destination == path or path in destination.parents
+           or destination in path.parents for path in forbidden):
+        raise qbus_news.PrivateNewsUnavailable("qbus_draft_requires_private_directory")
+    destination.mkdir(mode=0o700, parents=True, exist_ok=True)
+
+    def prepare(_previous: dict) -> dict:
+        # Never append new reports to an earlier attempt's evidence/facts.
+        return qbus_news.prepare_slot(
+            source_slot, database=database, universe_path=universe_path,
+            receipt_paths=receipt_paths,
+        )
+
+    def verify(prepared: dict) -> None:
+        qbus_news.verify_slot(
+            prepared, universe_path=universe_path, receipt_paths=receipt_paths,
+        )
+
+    llm_cfg = cfg.get("llm") or {}
+    state = writer.RunState(
+        token_budget=min(_env_int(
+            "PRESS_RUN_TOKEN_BUDGET", int(llm_cfg.get("run_token_budget") or 240_000)
+        ), 12_000),
+        breaker_threshold=_env_int(
+            "PRESS_CIRCUIT_BREAKER_FAILURES",
+            int(llm_cfg.get("circuit_breaker_consecutive_failures") or 3),
+        ),
+    )
+    return _stage_preplanned_slots(
+        root, cfg, slots=[candidate], staging_dir=destination,
+        run_date=str(source_slot.get("as_of") or ""),
+        state=state, max_regenerations=0, taken_slugs=set(),
+        single_provider_attempt=True, admitted_token_cap=True,
+        prepare_slot=prepare, before_write=verify,
     )
 
 
@@ -1036,6 +1136,18 @@ def run_emit(root: Path, cfg: dict, *, reviewed_promotion: dict | None = None) -
             continue
         if isinstance(obj, dict) and obj.get("status") == "passed" and obj.get("draft"):
             slot = obj.get("slot") if isinstance(obj.get("slot"), dict) else {}
+            from engine.press.qbus_news import is_private_stage
+
+            if is_private_stage(obj):
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "private qbus news draft: source processing permission "
+                    "does not authorize public-article release"
+                )
+                _write_stage_checkpoint(path, obj)
+                _annotate("warning", "press_emit_qbus_approval",
+                          f"press emit: private news candidate {obj.get('id')} not emitted")
+                continue
             if _is_unverified_earnings_story_stage(obj):
                 obj["status"] = "approval_required"
                 obj["quarantine_reason"] = (
@@ -1585,7 +1697,24 @@ def main(argv=None) -> int:
                     help="stage with one provider-adapter invocation per slot; "
                          "disable Anthropic SDK retries, Press fallback and "
                          "regeneration (Codex CLI internal requests are not bounded)")
+    mode.add_argument("--stage-qbus-news", action="store_true",
+                      help="ground one private Press draft from qualified qbus news; never emit")
+    ap.add_argument("--qbus-slot", default="", help="existing planned Press slot JSON")
+    ap.add_argument("--qbus-db", default="", help="canonical qbus database")
+    ap.add_argument("--qbus-universe", default="", help="owner-supplied news universe JSON")
+    ap.add_argument("--qbus-rights", action="append", default=[],
+                    help="blog_draft rights receipt; repeat for additional publishers")
+    ap.add_argument("--qbus-staging-dir", default="", help="dedicated private output directory")
     args = ap.parse_args(argv)
+    qbus_inputs = (args.qbus_slot, args.qbus_db, args.qbus_universe,
+                   args.qbus_rights, args.qbus_staging_dir)
+    if args.stage_qbus_news:
+        if not all(qbus_inputs):
+            ap.error("--stage-qbus-news requires all --qbus-* source/output arguments")
+        if args.desks or args.as_of or args.max_slots is not None:
+            ap.error("private news staging uses exactly the supplied current-day slot")
+    elif any(qbus_inputs):
+        ap.error("--qbus-* arguments require --stage-qbus-news")
     if args.emit and args.single_attempt:
         ap.error("--single-attempt applies only to staging, not --emit")
 
@@ -1600,6 +1729,19 @@ def main(argv=None) -> int:
 
     desks = [d.strip() for d in args.desks.split(",") if d.strip()] or None
 
+    if args.stage_qbus_news:
+        try:
+            slot = json.loads(Path(args.qbus_slot).read_text(encoding="utf-8"))
+            out = run_private_news_staging(
+                root, cfg, slot=slot, database=args.qbus_db,
+                universe_path=args.qbus_universe, receipt_paths=args.qbus_rights,
+                staging_dir=args.qbus_staging_dir,
+            )
+        except (OSError, ValueError) as exc:
+            _annotate("error", "press_private_news", str(exc))
+            return 1
+        print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
+        return 0 if out["passed"] == 1 else 1
     if args.prepare_reviewed_bundle:
         if not args.bundle_output:
             ap.error("--bundle-output is required")
