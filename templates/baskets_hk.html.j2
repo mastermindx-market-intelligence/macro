@@ -97,6 +97,46 @@
 
   <!-- prevailing-narrative scorecard → the Narrative Rotation playbook (filled client-side) -->
   <section id="nr-scorecard" data-alloc="allocation_hk.json" data-page="allocation_hk.html"></section>
+  {%- if scorecard and scorecard.n_graded is number and scorecard.n_graded > 0 %}
+  {%- set _stl = {'igniting': ('Igniting','点火'),
+                  'running': ('Running','运行'),
+                  'fading': ('Fading','退潮'), 'idle': ('Idle','静止')} %}
+  <section class="panel pad" id="ignition-reliability">
+    <p class="sub">{{ t(
+      'Ignition scoreboard — graded basket-days from the forward ledger for this market',
+      '点火记分板 — 本市场前瞻台账中已评分的篮子日') }}</p>
+    <table>
+      <thead><tr><th>{{ t('State','状态') }}</th><th>{{ t('Basket-days','篮子日') }}</th>
+        <th>{{ t('Beat the benchmark over the next 4 weeks','其后4周跑赢基准的比例') }}</th></tr></thead>
+      <tbody>
+      {% for st in ['igniting', 'running', 'fading', 'idle'] if st in scorecard.by_state %}
+        {% set r = scorecard.by_state[st] %}
+        <tr><td>{{ t(_stl[st][0], _stl[st][1]) }}</td><td>{{ r.n }}</td>
+          <td>{% if r.beat_rate_4w is number %}{#
+          #}{{ '%.1f'|format(r.beat_rate_4w * 100) }}%{% else %}—{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if scorecard.n_alerts is number and scorecard.alert_precision_4w is number %}
+    <p class="muted sm">{{ t(scorecard.n_alerts ~ ' of ' ~ scorecard.n_graded
+      ~ ' graded basket-days were in an alert state (igniting or running); '
+      ~ ('%.1f'|format(scorecard.alert_precision_4w * 100))
+      ~ '% of those beat the benchmark over the next 4 weeks.',
+      '已评分的 ' ~ scorecard.n_graded ~ ' 个篮子日中有 ' ~ scorecard.n_alerts
+      ~ ' 个处于预警状态（点火或运行）；其中 '
+      ~ ('%.1f'|format(scorecard.alert_precision_4w * 100))
+      ~ '% 在其后4周跑赢基准。') }}</p>
+    {% endif %}
+    {% if scorecard.asof_range is sequence and scorecard.asof_range|length == 2 %}
+    <p class="muted sm">{{ t('Graded window ' ~ scorecard.asof_range[0]
+      ~ ' → ' ~ scorecard.asof_range[1]
+      ~ '. A basket-day is graded only after its longest forward horizon'
+      ~ ' (40 sessions) has passed, so the window ends before today.',
+      '评分区间 ' ~ scorecard.asof_range[0] ~ ' → ' ~ scorecard.asof_range[1]
+      ~ '。篮子日须待最长前瞻期（40个交易日）走完才评分，故区间止于今日之前。') }}</p>
+    {% endif %}
+  </section>
+  {%- endif %}
 
   {% include "_baskets_desk.html.j2" %}
 

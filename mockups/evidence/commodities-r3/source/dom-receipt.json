@@ -1,7 +1,7 @@
 {
   "passed": 27,
   "assets": 17,
-  "snapshot": "6f617af0e84e0ae1469858475f03afec4e8f7128c1b80a715f3b0887180649e3",
-  "export_bytes": 74754,
-  "visual_layout_verified": false
+  "snapshot": "2d3d68280a023930ac7cf9a8c2ece1cfeda609ea9b297c3b954a56fa34c88d47",
+  "visual_layout_verified": false,
+  "export_limit_and_exact_round_trip": "Reverified by the current browser-journey receipt"
 }
