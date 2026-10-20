@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import functools
 import hashlib
 import io
 import json
@@ -17,7 +18,11 @@ from fastapi.testclient import TestClient
 import app.forensics as forensics_api
 from engine.fundamental_forensics.excel_export import response_query_id, to_xlsx_bytes
 from engine.fundamental_forensics.metric_registry import load_metric_registry
+from engine.fundamental_forensics import query as query_module
+from engine.fundamental_forensics import query_snapshots as query_snapshots_module
+from engine.fundamental_forensics.not_presented import load_not_presented_pack
 from engine.fundamental_forensics.query import (
+    QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX,
     BitemporalMetricQueryEngine,
     MetricMatrix,
     QueryEntity,
@@ -41,6 +46,16 @@ from engine.fundamental_forensics.raw_ledger import (
     FactUnit,
     RawFactLedger,
     canonical_json,
+)
+from tests.test_fundamental_forensics_formula_not_presented import (
+    AFTER as _NP_AFTER,
+    BEFORE as _NP_BEFORE,
+    DEBT_FACTS,
+    INSTANT as _NP_INSTANT,
+    NO_DEBT_ARCS,
+    NO_DEBT_FACTS,
+    _debt_engine,
+    _facts as _np_facts,
 )
 from tests.test_fundamental_forensics_query import PERIOD, _engine, _fact, _policy
 
@@ -556,6 +571,21 @@ _X1P_PROVENANCE_FIELDS = (
     # Conditional keys: present in JSON only on metric-qualification refusals.
     "issuer_class",
     "issuer_class_basis",
+    # Conditional keys (step 5, after the not-presented clock): na_basis and
+    # not_presented on a direct not-presented N/A cell; qualified_not_presented
+    # on a qualified-sum formula VALUE.
+    "na_basis",
+    "not_presented",
+    "qualified_not_presented",
+)
+_X1P_CONDITIONAL_PROVENANCE_FIELDS = frozenset(
+    {
+        "issuer_class",
+        "issuer_class_basis",
+        "na_basis",
+        "not_presented",
+        "qualified_not_presented",
+    }
 )
 _X1P_FIELD_INVENTORY = frozenset(
     _X1P_CELL_FIELDS
@@ -568,6 +598,9 @@ _X1P_FIELD_INVENTORY = frozenset(
 # state column and ``provenance.reason`` onto the reason column because
 # CellNode emits them as exact duplicates (state/status by construction,
 # reason/provenance.reason enforced equal by CellNode.__post_init__).
+# ``provenance.qualified_not_presented`` also maps onto the reason column: a
+# qualified sum is a VALUE (JSON reason null) whose reason column carries the
+# in-row marker naming the omitted operands.
 _X1P_CSV_XLSX_COLUMN_BY_FIELD = {
     "cell_id": "root_cell_id",
     "governance_bundle_id": "governance_bundle_id",
@@ -607,6 +640,8 @@ _X1P_CSV_XLSX_COLUMN_BY_FIELD = {
     "provenance.confidence": "confidence",
     "provenance.source_occurrence_ids": "source_occurrence_ids",
     "provenance.dependency_cell_ids": "dependency_cell_ids",
+    # In-row marker (query._export_reason_text): see _x1p_reason_column_leaf.
+    "provenance.qualified_not_presented": "reason",
 }
 _X1P_PARQUET_COLUMN_BY_FIELD = {
     "cell_id": "root_cell_id",
@@ -638,6 +673,7 @@ _X1P_PARQUET_COLUMN_BY_FIELD = {
     "provenance.system_ready_at": "system_ready_at",
     "provenance.source_occurrence_ids": "source_occurrence_ids_json",
     "provenance.dependency_cell_ids": "dependency_cell_ids_json",
+    "provenance.qualified_not_presented": "reason",
 }
 _X1P_COLUMN_MAPS = {
     "csv": _X1P_CSV_XLSX_COLUMN_BY_FIELD,
@@ -745,11 +781,40 @@ def _x1p_not_applicable_matrix() -> MetricMatrix:
     )
 
 
+@functools.lru_cache(maxsize=None)
+def _x1p_not_presented_matrices(recorded: str) -> tuple[MetricMatrix, MetricMatrix]:
+    """Step-5 cells over the not-presented fixture filing.
+
+    After the not-presented clock the first matrix holds a qualified sum
+    (total_debt omits the not-presented short_term_debt), a consumer that
+    inherits the qualifier (net_debt) and the direct not-presented N/A cell;
+    the second holds a formula N/A (every operand not presented) beside the
+    direct N/A.  Before the clock the same engines answer with ordinary
+    absences, so ``recorded`` selects the side of the clock.
+    """
+    pack = load_not_presented_pack()
+    policy = _policy(source=recorded, recorded=recorded)
+    debt = _debt_engine(pack).query_matrix(
+        tickers=["AAA"],
+        metrics=["total_debt", "short_term_debt", "net_debt"],
+        periods=[_NP_INSTANT],
+        policy=policy,
+    )
+    no_debt = _debt_engine(pack, NO_DEBT_FACTS, NO_DEBT_ARCS).query_matrix(
+        tickers=["AAA"],
+        metrics=["total_debt", "short_term_debt"],
+        periods=[_NP_INSTANT],
+        policy=policy,
+    )
+    return debt, no_debt
+
+
 def _x1p_matrices() -> list[MetricMatrix]:
     return [
         _x1p_parity_matrix(),
         _x1p_probe_matrix(),
         _x1p_not_applicable_matrix(),
+        *_x1p_not_presented_matrices(_NP_AFTER),
     ]
 
 
@@ -920,8 +985,34 @@ def _x1p_rows(fmt: str, matrix: MetricMatrix) -> list[dict]:
     raise AssertionError(f"unknown format {fmt!r}")
 
 
-def _x1p_field_carried(fmt: str, field: str, leaf, row: dict, numeric_columns: set[str]) -> bool:
+_X1P_REASON_COLUMN_FIELDS = frozenset(
+    {"reason", "provenance.reason", "provenance.qualified_not_presented"}
+)
+
+
+def _x1p_reason_column_leaf(field: str, leaf, node: dict):
+    """What the reason column must spell for ``field``, per the declaration.
+
+    A qualified sum (JSON reason null, provenance.qualified_not_presented
+    printed) carries the marker followed by the omitted operand IDs; every
+    other cell carries its JSON reason verbatim.  The qualifier field is
+    therefore carried exactly when the marker appears on the qualified cells
+    and nowhere else, so the reason and the qualifier both stay recoverable.
+    """
+    qualified = node["provenance"].get("qualified_not_presented")
+    if qualified:
+        return QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX + ", ".join(qualified)
+    if field == "provenance.qualified_not_presented":
+        return node["reason"]
+    return leaf
+
+
+def _x1p_field_carried(
+    fmt: str, field: str, leaf, row: dict, numeric_columns: set[str], node: dict
+) -> bool:
     """Does the format's row carry the JSON leaf exactly, per its encoding?"""
+    if field in _X1P_REASON_COLUMN_FIELDS:
+        leaf = _x1p_reason_column_leaf(field, leaf, node)
     if fmt == "parquet":
         return row.get(_X1P_PARQUET_COLUMN_BY_FIELD.get(field, "")) == _x1p_wire_text(
             leaf, csv_safe=False
@@ -964,7 +1055,7 @@ def test_a38_x1p_every_carried_field_is_identical_per_cell(fmt: str) -> None:
                 if column is None:
                     continue
                 leaf = _x1p_json_leaf(node, field)
-                assert _x1p_field_carried(fmt, field, leaf, row, numeric_columns), (
+                assert _x1p_field_carried(fmt, field, leaf, row, numeric_columns, node), (
                     fmt,
                     field,
                     node["cell_id"],
@@ -1023,6 +1114,7 @@ def test_a38_x1p_omitted_cell_fields_declaration_is_exact() -> None:
                         _x1p_json_leaf(node, field),
                         rows[node["cell_id"]],
                         numeric_by_id.get(node["cell_id"], set()),
+                        node,
                     ):
                         carried_everywhere = False
                         break
@@ -1042,8 +1134,8 @@ def test_a38_x1p_omitted_cell_fields_declaration_is_exact() -> None:
 
 def test_a38_x1p_field_inventory_matches_json_wire_keys() -> None:
     """The test inventory is the JSON cell wire surface, no drift."""
-    conditional = {"issuer_class", "issuer_class_basis"}
-    refusal_seen = False
+    conditional = set(_X1P_CONDITIONAL_PROVENANCE_FIELDS)
+    conditional_seen: set[str] = set()
     for matrix in _x1p_matrices():
         for node in _x1p_root_nodes(matrix):
             assert set(_X1P_CELL_FIELDS) == {
@@ -1054,9 +1146,11 @@ def test_a38_x1p_field_inventory_matches_json_wire_keys() -> None:
             inventory_keys = set(_X1P_PROVENANCE_FIELDS)
             assert provenance_keys - inventory_keys == set()
             assert inventory_keys - provenance_keys <= conditional
-            if "issuer_class" in provenance_keys:
-                refusal_seen = True
-    assert refusal_seen, "fixture set must include the conditional-key refusal cell"
+            conditional_seen |= provenance_keys & conditional
+    # The refusal cell (issuer_class*) and the step-5 cells (na_basis,
+    # not_presented, qualified_not_presented) must all be in the fixture set,
+    # or a conditional key would escape the completeness law.
+    assert conditional_seen == conditional, sorted(conditional - conditional_seen)
 
 
 def test_a40_x1p_no_unguarded_formula_leads_in_csv_or_xlsx() -> None:
@@ -1319,6 +1413,11 @@ def test_x1p_serialization_differences_declaration_shape() -> None:
         ),
         "parquet": ("STRING", "canonical-JSON", "null STRING", "no _csv_safe"),
     }
+    # Every tabular format declares the qualified-sum marker in its reason column.
+    required_notes = {
+        fmt: (*notes, QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX)
+        for fmt, notes in required_notes.items()
+    }
     for fmt, notes in required_notes.items():
         entry = SERIALIZATION_DIFFERENCES[fmt]
         assert set(entry) == {"omitted_cell_fields", "encoding"}
@@ -1334,6 +1433,176 @@ def test_x1p_serialization_differences_declaration_shape() -> None:
             assert note in joined, (fmt, note)
     with pytest.raises(TypeError):
         SERIALIZATION_DIFFERENCES["csv"] = {}  # type: ignore[index]
+
+
+# ---------------------------------------------------------------------------
+# Step-5 qualified sums: the qualifier survives every tabular export, and the
+# marker that carries it changes no byte of any export before the clock.
+# ---------------------------------------------------------------------------
+
+_QUALIFIED_MARKER = QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX + "short_term_debt"
+
+
+@pytest.mark.parametrize("fmt", ("csv", "xlsx", "parquet"))
+def test_a38_x1p_qualified_sum_marker_names_the_omitted_operands(fmt: str) -> None:
+    """A qualified sum never reads as a plain sum in CSV, XLSX or Parquet.
+
+    total_debt omits the not-presented short_term_debt and net_debt inherits
+    the qualifier: both rows must name the omitted operand in the reason
+    column, while the direct not-presented cell keeps its own reason and no
+    unqualified cell anywhere carries the marker.
+    """
+    debt, _no_debt = _x1p_not_presented_matrices(_NP_AFTER)
+    nodes = {node["metric_id"]: node for node in _x1p_root_nodes(debt)}
+    assert nodes["total_debt"]["provenance"]["qualified_not_presented"] == ["short_term_debt"]
+    assert nodes["net_debt"]["provenance"]["qualified_not_presented"] == ["short_term_debt"]
+    assert nodes["total_debt"]["reason"] is None
+    rows = {row["metric_id"]: row for row in _x1p_rows(fmt, debt)}
+    for metric_id, value in (("total_debt", "1050"), ("net_debt", "850")):
+        assert rows[metric_id]["state"] == "value", (fmt, metric_id)
+        assert rows[metric_id]["value"] == value, (fmt, metric_id)
+        assert rows[metric_id]["reason"] == _QUALIFIED_MARKER, (fmt, metric_id)
+    assert rows["short_term_debt"]["state"] == "not_applicable"
+    assert rows["short_term_debt"]["reason"] == "not_presented"
+    for matrix in _x1p_matrices():
+        for node in _x1p_root_nodes(matrix):
+            if node["provenance"].get("qualified_not_presented"):
+                continue
+            row = _x1p_rows_by_id(fmt, matrix)[node["cell_id"]]
+            assert not (row["reason"] or "").startswith(
+                QUALIFIED_NOT_PRESENTED_EXPORT_PREFIX
+            ), (fmt, node["cell_id"])
+
+
+def test_a38_x1p_qualified_sum_csv_row_bytes_name_the_operand() -> None:
+    """The raw CSV line of the qualified sum spells the omitted operand."""
+    debt, _no_debt = _x1p_not_presented_matrices(_NP_AFTER)
+    lines = debt.to_csv_bytes().splitlines()
+    total_debt = [line for line in lines if b",total_debt," in line]
+    assert len(total_debt) == 1
+    assert _QUALIFIED_MARKER.encode("utf-8") in total_debt[0]
+
+
+def _x1p_export_payloads(matrix: MetricMatrix) -> dict[str, bytes]:
+    return {
+        "csv": matrix.to_csv_bytes(),
+        "xlsx": to_xlsx_bytes(_x1p_xlsx_response(matrix)),
+        "parquet": _encode_cells_parquet(matrix)[0],
+    }
+
+
+def _x1p_export_digests(matrix: MetricMatrix) -> dict[str, str]:
+    """Environment-independent digests of the three tabular exports.
+
+    CSV is pinned as raw bytes.  XLSX is pinned per decompressed member (the
+    deflate stream may differ across zlib builds) and Parquet as its decoded
+    rows (the file carries writer metadata of the installed pyarrow); the
+    raw XLSX and Parquet bytes are compared in-process below instead.
+    """
+    import pyarrow.parquet as pq
+
+    payloads = _x1p_export_payloads(matrix)
+    with zipfile.ZipFile(io.BytesIO(payloads["xlsx"])) as archive:
+        members = [
+            [name, hashlib.sha256(archive.read(name)).hexdigest()]
+            for name in archive.namelist()
+        ]
+    rows = pq.ParquetFile(io.BytesIO(payloads["parquet"])).read(use_threads=False).to_pylist()
+    return {
+        "csv": hashlib.sha256(payloads["csv"]).hexdigest(),
+        "xlsx_members": hashlib.sha256(canonical_json(members).encode("utf-8")).hexdigest(),
+        "parquet_rows": hashlib.sha256(canonical_json(rows).encode("utf-8")).hexdigest(),
+    }
+
+
+def _x1p_pre_clock_matrices() -> dict[str, MetricMatrix]:
+    debt, no_debt = _x1p_not_presented_matrices(_NP_BEFORE)
+    return {
+        "parity": _x1p_parity_matrix(),
+        "probe": _x1p_probe_matrix(),
+        "not_applicable": _x1p_not_applicable_matrix(),
+        "debt_before_clock": debt,
+        "no_debt_before_clock": no_debt,
+    }
+
+
+# Produced by the encoder BEFORE the qualifier marker existed (PR #9794 head
+# e730669a, reason column = cell.reason), with _x1p_export_digests verbatim.
+_X1P_PRE_CLOCK_EXPORT_PINS = {
+    "parity": {
+        "csv": "b719080fe3637d0cb1cb8a588f1fd8f02f26e553acf5a8fd787fce3e80eaafcd",
+        "xlsx_members": "210e9cf17fe206e4aa8a930a88b1df3d189cfe969af66923af3578256f59768a",
+        "parquet_rows": "f2d0d66c75914c282ba4cecd09965971beace09623ee5f2edf1e05499fd1bd76",
+    },
+    "probe": {
+        "csv": "50fdd9b65be45c3b1d512a0702c2f8841ec228c06804158c8928b43e4c0e4c7c",
+        "xlsx_members": "c2b69955c131af6aff3b34c7d5c1c7462f9d35dd9e8bc3609f5671a30938b65a",
+        "parquet_rows": "8769011858d70f73e4367e1db34c916f2d24b9e0d274513120ac72a9a19d4628",
+    },
+    "not_applicable": {
+        "csv": "b6a0cf7f6951d3d1ec4b659ef692264b517cdf265e4bb6d67e9907dcf9ef47cb",
+        "xlsx_members": "584460166ba2de7cf3952575f4e403bcdde70bf824c21878f1e45cf2c7fd9442",
+        "parquet_rows": "632d466cce7f93b274e88268cc7ef2c54a630e5aa30d6c5bcfa2fbfa0a65970d",
+    },
+    "debt_before_clock": {
+        "csv": "bb3eed597652593f5c86904f81a744553ceefc802c13d241468d67c408bc2966",
+        "xlsx_members": "8313050a5414f05e7d77c9e617882a5e0c35855307fd5e82e6fd3bfc7900ef5b",
+        "parquet_rows": "75f8ac455d5fb7636f3532585bcfd4ee96a3cc224cbcb4286aca6594444208d1",
+    },
+    "no_debt_before_clock": {
+        "csv": "8deabd254484deef61b797021267322de964ef9bbe7a1bb91d8e9b02c207618e",
+        "xlsx_members": "45ed078c8550040fb22c39107b97b40e426c8cf5b7e5cd23e54d5a88f79a6cb0",
+        "parquet_rows": "c36b0de4947f5d5454e613c64901f4d1204f4c2e47bce27febdaac20c978e45a",
+    },
+}
+
+
+def test_a38_x1p_pre_clock_exports_match_the_pre_marker_pins() -> None:
+    """Before the clock every export is the pre-marker encoder's output."""
+    digests = {
+        name: _x1p_export_digests(matrix)
+        for name, matrix in _x1p_pre_clock_matrices().items()
+    }
+    assert digests == _X1P_PRE_CLOCK_EXPORT_PINS
+
+
+def test_a38_x1p_marker_changes_only_qualified_sums(monkeypatch) -> None:
+    """Raw-byte proof: removing the marker changes nothing before the clock.
+
+    The pre-marker encoder is the reason column spelled ``cell.reason``.
+    Every pre-clock CSV, XLSX and Parquet payload is byte-identical under
+    both encoders; the post-clock qualified-sum payloads must differ, or the
+    marker is not reaching that format at all.
+    """
+    pre_clock = _x1p_pre_clock_matrices()
+    qualified = _x1p_not_presented_matrices(_NP_AFTER)[0]
+    with_marker = {name: _x1p_export_payloads(m) for name, m in pre_clock.items()}
+    qualified_with_marker = _x1p_export_payloads(qualified)
+
+    def pre_marker_reason(cell):
+        return cell.reason
+
+    monkeypatch.setattr(query_module, "_export_reason_text", pre_marker_reason)
+    monkeypatch.setattr(query_snapshots_module, "_export_reason_text", pre_marker_reason)
+    for name, matrix in pre_clock.items():
+        assert _x1p_export_payloads(matrix) == with_marker[name], name
+    without_marker = _x1p_export_payloads(qualified)
+    for fmt in ("csv", "xlsx", "parquet"):
+        assert without_marker[fmt] != qualified_with_marker[fmt], fmt
+
+
+def test_a38_x1p_pre_clock_not_presented_pack_exports_equal_the_plain_engine() -> None:
+    """Before the clock the not-presented pack adds no export byte at all."""
+    policy = _policy(source=_NP_BEFORE, recorded=_NP_BEFORE)
+    debt, no_debt = _x1p_not_presented_matrices(_NP_BEFORE)
+    for matrix, values, metrics in (
+        (debt, DEBT_FACTS, ["total_debt", "short_term_debt", "net_debt"]),
+        (no_debt, NO_DEBT_FACTS, ["total_debt", "short_term_debt"]),
+    ):
+        plain = _engine(*_np_facts(values)).query_matrix(
+            tickers=["AAA"], metrics=metrics, periods=[_NP_INSTANT], policy=policy
+        )
+        assert _x1p_export_payloads(matrix) == _x1p_export_payloads(plain)
 
 
 def test_a54_reissue_after_a_new_generation_binds_the_new_receipt(
