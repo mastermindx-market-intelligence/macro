@@ -6,7 +6,7 @@ Acquisition time is this collector's known-by observation, never first publicati
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from decimal import Decimal
 import hashlib
 import json
@@ -91,6 +91,19 @@ def native_acquisitions(frame, root, session, kind, *, now=None):
                 return None
             datetime.strptime(start, "%Y%m%d")
             datetime.strptime(end, "%Y%m%d")
+            selected = frame.loc[column == raw]
+            expiration = str(params.get("expiration", "*")).replace("-", "")
+            if expiration != "*" and "expiration" in selected:
+                if any((value.strftime("%Y%m%d") if isinstance(value, (date, datetime))
+                        else str(value).replace("-", "")) != expiration for value in selected["expiration"]):
+                    return None
+            right = params.get("right", "both")
+            if right != "both" and "right" in selected:
+                if any(str(value).upper()[0] != str(right).upper()[0] for value in selected["right"]):
+                    return None
+            if params.get("strike", "*") != "*" and "strike" in selected:
+                if any(float(value) != float(params["strike"]) for value in selected["strike"]):
+                    return None
             if observed > current:
                 return None
             records.append(rec)
@@ -99,7 +112,7 @@ def native_acquisitions(frame, root, session, kind, *, now=None):
     return sorted(records, key=lambda r: json.dumps(r, sort_keys=True))
 
 
-def massive_reference_terms(observation, root, security_id=None):
+def massive_reference_terms(observation, root, security_id=None, *, contract=None):
     """Map one exact retained reference response. Omissions remain omissions.
 
     Shares delivered do NOT establish a quotation multiplier or an all-share
@@ -117,7 +130,15 @@ def massive_reference_terms(observation, root, security_id=None):
     acquired = observation.get("completed_at")
     if instant(acquired) > datetime.now(timezone.utc):
         raise ValueError("Future reference observation")
-    c = observation.get("contract")
+    c = observation.get("contract") if contract is None else contract
+    if not isinstance(c, dict):
+        raise ValueError("Invalid reference contract")
+    listed = contract is not None
+    if listed and (observation.get("path") != "/v3/reference/options/contracts"
+            or not isinstance(observation.get("contracts"), list) or c not in observation["contracts"]
+            or observation.get("params", {}).get("underlying_ticker") != root
+            or observation.get("params", {}).get("expiration_date") != c.get("expiration_date")):
+        raise ValueError("Reference list scope mismatch")
     if not isinstance(c, dict) or c.get("underlying_ticker") != root:
         raise ValueError("Reference underlying mismatch")
     expiry = c.get("expiration_date")
@@ -132,9 +153,9 @@ def massive_reference_terms(observation, root, security_id=None):
     if mills != mills.to_integral_value() or not (0 < mills < 100_000_000):
         raise ValueError("Invalid reference strike precision")
     ticker = f"O:{root}{parsed:%y%m%d}{right}{int(mills):08d}"
-    if c.get("ticker") != ticker or observation.get("path") != "/v3/reference/options/contracts/" + ticker:
+    if c.get("ticker") != ticker or (not listed and observation.get("path") != "/v3/reference/options/contracts/" + ticker):
         raise ValueError("Reference ticker/key mismatch")
-    presence = observation.get("field_presence")
+    presence = {k: True for k in c} if listed else observation.get("field_presence")
     if not isinstance(presence, dict) or any(presence.get(k) is not True for k in c):
         raise ValueError("Reference field presence mismatch")
     term = {"root": root, "expiration": expiry, "strike": strike, "right": right,
@@ -154,3 +175,58 @@ def massive_reference_terms(observation, root, security_id=None):
     if "additional_underlyings" in term and not isinstance(term["additional_underlyings"], list):
         raise ValueError("Invalid reference additional deliverables")
     return term
+
+
+MASSIVE_REFERENCE_METHODOLOGY = "https://massive.com/docs/rest/options/contracts/contract-overview"
+OCC_ETF_SPEC = "https://www.theocc.com/clearance-and-settlement/clearing/etf-options"
+
+
+def ordinary_spy_terms(term):
+    """Rule-backed interpretation of an exact ordinary SPY reference observation.
+
+    Raw absence remains absent. The provider promises to report extra deliverables;
+    no such report plus100shares supports this narrow standard-SPY interpretation.
+    Correction omission remains unknown. No expiry instant or Greek model is inferred.
+    """
+    out = deepcopy(term)
+    if (term.get("root") != "SPY"
+            or term.get("shares_per_contract") != 100
+            or term.get("exercise_style") != "american"
+            or ("additional_underlyings" in term and term["additional_underlyings"] != [])
+            or not term.get("terms_ref", "").startswith(("https://api.polygon.io/v3/reference/options/contracts", "https://api.massive.com/v3/reference/options/contracts"))):
+        return out
+    out.update(currency="USD", multiplier=100, deliverable="100_underlying_shares",
+        deliverable_ref=term["terms_ref"] + "|" + OCC_ETF_SPEC,
+        term_interpretation={"policy": "occ_standard_spy_etf/v1",
+            "additional_underlyings_field_present": "additional_underlyings" in term,
+            "additional_deliverables": "none_reported",
+            "reference_methodology": MASSIVE_REFERENCE_METHODOLOGY,
+            "quotation_rule": OCC_ETF_SPEC})
+    return out
+
+
+class BoundedRequestBudget:
+    """One in-process three-GET ceiling shared by the incumbent source adapters.
+
+    This is a request bound, not a scheduler, entitlement grant or retry route.
+    Failure/uncertainty closes the budget; consumed attempts cannot be reset.
+    """
+    def __init__(self, max_gets=3):
+        if type(max_gets) is not int or not 1 <= max_gets <= 3:
+            raise ValueError("Bounded acquisition permits1–3GETs")
+        self.max_gets = max_gets
+        self.attempts = 0
+        self.stopped = False
+
+    def begin(self, session, url):
+        if self.stopped or self.attempts >= self.max_gets:
+            raise RuntimeError("Bounded acquisition closed")
+        # requests' default adapter has no retries. Reject a retry-enabled carrier.
+        if hasattr(session, "get_adapter"):
+            retries = session.get_adapter(url).max_retries
+            if retries.total not in (0, False):
+                raise ValueError("Retry-enabled carrier cannot satisfy bounded acquisition")
+        self.attempts += 1
+
+    def stop(self):
+        self.stopped = True

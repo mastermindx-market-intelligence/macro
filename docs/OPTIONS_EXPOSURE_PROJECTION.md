@@ -265,3 +265,45 @@ unchanged and can still refuse incomplete composition.
 This helper creates no collector, registry, store, endpoint, entitlement or Greek
 engine. The current-day snapshot wrapper remains under its existing separate
 clock/dedup contract; this history-response change does not silently alter it.
+
+### Dated provider approximation (Gamma only)
+
+An explicit context `kind: dated_provider_approximation` uses the unchanged v2
+compact tuple representation, with a separate valuation profile:
+
+```json
+{"basis":"provider_eod_approximation","source_session":"YYYY-MM-DD","observation_clock":"session_only","methodology_ref":"https://www.thetadata.net/docs/Articles/Data-And-Requests/Option-Greeks.html","endpoint":"/v3/option/history/greeks/eod","requested_version":"1","serving_build":null,"tenor_policy":"provider_eod_whole_days_0dte_0.15"}
+```
+
+Its capabilities are exactly `dated_cells:true`, `instantaneous:false`,
+`next_live:false`, `joint_scenario:false`, `repricing:false`,
+`historical_pit:false`. Complete matching native Greek and OI acquisitions must
+exist; the actual Greek request must specify version1. Existing raw units,
+input digest, exact series terms, OI, numerical exclusions and denominator
+rules still apply. Source session/report date and aware acquisition known-by
+clocks are required. Option/underlying observation instants may be null; an
+expiration date is sufficient for this dated class. Missing or later-than-cutoff
+capture evidence refuses qualification. It never grants instantaneous/final-hour
+interpretation, next-live, joint scenarios or repricing. Vanna/Charm always remain
+unavailable, including zero-OI rows, and joint.complete is always false.
+The original modeled_exposure class retains all its original clock, economic
+expiry and no-floor provenance guards. Rights remain the incumbent separate
+pass-through decision; computing a number creates no display/export/save grant.
+
+The optional explicit `term_policy: occ_standard_spy_etf/v1` applies only to
+matched SPY reference observations with100shares, American exercise and no
+additional deliverables reported. It uses Massive's documented conditional
+additional_underlyings semantics and OCC ETF premium-quotation rules. Raw
+omissions remain omitted, with interpretation/citations retained separately;
+correction does not default to0. Other/adjusted terms remain unsupported.
+Exact reference-list observations retain their actual list route/query/digest;
+individual rows are not relabeled as separately requested overview responses.
+
+Bounded history calls accept an explicit shared BoundedRequestBudget plus
+strike_range<=5 and byte/row caps. They require one expiry/session, skip the
+extra health GET, disable redirects and reject retry-enabled adapters. The
+reference adapter has a matching bounded contracts-list mode with no next_url
+follow. Its maximum budget is three GET attempts, including failed attempts;
+refusals, transport uncertainty and cap failures close the budget. Normal
+legacy calls retain their existing behavior. Additive receipt construction
+failure preserves valid legacy rows and withholds only their new provenance.

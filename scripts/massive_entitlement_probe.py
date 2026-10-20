@@ -284,7 +284,12 @@ class RestProber:
     """
 
     def __init__(self, key: str | None, base_url: str = DEFAULT_BASE_URL,
-                 timeout: float = 15.0, session: Any = None) -> None:
+                 timeout: float = 15.0, session: Any = None, *, request_budget=None,
+                 max_bytes: int = 262144, max_rows: int = 100) -> None:
+        self.request_budget = request_budget
+        self.max_bytes, self.max_rows = max_bytes, max_rows
+        if request_budget is not None and (type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= 262144 and 0 < max_rows <= 100)):
+            raise ValueError("Bounded reference read needs byte/row caps")
         self.key = key
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
         self.timeout = float(timeout)
@@ -305,25 +310,59 @@ class RestProber:
     def _request(self, path: str, params: dict | None) -> tuple[Any, dict]:
         rec: dict[str, Any] = {"http_status": None, "verdict": "error", "evidence": {}}
         payload: Any = None
-        for attempt in (0, 1):                      # one GET, one retry on 5xx/timeout
+        bounded = self.request_budget is not None
+        if bounded:
+            if path != "/v3/reference/options/contracts":
+                raise ValueError("Bounded reference population uses only the contracts-list route")
+            self.request_budget.begin(self.session, self.base_url + path)
+        for attempt in ((0,) if bounded else (0, 1)):                      # one GET, one retry on 5xx/timeout
             try:
                 resp = self.session.get(self.base_url + path, params=params or None,
-                                        timeout=self.timeout)
+                                        timeout=self.timeout, **({"stream": True, "allow_redirects": False} if bounded else {}))
             except Exception as exc:                # requests embeds the URL — scrub it
                 rec["evidence"]["error"] = _err(exc, self._secrets())
-                if attempt == 0:
+                if bounded:
+                    self.request_budget.stop()
+                if attempt == 0 and not bounded:
                     continue
                 rec["verdict"] = "error"
                 return None, rec
             status = int(getattr(resp, "status_code", 0) or 0)
             rec["http_status"] = status
-            if 500 <= status < 600 and attempt == 0:
+            if 500 <= status < 600 and attempt == 0 and not bounded:
                 continue
             rec["verdict"] = verdict_for_status(status)
             try:
-                payload = resp.json()
-            except Exception:
+                if bounded:
+                    if status != 200:
+                        self.request_budget.stop()
+                        return None, rec
+                    parts, size = [], 0
+                    for chunk in resp.iter_content(chunk_size=65536):
+                        size += len(chunk)
+                        if size > self.max_bytes:
+                            raise ValueError("bounded reference byte limit exceeded")
+                        parts.append(chunk)
+                    raw = b"".join(parts)
+                    payload = json.loads(raw)
+                    results = payload.get("results") if isinstance(payload, dict) else None
+                    if (not isinstance(results, list) or len(results) > self.max_rows or payload.get("next_url")):
+                        raise ValueError("bounded reference row/page limit exceeded")
+                    import hashlib
+                    from datetime import datetime, timezone
+                    rec["evidence"].update(response_sha256=hashlib.sha256(raw).hexdigest(),
+                        response_bytes=size, completed_at=datetime.now(timezone.utc).isoformat())
+                else:
+                    payload = resp.json()
+            except Exception as exc:
                 payload = None
+                if bounded:
+                    self.request_budget.stop()
+                    rec["verdict"] = "error"
+                    rec["evidence"]["bounded_error"] = _err(exc, self._secrets())
+            finally:
+                if bounded:
+                    resp.close()
             rec["evidence"].pop("error", None)      # a retried-away 5xx is not an error
             break
         # Polygon also declares refusal in the BODY on some paths; honor it over the code.
@@ -331,9 +370,14 @@ class RestProber:
             st = str(payload.get("status") or "").upper()
             if st == "NOT_AUTHORIZED":
                 rec["verdict"] = "not_entitled"
+                if bounded:
+                    self.request_budget.stop()
                 rec["evidence"]["body_status"] = "NOT_AUTHORIZED"
             elif st in ("ERROR", "NOT_FOUND"):
                 rec["evidence"]["body_status"] = st
+                if bounded:
+                    self.request_budget.stop()
+                    return None, rec
         return payload, rec
 
     def probe(self, name: str, path: str, params: dict | None = None,

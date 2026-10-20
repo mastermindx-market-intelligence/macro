@@ -18,6 +18,12 @@ import pandas as pd
 from engine.exposure_math import MIN_QUOTED_IV, dealer_exposures
 from engine.intraday_greeks import kernel_applicability
 
+DATED_KIND = "dated_provider_approximation"
+DATED_TENOR = "provider_eod_whole_days_0dte_0.15"
+THETA_METHODOLOGY = "https://www.thetadata.net/docs/Articles/Data-And-Requests/Option-Greeks.html"
+DATED_CAPABILITIES = dict(dated_cells=True, instantaneous=False, next_live=False,
+    joint_scenario=False, repricing=False, historical_pit=False)
+
 METRIC_UNITS = {
     "gamma": "usd_delta_per_1pct_spot",
     "vanna": "usd_delta_per_1vol_point",
@@ -259,15 +265,23 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
     if context is None:
         return None
     from copy import deepcopy
-    from lib.options_source_receipts import native_acquisitions, massive_reference_terms
+    from lib.options_source_receipts import native_acquisitions, massive_reference_terms, ordinary_spy_terms
     out = deepcopy(context)
     if out.get("root", root) != root:
         raise ValueError("Exposure context root mismatch")
     if out.get("input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root):
         return out  # The incumbent qualifier rejects the unchanged mismatched receipt.
     terms = list(out.get("contract_terms") or [])
+    references = []
     for observation in out.pop("contract_reference_observations", []):
-        term = massive_reference_terms(observation, root, out.get("security_id"))
+        if "contracts" in observation:
+            references.extend((observation, c) for c in observation["contracts"])
+        else:
+            references.append((observation, None))
+    for observation, contract in references:
+        term = massive_reference_terms(observation, root, out.get("security_id"), contract=contract)
+        if out.get("term_policy") == "occ_standard_spy_etf/v1":
+            term = ordinary_spy_terms(term)
         matches = [i for i, old in enumerate(terms) if _key(old, root) == _key(term, root)]
         if len(matches) > 1:
             raise ValueError("Ambiguous owner terms")
@@ -355,6 +369,9 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
     """
     context = context or {}
     clocks = dict(context.get("clocks") or {})
+    kind = context.get("kind", "modeled_exposure")
+    dated = kind == DATED_KIND
+    valuation = context.get("valuation") or {}
     greek_rows = [] if greeks_df is None else greeks_df.to_dict("records")
     oi_rows = [] if oi_df is None else oi_df.to_dict("records")
     # Keep only this source session. OI date is its report date, not a second
@@ -384,6 +401,8 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
     required_clocks = [option_clock, underlying_clock,
                        _time(clocks.get("greeks_available_at")),
                        _time(clocks.get("oi_available_at"))]
+    if dated:
+        required_clocks = [_time(clocks.get(k)) for k in ("greeks_available_at", "oi_available_at")]
     source_reason = None
     input_digest = exposure_input_digest(greeks_df, oi_df, asof, root)
     if (not context.get("source_snapshot_ref") or not context.get("security_id")
@@ -395,11 +414,30 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
         source_reason = "source_availability_unknown"
     elif any(t > cutoff for t in required_clocks):
         source_reason = "source_after_availability_cutoff"
-    elif _time(clocks.get("greeks_available_at")) < option_clock:
+    elif not dated and _time(clocks.get("greeks_available_at")) < option_clock:
         source_reason = "source_availability_before_observation"
-    elif any(t.tz_convert("America/New_York").date().isoformat() != asof
+    elif not dated and any(t.tz_convert("America/New_York").date().isoformat() != asof
              for t in (option_clock, underlying_clock)):
         source_reason = "source_session_mismatch"
+    if kind not in ("modeled_exposure", DATED_KIND):
+        source_reason = "unsupported_projection_kind"
+    if dated:
+        from lib.options_source_receipts import native_acquisitions
+        native = native_acquisitions(greeks_df, root, asof, "greeks")
+        oi_native = native_acquisitions(oi_df, root, asof, "oi")
+        if (valuation.get("basis") != "provider_eod_approximation"
+                or valuation.get("source_session") != asof
+                or valuation.get("observation_clock") != "session_only"
+                or valuation.get("methodology_ref") != THETA_METHODOLOGY
+                or valuation.get("endpoint") != "/v3/option/history/greeks/eod"
+                or valuation.get("requested_version") != "1"
+                or valuation.get("serving_build") is not None
+                or valuation.get("tenor_policy") != DATED_TENOR
+                or not native or not oi_native
+                or any(str(r["parameters"].get("version")) != "1" for r in native)):
+            source_reason = "dated_valuation_unqualified"
+        elif asof > pd.Timestamp.now(tz="America/New_York").date().isoformat():
+            source_reason = "source_session_in_future"
     if invalid_greek or invalid_oi or invalid_expected:
         source_reason = "invalid_contract_identity"
 
@@ -423,11 +461,13 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
         if reason is None and (terms_clock is None or terms_clock > cutoff):
             reason = "series_terms_availability_unqualified"
         expiry = _time(term.get("economic_expiry_at"))
-        if reason is None and (expiry is None or not term.get("exercise_style")
+        if not dated and reason is None and (expiry is None or not term.get("exercise_style")
                 or expiry.tz_convert("America/New_York").date().isoformat() != key[0]):
             reason = "economic_expiry_unknown"
-        if reason is None and expiry <= option_clock:
+        if not dated and reason is None and expiry <= option_clock:
             reason = "at_or_after_economic_expiry"
+        if dated and reason is None and (key[0] < asof or not term.get("exercise_style")):
+            reason = "dated_contract_expired_or_style_unknown"
         oi_value = _number(o.get("open_interest"))
         if reason is None and (oi_value is None or oi_value < 0 or not oi_value.is_integer()):
             reason = "oi_unknown_or_invalid"
@@ -442,12 +482,14 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
             why = reason
             provenance = (context.get("greek_provenance") or {}).get(metric) or {}
             method = provenance.get("method")
+            if dated and metric != "gamma":
+                why = "dated_metric_unavailable"
             if why is None and oi_value != 0:
                 if (not provenance.get("source_ref") or not provenance.get("model_ref")
                         or provenance.get("source_ref") != context.get("source_snapshot_ref")
-                        or provenance.get("tenor_policy") != "economic_expiry_no_floor"
+                        or provenance.get("tenor_policy") != (DATED_TENOR if dated else "economic_expiry_no_floor")
                         or provenance.get("unit") != RAW_UNITS[metric]
-                        or method not in ("provider_observed", "engine.intraday_greeks")):
+                        or method not in (("provider_observed",) if dated else ("provider_observed", "engine.intraday_greeks"))):
                     why = "greek_provenance_unqualified"
                 elif method == "engine.intraday_greeks":
                     app = kernel_applicability(exercise_style=term["exercise_style"], right=key[2],
@@ -508,7 +550,8 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
     elif len(json.dumps(wire, separators=(",", ":"), allow_nan=False).encode()) > MAX_CELL_BYTES:
         wire, cells_status = encode_projection_cells([]), "payload_limit"
     return {
-        "schema": "options_hub.exposure_projection/v2", "kind": "modeled_exposure",
+        "schema": "options_hub.exposure_projection/v2", "kind": kind,
+        **({"valuation": valuation, "capabilities": dict(DATED_CAPABILITIES)} if dated else {}),
         "root": root, "source_snapshot_ref": context.get("source_snapshot_ref"),
         "input_sha256": input_digest,
         "security_id": context.get("security_id"),
