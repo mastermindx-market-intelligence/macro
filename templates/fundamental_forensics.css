@@ -2828,6 +2828,23 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
   .ff-tablist { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
   .ff-tab-group { flex: 0 0 auto; scroll-snap-align: start; }
   .ff-overview { grid-template-columns: minmax(0, 1fr); }
+  /* A43 tablet (820): the five-column desk row's minimum (200px + 150px
+     floors, the as-of controls, the 140px source strip, the export button and
+     four gaps) exceeds the 752px band; the header's single auto track then
+     grew to that min-content, so the saved-views row overflowed with it
+     (measured: 4 elements wider than the viewport, page 878px wide). Three
+     rows: company picker + identity, as-of + export, then the source strip
+     at full width. Phones (<=700) keep their own one-band layout. */
+  .ff-desk-header { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+  .ff-desk-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "picker identity" "asof export" "meta meta";
+  }
+  .ff-company-picker { grid-area: picker; min-width: 0; }
+  .ff-company-identity { grid-area: identity; min-width: 0; }
+  .ff-desk-asof { grid-area: asof; min-width: 0; }
+  .ff-desk-row > .ff-run-meta { grid-area: meta; width: 100%; }
+  .ff-desk-export { grid-area: export; justify-self: end; }
 }
 
 @media (max-width: 900px) {
