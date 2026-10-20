@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "IONQ-BULL-20260813",
-  "asof": "2026-10-18",
+  "asof": "2026-10-20",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 23.4,
-  "raw_confidence": 20.0,
-  "delta_vs_base": -36.6,
+  "management_confidence": 22.2,
+  "raw_confidence": 20.7,
+  "delta_vs_base": -37.8,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 13.5,
+    "validity": 15.5,
     "progress": 0.0,
-    "pace": 2.0,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.9
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.236,
+    "dist_to_stop_r": 0.251,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 146.7,
-    "p1": -0.5096,
-    "p2": -0.2548,
+    "horizon_pct_used": 151.1,
+    "p1": -0.4991,
+    "p2": -0.2495,
     "p3": null,
-    "move_r": -0.764,
+    "move_r": -0.749,
     "mfe_r": 0.105,
     "mae_r": -0.764
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 66,
-  "tau": 1.4667
+  "days_elapsed": 68,
+  "tau": 1.5111
 }

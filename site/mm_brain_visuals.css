@@ -22,7 +22,7 @@
 #mmb-root .mmb-v-line.mmb-v-series-3{stroke-dasharray:8 3 2 3}
 #mmb-root .mmb-v-line.mmb-v-series-4{stroke-dasharray:10 4}
 #mmb-root .mmb-v-area{fill-opacity:.1;stroke:none}
-#mmb-root .mmb-v-ring{fill:none}
+#mmb-root circle.mmb-v-ring{fill:none}
 #mmb-root .mmb-v-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin:4px 0 18px}
 #mmb-root .mmb-v-legend-item{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--mmb-text);font:inherit;font-size:12px;padding:4px;min-height:44px;cursor:pointer;text-align:left;max-width:100%}
 #mmb-root .mmb-v-legend-item[aria-pressed=false]{opacity:.45;text-decoration:line-through}

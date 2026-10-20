@@ -1,0 +1,49 @@
+{
+  "schema": "medtech.r14_main_composition/v1",
+  "status": "locally_qualified_not_deployed",
+  "parents": {
+    "candidate": "01b8e6360a5499a57eb63d7c3f22af8cda658d6e",
+    "main": "720e1e7df9797e414d8a2a218ef2f77016c45f48"
+  },
+  "tested_tree_before_this_receipt": "9e5ca68207a7fa70f6c7328a8256ee959bb58be1",
+  "manual_resolution": {
+    "path": ".github/ci/legacy-jobs.yml",
+    "job": "biocatalyst-serving",
+    "preserved_inputs": [
+      "engine/medtech/__init__.py",
+      "engine/medtech/events.py",
+      "engine/medtech/publication.py",
+      "engine/bond_issue_parser.py",
+      "engine/bond_issue_terms.py"
+    ],
+    "sha256": "ab8e109ffacce2eb5fa6c359ca957746c55338e98981f1f9007b0b9e60e2105c"
+  },
+  "checks": {
+    "all_parent_job_path_sets_preserved": true,
+    "jobs": 329,
+    "medtech_logic_and_policy_byte_identical_to_candidate": true,
+    "unmerged_paths": [],
+    "branch_delta_against_main_whitespace_check": 0
+  },
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_medtech.py tests/test_medtech_deployment.py tests/test_ci_pack.py -k 'medtech or ancestor_init_census_does_not_grow' -q",
+    "passed": 95,
+    "subtests_passed": 31,
+    "deselected": 200,
+    "seconds": 21.28,
+    "exit_code": 0,
+    "log": "/tmp/medtech-r14-main-composition-20261020.log"
+  },
+  "policy_review": {
+    "reviewer": "native principal medtech_migration_policy_review",
+    "verdict": "ACCEPT",
+    "scope": "Exact scoped 0037 authority/order amendments at candidate01b8; canonical acceptance and release prerequisites remain required",
+    "namespace_sha256": "4bb6ab8c10821420abcd2bbf968fae6d4c02423ca6d17dd57fac7aac9cde3ef2",
+    "solo_sha256": "2d2fb3f32e8a5a1f0c4534318b28342194dcacf7a52731f9d22fd8d3ef19df75"
+  },
+  "limits": [
+    "Hosted CI on the resulting candidate is still required.",
+    "No production SQL, source activation, API deployment or paid consumer proof is established.",
+    "Whitespace already present in main's generated site artifacts is preserved; the new branch delta against main passes git diff --check."
+  ]
+}
