@@ -11,6 +11,7 @@ from datetime import date, datetime, time, timezone
 from hashlib import sha256
 import json
 import math
+import re
 from urllib.parse import urlparse
 
 SCHEMA = "intl_policy_decision.v1"
@@ -64,6 +65,222 @@ def _finite(value):
         return math.isfinite(value) and -5 <= value <= 100
     except (OverflowError, ValueError):
         return False
+
+
+_BIS_POLICY_DATASET = "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip"
+_BIS_POLICY_SERIES = {"GB":"M.GB","AU":"M.AU","KR":"M.KR","IN":"M.IN","EZ":"M.XM","JP":"M.JP"}
+_BIS_POINT_ERAS = {
+    "GB": ("2006-08-03", "official bank rate", "bank_rate"),
+    "AU": ("1990-08-02", "cash rate target", "cash_rate_target"),
+    "KR": ("2008-03-07", "bank of korea base rate", "bok_base_rate"),
+    "IN": ("2001-04-03", "official repo overnight rate", "policy_repo_rate"),
+    "EZ": ("2024-09-18", "official central bank steering rate is the deposit facility rate, fixed rate",
+           "deposit_facility_rate"),
+}
+
+
+def _bis_date(text):
+    for fmt in ("%d %b %Y", "%d %B %Y"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            pass
+    return None
+
+
+def _bis_instrument(definition, cc, observed):
+    """Interpret an applicable compilation clause; never search older keywords."""
+    if type(definition) is not str or not 0 < len(definition) <= 30000:
+        return None
+    candidate, newer, uncertain = None, None, []
+    for clause in definition.split(";"):
+        clause = " ".join(clause.strip().split())
+        if not clause:
+            continue
+        match = re.fullmatch(
+            r"from (\d{1,2} [a-z]+ \d{4})(?: (onwards)| to (\d{1,2} [a-z]+ \d{4}))?:\s*(.+)",
+            clause, re.I)
+        if not match:
+            uncertain.append(clause)
+            if candidate is None:
+                return None
+            continue
+        start = _bis_date(match[1])
+        end = _bis_date(match[3]) if match[3] else None
+        if start is None or (match[3] and end is None) or (end is not None and end < start):
+            if candidate is None:
+                return None
+            uncertain.append(clause)
+            continue
+        if newer is not None and (start >= newer or (end is not None and end >= newer)):
+            return None
+        if (start <= observed and (end is None or observed <= end)
+                and (newer is None or observed < newer) and candidate is None):
+            candidate = (start, match[4].rstrip(".").lower())
+        newer = start
+    if candidate is None:
+        return None
+    start, description = candidate
+    # Incomplete historic JP clauses are harmless only when their stated years
+    # are unambiguously older than the selected, independently parsed era.
+    if any(not re.findall(r"\b\d{4}\b", clause)
+           or max(map(int,re.findall(r"\b\d{4}\b",clause))) >= start.year for clause in uncertain):
+        return None
+    if cc in _BIS_POINT_ERAS:
+        expected_start, expected_description, instrument = _BIS_POINT_ERAS[cc]
+        if start.isoformat() == expected_start and description == expected_description:
+            return instrument, None, start.isoformat(), None
+        return None
+    if cc == "JP":
+        match = re.fullmatch(
+            r"the boj encourages the uncollateralized overnight call rate to remain at around "
+            r"(-?\d+(?:\.\d+)?) (?:percent|%)", description)
+        if match:
+            return "uncollateralized_overnight_call_rate_target", "around", start.isoformat(), float(match[1])
+    return None
+
+
+def qualify_bis_monthly_policy(raw, cc, *, today):
+    """Source-defined instrument and conservative comparison timing.
+
+    Daily corroboration is a dated observation from the same retained source.
+    It is not an invented business calendar or a claim that a generic weekday
+    must be the monthly series' final business day.
+    """
+    if type(raw) is not dict:
+        return raw
+    result = deepcopy(raw)
+    for key in ("instrument","observation_convention","setting_qualifier","definition_version",
+                "instrument_effective_from","comparison_observation_date","comparison_qualification"):
+        result.pop(key, None)
+    result["comparison_qualification"] = "unqualified_source"
+    label = raw.get("period")
+    if type(label) is not str or not re.fullmatch(r"\d{4}-\d{2}", label):
+        return result
+    try:
+        year, month = map(int,label.split("-"))
+        first, last = date(year,month,1), date(year,month,monthrange(year,month)[1])
+    except ValueError:
+        return result
+    digest = raw.get("source_sha256")
+    known = raw.get("first_observed_at") or raw.get("retrieved_at")
+    retrieved = raw.get("retrieved_at")
+    if (cc not in _BIS_POLICY_SERIES or raw.get("metric") != "policy"
+            or raw.get("provider") != "Bank for International Settlements"
+            or raw.get("source_url") != "https://data.bis.org/topics/CBPOL"
+            or raw.get("dataset_url") != _BIS_POLICY_DATASET
+            or raw.get("series_id") != _BIS_POLICY_SERIES[cc]
+            or raw.get("frequency") != "monthly" or raw.get("unit") != "%"
+            or raw.get("status") not in ("observed","provisional") or not _finite(raw.get("value"))
+            or type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}",digest) is None
+            or type(known) is not str or "T" not in known or _time(known) is None
+            or type(retrieved) is not str or "T" not in retrieved or _time(retrieved) is None
+            or _time(retrieved) > _time(known)
+            or _time(known).date() > today or last > today):
+        return result
+    result["first_observed_at"] = known
+    reference = raw.get("daily_reference")
+    comparison = None
+    if reference is not None:
+        if type(reference) is not dict:
+            return result
+        comparison = _day(reference.get("date"))
+        if (comparison is None or comparison.isoformat() != reference.get("date") or not first <= comparison <= last
+                or reference.get("series_id") != _BIS_POLICY_SERIES[cc].replace("M.","D.",1)
+                or reference.get("source_sha256") != digest
+                or not _finite(reference.get("value")) or reference["value"] != raw["value"]):
+            result["comparison_qualification"] = "daily_monthly_disagreement"
+            return result
+    applicable = _bis_instrument(raw.get("definition"), cc, comparison or last)
+    if applicable is None:
+        result["comparison_qualification"] = "unrecognized_instrument_era"
+        return result
+    if comparison is not None:
+        daily_semantics = _bis_instrument(reference.get("definition"), cc, comparison)
+        if daily_semantics != applicable:
+            result["comparison_qualification"] = "daily_monthly_disagreement"
+            return result
+    else:
+        earlier = _bis_instrument(raw.get("definition"),cc,first)
+        if earlier is None or earlier[:2] != applicable[:2]:
+            result["comparison_qualification"] = "unresolved_instrument_transition"
+            return result
+    instrument, qualifier, effective_from, target = applicable
+    if target is not None and target != raw["value"]:
+        result["comparison_qualification"] = "definition_value_disagreement"
+        return result
+    result.update(instrument=instrument, setting_qualifier=qualifier,
+                  observation_convention="end_of_period",
+                  definition_version="bis_cbpol_compilation_20260924_v1",
+                  instrument_effective_from=effective_from,
+                  comparison_observation_date=comparison.isoformat() if comparison else None,
+                  comparison_qualification="qualified")
+    return result
+
+
+
+def reconcile_bis_monthly_policy(previous, incoming, cc, *, today):
+    """Keep whole evidence records; acquisition order is not correction order."""
+    candidates = []
+    for raw in (previous, incoming):
+        if type(raw) is not dict:
+            continue
+        items = raw.get("retained_contexts") if raw.get("schema") == "intl_bis_monthly_context_conflict.v1" else [raw]
+        if type(items) is not list or len(items) > 12:
+            raise ValueError("bis_retained_context_capacity")
+        for item in items:
+            record = qualify_bis_monthly_policy(item, cc, today=today)
+            if type(record) is dict and record.get("comparison_qualification") != "unqualified_source":
+                candidates.append(record)
+    if not candidates:
+        return qualify_bis_monthly_policy(previous or incoming, cc, today=today)
+    period = max(r["period"] for r in candidates)
+    candidates = [r for r in candidates if r["period"] == period]
+    economic_fields = ("metric","period","value","unit","provider","source_url","dataset_url",
+                       "series_id","status","frequency","definition")
+    meaning_fields = ("instrument","setting_qualifier","instrument_effective_from","observation_convention")
+    def identity(record, fields):
+        return json.dumps({k:record.get(k) for k in fields},sort_keys=True,separators=(",",":"),ensure_ascii=False)
+    def custody(record):
+        return (_time(record["first_observed_at"]), _time(record["retrieved_at"]),
+                json.dumps(record,sort_keys=True,separators=(",",":"),ensure_ascii=False))
+    # Deduplicate identical proof while retaining one complete acquisition.
+    proofs = {}
+    for record in candidates:
+        daily = record.get("daily_reference")
+        daily_semantics = {k:v for k,v in daily.items() if k != "source_sha256"} if type(daily) is dict else daily
+        key = (identity(record,economic_fields),identity(record,meaning_fields),
+               record.get("comparison_qualification"),record.get("comparison_observation_date"),
+               json.dumps(daily_semantics,sort_keys=True,separators=(",",":"),ensure_ascii=False))
+        if key not in proofs or custody(record) < custody(proofs[key]):
+            proofs[key] = record
+    candidates = list(proofs.values())
+    if len(candidates) == 1:
+        return deepcopy(candidates[0])
+    if len({identity(r,economic_fields) for r in candidates}) == 1:
+        qualified = [r for r in candidates if r.get("comparison_qualification") == "qualified"]
+        missing_timing = [r for r in candidates if r.get("daily_reference") is None
+                          and r.get("comparison_qualification") in ("qualified","unresolved_instrument_transition")]
+        comparable = (qualified and len({identity(r,meaning_fields) for r in qualified}) == 1
+                      and all(r in qualified or r in missing_timing for r in candidates))
+        if comparable:
+            latest_day = max(r.get("comparison_observation_date") or "" for r in qualified)
+            strongest = [r for r in qualified if (r.get("comparison_observation_date") or "") == latest_day]
+            return deepcopy(min(strongest,key=custody))
+    if len(candidates) > 12:
+        raise ValueError("bis_retained_context_capacity")
+    candidates.sort(key=lambda r: (identity(r,economic_fields),custody(r)))
+    # These clocks describe when all conflicting evidence was known. They are
+    # not attached to a selected numeric value or an invented source receipt.
+    return {"schema":"intl_bis_monthly_context_conflict.v1","metric":"policy",
+            "period":period,"value":None,"unit":"%","status":"conflict",
+            "provider":"Bank for International Settlements",
+            "source_url":"https://data.bis.org/topics/CBPOL","dataset_url":_BIS_POLICY_DATASET,
+            "series_id":_BIS_POLICY_SERIES[cc],"frequency":"monthly",
+            "comparison_qualification":"retained_conflict",
+            "first_observed_at":max(candidates,key=lambda r:_time(r["first_observed_at"]))["first_observed_at"],
+            "retrieved_at":max(candidates,key=lambda r:_time(r["retrieved_at"]))["retrieved_at"],
+            "retained_contexts":deepcopy(candidates)}
 
 
 def _official_url(value, host):
@@ -267,7 +484,12 @@ def select_policy_decision(records, cc, *, today=None, monthly=None, operational
     if (context and context.get("instrument") == selected["instrument"]
             and context.get("observation_convention") == "end_of_period"
             and context.get("setting_qualifier") == selected.get("setting_qualifier")
-            and _day(selected["effective_date"]) <= month_end
+            and ((context.get("comparison_observation_date")
+                  and _day(context["comparison_observation_date"]) is not None
+                  and _day(context["period"] + "-01") <= _day(context["comparison_observation_date"]) <= month_end
+                  and _day(selected["effective_date"]) <= _day(context["comparison_observation_date"]))
+                 or (not context.get("comparison_observation_date")
+                     and _day(selected["effective_date"]) < _day(context["period"] + "-01")))
             and context["value"] != selected["value"]):
         state = "conflict"
     review = _current_policy_review(review_events, cc, knowledge_cutoff, record=selected)
@@ -295,6 +517,13 @@ def select_policy_decision(records, cc, *, today=None, monthly=None, operational
     selected["current"] = state == "verified"
     selected["conflicting_records"] = [r["record_id"] for r in newest] if conflicting else []
     selected["monthly_context"] = context
+    if type(monthly) is dict and monthly.get("schema") == "intl_bis_monthly_context_conflict.v1":
+        collision = reconcile_bis_monthly_policy(None, monthly, cc, today=today)
+        known_at = _time(collision.get("first_observed_at")) if type(collision) is dict else None
+        if (type(collision) is dict and collision.get("comparison_qualification") == "retained_conflict"
+                and known_at is not None and known_at <= knowledge_cutoff):
+            selected["monthly_check"] = "review_required"
+            selected["monthly_check_period"] = collision["period"]
     selected["announced"] = next_decision
     return selected
 

@@ -1,6 +1,10 @@
 {# Analyst-led country reading. Native disclosures retain a full no-script path. #}
 {% macro pair(en, zh) -%}{{ t(en, zh) }}{%- endmacro %}
 {% set a = intl_analysis %}
+{% set available_countries = a.countries|map(attribute='cc')|list %}
+{% macro country_link(cc, en, zh) -%}
+  {% if cc in available_countries %}<a href="#imc-country-{{ cc|e }}" data-imc-country="{{ cc|e }}">{{ pair(en, zh) }} ↗</a>{% else %}<span>{{ pair(en, zh) }}</span>{% endif %}
+{%- endmacro %}
 <section class="imc" data-im-country-analysis aria-labelledby="imc-title">
   <header class="imc-masthead">
     <div><p class="imc-kicker">{{ pair('INTERNATIONAL / RESEARCH DESK', '国际市场 / 研究台') }}</p>
@@ -8,7 +12,7 @@
     <div class="imc-edition"><span>{{ pair('COUNTRY INTELLIGENCE', '国家与地区研判') }}</span>
       <time datetime="{{ a.evaluated_at|e }}">{{ a.evaluated_at|e }}</time></div>
   </header>
-  <nav class="imc-nav" aria-label="{{ 'International analysis' }}">
+  <nav class="imc-nav" aria-labelledby="imc-title">
     <a href="#imc-world">{{ pair('World brief', '全球简报') }}</a>
     <a href="#imc-countries">{{ pair('Country assessments', '国家与地区研判') }}</a>
     <a href="#imc-connections">{{ pair('Global connections', '全球关联') }}</a>
@@ -25,7 +29,7 @@
 
   <section class="imc-countries" id="imc-countries" aria-labelledby="imc-countries-title">
     <header class="imc-section-head imc-country-heading"><h2 id="imc-countries-title">{{ pair('Country assessments', '国家与地区研判') }}</h2><span class="imc-section-note">{{ pair('Economy · Policy · Markets', '经济 · 政策 · 市场') }}</span></header>
-    <nav class="imc-country-rail" aria-label="Countries">
+    <nav class="imc-country-rail" aria-labelledby="imc-countries-title">
     {% for c in a.countries %}
       <a href="#imc-country-{{ c.cc|e }}" data-imc-country="{{ c.cc|e }}"><span>{{ c.cc|e }}</span>{{ pair(c.name_en, c.name_zh) }}</a>
     {% endfor %}
@@ -57,8 +61,8 @@
                 </div>
                 {% if c.outlook.chart %}{% set chart = c.outlook.chart %}
                 <figure class="imc-growth-chart">
+                  <span class="imc-chart-description" id="imc-chart-title-{{ c.cc }}">{{ pair("Real GDP growth: " ~ chart.description_en, "实际GDP增长：" ~ chart.description_zh) }}</span>
                   <svg viewBox="0 0 440 155" role="img" aria-labelledby="imc-chart-title-{{ c.cc }}">
-                    <title id="imc-chart-title-{{ c.cc }}">Real GDP growth / 实际GDP增长: {{ chart.description_en|e }}</title>
                     <line x1="30" x2="410" y1="{{ chart.zero_y }}" y2="{{ chart.zero_y }}" class="imc-chart-grid"/>
                     <line x1="30" x2="410" y1="32" y2="32" class="imc-chart-grid"/>
                     <text x="5" y="35" class="imc-chart-scale">{{ '%.0f'|format(chart.high) }}%</text>
@@ -106,6 +110,7 @@
                   {% else %}{{ pair('This announcement needs review.', '此项公告待重新核验。') }}{% endif %}
                 </p>
                 {% endif %}
+                {% if pd.get('monthly_check') == 'review_required' %}<p class="imc-source-line">{{ pair('Monthly cross-check needs review', '月度交叉核验待复核') }} · {{ pd.monthly_check_period|e }}</p>{% endif %}
                 {% set policy_source = pd.review if pd.state == 'review_required' else pd %}
                 <p class="imc-source-line"><a href="{{ policy_source.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Review the source', '查看待核实来源') if pd.state == 'review_required' else pair('Read the decision', '阅读政策决定') }} ↗</a> · {{ pair('Published ', '发布于 ') }}{{ policy_source.published|e }}</p>
                 {% if pd.get('supporting_sources') %}<p class="imc-source-line imc-policy-support">{% for evidence in pd.supporting_sources %}<a href="{{ evidence.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair(evidence.label_en,evidence.label_zh) }} ↗</a>{% endfor %}</p>{% endif %}
@@ -202,9 +207,9 @@
   <section class="imc-connections" id="imc-connections" aria-labelledby="imc-connections-title">
     <header class="imc-section-head"><div><p class="imc-kicker">{{ pair('FOLLOW THE MECHANISM', '追踪传导机制') }}</p><h2 id="imc-connections-title">{{ pair('Global connections', '全球关联') }}</h2></div><span class="imc-section-note">{{ pair('Channels to examine, not causal estimates', '用于研究的渠道，并非因果估计') }}</span></header>
     <div class="imc-connection-grid">
-      <article class="panel"><span class="imc-channel-index">01 / {{ pair('DEMAND', '需求') }}</span><h3>{{ pair('Technology to exports', '科技传导至出口') }}</h3><p>{{ pair('Investment demand flows into export orders, production and earnings. Follow whether that strength spreads into domestic activity.', '投资需求传导至出口订单、生产与利润。关注这股力量能否扩散至国内经济。') }}</p><div><a href="#imc-country-TW" data-imc-country="TW">{{ pair('Taiwan','台湾') }} ↗</a><a href="#imc-country-KR" data-imc-country="KR">{{ pair('South Korea','韩国') }} ↗</a></div></article>
-      <article class="panel"><span class="imc-channel-index">02 / {{ pair('PRICES', '价格') }}</span><h3>{{ pair('Energy to real incomes', '能源传导至实际收入') }}</h3><p>{{ pair('Higher import costs can squeeze households and margins. Inflation then changes the room available for monetary support.', '进口成本上升可能挤压家庭购买力与利润率。通胀继而改变货币政策的支持空间。') }}</p><div><a href="#imc-country-JP" data-imc-country="JP">{{ pair('Japan','日本') }} ↗</a><a href="#imc-country-IN" data-imc-country="IN">{{ pair('India','印度') }} ↗</a><a href="#imc-country-EZ" data-imc-country="EZ">{{ pair('Euro Area','欧元区') }} ↗</a></div></article>
-      <article class="panel"><span class="imc-channel-index">03 / {{ pair('FINANCING', '融资') }}</span><h3>{{ pair('Policy to spending', '政策传导至支出') }}</h3><p>{{ pair('Policy reaches the economy through borrowing, saving and exchange rates. A lower rate is useful only if transmission follows.', '政策通过借贷、储蓄与汇率影响经济。利率下降的作用，取决于后续传导。') }}</p><div><a href="#imc-country-GB" data-imc-country="GB">{{ pair('United Kingdom','英国') }} ↗</a><a href="#imc-country-AU" data-imc-country="AU">{{ pair('Australia','澳大利亚') }} ↗</a></div></article>
+      <article class="panel"><span class="imc-channel-index">01 / {{ pair('DEMAND', '需求') }}</span><h3>{{ pair('Technology to exports', '科技传导至出口') }}</h3><p>{{ pair('Investment demand flows into export orders, production and earnings. Follow whether that strength spreads into domestic activity.', '投资需求传导至出口订单、生产与利润。关注这股力量能否扩散至国内经济。') }}</p><div>{{ country_link('TW', 'Taiwan','台湾') }}{{ country_link('KR', 'South Korea','韩国') }}</div></article>
+      <article class="panel"><span class="imc-channel-index">02 / {{ pair('PRICES', '价格') }}</span><h3>{{ pair('Energy to real incomes', '能源传导至实际收入') }}</h3><p>{{ pair('Higher import costs can squeeze households and margins. Inflation then changes the room available for monetary support.', '进口成本上升可能挤压家庭购买力与利润率。通胀继而改变货币政策的支持空间。') }}</p><div>{{ country_link('JP', 'Japan','日本') }}{{ country_link('IN', 'India','印度') }}{{ country_link('EZ', 'Euro Area','欧元区') }}</div></article>
+      <article class="panel"><span class="imc-channel-index">03 / {{ pair('FINANCING', '融资') }}</span><h3>{{ pair('Policy to spending', '政策传导至支出') }}</h3><p>{{ pair('Policy reaches the economy through borrowing, saving and exchange rates. A lower rate is useful only if transmission follows.', '政策通过借贷、储蓄与汇率影响经济。利率下降的作用，取决于后续传导。') }}</p><div>{{ country_link('GB', 'United Kingdom','英国') }}{{ country_link('AU', 'Australia','澳大利亚') }}</div></article>
     </div>
   </section>
 </section>

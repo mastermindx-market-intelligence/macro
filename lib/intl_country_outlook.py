@@ -82,7 +82,7 @@ def _chart(growth):
     return {"points": coordinates, "historical_line": poly(historical), "projection_line": poly(projected),
             "low": low, "high": high, "zero_y": round(32 + high * 72 / (high - low), 2),
             "description_en": "; ".join(f'{p["label"]}: {p["value"]:.1f}% ({p["status"].replace("_", " ")})' for p in points),
-            "description_zh": "；".join(f'{p["label"]}：{p["value"]:.1f}%' for p in points)}
+            "description_zh": "；".join(f'{p["label"]}：{p["value"]:.1f}%（{"预测" if p["status"] == "projection" else "机构历史数据"}）' for p in points)}
 
 
 def build_country_outlook(cc, archive, *, today, growth=None, metrics=(), market=None, operational_as_of=None, policy_decision=None):

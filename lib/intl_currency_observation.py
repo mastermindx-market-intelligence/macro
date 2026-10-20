@@ -102,6 +102,89 @@ def captured_source_context(cc, *, retrieved_at, response_sha256, provider_symbo
     }
 
 
+FX_CAPTURE_COLUMN = "intl_fx_adapter_capture"
+FX_CAPTURE_SCHEMA = "intl_fx_adapter_capture.v1"
+FX_DATE_POLICY = "provider_daily_label_no_timezone_conversion_v1"
+FX_CAPTURE_POLICY = "exclude_request_start_UTC_day_v1"
+
+
+def _instant(value):
+    if type(value) is not str:
+        return None
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return stamp.astimezone(timezone.utc) if stamp.tzinfo is not None else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def adapter_capture_receipt(ticker, observed, value, *, started_at, returned_at):
+    """Bind a real adapter invocation result, never a vendor-finality claim.
+
+    The caller is IntlPriceAdapter immediately after yf.download returns.
+    No receipt is created by the store reader or for a fallback cached frame.
+    """
+    cc = next((cc for cc, spec in SPECS.items() if spec[1] == ticker), None)
+    day, price = _day(observed), _price(value)
+    start, end = _instant(started_at), _instant(returned_at)
+    if cc is None or day is None or price is None or start is None or end is None or end < start:
+        return None
+    payload = {
+        "schema": FX_CAPTURE_SCHEMA, "provider": "Yahoo Finance", "collector": "intl_prices",
+        "configured_series": ticker, "price_field": "close", "interval": "1d", "auto_adjust": True,
+        "date_policy": FX_DATE_POLICY, "eligibility_policy": FX_CAPTURE_POLICY,
+        "date": day.isoformat(), "quote_hex": price.hex(),
+        "adapter_request_started_at_utc": start.isoformat(),
+        "adapter_result_returned_at_utc": end.isoformat(),
+        "eligible_before_date": start.date().isoformat(),
+    }
+    return json.dumps({**payload, "receipt_sha256": _digest(payload)},
+                      sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def _read_adapter_receipt(raw, cc, observed, value, today):
+    if type(raw) is str:
+        if len(raw) > 4000:
+            return None
+        try:
+            raw = json.loads(raw)
+        except (TypeError, ValueError):
+            return None
+    keys = {"schema", "provider", "collector", "configured_series", "price_field",
+            "interval", "auto_adjust", "date_policy", "eligibility_policy", "date",
+            "quote_hex", "adapter_request_started_at_utc", "adapter_result_returned_at_utc",
+            "eligible_before_date", "receipt_sha256"}
+    if type(raw) is not dict or set(raw) != keys:
+        return None
+    start = _instant(raw["adapter_request_started_at_utc"])
+    end = _instant(raw["adapter_result_returned_at_utc"])
+    if (raw["schema"] != FX_CAPTURE_SCHEMA or raw["provider"] != "Yahoo Finance"
+            or raw["collector"] != "intl_prices" or raw["configured_series"] != SPECS[cc][1]
+            or raw["price_field"] != "close" or raw["interval"] != "1d"
+            or raw["auto_adjust"] is not True or raw["date_policy"] != FX_DATE_POLICY
+            or raw["eligibility_policy"] != FX_CAPTURE_POLICY
+            or start is None or end is None or not start <= end
+            or end.date() > today or observed is None or value is None
+            or observed >= start.date() or raw["date"] != observed.isoformat()
+            or raw["quote_hex"] != value.hex()
+            or raw["eligible_before_date"] != start.date().isoformat()):
+        return None
+    try:
+        if raw["receipt_sha256"] != _digest({k:v for k,v in raw.items() if k != "receipt_sha256"}):
+            return None
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return dict(raw)
+
+
+def stored_source_context(cc, country_config):
+    """Source identity only. Endpoints must supply actual row-bound receipts."""
+    source = incumbent_source_context(cc, country_config)
+    if source is None:
+        return None
+    return {**source, "kind": "captured_store", "endpoint_receipts": None}
+
+
 def _captured_day(source):
     try:
         retrieved = datetime.fromisoformat(source["retrieved_at"].replace("Z", "+00:00"))
@@ -116,9 +199,11 @@ def _observation_cutoff(source, today):
     return min(today, _captured_day(source)) if source["kind"] == "captured_response" else today
 
 
-def _valid_source(source, cc, today):
+def _valid_source(source, cc, today, *, selecting=False):
     keys = {"provider", "collector", "price_field", "kind", "source_url",
             "dataset_url", "retrieved_at", "response_sha256", "provider_symbol"}
+    if type(source) is dict and source.get("kind") == "captured_store":
+        keys.add("endpoint_receipts")
     if (type(source) is not dict or set(source) != keys
             or source["provider"] != "Yahoo Finance"
             or source["collector"] != "intl_prices"
@@ -126,8 +211,27 @@ def _valid_source(source, cc, today):
             or source["source_url"] != _source_url(cc)):
         return False
     if source["kind"] == "configured_store":
-        return all(source[k] is None for k in (
-            "dataset_url", "retrieved_at", "response_sha256", "provider_symbol"))
+        # A series name and a daily label do not establish acquisition custody.
+        return False
+    if source["kind"] == "captured_store":
+        if any(source[k] is not None for k in ("dataset_url", "response_sha256", "provider_symbol")):
+            return False
+        receipts = source["endpoint_receipts"]
+        if selecting and receipts is None:
+            return source["retrieved_at"] is None
+        if type(receipts) is not dict or set(receipts) != {"start", "end"}:
+            return False
+        for receipt in receipts.values():
+            if type(receipt) is not dict:
+                return False
+            try:
+                value = _price(float.fromhex(receipt.get("quote_hex", "")))
+            except (TypeError, ValueError, OverflowError):
+                return False
+            if _read_adapter_receipt(receipt, cc, _day(receipt.get("date")), value, today) is None:
+                return False
+        latest = max((r["adapter_result_returned_at_utc"] for r in receipts.values()), key=_instant)
+        return source["retrieved_at"] == latest
     if (source["kind"] != "captured_response"
             or source["dataset_url"] != provider_dataset_url(cc)
             or source["provider_symbol"] not in SPECS[cc][3]
@@ -164,18 +268,28 @@ def build_currency_observation(cc, observations, *, today, source):
         raise ValueError("invalid_currency_evaluation_date")
     if type(cc) is not str or cc not in SPECS:
         return _missing(cc, "unsupported_currency")
-    if not _valid_source(source, cc, today):
+    if not _valid_source(source, cc, today, selecting=True):
         return _missing(cc, "source_unavailable")
     if not isinstance(observations, (list, tuple)):
         return _missing(cc, "observation_unavailable")
     cutoff = _observation_cutoff(source, today)
-    by_day = {}
+    by_day, row_receipts = {}, {}
+    stored = source["kind"] == "captured_store"
     for item in observations:
-        if not isinstance(item, (tuple, list)) or len(item) != 2:
+        if not isinstance(item, (tuple, list)) or len(item) != (3 if stored else 2):
             continue
         observed, value = _day(item[0]), _price(item[1])
         if observed is None or observed >= cutoff or value is None:
             continue
+        if stored:
+            receipt = _read_adapter_receipt(item[2], cc, observed, value, today)
+            if receipt is None:
+                continue
+            identity = (observed, value)
+            prior = row_receipts.get(identity)
+            if (prior is None or _instant(receipt["adapter_result_returned_at_utc"])
+                    < _instant(prior["adapter_result_returned_at_utc"])):
+                row_receipts[identity] = receipt
         by_day.setdefault(observed, set()).add(value)
     if not by_day:
         return _missing(cc, "observation_unavailable")
@@ -198,6 +312,12 @@ def build_currency_observation(cc, observations, *, today, source):
     value = _return(start_quote, end_quote, SPECS[cc][2])
     if value is None:
         return _missing(cc, "invalid_return")
+    selected_source = dict(source)
+    if stored:
+        receipts = {"start": row_receipts[(start, start_quote)], "end": row_receipts[(end, end_quote)]}
+        selected_source["endpoint_receipts"] = receipts
+        selected_source["retrieved_at"] = max(
+            (r["adapter_result_returned_at_utc"] for r in receipts.values()), key=_instant)
     payload = {
         "schema": SCHEMA, "status": "available", "cc": cc,
         "currency": SPECS[cc][0], "counter_currency": "USD",
@@ -206,7 +326,7 @@ def build_currency_observation(cc, observations, *, today, source):
         "reference_target": target.isoformat(),
         "start": {"date": start.isoformat(), "quote": start_quote},
         "end": {"date": end.isoformat(), "quote": end_quote},
-        "value": value, "source": dict(source),
+        "value": value, "source": selected_source,
     }
     return {**payload, "evidence_sha256": _digest(payload)}
 
@@ -239,6 +359,11 @@ def currency_observation_view(raw, cc, *, today):
             or not start < end < _observation_cutoff(raw["source"], today)
             or (today - end).days > MAX_END_AGE_DAYS):
         return missing
+    if raw["source"]["kind"] == "captured_store":
+        receipts = raw["source"]["endpoint_receipts"]
+        if (_read_adapter_receipt(receipts["start"], cc, start, a, today) is None
+                or _read_adapter_receipt(receipts["end"], cc, end, b, today) is None):
+            return missing
     try:
         target = reference_date(end)
     except ValueError:

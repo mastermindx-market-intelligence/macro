@@ -213,6 +213,11 @@ def _metric(key, record, official, today):
         period = _mapping(record.get("macro_asof")).get(date_key)
         source = "Existing international macro series"
         source_url = None
+    # Invalid or future observation periods cannot be labeled as earlier facts.
+    # Genuine old observations remain available with their dated treatment.
+    period_end = _period_end(period)
+    if period_end is None or period_end > today:
+        value = None
     current = value is not None and _fresh(period, today, limit)
     return {
         "key": key, "label_en": en, "label_zh": zh, "value": value,

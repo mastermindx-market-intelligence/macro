@@ -155,13 +155,12 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Publish the completed country-analysis, seven-bank policy, fiscal, currency and public-asset
-  increments through the original registered workspace, existing branch and native fenced publisher.
-  Original-owner evidence reconciles attempted action d07df7c6 as NOT_APPLIED; preserve its historical
-  EFFECT_UNKNOWN receipt. Qualify the real current composition and hosted CI without carrying forward
-  the withdrawn blanket Sector packet blocker. Complete genuine independent release review, the normal
-  render/updater path and real served acceptance. Retain PR8754 and its separate rights, browser, Saved
-  and release obligations.
+next_action: Bind the repaired country cockpit to genuine independent immutable reviews, publish through
+  the existing registered branch and native fenced publisher, and complete current hosted CI. Preserve
+  current-main CI enrollment and access-policy composition. Then complete ordinary full-history FX
+  acquisition, the normal render/updater path and actual served country acceptance. The original
+  publisher uncertainty is reconciled; the published 1a292672 candidate has concrete repairs awaiting
+  its next immutable publication. Retain PR8754 and its separate rights, browser, Saved and release obligations.
 artifacts:
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json
 - research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md
@@ -322,3 +321,11 @@ The current no-colored-container-edge doctrine is applied to four CSS selectors 
 Review responsibility remains substantive and independent. Current protected law permits a genuinely needed native principal audit; no exclusive Opus or SessionBridge-only requirement has been established. The failed SessionBridge discovery does not waive review or invent a mandatory missing API. Earlier bounded principal advice is not complete-candidate acceptance. The integrated source still needs its current hosted CI and independent complete review, applicable holding-authority release, the normal render/updater path, and actual served verification.
 
 Evidence: `research/paper_international_wave1_wave2/publisher_reconciliation_20261020/` and `mockups/evidence/intl-integration-20261020/`. No Ready/merge-to-main, runtime restart, migration or watcher is implied.
+
+## 2026-10-20 independent review repairs and clean CI
+
+The original immutable 1a292672 candidate received substantive independent REPAIR findings. Those findings were reproduced and repaired: actual adapter/store FX custody; retained forecast clocks and correction graph; source-qualified and order-stable BIS policy evidence; primary build resilience; future-period withholding; country disclosure/history/partial coverage; neutral panel edges; complete mobile focus; bilingual chart legend and accessible descriptions. The independent data/logic and product reviewers have inspected the working deltas without remaining concrete findings; their final immutable binding is still required.
+
+The final declared foundation commands pass 1,363 + 369 checks in a fresh Python 3.12 environment. An additional 40 final build/access tests pass. Actual Chrome records 84 country views, 12 focus checks, 8 ageing controls and no page exceptions; the twelve targeted history/legend/accessibility checks and six explicitly labeled degraded visual controls also pass. The canonical main integration inference reports no uncovered jobs or unenrolled gated suites. The clean-environment openpyxl failure and the earlier interaction failures are preserved beside the repairs.
+
+Evidence and remaining production obligations: `research/paper_international_wave1_wave2/review_repair_20261020/REVIEW_REPAIR_20261020.md`, its structured receipts, and `mockups/evidence/intl-review-repair-20261020/`. Ordinary full-history acquisition must establish production FX custody; a new render alone does not refresh observations. Hosted CI, release, actual shared render/updater adoption and served-user acceptance are still separate facts. This update does not close the mission.

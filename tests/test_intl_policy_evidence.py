@@ -73,7 +73,8 @@ def test_latest_decision_replaces_older_conflict():
 
 def monthly(**changes):
     item = {"value": 4.0, "period": "2026-09", "instrument": "bank_rate",
-            "observation_convention": "end_of_period", "first_observed_at": "2026-10-01T12:00:00+00:00"}
+            "observation_convention": "end_of_period", "first_observed_at": "2026-10-01T12:00:00+00:00",
+            "comparison_observation_date": "2026-09-30"}
     item.update(changes)
     return item
 
@@ -220,7 +221,8 @@ def test_realized_overnight_rate_does_not_contradict_an_approximate_target():
                    "observation_convention": "end_of_period",
                    "first_observed_at": "2026-10-01T00:00:00+00:00"}
     assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["current"]
-    observation.update(setting_qualifier="around", value=0.5)
+    observation.update(setting_qualifier="around", value=0.5,
+                       comparison_observation_date="2026-09-30")
     assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["state"] == "conflict"
 
 
@@ -474,3 +476,260 @@ def test_other_release_url_cannot_restore_a_withdrawn_source():
     after = select_policy_decision([one, two], "GB", review_events=events,
                                    operational_as_of="2026-10-19T10:03:00+00:00")
     assert after["state"] == "review_required" and not after["current"]
+
+
+def bis_policy_observation(*, cc="GB", value=4.0, period="2026-09",
+                           daily_date="2026-09-30", definition=None, retrieved_at=NOW, duplicate_definition=None):
+    """Actual BIS CSV -> ZIP -> parser boundary, including source compilation."""
+    import csv
+    import io
+    from zipfile import ZipFile
+    from collectors.intl_country_sources import parse_bis
+    baseline=json.loads((ROOT/"config/intl_country_baseline.json").read_text())
+    definition=definition if definition is not None else baseline["official"][cc]["policy"]["definition"]
+    area="XM" if cc=="EZ" else cc
+    headers=["STRUCTURE_ID","FREQ:Frequency","REF_AREA:Reference area",
+        "TIME_PERIOD:Time period or range","OBS_VALUE:Observation Value",
+        "UNIT_MEASURE:Unit of measure","UNIT_MULT:Unit Multiplier",
+        "OBS_CONF:Observation confidentiality","OBS_STATUS:Observation Status","COMPILATION:Compilation"]
+    text=io.StringIO()
+    writer=csv.writer(text)
+    writer.writerow(headers)
+    for freq,label in [("M",period)]+([("D",daily_date)] if daily_date is not None else []):
+        writer.writerow(["BIS:WS_CBPOL(1.0):"+freq+"."+area,freq,area,label,
+                         value,"368","0","F","A",definition])
+    if duplicate_definition is not None:
+        writer.writerow(["BIS:WS_CBPOL(1.0):M."+area,"M",area,period,
+                         value,"368","0","F","A",duplicate_definition])
+    data=io.BytesIO()
+    with ZipFile(data,"w") as z:
+        z.writestr("WS_CBPOL_csv_flat.csv",text.getvalue())
+    return parse_bis(data.getvalue(),"policy",retrieved_at=retrieved_at)["observations"][cc]
+
+
+def test_actual_bis_producer_connects_to_policy_conflict_guard():
+    context=bis_policy_observation()
+    assert context["instrument"]=="bank_rate"
+    assert context["setting_qualifier"] is None
+    assert context["observation_convention"]=="end_of_period"
+    assert context["comparison_observation_date"]=="2026-09-30"
+    assert context["daily_reference"]["value"]==4
+    assert selected([raw()],monthly=context)["state"]=="conflict"
+
+
+@pytest.mark.parametrize("cc,value,instrument,qualifier", [
+    ("GB",3.75,"bank_rate",None),("AU",4.6,"cash_rate_target",None),
+    ("KR",3.0,"bok_base_rate",None),("IN",5.25,"policy_repo_rate",None),
+    ("EZ",2.5,"deposit_facility_rate",None),
+    ("JP",1.25,"uncollateralized_overnight_call_rate_target","around"),
+])
+def test_bis_actual_compilation_defines_the_active_instrument(cc,value,instrument,qualifier):
+    context=bis_policy_observation(cc=cc,value=value)
+    assert context["comparison_qualification"]=="qualified"
+    assert context["instrument"]==instrument and context["setting_qualifier"]==qualifier
+
+
+@pytest.mark.parametrize("cc,period,definition", [
+    ("AU","1990-05","From 2 Aug 1990 onwards: cash rate target; from 23 Jan 1990 to 1 Aug 1990: middle of the cash rate target range;"),
+    ("EZ","2024-08","From 18 Sep 2024 onwards: official central bank steering rate is the deposit facility rate, fixed rate; from 15 Oct 2008 to 17 Sep 2024: official central bank liquidity providing, main refinancing operations, fixed rate;"),
+    ("JP","2026-09","From 24 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 0 to 0.1 percent;"),
+    ("GB","2026-09","From 1 Sep 2026 onwards: a new market rate; From 3 Aug 2006 onwards: official bank rate;"),
+    ("GB","2026-09","From unknown 2026 onwards: a new market rate; From 3 Aug 2006 onwards: official bank rate;"),
+    ("GB","2026-09","From 1 Sep 2026 to 15 Sep 2026: a temporary market rate; From 3 Aug 2006 onwards: official bank rate;"),
+])
+def test_bis_never_aliases_ranges_historic_or_unknown_newer_instruments(cc,period,definition):
+    from calendar import monthrange
+    y,m=map(int,period.split("-"))
+    context=bis_policy_observation(cc=cc,period=period,
+        daily_date=f"{period}-{monthrange(y,m)[1]:02d}",definition=definition)
+    assert context["comparison_qualification"]!="qualified"
+    assert "instrument" not in context
+
+
+def test_bis_japan_definition_target_must_match_the_actual_point():
+    context=bis_policy_observation(cc="JP",value=9.0)
+    assert context["comparison_qualification"]=="definition_value_disagreement"
+    assert "instrument" not in context
+
+
+@pytest.mark.parametrize("changes", [
+    {"source_sha256":None},{"series_id":"M.AU"},{"dataset_url":"https://example.com/data"},
+    {"source_url":"https://example.com/policy"},{"unit":"percent"},
+    {"first_observed_at":"2099-10-18T12:00:00Z"},{"retrieved_at":None},
+    {"frequency":"daily"},{"status":"estimated"},
+])
+def test_bis_comparability_cannot_be_supplied_by_a_wrong_source_shape(changes):
+    from lib.intl_policy_evidence import qualify_bis_monthly_policy
+    context=bis_policy_observation()
+    context.update(changes)
+    if "retrieved_at" in changes:
+        context.pop("first_observed_at",None)
+    assert qualify_bis_monthly_policy(context,"GB",today=TODAY)["comparison_qualification"]!="qualified"
+
+
+def test_bis_daily_corroboration_must_agree_with_the_monthly_source():
+    from lib.intl_policy_evidence import qualify_bis_monthly_policy
+    original=bis_policy_observation()
+    for changes in ({"value":9.},{"date":"2026-10-01"},{"source_sha256":"0"*64},
+                    {"series_id":"D.AU"},{"definition":"From 1 Sep 2026: other rate;"}):
+        context=deepcopy(original)
+        context["daily_reference"].update(changes)
+        assert qualify_bis_monthly_policy(context,"GB",today=TODAY)["comparison_qualification"]!="qualified"
+
+
+def test_monthly_without_exact_day_cannot_conflict_with_a_within_month_change():
+    context=bis_policy_observation(daily_date=None)
+    assert context["comparison_qualification"]=="qualified"
+    assert context["comparison_observation_date"] is None
+    assert selected([raw()],monthly=context)["current"]
+    older=raw(decision_date="2026-08-20",published="2026-08-20",
+              effective_date="2026-08-20",first_observed_at="2026-08-20T12:00:00Z")
+    assert selected([older],monthly=context)["state"]=="conflict"
+
+
+def test_final_weekend_effective_change_does_not_conflict_with_earlier_business_observation():
+    context=bis_policy_observation(value=3.75,period="2026-05",daily_date="2026-05-29",
+                                  retrieved_at="2026-06-01T12:00:00Z")
+    change=raw(value=4.,previous_value=3.75,action="increase",decision_date="2026-05-28",
+        published="2026-05-28",effective_date="2026-05-31",
+        first_observed_at="2026-05-28T12:00:00Z")
+    result=select_policy_decision([change],"GB",today=date(2026,6,1),monthly=context)
+    assert result["current"] and result["value"]==4.
+
+
+def test_policy_point_custody_survives_cache_replay_and_changes_only_with_new_content(monkeypatch):
+    from datetime import datetime,timezone
+    from collectors import intl_country_sources as owner
+    context=bis_policy_observation()
+    class Clock(datetime):
+        instant="2026-10-18T13:00:00+00:00"
+        @classmethod
+        def now(cls,tz):
+            return datetime.fromisoformat(cls.instant)
+    monkeypatch.setattr(owner,"datetime",Clock)
+    first=merge_country_inputs({"schema":SCHEMA},
+        {"schema":SCHEMA,"official":{"GB":{"policy":context}}},today=TODAY)
+    point=first["official"]["GB"]["policy"]
+    assert point["first_observed_at"]==Clock.instant
+    Clock.instant="2026-10-18T14:00:00+00:00"
+    repeated=deepcopy(context)
+    repeated["retrieved_at"]=Clock.instant
+    repeated["source_sha256"]="d"*64
+    repeated["daily_reference"]["source_sha256"]="d"*64
+    same=merge_country_inputs(first,{"schema":SCHEMA,"official":{"GB":{"policy":repeated}}},today=TODAY)
+    assert same["official"]["GB"]["policy"]==point
+    Clock.instant="2026-10-18T15:00:00+00:00"
+    changed=bis_policy_observation(value=4.25)
+    changed["first_observed_at"]="2026-01-01T00:00:00Z"
+    latest=merge_country_inputs(first,{"schema":SCHEMA,"official":{"GB":{"policy":changed}}},today=TODAY)
+    fresh=latest["official"]["GB"]["policy"]
+    assert fresh["first_observed_at"]==Clock.instant
+    restored=merge_country_inputs({"schema":SCHEMA},latest,today=TODAY,preserve_custody=True)
+    assert restored["official"]["GB"]["policy"]==fresh
+    assert selected([raw()],monthly=fresh,operational_as_of="2026-10-18T14:30:00Z")["monthly_context"] is None
+    reviewed=selected([raw()],monthly=fresh,operational_as_of="2026-10-18T15:30:00Z")
+    assert fresh["comparison_qualification"]=="retained_conflict" and fresh["value"] is None
+    assert reviewed["state"]=="verified" and reviewed["monthly_check"]=="review_required"
+    assert {p["value"] for p in fresh["retained_contexts"]}=={4.,4.25}
+
+
+def test_bis_duplicate_value_with_conflicting_compilation_is_rejected():
+    with pytest.raises(ValueError,match="conflicting_bis_observation"):
+        bis_policy_observation(duplicate_definition="From 1 Sep 2026: a different policy instrument;")
+
+
+def merged_bis_context(a, b):
+    def envelope(point):
+        return {"schema":SCHEMA,"official":{"GB":{"policy":point}}} if point else {"schema":SCHEMA}
+    return merge_country_inputs(envelope(a),envelope(b),today=date(2026,10,20),
+                                preserve_custody=True)["official"]["GB"]["policy"]
+
+
+def test_real_old_cache_cannot_erase_new_baseline_daily_proof():
+    base=json.loads((ROOT/"config/intl_country_baseline.json").read_text())["official"]["GB"]["policy"]
+    old=deepcopy(base)
+    old.pop("daily_reference")
+    old.update(retrieved_at="2026-10-18T03:33:39+00:00",first_observed_at="2026-10-18T03:33:39+00:00")
+    for a,b in ((base,old),(old,base)):
+        selected=merged_bis_context(a,b)
+        assert selected == base
+        assert selected["comparison_observation_date"]=="2026-09-30"
+
+
+def test_identical_bis_proof_uses_earliest_complete_actual_custody():
+    early=bis_policy_observation(retrieved_at="2026-10-19T08:00:00+00:00")
+    early["first_observed_at"]="2026-10-19T08:05:00+00:00"
+    late=deepcopy(early)
+    late.update(retrieved_at="2026-10-20T09:00:00+00:00",first_observed_at="2026-10-20T09:05:00+00:00")
+    for a,b in ((early,late),(late,early)):
+        assert merged_bis_context(a,b)==early
+
+
+def test_later_weaker_bis_copy_does_not_revoke_existing_daily_evidence():
+    complete=bis_policy_observation(retrieved_at="2026-10-19T08:00:00+00:00")
+    weak=bis_policy_observation(daily_date=None,retrieved_at="2026-10-20T09:00:00+00:00")
+    for a,b in ((complete,weak),(weak,complete)):
+        assert merged_bis_context(a,b)==complete
+
+
+def test_bis_proof_enrichment_never_borrows_the_old_knowledge_clock():
+    weak=bis_policy_observation(daily_date=None,retrieved_at="2026-10-18T12:00:00+00:00")
+    complete=bis_policy_observation(retrieved_at="2026-10-20T09:00:00+00:00")
+    complete["first_observed_at"]="2026-10-20T09:05:00+00:00"
+    merged=merged_bis_context(weak,complete)
+    assert merged == complete
+    assert select_policy_decision([raw()],"GB",monthly=merged,
+        operational_as_of="2026-10-20T09:04:59+00:00")["state"]=="verified"
+    assert select_policy_decision([raw()],"GB",monthly=merged,
+        operational_as_of="2026-10-20T09:05:00+00:00")["state"]=="conflict"
+
+
+@pytest.mark.parametrize("different",["value","definition","daily_disagreement"])
+def test_bis_same_period_collision_survives_both_archive_orders(different):
+    first=bis_policy_observation(value=3.75,retrieved_at="2026-10-19T08:00:00+00:00")
+    if different=="value":
+        second=bis_policy_observation(value=4.,retrieved_at="2026-10-20T09:00:00+00:00")
+    else:
+        second=deepcopy(first)
+        second.update(retrieved_at="2026-10-20T09:00:00+00:00",first_observed_at="2026-10-20T09:05:00+00:00")
+        if different=="definition":
+            second["definition"]="From 1 Sep 2026: a different instrument;"
+        else:
+            second["daily_reference"]["value"]=4.
+    collision=merged_bis_context(first,second)
+    assert collision["comparison_qualification"]=="retained_conflict" and collision["value"] is None
+    assert len(collision["retained_contexts"])==2
+    assert merged_bis_context(second,first)==collision
+    assert merged_bis_context(collision,first)==collision
+    assert merged_bis_context(first,collision)==collision
+    decision=select_policy_decision([raw()],"GB",monthly=collision,
+        operational_as_of="2026-10-20T10:00:00+00:00")
+    assert decision["state"]=="verified" and decision["current"]
+    assert decision["monthly_check"]=="review_required"
+    assert decision["monthly_context"] is None
+
+
+def test_new_policy_reference_month_is_progression_not_collision():
+    old=bis_policy_observation(value=4.,period="2026-08",daily_date="2026-08-31")
+    new=bis_policy_observation(value=3.75)
+    assert merged_bis_context(old,new)==new
+    assert merged_bis_context(new,old)==new
+
+
+def test_bis_custody_cannot_predate_the_evidence_it_contains():
+    from lib.intl_policy_evidence import qualify_bis_monthly_policy
+    record=bis_policy_observation(retrieved_at="2026-10-20T09:00:00+00:00")
+    record["first_observed_at"]="2026-10-19T09:00:00+00:00"
+    assert qualify_bis_monthly_policy(record,"GB",today=date(2026,10,20))["comparison_qualification"]=="unqualified_source"
+
+
+@pytest.mark.parametrize("reserved", ["retained_contexts","schema"])
+def test_live_policy_input_cannot_smuggle_retained_custody(reserved):
+    old=bis_policy_observation()
+    wrapped=deepcopy(old)
+    wrapped["retained_contexts"]=[old]
+    if reserved=="schema":
+        wrapped["schema"]="intl_bis_monthly_context_conflict.v1"
+    merged=merge_country_inputs({"schema":SCHEMA},
+        {"schema":SCHEMA,"official":{"GB":{"policy":wrapped}}},today=date(2026,10,20))
+    assert not merged["official"]["GB"].get("policy")

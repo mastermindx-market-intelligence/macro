@@ -419,3 +419,23 @@ def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures
             assert "A government debt projection has not been verified" in html
             assert "政府债务预测尚未核验" in html
             assert "A government balance projection has not been verified" not in html
+
+
+@pytest.mark.parametrize("period", ["2026-12", "2026-10-19", "unknown", None, "2026-13"])
+@pytest.mark.parametrize("key", ["inflation", "gdp"])
+def test_future_or_unknown_observed_periods_never_display_as_earlier(key, period):
+    c = view(official={"KR":{key:observation(key=key, metric=key, period=period)}})
+    metric = next(m for m in c["metrics"] if m["key"] == key)
+    assert metric["value"] is None
+    assert metric["quality"] == "missing" and not metric["current"]
+
+
+@pytest.mark.parametrize("period", ["2026-12", "2026-10-19", "unknown", None])
+def test_legacy_future_observation_is_withheld_but_real_old_value_remains_dated(period):
+    rec = record()
+    rec["macro_asof"]["gdp"] = period
+    metric = next(m for m in view(rec)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] is None and metric["quality"] == "missing"
+    rec["macro_asof"]["gdp"] = "2024-01"
+    metric = next(m for m in view(rec)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] == rec["macro"]["gdp_yoy"] and metric["quality"] == "dated"

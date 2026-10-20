@@ -239,11 +239,128 @@ def normalize_publication(raw, *, observed_at=None):
     return result
 
 
-def merge_publications(previous, incoming, *, observed_at=None):
+def _retained_custody_valid(raw, now):
+    """A retained archive must carry real clocks; reconstruction creates none."""
+    if type(raw) is not dict:
+        return False
+    fields = ("retrieved_at", "first_observed_at", "admitted_at")
+    # Preserve the precision actually retained for retrieval/first observation.
+    # Eligibility also requires the separate, precise admission timestamp.
+    if (any(type(raw.get(k)) is not str for k in fields)
+            or "T" not in raw["admitted_at"]):
+        return False
+    retrieved, first, admitted = (_time(raw[k]) for k in fields)
+    if any(clock is None for clock in (retrieved, first, admitted)):
+        return False
+    if not retrieved <= first <= admitted <= _time(now):
+        return False
+    if raw.get("withdrawn_at"):
+        event, known = _time(raw["withdrawn_at"]), _time(raw.get("withdrawal_admitted_at"))
+        published = _time(raw.get("published"))
+        if (event is None or known is None or published is None
+                or not published <= event <= known <= _time(now) or known < admitted
+                or not _source(raw.get("withdrawal_source_url"), raw.get("provider"))):
+            return False
+    elif raw.get("withdrawal_admitted_at"):
+        return False
+    if raw.get("superseded_at"):
+        event = _time(raw["superseded_at"])
+        if event is None or not admitted <= event <= _time(now):
+            return False
+    return True
+
+
+def _merge_retained_record(known, incoming, diagnostics):
+    """Reconcile identical content without detaching clocks from their receipts."""
+    records = (deepcopy(known), deepcopy(incoming))
+    # One complete acquisition record wins. Do not combine an early retrieval
+    # from one copy with the first-observation/admission claim of another.
+    winner = min(records, key=lambda r: (
+        _time(r["admitted_at"]), _time(r["first_observed_at"]),
+        _time(r["retrieved_at"]), _digest(r)))
+    result = deepcopy(winner)
+    withdrawal_fields = ("withdrawn_at", "withdrawal_source_url", "withdrawal_admitted_at")
+    for field in withdrawal_fields:
+        result.pop(field, None)
+    events = [r for r in records if r.get("withdrawn_at")]
+    if events:
+        # This is one whole retained withdrawal event, including its source.
+        event = min(events, key=lambda r: (_time(r["withdrawal_admitted_at"]), _digest(r)))
+        result.update({field: deepcopy(event[field]) for field in withdrawal_fields})
+    supersessions = [r for r in records if r.get("superseded_at")]
+    if supersessions:
+        event = min(supersessions, key=lambda r: (_time(r["superseded_at"]), _digest(r)))
+        result["superseded_at"] = event["superseded_at"]
+    if (len({r["admission_status"] for r in records}) > 1
+            or len({r.get("supersedes_record_id") for r in records}) > 1):
+        result["admission_status"] = "conflict"
+        diagnostics.append({"kind": "retained_identity_conflict", "record_id": result["record_id"]})
+    known.clear()
+    known.update(result)
+
+
+def _restore_retained_publications(previous, incoming, now):
+    """Reconstruct the union before evaluating its accepted correction graph."""
+    lookup, diagnostics = {}, []
+    for envelope in (previous, incoming):
+        for raw in envelope if type(envelope) is list else []:
+            if not _retained_custody_valid(raw, now):
+                diagnostics.append({"kind": "invalid_retained_custody"})
+                continue
+            record = normalize_publication(raw, observed_at=now)
+            if record is None:
+                diagnostics.append({"kind": "invalid_archived_publication"})
+                continue
+            known = lookup.get(record["record_id"])
+            if known is None:
+                lookup[record["record_id"]] = record
+            else:
+                _merge_retained_record(known, record, diagnostics)
+    archive = list(lookup.values())
+    if len(archive) > MAX_ARCHIVE_RECORDS:
+        raise ValueError("forecast_archive_capacity")
+    groups = {}
+    for record in archive:
+        if record["admission_status"] == "accepted":
+            groups.setdefault((record["publication_key"], record["correction_sequence"]), []).append(record)
+    for records in groups.values():
+        if len(records) > 1:
+            for record in records:
+                record["admission_status"] = "conflict"
+                diagnostics.append({"kind": "retained_identity_conflict", "record_id": record["record_id"]})
+    latest = {}
+    for record in sorted(archive, key=lambda r: (r["correction_sequence"], r["record_id"])):
+        if record["admission_status"] != "accepted":
+            continue
+        prior = latest.get(record["publication_key"])
+        predecessor = lookup.get(record.get("supersedes_record_id"))
+        initial = record["correction_sequence"] == 0 and prior is None and not record.get("supersedes_record_id")
+        ordered = (predecessor is not None and prior is predecessor
+                   and predecessor["admission_status"] == "accepted"
+                   and predecessor["publication_key"] == record["publication_key"]
+                   and record["correction_sequence"] > predecessor["correction_sequence"]
+                   and _source(record.get("correction_source_url"), record["provider"])
+                   and _time(predecessor["admitted_at"]) <= _time(record["admitted_at"]))
+        if not (initial or ordered):
+            record["admission_status"] = "conflict"
+            diagnostics.append({"kind": "invalid_retained_lineage", "record_id": record["record_id"]})
+            continue
+        if ordered:
+            event = predecessor.get("superseded_at")
+            if not event or _time(record["admitted_at"]) < _time(event):
+                predecessor["superseded_at"] = record["admitted_at"]
+        latest[record["publication_key"]] = record
+    archive.sort(key=lambda r: (r["published"], r["cc"], r["series_id"], r["correction_sequence"], r["record_id"]))
+    return archive, diagnostics
+
+
+def merge_publications(previous, incoming, *, observed_at=None, preserve_custody=False):
     """Stable content plus explicitly ordered admission and withdrawal events."""
     now = observed_at or datetime.now(timezone.utc).isoformat()
     if _time(now) is None:
         raise ValueError("invalid_forecast_custody_clock")
+    if preserve_custody:
+        return _restore_retained_publications(previous, incoming, now)
     archive, diagnostics, lookup = [], [], {}
     # Existing archive custody is trusted; incoming publication metadata cannot
     # backdate first observation/admission for previously unseen content.
@@ -306,6 +423,7 @@ def merge_publications(previous, incoming, *, observed_at=None):
         for record in sorted(records, key=lambda r: r["record_id"]):
             predecessor = lookup.get(record.get("supersedes_record_id"))
             ordered = (sequence > 0 and predecessor is not None
+                       and predecessor["admission_status"] == "accepted"
                        and predecessor["publication_key"] == key
                        and sequence > predecessor["correction_sequence"]
                        and _source(record.get("correction_source_url"), record["provider"])

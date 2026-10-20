@@ -19,7 +19,8 @@ TODAY = date(2026, 10, 20)
 
 def context(cc="KR"):
     spec = SPECS[cc]
-    return incumbent_source_context(cc, {"fx": spec[1], "fx_invert": spec[2] == "local_per_USD"})
+    return captured_source_context(cc, retrieved_at="2026-10-20T03:00:00+00:00",
+                                   response_sha256="a" * 64, provider_symbol=spec[3][0])
 
 
 def observation(cc="KR", start=100.0, end=80.0, *, end_date="2026-10-19",
@@ -146,7 +147,7 @@ def test_digest_and_endpoint_arithmetic_are_both_verified():
     ("source_url", "https://example.com/rates"), ("retrieved_at", "2026-10-20T00:00:00Z"),
 ])
 def test_configured_store_never_claims_an_unrecorded_retrieval_or_other_feed(key, value):
-    source = context()
+    source = incumbent_source_context("KR", {"fx": "USDKRW=X", "fx_invert": True})
     source[key] = value
     assert observation(source=source)["reason"] == "source_unavailable"
 
@@ -244,7 +245,9 @@ def test_captured_intraday_quote_never_matures_merely_by_replaying_later():
 def test_rehashed_captured_endpoint_cannot_follow_the_capture_day():
     later = TODAY + timedelta(days=1)
     raw = build_currency_observation("KR", [("2026-07-20", 100), ("2026-10-20", 80)],
-                                     today=later, source=context())
+                                     today=later, source=captured_source_context(
+                                         "KR", retrieved_at="2026-10-21T03:00:00Z",
+                                         response_sha256="a" * 64, provider_symbol="USDKRW=X"))
     raw["source"] = captured_source_context(
         "KR", retrieved_at="2026-10-20T03:44:44Z",
         response_sha256="d" * 64, provider_symbol="USDKRW=X")
@@ -327,3 +330,207 @@ def test_malformed_country_identity_is_withheld(cc):
     assert incumbent_source_context(cc, {}) is None
     assert build_currency_observation(cc, [], today=TODAY, source={})["status"] == "unavailable"
     assert not currency_observation_view({}, cc, today=TODAY)["available"]
+
+
+def _capture_fx_to_store(tmp_path, monkeypatch, *,
+        started="2026-10-20T03:00:00+00:00", returned="2026-10-20T03:00:01+00:00",
+        quotes=(100.0,99.0,80.0,5.0), include_reference=True, retry=False):
+    from datetime import datetime
+    from collectors import intl_prices
+    from lib import store
+    data = tmp_path / "data"
+    data.mkdir(exist_ok=True)
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    dates = ["2026-07-17","2026-07-20","2026-10-19","2026-10-20"]
+    frame = pd.DataFrame({"Close":quotes,"Volume":[0]*4},
+                         index=pd.to_datetime(dates).tz_localize("Europe/London"))
+    if not include_reference:
+        frame = frame.iloc[2:]
+    attempts = []
+    def download(batch, **kwargs):
+        assert batch == ["USDKRW=X"]
+        assert kwargs["interval"] == "1d" and kwargs["ignore_tz"] is True
+        assert kwargs["auto_adjust"] is True and kwargs["group_by"] == "ticker"
+        attempts.append(kwargs)
+        if retry and len(attempts) == 1:
+            raise RuntimeError("controlled failed acquisition")
+        return frame.copy(deep=True)
+    monkeypatch.setattr(intl_prices.yf, "download", download)
+    instants = (["2026-10-19T23:59:00+00:00"] if retry else []) + [started, returned]
+    times = iter(datetime.fromisoformat(s) for s in instants)
+    class CaptureClock:
+        @staticmethod
+        def now(tz):
+            return next(times)
+    monkeypatch.setattr(intl_prices, "datetime", CaptureClock)
+    monkeypatch.setattr(intl_prices.time, "sleep", lambda _: None)
+    adapter = intl_prices.IntlPriceAdapter()
+    adapter.ycfg = {**adapter.ycfg, "retries":2, "backoff_base_s":0}
+    frames = {}
+    adapter._collect(["USDKRW=X"], "max", frames)
+    assert set(frames) == {"USDKRW=X"}
+    admitted = adapter.validate("USDKRW=X", frames["USDKRW=X"])
+    # These are the same validation and persistence owners used by run_adapter.
+    stored = store.upsert(adapter.group, "USDKRW=X", admitted,
+        outlier_col=None, normalize_index=True, overwrite_overlap=adapter.overwrite_overlap)
+    return stored, attempts
+
+
+def _stored_currency(day=TODAY):
+    from engine import intl_inputs
+    inputs = intl_inputs.country_currency_inputs()["KR"]
+    return build_currency_observation("KR", inputs["observations"], today=day, source=inputs["source"])
+
+
+@pytest.mark.parametrize("started,returned,first_day", [
+    ("2026-10-20T03:00:00+00:00","2026-10-20T03:00:01+00:00",TODAY),
+    ("2026-10-20T23:59:58+00:00","2026-10-21T00:00:03+00:00",date(2026,10,21)),
+])
+def test_actual_acquisition_store_and_reader_never_mature_frozen_intraday_row(
+        tmp_path, monkeypatch, started, returned, first_day):
+    from lib import store
+    from lib.intl_currency_observation import FX_CAPTURE_COLUMN
+    stored, _ = _capture_fx_to_store(tmp_path, monkeypatch, started=started, returned=returned)
+    assert str(stored.index[-1].date()) == "2026-10-20"
+    assert stored.loc[pd.Timestamp("2026-10-20"), "close"] == 5
+    frozen = store._path("intl", "USDKRW=X").read_bytes()
+    first = _stored_currency(first_day)
+    for day in (first_day, first_day + timedelta(days=1), date(2026,10,25)):
+        later = _stored_currency(day)
+        assert later == first
+        assert later["value"] == pytest.approx(25)
+        assert later["end"]["date"] == "2026-10-19"
+        assert currency_observation_view(later, "KR", today=day)["available"]
+    assert _stored_currency(date(2026,11,3))["status"] == "unavailable"
+    assert store._path("intl", "USDKRW=X").read_bytes() == frozen
+    assert json.loads(stored.iloc[-1][FX_CAPTURE_COLUMN])["eligible_before_date"] == "2026-10-20"
+
+
+def test_legacy_price_history_remains_readable_but_has_no_currency_admission(tmp_path, monkeypatch):
+    from engine import intl_inputs
+    from lib import store
+    data = tmp_path / "data"
+    data.mkdir()
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    rows = pd.DataFrame({"close":[100.,99.,80.,5.]},
+        index=pd.to_datetime(["2026-07-17","2026-07-20","2026-10-19","2026-10-20"]))
+    store.upsert("intl", "USDKRW=X", rows)
+    frozen = store._path("intl", "USDKRW=X").read_bytes()
+    assert _stored_currency()["status"] == "unavailable"
+    assert _stored_currency(TODAY+timedelta(days=1))["status"] == "unavailable"
+    assert intl_inputs._intl_closes()["USDKRW=X"].tolist() == rows["close"].tolist()
+    assert store._path("intl", "USDKRW=X").read_bytes() == frozen
+    context = incumbent_source_context("KR", {"fx":"USDKRW=X","fx_invert":True})
+    assert build_currency_observation("KR", list(zip(rows.index.date,rows["close"])),
+        today=TODAY+timedelta(days=1), source=context)["reason"] == "source_unavailable"
+
+
+def test_columnwise_store_merge_cannot_attach_old_custody_to_changed_quote(tmp_path, monkeypatch):
+    from lib import store
+    from lib.intl_currency_observation import FX_CAPTURE_COLUMN
+    original, _ = _capture_fx_to_store(tmp_path, monkeypatch)
+    old_receipt = original.loc[pd.Timestamp("2026-10-19"),FX_CAPTURE_COLUMN]
+    store.upsert("intl","USDKRW=X",pd.DataFrame({"close":[81.]},
+        index=pd.to_datetime(["2026-10-19"])))
+    merged = store.read("intl","USDKRW=X")
+    assert merged.loc[pd.Timestamp("2026-10-19"),FX_CAPTURE_COLUMN] == old_receipt
+    assert _stored_currency()["status"] == "unavailable"
+
+
+def test_real_later_acquisition_can_admit_a_new_observation(tmp_path, monkeypatch):
+    _capture_fx_to_store(tmp_path, monkeypatch)
+    old = _stored_currency()
+    _capture_fx_to_store(tmp_path, monkeypatch, started="2026-10-21T03:00:00+00:00",
+        returned="2026-10-21T03:00:01+00:00", quotes=(100.,99.,80.,79.))
+    new = _stored_currency(TODAY+timedelta(days=1))
+    assert old["end"]["date"] == "2026-10-19" and new["end"]["date"] == "2026-10-20"
+    assert new["value"] == pytest.approx((99/79-1)*100)
+    assert new["source"]["retrieved_at"] == "2026-10-21T03:00:01+00:00"
+
+
+def test_shallow_capture_does_not_qualify_an_unreceipted_reference(tmp_path, monkeypatch):
+    from lib import store
+    data=tmp_path/"data"
+    data.mkdir()
+    monkeypatch.setattr(config,"data_dir",lambda:data)
+    store.upsert("intl","USDKRW=X",pd.DataFrame({"close":[100.,99.]},
+        index=pd.to_datetime(["2026-07-17","2026-07-20"])))
+    _capture_fx_to_store(tmp_path, monkeypatch, include_reference=False)
+    assert _stored_currency()["reason"] == "reference_unavailable"
+    _capture_fx_to_store(tmp_path, monkeypatch)
+    assert _stored_currency()["value"] == pytest.approx(25)
+
+
+def test_retry_uses_only_the_successful_adapter_invocation_interval(tmp_path, monkeypatch):
+    stored, attempts = _capture_fx_to_store(tmp_path, monkeypatch, retry=True)
+    assert len(attempts)==2
+    raw=_stored_currency()
+    for receipt in raw["source"]["endpoint_receipts"].values():
+        assert receipt["adapter_request_started_at_utc"] == "2026-10-20T03:00:00+00:00"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("schema","unknown.v2"),("configured_series","AUDUSD=X"),("date","2026-10-18"),
+    ("quote_hex",float(81).hex()),("interval","1h"),("auto_adjust",False),
+    ("date_policy","utc_convert"),("eligibility_policy","render_date"),
+    ("eligible_before_date","2026-10-21"),
+    ("adapter_request_started_at_utc","2026-10-19T12:00:00+00:00"),
+    ("adapter_result_returned_at_utc","2026-10-19T12:00:00+00:00"),
+    ("adapter_result_returned_at_utc","2026-10-21T12:00:00+00:00"),
+    ("unexpected","field"),
+])
+def test_serialized_store_receipt_rejects_rehashed_wrong_binding(
+        tmp_path, monkeypatch, field, value):
+    _capture_fx_to_store(tmp_path, monkeypatch)
+    raw=_stored_currency()
+    receipt=raw["source"]["endpoint_receipts"]["end"]
+    receipt[field]=value
+    receipt["receipt_sha256"]=sha256(json.dumps(
+        {k:v for k,v in receipt.items() if k!="receipt_sha256"},
+        sort_keys=True,separators=(",",":"),ensure_ascii=False,allow_nan=False).encode()).hexdigest()
+    assert not currency_observation_view(signed(raw),"KR",today=TODAY)["available"]
+
+
+@pytest.mark.parametrize("corrupt_fx", [False, True])
+def test_normal_engine_uses_the_qualified_same_frame_projection(tmp_path, monkeypatch, corrupt_fx):
+    from datetime import datetime, timezone
+    from engine import intl_run, risk_radar_intl
+    from lib import store
+    _capture_fx_to_store(tmp_path, monkeypatch)
+    country=deepcopy(config.load()["intl"]["countries"]["KR"])
+    monkeypatch.setattr(intl_run.intl_inputs,"countries",lambda:{"KR":country})
+    regime=pd.DataFrame({"quad":["Q1"],"quad_name":["Expansion"],"growth_score":[1.],
+        "inflation_score":[0.5],"regime_confidence":[0.8],"liquidity":["neutral"],
+        "recession_score":[10.],"growth_n_components":[2],"inflation_n_components":[2],
+        "c_fx":[55.]},index=pd.to_datetime(["2026-10-15"]))
+    monkeypatch.setattr(intl_run.intl_inputs,"country_frame",lambda *a:regime)
+    monkeypatch.setattr(intl_run.intl_inputs,"_macro_frame",lambda:pd.DataFrame())
+    monkeypatch.setattr(intl_run.intl_equity_risk,"equity_risk_all",lambda:{})
+    monkeypatch.setattr(intl_run,"classify",lambda x:x)
+    monkeypatch.setattr(intl_run,"component_evidence_at",lambda *a:{"preserved":True})
+    monkeypatch.setattr(intl_run.intl_inputs,"latest_macro_snapshot",
+        lambda *a:{"fx_strength_3m":-99,"cpi_yoy":2.,"gdp_yoy":1.})
+    monkeypatch.setattr(intl_run.intl_inputs,"macro_freshness",lambda *a:{})
+    monkeypatch.setattr(intl_run.intl_compare,"periphery_panel",lambda:None)
+    monkeypatch.setattr(risk_radar_intl,"PROFILES",{})
+    class EngineClock:
+        day=20
+        @classmethod
+        def now(cls,tz):
+            return datetime(2026,10,cls.day,12,tzinfo=timezone.utc)
+    monkeypatch.setattr(intl_run,"datetime",EngineClock)
+    if corrupt_fx:
+        store.upsert("intl",country["index"],pd.DataFrame({"close":[100.]},
+            index=pd.to_datetime(["2026-10-15"])))
+        store._path("intl","USDKRW=X").write_bytes(b"unreadable FX parquet")
+    frozen=store._path("intl","USDKRW=X").read_bytes()
+    first=intl_run.run()
+    EngineClock.day=21
+    later=intl_run.run()
+    assert first["records"][0]["currency_observation"] == later["records"][0]["currency_observation"]
+    if corrupt_fx:
+        assert later["records"][0]["currency_observation"]["status"] == "unavailable"
+    else:
+        assert later["records"][0]["currency_observation"]["value"] == pytest.approx(25)
+    assert later["records"][0]["macro"]["fx_strength_3m"] == -99
+    assert store._path("intl","USDKRW=X").read_bytes() == frozen

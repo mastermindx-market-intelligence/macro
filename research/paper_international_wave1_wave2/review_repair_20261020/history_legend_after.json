@@ -1,0 +1,281 @@
+{
+  "phase": "after",
+  "started_at": "2026-10-20T10:30:32.642415+00:00",
+  "html_sha256": "a23609a7e9f7390510945e9bb13485c701e5ba32a5ecac61f8976e7b97dfb336",
+  "checks": [
+    {
+      "name": "initial_fragment_free_selection",
+      "actual": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "expected": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "select_JP_from_initial",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ],
+        "rail": [
+          "JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ],
+        "rail": [
+          "JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "back_restores_initial_without_fragment",
+      "actual": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "expected": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "forward_restores_JP",
+      "actual": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ],
+        "rail": [
+          "JP"
+        ]
+      },
+      "expected": {
+        "hash": "#imc-country-JP",
+        "open": [
+          "imc-country-JP"
+        ],
+        "rail": [
+          "JP"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "fragment_free_reload_matches_back",
+      "actual": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "expected": {
+        "hash": "",
+        "open": [
+          "imc-country-KR"
+        ],
+        "rail": [
+          "KR"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "name": "exact_two_legend_swatches_en",
+      "actual": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "name": "solid_history_dashed_projection_en",
+      "actual": [
+        "solid",
+        "dashed"
+      ],
+      "expected": [
+        "solid",
+        "dashed"
+      ],
+      "passed": true
+    },
+    {
+      "name": "localized_accessible_chart_en",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "exact_two_legend_swatches_zh",
+      "actual": 2,
+      "expected": 2,
+      "passed": true
+    },
+    {
+      "name": "solid_history_dashed_projection_zh",
+      "actual": [
+        "solid",
+        "dashed"
+      ],
+      "expected": [
+        "solid",
+        "dashed"
+      ],
+      "passed": true
+    },
+    {
+      "name": "localized_accessible_chart_zh",
+      "actual": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "name": "no_page_errors",
+      "actual": [],
+      "expected": [],
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "accessible_charts": {
+    "en": "- 'img \"Real GDP growth: 2023: 1.5% (historical unclassified); 2024: 2.2% (historical unclassified); 2025: 1.1% (historical unclassified); 2026: 3.3% (projection); 2027: 2.8% (projection)\"': 4% 1.5 2023 2.2 2024 1.1 2025 3.3 2026 2.8 2027",
+    "zh": "- img \"\u5b9e\u9645GDP\u589e\u957f\uff1a2023\uff1a1.5%\uff08\u673a\u6784\u5386\u53f2\u6570\u636e\uff09\uff1b2024\uff1a2.2%\uff08\u673a\u6784\u5386\u53f2\u6570\u636e\uff09\uff1b2025\uff1a1.1%\uff08\u673a\u6784\u5386\u53f2\u6570\u636e\uff09\uff1b2026\uff1a3.3%\uff08\u9884\u6d4b\uff09\uff1b2027\uff1a2.8%\uff08\u9884\u6d4b\uff09\": 4% 1.5 2023 2.2 2024 1.1 2025 3.3 2026 2.8 2027"
+  },
+  "legends": {
+    "en": [
+      {
+        "text": "Published history\u673a\u6784\u5386\u53f2\u6570\u636e",
+        "content": "\"\"",
+        "style": "solid",
+        "width": "16px",
+        "direct": true,
+        "visible": true
+      },
+      {
+        "text": "Published history",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": true
+      },
+      {
+        "text": "\u673a\u6784\u5386\u53f2\u6570\u636e",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": false
+      },
+      {
+        "text": "Projection\u9884\u6d4b",
+        "content": "\"\"",
+        "style": "dashed",
+        "width": "16px",
+        "direct": true,
+        "visible": true
+      },
+      {
+        "text": "Projection",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": true
+      },
+      {
+        "text": "\u9884\u6d4b",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": false
+      }
+    ],
+    "zh": [
+      {
+        "text": "Published history\u673a\u6784\u5386\u53f2\u6570\u636e",
+        "content": "\"\"",
+        "style": "solid",
+        "width": "16px",
+        "direct": true,
+        "visible": true
+      },
+      {
+        "text": "Published history",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": false
+      },
+      {
+        "text": "\u673a\u6784\u5386\u53f2\u6570\u636e",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": true
+      },
+      {
+        "text": "Projection\u9884\u6d4b",
+        "content": "\"\"",
+        "style": "dashed",
+        "width": "16px",
+        "direct": true,
+        "visible": true
+      },
+      {
+        "text": "Projection",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": false
+      },
+      {
+        "text": "\u9884\u6d4b",
+        "content": "none",
+        "style": "none",
+        "width": "auto",
+        "direct": false,
+        "visible": true
+      }
+    ]
+  },
+  "finished_at": "2026-10-20T10:30:49.821068+00:00",
+  "passed": 12,
+  "total": 12
+}

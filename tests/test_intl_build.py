@@ -208,3 +208,58 @@ def test_country_controller_survives_the_normal_html_publisher(tmp_path, monkeyp
     assert 'id="imc-country-JP"' in output
     stocks = _env().get_template("intl.html.j2").render(**vm, mode="stocks")
     assert controller not in stocks
+
+
+def _isolated_primary_build(tmp_path, monkeypatch):
+    from copy import deepcopy
+    from lib import config, pages
+    from engine import intl_run
+    from scripts import build_international_macro, build_intl_library
+    cfg = deepcopy(config.load())
+    data, site = tmp_path / "data", tmp_path / "site"
+    data.mkdir()
+    cfg["storage"]["site_dir"] = str(site)
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(config, "data_dir", lambda: data)
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(pages, "_site_root", lambda: site)
+    monkeypatch.setattr(pages, "_shim_checked", False)
+    monkeypatch.setattr(intl_run, "run", lambda: deepcopy(_vm()["latest"]))
+    monkeypatch.setattr(build_international_macro, "build_all", lambda *a, **kw: None)
+    monkeypatch.setattr(build_intl_library, "main", lambda **kw: None)
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    monkeypatch.delenv("US_LANE", raising=False)
+    return data, site
+
+
+def test_primary_country_build_survives_corrupt_optional_stock_cache(tmp_path, monkeypatch):
+    from scripts import build_intl
+    data, site = _isolated_primary_build(tmp_path, monkeypatch)
+    cache = data / "intl_search"
+    cache.mkdir()
+    for name in ("closes.parquet", "members.parquet"):
+        (cache / name).write_bytes(b"deliberately undecodable optional parquet")
+    assert build_intl.main() == 0
+    output = (site / "intl.html").read_text()
+    assert 'id="imc-country-JP"' in output
+    assert "Country assessments" in output
+    assert (cache / "closes.parquet").read_bytes() == b"deliberately undecodable optional parquet"
+
+
+def test_primary_render_failure_is_not_reported_as_success(tmp_path, monkeypatch):
+    from scripts import build_intl
+    _, site = _isolated_primary_build(tmp_path, monkeypatch)
+    def fail(*args, **kwargs):
+        raise RuntimeError("controlled primary render failure")
+    monkeypatch.setattr(build_intl, "render_international_pages", fail)
+    assert build_intl.main() != 0
+    assert not (site / "intl.html").exists()
+
+
+def test_primary_engine_failure_is_not_reported_as_success(monkeypatch):
+    from engine import intl_run
+    from scripts import build_intl
+    def fail():
+        raise RuntimeError("controlled primary engine failure")
+    monkeypatch.setattr(intl_run, "run", fail)
+    assert build_intl.main() != 0

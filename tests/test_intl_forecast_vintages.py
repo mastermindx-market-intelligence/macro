@@ -443,3 +443,164 @@ def test_joint_fiscal_thesis_does_not_mix_publication_vintages_or_intervals(cc, 
     mixed = build_country_outlook(cc, admit([growth, inflation, balance, debt]), today=TODAY)
     thesis = next(p for p in mixed["propositions"] if p["id"] == cc + ":country_thesis")
     assert not ({"fiscal_balance", "government_debt"} & {e["series_id"] for e in thesis["evidence"]})
+
+
+def test_retained_cache_loader_preserves_actual_fiscal_admission(tmp_path):
+    from collectors.intl_country_sources import SCHEMA
+    from lib.intl_country_inputs import load_country_inputs
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    record = next(r for r in base["forecast_archive"]
+                  if r["cc"] == "KR" and r["series_id"] == "government_debt"
+                  and r["correction_sequence"] == 0)
+    source = tmp_path / "source"
+    data = tmp_path / "data"
+    (source / "config").mkdir(parents=True)
+    (data / "intl_macro").mkdir(parents=True)
+    (source / "config/intl_country_baseline.json").write_text(json.dumps({"schema":SCHEMA}))
+    cache = {"schema":SCHEMA, "forecast_archive":[record]}
+    path = data / "intl_macro/country_inputs.json"
+    path.write_text(json.dumps(cache))
+    original_bytes = path.read_bytes()
+    for _ in range(2):
+        loaded = load_country_inputs(data, source)
+        assert loaded["forecast_archive"] == [record]
+        selected = select_publications(loaded["forecast_archive"], "KR",
+            series_id="government_debt", today=date(2026,10,19),
+            operational_as_of="2026-10-19T23:50:00+00:00")
+        assert [r["record_id"] for r in selected] == [record["record_id"]]
+    assert path.read_bytes() == original_bytes
+
+
+def test_retained_archive_restores_correction_and_withdrawal_without_readmission():
+    from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+    old, corrected = corrected_cutoff_archive()
+    withdrawn = admit([{**corrected[-1], "withdrawn_at":"2026-10-19T12:30:00+00:00",
+                       "withdrawal_source_url":WEO_OCTOBER_2026["source_url"]}],
+                      corrected, now="2026-10-19T14:00:00+00:00")
+    original = admit([old])
+    # Reconstruct both an empty baseline and an older shipped baseline.
+    for previous in ([], original, corrected):
+        rebuilt = merge_country_inputs(
+            {"schema":SCHEMA,"forecast_archive":previous},
+            {"schema":SCHEMA,"forecast_archive":withdrawn}, preserve_custody=True)
+        assert rebuilt["forecast_archive"] == withdrawn
+        assert rebuilt["forecast_diagnostics"] == []
+        for cutoff, expected in ((NOW, "2026-10-01"),
+                ("2026-10-19T13:00:00+00:00", "2026-09-30"),
+                ("2026-10-19T15:00:00+00:00", None)):
+            selected = select_publications(rebuilt["forecast_archive"], "KR",
+                                           operational_as_of=cutoff)
+            assert (selected[0]["information_cutoff"] if selected else None) == expected
+
+
+def test_retained_reconstruction_preserves_accepted_and_conflict_identity():
+    from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+    accepted = admit([raw()])
+    archive = admit([raw(values={"2026":4.0,"2027":3.0})], accepted,
+                    now="2026-10-19T12:00:00+00:00")
+    restored = merge_country_inputs({"schema":SCHEMA},
+        {"schema":SCHEMA,"forecast_archive":archive}, preserve_custody=True)
+    assert restored["forecast_archive"] == archive
+    assert {r["admission_status"] for r in archive} == {"accepted","conflict"}
+
+
+@pytest.mark.parametrize("field", ["retrieved_at","first_observed_at","admitted_at"])
+def test_retained_cache_with_missing_custody_is_not_stamped_by_render(field):
+    from collectors.intl_country_sources import SCHEMA, merge_country_inputs
+    record = admit([raw()])[0]
+    record.pop(field)
+    restored = merge_country_inputs({"schema":SCHEMA},
+        {"schema":SCHEMA,"forecast_archive":[record]}, preserve_custody=True)
+    assert restored["forecast_archive"] == []
+    assert restored["forecast_diagnostics"]
+
+
+def test_live_forecast_payload_cannot_reuse_retained_admission_clocks():
+    old = admit([raw()])[0]
+    current = "2026-10-20T09:00:00+00:00"
+    incoming = {**old, "withdrawn_at":"2026-10-19T12:30:00+00:00",
+                "withdrawal_admitted_at":"2026-10-19T13:00:00+00:00",
+                "withdrawal_source_url":WEO_OCTOBER_2026["source_url"],
+                "superseded_at":"2026-10-19T14:00:00+00:00"}
+    records, _ = merge_publications([], [incoming], observed_at=current)
+    assert records[0]["first_observed_at"] == current
+    assert records[0]["admitted_at"] == current
+    assert records[0]["withdrawal_admitted_at"] == current
+    assert "superseded_at" not in records[0]
+
+
+@pytest.mark.parametrize("placement", ["baseline-cache", "cache-baseline", "baseline-only", "cache-only"])
+def test_retained_duplicate_custody_is_order_independent(placement):
+    early = admit([raw(source_sha256="a"*64)], now="2026-10-19T23:24:00+00:00")[0]
+    early["retrieved_at"] = "2026-10-19T23:23:00+00:00"
+    late = deepcopy(early)
+    late.update(retrieved_at="2026-10-19T23:30:00+00:00",
+                first_observed_at="2026-10-19T23:39:00+00:00",
+                admitted_at="2026-10-19T23:39:00+00:00", source_sha256="b"*64)
+    previous, incoming = {
+        "baseline-cache":([late],[early]), "cache-baseline":([early],[late]),
+        "baseline-only":([late,early],[]), "cache-only":([],[late,early]),
+    }[placement]
+    merged, diagnostics = merge_publications(previous,incoming,preserve_custody=True,
+                                             observed_at="2026-10-20T09:00:00+00:00")
+    assert diagnostics == [] and merged == [early]
+    assert select_publications(merged,"KR",operational_as_of="2026-10-19T23:30:00+00:00")
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_retained_withdrawal_uses_one_earliest_complete_event(reverse):
+    early = admit([raw()])[0]
+    early.update(withdrawn_at="2026-10-19T12:00:00+00:00",
+                 withdrawal_admitted_at="2026-10-19T13:00:00+00:00",
+                 withdrawal_source_url="https://www.imf.org/early-withdrawal")
+    late = deepcopy(early)
+    late.update(withdrawal_admitted_at="2026-10-20T08:00:00+00:00",
+                withdrawal_source_url="https://www.imf.org/later-withdrawal")
+    records = [late,early] if reverse else [early,late]
+    merged, diagnostics = merge_publications(records[:1],records[1:],preserve_custody=True,
+                                             observed_at="2026-10-20T09:00:00+00:00")
+    assert diagnostics == [] and merged == [early]
+    assert select_publications(merged,"KR",operational_as_of="2026-10-19T12:30:00+00:00")
+    assert not select_publications(merged,"KR",operational_as_of="2026-10-19T14:00:00+00:00")
+
+
+def test_earlier_retained_correction_reconciles_its_actual_predecessor_event():
+    _, original = corrected_cutoff_archive()
+    early = next(r for r in original if r["correction_sequence"] == 1)
+    late = deepcopy(original)
+    for record in late:
+        if record["correction_sequence"] == 1:
+            record.update(first_observed_at="2026-10-19T14:00:00+00:00",
+                          admitted_at="2026-10-19T14:00:00+00:00")
+        else:
+            record["superseded_at"] = "2026-10-19T14:00:00+00:00"
+    for previous,incoming in ((late,[early]),([early],late)):
+        merged, diagnostics = merge_publications(previous,incoming,preserve_custody=True,
+                                                 observed_at="2026-10-20T09:00:00+00:00")
+        assert diagnostics == [] and merged == original
+        assert select_publications(merged,"KR",operational_as_of="2026-10-19T11:00:00+00:00")[0]["correction_sequence"] == 0
+        assert select_publications(merged,"KR",operational_as_of="2026-10-19T13:00:00+00:00")[0]["correction_sequence"] == 1
+
+
+def test_incompatible_retained_admission_status_does_not_promote_content():
+    accepted = admit([raw()])[0]
+    conflict = {**accepted,"admission_status":"conflict"}
+    for previous,incoming in (([accepted],[conflict]),([conflict],[accepted])):
+        merged, diagnostics = merge_publications(previous,incoming,preserve_custody=True,
+                                                 observed_at="2026-10-20T09:00:00+00:00")
+        assert diagnostics and merged[0]["admission_status"] == "conflict"
+        assert not select_publications(merged,"KR",operational_as_of="2026-10-19T13:00:00+00:00")
+
+
+def test_live_correction_cannot_resolve_an_unaccepted_predecessor():
+    ambiguous, _ = merge_publications([], [raw(),raw(values={"2026":4.,"2027":3.})],observed_at=NOW)
+    assert all(r["admission_status"] == "conflict" for r in ambiguous)
+    correction = raw(values={"2026":3.5,"2027":2.9},correction_sequence=1,
+                     supersedes_record_id=ambiguous[0]["record_id"],
+                     correction_source_url=WEO_OCTOBER_2026["documentation_url"])
+    archive, diagnostics = merge_publications(ambiguous,[correction],
+                                               observed_at="2026-10-19T14:00:00+00:00")
+    assert diagnostics and all(r["admission_status"] == "conflict" for r in archive)
+    restored, _ = merge_publications([],archive,preserve_custody=True,
+                                     observed_at="2026-10-20T09:00:00+00:00")
+    assert restored == archive

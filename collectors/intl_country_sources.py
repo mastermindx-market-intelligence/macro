@@ -17,7 +17,8 @@ import json
 from pathlib import Path
 from datetime import timezone
 from lib.intl_forecast_vintages import merge_publications, select_publications
-from lib.intl_policy_evidence import merge_policy_decisions, merge_policy_reviews
+from lib.intl_policy_evidence import (merge_policy_decisions, merge_policy_reviews,
+    qualify_bis_monthly_policy, reconcile_bis_monthly_policy)
 from collectors.intl_policy_sources import collect_registered_policy
 from collectors.intl_weo import collect_registered_weo
 from zipfile import ZipFile, BadZipFile
@@ -63,7 +64,7 @@ def parse_bis(blob, kind, *, retrieved_at):
     dataset = "WS_LONG_CPI" if kind == "inflation" else "WS_CBPOL"
     expected_unit = "771" if kind == "inflation" else "368"
     cutoff = date.fromisoformat(retrieved_at[:10])
-    series = {}
+    series, daily = {}, {}
     with ZipFile(io.BytesIO(blob)) as archive:
         entries = [x for x in archive.infolist() if x.filename.endswith(".csv")]
         # The actual policy archive is475.9MB because it repeats series metadata.
@@ -80,7 +81,8 @@ def parse_bis(blob, kind, *, retrieved_at):
                 raise ValueError("unexpected_bis_columns")
             for row in rows:
                 area = _code(row["REF_AREA:Reference area"])
-                if area not in AREAS or _code(row["FREQ:Frequency"]) != "M":
+                frequency = _code(row["FREQ:Frequency"])
+                if area not in AREAS or frequency not in (("M","D") if kind == "policy" else ("M",)):
                     continue
                 if not row["STRUCTURE_ID"].startswith("BIS:" + dataset + "(1.0):"):
                     raise ValueError("unexpected_bis_dataset")
@@ -93,7 +95,17 @@ def parse_bis(blob, kind, *, retrieved_at):
                 status = _code(row["OBS_STATUS:Observation Status"])
                 if status not in ("A", "P"):
                     continue
-                period = _month(row["TIME_PERIOD:Time period or range"])
+                label = row["TIME_PERIOD:Time period or range"]
+                if frequency == "D":
+                    try:
+                        observed = date.fromisoformat(label)
+                    except (TypeError,ValueError):
+                        continue
+                    if observed.isoformat() != label or observed >= cutoff:
+                        continue
+                    period = label[:7]
+                else:
+                    period = _month(label)
                 # Month-end data for an incomplete future month is not an observation.
                 if period >= cutoff.strftime("%Y-%m"):
                     continue
@@ -101,15 +113,27 @@ def parse_bis(blob, kind, *, retrieved_at):
                 if value is None:
                     continue
                 cc = AREAS[area]
+                if frequency == "D":
+                    points = daily.setdefault(cc,{})
+                    point = {"date":label,"value":value,"series_id":"D."+area,
+                             "definition":row.get("COMPILATION:Compilation") or row.get("COVERAGE:Coverage") or ""}
+                    prior_daily = points.get(period)
+                    if prior_daily and prior_daily["date"] == label and prior_daily != point:
+                        raise ValueError("conflicting_bis_daily_observation")
+                    if prior_daily is None or label > prior_daily["date"]:
+                        points[period] = point
+                    continue
                 points = series.setdefault(cc, {})
-                if period in points and points[period]["value"] != value:
-                    raise ValueError("conflicting_bis_observation")
-                points[period] = {
+                point = {
                     "value": value, "status": "provisional" if status == "P" else "observed",
                     "definition": row.get("COMPILATION:Compilation") or row.get("COVERAGE:Coverage") or "",
                 }
+                if period in points and points[period] != point:
+                    raise ValueError("conflicting_bis_observation")
+                points[period] = point
     observations = {}
     url = BIS_CPI if kind == "inflation" else BIS_POLICY
+    digest = sha256(blob).hexdigest()
     for cc, points in series.items():
         last = max(points)
         item = points[last]
@@ -125,8 +149,12 @@ def parse_bis(blob, kind, *, retrieved_at):
             "status": item["status"], "frequency": "monthly",
             "definition": item["definition"], "retrieved_at": retrieved_at,
             "change_3m_pp": round(item["value"] - points[prior]["value"], 6) if prior in points else None,
-            "source_sha256": sha256(blob).hexdigest(),
+            "source_sha256": digest,
         }
+        if kind == "policy":
+            if last in daily.get(cc,{}):
+                observations[cc]["daily_reference"] = {**daily[cc][last], "source_sha256":digest}
+            observations[cc] = qualify_bis_monthly_policy(observations[cc],cc,today=cutoff)
     return {"observations": observations, "series": series}
 
 
@@ -289,14 +317,32 @@ def merge_country_inputs(previous, incoming, *, today=None, preserve_custody=Fal
     result["schema"] = SCHEMA
     result["official"] = {cc: deepcopy(value) for cc, value in _mapping(result.get("official")).items()
                           if cc in AREAS.values() and type(value) is dict}
+    observed_at = datetime.now(timezone.utc).isoformat()
+    for cc, values in result["official"].items():
+        if type(values.get("policy")) is dict:
+            values["policy"] = reconcile_bis_monthly_policy(None,values["policy"],cc,today=today)
     for cc, values in _mapping(incoming.get("official")).items():
         if cc not in AREAS.values() or type(values) is not dict:
             continue
         existing = result["official"].setdefault(cc, {})
         for key, observation in values.items():
-            if key not in ("inflation", "policy") or not _valid_incoming(observation, cc=cc, metric=key):
+            if key not in ("inflation", "policy"):
+                continue
+            if (key == "policy" and not preserve_custody and type(observation) is dict
+                    and ("retained_contexts" in observation
+                         or observation.get("schema") == "intl_bis_monthly_context_conflict.v1")):
+                continue
+            retained_collision = (key == "policy" and preserve_custody and type(observation) is dict
+                                  and observation.get("schema") == "intl_bis_monthly_context_conflict.v1")
+            if not retained_collision and not _valid_incoming(observation,cc=cc,metric=key):
                 continue
             current = _mapping(existing.get(key))
+            if key == "policy":
+                candidate = deepcopy(observation)
+                if not preserve_custody:
+                    candidate["first_observed_at"] = observed_at
+                existing[key] = reconcile_bis_monthly_policy(current,candidate,cc,today=today)
+                continue
             current_clock = _source_clock(current.get("period"), monthly=True) or ""
             if observation["period"] >= current_clock:
                 existing[key] = deepcopy(observation)
@@ -305,8 +351,8 @@ def merge_country_inputs(previous, incoming, *, today=None, preserve_custody=Fal
         records.extend(value for cc, value in _mapping(envelope.get("forecasts")).items()
                        if cc in AREAS.values() and type(value) is dict)
         return records
-    observed_at = datetime.now(timezone.utc).isoformat()
-    archive, diagnostics = merge_publications(publications(result), publications(incoming), observed_at=observed_at)
+    archive, diagnostics = merge_publications(publications(result), publications(incoming),
+                                             observed_at=observed_at, preserve_custody=preserve_custody)
     result["forecast_archive"] = archive
     result["policy_decisions"] = merge_policy_decisions(result.get("policy_decisions"), incoming.get("policy_decisions"),
                                                        observed_at=observed_at, preserve_custody=preserve_custody)

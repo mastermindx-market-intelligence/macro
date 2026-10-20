@@ -14,7 +14,7 @@ import pandas as pd
 from engine import intl_compare, intl_equity_risk, intl_inputs
 from engine.intl_regime import classify, component_evidence_at, recession_band
 from lib import config
-from lib.intl_currency_observation import build_currency_observation, incumbent_source_context
+from lib.intl_currency_observation import build_currency_observation, stored_source_context
 
 log = logging.getLogger(__name__)
 
@@ -41,7 +41,8 @@ def _macro_present(snap: dict) -> int:
 
 def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
                    equity: dict, *, today: date | None = None,
-                   fx_source: dict | None = None) -> tuple[dict | None, pd.DataFrame | None]:
+                   fx_source: dict | None = None,
+                   fx_observations: list | None = None) -> tuple[dict | None, pd.DataFrame | None]:
     c = intl_inputs.countries()[cc]
     f = intl_inputs.country_frame(cc, closes, macro)
     if f.empty:
@@ -80,12 +81,14 @@ def country_record(cc: str, closes: pd.DataFrame, macro: pd.DataFrame,
         if not observed_fx.empty:
             record["macro_asof"]["fx_strength_3m"] = str(observed_fx.index[-1].date())
     if fx_source is not None:
-        observations = []
-        for stamp, value in (fx.items() if fx is not None else []):
-            try:
-                observations.append((pd.Timestamp(stamp).date(), value))
-            except (TypeError, ValueError, OverflowError):
-                continue
+        observations = fx_observations
+        if observations is None:
+            observations = []
+            for stamp, value in (fx.items() if fx is not None else []):
+                try:
+                    observations.append((pd.Timestamp(stamp).date(), value))
+                except (TypeError, ValueError, OverflowError):
+                    continue
         record["currency_observation"] = build_currency_observation(
             cc, observations, today=today or datetime.now(timezone.utc).date(), source=fx_source)
     hist = reg[[col for col in reg.columns if not str(col).startswith("c_")]]
@@ -96,6 +99,7 @@ def run() -> dict:
     closes = intl_inputs._intl_closes()
     macro = intl_inputs._macro_frame()
     equity = intl_equity_risk.equity_risk_all()
+    currency_inputs = intl_inputs.country_currency_inputs()
     if closes.empty:
         raise RuntimeError("no intl price data in store — run collectors first")
 
@@ -107,7 +111,9 @@ def run() -> dict:
     for cc, country_config in intl_inputs.countries().items():
         try:
             rec, hist = country_record(cc, closes, macro, equity, today=evaluation_day,
-                                      fx_source=incumbent_source_context(cc, country_config))
+                                      fx_source=currency_inputs.get(cc, {}).get("source")
+                                          or stored_source_context(cc, country_config),
+                                      fx_observations=currency_inputs.get(cc, {}).get("observations", []))
         except Exception as e:  # noqa: BLE001 — one country can't kill the board
             log.warning("intl: %s record failed: %s", cc, e)
             continue

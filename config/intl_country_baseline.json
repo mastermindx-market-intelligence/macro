@@ -1,6 +1,6 @@
 {
   "schema": "intl_country_inputs.v1",
-  "retrieved_at": "2026-10-19T23:39:17.696032+00:00",
+  "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
   "official": {
     "EZ": {
       "inflation": {
@@ -31,9 +31,24 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 18 Sep 2024 onwards: official central bank steering rate is the deposit facility rate, fixed rate; from 15 Oct 2008 to 17 Sep 2024: official central bank liquidity providing, main refinancing operations, fixed rate; from 28 Jun 2000 to 14 Oct 2008: official central bank liquidity providing, main refinancing operations, minimum bid rate; from 5 Jan 1999 to 27 Jun 2000: official central bank liquidity providing, main refinancing operations, fixed rate.",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.25,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-09-30",
+          "value": 2.5,
+          "series_id": "D.XM",
+          "definition": "From 18 Sep 2024 onwards: official central bank steering rate is the deposit facility rate, fixed rate; from 15 Oct 2008 to 17 Sep 2024: official central bank liquidity providing, main refinancing operations, fixed rate; from 28 Jun 2000 to 14 Oct 2008: official central bank liquidity providing, main refinancing operations, minimum bid rate; from 5 Jan 1999 to 27 Jun 2000: official central bank liquidity providing, main refinancing operations, fixed rate.",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "deposit_facility_rate",
+        "setting_qualifier": null,
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "2024-09-18",
+        "comparison_observation_date": "2026-09-30"
       }
     },
     "IN": {
@@ -65,9 +80,24 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 3 Apr 2001 onwards: official repo overnight rate; from 1 Jan 1946 to 2 Apr 2001: oank rate.",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.0,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-06-30",
+          "value": 5.25,
+          "series_id": "D.IN",
+          "definition": "From 3 Apr 2001 onwards: official repo overnight rate; from 1 Jan 1946 to 2 Apr 2001: oank rate.",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "policy_repo_rate",
+        "setting_qualifier": null,
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "2001-04-03",
+        "comparison_observation_date": "2026-06-30"
       }
     },
     "GB": {
@@ -99,9 +129,24 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 3 Aug 2006 onwards: official bank rate; from 6 May 1997 to 2 Aug 2006: repo rate; from 20 Aug 1981 to 5 May 1997: minimum Bank of England Band 1 dealing rate; from 16 Oct 1972 to 19 Aug 1981: minimum lending rate; from 1 Jan 1946 to 15 Oct 1972: bank rate.",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.0,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-09-30",
+          "value": 3.75,
+          "series_id": "D.GB",
+          "definition": "From 3 Aug 2006 onwards: official bank rate; from 6 May 1997 to 2 Aug 2006: repo rate; from 20 Aug 1981 to 5 May 1997: minimum Bank of England Band 1 dealing rate; from 16 Oct 1972 to 19 Aug 1981: minimum lending rate; from 1 Jan 1946 to 15 Oct 1972: bank rate.",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "bank_rate",
+        "setting_qualifier": null,
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "2006-08-03",
+        "comparison_observation_date": "2026-09-30"
       }
     },
     "JP": {
@@ -133,9 +178,24 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 24 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.25 percent; From 17 Jun 2026 to 23 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.00 percent; From 22 Dec 2025 to 16 Jun 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.75 percent; From 27 Jan 2025 to 21 Dec 2025: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.50 percent; From 1 Aug 2024 to 26 Jan 2025: the BOJ encouraged the UOCR to remain at around 0.25% ; From 21 Mar 2024 to 31 July: the BOJ encouraged the UOCR to remain at around 0 to 0.1 %; from 21 Sep 2016 to 20 Mar 2024: the BOJ set the guideline for market operations which specifies a short-term policy interest rate at minus 0.1% and a target level of 10-year JGB yields at around 0%. Short-term policy interest rate; from 4 Apr 2013 to 20 Sep 2016: no policy rate; from 5 Oct 2010 to 3 Apr 2013: the BOJ encouraged the UOCR to remain at around 0 to 0.1%; from 19 Dec 2008 to 4 Oct 2010: the BOJ encouraged the UOCR to remain at around 0. %; from 31 Oct 2008 to 18 Dec 2008: the BOJ encouraged the UOCR to remain at around 0.3%; before 30 Oct 2008, refer to https://data.bis.org/topics/CBPOL",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.25,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-09-30",
+          "value": 1.25,
+          "series_id": "D.JP",
+          "definition": "From 24 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.25 percent; From 17 Jun 2026 to 23 Sep 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 1.00 percent; From 22 Dec 2025 to 16 Jun 2026: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.75 percent; From 27 Jan 2025 to 21 Dec 2025: the BOJ encourages the uncollateralized overnight call rate to remain at around 0.50 percent; From 1 Aug 2024 to 26 Jan 2025: the BOJ encouraged the UOCR to remain at around 0.25% ; From 21 Mar 2024 to 31 July: the BOJ encouraged the UOCR to remain at around 0 to 0.1 %; from 21 Sep 2016 to 20 Mar 2024: the BOJ set the guideline for market operations which specifies a short-term policy interest rate at minus 0.1% and a target level of 10-year JGB yields at around 0%. Short-term policy interest rate; from 4 Apr 2013 to 20 Sep 2016: no policy rate; from 5 Oct 2010 to 3 Apr 2013: the BOJ encouraged the UOCR to remain at around 0 to 0.1%; from 19 Dec 2008 to 4 Oct 2010: the BOJ encouraged the UOCR to remain at around 0. %; from 31 Oct 2008 to 18 Dec 2008: the BOJ encouraged the UOCR to remain at around 0.3%; before 30 Oct 2008, refer to https://data.bis.org/topics/CBPOL",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "uncollateralized_overnight_call_rate_target",
+        "setting_qualifier": "around",
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "2026-09-24",
+        "comparison_observation_date": "2026-09-30"
       }
     },
     "KR": {
@@ -167,9 +227,24 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 7 Mar 2008 onwards: Bank of Korea base rate; from 6 May 1999 to 6 Mar 2008: target overnight call rate(base rate). ",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.5,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-09-30",
+          "value": 3.0,
+          "series_id": "D.KR",
+          "definition": "From 7 Mar 2008 onwards: Bank of Korea base rate; from 6 May 1999 to 6 Mar 2008: target overnight call rate(base rate). ",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "bok_base_rate",
+        "setting_qualifier": null,
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "2008-03-07",
+        "comparison_observation_date": "2026-09-30"
       }
     },
     "AU": {
@@ -201,13 +276,123 @@
         "status": "observed",
         "frequency": "monthly",
         "definition": "From 2 Aug 1990 onwards: cash rate target; from 23 Jan 1990 to 1 Aug 1990: middle of the cash rate target range; from 7 Apr 1976 to 22 Jan 1990: interbank overnight cash rate.",
-        "retrieved_at": "2026-10-18T03:33:39.379940+00:00",
+        "retrieved_at": "2026-10-20T09:51:29.881008+00:00",
         "change_3m_pp": 0.25,
-        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
+        "daily_reference": {
+          "date": "2026-09-30",
+          "value": 4.6,
+          "series_id": "D.AU",
+          "definition": "From 2 Aug 1990 onwards: cash rate target; from 23 Jan 1990 to 1 Aug 1990: middle of the cash rate target range; from 7 Apr 1976 to 22 Jan 1990: interbank overnight cash rate.",
+          "source_sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d"
+        },
+        "first_observed_at": "2026-10-20T09:56:34.952942+00:00",
+        "comparison_qualification": "qualified",
+        "instrument": "cash_rate_target",
+        "setting_qualifier": null,
+        "observation_convention": "end_of_period",
+        "definition_version": "bis_cbpol_compilation_20260924_v1",
+        "instrument_effective_from": "1990-08-02",
+        "comparison_observation_date": "2026-09-30"
       }
     }
   },
   "forecasts": {
+    "IN": {
+      "cc": "IN",
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "series_id": "real_gdp_growth",
+      "unit": "percent",
+      "period_basis": "fiscal_year",
+      "fiscal_start_month": 4,
+      "definition_id": "real_gdp_growth:percent:fiscal_year",
+      "periods": [
+        {
+          "year": 2023,
+          "label": "FY2023/24",
+          "start": "2023-04-01",
+          "end": "2024-03-31",
+          "value": 7.3,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2024,
+          "label": "FY2024/25",
+          "start": "2024-04-01",
+          "end": "2025-03-31",
+          "value": 7.2,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2025,
+          "label": "FY2025/26",
+          "start": "2025-04-01",
+          "end": "2026-03-31",
+          "value": 7.8,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2026,
+          "label": "FY2026/27",
+          "start": "2026-04-01",
+          "end": "2027-03-31",
+          "value": 7.0,
+          "status": "projection"
+        },
+        {
+          "year": 2027,
+          "label": "FY2027/28",
+          "start": "2027-04-01",
+          "end": "2028-03-31",
+          "value": 7.0,
+          "status": "projection"
+        },
+        {
+          "year": 2031,
+          "label": "FY2031/32",
+          "start": "2031-04-01",
+          "end": "2032-03-31",
+          "value": 6.8,
+          "status": "projection"
+        }
+      ],
+      "information_cutoff": "2026-09-30",
+      "actual_through": null,
+      "reported_revisions": {},
+      "precision": 1,
+      "coverage_note": null,
+      "schema": "intl_forecast_publication.v1",
+      "kind": "sourced_forecast",
+      "publication_key": "7c309047ba22295ae6ed",
+      "record_id": "7c309047ba22295ae6ed:6d02e7b1dff25fac8e69:1",
+      "normalized_sha256": "6d02e7b1dff25fac8e694271cdd42de72042fc1d21ebd429f41385385619915a",
+      "values": {
+        "2023": 7.3,
+        "2024": 7.2,
+        "2025": 7.8,
+        "2026": 7.0,
+        "2027": 7.0,
+        "2031": 6.8
+      },
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
+      "parser_version": "weo_tables_2026_v1",
+      "source_table": "A4",
+      "source_page": 6,
+      "source_row_sha256": "6bcc4dfdef62cb54d6ad41c57842a23e25e96b05187eade4c1f8b3c45e240546",
+      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
+      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
+      "admission_status": "accepted",
+      "correction_sequence": 1,
+      "supersedes_record_id": "7c309047ba22295ae6ed:291c694cc06fb96b9e1d:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
+    },
     "KR": {
       "cc": "KR",
       "provider": "IMF",
@@ -269,7 +454,7 @@
           "status": "projection"
         }
       ],
-      "information_cutoff": "2026-10-01",
+      "information_cutoff": "2026-09-30",
       "actual_through": null,
       "reported_revisions": {},
       "precision": 1,
@@ -277,8 +462,8 @@
       "schema": "intl_forecast_publication.v1",
       "kind": "sourced_forecast",
       "publication_key": "09d68c9ea76e2743e8d5",
-      "record_id": "09d68c9ea76e2743e8d5:6826887a722c6f6810a8:0",
-      "normalized_sha256": "6826887a722c6f6810a8aa1eb3255bf20aed69f91cf29e919f6b5aae44cc1c0a",
+      "record_id": "09d68c9ea76e2743e8d5:586723dcc4d98a8a6ce0:1",
+      "normalized_sha256": "586723dcc4d98a8a6ce0741d4b9ae072d3c4c531590760a5b9fe0575fddb5721",
       "values": {
         "2023": 1.5,
         "2024": 2.2,
@@ -296,289 +481,12 @@
       "source_row_sha256": "b26d5999a249fb7eb8a758c9c272c1a81d909fb6f0b82c7156e4f6373bea1ff7",
       "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
       "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
       "admission_status": "accepted",
-      "correction_sequence": 0
-    },
-    "JP": {
-      "cc": "JP",
-      "provider": "IMF",
-      "family": "WEO",
-      "edition": "2026-10",
-      "published": "2026-10-13",
-      "series_id": "real_gdp_growth",
-      "unit": "percent",
-      "period_basis": "calendar_year",
-      "fiscal_start_month": 1,
-      "definition_id": "real_gdp_growth:percent:calendar_year",
-      "periods": [
-        {
-          "year": 2023,
-          "label": "2023",
-          "start": "2023-01-01",
-          "end": "2023-12-31",
-          "value": 0.9,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2024,
-          "label": "2024",
-          "start": "2024-01-01",
-          "end": "2024-12-31",
-          "value": 0.1,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2025,
-          "label": "2025",
-          "start": "2025-01-01",
-          "end": "2025-12-31",
-          "value": 1.2,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2026,
-          "label": "2026",
-          "start": "2026-01-01",
-          "end": "2026-12-31",
-          "value": 0.7,
-          "status": "projection"
-        },
-        {
-          "year": 2027,
-          "label": "2027",
-          "start": "2027-01-01",
-          "end": "2027-12-31",
-          "value": 0.7,
-          "status": "projection"
-        },
-        {
-          "year": 2031,
-          "label": "2031",
-          "start": "2031-01-01",
-          "end": "2031-12-31",
-          "value": 0.6,
-          "status": "projection"
-        }
-      ],
-      "information_cutoff": "2026-10-01",
-      "actual_through": null,
-      "reported_revisions": {},
-      "precision": 1,
-      "coverage_note": null,
-      "schema": "intl_forecast_publication.v1",
-      "kind": "sourced_forecast",
-      "publication_key": "ed3a0f7b026c8afebacf",
-      "record_id": "ed3a0f7b026c8afebacf:996d731c2e37519340fe:0",
-      "normalized_sha256": "996d731c2e37519340fe921f17661e4961f782658acce243f7919e4872573ab3",
-      "values": {
-        "2023": 0.9,
-        "2024": 0.1,
-        "2025": 1.2,
-        "2026": 0.7,
-        "2027": 0.7,
-        "2031": 0.6
-      },
-      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
-      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
-      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
-      "parser_version": "weo_tables_2026_v1",
-      "source_table": "A2",
-      "source_page": 3,
-      "source_row_sha256": "889f93df01341b7718c1428c8938263fcafa22b2781ff0f2889c6afeb243d5f1",
-      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
-      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
-      "admission_status": "accepted",
-      "correction_sequence": 0
-    },
-    "EZ": {
-      "cc": "EZ",
-      "provider": "IMF",
-      "family": "WEO",
-      "edition": "2026-10",
-      "published": "2026-10-13",
-      "series_id": "real_gdp_growth",
-      "unit": "percent",
-      "period_basis": "calendar_year",
-      "fiscal_start_month": 1,
-      "definition_id": "real_gdp_growth:percent:calendar_year",
-      "periods": [
-        {
-          "year": 2023,
-          "label": "2023",
-          "start": "2023-01-01",
-          "end": "2023-12-31",
-          "value": 0.4,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2024,
-          "label": "2024",
-          "start": "2024-01-01",
-          "end": "2024-12-31",
-          "value": 1.2,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2025,
-          "label": "2025",
-          "start": "2025-01-01",
-          "end": "2025-12-31",
-          "value": 1.2,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2026,
-          "label": "2026",
-          "start": "2026-01-01",
-          "end": "2026-12-31",
-          "value": 1.1,
-          "status": "projection"
-        },
-        {
-          "year": 2027,
-          "label": "2027",
-          "start": "2027-01-01",
-          "end": "2027-12-31",
-          "value": 1.2,
-          "status": "projection"
-        },
-        {
-          "year": 2031,
-          "label": "2031",
-          "start": "2031-01-01",
-          "end": "2031-12-31",
-          "value": 1.1,
-          "status": "projection"
-        }
-      ],
-      "information_cutoff": "2026-10-01",
-      "actual_through": null,
-      "reported_revisions": {},
-      "precision": 1,
-      "coverage_note": null,
-      "schema": "intl_forecast_publication.v1",
-      "kind": "sourced_forecast",
-      "publication_key": "92c5b444202c9bd37c0a",
-      "record_id": "92c5b444202c9bd37c0a:29eda8abc7e13a89354b:0",
-      "normalized_sha256": "29eda8abc7e13a89354b8c11ff197aab6c5f61e1f41af2189bd54fdd753cce1b",
-      "values": {
-        "2023": 0.4,
-        "2024": 1.2,
-        "2025": 1.2,
-        "2026": 1.1,
-        "2027": 1.2,
-        "2031": 1.1
-      },
-      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
-      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
-      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
-      "parser_version": "weo_tables_2026_v1",
-      "source_table": "A2",
-      "source_page": 3,
-      "source_row_sha256": "3fab96e9d9176a9591cd1b28148cab66da3c6eca4887ffdc42a2433dc36aa607",
-      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
-      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
-      "admission_status": "accepted",
-      "correction_sequence": 0
-    },
-    "AU": {
-      "cc": "AU",
-      "provider": "IMF",
-      "family": "WEO",
-      "edition": "2026-10",
-      "published": "2026-10-13",
-      "series_id": "real_gdp_growth",
-      "unit": "percent",
-      "period_basis": "calendar_year",
-      "fiscal_start_month": 1,
-      "definition_id": "real_gdp_growth:percent:calendar_year",
-      "periods": [
-        {
-          "year": 2023,
-          "label": "2023",
-          "start": "2023-01-01",
-          "end": "2023-12-31",
-          "value": 2.1,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2024,
-          "label": "2024",
-          "start": "2024-01-01",
-          "end": "2024-12-31",
-          "value": 1.0,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2025,
-          "label": "2025",
-          "start": "2025-01-01",
-          "end": "2025-12-31",
-          "value": 2.0,
-          "status": "historical_unclassified"
-        },
-        {
-          "year": 2026,
-          "label": "2026",
-          "start": "2026-01-01",
-          "end": "2026-12-31",
-          "value": 1.9,
-          "status": "projection"
-        },
-        {
-          "year": 2027,
-          "label": "2027",
-          "start": "2027-01-01",
-          "end": "2027-12-31",
-          "value": 1.6,
-          "status": "projection"
-        },
-        {
-          "year": 2031,
-          "label": "2031",
-          "start": "2031-01-01",
-          "end": "2031-12-31",
-          "value": 2.2,
-          "status": "projection"
-        }
-      ],
-      "information_cutoff": "2026-10-01",
-      "actual_through": null,
-      "reported_revisions": {},
-      "precision": 1,
-      "coverage_note": null,
-      "schema": "intl_forecast_publication.v1",
-      "kind": "sourced_forecast",
-      "publication_key": "b64386d1f9515b6c271f",
-      "record_id": "b64386d1f9515b6c271f:f34b33ca568ad9061e72:0",
-      "normalized_sha256": "f34b33ca568ad9061e72eff20506a9f78723dfe20fed5ee02d7118d5e71aafa6",
-      "values": {
-        "2023": 2.1,
-        "2024": 1.0,
-        "2025": 2.0,
-        "2026": 1.9,
-        "2027": 1.6,
-        "2031": 2.2
-      },
-      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
-      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
-      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
-      "parser_version": "weo_tables_2026_v1",
-      "source_table": "A2",
-      "source_page": 3,
-      "source_row_sha256": "91f5f0f266a35ae3a7f11a06cb6fb484efe568d64610dc92d649b91c626d7adc",
-      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
-      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
-      "admission_status": "accepted",
-      "correction_sequence": 0
+      "correction_sequence": 1,
+      "supersedes_record_id": "09d68c9ea76e2743e8d5:6826887a722c6f6810a8:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
     },
     "GB": {
       "cc": "GB",
@@ -641,7 +549,7 @@
           "status": "projection"
         }
       ],
-      "information_cutoff": "2026-10-01",
+      "information_cutoff": "2026-09-30",
       "actual_through": null,
       "reported_revisions": {},
       "precision": 1,
@@ -649,8 +557,8 @@
       "schema": "intl_forecast_publication.v1",
       "kind": "sourced_forecast",
       "publication_key": "936683262c12aabc2a73",
-      "record_id": "936683262c12aabc2a73:37dd2e2fc0b1a0a0c018:0",
-      "normalized_sha256": "37dd2e2fc0b1a0a0c01899237253bc86824d82f0f4b7d3df7179cfa669a2ddae",
+      "record_id": "936683262c12aabc2a73:bbecac6edc6ea3278a4f:1",
+      "normalized_sha256": "bbecac6edc6ea3278a4f3d5796bcd0534894d4837ace411622ef95666573dd21",
       "values": {
         "2023": 0.4,
         "2024": 1.1,
@@ -668,10 +576,12 @@
       "source_row_sha256": "35862c0f32f6f7949367728118b0aba468e4ec9c3b8926c40a7d9bd1f5c65194",
       "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
       "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
       "admission_status": "accepted",
-      "correction_sequence": 0
+      "correction_sequence": 1,
+      "supersedes_record_id": "936683262c12aabc2a73:37dd2e2fc0b1a0a0c018:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
     },
     "TW": {
       "cc": "TW",
@@ -734,7 +644,7 @@
           "status": "projection"
         }
       ],
-      "information_cutoff": "2026-10-01",
+      "information_cutoff": "2026-09-30",
       "actual_through": null,
       "reported_revisions": {},
       "precision": 1,
@@ -742,8 +652,8 @@
       "schema": "intl_forecast_publication.v1",
       "kind": "sourced_forecast",
       "publication_key": "6fe2da7526203d3994d6",
-      "record_id": "6fe2da7526203d3994d6:ed620533c6943fdfc4dd:0",
-      "normalized_sha256": "ed620533c6943fdfc4ddbdb8acc32eefe1272d442f2c30a7e726bad42baccb19",
+      "record_id": "6fe2da7526203d3994d6:5875d751b38ad0f7f9e6:1",
+      "normalized_sha256": "5875d751b38ad0f7f9e600cfadcd40b7b59c2db9f8b32ae83ff40ab34f3193a2",
       "values": {
         "2023": 1.1,
         "2024": 5.3,
@@ -761,110 +671,306 @@
       "source_row_sha256": "682a6cf79151b24ce13ae7cd0bd5f8ceb1fd6f50efe9bbea15403fbfa214f88d",
       "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
       "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
       "admission_status": "accepted",
-      "correction_sequence": 0
+      "correction_sequence": 1,
+      "supersedes_record_id": "6fe2da7526203d3994d6:ed620533c6943fdfc4dd:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
     },
-    "IN": {
-      "cc": "IN",
+    "JP": {
+      "cc": "JP",
       "provider": "IMF",
       "family": "WEO",
       "edition": "2026-10",
       "published": "2026-10-13",
       "series_id": "real_gdp_growth",
       "unit": "percent",
-      "period_basis": "fiscal_year",
-      "fiscal_start_month": 4,
-      "definition_id": "real_gdp_growth:percent:fiscal_year",
+      "period_basis": "calendar_year",
+      "fiscal_start_month": 1,
+      "definition_id": "real_gdp_growth:percent:calendar_year",
       "periods": [
         {
           "year": 2023,
-          "label": "FY2023/24",
-          "start": "2023-04-01",
-          "end": "2024-03-31",
-          "value": 7.3,
+          "label": "2023",
+          "start": "2023-01-01",
+          "end": "2023-12-31",
+          "value": 0.9,
           "status": "historical_unclassified"
         },
         {
           "year": 2024,
-          "label": "FY2024/25",
-          "start": "2024-04-01",
-          "end": "2025-03-31",
-          "value": 7.2,
+          "label": "2024",
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "value": 0.1,
           "status": "historical_unclassified"
         },
         {
           "year": 2025,
-          "label": "FY2025/26",
-          "start": "2025-04-01",
-          "end": "2026-03-31",
-          "value": 7.8,
+          "label": "2025",
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "value": 1.2,
           "status": "historical_unclassified"
         },
         {
           "year": 2026,
-          "label": "FY2026/27",
-          "start": "2026-04-01",
-          "end": "2027-03-31",
-          "value": 7.0,
+          "label": "2026",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "value": 0.7,
           "status": "projection"
         },
         {
           "year": 2027,
-          "label": "FY2027/28",
-          "start": "2027-04-01",
-          "end": "2028-03-31",
-          "value": 7.0,
+          "label": "2027",
+          "start": "2027-01-01",
+          "end": "2027-12-31",
+          "value": 0.7,
           "status": "projection"
         },
         {
           "year": 2031,
-          "label": "FY2031/32",
-          "start": "2031-04-01",
-          "end": "2032-03-31",
-          "value": 6.8,
+          "label": "2031",
+          "start": "2031-01-01",
+          "end": "2031-12-31",
+          "value": 0.6,
           "status": "projection"
         }
       ],
-      "information_cutoff": "2026-10-01",
+      "information_cutoff": "2026-09-30",
       "actual_through": null,
       "reported_revisions": {},
       "precision": 1,
       "coverage_note": null,
       "schema": "intl_forecast_publication.v1",
       "kind": "sourced_forecast",
-      "publication_key": "7c309047ba22295ae6ed",
-      "record_id": "7c309047ba22295ae6ed:291c694cc06fb96b9e1d:0",
-      "normalized_sha256": "291c694cc06fb96b9e1dc2e78fb6262e6b8fc6005205da04e8a0b93eb4373e4d",
+      "publication_key": "ed3a0f7b026c8afebacf",
+      "record_id": "ed3a0f7b026c8afebacf:bf8f60ad5913ac8c3786:1",
+      "normalized_sha256": "bf8f60ad5913ac8c37860f5cdb839a62b74262c1c42f95d8094d3613af778c2d",
       "values": {
-        "2023": 7.3,
-        "2024": 7.2,
-        "2025": 7.8,
-        "2026": 7.0,
-        "2027": 7.0,
-        "2031": 6.8
+        "2023": 0.9,
+        "2024": 0.1,
+        "2025": 1.2,
+        "2026": 0.7,
+        "2027": 0.7,
+        "2031": 0.6
       },
       "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
       "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
       "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
       "parser_version": "weo_tables_2026_v1",
-      "source_table": "A4",
-      "source_page": 6,
-      "source_row_sha256": "6bcc4dfdef62cb54d6ad41c57842a23e25e96b05187eade4c1f8b3c45e240546",
+      "source_table": "A2",
+      "source_page": 3,
+      "source_row_sha256": "889f93df01341b7718c1428c8938263fcafa22b2781ff0f2889c6afeb243d5f1",
       "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
       "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
-      "first_observed_at": "2026-10-18T11:29:58.685968+00:00",
-      "admitted_at": "2026-10-18T11:29:58.685968+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
       "admission_status": "accepted",
-      "correction_sequence": 0
+      "correction_sequence": 1,
+      "supersedes_record_id": "ed3a0f7b026c8afebacf:996d731c2e37519340fe:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
+    },
+    "AU": {
+      "cc": "AU",
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "series_id": "real_gdp_growth",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "fiscal_start_month": 1,
+      "definition_id": "real_gdp_growth:percent:calendar_year",
+      "periods": [
+        {
+          "year": 2023,
+          "label": "2023",
+          "start": "2023-01-01",
+          "end": "2023-12-31",
+          "value": 2.1,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2024,
+          "label": "2024",
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "value": 1.0,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2025,
+          "label": "2025",
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "value": 2.0,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2026,
+          "label": "2026",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "value": 1.9,
+          "status": "projection"
+        },
+        {
+          "year": 2027,
+          "label": "2027",
+          "start": "2027-01-01",
+          "end": "2027-12-31",
+          "value": 1.6,
+          "status": "projection"
+        },
+        {
+          "year": 2031,
+          "label": "2031",
+          "start": "2031-01-01",
+          "end": "2031-12-31",
+          "value": 2.2,
+          "status": "projection"
+        }
+      ],
+      "information_cutoff": "2026-09-30",
+      "actual_through": null,
+      "reported_revisions": {},
+      "precision": 1,
+      "coverage_note": null,
+      "schema": "intl_forecast_publication.v1",
+      "kind": "sourced_forecast",
+      "publication_key": "b64386d1f9515b6c271f",
+      "record_id": "b64386d1f9515b6c271f:9e2779f5d9c913b3434a:1",
+      "normalized_sha256": "9e2779f5d9c913b3434a3ad6f3dd5d54a6634d63ecf1af05f287f718650d9fa1",
+      "values": {
+        "2023": 2.1,
+        "2024": 1.0,
+        "2025": 2.0,
+        "2026": 1.9,
+        "2027": 1.6,
+        "2031": 2.2
+      },
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
+      "parser_version": "weo_tables_2026_v1",
+      "source_table": "A2",
+      "source_page": 3,
+      "source_row_sha256": "91f5f0f266a35ae3a7f11a06cb6fb484efe568d64610dc92d649b91c626d7adc",
+      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
+      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
+      "admission_status": "accepted",
+      "correction_sequence": 1,
+      "supersedes_record_id": "b64386d1f9515b6c271f:f34b33ca568ad9061e72:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
+    },
+    "EZ": {
+      "cc": "EZ",
+      "provider": "IMF",
+      "family": "WEO",
+      "edition": "2026-10",
+      "published": "2026-10-13",
+      "series_id": "real_gdp_growth",
+      "unit": "percent",
+      "period_basis": "calendar_year",
+      "fiscal_start_month": 1,
+      "definition_id": "real_gdp_growth:percent:calendar_year",
+      "periods": [
+        {
+          "year": 2023,
+          "label": "2023",
+          "start": "2023-01-01",
+          "end": "2023-12-31",
+          "value": 0.4,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2024,
+          "label": "2024",
+          "start": "2024-01-01",
+          "end": "2024-12-31",
+          "value": 1.2,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2025,
+          "label": "2025",
+          "start": "2025-01-01",
+          "end": "2025-12-31",
+          "value": 1.2,
+          "status": "historical_unclassified"
+        },
+        {
+          "year": 2026,
+          "label": "2026",
+          "start": "2026-01-01",
+          "end": "2026-12-31",
+          "value": 1.1,
+          "status": "projection"
+        },
+        {
+          "year": 2027,
+          "label": "2027",
+          "start": "2027-01-01",
+          "end": "2027-12-31",
+          "value": 1.2,
+          "status": "projection"
+        },
+        {
+          "year": 2031,
+          "label": "2031",
+          "start": "2031-01-01",
+          "end": "2031-12-31",
+          "value": 1.1,
+          "status": "projection"
+        }
+      ],
+      "information_cutoff": "2026-09-30",
+      "actual_through": null,
+      "reported_revisions": {},
+      "precision": 1,
+      "coverage_note": null,
+      "schema": "intl_forecast_publication.v1",
+      "kind": "sourced_forecast",
+      "publication_key": "92c5b444202c9bd37c0a",
+      "record_id": "92c5b444202c9bd37c0a:55f76e1025fe810cb55e:1",
+      "normalized_sha256": "55f76e1025fe810cb55eb2ace57b9b911a608ed8976c4a8acc489382d3ee9b98",
+      "values": {
+        "2023": 0.4,
+        "2024": 1.2,
+        "2025": 1.2,
+        "2026": 1.1,
+        "2027": 1.2,
+        "2031": 1.1
+      },
+      "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
+      "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
+      "source_sha256": "201e6b671bb7deb6da3065976f8020b50831da1aa9ea57edd9a2ab7458c215c8",
+      "parser_version": "weo_tables_2026_v1",
+      "source_table": "A2",
+      "source_page": 3,
+      "source_row_sha256": "3fab96e9d9176a9591cd1b28148cab66da3c6eca4887ffdc42a2433dc36aa607",
+      "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
+      "retrieved_at": "2026-10-18T11:13:37.359322+00:00",
+      "first_observed_at": "2026-10-19T23:39:17.696032+00:00",
+      "admitted_at": "2026-10-19T23:39:17.696032+00:00",
+      "admission_status": "accepted",
+      "correction_sequence": 1,
+      "supersedes_record_id": "92c5b444202c9bd37c0a:29eda8abc7e13a89354b:0",
+      "correction_source_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf"
     }
   },
   "sources": [
     {
       "url": "https://data.bis.org/static/bulk/WS_CBPOL_csv_flat.zip",
       "sha256": "a90d76d1777c7e1317cff1611e5a8e26ad0bb52fec38b06ccb1edb04fec83e3d",
-      "status": "read"
+      "status": "verified",
+      "provider": "Bank for International Settlements",
+      "retrieved_at": "2026-10-20T09:51:29.881008+00:00"
     },
     {
       "url": "https://data.bis.org/static/bulk/WS_LONG_CPI_csv_flat.zip",
