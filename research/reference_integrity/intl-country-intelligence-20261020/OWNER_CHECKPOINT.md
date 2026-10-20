@@ -1,3 +1,17 @@
+# Owner checkpoint — 2026-10-20 final artifact freeze preparation
+
+The country cockpit source is committed at442042e591d255dd24b540ff240edb4c0410c297. The final dock4 no-overlay build uses all510 retained inputs and the pinned production fonts, account, navigation, favicon and shared assistant visual assets. HTML SHA256ad802caa6a04a7049d0adf8721354c88aa7dfec7378d5afc6bf161064f9767d0. FINAL_ARTIFACT_EVIDENCE.json binds actual build, receipts, images and source hashes.
+
+Completed browser verification:46 canonical,109 focused including complete local static assets and12 loaded-launcher post-close geometries,132 fragment/navigation,112 native history and12 narrow source-disclosure checks PASS. The earlier Japan same-document landing failure is repaired with a still-current hash check after disclosure reflow; all original failed receipts remain. All seven country sections remain byte-identical to the source-trace artifact already examined by the independent product and source reviewers. The full assistant stays in its reserved navigation slot, opens via keyboard, closes with Escape and returns focus in all12 width/language/theme contexts.
+
+Current source also passes128 targeted macro/country/build tests, the19-file International contract suite, shared P0B128 real-browser cases and136 receipt tests, and required local guards after the actual radius-token repair. The old hosted macro/axis failure was repaired on main byPR9816; the exact failed tests and new regression pass on this source. All historical failures and audit limits are retained. No waived test or fabricated acquisition is claimed.
+
+The original independent critics are reviewing this exact font-complete dock4 render before final artifact approval. The GDP coverage follow-up is separately documented; no research-only observation has been admitted. PR9596 remains at remote6ad0c3 until the expected-head native push. No main merge, genuine acquisition, covering render or served acceptance is claimed.
+
+Next3: (1) freeze these bytes, receive independent artifact-bound repair verdicts and record the explicit legacy-world hierarchy tradeoff; (2) native publication, applicable hosted CI and normal protected-main acceptance; (3) genuine intl_prices acquisition, source-qualified FX acceptance, covering render and served anonymous proof. No human permission or login blocker identified.
+
+---
+
 # Owner checkpoint — 2026-10-20 20:50 UTC
 
 Release state: local candidate only; PR9596 still remote6ad0c3. No production merge, acquisition, render or served acceptance is claimed.

@@ -1,0 +1,19 @@
+{
+  "source_head": "442042e591d255dd24b540ff240edb4c0410c297",
+  "command": [
+    "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_macro_command_copy_law.py::test_labor_coverage_refusal_has_plain_copy_without_changing_source",
+    "tests/test_macro_command_copy_law.py::test_all_fifteen_built_pages_are_clean_outside_details",
+    "tests/test_macro_command_copy_law.py::test_user_facing_numbers_have_no_machine_floats",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_build.py",
+    "-q"
+  ],
+  "started_at": "2026-10-20T20:55:05.291947+00:00",
+  "finished_at": "2026-10-20T20:55:24.571190+00:00",
+  "exit_code": 0,
+  "log": "research/reference_integrity/intl-country-intelligence-20261020/dock3_focused_contracts.log",
+  "log_sha256": "78fa2e6e0161003636ea0f518e2ec9b3a221b02ab693d10b1c0db3bad044b629"
+}

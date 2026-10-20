@@ -9,7 +9,7 @@ OUT = Path(__file__).resolve().parent
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-sha", required=True)
-    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3"))
+    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3", "dock4"))
     parser.add_argument("--overlay", action="append", default=[])
     args = parser.parse_args()
     build = Path("/tmp/intl-rig-review-repair-20261020") / args.label / "source"
@@ -19,7 +19,7 @@ def main():
     archive = build.parent / "source.tar"
     subprocess.run(["git", "archive", "--format=tar", "--output=" + str(archive),
                     args.source_sha, "config.yml", "config", "collectors", "engine",
-                    "lib", "scripts", "templates", "requirements.txt"],
+                    "lib", "scripts", "templates", "requirements.txt", "site/fonts", "site/favicon.svg"],
                    cwd=ROOT, check=True, timeout=120)
     with tarfile.open(archive) as tf:
         tf.extractall(build, filter="data")
@@ -54,6 +54,8 @@ def main():
                                 stderr=subprocess.STDOUT, timeout=1200)
     receipt = {
         "schema": "intl.reference_complete_repair_build.v1",
+        "build_driver_sha256": sha256(Path(__file__).read_bytes()).hexdigest(),
+        "static_dependency_source_commit": args.source_sha,
         "source_commit": args.source_sha, "source_overlays": overlays,
         "input_snapshot": "production_input_snapshot.json",
         "input_snapshot_sha256": sha256(snapshot_path.read_bytes()).hexdigest(),
@@ -67,7 +69,10 @@ def main():
     if result.returncode == 0:
         html = build / "site/intl.html"
         text = html.read_text()
-        required = {"intl.html", "mm_brain.js"}
+        required = {"intl.html", "mm_brain.js", "account.js", "mm_brain_visuals.css", "favicon.svg", "nav_market.js"}
+        fonts = sorted((build / "site/fonts").glob("*.woff2"))
+        assert fonts, "The pinned production typeface assets must be present"
+        required.update("fonts/" + p.name for p in fonts)
         required.update(p.name for p in (build / "site").iterdir()
                         if p.is_file() and p.suffix in {".css", ".js"})
         for item in re.findall(r"""(?:src|href)=["']([^"']+)["']""", text):

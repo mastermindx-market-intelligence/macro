@@ -8,7 +8,7 @@ RIG = Path(__file__).resolve().parent
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3"))
+    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3", "dock4"))
     args = parser.parse_args()
     target = RIG / ("repair_" + args.label)
     assert not target.exists()
@@ -23,7 +23,11 @@ def main():
     build = json.loads(build_path.read_text())
     shutil.copyfile(build_path, target / "complete_build_receipt.json")
     canonical_exit = int(module.main())
-    checks = []
+    manifest = json.loads((target / "complete_capture_manifest.json").read_text())
+    local_failures = [r for page in manifest["pages"] for r in page.get("failed_responses", [])
+                      if r.get("url", "").startswith("http://intl.test/")]
+    checks = [{"id":"complete-local-static-dependencies", "passed":not local_failures,
+               "actual":local_failures}]
     screenshots = []
     from playwright.sync_api import sync_playwright
     with sync_playwright() as runtime:
@@ -72,7 +76,7 @@ def main():
                     screenshots.append(module.shot(page, "reading-" + name + ".png", {"actual":launch_state}))
                     checks.append({"id":"persistent-assistant-" + name,
                         "passed":launch_state["position"]=="fixed" and launch_state["inViewport"] and bool(launch_state["label"]),"actual":launch_state})
-                    if args.label in ("dock", "dock2", "dock3"):
+                    if args.label in ("dock", "dock2", "dock3", "dock4"):
                         checks.append({"id":"assistant-reserved-space-" + name,
                             "passed":launch_state["withinToolbarSlot"],"actual":launch_state})
                     launcher.focus()
@@ -88,6 +92,17 @@ def main():
                     focused = page.evaluate("document.activeElement && document.activeElement.id")
                     checks.append({"id":"assistant-close-and-focus-" + name,
                         "passed":closed and focused=="mmb-launch","actual":{"closed":closed,"focus":focused}})
+                    if args.label in ("dock3", "dock4"):
+                        after_close = page.locator("#mmb-launch").evaluate("""e => {
+                          const r=e.getBoundingClientRect(), b=document.querySelector('.imc-assistant-slot').getBoundingClientRect();
+                          return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,
+                            withinToolbarSlot:r.left>=b.left-1 && r.right<=b.right+1 && r.top>=b.top-1 && r.bottom<=b.bottom+1,
+                            visible:r.width>0 && r.height>0 && r.top>=0 && r.bottom<=innerHeight,
+                            radius:getComputedStyle(e).borderRadius};
+                        }""")
+                        checks.append({"id":"assistant-after-close-reserved-space-"+name,
+                            "passed":closed and after_close["visible"] and after_close["withinToolbarSlot"],"actual":after_close})
+                        screenshots.append(module.shot(page,"assistant-closed-"+name+".png",{"actual":after_close}))
                     checks.append({"id":"no-page-exceptions-" + name,"passed":not errors,"errors":errors})
                     context.close()
         browser.close()
