@@ -91,16 +91,17 @@ def verify(receipt: Path) -> None:
             checks.append("primary and session returns retain numeric hierarchy instead of caption styling")
             physical = page.locator("#cw-physical-oil")
             assert physical.is_visible()
-            assert "Product stocks tight" in page.locator("#cw-physical-title").inner_text()
-            assert "2026-10-02" in physical.locator(".cw-physical-clock").inner_text()
+            assert "Crude and product stocks below seasonal norms" in page.locator("#cw-physical-title").inner_text()
+            assert "2026-10-09" in physical.locator(".cw-physical-clock").inner_text()
             assert "release vintage unavailable" in physical.locator(".cw-physical-clock").inner_text()
             assert "not met" in physical.locator(".cw-physical-consequences").inner_text()
             assert physical.locator(".cw-stock").count() == 3
             physical.locator("summary").click()
-            assert "2021-09-10" in physical.inner_text()
+            assert "2021-09-17" in physical.inner_text()
             assert "2026-09-11" in physical.inner_text()
+            assert "2026-09-18" in physical.inner_text()
             physical.locator("summary").click()
-            checks.append("dated physical synthesis preserves product divergence, release uncertainty and independent inflation check")
+            checks.append("dated physical synthesis preserves broad inventory tightness, release uncertainty and independent inflation check")
             page.locator('[data-cw-hypothesis="oil"] input[value="supply"]').check()
             page.locator("#cw-tab-relationships").click()
             assert "Supply disruption" in page.locator("#cw-investigation-title").inner_text()
@@ -151,8 +152,8 @@ def verify(receipt: Path) -> None:
             assert draft["asset"] == "oil" and draft["hypothesis"] == "demand"
             assert draft["threshold"] == 0 and draft["metric_contract"]["field"] == "velocity.r20"
             assert draft["monitoring_active"] is False and draft["effect"] == "export_only"
-            assert draft["as_saved_evidence"]["physical"]["classification"] == "product_tightness"
-            assert draft["as_saved_evidence"]["physical"]["stocks"][1]["anomaly"]["value"] == -2.03
+            assert draft["as_saved_evidence"]["physical"]["classification"] == "broad_tightness"
+            assert draft["as_saved_evidence"]["physical"]["stocks"][1]["anomaly"]["value"] == -1.2
             assert draft["as_saved_evidence"]["physical"]["point_in_time_verified"] is False
             assert downloaded.stat().st_size <= 131072
             checks.append("real research export retains dated physical evidence and fits its import limit")
@@ -238,7 +239,7 @@ def verify(receipt: Path) -> None:
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
             checks.append("light mobile view retains the investigation and layout")
             page.locator("[data-cw-go-physical]").click()
-            assert "成品油库存偏紧" in page.locator("#cw-physical-title").inner_text()
+            assert "原油与成品油库存均低于季节常态" in page.locator("#cw-physical-title").inner_text()
             for card in page.locator("#cw-physical-oil .cw-stock").all():
                 card.scroll_into_view_if_needed()
                 assert card.locator(".cw-stock-level").is_visible()
