@@ -106,11 +106,11 @@ CLI process must then deduplicate that same complete registration and report sea
 N=3; it may not append another trial. The native API floors `effective_n` at one even
 for an unseen family, so the absence preflight uses `literal_n` and `families`.
 
-The generated registration receipt will retain original row objects, pre/post canonical
+The generated registration receipt retains original row objects, pre/post canonical
 ledger digests, the frozen source commit, protected harness merge, execution source head
-and driver digest. The retained result bundle will contain all three raw native
+and driver digest. The retained result bundle contains all three raw native
 envelopes, exact input/spec/registration/code digests, runtime versions and the coverage
-exclusion. These are generated only by the original execution, never fabricated by the
+exclusion. These were generated only by the original execution, never fabricated by the
 read-only adapter. The adapter verifies immutable receipts and the original three rows
 in `data/trial_ledger.jsonl`; unrelated family appends remain legal, while missing,
 duplicated, changed or additional same-family registrations refuse display.
@@ -121,5 +121,26 @@ The LP card adds this research diagnostic in fixed method order with monthly/log
 units, all three lag specifications, typed missingness and withheld authority. It creates
 no Workbench, Analog Lab, Evaluation OS, source registry, promotion route or trading plane.
 
-Native execution, retained results, protected publication and actual authenticated
-consumer acceptance remain pending until their original receipts are present.
+The original native execution completed on 2026-10-20T03:19:44.909147+00:00. The protected
+harness merge was `204164ab7edfae5c06a448a49654c8d5b8eca857`; the execution source head was
+`7a310fff20e71666f4799657eab8c99189a6b8fe`. All three configurations were durably registered before
+any estimate, and every native CLI process reported `new_trial_logged=false` and N=3.
+The working canonical ledger then remained byte-identical to the post-registration
+snapshot. Protected adoption/publication and actual authenticated product acceptance
+remain pending until the containing release and live proof complete.
+
+| Fixed role | Lags | h=3 coefficient | Native 95% HAC interval | Raw p | BY q | Usable h=3 rows |
+|---|---:|---:|---|---:|---:|---:|
+| primary | 4 | 0.010975584 | [0.000122305, 0.021828862] | 0.047474 | 0.3354 | 325 |
+| robustness_lags_2 | 2 | 0.011478254 | [0.000062048, 0.022894460] | 0.048768 | 0.304 | 327 |
+| robustness_lags_8 | 8 | 0.010877045 | [-0.000247668, 0.022001758] | 0.055323 | 0.3425 | 321 |
+
+No horizon rejects under the native dependent-horizon BY correction in any of the
+three prespecified configurations. A raw p below 0.05 at one horizon is not the
+multiple-testing conclusion. These retained numbers are descriptive associations,
+not scientific-utility acceptance or a current-regime claim. The complete h=0…3
+results, not just the displayed h=3 sensitivity comparison, remain in the immutable
+result bundle.
+
+Original result bundle SHA-256: `1c463e2ec8e8ab98399b40c176899d1fcf5b94d8969280212037adb321e90604`.
+Original registration receipt SHA-256: `a869ad712edc598b4b1faaadc9b08573beda62e4246015a1c3a6e83fd0776545`.

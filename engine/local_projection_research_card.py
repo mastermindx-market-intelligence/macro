@@ -20,7 +20,30 @@ PREFIX = "data/experiments/local_projection_alfred_cpi_payroll_v2"
 RESULT = PREFIX + "_results.json"
 REGISTRATION = PREFIX + "_registration.json"
 # Filled from the actual retained native run, never generated or estimated here.
-PINS = {}
+PINS = {'data/experiments/local_projection_alfred_cpi_payroll_v2_results.json': ('result',
+                                                                          '1c463e2ec8e8ab98399b40c176899d1fcf5b94d8969280212037adb321e90604'),
+ 'data/experiments/local_projection_alfred_cpi_payroll_v2_registration.json': ('registration',
+                                                                               'a869ad712edc598b4b1faaadc9b08573beda62e4246015a1c3a6e83fd0776545'),
+ 'data/experiments/local_projection_alfred_cpi_payroll_v2_panel.csv': ('input',
+                                                                       '4456ebeff9ebd0e218d5d3b58b643c9a4fdc2e96b8cecabca55736287e7d14a6'),
+ 'data/experiments/local_projection_alfred_cpi_payroll_v2_custody.json': ('custody',
+                                                                          '54c8fe8220ea323829817b23cac983469c0de459ee0d2c8610333f1aebaa52d0'),
+ 'research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json': ('preregistration',
+                                                                      'd70bbc156dc892dfbcf538dc712a5772ec2fb43cb5a3af3c41b7d0a5af7c4871'),
+ 'research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json': ('original_preregistration',
+                                                                      '9b70d444ba75d01db7460c86f970d1626a2df553c07dea17a8aa5dac4072edb5'),
+ 'research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json': ('original_source_refusal',
+                                                                          '3e2d9c93d46b4683b5251c4b80744e38ceb9c401abecf1cd7126af10957c2b4e'),
+ 'research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md': ('report',
+                                                                  '3d4ca68f63cbdc467866fcc121f0b2d4f7281236151feae54f5342c6302afd91'),
+ 'engine/local_projections.py': ('estimator',
+                                 'fe6112dff9ba2caf0ebb89634421ac1b7ecf6418ed96ec9558e81fa8e3d07a9e'),
+ 'scripts/run_local_projections.py': ('harness',
+                                      '22a1cc05996efdc430ebfd0f7787d35ff2ac0dcbaed3263af385dd2ceb9e9d45'),
+ 'scripts/local_projection_alfred_panel.py': ('panel_assembler',
+                                              '4756b2857905f28960f8b07d771b97e1a59dd86e7b8b74b08bfe05defe87f4b6'),
+ 'research/local_projections/reproduce_alfred_cpi_payroll_v2.py': ('run_driver',
+                                                                   '020a134a41e22c86f91e8eb34c96db9684e9a46e224da8b432b40b1c6d6d606a')}
 
 
 def adapt_local_projections(root: Path) -> dict:
@@ -31,9 +54,13 @@ def adapt_local_projections(root: Path) -> dict:
     receipts = {}
     code = []
     for path, (role, digest) in PINS.items():
-        receipt = _source_artifact(root, role=role, path=path,
-                                   expected_sha256=digest, as_of="2026-10-17")
-        if role in {"estimator", "harness", "panel_assembler"}:
+        dated = role in {"result", "registration", "preregistration", "report"}
+        reason = None if dated else _localized(
+            "This immutable receipt asserts no single publication date; use its per-row availability bounds, frozen specification and native run clocks.",
+            "此不可变凭据不主张单一发布日期；请使用各行可用性上界、冻结计划与原生运行时间。")
+        receipt = _source_artifact(root, role=role, path=path, expected_sha256=digest,
+                                   as_of="2026-10-20" if dated else None, as_of_reason=reason)
+        if role in {"estimator", "harness", "panel_assembler", "run_driver"}:
             code.append(receipt)
         else:
             receipts[path] = receipt
@@ -43,8 +70,9 @@ def adapt_local_projections(root: Path) -> dict:
     _verify_owner_bundle(bundle, spec, registration)
     configs = [row["config"] for row in registration["new_rows"]]
     try:
-        verify_registration(registration, (root / "data/trial_ledger.jsonl").read_bytes(),
-                            family=FAMILY, configs=configs)
+        with (root / "data/trial_ledger.jsonl").open("rb") as stream:
+            ledger_raw = stream.read(_MAX_LEDGER_BYTES + 1)
+        verify_registration(registration, ledger_raw, family=FAMILY, configs=configs)
     except (ValueError, OSError) as exc:
         raise CardContractError(f"LP canonical registration is not intact: {exc}") from exc
     primary = bundle["runs"][0]["envelope"]["result"]
@@ -88,6 +116,8 @@ def adapt_local_projections(root: Path) -> dict:
                                       f"预定滞后{lag}阶系数，第3期", row["beta"], unit,
                                       f"runs.{run['role']}.envelope.result.irf.h3.beta"))
     diagnostics.extend([
+        _metric("information_cutoff_utc", "Exact information cutoff (UTC)", "精确信息截止时间（UTC）",
+                spec["cutoff"], "utc_instant", SPEC + ":cutoff"),
         _metric("registered_search_n", "All prespecified configurations registered before estimation",
                 "估计前登记的全部预定配置数", 3, "configurations", REGISTRATION + ":effective_n"),
         _metric("requested_months", "Originally requested months", "原始请求月份", 345, "months", SPEC + ":coverage"),
@@ -167,6 +197,8 @@ def _verify_owner_bundle(bundle: dict, spec: dict, registration: dict) -> None:
             bundle.get("registration_receipt_sha256") == PINS[REGISTRATION][1], "LP custody binding mismatch")
     require(bundle.get("estimator_sha256") == PINS["engine/local_projections.py"][1] and
             bundle.get("harness_sha256") == PINS["scripts/run_local_projections.py"][1], "LP released code binding mismatch")
+    require(registration.get("driver_sha256") == PINS["research/local_projections/reproduce_alfred_cpi_payroll_v2.py"][1],
+            "LP original execution driver binding mismatch")
     require(bundle.get("coverage") == spec["coverage"], "LP source exclusions changed")
     runs = bundle.get("runs", [])
     require([run.get("role") for run in runs] == ["primary", "robustness_lags_2", "robustness_lags_8"],
