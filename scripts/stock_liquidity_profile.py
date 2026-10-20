@@ -135,8 +135,8 @@ def write_record(path: Path, rec: dict, *, data_root: Path,
                  recorded_at: datetime) -> None:
     """Existing stock-library writer's one-record seam, with one added field.
 
-    The caller supplies its existing output path; this module never selects a
-    publication destination or writes any index, board, store or user state.
+    The caller supplies its existing output path; this function writes no
+    index, board, source store or user state.
     """
     rec["liquidity_profile"] = read_profile(
         rec.get("ticker", ""), data_root=data_root, recorded_at=recorded_at)

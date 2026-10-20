@@ -577,18 +577,36 @@ def _index_gex_history_store_override(dirs) -> Path | None:
 
 def publish(dirs, dry_run: bool = False, workers: int = 32,
             manifest: bool = True, force_manifest: bool = False,
-            stock_ticker: str | None = None) -> int:
+            stock_ticker: str | None = None,
+            stock_source_file: str | Path | None = None) -> int:
     # A narrow, explicitly selected stock-library record uses this incumbent
     # publisher, with its normal hash delta, upload retry and failure reporting.
     # It must never replace the universe manifest or walk unrelated local files.
+    if stock_source_file is not None and stock_ticker is None:
+        raise ValueError("--stock-source-file requires --stock-ticker")
+    stock_base: Path | None = None
     if stock_ticker is not None:
         if (dirs != ["stockdata"] or manifest or force_manifest
                 or not isinstance(stock_ticker, str)
                 or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.^=-]{0,31}", stock_ticker) is None):
             raise ValueError("one stock ticker requires stockdata and --no-manifest")
-        candidate = config.ROOT / config.load()["storage"]["site_dir"] / "stockdata" / (stock_ticker + ".json")
-        if not candidate.is_file() or candidate.is_symlink() or candidate.parent.is_symlink():
-            raise ValueError("selected stock record must be a regular local file")
+        if stock_source_file is not None:
+            # Explicit record path (--stock-source-file): the ops host feeds a
+            # freshly canonicalised record from outside the configured site
+            # tree, so no configured site tree is required. Same regular-file
+            # gates as the configured path; its parent dir becomes this one
+            # stockdata iteration's local base and the object key stays
+            # stockdata/<ticker>.json.
+            src = Path(stock_source_file)
+            if src.name != stock_ticker + ".json":
+                raise ValueError("stock source file must be named <ticker>.json")
+            if src.is_symlink() or not src.is_file() or src.parent.is_symlink():
+                raise ValueError("stock source file must be an existing regular local file")
+            stock_base = src.parent
+        else:
+            candidate = config.ROOT / config.load()["storage"]["site_dir"] / "stockdata" / (stock_ticker + ".json")
+            if not candidate.is_file() or candidate.is_symlink() or candidate.parent.is_symlink():
+                raise ValueError("selected stock record must be a regular local file")
     index_store = _index_gex_history_store_override(dirs)
     s3 = _client(workers)
     if s3 is None:
@@ -626,6 +644,8 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             base = _store_overrides.get(d, data / d)
         else:
             base = site / d
+        if stock_base is not None:
+            base = stock_base  # explicit --stock-source-file: this dir's base only
         if not base.is_dir():
             log.info("%s: absent — skip", d)
             continue
@@ -749,11 +769,16 @@ def main() -> int:
                          "partial-tree invocations (checkout lacking the full dir)")
     ap.add_argument("--stock-ticker", default=None,
                     help="publish exactly one existing stockdata record; requires --dirs stockdata --no-manifest")
+    ap.add_argument("--stock-source-file", default=None,
+                    help="publish one explicit record file instead of the configured site copy; "
+                         "basename must be <ticker>.json (requires --stock-ticker)")
     ap.add_argument("--force-manifest", action="store_true",
                     help="override the shrink guard (intentional deep universe cull)")
     a = ap.parse_args()
     dirs = [d.strip() for d in a.dirs.split(",") if d.strip()]
     selected = {} if a.stock_ticker is None else {"stock_ticker": a.stock_ticker}
+    if a.stock_source_file is not None:
+        selected["stock_source_file"] = a.stock_source_file
     return publish(dirs, dry_run=a.dry_run, workers=a.workers,
                    manifest=a.manifest, force_manifest=a.force_manifest, **selected)
 
