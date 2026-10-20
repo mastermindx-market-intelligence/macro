@@ -4348,6 +4348,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
     "research-vault",
@@ -5089,7 +5090,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_670),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_674),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5226,6 +5227,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     earlier pin; both vector steps are present at this accepted base.
     Validate the full combined manifest with the unchanged canonical
     estimator and absolute assertion; every other bound stays fixed.
+    SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
+    tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
+    W23-L9 SPR step in unrun-macro-panels (job weight 78 -> 82, measured
+    on the merged run text). contract-delta on the PR (run 39379143776)
+    measures build_free_content 134 jobs / 5,668 against base 5,664. No
+    new entrant. index.html (5,793) and plan_book (5,542) stay under
+    their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
+    Every other bound stays unchanged.
+
+    Accepted 13e098 composition (2026-10-20) preserves the four SPR
+    JODI/gold units above and the six required WM/KO units:
+    5,664 + 4 + 6 = 5,674. Both historical measurements and all
+    earlier composition notes retain their original source attribution.
+    Validate this combined manifest with the unchanged canonical estimator
+    and absolute assertion; every other bound stays fixed.
+
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
