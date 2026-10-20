@@ -214,3 +214,46 @@ def test_reference_conflicts_and_late_terms_do_not_rewrite_owner_evidence():
     out = compose_native_exposure_context(g, oi, ASOF, "SPY", context=ctx)
     assert pd.Timestamp(out["contract_terms"][0]["available_at"]) == pd.Timestamp(RECEIVED)
     assert build_exposure_projection(g, oi, ASOF, "SPY", context=out)["metrics"]["gamma"]["exclusions"] == {"series_terms_availability_unqualified": 1}
+
+
+def test_ordinary_qqq_terms_are_explicit_rule_interpretation_not_raw_defaults():
+    from lib.options_source_receipts import ordinary_etf_terms, ordinary_spy_terms
+    obs=reference();c=obs['contract'];c.update(ticker='O:QQQ261023C00100000',underlying_ticker='QQQ')
+    obs['path']='/v3/reference/options/contracts/'+c['ticker']
+    term=massive_reference_terms(obs,'QQQ','SEC:US-XNAS-QQQ')
+    assert 'multiplier' not in term and 'additional_underlyings' not in term
+    before=deepcopy(term)
+    out=ordinary_etf_terms(term,root='QQQ')
+    assert term==before and out['currency']=='USD' and out['multiplier']==100
+    assert out['deliverable']=='100_underlying_shares'
+    assert out['term_interpretation']['policy']=='occ_standard_qqq_etf/v1'
+    assert out['term_interpretation']['additional_underlyings_field_present'] is False
+    assert 'additional_underlyings' not in out and 'correction' not in out
+    assert 'economic_expiry_at' not in out and 'model_ref' not in out
+    assert ordinary_spy_terms(term)==term
+
+
+@pytest.mark.parametrize('change',[
+    {'root':'SPY'}, {'shares_per_contract':10}, {'exercise_style':'european'},
+    {'additional_underlyings':[{'type':'cash','amount':1}]}, {'terms_ref':'https://untrusted.example/contracts'},
+])
+def test_ordinary_qqq_terms_withhold_adjusted_unknown_or_foreign_terms(change):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root='QQQ',shares_per_contract=100,exercise_style='american',
+        terms_ref='https://api.polygon.io/v3/reference/options/contracts#sha256='+'a'*64)
+    term.update(change)
+    assert ordinary_etf_terms(term,root='QQQ')==term
+
+
+def test_qqq_terms_policy_cannot_be_selected_by_an_absent_policy():
+    from lib.options_source_receipts import ordinary_etf_terms
+    obs=reference();c=obs['contract'];c.update(ticker='O:QQQ261023C00100000',underlying_ticker='QQQ')
+    obs['path']='/v3/reference/options/contracts/'+c['ticker']
+    ctx=dict(root='QQQ',security_id='SEC:US-XNAS-QQQ',contract_terms=[],
+             contract_reference_observations=[obs],input_sha256=exposure_input_digest(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ'))
+    out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ',context=ctx)
+    assert 'multiplier' not in out['contract_terms'][0]
+    ctx['term_policy']='occ_standard_qqq_etf/v1'
+    out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ',context=ctx)
+    assert out['contract_terms'][0]['multiplier']==100
+    assert ordinary_etf_terms(out['contract_terms'][0],root='QQQ')['multiplier']==100
