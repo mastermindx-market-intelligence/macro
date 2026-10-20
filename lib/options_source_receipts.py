@@ -256,14 +256,19 @@ OCC_ETF_SPEC = "https://www.theocc.com/clearance-and-settlement/clearing/etf-opt
 
 
 def ordinary_spy_terms(term):
-    """Rule-backed interpretation of an exact ordinary SPY reference observation.
+    """Compatibility wrapper for the existing explicit SPY interpretation."""
+    return ordinary_etf_terms(term, root='SPY')
+
+
+def ordinary_etf_terms(term, *, root):
+    """Rule-backed interpretation of an exact ordinary supported ETF reference observation.
 
     Raw absence remains absent. The provider promises to report extra deliverables;
-    no such report plus100shares supports this narrow standard-SPY interpretation.
+    no such report plus100shares supports this narrow standard-ETF interpretation.
     Correction omission remains unknown. No expiry instant or Greek model is inferred.
     """
     out = deepcopy(term)
-    if (term.get("root") != "SPY"
+    if (root not in {"SPY", "QQQ"} or term.get("root") != root
             or term.get("shares_per_contract") != 100
             or term.get("exercise_style") != "american"
             or ("additional_underlyings" in term and term["additional_underlyings"] != [])
@@ -271,7 +276,7 @@ def ordinary_spy_terms(term):
         return out
     out.update(currency="USD", multiplier=100, deliverable="100_underlying_shares",
         deliverable_ref=term["terms_ref"] + "|" + OCC_ETF_SPEC,
-        term_interpretation={"policy": "occ_standard_spy_etf/v1",
+        term_interpretation={"policy": {"SPY":"occ_standard_spy_etf/v1", "QQQ":"occ_standard_qqq_etf/v1"}[root],
             "additional_underlyings_field_present": "additional_underlyings" in term,
             "additional_deliverables": "none_reported",
             "reference_methodology": MASSIVE_REFERENCE_METHODOLOGY,
