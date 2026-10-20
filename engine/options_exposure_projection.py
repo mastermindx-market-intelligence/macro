@@ -575,9 +575,17 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
         wire, cells_status = encode_projection_cells([]), "source_unqualified"
     elif len(json.dumps(wire, separators=(",", ":"), allow_nan=False).encode()) > MAX_CELL_BYTES:
         wire, cells_status = encode_projection_cells([]), "payload_limit"
+    underlying_reference = None
+    if dated:
+        spots = [_number(row.get("underlying_price")) for row in greek_rows]
+        uniform = bool(spots) and all(v is not None and v > 0 for v in spots) and len(set(spots)) == 1
+        underlying_reference = {"value": spots[0] if uniform else None, "currency": "USD",
+            "basis": "uniform_selected_contract_underlying_price" if uniform else "nonuniform_or_missing_selected_underlying_prices",
+            "source_session": asof, "instantaneous": False}
     return {
         "schema": "options_hub.exposure_projection/v2", "kind": kind,
-        **({"valuation": valuation, "capabilities": dict(DATED_CAPABILITIES)} if dated else {}),
+        **({"valuation": valuation, "capabilities": dict(DATED_CAPABILITIES),
+            "underlying_reference": underlying_reference} if dated else {}),
         "root": root, "source_snapshot_ref": context.get("source_snapshot_ref"),
         "input_sha256": input_digest,
         "security_id": context.get("security_id"),

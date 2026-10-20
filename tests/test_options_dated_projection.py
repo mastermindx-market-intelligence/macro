@@ -221,3 +221,12 @@ def test_context_cannot_promote_dated_capabilities():
     g, oi, ctx = dated_book()
     ctx['capabilities'] = {k: True for k in DATED_CAPABILITIES}
     assert project(g, oi, ctx)['capabilities'] == DATED_CAPABILITIES
+
+
+def test_dated_underlying_reference_requires_uniform_observed_prices():
+    g,oi,ctx=dated_book()
+    p=project(g,oi,ctx)
+    assert p['underlying_reference']==dict(value=100.0,currency='USD',basis='uniform_selected_contract_underlying_price',source_session=ASOF,instantaneous=False)
+    g.loc[1,'underlying_price']=101
+    ctx['input_sha256']=exposure_input_digest(g,oi,ASOF,'SPY')
+    assert project(g,oi,ctx)['underlying_reference']['value'] is None

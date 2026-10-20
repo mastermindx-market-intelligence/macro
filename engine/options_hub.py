@@ -429,6 +429,7 @@ def compute_gex(
     root: str,
     *,
     exposure_context: dict | None = None,
+    exposure_inputs: tuple[pd.DataFrame, pd.DataFrame] | None = None,
 ) -> dict:
     """Build the options_hub/gex/{root} payload.
 
@@ -457,7 +458,14 @@ def compute_gex(
 
     # Capture membership before the historical OI/IV filters. No inference from
     # legacy marginals; the projection retains its own explicit qualification.
-    projection = build_exposure_projection(greeks_df, oi_prev_df, asof, root,
+    projection_greeks, projection_oi = greeks_df, oi_prev_df
+    if exposure_inputs is not None:
+        if (not exposure_context or exposure_context.get("kind") != "dated_provider_approximation"
+                or not exposure_context.get("contract_identity") or not isinstance(exposure_inputs, tuple)
+                or len(exposure_inputs) != 2 or not all(isinstance(f, pd.DataFrame) for f in exposure_inputs)):
+            raise ValueError("Separate projection inputs require a scoped dated identity")
+        projection_greeks, projection_oi = exposure_inputs
+    projection = build_exposure_projection(projection_greeks, projection_oi, asof, root,
                                           context=exposure_context)
 
     def empty_with_projection():

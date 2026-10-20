@@ -553,10 +553,26 @@ def build_root(
     oi_t1 = _load_oi_for_date(root, asof, theta_store)
 
     from engine.options_exposure_projection import compose_native_exposure_context
-    exposure_context = compose_native_exposure_context(greeks_asof, oi_t1, asof, root,
+    projection_inputs = None
+    if exposure_context is not None:
+        exposure_context = dict(exposure_context)
+        projection_inputs = exposure_context.pop("_projection_inputs", None)
+    projection_input_status = None
+    if projection_inputs is not None:
+        selected_session = (exposure_context.get("clocks") or {}).get("source_session")
+        projection_input_status = {"scope": "separate_selected_capture", "source_session": selected_session,
+            "legacy_source_session": asof, "spot_basis": "per_contract_captured_underlying_price", "state": "selected_capture"}
+        if selected_session != asof:
+            projection_input_status["state"] = "withheld_source_session_mismatch"
+            exposure_context, projection_inputs = None, None
+    projection_greeks, projection_oi = projection_inputs if projection_inputs is not None else (greeks_asof, oi_t1)
+    exposure_context = compose_native_exposure_context(projection_greeks, projection_oi, asof, root,
                                                        context=exposure_context)
+    extra_inputs = {"exposure_inputs": projection_inputs} if projection_inputs is not None else {}
     gex_payload = compute_gex(greeks_asof, oi_t1, asof, root,
-                             exposure_context=exposure_context)
+                             exposure_context=exposure_context, **extra_inputs)
+    if projection_input_status is not None:
+        gex_payload["exposure_projection_input"] = projection_input_status
 
     # ── CONTRACT v2: attach gex history from polygon_gex summary parquet ──────
     if polygon_gex_dir is not None:
@@ -1117,6 +1133,32 @@ def load_exposure_contexts(path: str | None) -> dict[str, dict]:
             raise ValueError("Exposure receipt root mismatch")
         if not re.fullmatch(r"[0-9a-f]{64}", str(context.get("input_sha256", ""))):
             raise ValueError("Exposure receipt needs exact input digest")
+        spec = context.pop("source_inputs", None)
+        if spec is not None:
+            if (context.get("kind") != "dated_provider_approximation" or not context.get("contract_identity")
+                    or not isinstance(spec, dict) or set(spec) != {"schema", "greeks", "oi"}
+                    or spec["schema"] != "options_hub.projection_inputs/v1" or spec["greeks"] == spec["oi"]):
+                raise ValueError("Scoped projection source-input descriptor invalid")
+            import io
+            import pyarrow.parquet as pq
+            from lib.symbol_directory_receipts import _read_regular_file
+            from engine.options_exposure_projection import exposure_input_digest
+            frames = []
+            for kind in ("greeks", "oi"):
+                name = spec[kind]
+                if (not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,199}\.parquet", name)
+                        or Path(name).name != name):
+                    raise ValueError("Projection inputs must be sibling Parquet basenames")
+                body = _read_regular_file(Path(path).parent / name, label="projection " + kind, limit=1024 * 1024)
+                source = pq.ParquetFile(io.BytesIO(body))
+                if (source.metadata.num_rows > 64 or len(source.schema_arrow.names) > 64
+                        or sum(source.metadata.row_group(i).total_byte_size for i in range(source.metadata.num_row_groups)) > 2*1024*1024):
+                    raise ValueError("Scoped projection Parquet exceeds decoded bounds")
+                frames.append(source.read().to_pandas())
+            session = (context.get("clocks") or {}).get("source_session")
+            if exposure_input_digest(frames[0], frames[1], session, root) != context["input_sha256"]:
+                raise ValueError("Scoped projection source inputs do not match context")
+            context["_projection_inputs"] = tuple(frames)
     return data["roots"]
 
 

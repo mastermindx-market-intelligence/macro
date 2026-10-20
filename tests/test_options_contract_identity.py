@@ -101,3 +101,76 @@ def test_expected_unbound_coordinate_stays_missing_before_totals(listing):
  assert p['metrics']['gamma']['missing']==1 and p['metrics']['gamma']['gross'] is None
  assert p['metrics']['gamma']['exclusions']=={'contract_identity_scope_unknown':1}
  assert len(p['contract_identity']['contract_keys'])==2 and not p['contract_identity']['root_alias_created']
+
+
+def native_bundle(listing,tmp_path):
+ g,oi,ctx,obs,args=setup(listing)
+ ctx.update(security_id=None,clocks=dict(option_observed_at=None,underlying_observed_at=None),contract_terms=[],term_policy='occ_standard_spy_etf/v1',contract_reference_observations=[obs],input_sha256=args['input_sha256'],dated_identity_inputs={k:v for k,v in args.items() if k not in ('source_session','input_sha256')})
+ ctx['valuation']['source_session']=DAY
+ ctx=compose_native_exposure_context(g,oi,DAY,'SPY',context=ctx)
+ ctx['greek_provenance']['gamma']['source_ref']=ctx['source_snapshot_ref']
+ g.to_parquet(tmp_path/'selected-greeks.parquet',index=False);oi.to_parquet(tmp_path/'selected-oi.parquet',index=False)
+ ctx['root']='SPY'
+ ctx['source_inputs']=dict(schema='options_hub.projection_inputs/v1',greeks='selected-greeks.parquet',oi='selected-oi.parquet')
+ manifest=dict(schema='options_hub.exposure_contexts/v1',roots={'SPY':ctx})
+ path=tmp_path/'context.json';path.write_text(json.dumps(manifest))
+ return g,oi,path,manifest
+
+
+@pytest.mark.parametrize("legacy_empty",[False,True])
+def test_native_builder_optional_capture_preserves_full_legacy_book(listing,tmp_path,monkeypatch,legacy_empty):
+ from scripts import build_options_hub_nightly as b
+ from engine.options_hub import compute_gex
+ g,oi,path,manifest=native_bundle(listing,tmp_path)
+ contexts=b.load_exposure_contexts(str(path))
+ all_g=pd.concat([g,g.iloc[:1].assign(strike=101,gamma=.02)],ignore_index=True)
+ all_oi=pd.concat([oi,oi.iloc[:1].assign(strike=101)],ignore_index=True)
+ if legacy_empty:all_g=all_g.iloc[:0]
+ baseline=compute_gex(all_g,all_oi,DAY,'SPY')
+ monkeypatch.setattr(b,'_load_greeks',lambda *a:all_g)
+ monkeypatch.setattr(b,'_load_oi_for_date',lambda *a:all_oi)
+ monkeypatch.setattr(b,'_load_yahoo',lambda *a:None)
+ monkeypatch.setattr(b,'compute_vol',lambda *a:{})
+ monkeypatch.setattr(b,'compute_vex',lambda *a,**kw:{})
+ _,published,_=b.build_root('SPY',DAY,None,exposure_context=contexts['SPY'])
+ assert {k:v for k,v in published.items() if k not in ('exposure_projection','exposure_projection_input')}=={k:v for k,v in baseline.items() if k!='exposure_projection'}
+ assert published['exposure_projection']['metrics']['gamma']['qualified']==2
+ assert published['exposure_projection']['population']['observed_contracts']==2
+ assert published['coverage']['n_contracts']==(0 if legacy_empty else 3)
+ if legacy_empty:assert published['spot_ref'] is None and published['exposure_projection']['underlying_reference']['value']==100
+ assert published['exposure_projection_input']['source_session']==DAY
+ assert published['exposure_projection_input']['legacy_source_session']==DAY
+ assert '_projection_inputs' in contexts['SPY'] # caller/context reusable, no mutation
+
+
+@pytest.mark.parametrize('mode',['traversal','symlink','wrong_digest','oversize_rows','missing','no_identity'])
+def test_native_capture_manifest_refuses_unsafe_or_mismatched_inputs(listing,tmp_path,mode):
+ from scripts.build_options_hub_nightly import load_exposure_contexts
+ g,oi,path,manifest=native_bundle(listing,tmp_path)
+ ctx=manifest['roots']['SPY'];spec=ctx['source_inputs']
+ if mode=='traversal':spec['greeks']='../selected-greeks.parquet'
+ elif mode=='symlink':(tmp_path/'linked.parquet').symlink_to(tmp_path/'selected-greeks.parquet');spec['greeks']='linked.parquet'
+ elif mode=='wrong_digest':g.loc[0,'gamma']=.123;g.to_parquet(tmp_path/'selected-greeks.parquet',index=False)
+ elif mode=='oversize_rows':pd.concat([g]*33,ignore_index=True).to_parquet(tmp_path/'selected-greeks.parquet',index=False)
+ elif mode=='missing':spec['greeks']='missing.parquet'
+ elif mode=='no_identity':ctx.pop('contract_identity')
+ path.write_text(json.dumps(manifest))
+ with pytest.raises((ValueError,OSError)):load_exposure_contexts(str(path))
+
+
+def test_stale_capture_does_not_replace_current_legacy_or_carry_old_identity(listing,tmp_path,monkeypatch):
+ from scripts import build_options_hub_nightly as b
+ from engine.options_hub import compute_gex
+ g,oi,path,manifest=native_bundle(listing,tmp_path)
+ context=b.load_exposure_contexts(str(path))['SPY']
+ day='2026-10-20';g=g.assign(date=pd.Timestamp(day));oi=oi.assign(date=pd.Timestamp(day))
+ baseline=compute_gex(g,oi,day,'SPY')
+ monkeypatch.setattr(b,'_load_greeks',lambda *a:g)
+ monkeypatch.setattr(b,'_load_oi_for_date',lambda *a:oi)
+ monkeypatch.setattr(b,'_load_yahoo',lambda *a:None)
+ monkeypatch.setattr(b,'compute_vol',lambda *a:{})
+ monkeypatch.setattr(b,'compute_vex',lambda *a,**kw:{})
+ _,out,_=b.build_root('SPY',day,None,exposure_context=context)
+ assert {k:v for k,v in out.items() if k!='exposure_projection_input'}==baseline
+ assert out['exposure_projection']['cells_status']=='source_unqualified'
+ assert out['exposure_projection_input']['state']=='withheld_source_session_mismatch'

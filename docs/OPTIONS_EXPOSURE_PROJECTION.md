@@ -339,3 +339,41 @@ The receipt cannot authorize `modeled_exposure`, next-live, joint/repricing or
 any market-wide/root-wide identity claim. It leaves the original October15
 root-alias seal and all native registry files unchanged. New underlying symbols,
 wider populations and historical PIT eligibility require their own source proof.
+
+### Native nightly/publication bridge for the selected capture
+
+The existing `--exposure-context` envelope can additionally declare per root:
+
+```json
+{"source_inputs":{"schema":"options_hub.projection_inputs/v1","greeks":"captured-greeks.parquet","oi":"captured-oi.parquet"}}
+```
+
+These are explicit sibling basenames, not path discovery or another store. Each
+regular non-symlink file is bounded to1MiB,64rows,64columns and2MiB decoded
+Parquet row-group data. The captured pair must match the context input digest
+and carry the existing scoped dated identity. Bad/missing descriptors refuse
+before any new publication; existing outputs are not removed. File-read custody
+has the incumbent reader's limitations and is not an atomic filesystem snapshot.
+
+`build_root` composes that exact projection pair and passes it to the incumbent
+`compute_gex`; all legacy calculations continue to consume their original full
+store frames. Projection failure or unavailability cannot replace legacy frames
+with the selected window. A selected context from another source session is
+withheld with `exposure_projection_input.state: withheld_source_session_mismatch`
+and the normal legacy projection/reference path is retained. The metadata names
+both selected and legacy sessions and the per-contract captured-spot basis.
+
+Dated projections also expose `underlying_reference` with `source_session`,
+`currency: USD`, `instantaneous:false` and either the exact uniform positive
+captured underlying price (`basis: uniform_selected_contract_underlying_price`)
+or a null value (`basis: nonuniform_or_missing_selected_underlying_prices`). It
+is a dated display reference; exposure arithmetic continues to use each contract's
+own raw source price. Legacy spot_ref remains unchanged, including null when the
+retained legacy source is absent. Qualified consumers must not substitute legacy
+spot for a missing selected-source reference.
+
+After normal source installation and publication-input custody checks, the
+existing native builder can validate the admitted context bundle with explicit
+`--roots SPY --date 2026-10-19 --exposure-context <bundle> --no-publish --out <candidate>`.
+The ordinary `--publish` path remains the only publication effect; this source
+change creates no service, schedule, endpoint, store, automatic probe or activation.
