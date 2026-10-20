@@ -21,8 +21,9 @@ waves:
     title: Verify publication, signup and explicit follow continuation
     status: in_progress
     depends_on: [qualified-story]
-next_action: Consume existing native coordinator Macro9696 protected publication/install return; root advances SAME9650 actual recovery/guard integration through capacity-admitted exact CI/protected install/browser proof. Terminal1075 source/data and scoped CNDT chart/return browser acceptance complete; never replay original OP/emitter. Current CHECKPOINT owns detailed state.
+next_action: Original root recovered interrupted child;9696 actualprotected3e392265 installed/public/browser PASS.9650 exactCI39341951816 allgreen, but currentDIRTY; twoownedknowledge conflicts resolved against protectedmain7777 preserving9pins/7nativefiles. Finish SAMEbranch realconflictrepair push after head/lease/capacity fence, new exactCI/protectedinstall/recovery/native-rowreplay. No emitter/TerminalOP replay.
 artifacts:
+  - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1075
   - https://github.com/mastermindx-market-intelligence/macro/pull/9696
   - https://github.com/mastermindx-market-intelligence/macro/pull/9648
   - https://github.com/mastermindx-market-intelligence/macro/pull/9650
