@@ -7427,6 +7427,11 @@ jobs:
       # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
       # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
       # engine.capital_need plus the same debt-maturity render boundary. No new job.
+      # W25-L21/L22/L23 (2026-10-20): the Impulse Tracker page suites ride this step.
+      # tests/test_impulse.py was named by no `run:` step in any workflow; the four
+      # new suites render templates/impulse.html.j2 through
+      # scripts/build_impulse._render_html with inline payloads (jinja2/pandas, both
+      # already on this install line). No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -7582,6 +7587,9 @@ jobs:
           tests/test_masterminds_hub.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
+          tests/test_impulse.py tests/test_impulse_regime_chip.py
+          tests/test_impulse_card_evidence.py tests/test_impulse_lane_totals.py
+          tests/test_impulse_freshness_strip.py
           tests/test_research_priority_ordering.py -q
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
