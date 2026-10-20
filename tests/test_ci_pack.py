@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_642),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_649),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5149,6 +5149,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,767 and plan_book 5,516, both under their ceilings). No new entrant.
     Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
     job/pack bound and both other probe ceilings stay unchanged.
+
+    SPR page JODI vintage + zh assess badges (2026-10-19, W23-L9) give
+    tests/test_strategic_reserves.py (off the unrun baseline),
+    tests/test_spr_jodi_vintage.py and tests/test_spr_assess_badge_zh.py
+    their own step in unrun-macro-panels. contract-delta on the PR merged
+    into main d52827f2 measures build_free_content 134 jobs / 5,649 (base
+    the same 134 / 5,642; index.html 5,774 and plan_book 5,523, both under
+    their ceilings). No new entrant. Fund only the seven-unit excess:
+    5,642 -> 5,649. Every suite, selector, job/pack bound and both other
+    probe ceilings stay unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
