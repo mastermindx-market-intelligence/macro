@@ -13,6 +13,7 @@ from typing import Mapping
 from . import (
     pk01_debt,
     pk02_sbc,
+    pk03_segments,
     pk04_revenue,
     pk06_leases,
     pk09_controls,
@@ -25,6 +26,7 @@ from .base import PackInput, PackProducer, SpecialistPackError, produce_pack_res
 _PRODUCER_MODULES = (
     pk01_debt,
     pk02_sbc,
+    pk03_segments,
     pk04_revenue,
     pk06_leases,
     pk09_controls,
