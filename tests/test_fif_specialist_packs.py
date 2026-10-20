@@ -7390,6 +7390,32 @@ _PK08_CONTING_RANGE = (
     "For those matters, the Company estimates a range of reasonably possible "
     "loss of $10 million to $20 million."
 )
+# Range-pattern revision v2 (F1/F2 review): the reviewer's literal inputs.
+_PK08_CONTING_RANGE_FULL_DIGIT = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company estimates a range of reasonably possible "
+    "loss of $450,000,000 to $900,000,000."
+)
+_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the loss or range of loss cannot be reasonably "
+    "estimated by the Company."
+)
+_PK08_CONTING_NOT_ESTIMABLE_NO_BE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company cannot reasonably estimate the loss or "
+    "range of loss."
+)
+_PK08_CONTING_NOT_ESTIMABLE_OVER_MATERIAL = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company has no material exposure and the loss or "
+    "range of loss cannot be reasonably estimated by the Company."
+)
+_PK08_CONTING_BARE_DOLLAR = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company considers a loss of $ reasonably "
+    "possible but cannot quantify an amount."
+)
 _PK08_ITEM3_BODY = (
     "Item 3. Legal Proceedings The Company and its subsidiaries are parties "
     "to litigation and claims in the ordinary course of business. On October "
@@ -7845,6 +7871,141 @@ def test_pk08_range_in_prose_only_is_never_valued() -> None:
         for line in result["limitations"]
     )
     assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.5b range-pattern revision v2 (F1/F2 review): the reviewer's inputs ------
+
+
+def test_pk08_prose_range_full_digit_amount() -> None:
+    # F1: the full-digit dollar form retypes the range rows exactly as the
+    # "$10 million" form always has (the C2 ruling is form-independent).
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(contingencies_prose=_PK08_CONTING_RANGE_FULL_DIGIT),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id in ("loss_contingency_range_low", "loss_contingency_range_high"):
+        row = rows[field_id]
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == "numeric_value_in_narrative_only", field_id
+        assert row["value"] is None, field_id
+    # The disclosed arm's literal IS in the catalogue: the enum values.
+    disclosed = rows["loss_contingency_range_disclosed"]
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "disclosed_range"
+    # The accrual is a plain ledger absence — the prose rule never touches it.
+    assert rows["loss_contingency_accrual"]["reason"] == (
+        "missing_standard_fact:us-gaap:LossContingencyAccrualAtCarryingValue"
+    )
+    assert any(
+        line.startswith("pk08.range_in_prose_only:")
+        for line in result["limitations"]
+    )
+    assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_adverb_after_be() -> None:
+    # F2 input A: "cannot be reasonably estimated" values not_estimable —
+    # the adverb-after-"be" order the v1 arm missed typed this row
+    # narrative_span_not_located.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert any(
+        line.startswith("pk08.range_pattern_revision:")
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_no_be_form() -> None:
+    # F2: the no-"be" phrasing ("cannot reasonably estimate") values the
+    # same declared literal as input A.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_NO_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert any(
+        line.startswith("pk08.range_pattern_revision:")
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_governs_over_not_material() -> None:
+    # F2 input B: "no material" earlier in the sentence must not oust the
+    # governing estimate clause — arms resolve by RANGE_ARM_PRIORITY, not
+    # first-match-by-position, so the A.3 not_material refusal never fires.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_OVER_MATERIAL
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert not any(
+        "catalogue lacks literal 'not_material'" in line
+        for line in result["limitations"]
+    )
+    assert any(
+        line.startswith("pk08.range_pattern_revision:")
+        for line in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_prose_amount_requires_digits() -> None:
+    # F1 negative: "$ reasonably possible" is not a dollar amount — no
+    # prose-only retype; the range rows stay plain ledger absences.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(contingencies_prose=_PK08_CONTING_BARE_DOLLAR),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id, alias in (
+        ("loss_contingency_range_low", _PK08_RANGE_LOW),
+        ("loss_contingency_range_high", _PK08_RANGE_HIGH),
+    ):
+        row = rows[field_id]
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == f"missing_standard_fact:{alias}", field_id
+        assert row["value"] is None, field_id
+    disclosed = rows["loss_contingency_range_disclosed"]
+    assert disclosed["quality_state"] == "missing"
+    assert disclosed["reason"] == "missing_dependency"
+    assert not any(
+        "range_in_prose_only" in line for line in result["limitations"]
+    )
     assert contract.validate_pack_result(result) == []
 
 

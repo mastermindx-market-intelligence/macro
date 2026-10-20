@@ -84,13 +84,51 @@ CONTINGENCIES_WORD = "Contingencies"
 # not_material arm's literal is deliberately kept as the packet names it —
 # the catalogue does not declare it, so a match on that arm degrades to a
 # non-valued missing_dependency row (A.3) instead of inventing a literal.
-RANGE_DISCLOSED_PATTERN = (
+#
+# Range-pattern revision v2 (F1/F2 review, 2026-10-20): the not_estimable
+# arm also matches the adverb-after-"be" ("cannot be reasonably estimated")
+# and no-"be" ("cannot reasonably estimate") phrasings plus the not-able/
+# unable estimates, and the governing arm is chosen by RANGE_ARM_PRIORITY
+# over the whole Contingencies span, never first-match-by-position (a "no
+# material" phrase earlier in the span must not oust a governing estimate
+# clause). RANGE_DISCLOSED_PATTERN_V1 keeps the frozen v1 bytes because the
+# declared mapping below stamps mapping_rule_digest from them — every BASE
+# envelope, including the byte-pinned golden-fixture envelope, carries that
+# digest — so the revision lives in the search arms and
+# RANGE_PATTERN_REVISION, and rides an envelope's limitations only where it
+# changed the resolution.
+RANGE_DISCLOSED_PATTERN_V1 = (
     r"(?P<disclosed>range of (?:reasonably )?possible loss)"
     r"|(?P<not_estimable>cannot (?:reasonably )?be estimated"
     r"|not (?:reasonably )?estimable)"
     r"|(?P<not_material>not at least a reasonable possibility"
     r"|would not (?:have )?a material|no material)"
 )
+RANGE_PATTERN_REVISION = "v2"
+RANGE_ARM_PRIORITY = ("disclosed", "not_estimable", "not_material")
+_RANGE_DISCLOSED_ARMS = (
+    ("disclosed", r"range of (?:reasonably )?possible loss"),
+    (
+        "not_estimable",
+        r"cannot (?:reasonably )?be estimated"
+        r"|cannot be reasonably estimated"
+        r"|cannot (?:reasonably )?estimate"
+        r"|cannot be estimated"
+        r"|not able to (?:reasonably )?estimate"
+        r"|unable to (?:reasonably )?estimate"
+        r"|not (?:reasonably )?estimable",
+    ),
+    (
+        "not_material",
+        r"not at least a reasonable possibility"
+        r"|would not (?:have )?a material|no material",
+    ),
+)
+RANGE_DISCLOSED_PATTERN = "|".join(
+    f"(?P<{arm}>{body})" for arm, body in _RANGE_DISCLOSED_ARMS
+)
+_RANGE_ARM_SEARCH = {arm: re.compile(body) for arm, body in _RANGE_DISCLOSED_ARMS}
+_RANGE_DISCLOSED_V1_SEARCH = re.compile(RANGE_DISCLOSED_PATTERN_V1)
 RANGE_ENUM_MAP = {
     "disclosed": "disclosed_range",
     "not_estimable": "not_estimable",
@@ -102,9 +140,17 @@ PROCEDURAL_STATUS_PATTERN = (
 )
 # C2: a dollar amount within this many characters of "reasonably possible"
 # inside the Contingencies subsection types the range rows as prose-only.
+# v2 (F1 review, 2026-10-20): the amount also matches the full-digit form
+# ($450,000,000), "$450 thousand" and $450m/$1.2bn abbreviations; every arm
+# requires a digit after the optional space, so a bare "$" — or "$
+# reasonably possible" — never fires the retype.
 PROSE_RANGE_WINDOW = 200
 PROSE_RANGE_PHRASE = "reasonably possible"
-PROSE_RANGE_AMOUNT = re.compile(r"\$\s?[\d,.]+ (?:million|billion)")
+PROSE_RANGE_AMOUNT = re.compile(
+    r"\$\s?\d[\d,.]* (?:million|billion|thousand)"
+    r"|\$\s?\d[\d,]*(?:\.\d+)? ?[mbn]\b"
+    r"|\$\s?\d[\d,]*(?:\.\d+)?"
+)
 
 # B.3 concept aliases (us-gaap; priority order p10/p20; undimensioned).
 _ACCRUAL = (
@@ -119,9 +165,10 @@ _NATURE_AXIS = "us-gaap:LossContingenciesByNatureOfContingencyAxis"
 # The B.3 text-value contracts the finalize hook executes (and whose digests
 # it stamps). Every narrative field is searched inside its governing section
 # or the Contingencies subsection derived from it, so each mapping declares
-# NOTE_CC/ITEM3 and the hook narrows the span itself.
+# NOTE_CC/ITEM3 and the hook narrows the span itself. The range mapping
+# keeps the v1 reserved-form bytes: they are what mapping_rule_digest pins.
 _RANGE_DISCLOSED_MAPPING = TextSpanMapping(
-    section=NOTE_CC, pattern=RANGE_DISCLOSED_PATTERN, kind="enum"
+    section=NOTE_CC, pattern=RANGE_DISCLOSED_PATTERN_V1, kind="enum"
 )
 _COMMITMENTS_BLOCK_MAPPING = TextSpanMapping(
     section=NOTE_CC, pattern="", kind="text", max_chars=512
@@ -144,6 +191,12 @@ RANGE_IN_PROSE_ONLY_LIMITATION = (
     "pk08.range_in_prose_only: a reasonably possible loss range appears only "
     "in the Contingencies narrative; the range rows are never valued from "
     "prose (R-K4')"
+)
+RANGE_PATTERN_REVISION_LIMITATION = (
+    f"pk08.range_pattern_revision: {RANGE_PATTERN_REVISION} resolved "
+    "loss_contingency_range_disclosed differently from the v1 reserved form "
+    "(not_estimable forms extended; arm precedence "
+    "disclosed > not_estimable > not_material)"
 )
 
 _QUARTERLY_FORMS = frozenset({"10-Q", "10-Q/A"})
@@ -284,6 +337,9 @@ class _RowRewriter:
         self.nt = nt
         self.accession = accession
         self.note: str | None = None  # intended stock code, for limitations
+        # Set only by the enum path: the v2 range pattern resolved this row
+        # differently from the frozen v1 reserved form.
+        self.range_revision_applied = False
 
     def _stamp(self, mapping: TextSpanMapping) -> None:
         field_id = self.row["field_id"]
@@ -332,6 +388,33 @@ class _RowRewriter:
         self.note = note
 
 
+def _governing_range_arm(
+    text: str, lo: int, hi: int
+) -> tuple[str, re.Match[str] | None]:
+    """The governing range arm in ``text[lo:hi]``: fixed priority, not position.
+
+    F2: arms evaluate in RANGE_ARM_PRIORITY order (disclosed >
+    not_estimable > not_material) over the whole Contingencies span, so a
+    ``no material`` phrase earlier in the span never ousts a governing
+    estimate clause. Returns ``("", None)`` when no arm matches.
+    """
+    for arm in RANGE_ARM_PRIORITY:
+        match = _RANGE_ARM_SEARCH[arm].search(text, lo, hi)
+        if match is not None:
+            return arm, match
+    return "", None
+
+
+def _v1_first_match_arm(text: str, lo: int, hi: int) -> str | None:
+    """The arm the frozen v1 reserved form chose (first match by position)."""
+    match = _RANGE_DISCLOSED_V1_SEARCH.search(text, lo, hi)
+    if match is None:
+        return None
+    return next(
+        name for name, value in match.groupdict().items() if value is not None
+    )
+
+
 def _rewrite_enum_row(
     row: dict[str, Any],
     nt: Any,
@@ -351,14 +434,13 @@ def _rewrite_enum_row(
         rewriter.absent(_RANGE_DISCLOSED_MAPPING, "governing_section_not_supplied")
         return rewriter
     lo, hi = sections.conting
-    match = re.compile(RANGE_DISCLOSED_PATTERN).search(nt.text, lo, hi)
+    arm, match = _governing_range_arm(nt.text, lo, hi)
     if match is None:
         rewriter.absent(_RANGE_DISCLOSED_MAPPING, "narrative_span_not_located")
         return rewriter
-    group = next(
-        name for name, value in match.groupdict().items() if value is not None
-    )
-    literal = RANGE_ENUM_MAP[group]
+    if arm != _v1_first_match_arm(nt.text, lo, hi):
+        rewriter.range_revision_applied = True
+    literal = RANGE_ENUM_MAP[arm]
     if literal not in declared:
         # A.3: this packet names a literal the catalogue does not declare;
         # never invent it (the framework's own A.4 law for enum rows).
@@ -601,6 +683,8 @@ class Pk08Producer(PackProducer):
             accession,
             declared,
         )
+        # Captured now: `rewriter` is rebound by the block/sentence passes.
+        range_revision_applied = rewriter.range_revision_applied
         if rewriter.note is not None:
             notes.append(
                 ("loss_contingency_range_disclosed", rewriter.note)
@@ -683,6 +767,11 @@ class Pk08Producer(PackProducer):
         limitations: list[str] = []
         if prose_range:
             limitations.append(RANGE_IN_PROSE_ONLY_LIMITATION)
+        if range_revision_applied:
+            # The declared mapping's digest stays v1 (see RANGE_DISCLOSED_
+            # PATTERN_V1), so the active revision is surfaced here — the one
+            # envelope surface the contract already carries for rulings.
+            limitations.append(RANGE_PATTERN_REVISION_LIMITATION)
         note_by_field = dict(notes)
         for field_id in _NARRATIVE_FIELD_IDS:
             note = note_by_field.get(field_id)
@@ -756,8 +845,12 @@ __all__ = [
     "NOTE_CC",
     "PRODUCER",
     "PROCEDURAL_STATUS_PATTERN",
+    "RANGE_ARM_PRIORITY",
     "RANGE_DISCLOSED_PATTERN",
+    "RANGE_DISCLOSED_PATTERN_V1",
     "RANGE_IN_PROSE_ONLY_LIMITATION",
+    "RANGE_PATTERN_REVISION",
+    "RANGE_PATTERN_REVISION_LIMITATION",
     "SPEC",
     "TABLE_CELL_RESERVED_LIMITATION",
 ]
