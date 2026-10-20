@@ -42,6 +42,29 @@ def reference():
         field_presence={k: True for k in c}, completed_at=RECEIVED, payload_sha256="a" * 64)
 
 
+def test_second_order_source_evidence_is_bound_without_changing_history_only_digest():
+    g, oi, _ = book()
+    original = exposure_input_digest(g, oi, ASOF, 'SPY')
+    frame = g.copy(); frame['_theta_second_acquisition'] = 'synthetic-second-response'
+    with_second = exposure_input_digest(frame, oi, ASOF, 'SPY')
+    assert with_second != original
+    frame['second_order_underlying_price'] = 101
+    assert exposure_input_digest(frame, oi, ASOF, 'SPY') != with_second
+    frame.drop(columns=['_theta_second_acquisition', 'second_order_underlying_price'], inplace=True)
+    assert exposure_input_digest(frame, oi, ASOF, 'SPY') == original
+
+
+def test_snapshot_capture_cannot_satisfy_the_dated_history_numerical_reader():
+    from lib.options_source_receipts import THETA_SNAPSHOT_ENDPOINTS, native_snapshot_acquisitions
+    g, _, _ = book()
+    frame = g.copy()
+    frame[ACQUISITION_COLUMN] = theta_acquisition(THETA_SNAPSHOT_ENDPOINTS['second'],
+        dict(symbol='SPY', expiration='*', strike='*', format='csv', version='latest'),
+        b'synthetic-snapshot', origin='http://theta-test:25503', received_at=RECEIVED)
+    assert native_snapshot_acquisitions(frame, 'SPY', 'second', now=RECEIVED)
+    assert native_acquisitions(frame, 'SPY', ASOF, 'greeks', now=RECEIVED) is None
+
+
 def test_large_reference_composition_preserves_existing_evidence_and_duplicate_refusal():
     observations=[];terms=[]
     for strike in range(100,3100):

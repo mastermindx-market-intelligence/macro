@@ -19,10 +19,33 @@ THETA_ENDPOINTS = {
     "greeks": "/v3/option/history/greeks/eod",
     "oi": "/v3/option/history/open_interest",
 }
+THETA_SNAPSHOT_ENDPOINTS = {
+    "first": "/v3/option/snapshot/greeks/first_order",
+    "second": "/v3/option/snapshot/greeks/second_order",
+    "oi": "/v3/option/snapshot/open_interest",
+}
 # Persist explicit request parameters only, never credentials or inferred defaults.
 THETA_PARAMETERS = frozenset({"symbol", "expiration", "strike", "right", "start_date",
     "end_date", "format", "version", "annual_dividend", "annual_dividend_amount",
     "rate_type", "rate_value", "underlyer_use_nbbo", "option_use_nbbo", "max_dte", "strike_range"})
+THETA_SNAPSHOT_PARAMETERS = frozenset({"symbol", "expiration", "strike", "right", "format",
+    "version", "annual_dividend", "annual_dividend_amount", "rate_type", "rate_value",
+    "stock_price", "max_dte", "strike_range", "min_time", "use_market_value", "current_day_only"})
+
+
+def _snapshot_calculation_provenance(path, parameters):
+    if path == THETA_SNAPSHOT_ENDPOINTS["oi"]:
+        return None
+    version = parameters.get("version")
+    if version is not None and version not in ("1", "latest"):
+        raise ValueError("Unsupported requested snapshot version")
+    return {"schema": "thetadata.snapshot_calculation_provenance/v1",
+        "basis": "requested_parameters_and_endpoint_documentation",
+        "requested_version": version, "serving_build": None,
+        "tenor_policy": {"1": "provider_snapshot_fixed_0dte_0.15",
+                         "latest": "provider_snapshot_latest_min_1h"}.get(version),
+        "methodology_ref": "https://www.thetadata.net/docs/operations/option_snapshot_greeks_"
+                           + ("first_order" if path == THETA_SNAPSHOT_ENDPOINTS["first"] else "second_order") + ".html"}
 
 
 def instant(value):
@@ -36,7 +59,11 @@ def instant(value):
 
 def theta_acquisition(path, parameters, raw, *, origin, received_at=None):
     """Called after a complete successful CSV parse. No request is made here."""
-    if path not in THETA_ENDPOINTS.values() or set(parameters) - THETA_PARAMETERS:
+    snapshot = path in THETA_SNAPSHOT_ENDPOINTS.values()
+    allowed = THETA_SNAPSHOT_PARAMETERS if snapshot else THETA_PARAMETERS
+    if (path not in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values())
+            or set(parameters) - allowed
+            or (path == THETA_SNAPSHOT_ENDPOINTS["oi"] and "version" in parameters)):
         raise ValueError("Unsupported native acquisition parameters")
     source = urlsplit(origin)
     if (source.scheme not in ("http", "https") or not source.hostname or source.username
@@ -44,11 +71,85 @@ def theta_acquisition(path, parameters, raw, *, origin, received_at=None):
         raise ValueError("Invalid acquisition origin")
     observed = received_at or datetime.now(timezone.utc).isoformat()
     instant(observed)
-    return json.dumps({"schema": "thetadata.acquisition/v1", "origin": origin, "endpoint": path,
+    evidence = {"schema": "thetadata.acquisition/v1", "origin": origin, "endpoint": path,
         "parameters": deepcopy(parameters), "received_at": observed,
         "response_sha256": hashlib.sha256(raw).hexdigest(),
         "availability_basis": "collector_observed_known_by",
-        "historical_first_availability_established": False}, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        "historical_first_availability_established": False}
+    if snapshot:
+        # A documented explicit floor remains a floor. Omitted version stays
+        # unknown; this receipt never asserts an actual model/build or no-floor T.
+        evidence["calculation_provenance"] = _snapshot_calculation_provenance(path, parameters)
+    return json.dumps(evidence, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def native_snapshot_acquisitions(frame, root, kind, *, now=None):
+    """Validate captured snapshot requests without promoting Greek/model semantics.
+
+    Raw vendor clocks remain separate from collector known-by time. This adapter
+    supplies no source session, economic expiry, availability before capture,
+    serving model identity, rights or numerical qualification.
+    """
+    import pandas as pd
+    if (kind not in THETA_SNAPSHOT_ENDPOINTS or frame is None or frame.empty
+            or ACQUISITION_COLUMN not in frame or "root" not in frame):
+        return None
+    column = frame[ACQUISITION_COLUMN]
+    if (column.isna().any() or not column.map(lambda v: isinstance(v, str)).all()
+            or frame["root"].isna().any() or not frame["root"].eq(root).all()
+            or len(column.unique()) > 1000):
+        return None
+    records = []
+    current = instant(now) if now is not None else datetime.now(timezone.utc)
+    def unique_keys(items):
+        out = {}
+        for key, value in items:
+            if key in out:
+                raise ValueError("Ambiguous acquisition receipt field")
+            out[key] = value
+        return out
+    for raw in column.unique():
+        if len(raw.encode("utf-8")) > 16384:
+            return None
+        try:
+            rec = json.loads(raw, object_pairs_hook=unique_keys); path = THETA_SNAPSHOT_ENDPOINTS[kind]
+            if (not isinstance(rec, dict) or rec.get("schema") != "thetadata.acquisition/v1"
+                    or rec.get("endpoint") != path
+                    or rec.get("availability_basis") != "collector_observed_known_by"
+                    or rec.get("historical_first_availability_established") is not False
+                    or not re.fullmatch(r"[a-f0-9]{64}", str(rec.get("response_sha256", "")))
+                    or instant(rec.get("received_at")) > current):
+                return None
+            source = urlsplit(rec.get("origin", ""))
+            if (source.scheme not in ("http", "https") or not source.hostname or source.username
+                    or source.password or source.query or source.fragment or source.path not in ("", "/")):
+                return None
+            params = rec.get("parameters")
+            if (not isinstance(params, dict) or set(params) - THETA_SNAPSHOT_PARAMETERS
+                    or not {"symbol", "expiration", "strike"} <= set(params)
+                    or params["symbol"] != root or params.get("format") != "csv"
+                    or any(type(v) not in (str, int, float, bool) or
+                           (type(v) is float and not math.isfinite(v)) for v in params.values())
+                    or (kind == "oi" and "version" in params)
+                    or rec.get("calculation_provenance") != _snapshot_calculation_provenance(path, params)):
+                return None
+            selected = frame.loc[column == raw]
+            expiration = str(params["expiration"]).replace("-", "")
+            if expiration != "*":
+                if "expiration" not in selected or any(pd.Timestamp(v).strftime("%Y%m%d") != expiration for v in selected["expiration"]):
+                    return None
+            if params["strike"] != "*":
+                if (type(params["strike"]) is bool or "strike" not in selected
+                        or not selected["strike"].map(lambda v: float(v) == float(params["strike"])).all()):
+                    return None
+            right = params.get("right", "both")
+            if right != "both" and (str(right).lower() not in ("call", "put", "c", "p")
+                    or "right" not in selected or not selected["right"].astype(str).str.upper().str[0].eq(str(right).upper()[0]).all()):
+                return None
+            records.append(rec)
+        except (ValueError, TypeError, KeyError, AttributeError, OverflowError):
+            return None
+    return sorted(records, key=lambda r: json.dumps(r, sort_keys=True))
 
 
 def native_acquisitions(frame, root, session, kind, *, now=None):

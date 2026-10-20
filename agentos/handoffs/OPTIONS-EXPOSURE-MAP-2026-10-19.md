@@ -4,7 +4,7 @@ session: 01a156f1-f450-7793-8951-bddadd4784c2
 model: codex
 ended_because: ci_handoff
 mission: Deliver the Options Exposure Map through Release A, then admitted B/C mechanics and research gates.
-prs: [9815, 9868]
+prs: [9815, 9868, 9874]
 state_before: The initial Options build was rejected for inadequate product quality and competitor parity; the full handoff remained assigned.
 changed:
   - path: collectors/thetadata.py
@@ -102,7 +102,7 @@ No production store/archive/current book has been written or published.
 
 **Runtime custody:** original protected Hub install remains Python79654→git79656→SSH79657
 on M1. Its original native handle20079 was pruned by tool refresh; no replacement install
-was launched. As of12:14UTC the same fetch has a28.6GB inflight pack, HEAD remains
+was launched. As of12:52UTC the same operation has a41.5GB received pack; child80584 is processing it at86%CPU, HEAD remains
 201064395fff8e16e958619bf1343eea6d7aca9c and no runtime backup/install receipt exists
 because no checkout write has begun. Retained receipt path is
 `~/optionshub-ops-wt/.git/options-source-install-5c2d0a04-v1/receipt.json`.
@@ -130,7 +130,8 @@ the20-contract canary. API target after lawful publication is native `/api/hub/g
 and entitled Terminal current/archive flow routes.
 
 **Release B/C remain open:** dated Gamma never gains instantaneous/next-live/joint/
-repricing/PIT capabilities. Official Theta EOD uses whole-numberDTE/.15expiryday;
+repricing/PIT capabilities. Retain explicit requested_version1: methodology and current EOD
+endpoint docs conflict for omitted-version whole-day versus latest/min1h semantics;
 Vanna/Charm output units and elapsed-time sign remain unproved. Existing owners are
 `engine/options_american_exercise.py` (research-only converged/interval American finite
  differences), `engine/intraday_greeks.py`, and `engine/options_scenario_surface.py`;
@@ -142,13 +143,36 @@ invent16:00 economic expiry or backdate current rules. See
 is not prespecified exposure-node/PIT validation; its negative proper-interval-score
 result stays scoped to that study.
 
-**Terminal root custody:** PR1083 `ffa78f9cafc65d6632d8f44487ab846e304757d7`,
-CI39415488127 now has verified same-run recovered observer71462/log
-`terminal-ci-ffa78f9-recovered-observer.log`; original51663 was pruned and processclosed.
-Root owns consumption/deploy. Main-chart pin follow-up1091 is draft stacked atff3c14a1b.
-Root QQQ consumer leaf47781 is separate from producer leaf74629. Preserve authenticated
-Chrome extension consent boundary; no alternate carrier. Full source acceptance,
-protected Terminal deploy and authenticated API-to-chart production proof are pending.
+**Terminal root custody:** #1083 refreshed protected base to
+`9068d579c7a3925c65dd1b2632f990ac55c0b907` (Exposure blobs unchanged), exact CI39423133774
+on verified observer7825/log `terminal-ci-9068d579-observer.log`. Prior ffa78f9
+CI39415488127 ALLPASSED and recovered71462 was consumed exit0, not live.
+#1091 is `84b00c720e802ec47600b1a17e519166be33d965`, exact CI39423505973 on verified11971/log
+`terminal-1091-ci-84b00c72-observer.log`. Root owns both consumption and deployment.
+QQQ consumer Fabric result was accepted after70 focused tests/TypeScript and six EN/ZH
+responsive map→sameQQQbook chart journeys;96 affected captures,11locks and build pass.
+Actual native SPY archive also passed six EN/ZH chart-link journeys with fixture auth/prices.
+Preserve authenticated Chrome extension consent and publication rights holds; no live proof.
+
+**Snapshot engineering frontier:** local follow-up on protected-base plus9874 retains exact
+regular first/second/OI acquisition endpoint, actual parameters, response hash and capture
+clock. Explicit1/latest requested calculation policy is separate from actual serving build,
+which stays null; omitted version/tenor stays unknown. Exact contract+snapshot_ts joins retain
+separately named secondary source metadata; no-match stays null. EOD dated guards are unchanged.
+Original test leaf50372 returned on its same carrier; accepted after principal fixture repairs,
+337 affected collector/receipt/poller/dated cases pass after owner reconciliation;25 snapshot cases include byte-cap and malformed-proof negatives. `snapshot-receipt-tests-adjudication.md` records limits.
+Original8684 owner released87cc03d54b9cab4d76d4f932fc33114311d87ed7 (parent59e5508f),
+494 affected cases pass. Fresh-inspected exact source and reused its snapshot raw-clock
+retention; our distinct addition retains acquisition receipts and exact secondary joins.
+No duplicate history append repair or broader8684/CI shard change was copied; original
+held merge/install custody remains. Frozen original patch is retained. No live GET, host installation, new service/poller or numerical qualification.
+
+**Review/source release:** #9874 exact00668db passed all12packs/ci-gate/contract-delta/active
+main authority and fences; original observer77735 consumed exit0, PR ready/mergeable. Inactive
+pilot authority is separate. Full-observed binding assessment is original Fabric
+`oem-01a156f1-full-observed-producer-review-v1`, MiniMax/ubuntu0, verified native22838; pending
+adjudication, not independent acceptance. Older selected producer/identity returns remain
+unaccepted and do not cover full-observed v2. Root owns accepted QQQ canonical intake review.
 
 Preserve original HOLDs #7327/#8555/#7328, #8684 custody, IW2T03k refusal, Save admission,
 Oct15SPY seal, original source/Fabric effects and their exact retained carriers. No new
