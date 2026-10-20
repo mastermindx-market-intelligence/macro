@@ -35,7 +35,9 @@ The context is a JSON-compatible existing-owner receipt with these fields:
   Generating this hash alone does not qualify the inputs or their rights.
 - `clocks`: `source_session`, `oi_report_date`, `option_observed_at`,
   `underlying_observed_at`, `greeks_available_at`, `oi_available_at`,
-  `available_at` (source selection cutoff). Instants must include a timezone.
+  `available_at` (source selection cutoff). `source_session` and `oi_report_date`
+  are exact `YYYY-MM-DD` civil-date labels, not instants to coerce across zones.
+  The observation/availability instants must include a timezone.
   Observation dates must match the selected New York source session; no input
   availability may exceed the cutoff. Greek availability cannot predate its
   observation. `oi_position_session`, `published_at`, `correction_ref` may be
@@ -81,6 +83,10 @@ Every cell exposes `gamma`, `vanna`, `charm` summaries. Each metric has
 `qualified`, `missing` (known member keys lacking qualification), `exclusions`,
 `call`, `put`, `net`, `gross`, `known_net`, `known_gross`,
 `qualified_population_id`, `status`, and its exact output unit.
+Exclusion reasons describe why qualification was withheld. A malformed input
+identity invalidates the source population globally, so that source-level reason
+takes precedence over individual Greek diagnostics; `population.invalid_rows`
+separately counts the actual malformed inputs.
 `economic_expiry_at` is retained only when all member terms agree on the instant.
 Next-live and current-exchange-week selections require this clock; a date label
 alone cannot establish whether a contract is still economically alive.

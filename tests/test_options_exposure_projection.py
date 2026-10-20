@@ -133,6 +133,7 @@ def test_mixed_model_cannot_qualify_joint_even_when_all_numbers_finite():
 
 @pytest.mark.parametrize("mutation,reason", [
     (lambda g, o, c: c.pop("source_snapshot_ref"), "source_identity_unknown"),
+    (lambda g, o, c: c["clocks"].update(source_session=ASOF+"T00:00:00Z"), "source_identity_unknown"),
     (lambda g, o, c: c["clocks"].pop("oi_available_at"), "source_availability_unknown"),
     (lambda g, o, c: c["clocks"].update(oi_available_at="2026-10-16T12:00:00Z"), "source_after_availability_cutoff"),
     (lambda g, o, c: c["clocks"].update(option_observed_at="2026-10-14T19:00:00Z"), "source_session_mismatch"),
@@ -141,6 +142,7 @@ def test_mixed_model_cannot_qualify_joint_even_when_all_numbers_finite():
     (lambda g, o, c: c["contract_terms"][0].update(available_at="2026-10-16T12:00:00Z"), "series_terms_availability_unqualified"),
     (lambda g, o, c: c["greek_provenance"]["gamma"].update(tenor_policy="floor_.001_years"), "greek_provenance_unqualified"),
     (lambda g, o, c: c["greek_provenance"]["gamma"].update(unit="millions"), "greek_provenance_unqualified"),
+    (lambda g, o, c: c["greek_provenance"]["gamma"].pop("model_ref"), "greek_provenance_unqualified"),
     (lambda g, o, c: g.__setitem__("implied_vol", .0001), "degenerate_iv"),
 ])
 def test_refusals_stay_counted(mutation, reason):
