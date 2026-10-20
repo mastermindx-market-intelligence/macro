@@ -4107,6 +4107,90 @@ def test_pk10_annual_meeting_alone_is_not_a_frequency() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def _pk10_frequency_row(body: str) -> tuple[dict, GoldenFilingPackage, dict]:
+    """Produce the supplied PK10 result for one synthetic DEF 14A body and
+    return its say_on_pay_frequency row, the package (the row's source_span
+    cites raw byte offsets into the package's primary member) and the full
+    result for the contract check."""
+    package = _synthetic_package("DEF 14A", body)
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(package,), entity=SYNTHETIC_ENTITY),
+    )
+    return _row(result, "say_on_pay_frequency"), package, result
+
+
+def _pk10_matched_span(package: GoldenFilingPackage, row: dict) -> str:
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    return package.members["doc.htm"][
+        span["start_offset"] : span["end_offset"]
+    ].decode("utf-8")
+
+
+def test_pk10_triennial_rather_than_annually() -> None:
+    # Review F1 (second repair), S1: the sentence states a triennial
+    # frequency; the contrastive "rather than annually" must not let the
+    # annual arm's gap skip past the stated frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_triennial_rather_than_every_year() -> None:
+    # Review F1 (second repair), S2: same sentence shape with "every year"
+    # as the contrasted annual phrase.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every three years rather"
+        " than every year.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_board_recommended_triennial_frequency() -> None:
+    # Review F1 (second repair), S3: the "frequency of" anchor with both a
+    # stated triennial frequency and a contrasted "every year" in the same
+    # sentence.
+    row, package, result = _pk10_frequency_row(
+        "<div>The Board recommended a frequency of every three years"
+        " rather than every year, and shareholders agreed.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert _pk10_matched_span(package, row) == (
+        "frequency of every three years"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_rather_than_triennial_stays_annual() -> None:
+    # Review F1 (second repair), control: the asymmetric sentence keeps
+    # resolving annual — the stated "every year" governs, and the arm
+    # reorder plus the tempered gaps never let triennial steal it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote will be held every year rather than"
+        " every three years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    assert _pk10_matched_span(package, row) == (
+        "say-on-pay vote will be held every year"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
 @pytest.mark.parametrize("pack_id", sorted(BASE_AAPL_ENVELOPE_SHA256))
 def test_base_pack_envelopes_unchanged_by_pk10_edits(pack_id: str) -> None:
     # §TESTS 4: every pack registered at BASE keeps its AAPL envelope

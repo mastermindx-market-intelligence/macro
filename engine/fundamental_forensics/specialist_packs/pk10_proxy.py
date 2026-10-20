@@ -57,20 +57,50 @@ SPEC = PackSpec(
 PERFORMANCE_MEASURE = r"(?:most important|selected) (?:financial )?performance measure"
 DIRECTOR_INDEPENDENCE = r"independent (?:director|under the)"
 RELATED_PARTY = r"related[- ]party transaction"
-# B.2 pattern revision v2 (review F2, 2026-10-20): every arm is anchored to
-# the vote-frequency sentence — the pre-context must name the advisory vote on
-# executive compensation / say-on-pay / the frequency, with a gap that never
-# crosses a sentence boundary, so an "annual meeting" preamble can never
-# satisfy the annual arm (which also refuses the meeting / report / proxy
-# collocations outright).
-SAY_ON_PAY_FREQUENCY = (
+# B.2 pattern revision v3 (review F1, 2026-10-20): a stated non-annual
+# frequency governs over an annual mention in the same sentence. The arms are
+# evaluated triennial -> biennial -> annual, and every arm keeps the v2
+# sentence-bounded gap — now tempered: a gap may never cross a phrase that
+# resolves a different frequency, so a contrastive "rather than annually" /
+# "rather than every year" clause can no longer let the annual arm skip past
+# the stated "every three years" earlier in the sentence. The annual literal
+# still refuses the meeting / report / proxy collocations outright, and a
+# refused collocation guards no gap either.
+_SAY_ON_PAY_ANCHOR = (
     r"(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
-    r"|frequency of)[^.]{0,240}?"
-    r"(?P<annual>every year|annual(?:ly)?(?! (?:meeting|report|proxy))|one year)"
-    r"|(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
-    r"|frequency of)[^.]{0,240}?(?P<biennial>every two years)"
-    r"|(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
-    r"|frequency of)[^.]{0,240}?(?P<triennial>every three years)"
+    r"|frequency of)"
+)
+_ANNUAL_FREQUENCY_PHRASE = (
+    r"every year|annual(?:ly)?(?! (?:meeting|report|proxy))|one year"
+)
+_BIENNIAL_FREQUENCY_PHRASE = r"every two years|biennial(?:ly)?"
+_TRIENNIAL_FREQUENCY_PHRASE = r"every three years|triennial(?:ly)?"
+# The competing phrases the annual arm's gap may never cross.
+_NON_ANNUAL_FREQUENCY_PHRASE = (
+    r"every (?:two|three) years|triennial(?:ly)?|biennial(?:ly)?"
+    r"|once every (?:two|three) years"
+)
+
+
+def _guarded_gap(*guards: str) -> str:
+    """A sentence-bounded lazy gap whose characters never start a guard
+    phrase, so the gap cannot cross any of them."""
+    return r"(?:(?!" + r"|".join(guards) + r")[^.]){0,240}?"
+
+
+SAY_ON_PAY_FREQUENCY = (
+    _SAY_ON_PAY_ANCHOR
+    + _guarded_gap(_ANNUAL_FREQUENCY_PHRASE, _BIENNIAL_FREQUENCY_PHRASE)
+    + r"(?P<triennial>every three years)"
+    r"|"
+    + _SAY_ON_PAY_ANCHOR
+    + _guarded_gap(_ANNUAL_FREQUENCY_PHRASE, _TRIENNIAL_FREQUENCY_PHRASE)
+    + r"(?P<biennial>every two years)"
+    r"|"
+    + _SAY_ON_PAY_ANCHOR
+    + _guarded_gap(_NON_ANNUAL_FREQUENCY_PHRASE)
+    + r"(?P<annual>every year|annual(?:ly)?(?! (?:meeting|report|proxy))"
+    r"|one year)"
 )
 
 # The catalogue field name declares no "(annual | ...)" literal list, so the
