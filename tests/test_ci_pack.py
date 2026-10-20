@@ -5142,7 +5142,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_795),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5151,6 +5151,26 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-20 private company-news drafts bind the existing Press run/writer
+    suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
+    so it cannot prove an ordinary source PR. The unchanged canonical closure
+    follows Press validators into scripts.build_free_content; dropping that
+    dependency or either suite would remove real coverage. The news job keeps
+    scope: exclusive with literal paths and adds no fallback or wildcard root.
+    Full contract-delta on e6f78cfc against main 2d34f640 measured:
+
+        templates/index.html          135 jobs, 5,822 -> 5,822 weight
+        scripts/build_free_content.py 134 -> 135 jobs, 5,697 -> 5,795 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,571 weight
+
+    The sole new selected job is ticker-news-qbus, exactly 98 estimator units.
+    All three probes stay at ten packs. Record only that measured code-coverage
+    addition: build's job ceiling 134 -> 135 and weight 5,697 -> 5,795, without
+    padding. Other probe ceilings, the ten-pack limit, selector code, ancestor
+    ratchet and every prior suite remain unchanged. Planning weights are not
+    measured execution times. Retained red/green contract receipts accompany
+    this candidate; current-head CI must execute this assertion.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight
