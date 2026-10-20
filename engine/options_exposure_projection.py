@@ -283,6 +283,9 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         out["security_id"] = bound["security_id"]
         out["contract_identity"] = bound
     terms = list(out.get("contract_terms") or [])
+    term_indices = defaultdict(list)
+    for index, term in enumerate(terms):
+        term_indices[_key(term, root)].append(index)
     references = []
     for observation in out.pop("contract_reference_observations", []):
         if "contracts" in observation:
@@ -293,7 +296,8 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         term = massive_reference_terms(observation, root, out.get("security_id"), contract=contract)
         if out.get("term_policy") == "occ_standard_spy_etf/v1":
             term = ordinary_spy_terms(term)
-        matches = [i for i, old in enumerate(terms) if _key(old, root) == _key(term, root)]
+        term_key = _key(term, root)
+        matches = term_indices.get(term_key, [])
         if len(matches) > 1:
             raise ValueError("Ambiguous owner terms")
         if matches:
@@ -309,6 +313,7 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
             merged["reference_observation_ref"] = term["terms_ref"]
             terms[matches[0]] = merged
         else:
+            term_indices[term_key].append(len(terms))
             terms.append(term)
     if terms:
         out["contract_terms"] = terms

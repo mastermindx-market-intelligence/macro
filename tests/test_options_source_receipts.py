@@ -42,6 +42,28 @@ def reference():
         field_presence={k: True for k in c}, completed_at=RECEIVED, payload_sha256="a" * 64)
 
 
+def test_large_reference_composition_preserves_existing_evidence_and_duplicate_refusal():
+    observations=[];terms=[]
+    for strike in range(100,3100):
+        obs=reference();ticker=f'O:SPY261023C{strike*1000:08d}'
+        obs['contract'].update(ticker=ticker,strike_price=strike)
+        obs['path']='/v3/reference/options/contracts/'+ticker
+        observations.append(obs)
+        term=massive_reference_terms(obs,'SPY','SEC:SPY')
+        term['owner_evidence']='retained'
+        terms.append(term)
+    ctx=dict(security_id='SEC:SPY',contract_terms=terms,contract_reference_observations=observations,
+             input_sha256=exposure_input_digest(pd.DataFrame(),pd.DataFrame(),ASOF,'SPY'))
+    out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'SPY',context=ctx)
+    assert len(out['contract_terms'])==3000
+    assert all(t['owner_evidence']=='retained' and t['reference_observation_ref']==t['terms_ref']
+               for t in out['contract_terms'])
+    assert out['contract_terms'][-1]['strike']==3099
+    ctx['contract_terms']=terms+[deepcopy(terms[-1])]
+    with pytest.raises(ValueError,match='Ambiguous owner terms'):
+        compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'SPY',context=ctx)
+
+
 def test_reference_maps_only_observed_fields_without_contract_or_model_defaults():
     obs = reference()
     term = massive_reference_terms(obs, "SPY", "SEC:SPY")

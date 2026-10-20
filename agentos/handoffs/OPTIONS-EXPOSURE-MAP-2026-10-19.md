@@ -2,9 +2,39 @@
 workstream: WS:ADVANCED-DATA-OPTIONS
 session: 01a156f1-f450-7793-8951-bddadd4784c2
 model: codex
-ended_because: checkpointed
+ended_because: ci_handoff
 mission: Deliver the Options Exposure Map through Release A, then admitted B/C mechanics and research gates.
 prs: [9815]
+state_before: The initial Options build was rejected for inadequate product quality and competitor parity; the full handoff remained assigned.
+changed:
+  - path: collectors/thetadata.py
+    what: Add an explicit one-GET full-observed-root capture profile while preserving selected-capture limits and defaults.
+  - path: engine/options_exposure_projection.py
+    what: Add source-bound joint projection and explicitly dated Gamma qualification.
+  - path: scripts/build_options_hub_nightly.py
+    what: Compose bounded captured inputs through the existing builder while preserving legacy inputs and publication guards.
+  - path: .github/ci/legacy-jobs.yml
+    what: Keep affected Options tests owned by the existing flow-surface CI lane.
+verified:
+  - command: python3 -m pytest tests/test_options_dated_projection.py tests/test_options_source_receipts.py tests/test_thetadata.py -q
+    result: 155 passed, including a 14000-row multi-expiry capture and refusal/byte/row controls.
+  - command: python3 -m pytest tests/test_options_source_receipts.py tests/test_options_contract_identity.py tests/test_options_dated_projection.py -q
+    result: 83 passed after indexing full-book term composition, including 3000 exact term merges and duplicate refusal.
+  - command: python3 scripts/audit_unrun_tests.py
+    result: Exit 0 after the current-main integration; no newly unwired suite.
+  - command: curated_exclusive_closure_findings(Path('.github/ci/legacy-jobs.yml'))
+    result: No uncovered flow-surface dependency after the merge.
+  - command: TERMINAL_E2E_PORT=3193 npm run test:e2e:responsive -- e2e/options-exposure-workspace.spec.ts --workers=1
+    result: All six EN/ZH desktop, tablet and mobile workspace journeys passed after the copy-layer repair.
+unresolved:
+  - Full SPY/QQQ source qualification, native publication and protected source release.
+  - Protected Terminal release, production deployment and authenticated product acceptance.
+unverified:
+  - Product-scale qualified source coverage and authenticated production rendering.
+  - Release B nonlinear and Release C empirical/PIT acceptance.
+danger_areas:
+  - Do not replace a last-good full book with the 20-contract canary or weaken its empty-book guard.
+  - Preserve exact source/Fabric operation identities, rights, held carriers and the Chrome extension UI consent boundary.
 next_actions:
   - Integrate the matched captured source pair through the incumbent nightly publisher, then verify qualified native API output.
   - Complete exact-head protected CI, merge, git-gated deployment and authenticated product verification.
@@ -35,15 +65,13 @@ Validation retained:
 
 Fabric review `oem-01a156f1-scoped-identity-review-v1` settled on its original carrier, was adjudicated and accepted after the valid listing-completion clock finding was fixed with negative tests. Unsupported findings were rejected with source evidence. Existing workspace, projection and narrow Theta-document reviews remain accepted for their exact scope. Earlier failed operations remain retained and unreplayed.
 
-Terminal exact-head CI run `39402278091` has a verified launched observer, native handle `72197`; root consumes that same handle with write_stdin. Log: `terminal-ci-7cf52f-observer.log`. Superseded run `39400384185` and observer `98453` were consumed to final cancellation, as were 73541 and 45788. Copy routing is repaired without guard changes; all six EN/ZH responsive journeys, TypeScript, exposure ESLint and plain-language guard pass. Ledger #858 is reconciled to verified merged `abfedf79e`, with 97 namespace checks passing and no migration action. Macro's inactive merge-queue-pilot authority context is not an active-main test failure; preserve required active checks.
+Terminal exact-head CI run `39402278091` has verified running observer handle `72197`, launched with `gh run watch --exit-status --interval 60`; consume that same handle at the next useful boundary. Log: `terminal-ci-7cf52f-observer.log`. Superseded observers 73541, 45788 and 98453 were consumed to final cancellation; do not recreate them. The repair moves static copy into existing bilingual dictionaries and reconciles migration 0031 to the verified #858 merge, without a migration action. Plain-language guard, TypeScript, affected exposure ESLint, all six responsive workspace journeys and 97 migration-namespace tests pass. Macro active-main authority passes and the merged branch is conflict-free. The fence failure was missing required metadata in this checkpoint, now repaired without guard changes; local Agent OS validation must pass before the next push. Its inactive merge-queue-pilot authority context is not an active-main test failure.
 
-Source-scale continuation: a new, separately bounded four-GET read-only SPY/QQQ October 19 capture stopped after its first reserved SPY Greek wildcard request exceeded the outer 90-second SSH return bound. `M1-SPY-QQQ-20261019-full-observed-capture.json` records EFFECT_UNKNOWN, no response observed, no replay, and three unlaunched requests; this is not a provider entitlement refusal. No M1 data or services changed. The native collector now has an explicit one-GET full-observed-root helper with response bounds up to 16 MiB/100,000 rows; its 14,000-row case and refusal controls pass in 155 affected tests. Original selected-capture caps remain unchanged. Captured canonical master has no QQQ row; the native owner receipt retains QQQ REFUSED under the original eleven-lost-row pending-transition fence. Resolve through its supported evidence/intake path, not a hard-coded canonical ID or a broad alias. Full observed population and exact per-series reference coverage remain next engineering work. Fabric helper `oem-01a156f1-reference-page-validator-v1` retains its original operation, foreground handle17018; controller launch recorded, worker state UNKNOWN and no accepted result yet.
-
-Macro merge CI run `39401831972`: active-main authority passed, but fence-pack/self-mod-fence failed while packs continued. Root owns exact diagnosis; same-carrier full-log reader returned READ_COOLDOWN_ONLY until about09:50 UTC. Preserve its carrier and cooldown; no bypass or duplicate observer.
+Source-scale continuation: commit `14c8f3f2c2b67` adds an explicit full-observed-root native history method; existing selected-capture caps remain unchanged. A separately commissioned four-GET read-only SPY/QQQ October 19 capture stopped after its first reserved SPY wildcard Greek read exceeded the outer 90-second SSH return bound. `M1-SPY-QQQ-20261019-full-observed-capture.json` records EFFECT_UNKNOWN, no response observed, no replay, and three unlaunched requests. This is not a provider entitlement refusal. No M1 store, service or publisher changed. The captured master has no QQQ target; its native owner receipt retains the original QQQ canonical refusal under the eleven-lost-row transition fence. Resolve through that owner's supported independence-evidence intake, not a hard-coded canonical ID or broad alias. Fabric helper `oem-01a156f1-reference-page-validator-v1` remains on its original carrier/foreground handle17018, with controller launch recorded, worker state UNKNOWN and no accepted result. Full-book engineering and actual source acceptance remain distinct.
 
 Production custody: Fable reports its git-gated build of `abfedf79eb2f2bad59fa75b4684ee83075d9ffa5` completed with matching repo/marker/served HTML and released the shared build lock. Root must fresh-check ownership before #1083 deployment. No Options candidate merge/deployment or production acceptance has occurred. Chrome automation still requires the user to dismiss the explicit extension UI block; no alternate control carrier was used.
 
-Next: resolve the actual protected fence failures through the root's retained CI reader; complete protected CI and paired source release; advance full SPY/QQQ source qualification through native owners without replacing full books with samples; deploy merged Terminal through `/opt/terminal/terminal-build.sh`, then verify actual source/API/rendered behavior and the authenticated journey when the Chrome gate is cleared. Release B nonlinear mechanics and Release C empirical/PIT acceptance remain open. No validated probability, price-path or trade-sizing claim.
+Next: commit the repaired Agent OS metadata, then consume new protected CI through the root's existing observer; complete protected CI and paired source release; advance full SPY/QQQ source qualification through native owners without replacing full books with samples; deploy merged Terminal through `/opt/terminal/terminal-build.sh`, then verify actual source/API/rendered behavior and the authenticated journey when the Chrome gate is cleared. Release B nonlinear mechanics and Release C empirical/PIT acceptance remain open. No validated probability, price-path or trade-sizing claim.
 
 Evidence: `/Volumes/Mastermind/evidence/options-exposure-01a156f1/`; actual-source captures and arithmetic records live there. Committed fixture captures: Terminal `docs/pr-crops/options-exposure-recovery/`. Protected procedure pin `fd1159695b0491a1b2c8d3042dce1232ad8365b4`.
 
