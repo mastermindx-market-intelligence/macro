@@ -220,6 +220,20 @@ def manifest(inputs):
     return CM.build_coverage_manifest(as_of=AS_OF, **inputs)
 
 
+@pytest.fixture(scope="module")
+def unclassed(inputs):
+    """The same manifest with a resolver that answers no SIC at all.
+
+    The golden packages ride the real AAPL CIK, so the default resolver
+    resolves a shipped industrial SIC for the synthetic member; this build
+    exercises the None-SIC flow the five real issuers hit only when the
+    coverage contract carries no member record for them.
+    """
+    return CM.build_coverage_manifest(
+        as_of=AS_OF, sic_resolver=lambda _entity_id: None, **inputs
+    )
+
+
 def _cells_for(manifest, cik):
     return [cell for cell in manifest["cells"] if cell["cik"] == cik]
 
@@ -390,11 +404,49 @@ def test_served_member_slots_cells_and_counts(manifest, served) -> None:
         assert by_key[("A1", f"package:{role}")]["status"] == "present"
     for kind in ("income_statement", "balance_sheet", "cash_flow"):
         assert by_key[("A1", f"statement:{kind}")]["status"] == "present"
-    # Windowless components have no production producer yet.
+    # Windowless components run their production producers.  The golden
+    # packages ride the real AAPL CIK, so the shipped SIC index resolves an
+    # industrial SIC for the synthetic member and the class packs answer
+    # their issuer-class policy.
+    journey = by_key[("*", "journey")]
+    assert (journey["status"], journey["reason_code"]) == ("absent", "no_production_producer")
     for pack in [f"PK{n:02d}" for n in range(1, 13)]:
-        assert by_key[("*", f"specialist:{pack}")]["reason_code"] == "no_production_producer"
-    assert by_key[("*", "journey")]["reason_code"] == "no_production_producer"
-    assert by_key[("*", "packet")]["reason_code"] == "packet_request_unfrozen"
+        cell = by_key[("*", f"specialist:{pack}")]
+        assert cell["status"] in {"present", "not_applicable", "absent"}, cell
+        assert BARE_REASON.fullmatch(cell["reason_code"]), cell
+        assert re.fullmatch(r"[0-9a-f]{64}", cell["pack_content_sha256"]), cell
+        assert re.fullmatch(r"[0-9a-f]{64}", cell["pack_schema_digest"]), cell
+    # Observed on this fixture: the AAPL pair values every required field of
+    # the applicable packs except PK01's total_debt and PK07's goodwill.
+    pk01 = by_key[("*", "specialist:PK01")]
+    assert (pk01["status"], pk01["reason_code"]) == ("absent", "pack_required_fields_absent")
+    assert pk01["missing_required_fields"] == ["total_debt"]
+    pk07 = by_key[("*", "specialist:PK07")]
+    assert (pk07["status"], pk07["reason_code"]) == ("absent", "pack_required_fields_absent")
+    assert pk07["missing_required_fields"] == ["goodwill"]
+    for pack in ("PK02", "PK03", "PK04", "PK05", "PK06", "PK08", "PK09"):
+        assert by_key[("*", f"specialist:{pack}")]["status"] == "present"
+    # No DEF 14A is admitted, so PK10 is honestly not supplied.
+    pk10 = by_key[("*", "specialist:PK10")]
+    assert (pk10["status"], pk10["reason_code"]) == ("absent", "proxy_package_not_supplied")
+    # The industrial issuer is neither a bank nor a biotech: both class
+    # verdicts are allowed N/A cells on the class basis.
+    pk11 = by_key[("*", "specialist:PK11")]
+    assert (pk11["status"], pk11["reason_code"], pk11["na_basis"]) == (
+        "not_applicable", "issuer_class_not_bank", "class_policy"
+    )
+    pk12 = by_key[("*", "specialist:PK12")]
+    assert (pk12["status"], pk12["reason_code"], pk12["na_basis"]) == (
+        "not_applicable", "sic_outside_biotech_codes", "class_policy"
+    )
+    # The frozen A1 request values at least one default metric (revenue) on
+    # the synthetic ledger, so the packet cell is present and pins the build
+    # through its two digests — never the packet bytes.
+    packet = by_key[("*", "packet")]
+    assert packet["status"] == "present"
+    assert re.fullmatch(r"fip_[0-9a-f]{24}", packet["packet_id"])
+    assert re.fullmatch(r"[0-9a-f]{64}", packet["query_request_digest"])
+    assert "cells" not in packet
     # Kernel answers land unchanged: some values are present on both slots.
     for period in ("A1", "I1"):
         metric_cells = [
@@ -428,6 +480,237 @@ def test_admitted_after_as_of_is_not_served(inputs, served) -> None:
     cells = _cells_for(early, served["cik"])
     assert {(c["status"], c["reason_code"]) for c in cells} == {("absent", "not_served")}
     assert early["header"]["served_set"] == []
+
+
+# ---------------------------------------------------------------------------
+# Windowless producers (specialist packs, packet)
+# ---------------------------------------------------------------------------
+
+
+def _windowless(manifest, cik, field_id):
+    (cell,) = [
+        c
+        for c in manifest["cells"]
+        if c["cik"] == cik and c["period_id"] == "*" and c["field_id"] == field_id
+    ]
+    return cell
+
+
+def _canned_envelope(pack_id: str) -> dict:
+    """A cheap not-applicable envelope for the packs a test does not target."""
+    return {
+        "applicability": {
+            "state": "not_applicable",
+            "reason": "form_outside_pack_forms",
+            "rule_id": f"test.{pack_id.lower()}.canned",
+            "sic": None,
+            "sic_source": None,
+        },
+        "fields": [],
+        "checks": [],
+        "pack_content_sha256": "a" * 64,
+        "pack_schema_digest": "b" * 64,
+    }
+
+
+def _no_valued_packet() -> dict:
+    return {
+        "packet_id": "fip_" + "0" * 24,
+        "receipts": {"query_request_digest": "c" * 64},
+        "cells": [
+            {"metric_id": "revenue", "quality_state": "missing"},
+            {"metric_id": "gross_margin", "quality_state": "not_evaluable"},
+        ],
+    }
+
+
+def test_an_unresolved_sic_flows_through_as_none(unclassed, served) -> None:
+    """A.4: a None SIC reaches the producers, who type the class themselves."""
+    pk04 = _windowless(unclassed, served["cik"], "specialist:PK04")
+    assert (pk04["status"], pk04["reason_code"]) == ("absent", "issuer_class_unknown")
+    pk11 = _windowless(unclassed, served["cik"], "specialist:PK11")
+    assert (pk11["status"], pk11["reason_code"], pk11["na_basis"]) == (
+        "not_applicable",
+        "issuer_class_unknown",
+        "class_policy",
+    )
+    pk12 = _windowless(unclassed, served["cik"], "specialist:PK12")
+    assert (pk12["status"], pk12["reason_code"], pk12["na_basis"]) == (
+        "not_applicable",
+        "sic_outside_biotech_codes",
+        "class_policy",
+    )
+
+
+def test_the_sic_source_label_follows_the_resolver(inputs, monkeypatch) -> None:
+    """The envelope's closed sic_source enum names where the SIC came from: a
+    SIC the shipped coverage contracts resolve is their SEC-submissions
+    capture; a CIK they do not bind is unbound."""
+    seen: list[tuple[str | None, str | None]] = []
+
+    def recording(pack_id, pack_input):
+        seen.append((pack_input.issuer_sic, pack_input.sic_source))
+        return _canned_envelope(pack_id)
+
+    monkeypatch.setattr(CM, "produce_pack", recording)
+    monkeypatch.setattr(
+        CM, "build_financial_intelligence_packet_from_repo", lambda **_kw: _no_valued_packet()
+    )
+    CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    assert seen and all(sic is not None for sic, _ in seen)
+    assert {source for _, source in seen} == {"sec_submissions"}
+    seen.clear()
+    CM.build_coverage_manifest(as_of=AS_OF, sic_resolver=lambda _entity_id: None, **inputs)
+    assert seen and {sic for sic, _ in seen} == {None}
+    assert {source for _, source in seen} == {"unbound"}
+
+
+def test_a_non_valued_required_pack_field_is_absent(inputs, served, monkeypatch) -> None:
+    from engine.fundamental_forensics.specialist_pack_contract import load_pack_schema
+
+    required = sorted(
+        field["field_id"]
+        for field in load_pack_schema("PK02")["fields"]
+        if field.get("required") is True
+    )
+    assert len(required) > 1
+    real = CM.produce_pack
+
+    def one_required_field_missing(pack_id, pack_input):
+        if pack_id != "PK02":
+            return _canned_envelope(pack_id)
+        envelope = real(pack_id, pack_input)
+        for row in envelope["fields"]:
+            if row["field_id"] == required[0]:
+                row["quality_state"] = "missing"
+        return envelope
+
+    monkeypatch.setattr(CM, "produce_pack", one_required_field_missing)
+    manifest = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    cell = _windowless(manifest, served["cik"], "specialist:PK02")
+    assert (cell["status"], cell["reason_code"]) == ("absent", "pack_required_fields_absent")
+    assert cell["missing_required_fields"] == [required[0]]
+
+
+def test_a_refused_pack_producer_is_one_absent_cell(inputs, served, monkeypatch) -> None:
+    from engine.fundamental_forensics.specialist_packs import SpecialistPackError
+
+    def refusing(pack_id, pack_input):
+        if pack_id == "PK05":
+            raise SpecialistPackError("nope")
+        return _canned_envelope(pack_id)
+
+    monkeypatch.setattr(CM, "produce_pack", refusing)
+    manifest = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    refused = _windowless(manifest, served["cik"], "specialist:PK05")
+    assert (refused["status"], refused["reason_code"]) == ("absent", "pack_producer_refused")
+    assert refused["producer_reason"] == "SpecialistPackError"
+    assert "pack_content_sha256" not in refused
+    # One bad pack never refuses the manifest: the other packs still answer.
+    assert _windowless(manifest, served["cik"], "specialist:PK06")["status"] == "not_applicable"
+    assert len(manifest["issuers"]) == 3
+
+
+def test_an_unregistered_pack_is_no_production_producer(inputs, served, tmp_path) -> None:
+    document = json.loads(CM.DEFAULT_THRESHOLDS.read_text(encoding="utf-8"))
+    document["tiers"]["deep"]["specialist_packs"] = ["PK01", "PK99"]
+    thresholds = _write(tmp_path / "thresholds.json", document)
+    manifest = CM.build_coverage_manifest(as_of=AS_OF, thresholds_file=thresholds, **inputs)
+    pk99 = _windowless(manifest, served["cik"], "specialist:PK99")
+    assert (pk99["status"], pk99["reason_code"]) == ("absent", "no_production_producer")
+    assert "pack_content_sha256" not in pk99
+    # The registered pack on the same list is still produced.
+    pk01 = _windowless(manifest, served["cik"], "specialist:PK01")
+    assert (pk01["status"], pk01["reason_code"]) == ("absent", "pack_required_fields_absent")
+
+
+def test_packet_builder_refusal_and_no_valued_cell(inputs, served, monkeypatch) -> None:
+    monkeypatch.setattr(
+        CM, "produce_pack", lambda pack_id, pack_input: _canned_envelope(pack_id)
+    )
+
+    def refusing(**kwargs):
+        raise ValueError("builder refused")
+
+    monkeypatch.setattr(CM, "build_financial_intelligence_packet_from_repo", refusing)
+    refused = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    cell = _windowless(refused, served["cik"], "packet")
+    assert (cell["status"], cell["reason_code"], cell["producer_reason"]) == (
+        "absent",
+        "packet_builder_refused",
+        "ValueError",
+    )
+
+    monkeypatch.setattr(
+        CM,
+        "build_financial_intelligence_packet_from_repo",
+        lambda **kwargs: _no_valued_packet(),
+    )
+    empty = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    cell = _windowless(empty, served["cik"], "packet")
+    assert (cell["status"], cell["reason_code"]) == ("absent", "packet_no_valued_cell")
+    assert cell["packet_id"] == "fip_" + "0" * 24
+    assert cell["query_request_digest"] == "c" * 64
+
+
+def test_the_packet_request_is_frozen(inputs, served, monkeypatch) -> None:
+    from datetime import date, timedelta
+
+    from engine.fundamental_forensics.production_datasets import build_production_dataset_store
+    from engine.fundamental_forensics.production_provider import (
+        ProductionFinancialQueryProvider,
+    )
+    from engine.fundamental_forensics.query import BitemporalPolicy
+    from engine.fundamental_forensics.specialist_packs.base import (
+        _primary_duration_opening_bound,
+    )
+
+    captured: dict[str, object] = {}
+
+    def capturing(**kwargs):
+        captured.clear()
+        captured.update(kwargs)
+        return _no_valued_packet()
+
+    monkeypatch.setattr(
+        CM, "produce_pack", lambda pack_id, pack_input: _canned_envelope(pack_id)
+    )
+    monkeypatch.setattr(CM, "build_financial_intelligence_packet_from_repo", capturing)
+    CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    request = captured["query_request"]
+    entity = captured["entity"]
+    # The seat ruling's label is "production_manifest"; the packet contract's
+    # closed EVALUATION_MODES enum refuses that label, so the frozen request
+    # carries the contract's default label (a lane deviation, recorded in the
+    # seat record).
+    assert request.evaluation_mode == "historical_replay"
+    assert [period.label for period in request.periods] == ["A1", "A1_instant"]
+    assert request.policy.selection is BitemporalPolicy.LATEST_KNOWN_AS_OF
+    as_of = CM.parse_as_of(AS_OF)
+    assert request.policy.source_snapshot_at == as_of
+    assert request.policy.recorded_at == as_of
+    assert tuple(request.metrics) == CM.DEFAULT_REQUESTED_METRICS
+    # A.2/A.5: the entity is the served binding plus the generation's stored
+    # display name, under the production identity basis.
+    assert entity.name == SYN_NAME
+    assert entity.identity_basis == "production_generation_binding_v1"
+    assert entity.entity_id == SYN_ENTITY
+    assert entity.source_entity_id == served["cik"]
+    assert Path(captured["repo_root"]) == ROOT
+    # The filing metadata is rekeyed onto occurrence ids exactly as the
+    # packet service boundary does.
+    dataset = ProductionFinancialQueryProvider(
+        build_production_dataset_store(inputs["store_dir"])
+    ).resolve(SYN_ENTITY)
+    assert dataset.ledger.events[0].occurrence_id in captured["filing_metadata"]
+    # The A1 duration start is the pack framework's primary fiscal duration
+    # start on the served ledger, so the packet and the packs share one
+    # period basis.
+    annual = served["by_form"]["10-K"]["period_of_report"]
+    opening = _primary_duration_opening_bound(dataset.ledger, date.fromisoformat(annual))
+    assert request.periods[0].start == opening + timedelta(days=1)
+    assert request.periods[0].end == date.fromisoformat(annual)
+    assert request.periods[1].end == date.fromisoformat(annual)
 
 
 @NEEDS_THRESHOLDS

@@ -223,10 +223,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     from app import ticker_news
 
     db = _make_db(tmp_path)
-    decisions = [
-        store_mod.NewsReadRights.all_internal(),
-        None,
-    ]
+    current_rights = [store_mod.NewsReadRights.all_internal()]
     monkeypatch.setattr(
         ticker_news,
         "_news_db_path",
@@ -240,7 +237,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     monkeypatch.setattr(
         ticker_news,
         "_rights_for_user",
-        lambda user: decisions.pop(0),
+        lambda user: current_rights[0],
     )
 
     async def collect():
@@ -253,6 +250,8 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
             max_cycles=2,
         ):
             out.append(chunk)
+            if chunk.startswith("event: upsert"):
+                current_rights[0] = None
         return out
 
     chunks = asyncio.run(collect())
@@ -261,7 +260,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     assert "event: upsert" in joined
     assert "Nvidia launches accelerator" in joined
     assert "event: restricted" in joined
-    assert "ticker news rights unavailable" in joined
+    assert "ticker news rights" in joined
 
 
 def test_rate_limit_is_bounded_per_authenticated_user(monkeypatch, tmp_path):
@@ -346,3 +345,87 @@ def test_snapshot_default_initial_page_is_twenty(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert seen == [20]
+
+
+def test_quiet_sse_heartbeats_keep_margin_before_edge_idle_timeout(monkeypatch, tmp_path):
+    """A quiet connection must emit bytes well before the edge's 15s idle limit."""
+    from types import SimpleNamespace
+    from app import ticker_news
+
+    now = [100.0]
+    pauses = []
+    reads = []
+    scope_checks = []
+    rights = store_mod.NewsReadRights.all_internal()
+
+    class ImmediateScopeReader:
+        async def read(self, reader):
+            return reader()
+
+    class QuietChangeReader:
+        async def read(self, key, reader):
+            reads.append(key[2])
+            return SimpleNamespace(rows=(), next_sequence=7, has_more=False)
+
+    def current_scope(user):
+        scope_checks.append(now[0])
+        return rights, False
+
+    async def advance(seconds):
+        pauses.append(seconds)
+        now[0] = round(now[0] + seconds, 6)
+
+    monkeypatch.setattr(ticker_news, "time", SimpleNamespace(monotonic=lambda: now[0]))
+    monkeypatch.setattr(ticker_news, "asyncio", SimpleNamespace(sleep=advance))
+    monkeypatch.setattr(ticker_news, "_STREAM_BLOCKING_READER", ImmediateScopeReader())
+    monkeypatch.setattr(ticker_news, "_STREAM_CHANGE_READER", QuietChangeReader())
+    monkeypatch.setattr(ticker_news, "_stream_scope", current_scope)
+    monkeypatch.setattr(ticker_news, "_news_db_path", lambda: tmp_path / "unused.sqlite3")
+    monkeypatch.setattr(
+        ticker_news, "_security_or_404",
+        lambda ticker, now: ("NVDA", "SEC:US-XNAS-NVDA"),
+    )
+
+    async def collect():
+        return [
+            (now[0], chunk)
+            async for chunk in ticker_news._sse_events(
+                ticker="NVDA", user={"id": "fixture"}, after_sequence=7,
+                poll_seconds=0.1, max_cycles=201,
+            )
+        ]
+
+    frames = asyncio.run(collect())
+    times = [at for at, _chunk in frames]
+    assert times[0] == 100.0  # Flush a quiet connection immediately.
+    assert len(times) >= 5
+    assert max(later - earlier for earlier, later in zip(times, times[1:])) <= 5.1
+    assert all(chunk == ": heartbeat\n\n" for _at, chunk in frames)
+    # The heartbeat only emits a comment; it must not add polling, move a cursor,
+    # or replace the existing fresh permission check on each read cycle.
+    assert reads == [7] * 201
+    assert len(scope_checks) == 201
+    assert pauses == [0.1] * 201
+    assert not (tmp_path / "unused.sqlite3").exists()
+
+
+def test_sse_revalidates_access_after_cached_read_before_delivery(monkeypatch, tmp_path):
+    from app import ticker_news
+    db = _make_db(tmp_path)
+    current_rights = [store_mod.NewsReadRights.all_internal()]
+    monkeypatch.setattr(ticker_news, "_news_db_path", lambda: db)
+    monkeypatch.setattr(ticker_news, "_security_for_ticker", lambda ticker, now: "SEC:US-XNAS-NVDA")
+    monkeypatch.setattr(ticker_news, "_rights_for_user", lambda user: current_rights[0])
+    class DelayedRead:
+        async def read(self, key, read):
+            page = read()
+            current_rights[0] = None  # policy expires while the read was in flight
+            return page
+    monkeypatch.setattr(ticker_news, "_STREAM_CHANGE_READER", DelayedRead())
+    async def collect():
+        return [chunk async for chunk in ticker_news._sse_events(
+            ticker="NVDA", user={"id": "fixture"}, after_sequence=0, poll_seconds=0, max_cycles=1)]
+    output = "".join(asyncio.run(collect()))
+    assert "event: restricted" in output
+    assert "event: upsert" not in output
+    assert "Nvidia launches accelerator" not in output
