@@ -40,6 +40,8 @@ The unfiltered report returned **298 rows**, comprising 261 NCA rows and 37 CAL 
 
 These are observed same-key title discrepancies. They do not establish two distinct analyses or two new developments. A collector must preserve the source rows and evidence, reconcile stable native identity and title provenance, and refuse silent last-row-wins behavior. Whether every such pair is a deliberate alias remains unqualified.
 
+The bounded receipt retains the native `last_updated_sort` field for each duplicate row. This source sorting value has no qualified timezone or public-knowledge meaning here; it must not become a publication timestamp. The owner reproduced all nine retained response digests/lengths, the complete report counts and all 54 projected native sample fields. The independent factual review assessed the schema and date semantics; its projection-key correction is incorporated.
+
 The sampled detail/tracking response for NCA 322 uses the first title. Neither NCA detail nor tracking response echoes the report's `document_version`. Therefore an atomic version-pinned report/detail join is not yet proven. Capture independent payload hashes and clocks; qualify source-race handling before publication.
 
 ## Dates have different meanings
