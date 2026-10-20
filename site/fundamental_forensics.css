@@ -2934,6 +2934,37 @@ html[data-theme="light"] .ff-quick-signal[data-priority="high"] { border-color: 
   font-size: var(--fs-micro);
   font-variant-numeric: tabular-nums;
 }
+/* A43 r3 (P0 first-viewport repair): the stamp line is a flex row that also
+   carries the pinned saved-view badge and the closed Desk tools disclosure
+   (saved views + the retained-holding reader). Closed, the row is exactly one
+   stamp line tall at every viewport, so the desk band keeps the 10-12 fold
+   geometry the P0 contract pins (lead at 370 / 500); open, the disclosure
+   drops under the stamp at the full band width. The summary keeps its native
+   marker and focus outline. */
+.ff-desk-stamp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 12px;
+  min-width: 0;
+}
+.ff-desk-stamp-row > .ff-desk-stamp { min-width: 0; }
+.ff-desk-tools { margin-left: auto; min-width: 0; }
+.ff-desk-tools > summary {
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  line-height: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ff-desk-tools > summary:hover { color: var(--text); }
+.ff-desk-tools[open] { flex: 1 1 100%; margin-left: 0; }
+.ff-desk-tools-body { display: grid; gap: 12px; padding-top: 8px; }
+.ff-desk-tools-body > .ff-asof-controls--saved { margin-top: 0; }
+.ff-desk-tools-body > .ff-holding-research { margin: 0; }
 .ff-desk-asof > label,
 .ff-desk-export { align-self: end; }
 .ff-asof-controls { display: flex; gap: 6px; align-items: center; }

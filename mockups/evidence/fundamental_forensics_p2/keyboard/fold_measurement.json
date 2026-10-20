@@ -18,9 +18,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -31,7 +31,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -39,12 +39,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -52,12 +52,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -65,12 +65,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -78,12 +78,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -91,7 +91,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -122,7 +122,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -130,7 +130,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -171,9 +171,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -184,7 +184,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -192,12 +192,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -205,12 +205,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -218,12 +218,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -231,12 +231,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -244,7 +244,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -275,7 +275,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -283,7 +283,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -324,9 +324,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -337,7 +337,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -345,12 +345,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -358,12 +358,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -371,12 +371,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -384,12 +384,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -397,7 +397,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -428,7 +428,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -436,7 +436,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -477,9 +477,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -490,7 +490,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -498,12 +498,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -511,12 +511,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -524,12 +524,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -537,12 +537,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -550,7 +550,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -581,7 +581,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -589,7 +589,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -630,9 +630,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -643,7 +643,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -651,12 +651,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -664,12 +664,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -677,12 +677,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -690,12 +690,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -703,7 +703,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -734,7 +734,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -742,7 +742,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -783,9 +783,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -796,7 +796,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -804,12 +804,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -817,12 +817,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -830,12 +830,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 755.234375,
+        "bottom": 608.296875,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -843,12 +843,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 589.296875,
+        "top": 442.359375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 855.234375,
+        "bottom": 708.296875,
         "found": true,
         "height": 61,
         "left": 36,
@@ -856,7 +856,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 794.234375,
+        "top": 647.296875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -887,7 +887,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 576.296875,
+        "bottom": 429.359375,
         "found": true,
         "height": 153.6875,
         "left": 855.5,
@@ -895,7 +895,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -936,9 +936,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -949,7 +949,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -957,12 +957,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -970,12 +970,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -983,12 +983,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -996,12 +996,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1009,7 +1009,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1040,7 +1040,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1048,7 +1048,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1089,9 +1089,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -1102,7 +1102,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -1110,12 +1110,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -1123,12 +1123,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -1136,12 +1136,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -1149,12 +1149,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1162,7 +1162,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1193,7 +1193,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1201,7 +1201,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1242,9 +1242,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -1255,7 +1255,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -1263,12 +1263,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -1276,12 +1276,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -1289,12 +1289,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -1302,12 +1302,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1315,7 +1315,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1346,7 +1346,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1354,7 +1354,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1395,9 +1395,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -1408,7 +1408,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -1416,12 +1416,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -1429,12 +1429,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -1442,12 +1442,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -1455,12 +1455,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1468,7 +1468,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1499,7 +1499,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1507,7 +1507,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1548,9 +1548,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -1561,7 +1561,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -1569,12 +1569,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -1582,12 +1582,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -1595,12 +1595,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -1608,12 +1608,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1621,7 +1621,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1652,7 +1652,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1660,7 +1660,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1701,9 +1701,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 317.609375,
+        "bottom": 244.671875,
         "found": true,
-        "height": 213.609375,
+        "height": 140.671875,
         "left": 28,
         "name": "desk",
         "rendered": true,
@@ -1714,7 +1714,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 648.734375,
+        "bottom": 501.796875,
         "found": true,
         "height": 131.828125,
         "left": 52,
@@ -1722,12 +1722,12 @@
         "rendered": true,
         "right": 707.015625,
         "selector": "#ff-quick-signal",
-        "top": 516.90625,
+        "top": 369.96875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 763.015625,
@@ -1735,12 +1735,12 @@
         "rendered": true,
         "right": 832.5,
         "selector": "#ff-stat-attention",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 487.609375,
+        "bottom": 340.671875,
         "found": true,
         "height": 20,
         "left": 869.5,
@@ -1748,12 +1748,12 @@
         "rendered": true,
         "right": 939,
         "selector": "#ff-stat-coverage",
-        "top": 467.609375,
+        "top": 320.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 713.421875,
+        "bottom": 566.484375,
         "found": true,
         "height": 165.9375,
         "left": 749.015625,
@@ -1761,12 +1761,12 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-next-steps",
-        "top": 547.484375,
+        "top": 400.546875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
       {
-        "bottom": 813.421875,
+        "bottom": 666.484375,
         "found": true,
         "height": 61,
         "left": 36,
@@ -1774,7 +1774,7 @@
         "rendered": true,
         "right": 964,
         "selector": ".ff-tablist",
-        "top": 752.421875,
+        "top": 605.484375,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1805,7 +1805,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 534.484375,
+        "bottom": 387.546875,
         "found": true,
         "height": 111.875,
         "left": 855.5,
@@ -1813,7 +1813,7 @@
         "rendered": true,
         "right": 953,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 422.609375,
+        "top": 275.671875,
         "viewport_height": 900,
         "within_first_viewport": true
       },
@@ -1854,9 +1854,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -1867,7 +1867,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -1875,12 +1875,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -1888,12 +1888,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -1901,12 +1901,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -1914,12 +1914,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -1927,9 +1927,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -1958,7 +1958,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -1966,7 +1966,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2007,9 +2007,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2020,7 +2020,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2028,12 +2028,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2041,12 +2041,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2054,12 +2054,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2067,12 +2067,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2080,12 +2080,12 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1809,
+        "bottom": 1168,
         "found": true,
         "height": 1156,
         "left": 836,
@@ -2093,12 +2093,12 @@
         "rendered": true,
         "right": 1396,
         "selector": "#ff-evidence",
-        "top": 653,
+        "top": 12,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1799,
+        "bottom": 1158,
         "found": true,
         "height": 56,
         "left": 595.90625,
@@ -2106,12 +2106,12 @@
         "rendered": true,
         "right": 798,
         "selector": "#mmb-boot",
-        "top": 1743,
+        "top": 1102,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2119,7 +2119,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2160,9 +2160,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2173,7 +2173,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2181,12 +2181,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2194,12 +2194,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2207,12 +2207,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2220,12 +2220,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2233,9 +2233,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -2264,7 +2264,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2272,7 +2272,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2313,9 +2313,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2326,7 +2326,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2334,12 +2334,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2347,12 +2347,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2360,12 +2360,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2373,12 +2373,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2386,9 +2386,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -2417,7 +2417,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2425,7 +2425,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2466,9 +2466,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2479,7 +2479,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2487,12 +2487,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2500,12 +2500,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2513,12 +2513,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2526,12 +2526,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2539,12 +2539,12 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1809,
+        "bottom": 1168,
         "found": true,
         "height": 1156,
         "left": 836,
@@ -2552,12 +2552,12 @@
         "rendered": true,
         "right": 1396,
         "selector": "#ff-evidence",
-        "top": 653,
+        "top": 12,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1799,
+        "bottom": 1158,
         "found": true,
         "height": 56,
         "left": 595.90625,
@@ -2565,12 +2565,12 @@
         "rendered": true,
         "right": 798,
         "selector": "#mmb-boot",
-        "top": 1743,
+        "top": 1102,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2578,7 +2578,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2619,9 +2619,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2632,7 +2632,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2640,12 +2640,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2653,12 +2653,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2666,12 +2666,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2679,12 +2679,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2692,9 +2692,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -2723,7 +2723,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2731,7 +2731,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2772,9 +2772,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2785,7 +2785,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2793,12 +2793,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2806,12 +2806,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2819,12 +2819,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2832,12 +2832,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2845,9 +2845,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -2876,7 +2876,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -2884,7 +2884,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -2925,9 +2925,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -2938,7 +2938,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -2946,12 +2946,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -2959,12 +2959,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -2972,12 +2972,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -2985,12 +2985,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -2998,12 +2998,12 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1809,
+        "bottom": 1168,
         "found": true,
         "height": 1156,
         "left": 836,
@@ -3011,12 +3011,12 @@
         "rendered": true,
         "right": 1396,
         "selector": "#ff-evidence",
-        "top": 653,
+        "top": 12,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1799,
+        "bottom": 1158,
         "found": true,
         "height": 56,
         "left": 626.9375,
@@ -3024,12 +3024,12 @@
         "rendered": true,
         "right": 798,
         "selector": "#mmb-boot",
-        "top": 1743,
+        "top": 1102,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -3037,7 +3037,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -3078,9 +3078,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -3091,7 +3091,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -3099,12 +3099,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -3112,12 +3112,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -3125,12 +3125,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -3138,12 +3138,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -3151,9 +3151,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -3182,7 +3182,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -3190,7 +3190,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -3231,9 +3231,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -3244,7 +3244,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -3252,12 +3252,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -3265,12 +3265,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -3278,12 +3278,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -3291,12 +3291,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -3304,9 +3304,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -3335,7 +3335,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -3343,7 +3343,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -3384,9 +3384,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -3397,7 +3397,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -3405,12 +3405,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -3418,12 +3418,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -3431,12 +3431,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -3444,12 +3444,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -3457,12 +3457,12 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1809,
+        "bottom": 1168,
         "found": true,
         "height": 1156,
         "left": 836,
@@ -3470,12 +3470,12 @@
         "rendered": true,
         "right": 1396,
         "selector": "#ff-evidence",
-        "top": 653,
+        "top": 12,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1799,
+        "bottom": 1158,
         "found": true,
         "height": 56,
         "left": 626.9375,
@@ -3483,12 +3483,12 @@
         "rendered": true,
         "right": 798,
         "selector": "#mmb-boot",
-        "top": 1743,
+        "top": 1102,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -3496,7 +3496,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -3537,9 +3537,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 502.484375,
+        "bottom": 429.546875,
         "found": true,
-        "height": 359.484375,
+        "height": 286.546875,
         "left": 18,
         "name": "desk",
         "rendered": true,
@@ -3550,7 +3550,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 833.609375,
+        "bottom": 686.671875,
         "found": true,
         "height": 131.828125,
         "left": 42,
@@ -3558,12 +3558,12 @@
         "rendered": true,
         "right": 778,
         "selector": "#ff-quick-signal",
-        "top": 701.78125,
+        "top": 554.84375,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 51,
@@ -3571,12 +3571,12 @@
         "rendered": true,
         "right": 391.5,
         "selector": "#ff-stat-attention",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 940.609375,
+        "bottom": 793.671875,
         "found": true,
         "height": 20,
         "left": 428.5,
@@ -3584,12 +3584,12 @@
         "rendered": true,
         "right": 769,
         "selector": "#ff-stat-coverage",
-        "top": 920.609375,
+        "top": 773.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1154.546875,
+        "bottom": 1007.609375,
         "found": true,
         "height": 165.9375,
         "left": 37,
@@ -3597,12 +3597,12 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-next-steps",
-        "top": 988.609375,
+        "top": 841.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
       {
-        "bottom": 1256.546875,
+        "bottom": 1109.609375,
         "found": true,
         "height": 63,
         "left": 26,
@@ -3610,9 +3610,9 @@
         "rendered": true,
         "right": 794,
         "selector": ".ff-tablist",
-        "top": 1193.546875,
+        "top": 1046.609375,
         "viewport_height": 1180,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 1168,
@@ -3641,7 +3641,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 975.609375,
+        "bottom": 828.671875,
         "found": true,
         "height": 100,
         "left": 414.5,
@@ -3649,7 +3649,7 @@
         "rendered": true,
         "right": 783,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 875.609375,
+        "top": 728.671875,
         "viewport_height": 1180,
         "within_first_viewport": true
       },
@@ -3690,9 +3690,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -3703,7 +3703,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -3711,12 +3711,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -3724,12 +3724,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -3737,12 +3737,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -3750,12 +3750,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -3763,7 +3763,7 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -3794,7 +3794,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -3802,7 +3802,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -3843,9 +3843,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -3856,7 +3856,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -3864,12 +3864,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -3877,12 +3877,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -3890,12 +3890,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -3903,12 +3903,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -3916,12 +3916,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1765,
+        "bottom": 1772,
         "found": true,
         "height": 415,
         "left": 0,
@@ -3929,12 +3929,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 1350,
+        "top": 1357,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1318,
+        "bottom": 1325,
         "found": true,
         "height": 56,
         "left": 318,
@@ -3942,12 +3942,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1262,
+        "top": 1269,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -3955,7 +3955,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -3996,9 +3996,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4009,7 +4009,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -4017,12 +4017,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4030,12 +4030,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4043,12 +4043,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4056,12 +4056,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4069,12 +4069,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1316,
+        "bottom": 844,
         "found": true,
         "height": 816,
         "left": 0,
@@ -4082,12 +4082,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 500,
+        "top": 28,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1300,
+        "bottom": 828,
         "found": true,
         "height": 56,
         "left": 318,
@@ -4095,12 +4095,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1244,
+        "top": 772,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -4108,7 +4108,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4149,9 +4149,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4162,7 +4162,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -4170,12 +4170,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4183,12 +4183,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4196,12 +4196,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4209,12 +4209,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4222,7 +4222,7 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4253,7 +4253,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -4261,7 +4261,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4302,9 +4302,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4315,7 +4315,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -4323,12 +4323,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4336,12 +4336,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4349,12 +4349,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4362,12 +4362,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4375,12 +4375,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1765,
+        "bottom": 1772,
         "found": true,
         "height": 415,
         "left": 0,
@@ -4388,12 +4388,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 1350,
+        "top": 1357,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1318,
+        "bottom": 1325,
         "found": true,
         "height": 56,
         "left": 318,
@@ -4401,12 +4401,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1262,
+        "top": 1269,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -4414,7 +4414,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4455,9 +4455,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4468,7 +4468,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 922.21875,
+        "bottom": 693.28125,
         "found": true,
         "height": 193.421875,
         "left": 26,
@@ -4476,12 +4476,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4489,12 +4489,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1018.21875,
+        "bottom": 789.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4502,12 +4502,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 998.21875,
+        "top": 769.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1257.96875,
+        "bottom": 1029.03125,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4515,12 +4515,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1092.03125,
+        "top": 863.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1338.96875,
+        "bottom": 1110.03125,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4528,12 +4528,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1289.96875,
+        "top": 1061.03125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1316,
+        "bottom": 844,
         "found": true,
         "height": 816,
         "left": 0,
@@ -4541,12 +4541,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 500,
+        "top": 28,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1300,
+        "bottom": 828,
         "found": true,
         "height": 56,
         "left": 318,
@@ -4554,12 +4554,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1244,
+        "top": 772,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1079.03125,
+        "bottom": 850.09375,
         "found": true,
         "height": 125.8125,
         "left": 160.5,
@@ -4567,7 +4567,7 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 953.21875,
+        "top": 724.28125,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4608,9 +4608,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4621,7 +4621,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -4629,12 +4629,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4642,12 +4642,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4655,12 +4655,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4668,12 +4668,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4681,7 +4681,7 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -4712,7 +4712,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -4720,9 +4720,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
@@ -4761,9 +4761,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4774,7 +4774,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -4782,12 +4782,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4795,12 +4795,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4808,12 +4808,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4821,12 +4821,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4834,12 +4834,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1733,
+        "bottom": 1740,
         "found": true,
         "height": 415,
         "left": 0,
@@ -4847,12 +4847,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 1318,
+        "top": 1325,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1286,
+        "bottom": 1293,
         "found": true,
         "height": 56,
         "left": 318,
@@ -4860,12 +4860,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1230,
+        "top": 1237,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -4873,9 +4873,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
@@ -4914,9 +4914,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -4927,7 +4927,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -4935,12 +4935,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -4948,12 +4948,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -4961,12 +4961,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -4974,12 +4974,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -4987,12 +4987,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1298,
+        "bottom": 844,
         "found": true,
         "height": 816,
         "left": 0,
@@ -5000,12 +5000,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 482,
+        "top": 28,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1282,
+        "bottom": 828,
         "found": true,
         "height": 56,
         "left": 318,
@@ -5013,12 +5013,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1226,
+        "top": 772,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -5026,9 +5026,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
@@ -5067,9 +5067,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -5080,7 +5080,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -5088,12 +5088,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -5101,12 +5101,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -5114,12 +5114,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -5127,12 +5127,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -5140,7 +5140,7 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
@@ -5171,7 +5171,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -5179,9 +5179,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
@@ -5220,9 +5220,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -5233,7 +5233,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -5241,12 +5241,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -5254,12 +5254,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -5267,12 +5267,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -5280,12 +5280,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -5293,12 +5293,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1733,
+        "bottom": 1740,
         "found": true,
         "height": 415,
         "left": 0,
@@ -5306,12 +5306,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 1318,
+        "top": 1325,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1286,
+        "bottom": 1293,
         "found": true,
         "height": 56,
         "left": 318,
@@ -5319,12 +5319,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1230,
+        "top": 1237,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -5332,9 +5332,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
@@ -5373,9 +5373,9 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 497.734375,
+        "bottom": 342.796875,
         "found": true,
-        "height": 367.734375,
+        "height": 212.796875,
         "left": 8,
         "name": "desk",
         "rendered": true,
@@ -5386,7 +5386,7 @@
         "within_first_viewport": true
       },
       {
-        "bottom": 904.21875,
+        "bottom": 675.28125,
         "found": true,
         "height": 175.421875,
         "left": 26,
@@ -5394,12 +5394,12 @@
         "rendered": true,
         "right": 364,
         "selector": "#ff-quick-signal",
-        "top": 728.796875,
+        "top": 499.859375,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 36,
@@ -5407,12 +5407,12 @@
         "rendered": true,
         "right": 137.5,
         "selector": "#ff-stat-attention",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1000.21875,
+        "bottom": 771.28125,
         "found": true,
         "height": 20,
         "left": 174.5,
@@ -5420,12 +5420,12 @@
         "rendered": true,
         "right": 276,
         "selector": "#ff-stat-coverage",
-        "top": 980.21875,
+        "top": 751.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1226.03125,
+        "bottom": 997.09375,
         "found": true,
         "height": 165.9375,
         "left": 22,
@@ -5433,12 +5433,12 @@
         "rendered": true,
         "right": 368,
         "selector": ".ff-next-steps",
-        "top": 1060.09375,
+        "top": 831.15625,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1307.03125,
+        "bottom": 1078.09375,
         "found": true,
         "height": 49,
         "left": 14,
@@ -5446,12 +5446,12 @@
         "rendered": true,
         "right": 376,
         "selector": ".ff-tablist",
-        "top": 1258.03125,
+        "top": 1029.09375,
         "viewport_height": 844,
         "within_first_viewport": false
       },
       {
-        "bottom": 1298,
+        "bottom": 844,
         "found": true,
         "height": 816,
         "left": 0,
@@ -5459,12 +5459,12 @@
         "rendered": true,
         "right": 390,
         "selector": "#ff-evidence",
-        "top": 482,
+        "top": 28,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1282,
+        "bottom": 828,
         "found": true,
         "height": 56,
         "left": 318,
@@ -5472,12 +5472,12 @@
         "rendered": true,
         "right": 374,
         "selector": "#mmb-boot",
-        "top": 1226,
+        "top": 772,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
-        "bottom": 1047.09375,
+        "bottom": 818.15625,
         "found": true,
         "height": 111.875,
         "left": 160.5,
@@ -5485,9 +5485,9 @@
         "rendered": true,
         "right": 290,
         "selector": ".ff-snapshot-stat.is-coverage",
-        "top": 935.21875,
+        "top": 706.28125,
         "viewport_height": 844,
-        "within_first_viewport": false
+        "within_first_viewport": true
       },
       {
         "bottom": 311.296875,
