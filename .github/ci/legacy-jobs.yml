@@ -18288,9 +18288,13 @@ jobs:
     # moved the index-template packing probe past its ceiling (5,824 > 5,822). scope: exclusive
     # pins it to its static import closure, the modules engine/pick_lab/__init__.py imports and
     # ancestor inits; the probe ceilings stay fixed.
+    # W30-L38 (2026-10-20): the scoreboard prints the committed path25 columns and the
+    # Accountability tab its matured-row denominator; one guard test reads
+    # templates/hk_stocks_lab.html.j2 as text (the HK lab keeps its h21 columns).
     paths:
       - "engine/pick_lab/render_cn.py"
       - "templates/china_stocks_lab.html.j2"
+      - "templates/hk_stocks_lab.html.j2"
       - "tests/test_pick_lab_cn_render.py"
       - "engine/__init__.py"
       - "engine/pick_lab/__init__.py"
