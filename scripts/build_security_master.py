@@ -96,6 +96,7 @@ from lib.dataos.identity import (  # noqa: E402
     BATS,
     XASE,
     ARCX,
+    TXSE,
     alias_binding_sha256,
     XNAS,
     XNYS,
@@ -327,6 +328,10 @@ VENDOR_THEME_GRAPH_NATIVE = "theme_graph_native"
 #: otherlisted.txt single-character exchange codes, per the legend the collector that
 #: fetches the file records at ``collectors/symbol_directory.py:184-185``:
 #: "A=NYSE MKT (AMEX), N=NYSE, P=NYSE Arca, Z=BATS, V=Investors Exchange".
+#: ``F`` = Texas Stock Exchange (MIC TXSE) is newer than that legend: the CTS Pillar
+#: participant id ``F`` is assigned to TXSE (txse.com alert TXSE-2026-002 / CTA
+#: "CTS Pillar Output Specification"), and the 2026-10-15 otherlisted.txt snapshot
+#: carries ``F`` on exactly the TXSE-listed names (ET, TXS, OILT, ILS, ...).
 #: Only venues with an evidence-backed MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
 #: Arca / IEX remain deliberately ABSENT rather than approximated: a name listed
 #: there is reported unresolved by name, because widening the closed MIC list is a
@@ -336,6 +341,7 @@ EXCHANGE_MIC = {
     "N": XNYS,
     "A": XASE,
     "Z": BATS,
+    "F": TXSE,
 }
 
 #: `exchange:` values used by the exit ledger (`config/delisted_symbols.yml`), which
@@ -501,6 +507,93 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    RenameEvent(
+        old="DOMO",
+        new="HUCK",
+        on=date(2026, 9, 24),
+        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so no
+        # supersession entry is needed (same as EQR->VMRK). `yahoo` + `membership`
+        # dated exactly as PSKY's are; `store`/`yahoo_fetch` stay at the committed
+        # DOMO rows until a #4622-protocol store-key migration moves them (out of
+        # scope here). Until then the committed build still reports US-XNAS-DOMO
+        # in resolved_not_rederivable and HUCK in listing_continuity: this event
+        # dates and attributes the rename, it does not by itself clear those rows.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 "
+            "(www.sec.gov/Archives/edgar/data/1505952/000110465926109635/"
+            "tm2625825d1_8k.htm): Nasdaq ticker DOMO -> HUCK effective 2026-09-24, "
+            "same registrant/CIK. Corroborated by the 2026-10-15 nasdaqlisted.txt "
+            "snapshot (HUCK listed, DOMO absent)."
+        ),
+    ),
+    RenameEvent(
+        old="YYGH",
+        new="YFOR",
+        on=date(2026, 9, 2),
+        # Nasdaq->Nasdaq symbol change with a name change (YY Group Holding Ltd. is
+        # the formerName under the same CIK). Vendors dated as DOMO->HUCK above.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001985337 Form 6-K accession 0001185185-26-003874 "
+            "(www.sec.gov/Archives/edgar/data/1985337/000118518526003874/"
+            "yfor6k090726.htm): Nasdaq ticker YYGH -> YFOR effective 2026-09-02, "
+            "same registrant/CIK (formerName YY Group Holding Ltd.). Corroborated by "
+            "the 2026-10-15 nasdaqlisted.txt snapshot (YFOR listed, YYGH absent)."
+        ),
+    ),
+)
+
+
+# ── The curated venue-transfer registry ───────────────────────────────────────
+@dataclass(frozen=True)
+class VenueTransfer:
+    """One SAME-SYMBOL primary-listing transfer between venues (no rename).
+
+    A transfer leaves the symbol directory carrying the security only under its NEW
+    venue, so the resolution re-derives ``US-{to_mic}-{symbol}`` while the committed
+    master row keeps its inception venue ``US-{from_mic}-{symbol}`` — structurally
+    the PSKY->SKYD cross-venue case without a :class:`RenameEvent`. Each entry is
+    paired with an EXACT-listing-key :data:`SECURITY_SUPERSESSIONS` entry (checked
+    by :func:`_venue_transfer_covered_keys`); together they ratify the join onto the
+    one canonical row, never a second mint. Authored data, same evidence law.
+    """
+
+    symbol: str
+    from_mic: str
+    to_mic: str
+    on: date
+    evidence: str
+
+
+VENUE_TRANSFERS: tuple[VenueTransfer, ...] = (
+    VenueTransfer(
+        symbol="KHC",
+        from_mic=XNAS,
+        to_mic=XNYS,
+        on=date(2026, 9, 14),
+        evidence=(
+            "SEC EDGAR CIK 0001637459: Form 8-K accession 0001637459-26-000057 "
+            "(listing-transfer notice, Nasdaq -> NYSE), Form 25 accession "
+            "0001637459-26-000062 (voluntary removal from Nasdaq) and Form 8-A12B "
+            "accession 0001637459-26-000061 (NYSE registration); KHC trades on NYSE "
+            "from 2026-09-14 under the unchanged symbol."
+        ),
+    ),
+    VenueTransfer(
+        symbol="ET",
+        from_mic=XNYS,
+        to_mic=TXSE,
+        on=date(2026, 10, 5),
+        evidence=(
+            "SEC EDGAR CIK 0001276187: Form 8-K accession 0001276187-26-000044 "
+            "(listing-transfer notice, NYSE -> Texas Stock Exchange), Form 25 "
+            "accession 0001276187-26-000058 (voluntary removal from NYSE) and Form "
+            "8-A12B accession 0001276187-26-000056 (TXSE registration); ET trades "
+            "on TXSE from 2026-10-05 under the unchanged symbol (txse.com press "
+            "release; otherlisted.txt exchange code F)."
+        ),
+    ),
 )
 
 
@@ -576,7 +669,44 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    SecuritySupersession(
+        listing_key="US-XNYS-KHC",
+        canonical_id="SEC:US-XNAS-KHC",
+        on=date(2026, 9, 14),
+        # The cross-venue half of the KHC VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[0].evidence,
+    ),
+    SecuritySupersession(
+        listing_key="US-TXSE-ET",
+        canonical_id="SEC:US-XNYS-ET",
+        on=date(2026, 10, 5),
+        # The cross-venue half of the ET VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[1].evidence,
+    ),
 )
+
+
+def _venue_transfer_covered_keys() -> frozenset[str]:
+    """Symbols a :data:`VENUE_TRANSFERS` entry ratifies for a cross-venue join.
+
+    Fail-closed pairing check: every transfer must have EXACTLY the matching
+    :data:`SECURITY_SUPERSESSIONS` entry (``US-{to}-{sym}`` -> ``SEC:US-{from}-{sym}``)
+    — a transfer without its exact-key supersession, or with a mismatched canonical
+    id, is a curation defect raised here, never a silent join.
+    """
+    by_lk = {e.listing_key: e for e in SECURITY_SUPERSESSIONS}
+    covered: set[str] = set()
+    for t in VENUE_TRANSFERS:
+        lk = f"US-{t.to_mic}-{t.symbol}"
+        want = f"SEC:US-{t.from_mic}-{t.symbol}"
+        entry = by_lk.get(lk)
+        if entry is None or entry.canonical_id != want or t.from_mic == t.to_mic:
+            raise ValueError(
+                f"VENUE_TRANSFERS entry {t!r} lacks its exact SECURITY_SUPERSESSIONS "
+                f"pair {lk} -> {want}"
+            )
+        covered.add(t.symbol)
+    return frozenset(covered)
 
 #: Renames the repo records WITHOUT a citable date.  Fiserv renamed FISV->FI in 2023
 #: and the vendor LAGS it: Yahoo still serves the series under FISV
@@ -2145,7 +2275,7 @@ def mint_master_rows(
     supersession_joins: dict[str, str] = {}
     _rename_covered_keys = {
         sym for event in RENAME_EVENTS for sym in (event.old, event.new)
-    }
+    } | _venue_transfer_covered_keys()  # same-symbol transfers: exact-pair checked
     for entry in SECURITY_SUPERSESSIONS:
         if entry.listing_key in by_listing_key:
             continue  # a committed row already owns this key: the stored join below
@@ -2157,6 +2287,9 @@ def mint_master_rows(
         # exists to feed is derived from the RenameEvent (date + evidence law), so a
         # key no event covers never joins — it keeps falling to the fence below
         # exactly as before this bridge existed (the H1/H7 race replays pin that).
+        # A VENUE_TRANSFERS symbol is covered too: a same-symbol transfer has no
+        # dated alias family to feed (the symbol never changes), and its exact
+        # supersession pairing is enforced by _venue_transfer_covered_keys.
         covered = any(
             res.listing_key is not None
             and res.listing_key.render() == entry.listing_key
@@ -2523,8 +2656,12 @@ def apply_issuer_correction(
     finally covers its ticker — the contract's own promised self-heal (spec §11 "FI/
     FISV ... self-heals on a later map") was unreachable.  ``RESOLVED``,
     ``DEFERRED_IDENTITY_EXCEPTION`` and ``EVIDENCE_CONFLICT`` rows stay mint-once —
-    never revisited: a later run whose seeds are unchanged sees the SAME pending set
-    (only the unstamped + NO_ISSUER_EVIDENCE rows) and, if none of them can change
+    never revisited (sole exception: an allowlist-refused EVIDENCE_CONFLICT whose
+    issuer_id is still NULL and whose stamped CIK has since been ratified in
+    config/issuer_group_allowlist.yml, and no same-CIK conflicted sibling carries a
+    committed issuer_id — see the reopen below): a later run whose seeds are
+    unchanged sees the SAME pending set (the unstamped, NO_ISSUER_EVIDENCE and
+    AMBIGUOUS rows plus any ratified-reopen rows) and, if none of them can change
     outcome, returns byte-stable rows.  A CIK group that later grows to include an
     already-RESOLVED member ADOPTS that member's existing ``issuer_id`` rather than
     re-running the tie-break ("the id is never re-derived because membership grew",
@@ -2581,9 +2718,35 @@ def apply_issuer_correction(
     # a CIK group, and a future CIK map carrying its old symbol can never trip it into
     # EVIDENCE_CONFLICT (H4).  Its issuer columns stay exactly as committed, frozen.
     _REOPENABLE = (None, "", "NO_ISSUER_EVIDENCE", "AMBIGUOUS")
+    # ALLOWLIST RATIFICATION REOPEN (#9570): a row the FIX 5 gate refused — typed
+    # EVIDENCE_CONFLICT with its stamped issuer_cik — whose CIK has SINCE been
+    # ratified in config/issuer_group_allowlist.yml is re-examined, but ONLY while
+    # its issuer_id is still NULL.  With no committed value there is nothing for
+    # mint-once to protect, and the ratification row IS the review the gate asked
+    # for.  A conflict that carries a committed issuer_id (FIX 1(b), or a refused
+    # legacy row) stays terminal: reopening it would rewrite an assignment.  The
+    # reopen is also ALL-OR-NOTHING per CIK: when any conflicted sibling sharing the
+    # stamped CIK carries a committed issuer_id, NO null member of that CIK reopens —
+    # a partial reopen would tie-break over the null members alone and mint a second
+    # issuer_id for one registrant (the committed sibling is not RESOLVED, so the
+    # adoption index below never sees it).  Such a CIK stays terminal for a human.
+    _committed_conflict_ciks = {
+        r.get("issuer_cik")
+        for r in rows
+        if not r.get("security_state")
+        and r.get("issuer_state") == "EVIDENCE_CONFLICT"
+        and r.get("issuer_id") is not None
+        and r.get("issuer_cik")
+    }
     pending = [
         r for r in rows
-        if r.get("issuer_state") in _REOPENABLE and not r.get("security_state")
+        if not r.get("security_state") and (
+            r.get("issuer_state") in _REOPENABLE
+            or (r.get("issuer_state") == "EVIDENCE_CONFLICT"
+                and r.get("issuer_id") is None
+                and r.get("issuer_cik") in allowed_ciks
+                and r.get("issuer_cik") not in _committed_conflict_ciks)
+        )
     ]
     if not pending:
         return rows, []
