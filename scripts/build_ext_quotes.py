@@ -519,6 +519,11 @@ class BoatsLastTrade:
             return
         if data[0] not in {"Q", "T", "B"}:
             return
+        if data[0] == "Q":
+            # Top-of-book is not evidence about the last trade, including when
+            # its clock is stale, malformed or slightly ahead of this host.
+            # It must neither invalidate nor refresh a qualified trade.
+            return
         # Do not accept the research decoder's string/int coercion as identity proof.
         vendor_symbol = data[3] if len(data) > 3 else None
         if not isinstance(vendor_symbol, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.:-]{0,31}", vendor_symbol):
@@ -549,8 +554,6 @@ class BoatsLastTrade:
         except (ValueError, TypeError, OverflowError, TiingoArchiveError):
             self.quotes.pop(symbol, None)
             return
-        if event["kind"] == "Q":
-            return  # A quote cannot advance or refresh a last-trade clock.
         epoch_ns = data[2]
         prior = self.watermarks.get(symbol, 0)
         if event["kind"] == "B":
