@@ -1,4 +1,4 @@
-# F07 — Event → AssumptionChange proposal contract (V1, FROZEN)
+# F07 — Event → AssumptionChange proposal contract (V1; source-qualification amendment 2026-10-20)
 
 Commissioned 2026-09-21. Base `origin/main` @ `ea194c5d215c`.
 Owner engine: `engine/valuation_event_proposal.py` (new). Consumers: `engine/valuation_assumptions.py`.
@@ -58,11 +58,13 @@ abstain_reasons   every reason that applied, so nothing is hidden behind the fir
   no_event                        healthy reader, issuer has none
   event_not_yet_observable        dated after the build's as_of: a calendar entry
   model_version_mismatch          stored proposal replayed against another model
+  issuer_mismatch                 missing or different issuer identity
   already_in_reported_base        dated on/before base period end — double count
   superseded_by_base              the base advanced past the proposal
   reported_result_not_an_assumption   a reported result is a FACT, not a forecast
   payload_not_licensed            payload is consensus-derived (rights)
   no_source_ref                   nothing the user could open and check
+  guidance_metric_unqualified     phrase does not qualify the sales input/direction
   event_class_unmapped            no target for this class
   no_lawful_control_mapping       target is not one of the three controls
 ```
@@ -83,7 +85,7 @@ abstain_reasons   every reason that applied, so nothing is hidden behind the fir
    `as_of` has not happened yet — a scheduled earnings date is a calendar entry, not
    evidence. This module never reads a clock; `as_of` is threaded from the build.
 8. **Stored-proposal binding.** `evaluate_proposal` refuses a proposal whose
-   `model_version` differs from the engine's, or whose `base_period_end` differs from
+   `model_version` differs from the engine's, whose issuer is absent/different, or whose `base_period_end` differs from
    the blob's. A proposal is only meaningful against the exact model and base it was
    made against, and re-applying one the newer base has absorbed double-counts it.
    The historical proposal is never rewritten — it keeps its own `base_period_end`.
@@ -136,7 +138,7 @@ test-pinned, not left to copy drift.
 
 A generic guidance raise/cut is not evidence about sales growth. The native Corteva
 2026-07-30 hit (`0001755672-26-000022:a2q_2026xearningsxnewsxr.htm`) illustrates the
-failure: its SEC document raises non-GAAP Operating EBITDA and EPS guidance. It
+failure: its SEC document raises Operating EBITDA and Operating EPS guidance. It
 must not move `sales_growth_pct`. The same applies to EPS-only and EBITDA-only hits.
 
 `propose_from_guidance_hit` now requires the issuer to match the selected controls
@@ -150,3 +152,14 @@ This correction does not enable a new issuer or claim a positive native journey.
 The existing coarse SEC search producer still has a documented negation/context
 limitation; an extracted query phrase is not full-document semantic qualification.
 A positive native cohort admission needs source-context qualification before release.
+
+Both guidance and chronicle proposals require a nonempty matching issuer, and stored
+shadow evaluation repeats that binding check. Refused guidance copy states that no
+input moves and no scenario figure is proposed; it never claims an outlook change
+merely from a classified search hit. The ordered reasons in §2 include this amendment.
+
+The current coarse producer has no source-context qualification for a positive sales
+proposal. Its production guidance path therefore remains abstaining until that work
+is complete. Positive unit fixtures are explicitly synthetic and use a placeholder
+accession, not a quotation falsely attached to the real Corteva filing. The native
+Corteva accession is retained only for the real generic-guidance negative control.
