@@ -5089,8 +5089,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_664),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5191,6 +5191,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     base that already holds #9819, so fund 5,661 -> 5,664. index.html and
     plan_book stay under their ceilings even if they select this job
     (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
+    tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
+    W23-L9 SPR step in unrun-macro-panels (job weight 78 -> 82, measured
+    on the merged run text). contract-delta on the PR (run 39379143776)
+    measures build_free_content 134 jobs / 5,668 against base 5,664. No
+    new entrant. index.html (5,793) and plan_book (5,542) stay under
+    their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
+    Every other bound stays unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
@@ -5881,6 +5890,123 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Narrowing either job without a complete closure audit would discard
     coverage, while padding counts beyond the exact measured entrants
     would hide the next change. No selector or runtime source is edited.
+
+    2026-10-18 (PR #8014, joined AI x Terminal and native rich answers):
+    the existing unrun-brain-gateway job retains its selector and every prior
+    suite while adding the registered chart-context/receipt/presentation and
+    native-visual/browser regressions. Its deterministic weight rises 61 -> 90;
+    it is the only job whose weight changes. The selected job sets are unchanged.
+    Hosted contract-delta run 39122785381 / job 117661607889 measured head
+    c4a938afc201df797146bb685cc0c7f1977312fd against base
+    f3fefce7e893755dcec18cbfe06f421c2c4d2db8:
+
+        templates/index.html          136 -> 136 jobs, 5,779 -> 5,808 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,566 -> 5,595 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,528 -> 5,557 weight
+
+    All three remain at ten packs, with no newly selected job. Fund only the
+    five weight-seconds beyond the previous 5,803 index-template ceiling, to
+    the exact observed 5,808. Preserve both other weight limits, every job-count
+    limit, all test coverage, selectors and the ten-pack limit. These are planning
+    weights, not measured execution timings. Narrowing the shared Brain job
+    without its complete dependency audit would discard conservative coverage;
+    no assertion or semantic release rule is weakened to excuse a failing test.
+
+    2026-10-19 (PR #8014, accepted-main issuer-context integration):
+    the normal c3d25f38 + f5b7b273 merge retains every existing Brain and
+    upstream regression. Accepted main registers
+    tests/test_gmi_issuer_economic_context_api.py in prelaunch-hardening.
+    It is the sole selected weight change, 45 -> 47; the existing job sets
+    are unchanged. The other two changed exclusive jobs do not enter any
+    probe. Full-manifest measurements bound to the merged checkout compare
+    the prior and combined manifests on the SAME combined source tree
+    d7ab4bf07968eb6a8db2c107c06c0ca2bdf93c9b (not historical source runs):
+
+        templates/index.html          136 -> 136 jobs, 5,808 -> 5,810 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,595 -> 5,597 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,557 -> 5,559 weight
+
+    All three still require ten packs. Fund only the measured two units
+    beyond the existing index-template ceiling: 5,808 -> 5,810. Keep both
+    other weight limits, all job-count limits, every suite and selector,
+    and the ten-pack limit. These are deterministic planning weights, not
+    execution timings. The initial pytest failure is retained as evidence;
+    no runtime, scope, command, observed-duration override or semantic
+    release gate is changed. In particular, the independent Sector RIG
+    approval requirement remains active.
+
+    2026-10-19 (PR #8014, current hosted/base and Research-mode composition):
+    hosted run 39219648574 tested 0bbef372 against b73dbbd8 and exposed
+    index/build weights 5,814/5,601, above 5,810/5,600. The same original
+    branch now joins accepted main ff1b80af, preserving its Research mode and
+    every chart/rich regression. The prior and combined manifests, measured
+    on the SAME combined source tree bec31d6128b830212570dae2a60f0ce4c9ad072c,
+    select identical jobs; these are not historical source executions:
+
+        templates/index.html          136 -> 136 jobs, 5,810 -> 5,822 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,597 -> 5,609 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,559 -> 5,571 weight
+
+    All three remain at ten packs. Exactly four accepted upstream additions
+    contribute to each probe: prelaunch-hardening +2 (issuer-context parity),
+    support-email-spine +4 (held-material delivery), unrun-brain-gateway +2
+    (Research mode) and unrun-intl-libraries +4 (US/China cohort contract).
+    Other changed jobs are absent from these selected sets. The incoming
+    main manifest alone measures 5,793/5,580/5,542 on this same source.
+    Fund only the necessary exact ceilings: index 5,810 -> 5,822 and build
+    5,600 -> 5,609. Preserve the plan-book ceiling, every job-count limit,
+    all suites, selectors, scope/closure audits, observed-duration overrides
+    and the ten-pack limit. These are planning weights, not execution times.
+    No reference-integrity rule or approval requirement changes here.
+
+    2026-10-20 (original PR #8014, accepted ec836731 integration):
+    The combined and incoming manifests were measured on the same current
+    source tree 52d2c31d7d3f3865975e1f499505e43788e318d5. Selected job sets
+    are identical. Retaining the existing chart/readback/rich-answer suites
+    makes unrun-brain-gateway 92 rather than incoming main's 63 weight units:
+    exactly +29 on each probe, with no new or removed selected job.
+
+        templates/index.html          135 jobs, 5,763 -> 5,792 weight
+        scripts/build_free_content.py 134 jobs, 5,638 -> 5,667 weight
+        engine/prophet/plan_book.py    128 jobs, 5,512 -> 5,541 weight
+
+    All remain at ten packs. Only the build probe exceeds its current bound;
+    fund exactly 5,638 -> 5,667. Preserve the index/plan-book ceilings, all
+    job-count bounds, scopes, suite commands, import-closure audits, observed
+    duration overrides and ten-pack bound. These are planning weights, not
+    execution times; this does not change any reference-integrity requirement.
+
+    2026-10-20 (original PR #8014, accepted d52827f2 integration):
+    The combined and incoming manifests were measured on the same current
+    source tree f2b2ea007cd9921618d1d50793fa110a0679f3c1. Selected job sets
+    are identical. Retaining the existing chart/readback/rich-answer suites
+    makes unrun-brain-gateway 92 rather than incoming main's 63 weight units:
+    exactly +29 on each probe, with no new or removed selected job.
+
+        templates/index.html          135 jobs, 5,767 -> 5,796 weight
+        scripts/build_free_content.py 134 jobs, 5,642 -> 5,671 weight
+        engine/prophet/plan_book.py    128 jobs, 5,516 -> 5,545 weight
+
+    All remain at ten packs. Only the build probe exceeds its current bound;
+    fund exactly 5,642 -> 5,671. Preserve the index/plan-book ceilings, all
+    job-count bounds, scopes, suite commands, import-closure audits, observed
+    duration overrides and ten-pack bound. These are planning weights, not
+    execution times; this does not change any reference-integrity requirement.
+
+    2026-10-20 original PR8014 recovery joins accepted e1ae07b1 after
+    completing the retained d63e59bc+d19e1fb1 merge. On combined source tree
+    6891a298547461200549a463a18a956b7ab4441e, both current-main and combined
+    manifests select identical jobs. Retained chart/readback/rich suites add
+    exactly 29 estimator units on every probe:
+
+        templates/index.html          135 jobs, 5793 -> 5822 weight
+        scripts/build_free_content.py 134 jobs, 5668 -> 5697 weight
+        engine/prophet/plan_book.py    128 jobs, 5542 -> 5571 weight
+
+    Each remains ten packs. Fund only the measured index ceiling 5803 ->
+    5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
+    ceilings, suites, scopes, commands, assertions and ten-pack limit remain
+    unchanged. These are planning weights, not execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
