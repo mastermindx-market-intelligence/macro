@@ -38,6 +38,10 @@ jobs:
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -1878,6 +1882,10 @@ jobs:
     timeout-minutes: 10
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -2778,6 +2786,10 @@ jobs:
     timeout-minutes: 10
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -6554,6 +6566,9 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -8831,6 +8846,10 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "templates/institutional_holding_research.js"
@@ -10013,7 +10032,10 @@ jobs:
           tests/test_capital_structure_pit.py
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
-          tests/test_capital_structure_page.py tests/test_bond_issue_terms.py tests/test_bond_issue_parser.py
+          tests/test_capital_structure_page.py
+          tests/test_ma_agreement_context.py
+          tests/test_bond_issue_terms.py
+          tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10762,6 +10784,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -15984,6 +16010,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -16731,6 +16761,7 @@ jobs:
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
+      - engine/ma_agreement_context.py
       - engine/spine.py
       - engine/spotlight.py
       - engine/spvector_overlay.py
@@ -17878,6 +17909,40 @@ jobs:
       - name: admin site-gate unit + HTTP tests (admin/site_gate.py)
         run: python -m pytest tests/test_admin_site_gate.py -v
 
+  stock-liquidity-profile:
+    if: ${{ false }}
+    gate: code
+    # Producer-only F08 contract; no holdings, account, collector or live writes.
+    # Exact native import/read closure; temporary parquet fixtures do not own
+    # unrelated product code. Keep the existing packing-probe ceilings intact.
+    scope: exclusive
+    paths:
+      - .github/workflows/daily.yml
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/liquidity_chip.py
+      - engine/liquidity_profile.py
+      - lib/__init__.py
+      - lib/massive_ticker.py
+      - lib/nyse_calendar.py
+      - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+      - scripts/build_stock_library.py
+      - scripts/ci/daily_engine_regime_dashboard.sh
+      - scripts/stock_liquidity_profile.py
+      - tests/test_liquidity_chip.py
+      - tests/test_liquidity_profile.py
+      - tests/test_stock_liquidity_profile.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: raw-source qualification and existing one-record writer
+        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py -q
+
   pick-lab-liquidity:
     if: ${{ false }}
     gate: code
@@ -18955,6 +19020,9 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
@@ -19371,6 +19439,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
@@ -19728,6 +19797,9 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -21726,6 +21798,10 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -23388,6 +23464,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -24176,6 +24254,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -25287,6 +25367,10 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -25869,6 +25953,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_desk.py"
@@ -26632,6 +26717,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "lib/dataos/sec_filing_identity.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
@@ -27250,6 +27338,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/spvector_overlay.py"
@@ -29637,6 +29726,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -30131,6 +30222,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -33110,6 +33203,10 @@ jobs:
     scope: exclusive
     paths:
       - "engine/turn_watch_capture.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -34608,6 +34705,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -35794,6 +35894,8 @@ jobs:
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: radar_panel.js honesty section (settled theses + calls tile)
         run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
+      - name: radar_panel.js trail dates, promise horizon, stocks-tab read split
+        run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_trail.test.mjs tests/js/radar_panel_horizon.test.mjs tests/js/radar_panel_names.test.mjs
 
   sni-s2-event-response:
     if: ${{ false }}

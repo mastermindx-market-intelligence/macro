@@ -3,7 +3,9 @@
  *
  * Loads the real panel into a fresh node:vm context per render, stubs fetch
  * with inline fixtures (URL basename -> committed-shaped object), runs
- * window.renderRadarFull and returns the rendered #rx-honesty section HTML.
+ * window.renderRadarFull and returns the rendered #rx-honesty section HTML
+ * (renderHonesty) or the whole mount plus every #id node the panel painted
+ * (renderPanel: the board rows land in #rx-tbody, the name rows in #rx-nrows).
  * Stdlib only; no network; no site/ or data/ reads at test time. Source path
  * mirrors tests/js/stockbrief_freshness.test.mjs (RADAR_PANEL_JS override,
  * resolved against process.cwd(), else the repo-relative URL).
@@ -41,6 +43,20 @@ function fakeEl() {
   };
 }
 
+// The mount resolves "#id" to one persistent element per id, as a real DOM
+// does, so innerHTML the panel paints into byId() nodes can be read back.
+function fakeMount() {
+  const nodes = {};
+  const mount = fakeEl();
+  mount.querySelector = function querySelector(sel) {
+    const m = /^#([\w-]+)$/.exec(String(sel));
+    if (!m) return fakeEl();
+    if (!nodes[m[1]]) nodes[m[1]] = fakeEl();
+    return nodes[m[1]];
+  };
+  return { mount, nodes };
+}
+
 function makeFetch(byName) {
   return function fetchStub(url) {
     const name = String(url).split('/').pop();
@@ -55,8 +71,8 @@ function makeFetch(byName) {
 
 const tick = () => new Promise((done) => setTimeout(done, 0));
 
-export async function renderHonesty(fixtures) {
-  const mount = fakeEl();
+async function render(fixtures) {
+  const { mount, nodes } = fakeMount();
   const fakeDocument = {
     readyState: 'complete',
     querySelector(sel) {
@@ -107,7 +123,17 @@ export async function renderHonesty(fixtures) {
     process.removeListener('uncaughtException', onError);
   }
   if (errors.length) assert.fail('render threw: ' + errors.join(' | '));
-  const html = mount.innerHTML;
+  const painted = {};
+  for (const id of Object.keys(nodes)) painted[id] = nodes[id].innerHTML;
+  return { html: mount.innerHTML, nodes: painted };
+}
+
+export async function renderPanel(fixtures) {
+  return render(fixtures);
+}
+
+export async function renderHonesty(fixtures) {
+  const { html } = await render(fixtures);
   const start = html.indexOf('<section class="rx-honesty');
   assert.ok(start >= 0, 'honesty section rendered into the mount');
   const end = html.indexOf('</section>', start);
