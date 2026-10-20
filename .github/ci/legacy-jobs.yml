@@ -29152,6 +29152,8 @@ jobs:
       - "tests/test_okx_retail.py"
       - "tests/test_w4_us_board.py"
       - "tests/test_w5b_edge_chips.py"
+      - "tests/test_china_sector_desk.py"
+      - "templates/china_sector_desk.html.j2"
     timeout-minutes: 4
     runs-on: ubuntu-latest
     steps:
@@ -29167,6 +29169,26 @@ jobs:
         run: python -m pytest tests/test_okx_retail.py -q
       - name: CN risk-backdrop chip — renders, degrades, and stays out of macro mode
         run: python -m pytest tests/test_w5b_edge_chips.py -q
+      # China Sector Desk — the turn-signature gate row and the cohort label (W27-L26,
+      # 2026-10-20). The gate row read only gate.passed, so "✓ signature checks pass"
+      # could not be checked, and when the sector or benchmark data was absent run_gate()
+      # returns available=False with passed=True, which painted a tick for a gate that
+      # never ran. The failing branch printed the bare English word "review" in the ZH
+      # leg. The h6 band was labelled "when setup ~ today", but the cohort is the setup
+      # sitting in its own expanding top third — false today for three of four sectors.
+      # The five new tests render the real template with jinja2 + engine/i18n and pin
+      # the pooled n, median percentiles and separation CI per leg, "directional only"
+      # when the CI includes zero, the translated drifted leg and sector, "not run" for
+      # an unavailable gate, and "(not today)" when the setup is outside the top third.
+      #
+      # WIRED, NOT JUST ADDED (#5952-class): tests/test_china_sector_desk.py sat in
+      # config/unrun_test_baseline.json, so it ran in no job; it leaves the grandfather
+      # list in this PR. Its three older tests read the china_sectors parquet store and
+      # SKIP without it (no data/ store on this job), so the five render tests are what
+      # this step adds to the merge gate: hermetic, templates/ only (11 passed, 3 skipped
+      # in a code-only export).
+      - name: China Sector Desk — turn-signature gate row prints its sample + band; cohort label is the top third
+        run: python -m pytest tests/test_china_sector_desk.py -q
       # P0B exact-source correction (2026-09-06): 14 builder/template cases are
       # hermetic and belong in the PR code gate.  The one generated-page case
       # remains in unrun-intl-collectors, which continues to run all 15 in data.
