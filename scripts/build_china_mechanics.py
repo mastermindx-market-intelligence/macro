@@ -222,6 +222,7 @@ def _phase_panel() -> dict:
     phase_strip: list[dict] = []
     ledger_held = 0
     ledger_fired = 0
+    ledger_indeterminate = 0
     days_in_phase: int | None = None
     phase_started: str | None = None
     prev_phase: str | None = None
@@ -263,6 +264,8 @@ def _phase_panel() -> dict:
             ledger = pd.read_parquet(ledger_path)
             ledger_held = int((ledger["outcome"] == "held").sum()) if "outcome" in ledger.columns else 0
             ledger_fired = int((ledger["outcome"] == "fired").sum()) if "outcome" in ledger.columns else 0
+            if "outcome" in ledger.columns:
+                ledger_indeterminate = int((ledger["outcome"] == "indeterminate").sum())
     except Exception as e:  # noqa: BLE001
         log.warning("phase tape/ledger read failed (%s); degrading", e)
 
@@ -271,7 +274,9 @@ def _phase_panel() -> dict:
         phase_strip = [{"d": cp.get("asof", ""), "phase": cp.get("phase", ""), "confidence": cp.get("confidence")}]
 
     era_table = (cp or {}).get("era_table", [])
-    ledger_summary = (cp or {}).get("ledger_summary") or {"held": ledger_held, "fired": ledger_fired, "total_graded": ledger_held + ledger_fired}
+    ledger_summary = (cp or {}).get("ledger_summary") or {
+        "held": ledger_held, "fired": ledger_fired, "indeterminate": ledger_indeterminate,
+        "total_graded": ledger_held + ledger_fired + ledger_indeterminate}
 
     # current-phase enrichment: where we are on the wheel + what usually comes next
     cur_key = (cp or {}).get("phase")

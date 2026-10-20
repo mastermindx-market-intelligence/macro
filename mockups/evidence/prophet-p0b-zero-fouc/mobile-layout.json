@@ -541,7 +541,7 @@
     "site/stocktable.js": "c5387799d9ba5988f4b8859eb34d8fac3f91e36584ba78e567a2384c083eb22c",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
     "site/theme.css": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
-    "site/theme.js": "599fcdff9fd7feb6f0bf5ab8a950f264d64956319ab2e0f97623dc32a991dde4"
+    "site/theme.js": "bfd451a37dd8025c70bf1fe58825877b14b9898f031c9c7f1057cc9cb901fa4a"
   },
   "viewport": {
     "width": 390,
@@ -574,7 +574,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -599,7 +599,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -623,7 +623,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -648,7 +648,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -672,7 +672,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -697,7 +697,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -728,7 +728,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -753,7 +753,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -777,7 +777,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -802,7 +802,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -826,7 +826,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -851,7 +851,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -882,7 +882,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -907,7 +907,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -931,7 +931,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -956,7 +956,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -980,7 +980,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1005,7 +1005,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1036,7 +1036,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -1061,7 +1061,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1085,7 +1085,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1110,7 +1110,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1134,7 +1134,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1159,7 +1159,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1190,7 +1190,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -1215,7 +1215,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1239,7 +1239,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1264,7 +1264,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1288,7 +1288,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1313,7 +1313,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1344,7 +1344,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -1369,7 +1369,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1393,7 +1393,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1418,7 +1418,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1442,7 +1442,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1467,7 +1467,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1498,7 +1498,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -1523,7 +1523,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1547,7 +1547,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1572,7 +1572,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1596,7 +1596,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1621,7 +1621,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1652,7 +1652,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": false,
           "other_open_count": 0,
           "same_lane": true,
@@ -1677,7 +1677,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1701,7 +1701,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1726,7 +1726,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1750,7 +1750,7 @@
           "disclosure_count": 1,
           "disclosure_open": false,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "View all\u67e5\u770b\u5168\u90e8 4",
+          "summary_visible_text": "View all查看全部 4",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1775,7 +1775,7 @@
           "disclosure_count": 1,
           "disclosure_open": true,
           "summary_tag": "SUMMARY",
-          "summary_visible_text": "Show fewer\u6536\u8d77",
+          "summary_visible_text": "Show fewer收起",
           "focus_on_summary": true,
           "other_open_count": 0,
           "same_lane": true,
@@ -1995,7 +1995,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2028,7 +2028,7 @@
         "table_mode": true,
         "table_visible": true,
         "grid_visible": false,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2058,7 +2058,7 @@
         "table_mode": true,
         "table_visible": true,
         "grid_visible": false,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true,
         "persisted_view": "table"
@@ -2077,7 +2077,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2095,7 +2095,7 @@
         "table_mode": true,
         "table_visible": true,
         "grid_visible": false,
-        "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2121,7 +2121,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2151,7 +2151,7 @@
         "table_mode": true,
         "table_visible": true,
         "grid_visible": false,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2175,7 +2175,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "2 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 2 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "2 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 2 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true,
         "source_unchanged": true
@@ -2202,7 +2202,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2228,7 +2228,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2254,7 +2254,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true
       },
@@ -2280,7 +2280,7 @@
         "table_mode": false,
         "table_visible": false,
         "grid_visible": true,
-        "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+        "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
         "selected_sm_hidden": [],
         "pass": true,
         "animation_delay_residue": false
@@ -2542,11 +2542,11 @@
               "visible": true,
               "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below."
             },
-            "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "Sector : Fixture finance \u00d7"
+              "copy": "Sector : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -2662,9 +2662,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -2790,9 +2790,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -2952,9 +2952,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3075,9 +3075,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3171,9 +3171,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -3296,9 +3296,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3419,9 +3419,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3548,9 +3548,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3671,9 +3671,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3794,9 +3794,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -3926,11 +3926,11 @@
               "visible": true,
               "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below."
             },
-            "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "Sector : Fixture finance \u00d7"
+              "copy": "Sector : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -4046,9 +4046,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -4174,9 +4174,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -4336,9 +4336,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -4459,9 +4459,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -4555,9 +4555,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -4680,9 +4680,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -4803,9 +4803,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -4932,9 +4932,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5055,9 +5055,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5178,9 +5178,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5310,11 +5310,11 @@
               "visible": true,
               "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below."
             },
-            "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "Sector : Fixture finance \u00d7"
+              "copy": "Sector : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -5430,9 +5430,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -5558,9 +5558,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5720,9 +5720,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5843,9 +5843,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -5939,9 +5939,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -6064,9 +6064,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -6187,9 +6187,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -6316,9 +6316,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -6439,9 +6439,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -6562,9 +6562,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -6694,11 +6694,11 @@
               "visible": true,
               "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below."
             },
-            "result_copy": "0 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "Sector : Fixture finance \u00d7"
+              "copy": "Sector : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -6814,9 +6814,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+            "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -6942,9 +6942,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7104,9 +7104,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7227,9 +7227,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7323,9 +7323,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+            "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -7448,9 +7448,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7571,9 +7571,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7700,9 +7700,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 stage board unavailable \u00b7 8 watch names",
+          "result_copy": "0 actionable cards shown · stage board unavailable · 8 watch names",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7823,9 +7823,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -7946,9 +7946,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "0 actionable cards shown \u00b7 44 current names (36 stage board + 8 watch)",
+          "result_copy": "0 actionable cards shown · 44 current names (36 stage board + 8 watch)",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -8076,13 +8076,13 @@
             "grid_empty": {
               "hidden_attribute": false,
               "visible": true,
-              "copy": "\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "\u677f\u5757 : Fixture finance \u00d7"
+              "copy": "板块 : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -8198,9 +8198,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -8326,9 +8326,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -8488,9 +8488,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -8611,9 +8611,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -8707,9 +8707,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -8832,9 +8832,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -8955,9 +8955,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9084,9 +9084,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9207,9 +9207,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9330,9 +9330,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9460,13 +9460,13 @@
             "grid_empty": {
               "hidden_attribute": false,
               "visible": true,
-              "copy": "\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "\u677f\u5757 : Fixture finance \u00d7"
+              "copy": "板块 : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -9582,9 +9582,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -9710,9 +9710,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9872,9 +9872,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -9995,9 +9995,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10091,9 +10091,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -10216,9 +10216,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10339,9 +10339,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10468,9 +10468,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10591,9 +10591,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10714,9 +10714,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -10844,13 +10844,13 @@
             "grid_empty": {
               "hidden_attribute": false,
               "visible": true,
-              "copy": "\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "\u677f\u5757 : Fixture finance \u00d7"
+              "copy": "板块 : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -10966,9 +10966,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -11094,9 +11094,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11256,9 +11256,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11379,9 +11379,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11475,9 +11475,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -11600,9 +11600,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11723,9 +11723,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11852,9 +11852,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -11975,9 +11975,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -12098,9 +12098,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -12228,13 +12228,13 @@
             "grid_empty": {
               "hidden_attribute": false,
               "visible": true,
-              "copy": "\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": true,
-              "copy": "\u677f\u5757 : Fixture finance \u00d7"
+              "copy": "板块 : Fixture finance ×"
             },
             "active_group_count": 2,
             "research_href": "sectors/FIXTURE-FINANCE.html",
@@ -12350,9 +12350,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.\u5f53\u524d\u9886\u5148\u7b5b\u9009\u4e0b\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5339\u914d\u7684\u89c2\u5bdf/\u9636\u6bb5\u540d\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this leadership filter; matching watch/stage names remain below.当前领先筛选下无可操作卡片；匹配的观察/阶段名单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -12478,9 +12478,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -12640,9 +12640,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -12763,9 +12763,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -12859,9 +12859,9 @@
             "grid_empty": {
               "hidden_attribute": true,
               "visible": false,
-              "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+              "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
             },
-            "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+            "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
             "static_owner_states": [],
             "filter": {
               "visible": false,
@@ -12984,9 +12984,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -13107,9 +13107,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -13236,9 +13236,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u9636\u6bb5\u699c\u5355\u6682\u4e0d\u53ef\u7528 \u00b7 \u89c2\u5bdf 8 \u53ea",
+          "result_copy": "显示 0 张可操作卡片 · 阶段榜单暂不可用 · 观察 8 只",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -13359,9 +13359,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -13482,9 +13482,9 @@
           "grid_empty": {
             "hidden_attribute": true,
             "visible": false,
-            "copy": "No actionable cards match this filter; the full stage board remains below.\u5f53\u524d\u7b5b\u9009\u65e0\u53ef\u64cd\u4f5c\u5361\u7247\uff1b\u5b8c\u6574\u9636\u6bb5\u699c\u5355\u4ecd\u4fdd\u7559\u5728\u4e0b\u65b9\u3002"
+            "copy": "No actionable cards match this filter; the full stage board remains below.当前筛选无可操作卡片；完整阶段榜单仍保留在下方。"
           },
-          "result_copy": "\u663e\u793a 0 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 44 \u53ea\uff08\u9636\u6bb5\u699c\u5355 36 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "显示 0 张可操作卡片 · 当前共 44 只（阶段榜单 36 + 观察 8）",
           "static_owner_states": [],
           "filter": {
             "visible": false,
@@ -13529,28 +13529,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": true,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -13561,7 +13561,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -13582,7 +13582,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -13790,28 +13790,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": true,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -13822,7 +13822,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -13843,7 +13843,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -14051,28 +14051,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": true,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -14083,7 +14083,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -14104,7 +14104,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -14312,28 +14312,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": true,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -14344,7 +14344,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -14365,7 +14365,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -14573,28 +14573,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -14605,7 +14605,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -14626,7 +14626,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -14894,28 +14894,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -14926,7 +14926,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -14947,7 +14947,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {
@@ -15242,28 +15242,28 @@
         "tabs": [
           {
             "lane": "buy",
-            "title": "Buy Now\u7acb\u5373\u4e70\u5165",
+            "title": "Buy Now立即买入",
             "count": "4",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "near",
-            "title": "In Favour\u770b\u597d",
+            "title": "In Favour看好",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "wait",
-            "title": "Bottoming Watch\u6d17\u76d8\u89c2\u5bdf",
+            "title": "Bottoming Watch洗盘观察",
             "count": "1",
             "selected": false,
             "title_fully_visible": true
           },
           {
             "lane": "avoid",
-            "title": "Reduce / Avoid\u51cf\u4ed3 / \u56de\u907f",
+            "title": "Reduce / Avoid减仓 / 回避",
             "count": "2",
             "selected": false,
             "title_fully_visible": true
@@ -15274,7 +15274,7 @@
         ],
         "active_row_count": 3,
         "known_membership_hook": true,
-        "known_copy": "Sector pulse \u00b7 FIXTURE-SECTOR\u677f\u5757\u8109\u640f \u00b7 FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup\u5f53\u524d\u5f62\u6001Entry open today\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5f00\u542fSignal ~2d\u4fe1\u53f7\u7ea6 2 \u5929 \u2192 What matters\u8981\u70b9 A clean entry is open today.\u4eca\u65e5\u5165\u573a\u7a97\u53e3\u5e72\u51c0\u3002 Click row for the full sector view\u70b9\u51fb\u67e5\u770b\u5b8c\u6574\u677f\u5757\u8be6\u60c5FIXTURE-SECTOR \u2197 Fixture sectorFixture sector2 \u00b7 Prophet\u5019\u9009 \u2197 ENTRY NOW\u73b0\u5728\u5165\u573a FIXTURE ENTRYFIXTURE ENTRY \u00b7 ~2d\u5929 \u00b7 FIXTURE-SECTOR",
+        "known_copy": "Sector pulse · FIXTURE-SECTOR板块脉搏 · FIXTURE-SECTOR Fixture sectorFixture sector FIXTURE ENTRYFIXTURE ENTRY Current setup当前形态Entry open today今日入场窗口开启Signal ~2d信号约 2 天 → What matters要点 A clean entry is open today.今日入场窗口干净。 Click row for the full sector view点击查看完整板块详情FIXTURE-SECTOR ↗ Fixture sectorFixture sector2 · Prophet候选 ↗ ENTRY NOW现在入场 FIXTURE ENTRYFIXTURE ENTRY · ~2d天 · FIXTURE-SECTOR",
         "unknown_membership_hook": false,
         "unknown_route": true,
         "generic_showmore_attribute": false,
@@ -15295,7 +15295,7 @@
             "9926.HK",
             "2057.HK"
           ],
-          "result_copy": "3 actionable cards shown \u00b7 47 current names (39 stage board + 8 watch)\u663e\u793a 3 \u5f20\u53ef\u64cd\u4f5c\u5361\u7247 \u00b7 \u5f53\u524d\u5171 47 \u53ea\uff08\u9636\u6bb5\u699c\u5355 39 + \u89c2\u5bdf 8\uff09",
+          "result_copy": "3 actionable cards shown · 47 current names (39 stage board + 8 watch)显示 3 张可操作卡片 · 当前共 47 只（阶段榜单 39 + 观察 8）",
           "pass": true
         },
         "prophet_chrome": {

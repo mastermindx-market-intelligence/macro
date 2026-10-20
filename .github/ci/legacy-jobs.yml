@@ -193,6 +193,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -464,6 +465,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2082,6 +2084,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -2307,6 +2310,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2947,6 +2951,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -3188,6 +3193,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -6586,10 +6592,14 @@ jobs:
       - "engine/options_exposure_projection.py"
       - "engine/intelligence_workspace/options_contract_identity.py"
       - "tests/test_options_contract_identity.py"
+      - "tests/test_options_observed_qqq.py"
+      - "scripts/repair_gex_history.py"
+      - "tests/test_repair_gex_history.py"
       - "lib/options_source_receipts.py"
       - "lib/options_reference_pages.py"
       - "tests/test_options_reference_pages.py"
       - "tests/test_options_source_receipts.py"
+      - "tests/test_snapshot_source_receipts.py"
       - "tests/test_options_dated_projection.py"
       - "scripts/massive_entitlement_probe.py"
       - "engine/options_hub.py"
@@ -7262,7 +7272,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -9035,9 +9045,12 @@ jobs:
       - "tests/test_fif_a0_production_mode_unit.py"
       - "tests/test_fif_a18_publish_fault_drill.py"
       - "scripts/fif_coverage_writer.py"
+      - "scripts/fif_coverage_manifest.py"
       - "tests/test_fif_coverage_writer.py"
+      - "tests/test_fif_coverage_manifest.py"
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
+      - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
       - "app/deploy/macro-api.service"
@@ -9050,6 +9063,7 @@ jobs:
       - "site/fif_saved_briefcase.js"
       - "scripts/build_financial_intelligence_packet.py"
       - "collectors/sec_request_pacer.py"
+      - "scripts/capture_fif3a2_aapl_package.py"
       - "tests/fundamental_forensics_*.test.mjs"
       - ".github/workflows/daily.yml"
       - ".github/workflows/deploy-api-secrets.yml"
@@ -9851,6 +9865,7 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a21_publish_observation.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
@@ -9860,6 +9875,7 @@ jobs:
           tests/test_fif_a0_production_mode_unit.py
           tests/test_fif_a18_publish_fault_drill.py
           tests/test_fif_coverage_writer.py
+          tests/test_fif_coverage_manifest.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -9898,6 +9914,7 @@ jobs:
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_five_issuer_sic_contract.py
+          tests/test_fundamental_forensics_formula_not_presented.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
@@ -9909,6 +9926,7 @@ jobs:
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_no_request_time_sec.py
           tests/test_fundamental_forensics_normalize.py
+          tests/test_fundamental_forensics_not_presented.py
           tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_fundamental_forensics_pack_evaluation.py
           tests/test_fundamental_forensics_page.py
@@ -9926,6 +9944,7 @@ jobs:
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
+          tests/test_fundamental_forensics_query_not_presented.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_refusal_entry_readers.py
@@ -10629,6 +10648,44 @@ jobs:
       - name: THS collection receipts — offline source-boundary refusal
         run: python -m pytest tests/test_ths_collection_receipts.py -q
 
+  china-mechanics-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China A-Share Mechanics page display contract (W28C-L29). The suite renders the
+    # real templates/china_mechanics.html.j2 from a synthetic vm and calls the builder's
+    # pure helpers (_phase_panel, _phase_meta, PHASE_CATALOG) on tmp_path parquet; it
+    # never runs main() and never fetches. It pins three facts the page used to hide:
+    # the participation header dates the snapshot row (not the tape tail), the phase-call
+    # ledger prints its unresolved count, and Days-in-phase names its start date and the
+    # previous phase. Exclusive so the page's own suite does not widen any shared job's
+    # inferred scope (the templates/index.html packing-probe ceiling).
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "scripts/__init__.py"
+      - "scripts/build_china_mechanics.py"
+      - "templates/china_mechanics.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_mechanics_display.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: China Mechanics — participation snapshot date, unresolved calls, phase start
+        run: python -m pytest tests/test_china_mechanics_display.py -q -p no:cacheprovider
   cycle-consistency:
     if: ${{ false }}
     gate: data
@@ -16490,6 +16547,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_score.yml
       - config/fundamental_forensics/coverage/five_issuer_v1.json
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/metabolism_budget.yml
       - config/sector_legs.json
@@ -16758,6 +16816,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/peer_cohort.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -18234,6 +18293,72 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
         run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
+
+  narrative-radar-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China narrative radar page display contract (W28F-L30). Both suites render the real
+    # templates/china_narrative_radar.html.j2 (autoescape on, as the builder renders it) from
+    # a synthetic payload; they import only json, re, pathlib and jinja2 and never run the
+    # builder. They pin the cycle inputs printed beside each score chip (drawdown from the
+    # 1y high, distance from the 200d SMA) and the intro's description of top_members as a
+    # current-membership snapshot rather than entry history. Exclusive so the page's own
+    # suites do not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/china_narrative_radar.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_narrative_radar_cycle_inputs.py"
+      - "tests/test_narrative_radar_member_claim.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
+        run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
+
+  cn-reversal-sleeve-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China reversal sleeve page display contract (W28E-L32). The suite renders the real
+    # templates/cn_reversal_sleeve.html.j2 (autoescape on) from a synthetic payload shaped
+    # like the committed site/factordata/cn_reversal_sleeve.json; it imports only copy,
+    # pathlib and jinja2 and never runs the builder. It pins the graded-window block (date
+    # span, registered-but-ungraded count, horizon, median excess, overlapping-window note)
+    # and the sizing chip's bilingual dominant driver. Exclusive so the page's own suite does
+    # not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/cn_reversal_sleeve.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_cn_reversal_sleeve_ledger_display.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China reversal sleeve — graded window, overlap note, sizing-chip driver
+        run: python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -22266,6 +22391,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_detector.yml
       - config/flow_score.yml
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/government_revenue/candidate_historical_suppressions.v1.json
       - config/government_revenue/candidate_issuance_corrections.v1.json
@@ -22485,6 +22611,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/packet_service.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -25731,6 +25858,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
       - "config/metabolism_budget.yml"
@@ -25937,6 +26065,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/peer_cohort.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -30755,6 +30884,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -31000,6 +31130,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -33689,6 +33820,7 @@ jobs:
       - "config/delisted_symbols.yml"
       - "config/earnings_story_promotion.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -33902,6 +34034,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -37219,3 +37352,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  options-pilot-chronology-code:
+    # Synthetic guards must run on source PRs; flow-surface is data-gated.
+    # These are the literal source/reference inputs of the two offline suites.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    scope: exclusive
+    paths:
+      - scripts/options_pilot_study_adapter.py
+      - tests/test_options_pilot_study_adapter.py
+      - tests/test_options_pilot_chronology.py
+      - research/options_intelligence/2026-10-03/pilot-study-spec.v1.json
+      - research/options_intelligence/2026-10-03/pilot-p3-reference.py
+      - research/options_intelligence/2026-10-03/gex-published-board-extract.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: frozen study refusal and chronology guards (no empirical execution)
+        run: |
+          python tests/test_options_pilot_study_adapter.py
+          python tests/test_options_pilot_chronology.py
