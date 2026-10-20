@@ -2237,6 +2237,19 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
+      - name: restore raw daily stock bars from R2 (F08 per-stock liquidity input)
+        timeout-minutes: 20
+        continue-on-error: true
+        # The collect job already owns the full raw store and its gated publish.
+        # Materialize that same store before the stock-library producer reads it;
+        # do not substitute adjusted Yahoo closes or add a collector. Missing,
+        # stale or unqualified inputs produce typed unknown fields in stockdata.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo "::warning::raw daily stock restore failed (F08 liquidity remains unqualified where inputs are missing)"
       - name: restore odds desk OHLCV store from R2 (engine hops runners; store is runner-local)
         # data/odds_ohlcv/*.parquet is gitignored + R2-backed (published back by this job's
         # R2 publish step) but was never restored, so every runner hop cold-started the
@@ -4662,21 +4675,15 @@ jobs:
         # Outputs covered by 'git add data/' in 'commit engine outputs' below —
         # EXCEPT events.parquet, which is gitignored and R2-canonical (see below).
         #
-        # THREE R2 legs live inside this one step, all non-fatal, in order:
+        # THREE R2 legs serve this lobe; the first is shared in the engine preamble.
         #
-        # 1. BAR-STORE COLD-RESTORE. data/massive_stock_day is restored, advanced and
-        #    published by the COLLECT job — in the COLLECT job's own workspace. Workspace
-        #    state cannot cross a job boundary, so when this job lands on a runner whose
-        #    checkout has never held that store (a cold spare), the store is simply
-        #    absent and the builder's staleness gate correctly refuses: run 31440972065
-        #    (2026-08-10) landed on actions-runner-2 and warned
-        #    "price-pressure-store-stale ... artifacts left untouched" — a whole night
-        #    of the lobe lost to a scheduling accident. The existence probe below is a
-        #    `find -print -quit`, not a `ls *.parquet` glob: this store is ~20k files and
-        #    the glob would expand ~800 KB of argv. Warm runner = one stat-ish walk that
-        #    stops at the first hit, ~0 cost, no R2 call at all. Cold runner = a full
-        #    ~617 MB / ~20k-object download (fetch_r2's delta is per FILE — an absent
-        #    file downloads whole; only an already-current file is skipped by md5/ETag).
+        # 1. BAR-STORE RESTORE. The collect workspace cannot cross a job boundary:
+        #    run 31440972065 (2026-08-10) landed on a cold spare and the absent raw
+        #    store correctly refused the whole lobe. The existing fetch_r2 restore
+        #    now runs before the stock-library builder so both consumers share it.
+        #    A cold runner downloads ~617 MB / ~20k objects; the existing md5/ETag
+        #    check skips unchanged files on a warm runner. This step never repeats
+        #    that restore. Missing/stale bars still hit the same builder refusal.
         # 2. LEDGER RESTORE. data/price_pressure/events.parquet is R2-canonical and
         #    gitignored (2026-08-11): the advance + the §10.1 completion pass rewrite
         #    all ~10.8 MB every successful night, which is ~4 GB/yr of binary git churn.
@@ -4703,12 +4710,7 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          if [ -z "$(find data/massive_stock_day -maxdepth 1 -name '*.parquet' -print -quit 2>/dev/null)" ]; then
-            echo "price_pressure: bar store has no parquet bars locally (cold runner) — restoring from R2"
-            python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24 || echo "::warning::massive_stock_day restore failed (non-fatal — the builder's staleness gate refuses and leaves artifacts untouched)"
-          else
-            echo "price_pressure: bar store present locally — no R2 restore needed"
-          fi
+          # Raw daily bars are restored once in the shared engine preamble.
           PP_RESTORE=ok
           python -m scripts.fetch_r2 --dirs price_pressure || { PP_RESTORE=failed; echo "::warning::price_pressure ledger restore failed (non-fatal — the builder's freshness gate refuses and leaves artifacts untouched)"; }
           PP_BUILD=ok

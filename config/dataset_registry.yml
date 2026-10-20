@@ -167,6 +167,17 @@ datasets:
     timezone: America/New_York
     frequency: 1d
     adjustment: none
+    basis: raw
+    rights:
+      purchase_access: granted
+      internal_computation: granted
+      redistribution: granted
+      evidence:
+        purchase_access: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        internal_computation: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+        redistribution: research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+    code_consumers:
+      - scripts/stock_liquidity_profile.py
     conflict_policy: PRIMARY_ONLY
     quality_checks: [uniqueness, validity, freshness]
     version: "1.0.0"
@@ -180,10 +191,22 @@ datasets:
         note: >
           MEASURED NVDA 2024-06-03 = 1150.00 — the price actually PRINTED, pre the 10:1
           split. Same column name as the two stores above, 10x the number.
+      volume:
+        dtype: int64
+        unit: shares
+        nullable: false
+        note: >
+          Native _parse_day normalizes missing source volume to zero. Non-null
+          storage does not certify source completeness; the F08 qualified
+          projection refuses a zero-volume window because missingness was erased.
     notes: >
       The only raw-print equity store here, and therefore the only lawful input for
       limit-price / tick-size / exchange-rule work — see DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT,
       where using an adjusted tape for exactly that stop-shipped a whole program.
+      Rights adopt the existing operator-confirmed enterprise record, not a new
+      grant. Currency and per-row publication/ingestion clocks are not declared
+      by these daily files; the F08 liquidity projection must qualify its window
+      separately and cannot infer USD or known_at from this registry entry.
 
   # ── Macro releases ─────────────────────────────────────────────────────────
   - dataset_id: macro.fred.observations
