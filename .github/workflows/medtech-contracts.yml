@@ -5,6 +5,10 @@ on:
     paths:
       - "engine/medtech/**"
       - "collectors/medtech/**"
+      - "app/__init__.py"
+      - "engine/__init__.py"
+      - "collectors/__init__.py"
+      - "tests/__init__.py"
       - "engine/sector_intelligence/**"
       - "app/medtech.py"
       - "app/main.py"
@@ -23,6 +27,10 @@ on:
     paths:
       - "engine/medtech/**"
       - "collectors/medtech/**"
+      - "app/__init__.py"
+      - "engine/__init__.py"
+      - "collectors/__init__.py"
+      - "tests/__init__.py"
       - "engine/sector_intelligence/**"
       - "app/medtech.py"
       - "app/main.py"

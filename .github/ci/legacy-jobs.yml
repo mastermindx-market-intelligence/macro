@@ -41,6 +41,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -697,6 +699,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -1892,6 +1895,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -2539,6 +2544,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -2802,6 +2808,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -3429,6 +3437,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -5591,6 +5600,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/rate_inflation_transmission.py"
@@ -5666,6 +5676,10 @@ jobs:
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
+      - "scripts/_baskets_scorecard.py"
+      - "scripts/_china_income_card.py"
+      - "scripts/_commodity_card_fields.py"
+      - "scripts/_ths_build_notes.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -6596,6 +6610,7 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - engine/qbus_news_quality.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
       - "engine/exposure_math.py"
@@ -6828,6 +6843,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -8916,6 +8932,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -9064,7 +9082,9 @@ jobs:
       - "tests/test_fif_a0_production_mode_unit.py"
       - "tests/test_fif_a18_publish_fault_drill.py"
       - "scripts/fif_coverage_writer.py"
+      - "scripts/fif_coverage_manifest.py"
       - "tests/test_fif_coverage_writer.py"
+      - "tests/test_fif_coverage_manifest.py"
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
       - "tests/test_fif_a21_publish_observation.py"
@@ -9592,6 +9612,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -9892,6 +9913,7 @@ jobs:
           tests/test_fif_a0_production_mode_unit.py
           tests/test_fif_a18_publish_fault_drill.py
           tests/test_fif_coverage_writer.py
+          tests/test_fif_coverage_manifest.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -17155,6 +17177,10 @@ jobs:
       - research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md
       - research/US_BOARD_MEASUREMENT.md
       - scripts/_active_render.py
+      - scripts/_baskets_scorecard.py
+      - scripts/_china_income_card.py
+      - scripts/_commodity_card_fields.py
+      - scripts/_ths_build_notes.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
       - scripts/build_baskets_china.py
@@ -18310,6 +18336,40 @@ jobs:
       - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
         run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
 
+  ths-factorwatch-build-notes:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # 同花顺 basket browser build notes and lite-page SEO (W28G-L31). The suite renders the
+    # real templates/baskets_china_factorwatch.html.j2 (autoescape on, as the THS builder
+    # renders it) and imports only re, sys, pathlib, jinja2 and scripts/_ths_build_notes.py; it
+    # never runs the builder. It pins the server-rendered construction / history notes on the
+    # lite page and the lite page's own canonical, og:url and description. Exclusive so the
+    # page's suite does not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/baskets_china_factorwatch.html.j2"
+      - "templates/_baskets_desk.html.j2"
+      - "templates/_forming_narratives.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_ths_build_notes.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_baskets_china_factorwatch_notes.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: THS basket browser — build notes, lite canonical and description
+        run: python -m pytest tests/test_baskets_china_factorwatch_notes.py -q -p no:cacheprovider
+
   narrative-radar-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
@@ -18345,6 +18405,41 @@ jobs:
       - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
         run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
 
+  commodity-strategies-grid-fields:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # Commodity strategies grid card fields (W28D-L33). The suite renders the real
+    # templates/commodity_strategies.html.j2 (autoescape on) from synthetic cards and imports
+    # only re, sys, pathlib, jinja2 and scripts/_commodity_card_fields.py; it never runs the
+    # builder. It pins the active cards' average-leverage tile (no longer printed as Income),
+    # the split-half chip in the card foot, and the byte-identical non-active cards.
+    # Exclusive so the page's suite does not widen any shared job's inferred scope.
+    scope: exclusive
+    paths:
+      - "templates/commodity_strategies.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_commodity_card_fields.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_commodity_strategies_grid_fields.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: Commodity strategies grid — average-leverage tile, split-half chip
+        run: python -m pytest tests/test_commodity_strategies_grid_fields.py -q -p no:cacheprovider
+
   cn-reversal-sleeve-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
@@ -18375,6 +18470,41 @@ jobs:
         run: pip install pytest jinja2
       - name: China reversal sleeve — graded window, overlap note, sizing-chip driver
         run: python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py -q -p no:cacheprovider
+
+  regional-baskets-scorecard:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # HK / Canada basket desks' ignition scoreboard (W28B-L34). The suite renders the real
+    # templates/baskets_hk.html.j2 and templates/baskets_canada.html.j2 (autoescape on) and
+    # imports only re, sys, pathlib, jinja2 and scripts/_baskets_scorecard.py; it never runs a
+    # builder. It pins the graded-ignition scoreboard block, its absence when nothing is
+    # graded, and that its id never shadows the desk partial's script target. Exclusive so
+    # the pages' suite does not widen any shared job's inferred scope.
+    scope: exclusive
+    paths:
+      - "templates/baskets_hk.html.j2"
+      - "templates/baskets_canada.html.j2"
+      - "templates/_baskets_desk.html.j2"
+      - "templates/_forming_narratives.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_baskets_scorecard.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_baskets_regional_scorecard_block.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: HK / Canada basket desks — ignition scoreboard block
+        run: python -m pytest tests/test_baskets_regional_scorecard_block.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -18408,6 +18538,41 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
+
+  china-strategies-income-tile:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China strategies grid Income-Vector tile (W28D-L35). The suite renders the real
+    # templates/china_strategies.html.j2 (autoescape on) from synthetic cards and imports
+    # only re, sys, pathlib, jinja2 and scripts/_china_income_card.py; it never runs the builder.
+    # It pins the drawdown-count tile that replaces the CAGR printed as Income, the fallback
+    # card's Income tile and the byte-identical other cards. Exclusive so the page's suite
+    # does not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/china_strategies.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_china_income_card.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_strategies_income_tile.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China strategies grid — Income-Vector drawdown-count tile
+        run: python -m pytest tests/test_china_strategies_income_tile.py -q -p no:cacheprovider
 
   global-liquidity-transmission-contracts:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -19424,6 +19589,7 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -19798,6 +19964,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -20203,6 +20370,7 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -20360,6 +20528,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -22207,6 +22376,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -22836,6 +23007,7 @@ jobs:
       - engine/qbus_news_contract.py
       - engine/qbus_news_receipts.py
       - engine/qbus_news_reducer.py
+      - engine/qbus_news_retrieval.py
       - engine/qbus_news_store.py
       - engine/qbus_news_universe.py
       - engine/qbus_news_velocity.py
@@ -23446,6 +23618,10 @@ jobs:
       - research/crypto_science/r9_prebreak_study.py
       - scripts/__init__.py
       - scripts/_active_render.py
+      - scripts/_baskets_scorecard.py
+      - scripts/_china_income_card.py
+      - scripts/_commodity_card_fields.py
+      - scripts/_ths_build_notes.py
       - scripts/backfill_crypto.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
@@ -24675,6 +24851,7 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -24834,6 +25011,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -27868,6 +28046,10 @@ jobs:
       - "research/prophet_fusion/pr2_c2/era_frame_pin.json"
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
+      - "scripts/_baskets_scorecard.py"
+      - "scripts/_china_income_card.py"
+      - "scripts/_commodity_card_fields.py"
+      - "scripts/_ths_build_notes.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -30156,6 +30338,7 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -30313,6 +30496,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -30655,6 +30839,8 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -31381,6 +31567,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -33645,6 +33832,16 @@ jobs:
       - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
+      - app/ticker_news_stream.py
+      - engine/massive_news.py
+      - engine/qbus_news_intake.py
+      - engine/qbus_news_quality.py
+      - engine/qbus_news_context.py
+      - scripts/benchmark_ticker_news.py
+      - scripts/verify_ticker_news_ui.py
+      - tests/test_massive_news.py
+      - tests/test_qbus_news_intake.py
+      - tests/test_shared_news_intelligence.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -34267,6 +34464,10 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
+      - "tests/test_qbus_news_retrieval.py"
+      - "scripts/benchmark_qbus_news_retrieval.py"
+      - "scripts/verify_ticker_news_stream_ui.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
@@ -34568,6 +34769,10 @@ jobs:
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_qbus_news_retrieval.py
+          tests/test_massive_news.py
+          tests/test_qbus_news_intake.py
+          tests/test_shared_news_intelligence.py
           tests/test_alpaca_news.py
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
