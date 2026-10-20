@@ -29,7 +29,7 @@ unverified:
   - claim: Release B/C nonlinear mechanics, observed evolution and empirical research are accepted.
     what_would_verify: Qualified instrument/model inputs and admitted PIT history, existing-owner scenario/replay integration, and the declared independent numerical/statistical gates.
 unresolved:
-  - Exact qualified source receipt is not available in the current feed; one request for its existing location is pending with Chris.
+  - Exact qualified source receipt is absent from the current feed. Chris identified Tiingo for futures and Massive for stocks; the checked repository still names ThetaData as canonical options source.
   - Consumer review terminated at the provider output limit without an assessment; producer findings were consumed and adjudicated, but no independent release approval was established. No merge or deployment occurred.
 next_actions:
   - Supply an actual admitted owner receipt through the existing builder flag, verify exact numeric source-to-consumer agreement, and complete the still-open scoped independent release assessment against that candidate.
@@ -61,8 +61,18 @@ builder flag, verify exact producer/API/inspector agreement, complete the open s
 independent release assessment and required hosted checks, then use the protected
 merge/deploy/live-verification path. The receipt needs exact per-series terms,
 model/unit/tenor provenance, availability clocks, input digest and permitted display
-action. One request for its location is pending with Chris. Generic 100-share rules,
+action. Chris answered the source question with Tiingo/futures and Massive/stocks;
+no exact options receipt was supplied. Generic 100-share rules,
 Matrix marginals, paid-view entitlement alone and build timestamps cannot fill it.
+
+The follow-up source check confirms the shared price chart already uses Massive/Polygon
+US bars. `DEC-AD-OPTIONS-CANONICAL-SOURCE-THETADATA` and the current producer keep
+ThetaData as the options authority. The stock entitlement record does not restore the
+retired Options Snapshot path, and that restoration is not a dependency of this work.
+Massive's public contract-reference documentation lists per-series exercise/share/
+adjustment fields under Options plans; no account entitlement or live contract receipt
+was inferred from it, and no refused options endpoint was retried. Exact terms and
+Greek provenance must still qualify through an admitted source path.
 
 Two native Sol coordinators returned; their source/mechanics and producer work was
 inspected and integrated with repairs. All Fabric outcomes retain root/parent
