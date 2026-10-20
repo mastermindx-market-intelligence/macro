@@ -343,6 +343,137 @@ def chart_transmission(tr: dict) -> str:
 
 
 # --------------------------------------------------------------------------- #
+# R4 answer-first view-model helpers
+# --------------------------------------------------------------------------- #
+def _r4_currency_rows(strength: dict, horizon: str = "1m") -> dict:
+    """Build R4 comparison rows on one explicit currency-vs-USD basis.
+
+    strength_meter intentionally exposes both a cross-sectional strength value and
+    the actual trailing vs_usd_pct move.  The R4 decision surface must not mix
+    those scales: ordering, visible values and zero-anchored bar geometry all use
+    vs_usd_pct for the selected horizon.
+
+    USD is the zero reference, not a ranked currency. Missing/non-finite moves stay
+    visible as unavailable rows and never become neutral zeroes.
+    """
+    horizon_rows = (((strength or {}).get("horizons") or {}).get(horizon) or [])
+    rows: list[dict] = []
+    finite_abs: list[float] = []
+
+    for source in horizon_rows:
+        ccy = str(source.get("ccy") or "")
+        if not ccy or ccy == "USD":
+            continue
+        raw = source.get("vs_usd_pct")
+        move = None
+        if raw is not None:
+            try:
+                candidate = float(raw)
+                if np.isfinite(candidate):
+                    move = candidate
+            except (TypeError, ValueError):
+                move = None
+        if move is not None:
+            finite_abs.append(abs(move))
+        rows.append({
+            "ccy": ccy,
+            "ccy_zh": source.get("ccy_zh") or ccy,
+            "em": bool(source.get("em")),
+            "move_pct": move,
+            "available": move is not None,
+            "cross_section_strength": source.get("strength"),
+        })
+
+    domain = max(finite_abs, default=0.0)
+    scale = domain if domain > 0 else 1.0
+    for row in rows:
+        row["bar_frac"] = (row["move_pct"] / scale) if row["available"] else None
+
+    rows.sort(key=lambda row: (
+        not row["available"],
+        -(row["move_pct"] if row["move_pct"] is not None else 0.0),
+        row["ccy"],
+    ))
+    available = [row for row in rows if row["available"]]
+    return {
+        "basis": "vs_usd",
+        "horizon": horizon,
+        "rows": rows,
+        "domain_abs_pct": domain,
+        "leader": available[0] if available else None,
+        "n_available": len(available),
+        "n_above_usd": sum(row["move_pct"] > 0 for row in available),
+        "n_below_usd": sum(row["move_pct"] < 0 for row in available),
+    }
+
+
+def _r4_readiness(
+    dependencies: dict[str, dict],
+    *,
+    asof: str | None = None,
+    checked_at: str | None = None,
+    action_requirements: dict[str, list[str]] | None = None,
+) -> dict:
+    """Aggregate typed Forex dependency receipts into one honest readiness state.
+
+    This is presentation/view-model logic only.  Source-specific clocks and thresholds
+    remain with their existing producers.  Fresh/slow dependencies are usable; stale,
+    missing or error states block only actions that explicitly require them.
+    """
+    usable_states = {"fresh", "slow"}
+    bad_states = {"stale", "missing", "error"}
+    receipts: dict[str, dict] = {
+        str(name): dict(receipt or {}) for name, receipt in (dependencies or {}).items()
+    }
+
+    critical_bad = []
+    secondary_bad = []
+    for name, receipt in receipts.items():
+        state = receipt.get("state")
+        is_bad = state in bad_states or state not in usable_states
+        if not is_bad:
+            continue
+        (critical_bad if receipt.get("critical") else secondary_bad).append(name)
+
+    if critical_bad:
+        verdict = "stale"
+        banner = {
+            "en": "Older Forex snapshot — current conditions may differ.",
+            "zh": "较早的外汇快照 — 当前情况可能不同。",
+        }
+    elif secondary_bad:
+        verdict = "degraded"
+        banner = {
+            "en": "Some Forex context is unavailable — core market data remains usable.",
+            "zh": "部分外汇背景数据暂不可用 — 核心市场数据仍可使用。",
+        }
+    else:
+        verdict = "ok"
+        banner = None
+
+    actions: dict[str, dict] = {}
+    for action, required in (action_requirements or {}).items():
+        blocked_by = []
+        for dep in required:
+            receipt = receipts.get(dep)
+            if receipt is None or receipt.get("state") not in usable_states:
+                blocked_by.append(dep)
+        actions[action] = {
+            "allowed": not blocked_by,
+            "blocked_by": blocked_by,
+        }
+
+    return {
+        "checked_at": checked_at,
+        "asof": asof,
+        "dependencies": receipts,
+        "verdict": verdict,
+        "banner_message": banner,
+        "actions": actions,
+    }
+
+
+# --------------------------------------------------------------------------- #
 # view-models
 # --------------------------------------------------------------------------- #
 def dollar_vm(dol: pd.DataFrame) -> dict:
