@@ -168,3 +168,27 @@ def test_known_transitive_render_dependencies_stay_owned():
         "build_research_pages",
         "build_theme_detail",
     } <= owned
+
+
+def test_macro_risk_partials_select_their_actual_consumer_region():
+    """Execute the existing picker; leaf Risk Radar changes must not force all regions."""
+    import subprocess
+
+    lines = RENDER.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip() == "region_of() {")
+    end = next(i for i in range(start + 1, len(lines)) if lines[i].strip() == "}")
+    function = "\n".join(line.strip() for line in lines[start:end + 1])
+    cases = {
+        "templates/_fear_greed_intelligence.html.j2": "macro",
+        "templates/_risk_radar_workspace.html.j2": "macro",
+        "templates/risk_radar_workspace.css": "macro",
+        "templates/risk_radar_workspace.js": "macro",
+        "templates/theme.css": "all",  # Shared assets retain broad coverage.
+        "templates/transmission.html.j2": "markets",
+    }
+    for path, expected in cases.items():
+        result = subprocess.run(
+            ["bash", "-c", function + '\nregion_of "$1"', "_", path],
+            capture_output=True, text=True, check=True,
+        )
+        assert result.stdout.strip() == expected, path

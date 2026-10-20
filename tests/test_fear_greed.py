@@ -256,13 +256,17 @@ class TestInsiderDataQuality:
             "glob": staticmethod(lambda pat: ["/fake/2024q1.parquet"])
         })())
 
+        # Hermetic fixture: sparse worktrees have no real insider directory.
+        (tmp_path / "sec_insider" / "panel").mkdir(parents=True)
+        monkeypatch.setattr(fgmod.config, "data_dir", lambda: tmp_path)
+
         ts = fgmod._build_insider_time_series()
         assert len(ts) == 1
         # After dedup, net should be $50K, not $100K
         assert abs(ts.iloc[0] - 50_000.0) < 1.0, (
             f"Expected ~50000 after dedup, got {ts.iloc[0]}")
 
-    def test_corrupt_price_rows_are_capped(self, monkeypatch):
+    def test_corrupt_price_rows_are_capped(self, monkeypatch, tmp_path):
         """A row with a corrupt usd value > _INSIDER_TXN_CAP_USD is excluded."""
         import glob as _glob
         panel = self._make_panel([
@@ -281,6 +285,10 @@ class TestInsiderDataQuality:
         monkeypatch.setattr(fgmod, "glob", type("G", (), {
             "glob": staticmethod(lambda pat: ["/fake/2024q1.parquet"])
         })())
+
+        # Hermetic fixture: sparse worktrees have no real insider directory.
+        (tmp_path / "sec_insider" / "panel").mkdir(parents=True)
+        monkeypatch.setattr(fgmod.config, "data_dir", lambda: tmp_path)
 
         ts = fgmod._build_insider_time_series()
         assert len(ts) == 1

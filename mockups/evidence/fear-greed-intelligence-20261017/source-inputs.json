@@ -1,0 +1,69 @@
+{
+  "source_ref": "9cfa8918b55a1c4735a90f4ca133506baa9d7966",
+  "inputs": {
+    "data/regime/latest.json": {
+      "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+      "as_of": "2026-10-16"
+    },
+    "data/market_state/latest.json": {
+      "sha256": "07d767326cada9972db5f92143d3a0f57d59b1479f0c4d9e1eaee2a903f28530",
+      "as_of": "2026-10-16"
+    },
+    "site/riskdata/risk_envelope.json": {
+      "sha256": "87f9a05a549605d7a035c060f973095bad610fe0fdeec9f85cb1ca19a290e92d",
+      "as_of": "2026-10-16"
+    },
+    "data/contagion_links/latest.json": {
+      "sha256": "e99411487447db05e566491704cbaabde8124beda694bf9ac0cdf566796f9c2d",
+      "as_of": null
+    },
+    "data/crossasset_shadow/latest.json": {
+      "sha256": "d4c262d8d1f6d04e4e4570ffe35daa6df3f985e8e0b49418c2f44d5017751eb8",
+      "as_of": "2026-10-16"
+    },
+    "site/basketdata/fear_greed.json": {
+      "sha256": "5572a4d64ef3377ae4c29e2eae685874f6c67d4602f928de4aa9ec5c0b450f9a",
+      "as_of": "2026-10-16"
+    },
+    "candidate_engine/fear_greed_intelligence": {
+      "sha256": "d313b2ce086315ad797cd015d9c7aee1281abedb8a6831cb74dcfbf218ae2895",
+      "as_of": "2026-10-14",
+      "kind": "candidate_engine_fixture_not_published_snapshot"
+    },
+    "site/basketdata/vol_weather.json": {
+      "sha256": "6536795153eea4b61fceb58c4291a3d70f34cef643a9d9675943eb122d30f949",
+      "as_of": "2026-10-16"
+    },
+    "data/leadership_crack/latest.json": {
+      "sha256": "516b26fbb0fa5d9e2e30e665dbd280230d05d46f2b12d91812177956e3380d87",
+      "as_of": "2026-10-14"
+    },
+    "site/basketdata/sector_pulse.json": {
+      "sha256": "83e985a5cfc5c46e766dd5df9c17c5984769db36cf497b7d281e904e95ae2617",
+      "as_of": "2026-10-14"
+    }
+  },
+  "presentation_sha256": {
+    "templates/dashboard.html.j2": "ca6d6d3b8751f0d829f6e1f47e5cfaa1a6f480836a17755cfd0d10fda131740d",
+    "templates/_risk_radar_workspace.html.j2": "b141aa8b6a9f54c8c9b4d20db0671fd85c0988348e8b687c778d986d18e16151",
+    "templates/risk_radar_workspace.js": "07cf3a7e108d13b5ca84be68debe108459e73b575ea1ee162bdbe1c14f27e2da",
+    "templates/risk_radar_workspace.css": "cca7ab0507cc14824c946051d0a25870c208e163df75e99a3df653af2efffaf6",
+    "templates/_fear_greed_intelligence.html.j2": "59c74cb2ceb27a239d0b522fb19b1d69035d108e4ea3e29b5515983b1b6d044b"
+  },
+  "intelligence_input_sha256": {
+    "data/yahoo/SPY.parquet": "4628a0de7c489988d30e7b52843d6f25d520b553f140d17ef5a42ccf39c70ff4",
+    "data/yahoo/TLT.parquet": "b2af871c5c07bada28a65d172043d1738d201d6e5c68e29971345d66cab725c8",
+    "data/yahoo/_VIX.parquet": "07b9a5b0124bcfd4289270c0701d56b07e0c1828b22326fa889316be89283243",
+    "data/yahoo/_VIX3M.parquet": "e48891a6dcce91db2222c84f2e660f28f41ef12e539e821ffb3e3f568b0a68cf",
+    "data/yahoo/_VIX9D.parquet": "8e27d36ddf81c34284a130d7c8895f4f59a2e252ab2b13ddd2b33ff4e3b6d017",
+    "data/cboe/vvix.parquet": "585245232592e7fdc54a4b649c81c0cdc2390959acbd6816741fa1598bd16ce2",
+    "data/fred/BAMLH0A0HYM2.parquet": "eafef7bae21880c089d0048d8f56c9b922457acc0692a4845d6c67581021f764",
+    "data/cboe/putcall.parquet": "b3fca25c2e4901ed3890e753cab3a522cd43d79181ae003b7578375558aaac76",
+    "data/breadth/breadth.parquet": "55b6d14e832c0d87e6524657bbecd7a03b9497a08f4df5d619939498f7c53f91"
+  },
+  "candidate_engine_sha256": {
+    "engine/vol_velocity.py": "fb4cc7584b20327bf506296776aa7b652ba4c766ea9745847fca2d24932d5438",
+    "engine/fear_greed_intelligence.py": "01dcf8141d1a9e95e43c3513cfa89787a8021abff9838cca1fa95d2826dcdab0",
+    "engine/fear_greed.py": "d6d5f4ec15ae1e2e00283bb23bfeb99a8e2d5362c31f1e8f6d66173c12ab8dbc"
+  }
+}
