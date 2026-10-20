@@ -145,7 +145,10 @@ class SSHBridge:
 
 def capture_snapshot(symbol: str, session: str, archive: Archive, key: str,
                      fetch: Callable = fetch_json_bytes, *, check_mount: bool = True) -> tuple[dict, int]:
-    params = {"startDate": session, "endDate": session, "resampleFreq": "1min",
+    # Tiingo's date-free endpoint selects the latest overnight session. A
+    # trading-date lower bound can exclude its prior-evening bars. Keep the
+    # captured-session validation below: a stale/default window is not accepted.
+    params = {"resampleFreq": "1min",
               "columns": "open,high,low,close,volume", "forceFill": "false"}
     route = request_path("boats-bars", symbol, params)
     raw, mime = fetch(route, key, max_bytes=MAX_RESPONSE)
