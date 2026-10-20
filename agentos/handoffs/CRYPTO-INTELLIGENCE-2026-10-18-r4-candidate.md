@@ -135,3 +135,61 @@ Fabric runs, root `crypto-intelligence-r4-20261018`:
 The full design, data, research and release contract stays in
 `research/CRYPTO_INTELLIGENCE_R4_BUILD_PACKET.md`; this handoff records the delta
 and exact continuation requirements.
+
+
+## R4 continuation — 2026-10-20 (source-local, not a release)
+
+Recovered the existing operation `crypto-intelligence-r4-20261018`, Macro branch
+`sol/web-crypto-intelligence-r4-20261018`, PR #9580 and its 13 dirty R4
+presentation/projection files without creating another workspace or carrier.
+The Mastermind Paper `p-10-0` page now visibly has eight R4 artboards,
+including light Overview/Bitcoin/Markets/Scenarios, state/hover, responsive,
+and implementation-scorecard references. The older handoff's claim that no
+Paper revision exists is superseded by this read; no Paper write occurred here.
+
+The additive entry-point hook in `scripts/build_crypto.py` now emits the R4
+candidate **after** the established `build()` writes the production Crypto
+contract. This happens through the existing `python -m scripts.build_crypto`
+invocation present in daily, render and engine-render workflows. It calls the
+existing `scripts.build_crypto_intelligence_r4.build(site,site)` and catches
+shadow-only failures, never retargeting `crypto.html` or `vector.html`.
+This is source wiring, **not** proof of a hosted covering render.
+
+The recovered WIP was preserved and validated rather than reset: source
+projection remains date/coverage constrained and continues to withhold forecast
+probabilities. An independent paid read-only reviewer inspected the older
+published head because the private M2 dirty workspace was unavailable to that
+worker. Its delivered response was accepted **as an informational HEAD-only
+review**, not as independent WIP or production sign-off
+(`crypto-r4-wip-review-20261020-01`, response SHA-256
+`7d1bc1e471dbef0330bfdec635bf0eda18a6f75e091e2fdf9b4308d673916827`).
+
+Two material reviewer concerns were reproduced locally: a saved-scenario toast
+was obscured by the top-layer dialog, and saved scenarios lacked an issue-time
+family evidence digest. The toast now lives inside the dialog; new saves retain
+the source dates, quality and observed states for each family; frozen review
+discloses this captured evidence, while older saves explicitly disclose missing
+digest information. A missing scenario deep link receives a nonempty title.
+Short-viewport drawers can scroll. The review's hardcoded seven-day aside and
+remove-current-snapshot findings had already been repaired by recovered WIP
+and were not redundantly rewritten.
+
+`python3 -m pytest -q tests/test_crypto_intelligence_r4.py
+tests/test_crypto_intelligence_r4_browser.py` gave **44 passed** (39 contract
++ 5 Chromium browser tests; two unrelated stale Chromium-temp cleanup warnings).
+The 32 combination matrix is four views x light/dark x English/Chinese x
+1440/390; it checks route state, horizontal overflow and browser JS errors.
+Additional tests cover 30-day deep-link restoration, chart-window persistence,
+frozen evidence, legacy-snapshot fallback, inaccessible/dead links, visible
+save confirmation and short-mobile drawer scrolling. `node --check` and
+`git diff --check` pass. Candidate builder returns chart ready,
+Bitcoin daily-close cutoff 2026-10-17, broad-market cutoff 2026-10-15, two
+supported asset records, `production_routes_replaced=false`.
+
+**Next actual release gates:** run published-branch CI and inspect integration
+with the latest protected main; obtain hosted authenticated browser+visual
+acceptance in the existing private review carrier, then validate production
+render/cutover compatibility including preserving canonical Bitcoin model and
+H5 paths. The former R3 assets are not a second authority. Streaming coverage,
+remote delivery and historically qualified forward skill remain future work.
+Do not merge/promote the candidate based solely on these local green tests.

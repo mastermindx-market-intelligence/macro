@@ -36,7 +36,7 @@ def money(value) -> str:
     number = finite(value)
     if number is None:
         return "—"
-    return "$" + format(number, ",.2f" if abs(number) < 100 else ",.0f")
+    return "$" + format(number, ",.2f" if abs(number) < 1000 else ",.0f")
 
 
 def pct(value) -> str:
@@ -68,6 +68,9 @@ def render_view(view: dict, site: Path) -> list[Path]:
         rendered = env.get_template("crypto_intelligence_r4.html.j2").render(
             view=view, charts=charts, money=money, pct=pct, default_view=default_view, version=version,
         )
+        # Jinja-only lines can otherwise emit indentation as trailing whitespace.
+        # Do not collapse content or block boundaries: preserve each original line.
+        rendered = "\n".join(line.rstrip(" \t") for line in rendered.split("\n"))
         destination = site / filename
         destination.write_text(rendered, encoding="utf-8")
         outputs.append(destination)

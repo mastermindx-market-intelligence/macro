@@ -3,21 +3,27 @@
 {% macro inspect_button(target,en='Inspect view',zh='查看依据') -%}<button class="cri-btn" data-open="{{ target }}">{{ t(en,zh) }}{{ arrow() }}</button>{%- endmacro %}
 {% macro scenario_paths() -%}
 <aside class="cri-panel cri-next">
-  <div class="cri-section-head"><div><h3>{{ t('What could follow','接下来关注什么') }}</h3><p>{{ t('Bitcoin · next 7 days','比特币 · 未来7天') }}</p></div></div>
-  {% for scenario in view.scenarios['7'] if scenario.id in ['continuation','failure'] %}
-  <button class="cri-path" data-open="scenario:{{ scenario.id }}">
-    <span class="cri-path-head">{{ t(scenario.title_en,scenario.title_zh) }}{{ arrow() }}</span>
-    <p>{{ t(scenario.condition_en,scenario.condition_zh) }}</p>
-  </button>
-  {% else %}<div class="cri-empty"><h3>{{ t('Price conditions unavailable','价格条件暂不可用') }}</h3><p class="cri-note">{{ t('More continuous daily history is needed.','需要更多连续日频历史。') }}</p></div>{% endfor %}
-  <div class="cri-next-foot"><span class="cri-note">{{ t('Conditions, not probability estimates','条件路径，尚无概率估计') }}</span><a href="#scenarios" data-route="scenarios">{{ t('Compare','比较') }} →</a></div>
+  <div class="cri-section-head"><div><h3>{{ t('What could follow','接下来关注什么') }}</h3><p>{{ t('Bitcoin · conditional outlook','比特币 · 条件展望') }}</p></div>
+    <div><div class="cri-horizon-label">{{ t('Outlook','展望周期') }}</div><div class="cri-segment" aria-label="Outlook horizon"><button data-horizon="7" aria-pressed="true">7D</button><button data-horizon="30" aria-pressed="false">30D</button></div></div>
+  </div>
+  {% for horizon,scenarios in view.scenarios.items() %}
+  <div data-case-horizon="{{ horizon }}" {% if horizon!='7' %}hidden{% endif %}>
+    {% for scenario in scenarios|sort(attribute='progress_state') if scenario.id in ['continuation','failure'] %}
+    <button class="cri-path" data-open="scenario:{{ scenario.id }}">
+      <span class="cri-path-head">{{ t(scenario.title_en,scenario.title_zh) }}{{ arrow() }}</span>
+      <span class="cri-condition-state">{{ t(scenario.progress_en,scenario.progress_zh) }}</span>
+      <p>{{ t(scenario.next_check_en,scenario.next_check_zh) }}</p>
+    </button>
+    {% else %}<div class="cri-empty"><h3>{{ t('Price conditions unavailable','价格条件暂不可用') }}</h3><p class="cri-note">{{ t('More continuous daily history is needed.','需要更多连续日频历史。') }}</p></div>{% endfor %}
+  </div>{% endfor %}
+  <div class="cri-next-foot"><span class="cri-note">{{ t('Conditions · no qualified probabilities','条件路径 · 暂无合格概率') }}</span><a href="#scenarios" data-route="scenarios">{{ t('Compare','比较') }} →</a></div>
 </aside>
 {%- endmacro %}
 {% macro chart_panel(kind) -%}
 <div class="cri-panel">
   <div class="cri-section-head">
     <div><div class="cri-kicker">{{ t('Bitcoin · daily close','比特币 · 日收盘') }}</div><div class="cri-price-line"><strong class="cri-price">{{ money(view.price) }}</strong><span class="cri-change {% if view.change_24h_pct is not none and view.change_24h_pct<0 %}cri-down{% elif view.change_24h_pct is not none and view.change_24h_pct>0 %}cri-up{% endif %}">{{ pct(view.change_24h_pct) }} {{ t('1D','1天') }}</span></div></div>
-    <div class="cri-segment" aria-label="Chart window"><button data-chart-window="30" aria-pressed="false">30D</button><button data-chart-window="90" aria-pressed="true">90D</button></div>
+    <div><div class="cri-horizon-label">{{ t("History","历史窗口") }}</div><div class="cri-segment" aria-label="Chart window"><button data-chart-window="30" aria-pressed="false">30D</button><button data-chart-window="90" aria-pressed="true">90D</button></div></div>
   </div>
   <div class="cri-chart">
   {% if charts %}
@@ -61,8 +67,8 @@
 
   <section data-view="overview" {% if default_view!='overview' %}hidden{% endif %} aria-labelledby="overview-title">
     <div class="cri-heading">
-      <div><div class="cri-kicker">{{ t('Market read · '+(view.market_as_of or 'date unavailable'),'市场观察 · '+(view.market_as_of or '日期暂无')) }}</div><h2 id="overview-title">{{ t(view.headline_en,view.headline_zh) }}</h2><p>{{ t(view.summary_en,view.summary_zh) }}</p></div>
-      <div class="cri-actions"><span class="cri-stance"><i class="cri-dot"></i>{{ t('Watch — don’t chase','先观察，不追涨') }}</span>{{ inspect_button('evidence:participation') }}</div>
+      <div><div class="cri-kicker">{{ t('Bitcoin · 20-day structure · '+(view.as_of or 'date unavailable'),'比特币 · 20天结构 · '+(view.as_of or '日期暂无')) }}</div><h2 id="overview-title">{{ t(view.headline_en,view.headline_zh) }}</h2><p>{{ t(view.summary_en,view.summary_zh) }}</p></div>
+      <div class="cri-actions"><span class="cri-stance"><i class="cri-dot"></i>{{ t(view.stance_en,view.stance_zh) }}</span>{{ inspect_button('coverage','Data & coverage','数据与覆盖') }}</div>
     </div>
     <div class="cri-layout">{{ chart_panel('overview') }}{{ scenario_paths() }}</div>
     <div class="cri-section">
@@ -77,8 +83,8 @@
 
   <section data-view="bitcoin" {% if default_view!='bitcoin' %}hidden{% endif %} aria-labelledby="bitcoin-title">
     <div class="cri-heading">
-      <div><div class="cri-kicker">{{ t('Bitcoin / Structure & outlook','比特币 / 结构与展望') }}</div><h2 id="bitcoin-title">{{ t(view.btc_headline_en,view.btc_headline_zh) }}</h2><p>{{ t('Follow the price conditions that confirm strength or expose a failed recovery.','关注确认走强或修复失效的价格条件。') }}</p></div>
-      <div class="cri-actions"><span class="cri-stance"><i class="cri-dot"></i>{{ t('Watch the next close','关注下次收盘') }}</span>{{ inspect_button('model','Model tools','模型工具') }}</div>
+      <div><div class="cri-kicker">{{ t('Bitcoin / Structure & outlook','比特币 / 结构与展望') }}</div><h2 id="bitcoin-title">{{ t(view.btc_headline_en,view.btc_headline_zh) }}</h2><p>{{ t(view.summary_en,view.summary_zh) }}</p></div>
+      <div class="cri-actions"><span class="cri-stance"><i class="cri-dot"></i>{{ t(view.stance_en,view.stance_zh) }}</span>{{ inspect_button('model','Model tools','模型工具') }}</div>
     </div>
     <div class="cri-layout">{{ chart_panel('bitcoin') }}{{ scenario_paths() }}</div>
     <div class="cri-lens-strip">{% for family in view.families %}<button class="cri-btn" data-open="evidence:{{ family.id }}">{{ t(family.label_en,family.label_zh) }}</button>{% endfor %}</div>
@@ -110,13 +116,13 @@
   </section>
 
   <section data-view="scenarios" {% if default_view!='scenarios' %}hidden{% endif %} aria-labelledby="scenarios-title">
-    <div class="cri-heading"><div><div class="cri-kicker">{{ t('Bitcoin / Conditional outlook','比特币 / 条件展望') }}</div><h2 id="scenarios-title">{{ t('Plan for the turn','为变化做好准备') }}</h2><p>{{ t('Compare what could strengthen, stall, or break the recovery.','比较修复延续、盘整或失效的条件。') }}</p></div><div class="cri-actions"><div class="cri-segment" aria-label="Scenario horizon"><button data-horizon="7" aria-pressed="true">{{ t('7 days','7天') }}</button><button data-horizon="30" aria-pressed="false">{{ t('30 days','30天') }}</button></div></div></div>
+    <div class="cri-heading"><div><div class="cri-kicker">{{ t('Bitcoin / Conditional outlook','比特币 / 条件展望') }}</div><h2 id="scenarios-title">{{ t('Plan for the turn','为变化做好准备') }}</h2><p>{{ t('See which conditions are met, which are challenged, and what to check next.','查看哪些条件已满足、哪些受到挑战，以及下一步应检查什么。') }}</p></div><div class="cri-actions"><div class="cri-segment" aria-label="Scenario horizon"><button data-horizon="7" aria-pressed="true">{{ t('7 days','7天') }}</button><button data-horizon="30" aria-pressed="false">{{ t('30 days','30天') }}</button></div></div></div>
     {% for horizon,scenarios in view.scenarios.items() %}
     <div class="cri-cases" data-case-horizon="{{ horizon }}" {% if horizon!='7' %}hidden{% endif %}>
       {% for scenario in scenarios %}
-      <article class="cri-panel cri-case"><div class="cri-case-number">0{{ loop.index }} / {{ t('CONDITIONAL','条件路径') }}</div><h3>{{ t(scenario.title_en,scenario.title_zh) }}</h3>
-        <div><div class="cri-case-label">{{ t('Watch for','关注条件') }}</div><p>{{ t(scenario.condition_en,scenario.condition_zh) }}</p></div>
-        <div><div class="cri-case-label">{{ t('What follows','后续变化') }}</div><p>{{ t(scenario.sequence_en,scenario.sequence_zh) }}</p></div>
+      <article class="cri-panel cri-case"><div class="cri-case-number">{{ t('PRICE OBSERVATION','价格观测') }} · {{ scenario.as_of }}</div><h3>{{ t(scenario.title_en,scenario.title_zh) }}</h3>
+        <span class="cri-condition-state">{{ t(scenario.progress_en,scenario.progress_zh) }}</span>
+        <div><div class="cri-case-label">{{ t('Next check','下一步检查') }}</div><p>{{ t(scenario.next_check_en,scenario.next_check_zh) }}</p></div>
         {{ inspect_button('scenario:'+scenario.id,'Inspect scenario','查看情景') }}
       </article>{% else %}<div class="cri-panel cri-empty"><h3>{{ t('Not enough price history','价格历史不足') }}</h3><p class="cri-note">{{ t('This horizon needs a longer uninterrupted history.','此周期需要更长的连续历史。') }}</p></div>{% endfor %}
     </div>{% endfor %}
@@ -127,7 +133,7 @@
         <button class="cri-btn" data-shock="easing" aria-pressed="false">{{ t('Financial conditions ease','金融条件放松') }}{{ arrow() }}</button>
         <button class="cri-btn" data-shock="leverage" aria-pressed="false">{{ t('Leverage outruns demand','杠杆增长快于需求') }}{{ arrow() }}</button>
       </div></div>
-      <div class="cri-mechanism"><h3 id="cri-shock-title"></h3><ol id="cri-shock-chain"></ol><p class="cri-note" id="cri-shock-limit"></p><button class="cri-btn cri-btn-text" data-open="research">{{ t('Research basis','研究依据') }} ↗</button></div>
+      <div class="cri-mechanism"><h3 id="cri-shock-title"></h3><ol id="cri-shock-chain"></ol><p class="cri-note" id="cri-shock-limit"></p><button class="cri-btn cri-btn-text" id="cri-shock-evidence" data-open="evidence:macro_backdrop">{{ t("Inspect current evidence","查看当前证据") }} ↗</button> <button class="cri-btn cri-btn-text" data-open="research">{{ t('Research basis','研究依据') }} ↗</button></div>
     </div>
     <div class="cri-section cri-watch-row"><div><strong>{{ t('Challenge the scenario','检验这个情景') }}</strong><p>{{ t('Review the evidence, missing inputs, and requirements for historical evaluation.','查看证据、缺失项与历史检验要求。') }}</p></div>{{ inspect_button('memory','Historical review','历史检验') }}</div>
   </section>
@@ -136,8 +142,8 @@
 <dialog class="cri-dialog" id="cri-dialog" aria-labelledby="cri-dialog-title">
   <div class="cri-dialog-header"><div><div class="cri-kicker" id="cri-dialog-kicker"></div><h2 id="cri-dialog-title"></h2></div><button class="cri-btn cri-btn-icon" id="cri-dialog-close" aria-label="Close / 关闭"><svg class="cri-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <div class="cri-dialog-body" id="cri-dialog-body"></div>
+  <div id="cri-toast" class="cri-toast" role="status" aria-live="polite" hidden></div>
 </dialog>
-<div id="cri-toast" class="cri-toast" role="status" hidden></div>
 <script id="cri-data" type="application/json">{{ view|tojson }}</script>
 <script src="theme.js"></script><script src="illus.js"></script><script src="crypto_intelligence_r4.js?v={{ version }}"></script>
 </body>

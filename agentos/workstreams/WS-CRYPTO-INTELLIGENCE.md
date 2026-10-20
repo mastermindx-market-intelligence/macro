@@ -85,22 +85,29 @@ waves:
     status: in_progress
     pr: 9580
     next_action: >
-      Apply the house-style Paper revision after exact connection identification,
-      complete the four-view browser matrix, and integrate the accepted candidate
-      into existing production builders. See DEC:CRYPTO-INTELLIGENCE-R4-20261018.
+      Paper p-10-0 now has eight R4 reference boards and local Chromium 32-case
+      matrix plus saved-snapshot flows pass. The isolated candidate is wired into
+      the legacy Crypto CLI as a nonblocking shadow refresh. Push and verify the
+      existing draft PR #9580, obtain hosted browser/design acceptance and exact-
+      head CI before any production route cutover. See DEC:CRYPTO-INTELLIGENCE-R4-20261018.
 next_action: >
-  Continue the Chairman's 2026-10-18 R4 commission from the built candidate and
-  review packet. Identify the existing Mastermind Paper connection Tunnel ID,
-  obtain owner sign-in to the private review Site, then complete Paper and
-  dark/light x EN/ZH x 1440/390 interaction acceptance before route replacement.
-  Historical P0A/P0B authority and completed polish waves are preserved.
+  Continue the Chairman's R4 commission from PR #9580's recovered workspace.
+  Local 44 focused/Chromium tests and eight Paper R4 boards are observed; the
+  default Crypto CLI now additionally refreshes isolated R4 candidate routes.
+  Publish current exact-head checkpoint, reconcile with main/CI, and obtain
+  authenticated hosted visual/interaction acceptance before public route cutover.
+  Preserve Bitcoin model and H5 pathways; do not claim streaming, remote alerts
+  or calibrated forward skill. Historical P0A/P0B closure stays preserved.
 blocked_by:
   - >
-    The installed Paper direct connector expects an older catalog. Its exact
-    same-app connection-to-Tunnel-ID binding is needed before a targeted update.
+    Existing private R4 hosted review still needs an authenticated browser
+    interaction/visual acceptance receipt. Local Chromium proof is not a hosted
+    or production result. The existing Paper target is readable and displays
+    eight R4 boards; no further Paper write is pending in this slice.
   - >
-    The private R4 review Site is deployed, but the connected browser requires
-    ChatGPT sign-in. Visual and interaction acceptance remain unverified.
+    Public replacement requires exact-head CI and a covering production render,
+    including explicit compatibility of the canonical Bitcoin model/H5 flows;
+    issue-time forecast validation, streaming and remote alerts are unbuilt.
 owns_paths:
   - "lib/crypto_intelligence_view.py"
   - "scripts/build_crypto_intelligence_r4.py"

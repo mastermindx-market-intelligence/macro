@@ -152,7 +152,7 @@ def test_missing_breadth_denominator_is_not_invented():
 def test_falling_market_is_not_rewritten_as_no_direction():
     args = inputs()
     args[1]["market"]["total_state"] = "Falling"
-    assert build_view(*args)["headline_en"] == "Market value is falling"
+    assert build_view(*args)["market_headline_en"] == "Market value is falling"
 
 
 def test_invalid_date_or_wrong_asset_cannot_emit_bitcoin_conditions():
@@ -197,6 +197,93 @@ def test_breadth_flag_without_measurement_does_not_confirm_participation(value, 
     values[1]["universe_coverage"]["breadth"].update(available=True, value=value)
     view = build_view(*values)
     assert view["limitations"]["broad_participation"] is (not ready)
-    assert (view["headline_en"] == "Market value is rising") is ready
+    assert (view["market_headline_en"] == "Market value is rising") is ready
     family = next(f for f in view["families"] if f["id"] == "participation")
     assert (family["quality"] == "observed") is ready
+
+
+@pytest.mark.parametrize("position,last,key", [
+    ("below", 1.0, "failure"), ("above", 999999.0, "continuation"),
+])
+def test_visible_progress_matches_current_price_without_confirming_demand(position, last, key):
+    args = inputs()
+    args[3]["price"][-1] = last
+    args[0]["hero"]["price"] = last
+    view = build_view(*args)
+    assert view["levels"]["position"] == position
+    for horizon in ("7", "30"):
+        cases = {s["id"]: s for s in view["scenarios"][horizon]}
+        assert cases[key]["progress_state"] == "price_met"
+        assert "demand unconfirmed" in cases[key]["progress_en"]
+        assert cases["range"]["progress_state"] == "challenged"
+        assert "between" in cases["range"]["next_check_en"]
+        assert f'{cases["range"]["levels"]["low"]:,.2f}' in cases["range"]["next_check_en"]
+        assert f'{cases["range"]["levels"]["high"]:,.2f}' in cases["range"]["next_check_en"]
+        assert all(s["probability"] is None for s in cases.values())
+    assert view["headline_en"] != view["market_headline_en"]
+
+
+@pytest.mark.parametrize("boundary", ["low", "high"])
+def test_equal_range_boundary_is_inside_not_a_directional_break(boundary):
+    args = inputs()
+    prior = args[3]["price"][-21:-1]
+    args[3]["price"][-1] = min(prior) if boundary == "low" else max(prior)
+    args[0]["hero"]["price"] = args[3]["price"][-1]
+    cases = {s["id"]: s for s in build_view(*args)["scenarios"]["7"]}
+    assert cases["range"]["progress_state"] == "inside"
+    assert "persistence unproven" in cases["range"]["progress_en"]
+    assert cases["failure"]["progress_state"] == "waiting"
+    assert cases["continuation"]["progress_state"] == "waiting"
+
+
+def test_shorter_and_longer_outlook_can_have_different_observed_positions():
+    args = inputs()
+    args[3]["price"][-1] = args[3]["price"][-21] - 1
+    args[0]["hero"]["price"] = args[3]["price"][-1]
+    view = build_view(*args)
+    short = {s["id"]: s for s in view["scenarios"]["7"]}
+    long = {s["id"]: s for s in view["scenarios"]["30"]}
+    assert short["failure"]["progress_state"] == "price_met"
+    assert long["range"]["progress_state"] == "inside"
+    assert short["failure"]["levels"]["lookback_days"] == 20
+    assert long["range"]["levels"]["lookback_days"] == 60
+
+
+def test_r4_preview_builder_never_overwrites_legacy_routes(tmp_path):
+    import json
+    from scripts.build_crypto_intelligence_r4 import INPUTS, build as build_candidate
+
+    for name, payload in zip(INPUTS, inputs()):
+        (tmp_path / name).write_text(json.dumps(payload), encoding="utf-8")
+    for name in ("crypto.html", "vector.html"):
+        (tmp_path / name).write_text("LEGACY_ROUTE_SENTINEL", encoding="utf-8")
+    result = build_candidate(tmp_path, tmp_path)
+    assert result["production_routes_replaced"] is False
+    assert (tmp_path / "crypto-r4.html").exists()
+    assert (tmp_path / "vector-r4.html").exists()
+    assert (tmp_path / "crypto_intelligence_r4.json").exists()
+    for name in ("crypto.html", "vector.html"):
+        assert (tmp_path / name).read_text(encoding="utf-8") == "LEGACY_ROUTE_SENTINEL"
+
+
+def test_shadow_hook_refreshes_preview_after_legacy_build(tmp_path, monkeypatch):
+    from scripts import build_crypto as legacy, build_crypto_intelligence_r4 as candidate
+
+    calls = []
+    monkeypatch.setattr(candidate, "build", lambda site, source: (
+        calls.append((site, source)) or
+        {"as_of": "2026-10-17", "market_as_of": "2026-10-15", "production_routes_replaced": False}
+    ))
+    legacy._build_r4_shadow(tmp_path)
+    assert calls == [(tmp_path, tmp_path)]
+
+
+def test_shadow_failure_does_not_break_existing_crypto_render(tmp_path, monkeypatch, caplog):
+    from scripts import build_crypto as legacy, build_crypto_intelligence_r4 as candidate
+
+    def fail(_site, _source):
+        raise RuntimeError("preview-only failure")
+
+    monkeypatch.setattr(candidate, "build", fail)
+    legacy._build_r4_shadow(tmp_path)
+    assert "existing production routes preserved" in caplog.text

@@ -112,7 +112,7 @@ html:not([data-theme=light]) .cri-panel{background:var(--glass-bg)}
 .cri-empty{text-align:center;padding:54px 24px}
 .cri-empty h3{font-size:var(--fs-h2);margin:0 0 8px}
 .cri-footer{display:flex;justify-content:space-between;gap:20px;margin-top:36px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:var(--fs-sm)}
-.cri-dialog{width:min(570px,100vw);height:100dvh;max-height:100dvh;max-width:100vw;margin:0 0 0 auto;padding:0;border:0;border-left:1px solid var(--line);background:var(--panel);color:var(--text);box-shadow:var(--glass-shadow);font-family:var(--font-ui)}
+.cri-dialog{width:min(570px,100vw);height:100dvh;max-height:100dvh;max-width:100vw;margin:0 0 0 auto;padding:0;border:0;border-left:1px solid var(--line);background:var(--panel);color:var(--text);box-shadow:var(--glass-shadow);font-family:var(--font-ui);overflow:auto;overscroll-behavior:contain}
 .cri-dialog::backdrop{background:var(--pv-dialog-backdrop)}
 .cri-dialog-header{position:sticky;top:0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:24px;background:var(--panel);border-bottom:1px solid var(--line);z-index:1}
 .cri-dialog-header h2{font-size:var(--fs-num-lg);margin:5px 0 0;line-height:1.3}
@@ -160,3 +160,18 @@ html[data-lang=zh] .cri :is(h1,h2,h3,.cri-kicker,.cri-case-label){letter-spacing
 @media(prefers-reduced-motion:reduce){.crypto-r4 *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 
 @media(max-width:760px){html[data-lang=zh] .cri-table td:before{content:attr(data-label-zh)}}
+
+
+/* Non-scaling strokes must not retain a viewBox-length reveal dash after stretching. */
+.cri-chart .ilx-path{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+.cri-condition-state{display:block;color:var(--ink-warn,var(--warn));font-size:var(--fs-sm);font-weight:600;line-height:1.5;margin-top:8px}
+.cri-horizon-label{font-size:var(--fs-label);color:var(--muted);margin:0 0 6px}
+.cri-evidence-index{display:flex;width:100%;justify-content:space-between;text-align:left;margin-bottom:10px}
+.cri-dialog.cri-dialog-wide{width:min(960px,calc(100vw - 32px));max-width:960px}
+.cri-comparison-table{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin:20px 0}
+.cri-comparison-table th,.cri-comparison-table td{padding:14px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cri-comparison-table th{font-weight:600;color:var(--muted)}
+.cri-comparison-scroll{overflow-x:auto}
+
+/* Keep desktop dismissal clear of the shared navigation hover controls. */
+@media(min-width:761px){.cri-dialog{height:calc(100dvh - 104px);max-height:calc(100dvh - 104px);margin:80px 24px 24px auto;border:1px solid var(--line);border-radius:var(--r-panel,14px)}}

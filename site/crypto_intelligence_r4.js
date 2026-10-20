@@ -12,7 +12,7 @@
   function zh() { return document.documentElement.dataset.lang === "zh"; }
   function t(en, cn) { return zh() ? cn : en; }
   function field(value, name) { return value[name + (zh() ? "_zh" : "_en")] || ""; }
-  function money(value) { return typeof value === "number" && isFinite(value) ? "$" + value.toLocaleString("en-US", { maximumFractionDigits: value < 100 ? 2 : 0 }) : t("Unavailable", "暂无"); }
+  function money(value) { return typeof value === "number" && isFinite(value) ? "$" + value.toLocaleString("en-US", { maximumFractionDigits: value < 1000 ? 2 : 0 }) : t("Unavailable", "暂无"); }
   function pct(value) { return typeof value === "number" && isFinite(value) ? (value > 0 ? "+" : "") + value.toFixed(1) + "%" : t("Unavailable", "暂无"); }
   function node(tag, text, className) {
     var element = document.createElement(tag);
@@ -37,21 +37,25 @@
   function update(view, changes, replace) {
     var current = state(), params = current.params;
     Object.keys(changes || {}).forEach(function (key) { if (changes[key] == null || changes[key] === "") params.delete(key); else params.set(key, changes[key]); });
-    history[replace ? "replaceState" : "pushState"]({ r4: true }, "", address(view || current.view, params));
+    var metadata = replace && params.has("panel") && history.state && history.state.drawer ? history.state : { r4: true };
+    history[replace ? "replaceState" : "pushState"](metadata, "", address(view || current.view, params));
     apply();
   }
   function horizon() { return state().params.get("h") === "30" ? "30" : "7"; }
   function activeScenario(id) { return (data.scenarios[horizon()] || []).find(function (s) { return s.id === id; }); }
   function open(key, trigger, scenarioHorizon) {
     if (trigger) lastTrigger = trigger;
-    var s = state(), previous = location.hash;
+    var s = state(), previous = location.hash, alreadyOpen = s.params.has("panel");
     s.params.set("panel", key);
     if (scenarioHorizon) s.params.set("h", scenarioHorizon);
-    history.pushState({ r4: true, drawer: true, previous: previous }, "", address(s.view, s.params));
+    var managed = history.state && history.state.r4 && history.state.drawer && Number.isInteger(history.state.depth);
+    var depth = managed ? history.state.depth + 1 : 1;
+    var detachedOrigin = managed ? history.state.detachedOrigin === true : alreadyOpen;
+    history.pushState({ r4: true, drawer: true, previous: previous, depth: depth, detachedOrigin: detachedOrigin }, "", address(s.view, s.params));
     apply();
   }
   function close() {
-    if (history.state && history.state.drawer && typeof history.state.previous === "string") history.back();
+    if (history.state && history.state.r4 && history.state.drawer && !history.state.detachedOrigin && Number.isInteger(history.state.depth) && history.state.depth > 0) history.go(-history.state.depth);
     else update(null, { panel: null }, true);
   }
   function toast(message) {
@@ -66,22 +70,39 @@
     } catch (error) { return []; }
   }
   function expired(s) { return !s.expires || s.expires < new Date().toISOString().slice(0, 10); }
+  function snapshotEvidence() {
+    return {
+      bitcoin_as_of: data.as_of || null,
+      market_as_of: data.market_as_of || null,
+      asset_as_of: data.asset_as_of || null,
+      history_state: data.history && data.history.state || "unavailable",
+      families: (data.families || []).map(function (f) {
+        return { id: f.id, label_en: f.label_en, label_zh: f.label_zh,
+          state_en: f.state_en, state_zh: f.state_zh, quality: f.quality || "unknown",
+          snapshot_as_of: f.snapshot_as_of || null, source: f.source || null };
+      })
+    };
+  }
   function save(s) {
     if (!s) return;
     var items = stored(), index = items.findIndex(function (item) { return item.revision === s.revision; });
-    if (index < 0 && (expired(s) || s.state === "insufficient")) { toast(t("This scenario cannot be saved with the available evidence.", "现有证据不足，无法保存此情景。")); return; }
+    if (index < 0 && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable")) { toast(t("This scenario cannot be saved with the available evidence.", "现有证据不足，无法保存此情景。")); return; }
     if (index >= 0) items.splice(index, 1);
-    else items.push(Object.assign({}, s, { saved_at: new Date().toISOString() }));
+    else items.push(Object.assign({}, s, { saved_at: new Date().toISOString(), issue_evidence: snapshotEvidence() }));
     try {
       localStorage.setItem(storageKey, JSON.stringify(items.slice(-50)));
-      toast(index >= 0 ? t("Removed from this device.", "已从本设备移除。") : t("Saved on this device. Notification delivery is not connected.", "已保存至本设备。通知推送尚未接通。"));
-      renderDrawer(state().params.get("panel"));
+      toast(index >= 0 ? t("Removed from this device.", "已从本设备移除。") : t("Saved on this device.", "已保存至本设备。"));
+      if (index >= 0 && (state().params.get("panel") || "").indexOf("saved-item:") === 0) update(null, { panel: "saved" }, true);
+      else renderDrawer(state().params.get("panel"));
+      var restoredAction = body.querySelector("[data-snapshot-action]");
+      (restoredAction || document.getElementById("cri-dialog-close")).focus();
     } catch (error) { toast(t("This browser could not save the scenario. The current view still works.", "浏览器无法保存情景，当前页面仍可使用。")); }
   }
   function status(s) {
     if (expired(s)) return t("Expired · historical context only", "已到期 · 仅供历史参考");
     if (s.state === "insufficient") return t("Insufficient price history", "价格历史不足");
-    if ((s.id === "continuation" && s.levels.position === "above") || (s.id === "failure" && s.levels.position === "below")) return t("Price condition met; demand remains unconfirmed", "价格条件已满足，需求尚未确认");
+    if (s.progress_en) return field(s, "progress");
+    if (s.levels && ((s.id === "continuation" && s.levels.position === "above") || (s.id === "failure" && s.levels.position === "below"))) return t("Price condition met · demand unconfirmed", "价格条件已满足 · 需求尚未确认");
     return t("Conditional · confirmation pending", "条件路径 · 等待确认");
   }
   function evidence(family) {
@@ -94,7 +115,7 @@
       [t("Coverage", "覆盖状态"), family.quality === "observed" ? t("Dated observation", "带日期观测") : family.quality === "snapshot_only" ? t("Snapshot context; underlying date not supplied", "快照背景；未提供底层日期") : family.quality === "stale" ? t("Update overdue", "更新滞后") : t("Evidence incomplete", "证据不完整")]
     ]);
     if (family.members.length) {
-      heading(t("Supporting readings", "相关读数"));
+      heading(t("Component readings", "组成读数"));
       definition(family.members.map(function (member) { return [field(member, "label"), field(member, "state")]; }));
     }
     var details = node("details", null, "mx-disc");
@@ -104,34 +125,67 @@
     body.appendChild(details);
   }
   function scenario(s, frozen) {
-    if (!s) { paragraph(t("This scenario is unavailable.", "此情景暂不可用。")); return; }
+    if (!s) { title.textContent = t("Scenario unavailable", "情景暂不可用"); paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。")); return; }
     title.textContent = field(s, "title");
     paragraph(status(s)).className = "cri-warning";
-    definition([[t("Asset / horizon", "资产 / 周期"), s.asset + " / " + s.horizon_days + t(" days", "天")], [t("Evidence cutoff", "证据截至"), s.as_of], [t("Expires", "到期日"), s.expires]]);
-    heading(t("Watch for", "关注条件")); paragraph(field(s, "condition"));
-    heading(t("Expected sequence", "预期变化")); paragraph(field(s, "sequence"));
-    heading(t("What changes the view", "什么会改变判断")); paragraph(field(s, "invalidation"));
-    heading(t("Challenge this path", "检验此路径")); paragraph(field(s, "counter"));
-    paragraph(t("Price levels use prior daily closes. They are conditional research thresholds, not the official model's invalidation or a trade order.", "价位来自前期日收盘，仅为条件研究阈值，不是官方模型失效位或交易指令。"));
+    paragraph((s.asset || t("Asset unavailable", "资产暂无")) + " · " + s.horizon_days + t(" days", "天") + " · " + (s.as_of || t("Date not supplied", "未提供日期"))).className = "cri-note";
+    if (s.next_check_en && !expired(s)) { heading(t("Next check", "下一步检查")); paragraph(field(s, "next_check")); }
+    heading(expired(s) ? t("Sequence at the original cutoff", "原始时点的后续路径") : t("What could follow", "可能的后续变化")); paragraph(field(s, "sequence"));
+    heading(expired(s) ? t("Original invalidation condition", "原始失效条件") : t("What changes the view", "什么会改变判断")); paragraph(field(s, "invalidation"));
+    var details = node("details", null, "mx-disc");
+    details.appendChild(node("summary", t("Conditions and evidence", "条件与证据")));
+    details.appendChild(node("p", field(s, "condition")));
+    details.appendChild(node("p", field(s, "counter")));
+    details.appendChild(node("p", t("Expires: ", "到期日：") + s.expires));
+    details.appendChild(node("p", t("Levels use prior daily closes. They are research conditions, not official model invalidations.", "价位来自前期日收盘，属于研究条件，并非官方模型失效位。")));
+    body.appendChild(details);
+    button(t("Historical review", "历史检验"), function () { open((frozen ? "memory-saved:" + s.revision : "memory:" + s.id), null, String(s.horizon_days)); });
+    if (frozen) {
+      heading(t("Original evidence snapshot", "原始证据快照"));
+      var savedEvidence = s.issue_evidence;
+      if (savedEvidence && Array.isArray(savedEvidence.families) && savedEvidence.families.length) {
+        paragraph(t("Bitcoin: ", "比特币：") + (savedEvidence.bitcoin_as_of || t("date unavailable", "日期暂无")) +
+          t(" · Broader market: ", " · 全市场：") + (savedEvidence.market_as_of || t("date unavailable", "日期暂无"))).className = "cri-note";
+        var digest = node("details", null, "mx-disc"), digestSummary = node("summary",
+          t("Review saved source quality and dates", "查看保存时的来源质量与日期"));
+        digest.appendChild(digestSummary);
+        var digestList = node("dl");
+        savedEvidence.families.filter(function (f) { return f && typeof f === "object"; }).forEach(function (f) {
+          var item = node("div"), name = node("dt", field(f, "label") || f.id || t("Unknown reading", "未知读数"));
+          var detail = node("dd", (field(f, "state") || t("Unavailable", "暂无")) + " · " +
+            (f.quality || "unknown") + " · " + (f.snapshot_as_of || t("date unavailable", "日期暂无")));
+          item.append(name, detail); digestList.appendChild(item);
+        });
+        digest.appendChild(digestList); body.appendChild(digest);
+        paragraph(t("These are the readings saved at issue time, not current evidence or validated forecast performance.", "这些读数属于原始时点，并非最新证据或已验证的预测表现。")).className = "cri-note";
+      } else paragraph(t("Evidence digest was not preserved in this older snapshot. Its original conditions and cutoff remain visible, but source quality cannot be reconstructed.", "旧快照未保存原始证据摘要。原始条件与时间仍可查看，但无法恢复当时的来源质量。")).className = "cri-warning";
+    }
     if (!frozen) {
       var saved = stored().some(function (item) { return item.revision === s.revision; });
       var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function () { save(s); });
-      saveButton.disabled = !saved && (expired(s) || s.state === "insufficient");
+      saveButton.dataset.snapshotAction = "toggle";
+      saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
       button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
     } else {
       paragraph(t("This saved version preserves its original conditions and cutoff.", "该保存版本保留原始条件与证据日期。"));
-      button(t("Remove from this device", "从本设备移除"), function () { save(s); });
+      button(t("Remove from this device", "从本设备移除"), function () { save(s); }).dataset.snapshotAction = "remove";
     }
   }
   function renderDrawer(key) {
     if (!key) return;
-    body.replaceChildren(); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
+    body.replaceChildren(); dialog.classList.toggle("cri-dialog-wide", key === "comparison"); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
     var parts = key.split(":"), category = parts[0], id = parts.slice(1).join(":");
     if (category === "evidence") {
       var rows = id === "all" ? data.families : data.families.filter(function (f) { return f.id === id; });
       title.textContent = t("Evidence behind the view", "判断背后的证据");
       if (!rows.length) paragraph(t("This evidence is unavailable.", "该证据暂不可用。"));
-      rows.forEach(evidence);
+      if (id === "all") {
+        paragraph(t("Choose one evidence family. Source dates and missing observations stay with that reading.", "选择一类证据，查看其来源日期与缺失观测。"));
+        rows.forEach(function (family) {
+          var entry = button(field(family, "label") + " · " + field(family, "state"), function () { open("evidence:" + family.id); });
+          entry.classList.add("cri-evidence-index");
+        });
+      } else rows.forEach(evidence);
     } else if (category === "scenario") {
       scenario(activeScenario(id), false);
     } else if (category === "saved-item") {
@@ -149,14 +203,35 @@
     } else if (category === "comparison") {
       title.textContent = t("Compare supported assets", "比较已覆盖资产");
       paragraph(t("Compare the same published horizon; missing values stay unavailable.", "比较相同发布周期；缺失读数保留为暂无。"));
-      data.assets.forEach(function (asset) {
-        heading(asset.name + " · " + asset.symbol);
-        definition([[t("As of", "截至"), asset.as_of], [t("90D relative to Bitcoin", "90天相对比特币"), pct(asset.relative_90d_pct)], [t("30D price change", "30天价格涨跌"), pct(asset.change_30d_pct)], [t("Risk", "风险"), field(asset, "risk")]]);
+      var wrap = node("div", null, "cri-comparison-scroll"), table = node("table", null, "cri-comparison-table");
+      var caption = node("caption", t("Bitcoin is the relative-return benchmark (0% by definition, not its price change). Asset observations retain their own dates.", "比特币为相对表现基准（定义为0%，并非其价格涨跌），各资产保留自己的观测日期。"));
+      table.appendChild(caption);
+      var headerRow = node("tr");
+      [t("Measure", "指标")].concat(data.assets.map(function (a) { return a.symbol; })).forEach(function (label) { var cell = node("th", label); cell.scope = "col"; headerRow.appendChild(cell); });
+      var head = node("thead"); head.appendChild(headerRow); table.appendChild(head);
+      var tbody = node("tbody");
+      [[t("Observation date", "观测日期"), function (a) { return a.as_of; }],
+       [t("90D vs Bitcoin", "90天相对比特币"), function (a) { return pct(a.relative_90d_pct); }],
+       [t("30D price change", "30天价格涨跌"), function (a) { return pct(a.change_30d_pct); }],
+       [t("Structure", "结构"), function (a) { return field(a, "trend"); }],
+       [t("Risk", "风险"), function (a) { return field(a, "risk"); }]].forEach(function (row) {
+        var tr = node("tr"), label = node("th", row[0]); label.scope = "row"; tr.appendChild(label);
+        data.assets.forEach(function (a) { tr.appendChild(node("td", row[1](a) || t("Unavailable", "暂无"))); }); tbody.appendChild(tr);
       });
+      table.appendChild(tbody); wrap.appendChild(table); body.appendChild(wrap);
       if (!data.assets.length) paragraph(t("No supported assets are available for comparison.", "暂无可供比较的已覆盖资产。"));
+    } else if (category === "coverage") {
+      title.textContent = t("Data and coverage", "数据与覆盖");
+      definition([[t("Bitcoin daily close", "比特币日收盘"), data.as_of], [t("Broad-market snapshot", "全市场快照"), data.market_as_of], [t("Asset snapshot", "资产快照"), data.asset_as_of]]);
+      heading(t("Broader market context", "全市场背景"));
+      paragraph(field(data, "market_headline")); paragraph(field(data, "market_summary"));
+      if (data.limitations.source_dates_differ) paragraph(t("These observations have different cutoffs. An older market assessment does not confirm the latest Bitcoin price move.", "这些观测的截止日期不同，较早的全市场判断不能确认比特币最新价格变化。")).className = "cri-warning";
+      button(t("Inspect breadth coverage", "查看广度覆盖"), function () { open("evidence:participation"); });
+      button(t("Inspect price basis", "查看价格口径"), function () { open("history"); });
     } else if (category === "history") {
       title.textContent = t("Price data and levels", "价格数据与价位");
-      definition([[t("Observation date", "观测日期"), data.as_of], [t("Price basis", "价格口径"), t("Published Bitcoin daily closes in USD", "已发布的比特币美元日收盘价")], [t("Displayed history", "展示历史"), data.history.dates.length ? data.history.dates[0] + " → " + data.history.dates[data.history.dates.length - 1] : t("Unavailable", "暂无")], [t("Latest segment", "最新连续片段"), data.history.state]]);
+      var displayedDates = data.history.dates.slice(state().params.get("window") === "30" ? -30 : -90);
+      definition([[t("Observation date", "观测日期"), data.as_of], [t("Price basis", "价格口径"), t("Published Bitcoin daily closes in USD", "已发布的比特币美元日收盘价")], [t("Displayed history", "展示历史"), displayedDates.length ? displayedDates[0] + " → " + displayedDates[displayedDates.length - 1] : t("Unavailable", "暂无")], [t("Latest segment", "最新连续片段"), data.history.state]]);
       if (data.limitations.price_basis_divergence) paragraph(t("The cockpit price differs from the chart series. This chart and its levels use the published daily close series.", "快照价格与图表序列不同。本图及价位采用已发布的日收盘序列。")).className = "cri-warning";
       paragraph(t("The chart uses the latest uninterrupted daily segment. Missing dates or prices break the line; they are not filled with zero.", "图表只展示最新连续日频片段。缺失日期或价格会中断曲线，不会补零。"));
       paragraph(t("The 7-day research scenarios use the prior 20 daily closes; the 30-day scenarios use the prior 60. Today's close is excluded from both thresholds.", "7天情景使用前20天日收盘；30天情景使用前60天。两者阈值均不包含当日收盘。"));
@@ -169,15 +244,17 @@
         definition([[t("Effective date", "生效日期"), data.model.as_of], [t("Authority", "权威来源"), data.model.source || data.model.schema]]);
       } else paragraph(t("The model decision is unavailable. No replacement allocation is inferred.", "模型决策暂不可用，不推算替代仓位。")).className = "cri-warning";
       paragraph(t("The scenario workspace does not change the model. Crypto budget splitting retains its existing separate governed projection.", "情景研究不会改变模型。加密预算拆分继续遵循既有约定。"));
-      link(t("Open the existing model record", "查看现有模型记录"), "vector.html");
+      link(t("Open the existing model record", "查看现有模型记录"), "https://www.mastermind-x.com/vector.html");
     } else if (category === "saved") {
       title.textContent = t("Saved snapshots", "已存快照");
-      paragraph(t("Saved on this device. Cross-device sync and notification delivery are not connected.", "仅保存在本设备，尚未接通跨设备同步与通知推送。"));
+      paragraph(t("Saved in this browser. Each snapshot preserves its original evidence cutoff.", "保存在此浏览器中，每份快照保留原始证据截止日期。"));
       var items = stored();
       if (!items.length) paragraph(t("Nothing saved yet. Open a scenario and save its dated conditions.", "尚未保存。打开一个情景，保存其带日期的条件。"));
       items.forEach(function (s) { button(field(s, "title") + " · " + s.horizon_days + t(" days", "天") + " · " + s.as_of, function () { open("saved-item:" + s.revision); }); });
-    } else if (category === "memory") {
+    } else if (category === "memory" || category === "memory-saved") {
       title.textContent = t("Historical review", "历史检验");
+      var historicalContext = category === "memory-saved" ? stored().find(function (s) { return s.revision === id; }) : (id ? activeScenario(id) : null);
+      paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
       paragraph(t("A historical match must preserve the scenario's issue-time evidence, horizon and eligible universe. Similar-looking charts alone do not establish predictive value.", "历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。"));
       heading(t("Required before results", "结果发布前需要"));
@@ -220,27 +297,42 @@
   }
   var shocks = {
     tightening: {
+      family: "macro_backdrop",
       title: ["Pressure on demand", "需求可能承压"],
       steps: [["Higher rates or a stronger dollar tighten financial conditions.", "利率上升或美元走强，金融条件收紧。"], ["Risk appetite can weaken, reducing marginal crypto demand.", "风险偏好可能转弱，压低边际加密需求。"], ["A price break matters more if spot demand also weakens.", "若现货需求同步转弱，价格失守更值得关注。"]],
       limit: ["Macro hypothesis · weeks to months. Confirm the actual release surprise and market response.", "宏观假设 · 数周至数月。需确认实际数据意外与市场反应。"]
     },
     easing: {
+      family: "macro_backdrop",
       title: ["Room for demand", "需求可能获得空间"],
       steps: [["Easier financial conditions can support risk appetite.", "金融条件放松，可能支持风险偏好。"], ["Fresh capital must reach crypto rather than remain idle.", "新增资金需要进入加密市场，而非闲置。"], ["A recovery is stronger when participation expands with price.", "价格回升伴随参与扩大，修复才更有支撑。"]],
       limit: ["Macro hypothesis · weeks to months. Easier conditions do not guarantee crypto inflows.", "宏观假设 · 数周至数月。金融条件放松不保证资金流入加密市场。"]
     },
     leverage: {
+      family: "leverage_derivatives",
       title: ["A more fragile rise", "上涨可能更脆弱"],
       steps: [["Leveraged positioning grows faster than observed spot demand.", "杠杆头寸增长快于已观测的现货需求。"], ["The market becomes more sensitive to funding and margin shocks.", "市场对融资与保证金冲击更敏感。"], ["A downside break can force selling if positioning is crowded.", "若头寸拥挤，向下突破可能触发被动卖出。"]],
       limit: ["Conditional mechanism. Funding and venue coverage must be current before confirmation.", "条件机制。确认前需要最新资金费率与交易场所覆盖。"]
     }
   };
   function renderShock() {
-    var shock = shocks[currentShock], index = zh() ? 1 : 0, list = document.getElementById("cri-shock-chain");
-    document.getElementById("cri-shock-title").textContent = shock.title[index]; list.replaceChildren();
-    shock.steps.forEach(function (pair) { list.appendChild(node("li", pair[index])); });
-    document.getElementById("cri-shock-limit").textContent = shock.limit[index];
-    document.querySelectorAll("[data-shock]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.shock === currentShock)); });
+    var shock = shocks[currentShock], index = zh() ? 1 : 0;
+    var list = root.querySelector("#cri-shock-chain"), label = root.querySelector("#cri-shock-title");
+    var evidenceButton = root.querySelector("#cri-shock-evidence"), limit = root.querySelector("#cri-shock-limit");
+    if (!shock || !shock.title || !shock.steps || !shock.steps[1] || !shock.limit || !list || !label || !evidenceButton || !limit) return;
+    label.textContent = shock.title[index]; list.replaceChildren();
+    var families = data.families || [];
+    var context = families.find(function (f) { return f.id === shock.family; });
+    var demand = families.find(function (f) { return f.id === "liquidity_flows"; });
+    var cases = (data.scenarios || {})[horizon()] || [];
+    var next = cases.find(function (s) { return s.progress_state === "price_met"; }) || cases.find(function (s) { return s.id === "range"; });
+    list.appendChild(node("li", t("Observed context: ", "已观测背景：") + (context ? field(context, "state") + t(" · snapshot ", " · 快照 ") + (context.snapshot_as_of || t("date not supplied", "未提供日期")) : t("Unavailable", "暂无"))));
+    list.appendChild(node("li", t("Possible transmission: ", "可能的传导：") + shock.steps[1][index]));
+    list.appendChild(node("li", t("Demand evidence: ", "需求证据：") + (demand ? field(demand, "state") : t("Unavailable", "暂无")) + t(". Fresh observations are required for confirmation.", "。确认前需要最新观测。")));
+    list.appendChild(node("li", t("Next check: ", "下一步检查：") + (next && !expired(next) ? field(next, "title") + " · " + field(next, "next_check") : t("Wait for current, sufficient price evidence.", "等待充足的最新价格证据。"))));
+    evidenceButton.dataset.open = "evidence:" + shock.family;
+    limit.textContent = shock.limit[index];
+    root.querySelectorAll("[data-shock]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.shock === currentShock)); });
   }
   function apply() {
     var s = state(), h = horizon(), windowSize = s.params.get("window") === "30" ? "30" : "90";
@@ -251,13 +343,13 @@
     root.querySelectorAll("[data-horizon]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.horizon === h)); });
     root.querySelectorAll("[data-case-horizon]").forEach(function (p) { p.hidden = p.dataset.caseHorizon !== h; });
     filterMarkets(); renderShock();
-    if (s.params.get("panel")) { renderDrawer(s.params.get("panel")); if (!dialog.open) dialog.showModal(); }
+    if (s.params.get("panel")) { var focusWasInside = dialog.contains(document.activeElement); renderDrawer(s.params.get("panel")); if (!dialog.open) dialog.showModal(); else if (focusWasInside && !dialog.contains(document.activeElement)) document.getElementById("cri-dialog-close").focus(); }
     else if (dialog.open) { dialog.close(); if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus(); }
   }
   root.addEventListener("click", function (event) {
     var route = event.target.closest("[data-route]"), openButton = event.target.closest("[data-open]");
     if (route && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) { event.preventDefault(); update(route.dataset.route, { panel: null }); }
-    else if (openButton) { event.preventDefault(); var caseGroup = openButton.closest("[data-case-horizon]"); var scenarioHorizon = openButton.dataset.open.indexOf("scenario:") === 0 ? (caseGroup ? caseGroup.dataset.caseHorizon : "7") : null; open(openButton.dataset.open, openButton, scenarioHorizon); }
+    else if (openButton) { event.preventDefault(); var caseGroup = openButton.closest("[data-case-horizon]"); var scenarioHorizon = openButton.dataset.open.indexOf("scenario:") === 0 ? (caseGroup ? caseGroup.dataset.caseHorizon : horizon()) : null; open(openButton.dataset.open, openButton, scenarioHorizon); }
     var windowButton = event.target.closest("[data-chart-window]");
     if (windowButton) update(null, { window: windowButton.dataset.chartWindow }, true);
     var horizonButton = event.target.closest("[data-horizon]");

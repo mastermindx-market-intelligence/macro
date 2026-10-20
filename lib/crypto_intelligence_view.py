@@ -134,8 +134,8 @@ def families(cockpit: dict, class_state: dict) -> list[dict]:
         if key == "participation":
             breadth = (class_state.get("universe_coverage") or {}).get("breadth") or {}
             ready = breadth.get("available") is True and finite(breadth.get("value")) is not None
-            state = breadth.get("state") if ready else "Not yet confirmed"
-            state_zh = breadth.get("state_zh") if ready else "尚未确认"
+            state = breadth.get("state") if ready else "Coverage incomplete"
+            state_zh = breadth.get("state_zh") if ready else "覆盖不足"
             quality = "observed" if ready else "insufficient"
             source_date = breadth.get("as_of") if iso_day(breadth.get("as_of")) else None
             primary = {"source": "crypto.class_state/v1.universe_coverage.breadth"}
@@ -157,6 +157,42 @@ def families(cockpit: dict, class_state: dict) -> list[dict]:
     return out
 
 
+def scenario_progress(levels: dict, key: str) -> dict:
+    """Describe current price evidence without implying demand confirmation."""
+    position = levels.get("position") if isinstance(levels, dict) else None
+    low_value = finite(levels.get("low")) if isinstance(levels, dict) else None
+    high_value = finite(levels.get("high")) if isinstance(levels, dict) else None
+    if (not isinstance(levels, dict) or not levels.get("available")
+            or position not in {"above", "below", "inside"}
+            or low_value is None or high_value is None or not 0 < low_value <= high_value):
+        return {"progress_state": "unavailable", "progress_en": "Price evidence unavailable",
+                "progress_zh": "价格证据暂无", "next_check_en": "Wait for a complete dated price range.",
+                "next_check_zh": "等待完整、带日期的价格区间。"}
+    low, high = "$" + format(levels["low"], ",.2f"), "$" + format(levels["high"], ",.2f")
+    matched = (key == "continuation" and position == "above") or (key == "failure" and position == "below")
+    if matched:
+        state, en, zh = "price_met", "Price condition met · demand unconfirmed", "价格条件已满足 · 需求尚未确认"
+        ne, nz = (f"Watch for a return below {high} and check fresh spot demand.",
+                  f"关注是否回落至{high}下方，并检查最新现货需求。") if key == "continuation" else (
+                  f"Watch for a reclaim of {low} and check fresh demand evidence.",
+                  f"关注能否收复{low}，并检查最新需求证据。")
+    elif key == "range":
+        if position == "inside":
+            state, en, zh = "inside", "Inside the prior range · persistence unproven", "位于前期区间内 · 延续尚待验证"
+            ne, nz = f"Watch the next close against {low} and {high}.", f"关注下一次收盘与{low}、{high}的关系。"
+        else:
+            state, en, zh = "challenged", "Range challenged · return required", "区间已受挑战 · 需重回区间"
+            ne = f"A daily close back between {low} and {high} would restore the price condition."
+            nz = f"日收盘回到{low}与{high}之间，才恢复区间价格条件。"
+    else:
+        state, en, zh = "waiting", "Price condition pending", "价格条件尚未满足"
+        boundary = high if key == "continuation" else low
+        direction, direction_zh = ("above", "上方") if key == "continuation" else ("below", "下方")
+        ne, nz = f"First watch for a daily close {direction} {boundary}.", f"先关注日收盘能否到达{boundary}{direction_zh}。"
+    return {"progress_state": state, "progress_en": en, "progress_zh": zh,
+            "next_check_en": ne, "next_check_zh": nz}
+
+
 def scenario_set(history: dict, as_of: str, horizon: int) -> list[dict]:
     lookback = 20 if horizon == 7 else 60
     levels = prior_close_range(history, lookback)
@@ -164,12 +200,12 @@ def scenario_set(history: dict, as_of: str, horizon: int) -> list[dict]:
     if not day or not levels.get("available"):
         return []
     expires = str(day + timedelta(days=horizon))
-    high = "$" + format(levels["high"], ",.0f") if levels.get("available") else "the prior range high"
-    low = "$" + format(levels["low"], ",.0f") if levels.get("available") else "the prior range low"
+    high = "$" + format(levels["high"], ",.2f") if levels.get("available") else "the prior range high"
+    low = "$" + format(levels["low"], ",.2f") if levels.get("available") else "the prior range low"
     high_zh = high if levels.get("available") else "前期区间高位"
     low_zh = low if levels.get("available") else "前期区间低位"
     definitions = [
-        ("continuation", "Breaks higher", "向上突破",
+        ("continuation", "Upside test", "上行检验",
          f"A daily close above {high}, followed by stronger spot demand.",
          f"日收盘突破{high_zh}，随后现货需求增强。",
          "Price holds above the old range as participation broadens.",
@@ -185,7 +221,7 @@ def scenario_set(history: dict, as_of: str, horizon: int) -> list[dict]:
          "A sustained range break with demand or selling pressure ends this path.",
          "持续突破区间，并伴随需求或卖压变化，结束此路径。",
          "Mixed evidence", "证据分化", "A sudden catalyst can end the range.", "突发催化可能打破区间。"),
-        ("failure", "Breaks lower", "向下突破",
+        ("failure", "Downside test", "下行检验",
          f"A daily close below {low}, followed by weaker demand.",
          f"日收盘跌破{low_zh}，随后需求转弱。",
          "Lost price structure and weaker demand reinforce selling pressure.",
@@ -196,6 +232,7 @@ def scenario_set(history: dict, as_of: str, horizon: int) -> list[dict]:
     ]
     return [{
         "id": key, "title_en": en, "title_zh": zh,
+        **scenario_progress(levels, key),
         "asset": "BTC", "horizon_days": horizon, "as_of": as_of, "expires": expires,
         "state": "conditional" if levels.get("available") else "insufficient",
         "condition_en": ce, "condition_zh": cz, "sequence_en": se, "sequence_zh": sz,
@@ -268,14 +305,29 @@ def build_view(cockpit: dict, class_state: dict, asset_states: dict, chart: dict
     if market.get("total_state") == "Rising" and broad_ready:
         copy = ("Market value is rising", "市场总值回升", "The latest snapshot rose; compare price with observed participation.", "最新快照显示市值回升，对照价格与参与度。")
     levels = prior_close_range(history, 20)
+    position_copy = {
+        "below": ("The recent range is under pressure.", "近期区间承压。",
+                  "Price has slipped below its prior closing range. A wider breakdown still needs demand confirmation.",
+                  "价格已跌破前期收盘区间，更广泛的下行仍需需求证据确认。", "Range under pressure", "区间承压"),
+        "above": ("Bitcoin is testing higher ground.", "比特币正在试探区间上方。",
+                  "Price is above its prior closing range. Fresh demand is needed to assess continuation.",
+                  "价格已越过前期收盘区间，需结合最新需求判断能否延续。", "Testing strength", "试探强势"),
+        "inside": ("Bitcoin is holding inside its range.", "比特币仍在区间内运行。",
+                   "The latest close remains between the prior boundaries. Watch the next close and fresh demand.",
+                   "最新收盘仍处于前期边界内，关注下一次收盘与最新需求。", "Inside the prior range", "位于前期区间内"),
+    }
+    thesis = position_copy.get(levels.get("position"), ("Price evidence incomplete", "价格证据不完整",
+        "A current price condition cannot be established from the available history.", "现有历史尚不能建立当前价格条件。",
+        "Price evidence incomplete", "价格证据不完整"))
     return {
         "schema": "crypto.intelligence_view/v1", "display_only": True, "contracts": contract_status,
         "as_of": as_of, "market_as_of": class_state.get("as_of"),
         "price": display_price, "snapshot_price": price,
         "change_24h_pct": change,
-        "headline_en": copy[0], "headline_zh": copy[1], "summary_en": copy[2], "summary_zh": copy[3],
-        "btc_headline_en": "Watch the range" if levels["available"] else "Price evidence incomplete",
-        "btc_headline_zh": "关注区间突破" if levels["available"] else "价格证据不完整",
+        "headline_en": thesis[0], "headline_zh": thesis[1], "summary_en": thesis[2], "summary_zh": thesis[3],
+        "market_headline_en": copy[0], "market_headline_zh": copy[1], "market_summary_en": copy[2], "market_summary_zh": copy[3],
+        "stance_en": thesis[4], "stance_zh": thesis[5],
+        "btc_headline_en": thesis[0], "btc_headline_zh": thesis[1],
         "families": families(cockpit, class_state),
         "history": history, "levels": levels,
         "scenarios": {str(h): scenario_set(history, as_of or "", h) for h in (7, 30)},
