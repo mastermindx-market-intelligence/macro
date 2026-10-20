@@ -5069,6 +5069,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "scripts/__init__.py"
+      - "scripts/local_projection_alfred_panel.py"
       - "scripts/run_local_projections.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
