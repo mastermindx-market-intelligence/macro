@@ -12,7 +12,7 @@ not rights decisions made by this module.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -23,6 +23,7 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
+from engine.qbus_news_quality import display_text, publisher_identity, representative_key
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
@@ -100,11 +101,29 @@ class RoutedRevision:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceReadRights:
+    source: str
+    allow_title: bool
+    allow_url: bool
+    allow_teaser: bool
+
+
+@dataclass(frozen=True, slots=True)
 class NewsReadRights:
     allowed_sources: frozenset[str]
     allow_title: bool = True
     allow_url: bool = True
     allow_teaser: bool = True
+    source_fields: tuple[SourceReadRights, ...] = ()
+
+    def allows(self, source: str, field: str) -> bool:
+        if source not in self.allowed_sources or field not in {"title", "url", "teaser"}:
+            return False
+        if self.source_fields:
+            matches = [grant for grant in self.source_fields if grant.source == source]
+            # Duplicate receipts may only narrow a field, never broaden it.
+            return bool(matches) and all(getattr(grant, "allow_" + field) for grant in matches)
+        return bool(getattr(self, "allow_" + field))
 
     @classmethod
     def all_internal(cls) -> "NewsReadRights":
@@ -266,6 +285,9 @@ CREATE TABLE IF NOT EXISTS news_clusters (
     event_family TEXT NOT NULL,
     cluster_policy_version TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_news_clusters_observed
+ON news_clusters(anchor_observed_at);
 
 CREATE TABLE IF NOT EXISTS news_cluster_members (
     source TEXT NOT NULL,
@@ -548,9 +570,9 @@ def _projection_story(
         story_id=story_id,
         source_count=source_count,
         item_count=item_count,
-        title=str(row["title"]) if rights.allow_title else "",
-        url=str(row["url"]) if rights.allow_url else "",
-        teaser=str(row["teaser"]) if rights.allow_teaser else "",
+        title=display_text(row["title"]) if rights.allows(str(row["source"]), "title") else "",
+        url=str(row["url"]) if rights.allows(str(row["source"]), "url") else "",
+        teaser=display_text(row["teaser"]) if rights.allows(str(row["source"]), "teaser") else "",
         published_at=_projection_dt(row["published_at"]),
         updated_at=_projection_dt(row["updated_at"]),
         received_at=received_at,
@@ -575,9 +597,9 @@ def _redact_story(
         story_id=story_id,
         source_count=source_count,
         item_count=item_count,
-        title=state.title if rights.allow_title else "",
-        url=state.url if rights.allow_url else "",
-        teaser=state.teaser if rights.allow_teaser else "",
+        title=display_text(state.title) if rights.allows(state.source, "title") else "",
+        url=state.url if rights.allows(state.source, "url") else "",
+        teaser=display_text(state.teaser) if rights.allows(state.source, "teaser") else "",
         published_at=state.published_at,
         updated_at=state.updated_at,
         received_at=state.last_received_at,
@@ -1036,16 +1058,34 @@ class NewsStore:
         ).fetchone()
         return None if row is None else str(row["cluster_id"])
 
-    def _cluster_candidates(self) -> tuple[ClusterCandidate, ...]:
+    def _cluster_candidates(self, incoming: ClusterItem) -> tuple[ClusterCandidate, ...]:
+        # Apply the same hard relevance/window constraints as the pure matcher
+        # BEFORE the bounded candidate budget. A market-wide burst must not evict
+        # a matching report for this security from the search horizon. Use the
+        # cluster's retained subject union, including corrected/withdrawn members,
+        # so this is a query optimization rather than a new matching policy.
+        if not incoming.subject_ids:
+            return ()
+        window = timedelta(seconds=self.cluster_policy.window_seconds)
         rows = self._conn.execute(
             """
             SELECT cluster_id, anchor_story_id, anchor_title,
                    anchor_observed_at, subject_ids_json, event_family
             FROM news_clusters
+            WHERE anchor_observed_at BETWEEN ? AND ?
+              AND EXISTS (
+                  SELECT 1 FROM json_each(news_clusters.subject_ids_json) subjects
+                  WHERE subjects.value IN (SELECT value FROM json_each(?))
+              )
             ORDER BY anchor_observed_at DESC, cluster_id
             LIMIT ?
             """,
-            (self.cluster_policy.max_candidates + 1,),
+            (
+                (incoming.observed_at - window).isoformat(),
+                (incoming.observed_at + window).isoformat(),
+                _stable_json(list(incoming.subject_ids)),
+                self.cluster_policy.max_candidates + 1,
+            ),
         ).fetchall()
         return tuple(
             ClusterCandidate(
@@ -1097,7 +1137,7 @@ class NewsStore:
         )
         decision = cluster_candidates(
             incoming,
-            self._cluster_candidates(),
+            self._cluster_candidates(incoming),
             policy=self.cluster_policy,
         )
         cluster_id = decision.cluster_id
@@ -1119,6 +1159,15 @@ class NewsStore:
                     incoming.event_family,
                     cluster_policy_version(self.cluster_policy),
                 ),
+            )
+        if decision.action != "new":
+            row = self._conn.execute(
+                "SELECT subject_ids_json FROM news_clusters WHERE cluster_id=?", (cluster_id,)
+            ).fetchone()
+            subjects = set(json.loads(row["subject_ids_json"])) | set(security_ids)
+            self._conn.execute(
+                "UPDATE news_clusters SET subject_ids_json=? WHERE cluster_id=?",
+                (_stable_json(sorted(subjects)), cluster_id),
             )
         self._conn.execute(
             """
@@ -1559,14 +1608,14 @@ class NewsStore:
             members = members_by_cluster.get(cluster_id, [])
             if not members:
                 continue
-            representative = members[0]
+            representative = max(members, key=lambda row: representative_key(row, rights))
             out.append(
                 _projection_story(
                     sequence=int(cluster["cluster_sequence"]),
                     row=representative,
                     story_id=cluster_id,
                     source_count=len(
-                        {str(member["source"]) for member in members}
+                        {publisher_identity(str(member["source"]), str(member["url"])) for member in members}
                     ),
                     item_count=len(members),
                     universe_revision=str(
@@ -1584,6 +1633,59 @@ class NewsStore:
             next_cursor=next_cursor,
             has_more=has_more,
         )
+
+
+    def evidence_for_security(self, security_id: str, *, limit: int, rights: NewsReadRights) -> dict:
+        """Bounded permitted text with exact current revisions for downstream use.
+
+        Caller owns audience/use admission. The transaction binds the selected
+        stories, field projection and revision references to one read snapshot.
+        """
+        own_transaction = not self._conn.in_transaction
+        if own_transaction:
+            self._conn.execute("BEGIN")
+        try:
+            snapshot = self.snapshot(security_id, limit=limit, cursor=None, rights=rights)
+            stories = []
+            remaining_text = 32000
+            text_limited = False
+            for item in snapshot.rows:
+                detail = self.story(item.story_id, rights=rights, security_id=security_id)
+                if detail is None:
+                    continue
+                reports = []
+                for member in detail.members[:10]:
+                    state = self._load_state(member.source, member.source_item_id)
+                    if state is None or state.status != "active":
+                        continue
+                    if len(member.title) > remaining_text:
+                        text_limited = True
+                        break
+                    teaser = member.teaser[:min(2000, remaining_text-len(member.title))]
+                    remaining_text -= len(member.title) + len(teaser)
+                    reports.append({
+                        "source": member.source, "source_item_id": member.source_item_id,
+                        "revision_id": state.current_revision_id,
+                        "member_sequence": member.sequence, "title": member.title,
+                        "url": member.url, "teaser": teaser,
+                        "teaser_truncated": len(member.teaser) > len(teaser),
+                        "published_at": member.published_at.isoformat() if member.published_at else None,
+                        "updated_at": member.updated_at.isoformat() if member.updated_at else None,
+                        "source_event_at": state.source_event_at.isoformat() if state.source_event_at else None,
+                        "received_at": member.received_at.isoformat(),
+                        "version_clock_domain": state.version_clock_domain,
+                    })
+                if not reports:
+                    break
+                stories.append({
+                    "story_id": item.story_id, "story_sequence": item.sequence,
+                    "source_count": detail.source_count, "item_count": detail.item_count,
+                    "reports_truncated": detail.item_count > len(reports), "reports": reports,
+                })
+            return {"stories": stories, "has_more": snapshot.has_more or text_limited}
+        finally:
+            if own_transaction:
+                self._conn.execute("ROLLBACK")
 
     def news_flow(
         self,
@@ -1707,12 +1809,23 @@ class NewsStore:
         story_id: str,
         *,
         rights: NewsReadRights,
+        security_id: str | None = None,
     ) -> StoryDetail | None:
         story_id = _validate_token(story_id, "story_id", 1024)
         if not isinstance(rights, NewsReadRights):
             raise StoreValidationError("qbus_news_store:invalid_rights")
         if not rights.allowed_sources:
             return None
+        security_filter = ""
+        params = [story_id, *sorted(rights.allowed_sources)]
+        if security_id is not None:
+            security_id = _validate_token(security_id, "security_id", 1024)
+            security_filter = """AND EXISTS (
+                SELECT 1 FROM news_security_index i
+                WHERE i.source=s.source AND i.source_item_id=s.source_item_id
+                  AND i.security_id=?
+            )"""
+            params.append(security_id)
         placeholders = ",".join("?" for _ in rights.allowed_sources)
         rows = self._conn.execute(
             f"""
@@ -1727,13 +1840,15 @@ class NewsStore:
             WHERE m.cluster_id=?
               AND s.status='active'
               AND s.source IN ({placeholders})
+              {security_filter}
             ORDER BY s.last_sequence DESC, s.source, s.source_item_id
             """,
-            (story_id, *sorted(rights.allowed_sources)),
+            tuple(params),
         ).fetchall()
         if not rows:
             return None
-        source_count = len({str(row["source"]) for row in rows})
+        rows = sorted(rows, key=lambda row: representative_key(row, rights), reverse=True)
+        source_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
         item_count = len(rows)
         members = tuple(
             _projection_story(
@@ -1799,6 +1914,42 @@ class NewsStore:
         ).fetchall()
         return self._change_page(rows, after_sequence=after_sequence, limit=limit, rights=rights)
 
+    def projected_changes_for_security(
+        self, security_id: str, *, after_sequence: int, limit: int,
+        rights: NewsReadRights,
+    ) -> ChangePage:
+        """Project live invalidations through the same audience view as snapshots.
+
+        The immutable change journal remains available for audits. UI consumers
+        receive the current eligible representative, never the raw last-arriving
+        report. Coalesce within this bounded page; cursor advancement still covers
+        every consumed journal row, including several updates of one story.
+        """
+        # Keep journal invalidations and current rows in one SQLite read snapshot.
+        own_transaction = not self._conn.in_transaction
+        if own_transaction:
+            self._conn.execute("BEGIN")
+        try:
+            page = self.changes_for_security(
+                security_id, after_sequence=after_sequence, limit=limit, rights=rights,
+            )
+            latest = {row.story_id: row for row in page.rows}
+            projected = []
+            for row in sorted(latest.values(), key=lambda item: item.sequence):
+                detail = self.story(row.story_id, rights=rights, security_id=security_id)
+                if detail is None:
+                    projected.append(replace(row, kind="remove", title="", url="", teaser=""))
+                    continue
+                best = detail.members[0]
+                projected.append(replace(
+                    row, kind="upsert", source=best.source, source_item_id=best.source_item_id,
+                    title=best.title, url=best.url, teaser=best.teaser,
+                ))
+            return ChangePage(page.schema, tuple(projected), page.next_sequence, page.has_more)
+        finally:
+            if own_transaction:
+                self._conn.execute("ROLLBACK")
+
     def _change_page(
         self,
         rows,
@@ -1820,9 +1971,9 @@ class NewsStore:
                     source=str(row["source"]),
                     source_item_id=str(row["source_item_id"]),
                     story_id=str(row["cluster_id"]),
-                    title="" if removed or not rights.allow_title else revision.title,
-                    url="" if removed or not rights.allow_url else revision.url,
-                    teaser="" if removed or not rights.allow_teaser else revision.teaser,
+                    title="" if removed or not rights.allows(revision.source, "title") else display_text(revision.title),
+                    url="" if removed or not rights.allows(revision.source, "url") else revision.url,
+                    teaser="" if removed or not rights.allows(revision.source, "teaser") else display_text(revision.teaser),
                     security_ids=tuple(json.loads(row["security_ids_json"])),
                     universe_revision=str(row["universe_revision"]),
                     observed_at=datetime.fromisoformat(row["observed_at"]),

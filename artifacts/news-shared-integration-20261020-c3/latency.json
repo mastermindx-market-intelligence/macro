@@ -1,0 +1,50 @@
+{
+  "schema": "qbus.news_latency_benchmark.v1",
+  "observed_at": "2026-10-20T06:10:02.874785+00:00",
+  "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+  "proof_scope": "controlled local SQLite-to-SSE fanout; both arms use current projection and authorization; excludes vendor, WAN, Terminal BFF and browser paint",
+  "control": {
+    "poll_seconds": 1.0,
+    "shared_reads": false,
+    "subscribers": 32,
+    "events": 24,
+    "receive_before_commit_to_sse": {
+      "samples": 768,
+      "p50_ms": 1101.58,
+      "p95_ms": 1459.86,
+      "p99_ms": 1523.03,
+      "max_ms": 1581.15
+    },
+    "commit_duration": {
+      "samples": 24,
+      "p50_ms": 7.28,
+      "p95_ms": 10.87,
+      "p99_ms": 13.11,
+      "max_ms": 13.11
+    },
+    "database_reads": 64,
+    "subscriber_read_requests": 64
+  },
+  "candidate": {
+    "poll_seconds": 0.1,
+    "shared_reads": true,
+    "subscribers": 32,
+    "events": 24,
+    "receive_before_commit_to_sse": {
+      "samples": 768,
+      "p50_ms": 80.99,
+      "p95_ms": 136.03,
+      "p99_ms": 154.4,
+      "max_ms": 162.57
+    },
+    "commit_duration": {
+      "samples": 24,
+      "p50_ms": 7.32,
+      "p95_ms": 25.32,
+      "p99_ms": 28.23,
+      "max_ms": 28.23
+    },
+    "database_reads": 23,
+    "subscriber_read_requests": 331
+  }
+}

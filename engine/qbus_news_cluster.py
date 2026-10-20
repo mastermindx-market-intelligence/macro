@@ -21,6 +21,7 @@ import dataclasses
 from dataclasses import dataclass
 from datetime import datetime
 import hashlib
+from html import unescape
 import re
 
 from engine import qkernel
@@ -388,10 +389,10 @@ def cluster_candidates(
             > policy.window_seconds
         ):
             continue
-        if not _compatible(incoming.title, candidate.anchor_title):
+        if not _compatible(unescape(incoming.title), unescape(candidate.anchor_title)):
             continue
         similarity = qkernel.title_similarity(
-            incoming.title, candidate.anchor_title
+            unescape(incoming.title), unescape(candidate.anchor_title)
         )
         if similarity < policy.title_threshold:
             continue
