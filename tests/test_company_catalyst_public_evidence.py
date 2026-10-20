@@ -338,10 +338,11 @@ def _api_inputs(event):
         "issuer_state": "RESOLVED", "issuer_cik": CIK,
         "listing_key": "US-XNAS-SYNB", "security_state": None, "superseded_by": None,
     }])
-    aliases = VendorAliasTable.from_records([{
+    alias_records = [{
         "vendor": "store", "vendor_symbol": "SYNB", "security_id": "SEC:US-XNAS-SYNB",
         "valid_from": None, "valid_to": None,
-    }])
+    }]
+    aliases = VendorAliasTable.from_records(alias_records)
     identity = resolve_current_event_identity(
         event, issuer_master=master, alias_table=aliases,
         identity_cut_date=date(2026, 10, 18), identity_observed_at="2026-10-18T17:00:00Z",
@@ -359,6 +360,12 @@ def _api_inputs(event):
     }, {
         "contract_id": "dataos_issuer_master.current",
         "ref": "synthetic-master-cut-2026-10-18", "sha256": "2" * 64,
+        "observed_at": "2026-10-18T17:00:00Z", "accepted_at": "2026-10-18T17:00:00Z",
+        "availability": "available",
+    }, {
+        "contract_id": "dataos_vendor_aliases.current",
+        "ref": "synthetic-alias-cut-2026-10-18",
+        "sha256": canonical_json_sha256(alias_records),
         "observed_at": "2026-10-18T17:00:00Z", "accepted_at": "2026-10-18T17:00:00Z",
         "availability": "available",
     }]

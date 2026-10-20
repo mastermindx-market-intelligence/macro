@@ -7867,6 +7867,8 @@ jobs:
       - "tests/test_biocatalyst_catalyst_radar_api.py"
       - "tests/test_biocatalyst_peer_api_contract.py"
       - "tests/test_biocatalyst_wmn_api.py"
+      - "tests/test_biocatalyst_wmn_publication.py"
+      - "tests/fixtures/biocatalyst_wmn/legacy_v1_generation_ec5.json"
       - "tests/test_biocatalyst_worker.py"
       - "templates/biocatalyst.js"
       - "site/biocatalyst.js"
@@ -7946,6 +7948,10 @@ jobs:
       - "contracts/**"
       - "data/**"
       - "engine/biocatalyst/**"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "lib/dataos/identity.py"
       - "engine/earnings_narrative/**"
       - "engine/neuralweb/**"
       - "engine/press/**"
@@ -7956,6 +7962,7 @@ jobs:
       - "tests/test_biocatalyst_activation.py"
       - "tests/test_biocatalyst_worker.py"
       - "tests/test_biocatalyst_wmn_publication.py"
+      - "tests/fixtures/biocatalyst_wmn/legacy_v1_generation_ec5.json"
       - "tests/test_clinicaltrials_biocatalyst.py"
     # Full B1 collector → private evidence → public-generation worker replay.
     # Twelve minutes preserves measured headroom without hiding a slow worker
@@ -8389,6 +8396,7 @@ jobs:
           tests/test_biocatalyst_sponsor_ticker_map.py
           tests/test_biocatalyst_theme_rollup_pit.py
           tests/test_biocatalyst_m0a_clock_activation.py
+          tests/test_company_intelligence_catalyst_event.py
           tests/test_biocatalyst_dataos_cik_reader.py
           tests/test_biocatalyst_research_priority.py
           tests/test_biocatalyst_what_matters_next.py

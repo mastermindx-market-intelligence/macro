@@ -7,7 +7,7 @@ probability, materiality, historical-response or incorporation estimates.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Any, Mapping, Sequence
 from urllib.parse import quote
 
@@ -664,18 +664,24 @@ def validate_wmn_inputs(
     *,
     forbidden_generation_id: str | None = None,
 ) -> dict[str, Any]:
-    """Validate one immutable owner-input cut for What Matters Next.
+    """Validate an immutable WMN artifact using its declared wire version.
 
-    The first slice binds Company Intelligence event bytes and the CURRENT Data
-    OS identity projection.  It deliberately admits no relationship/asset or
-    estimate owner blob yet.  The cut is self-contained so request handlers do
-    not perform live owner reads or stitch generations.
+    V1 preserves historical generation integrity and its original normalization.
+    V2 also binds the Data OS vendor-alias cut used by the identity projection.
+    These are declared owner dependencies, not independent proof of native Data
+    OS admission. Current publication/composition requires the separate v2 gate.
     """
     item = _wmn_exact_mapping(payload, field="wmn_inputs", keys=_WMN_INPUT_KEYS)
-    if item.get("contract_id") != "biocatalyst_wmn_inputs.v1":
+    versions = {
+        "biocatalyst_wmn_inputs.v1": "1.0.0",
+        "biocatalyst_wmn_inputs.v2": "2.0.0",
+    }
+    contract_id = item.get("contract_id")
+    if not isinstance(contract_id, str) or contract_id not in versions:
         raise ContractError("wmn_inputs contract_id invalid")
-    if item.get("schema_version") != "1.0.0":
+    if item.get("schema_version") != versions[contract_id]:
         raise ContractError("wmn_inputs schema_version invalid")
+    alias_bound = contract_id == "biocatalyst_wmn_inputs.v2"
     input_cut = _wmn_input_cut(
         item.get("input_cut"), forbidden_generation_id=forbidden_generation_id
     )
@@ -697,6 +703,8 @@ def validate_wmn_inputs(
 
     cut_members = input_cut["members"]
     allowed_member_contracts = {"company_catalyst_event.v1", "dataos_issuer_master.current"}
+    if alias_bound:
+        allowed_member_contracts.add("dataos_vendor_aliases.current")
     if any(member["contract_id"] not in allowed_member_contracts for member in cut_members):
         raise ContractError("input_cut contains an owner contract not admitted in first slice")
     dataos_members = [
@@ -705,6 +713,13 @@ def validate_wmn_inputs(
     ]
     if len(dataos_members) != 1:
         raise ContractError("input_cut requires exactly one Data OS current-master member")
+    if alias_bound:
+        alias_members = [
+            member for member in cut_members
+            if member["contract_id"] == "dataos_vendor_aliases.current"
+        ]
+        if len(alias_members) != 1:
+            raise ContractError("input_cut requires exactly one Data OS vendor-alias member")
     event_member_by_ref = {
         member["ref"]: member
         for member in cut_members
@@ -734,6 +749,21 @@ def validate_wmn_inputs(
             issuer_cik=event["issuer_cik"],
             evaluation_cutoff=cutoff,
         )
+        if alias_bound:
+            # Preserve historical v1 acceptance and bytes. New immutable cuts
+            # must reject future alias lookups and invalid nested navigation at
+            # admission, even when the projection was supplied precomputed.
+            identity = identity_projection[event_id]
+            try:
+                identity_cut_date = date.fromisoformat(identity["identity_cut_date"])
+            except ValueError as exc:
+                raise ContractError("identity_cut_date invalid") from exc
+            if identity_cut_date.isoformat() != identity["identity_cut_date"]:
+                raise ContractError("identity_cut_date invalid")
+            _cutoff_literal, cutoff_time = _utc(cutoff, field="input_cut.cutoff")
+            if identity_cut_date > cutoff_time.date():
+                raise ContractError("identity_cut_date exceeds generation cutoff")
+            _admitted_issuer(identity, company_id=event["company_id"])
 
     coverage = _wmn_coverage(item.get("coverage"))
     family_counts: dict[str, int] = {}
@@ -770,8 +800,8 @@ def validate_wmn_inputs(
             raise ContractError("wmn_inputs embeds the future generation")
 
     return {
-        "contract_id": "biocatalyst_wmn_inputs.v1",
-        "schema_version": "1.0.0",
+        "contract_id": contract_id,
+        "schema_version": versions[contract_id],
         "input_cut": input_cut,
         "events": events,
         "relationships": [],
@@ -786,6 +816,24 @@ def validate_wmn_inputs(
     }
 
 
+def validate_current_wmn_inputs(
+    payload: object,
+    *,
+    forbidden_generation_id: str | None = None,
+) -> dict[str, Any]:
+    """Require a complete declared identity cut for new publication/current use.
+
+    Historical v1 artifacts remain readable through validate_wmn_inputs; they
+    cannot be upgraded without a new owner-supplied alias binding.
+    """
+    inputs = validate_wmn_inputs(
+        payload, forbidden_generation_id=forbidden_generation_id
+    )
+    if inputs["contract_id"] != "biocatalyst_wmn_inputs.v2":
+        raise ContractError("current WMN requires an alias-bound v2 owner input")
+    return inputs
+
+
 def compose_rows_from_wmn_inputs(
     payload: object,
     *,
@@ -794,7 +842,7 @@ def compose_rows_from_wmn_inputs(
     registry_events: Sequence[Mapping[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Compose a complete admitted WMN row set from one immutable generation cut."""
-    inputs = validate_wmn_inputs(payload)
+    inputs = validate_current_wmn_inputs(payload)
     _input_cut_literal, input_cut_time = _utc(
         inputs["input_cut"]["cutoff"], field="input_cut.cutoff"
     )
@@ -984,7 +1032,7 @@ def build_what_matters_next(
     if not isinstance(generation_id, str) or not generation_id:
         raise ContractError("generation_id invalid")
     normalized_query = normalize_wmn_query(**dict(query))
-    inputs = validate_wmn_inputs(bundle, forbidden_generation_id=generation_id)
+    inputs = validate_current_wmn_inputs(bundle, forbidden_generation_id=generation_id)
     rows = compose_rows_from_wmn_inputs(
         inputs,
         evaluation_cutoff=evaluation_cutoff,
@@ -1007,8 +1055,14 @@ def build_what_matters_next(
         registry_available=registry_events is not None,
     )
     source_health = inputs["coverage"]["source_health"]
+    # Missing optional estimates remain explicit NOT_ESTIMABLE slots. They do
+    # not alone make available research facts partial; real owner/family/source
+    # gaps continue to determine coverage.
+    optional_estimate_ports = {
+        "probability", "materiality", "historical_response", "incorporation",
+    }
     coverage_incomplete = (
-        bool(coverage["missing_owner_ports"])
+        bool(set(coverage["missing_owner_ports"]) - optional_estimate_ports)
         or source_health in {"partial", "unavailable"}
         or any(
             state["state"] != "supported"
@@ -1079,7 +1133,7 @@ def build_what_matters_next_detail(
         raise ValueError("event_fact_ref invalid")
     if issuer_id is not None and (not isinstance(issuer_id, str) or not issuer_id):
         raise ValueError("issuer_id invalid")
-    inputs = validate_wmn_inputs(bundle, forbidden_generation_id=generation_id)
+    inputs = validate_current_wmn_inputs(bundle, forbidden_generation_id=generation_id)
     rows = compose_rows_from_wmn_inputs(
         inputs,
         evaluation_cutoff=evaluation_cutoff,
