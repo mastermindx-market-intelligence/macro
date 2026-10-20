@@ -9936,7 +9936,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -10006,7 +10006,7 @@ jobs:
           tests/test_capital_structure_pit.py
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
-          tests/test_capital_structure_page.py
+          tests/test_capital_structure_page.py tests/test_bond_issue_terms.py tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10755,6 +10755,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
@@ -15961,6 +15962,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -18928,6 +18932,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -25245,6 +25251,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -26587,6 +26596,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
