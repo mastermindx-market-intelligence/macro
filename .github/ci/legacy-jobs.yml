@@ -17966,6 +17966,7 @@ jobs:
       - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
       - scripts/build_stock_library.py
       - scripts/ci/daily_engine_regime_dashboard.sh
+      - scripts/__init__.py
       - scripts/stock_liquidity_profile.py
       - tests/test_liquidity_chip.py
       - tests/test_liquidity_profile.py
