@@ -67,13 +67,17 @@ def reporting_state(rows, rights=None) -> str:
     from engine.qbus_news_cluster import _compatible
 
     titles = set()
+    visible_reports = 0
     for row in rows:
         if rights is None or rights.allows(str(row["source"]), "title"):
             title = display_text(row["title"])
             if title:
+                visible_reports += 1
                 titles.add(title)
         if len(titles) > 32:
             return "comparison_limited"
+    if visible_reports < 2:
+        return "not_compared"
     ordered = sorted(titles)
     if any(
         not _compatible(title, prior)

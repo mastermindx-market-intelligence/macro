@@ -378,7 +378,8 @@ async def scenario_gap_and_replay(drv: Driver):
                         "upsert older than the applied remove stays removed"))
     await drv.push("upsert", change_row(104, 60, "Story accessible again after re-add"))
     await drv.page.wait_for_function("document.querySelector('.tn-row[data-story=\"story-60\"]')")
-    checks.append(check(True, "higher-sequence re-add after remove restores the story"))
+    checks.append(check(await drv.page.get_by_text("Story accessible again after re-add", exact=True).count() == 1,
+                        "higher-sequence re-add after remove restores the story"))
     return checks
 
 
@@ -414,7 +415,8 @@ async def scenario_hold_and_group(drv: Driver):
 
     await page.locator("[data-tn-updates]").click()
     await page.locator(".tn-row[data-story=\"story-70\"]").wait_for()
-    checks.append(check(True, "releasing the notice reveals the held story"))
+    checks.append(check(await page.locator('.tn-row[data-story="story-70"]').is_visible(),
+                        "releasing the notice reveals the held story"))
     return checks
 
 
@@ -596,7 +598,8 @@ async def scenario_stream_reset(drv: Driver):
     conn = f.streams["NVDA"]
     await conn.put_raw("upsert", "this is not json")
     await page.wait_for_function("document.querySelector('[data-tn-status]').dataset.state==='degraded'")
-    checks.append(check(True, "unparseable stream frame degrades instead of failing silently"))
+    checks.append(check(await page.locator("[data-tn-status]").get_attribute("data-state") == "degraded",
+                        "unparseable stream frame degrades instead of failing silently"))
     await page.wait_for_timeout(5600)
     checks.append(check(f.snapshot_count >= base + 1, "client reconnects with an authoritative snapshot after stream reset"))
     await page.locator(".tn-row").first.wait_for()

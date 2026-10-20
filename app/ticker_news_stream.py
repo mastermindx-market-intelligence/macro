@@ -63,3 +63,39 @@ class SharedChangeReader:
                 self._entries.pop(key, None)
         task.add_done_callback(finished)
         return await asyncio.shield(task)
+
+
+class BlockingReadPool:
+    """Bound fresh blocking reads without caching an authorization decision.
+
+    Capacity belongs to each submitted task until the actual read finishes.
+    Cancelling a waiting stream cannot release its still-running thread slot.
+    At most concurrency tasks are submitted per event loop; other callers wait
+    before creating work.
+    """
+
+    def __init__(self, *, concurrency: int = 8):
+        if concurrency < 1:
+            raise ValueError("invalid_blocking_read_bound")
+        self.concurrency = concurrency
+        self._loop = None
+        self._pending = set()
+
+    async def read(self, reader: Callable):
+        loop = asyncio.get_running_loop()
+        if self._loop is not loop:
+            self._loop = loop
+            self._pending = set()
+        pending = self._pending
+        while len(pending) >= self.concurrency:
+            await asyncio.wait(tuple(pending), return_when=asyncio.FIRST_COMPLETED)
+        task = loop.create_task(asyncio.to_thread(reader))
+        pending.add(task)
+
+        def finished(completed):
+            pending.discard(completed)
+            if not completed.cancelled():
+                completed.exception()  # retrieve even if the requesting stream left
+
+        task.add_done_callback(finished)
+        return await asyncio.shield(task)

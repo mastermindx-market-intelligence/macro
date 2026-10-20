@@ -1205,9 +1205,68 @@ class NewsStore:
         query optimization rather than a new matching policy: the pure matcher
         remains the final judge of every candidate it is handed.
         """
-        return retrieve_candidates(
+        candidates, evidence = retrieve_candidates(
             self._conn, incoming, policy=self.cluster_policy
         )
+        if incoming.published_at is not None:
+            candidates = tuple(
+                replace(candidate, anchor_published_at=self._anchor_publication_at(candidate))
+                for candidate in candidates
+            )
+        return candidates, evidence
+
+    def _anchor_publication_at(self, candidate: ClusterCandidate) -> datetime | None:
+        """Read at most the first accepted journal row for one immutable anchor.
+
+        The item index bounds this lookup independently of correction history.
+        Never derive an old anchor's publication clock from mutable current state,
+        or scan forward past a mismatching legacy row to invent an anchor binding.
+        """
+        source, separator, source_item_id = candidate.anchor_story_id.partition(":")
+        if source == "massive":
+            publisher, separator, source_item_id = source_item_id.partition(":")
+            source = f"massive:{publisher}"
+        if not separator or not source_item_id:
+            return None
+        row = self._conn.execute(
+            """
+            SELECT first_change.kind, first_change.cluster_id,
+                   revision.revision_json,
+                   member.cluster_id AS member_cluster_id, member.story_id
+            FROM (
+                SELECT kind, source, source_item_id, revision_id, cluster_id
+                FROM news_changes
+                WHERE source=? AND source_item_id=?
+                ORDER BY sequence LIMIT 1
+            ) AS first_change
+            JOIN news_revisions AS revision
+              ON revision.revision_id=first_change.revision_id
+             AND revision.source=first_change.source
+             AND revision.source_item_id=first_change.source_item_id
+            JOIN news_cluster_members AS member
+              ON member.source=first_change.source
+             AND member.source_item_id=first_change.source_item_id
+            """,
+            (source, source_item_id),
+        ).fetchone()
+        if (
+            row is None or row["kind"] != "upsert"
+            or row["cluster_id"] != candidate.cluster_id
+            or row["member_cluster_id"] != candidate.cluster_id
+            or row["story_id"] != candidate.anchor_story_id
+        ):
+            return None
+        try:
+            revision = _revision_from_json(row["revision_json"])
+        except (KeyError, TypeError, ValueError):
+            return None
+        if (
+            revision.source != source or revision.source_item_id != source_item_id
+            or revision.title != candidate.anchor_title
+            or revision.received_at != candidate.anchor_observed_at
+        ):
+            return None
+        return revision.published_at
 
     def _ensure_cluster_membership(
         self,
@@ -1246,6 +1305,7 @@ class NewsStore:
             source_item_id=state.source_item_id,
             title=state.title,
             observed_at=state.first_received_at,
+            published_at=state.published_at,
             subject_ids=tuple(security_ids),
             event_family="",
         )

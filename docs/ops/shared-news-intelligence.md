@@ -194,16 +194,16 @@ fixtures only, not licensed provider payloads or credentials.
 
 | Local receive-before-commit to SSE | Control | Candidate |
 | --- | ---: | ---: |
-| p50 | 1,101.58 ms | 80.99 ms |
-| p95 | 1,459.86 ms | 136.03 ms |
-| p99 | 1,523.03 ms | 154.40 ms |
-| maximum | 1,581.15 ms | 162.57 ms |
-| actual database reads | 64 | 23 |
-| subscriber read requests | 64 | 331 |
+| p50 | 1,254.91 ms | 94.60 ms |
+| p95 | 1,501.70 ms | 156.91 ms |
+| p99 | 1,567.46 ms | 177.34 ms |
+| maximum | 1,625.60 ms | 193.75 ms |
+| actual database reads | 64 | 26 |
+| subscriber read requests | 64 | 376 |
 
 This is a controlled local SQLite-to-SSE comparison, not production end-to-end
 latency. It excludes provider delivery, WAN, Terminal BFF and browser paint.
-The candidate's commit p95 was 25.32 ms versus the control's 10.87 ms; faster
+The candidate's commit p95 was 61.34 ms versus the control's 16.56 ms; faster
 fanout does not establish lower commit cost. Do not extrapolate an absolute SLA
 or an extreme-speed claim from this short fixture.
 
@@ -424,3 +424,96 @@ of additional upstream publishers or completion of the held sidebar UI.
 The final local differential CI contract check also completed successfully against
 `13e098071ab2799c41a170d21ad522f751dfb15a`: zero introduced and zero inherited
 violations. The expanded manifest stays within all existing job/weight/pack ceilings.
+
+
+### Review repairs checkpoint — 20 October 2026, 13:30 UTC
+
+This is the same integration operation and source branch at published parent
+`111753b278ae9fd2275a7c222f0a11db8999a97c`. Macro PR #9846 remains draft.
+The Chairman reaffirmed project ownership after interrupted message streams.
+The refreshed GitHub and handoff census preserves the active dashboard owner on
+Macro #9612 (`8d76db52`) and sidebar owner on Terminal #1081 (`a10657ee`).
+Terminal #1088's previously verified deployed generation remains accepted.
+
+The independent backend and delivery reviews returned terminal successful execution
+receipts, but identified source findings; those reports are not implementation
+approval for the repaired candidate. The current continuation addresses:
+
+- Publication-time grouping: known publication clocks must also fit the six-hour
+  fuzzy window. The receipt-time retrieval bound stays intact. Anchor publication
+  comes only from the exact first accepted journal/revision binding, through the
+  existing item index with one-row lookup, never a mutable correction or an
+  unbounded history scan. Unbound legacy publication stays unknown. Existing
+  source/item identity and immutable anchors are preserved; old groups are not
+  rewritten. New decisions identify `qbus_news_cluster.v3`.
+- Polling clocks: the query's preflight coverage bound remains separate from each
+  page's actual arrival clock.
+- Comparison: fewer than two eligible visible reports says `not_compared`;
+  identical titles from two reports may still be compared.
+- Permitted keywords survive normalization and participate in content identity.
+- Health no longer asserts an unmeasured hourly cadence. Valid configured publisher
+  domains and `accepted_reports_since_start` are explicitly scoped diagnostics,
+  not claims of distinct observed live publishers.
+- SSE permission and initial universe file reads run through an eight-task bounded
+  pool per event loop. Every cycle/frame still reads fresh scope; permissions are not cached.
+  Cancelling a stream does not free capacity until its actual read finishes.
+  The unused rights-generation helper was removed.
+- Three browser checks now assert the observed condition explicitly after their
+  existing throwing waits.
+
+The publication regression baseline reproduced three failures; all **125** focused
+Massive, clustering, store, retrieval and provenance tests now pass. A separate
+event-loop regression failed on the original blocking read; the repaired delivery,
+API and receipt suites pass **81** tests, including quiet expiry, mid-read
+revocation, cancellation/backpressure and complete live projections.
+
+The current latency artifact was rerun at **13:28 UTC**, after one excluded
+one-event warmup resolved lazy imports. It records all **25** loaded repository
+Python source digests and rejects source changes during measurement. The table above
+now describes that run. It remains synthetic local delivery evidence.
+
+Current main has a real conflict with this branch in
+`.github/ci/legacy-jobs.yml`; a read-only merge calculation identified no other
+conflicted path. The next integration preserves both owners' job coverage and
+requalifies the differential contract. Hosted binding CI has not yet run for these
+unpublished repairs; independent delta review, merge and Macro deployment remain
+open. Source rights and provider availability are distinct from those release gates:
+the standing operator-confirmed enterprise record covers the qualified metadata
+use, and a prior bounded credential probe observed the three configured candidate
+publishers. Runtime receipts and additional-source activation are not yet installed.
+
+Next three steps:
+1. Publish the repaired source after combined qualification and the actual CI
+   manifest conflict repair; obtain binding hosted CI and independent delta review.
+2. Follow the normal Macro release/render owner and verify deployed identity,
+   authenticated snapshot/detail/stream/dossier behavior and the sole writer.
+3. Install the narrowly scoped publisher receipts under the standing entitlement,
+   activate the existing optional adapter, and prove admitted live publisher counts
+   and separate publication/receipt/delivery clocks; then qualify downstream callers.
+
+No human permission or login is currently blocking source work. The active release
+gates are exact-source review, binding CI and normal production proof. Keep the
+dashboard/sidebar carriers and existing sector holds with their owners.
+
+
+### Combined qualification and publisher preparation — 20 October 2026, 13:40 UTC
+
+The complete registered news job passed **770 tests across 45 suites**. The refreshed
+real Chromium stream harness completed successfully with the same shipped JS/CSS
+digests. The paired current-source retrieval artifacts are `retrieval/review-baseline.json`
+and `retrieval/review-candidate.json`: at 2,048 noise reports, duplicate full-commit
+median was **8.79 ms versus 1.34 ms**; distinct-report ingestion was **3.26 s versus
+14.63 s**, and the largest candidate 256-item commit was **2.19 s**. The current
+6,000-cluster fixture rebuilt the derived index in **1.13 s**, with warm opens
+**4.15–4.51 ms**. These measurements retain the additional writer-work tradeoff;
+older numeric checkpoints describe their own earlier source and host observations.
+
+Three exact-publisher receipt projections are prepared under `activation/` for
+`massive:zacks.com`, `massive:fool.com` and `massive:globenewswire.com`, each qualified
+for `site_full`, `internal_research`, `blog_draft` and `marketing_draft`. They derive
+only from the pinned operator-confirmed enterprise record, permit delivered title,
+link, description, retention and derivative processing, and deny body/image use.
+Their actual issuance clocks and SHA-256 values are retained. The thirty-day expiry
+is an operational revalidation deadline, not a contractual term. They have not
+been installed in production. No credential is stored in these artifacts, and
+existing publication owners retain publication decisions.

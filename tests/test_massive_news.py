@@ -165,7 +165,7 @@ def test_approved_fields_only_no_insights_body_image() -> None:
     finally:
         mn.normalize_massive_news = real  # type: ignore[assignment]
 
-    assert set(seen) <= {"id", "title", "article_url", "description", "published_utc", "publisher", "tickers"}
+    assert set(seen) <= {"id", "title", "article_url", "description", "published_utc", "publisher", "tickers", "keywords"}
     assert set(seen["publisher"]) <= {"name", "homepage_url"}
 
 
@@ -392,3 +392,89 @@ def test_naive_clock_and_naive_since_rejected() -> None:
 def test_empty_token_rejected() -> None:
     with pytest.raises(ValueError):
         MassiveNewsClient("", session=FakeSession([]))
+
+
+def test_keywords_survive_admission_and_bind_the_report_revision():
+    row = {**_row("tagged"), "keywords": ["earnings", "semiconductors"]}
+    first = _poll(_client(FakeSession([FakeResponse(200, _page([row]))]))).revisions[0]
+    changed = {**row, "keywords": ["guidance"]}
+    second = _poll(_client(FakeSession([FakeResponse(200, _page([changed]))]))).revisions[0]
+    assert set(first.tags) == {"earnings", "semiconductors"}
+    assert set(second.tags) == {"guidance"}
+    assert first.content_hash != second.content_hash
+
+
+@pytest.mark.parametrize("publication_gap_hours,expected_clusters", [(20, 2), (1, 1)])
+def test_historical_batch_grouping_keeps_publication_time_separate_from_receipt_time(
+    tmp_path, publication_gap_hours, expected_clusters,
+):
+    from engine.qbus_news_store import NewsStore, RoutedRevision
+
+    first_published = _FIXED_NOW - _dt.timedelta(hours=publication_gap_hours + 1)
+    second_published = _FIXED_NOW - _dt.timedelta(hours=1)
+    rows = [
+        {**_row("history-a", published=first_published.isoformat()), "title": "Nvidia opens a new research center"},
+        {**_row("history-b", published=second_published.isoformat(),
+                homepage="https://www.bloomberg.com", name="Bloomberg"),
+         "title": "Nvidia opens a new research center"},
+    ]
+    batch = _poll(
+        _client(FakeSession([FakeResponse(200, _page(rows))])),
+        since=_FIXED_NOW - _dt.timedelta(hours=24),
+    )
+    assert all(revision.received_at == _FIXED_NOW for revision in batch.revisions)
+    assert [revision.published_at for revision in batch.revisions] == [first_published, second_published]
+    with NewsStore(tmp_path / "historical.db", source_key="fixture") as store:
+        store.commit_observations(tuple(
+            RoutedRevision(revision, ("sec-NVDA",), "fixture")
+            for revision in batch.revisions
+        ))
+        groups = store._conn.execute("SELECT count(*) FROM news_clusters").fetchone()[0]
+        assert groups == expected_clusters
+        assert {row[0] for row in store._conn.execute(
+            "SELECT anchor_observed_at FROM news_clusters"
+        )} == {_FIXED_NOW.isoformat()}
+
+
+def test_cross_provider_group_uses_the_immutable_anchor_publication_after_a_correction(tmp_path):
+    from engine.qbus_news_contract import normalize_news
+    from engine.qbus_news_store import NewsStore, RoutedRevision
+
+    title = "Nvidia opens a new research center"
+    earlier = _FIXED_NOW - _dt.timedelta(hours=21)
+    recent = _FIXED_NOW - _dt.timedelta(hours=1)
+    def primary(published, received):
+        return normalize_news({
+            "id": "primary", "title": title, "url": "https://benzinga.com/primary",
+            "created": published.isoformat(), "updated": received.isoformat(),
+            "stocks": ["NVDA"],
+        }, transport="benzinga_rest", received_at=received)
+    with NewsStore(tmp_path / "cross-provider.db", source_key="fixture") as store:
+        store.commit_observations((RoutedRevision(primary(earlier, _FIXED_NOW), ("sec-NVDA",), "fixture"),))
+        store.commit_observations((RoutedRevision(
+            primary(recent, _FIXED_NOW + _dt.timedelta(minutes=1)), ("sec-NVDA",), "fixture",
+        ),))
+        row = {**_row("different-event", published=recent.isoformat()), "title": title}
+        revision = _poll(_client(FakeSession([FakeResponse(200, _page([row]))]))).revisions[0]
+        store.commit_observations((RoutedRevision(revision, ("sec-NVDA",), "fixture"),))
+        assert store._conn.execute("SELECT count(*) FROM news_clusters").fetchone()[0] == 2
+        assert store._conn.execute(
+            "SELECT count(*) FROM news_cluster_members WHERE source='benzinga'"
+        ).fetchone()[0] == 1
+
+
+def test_poll_coverage_clock_does_not_backdate_receipt_of_later_pages():
+    clocks = iter([
+        _FIXED_NOW,
+        _FIXED_NOW + _dt.timedelta(seconds=2),
+        _FIXED_NOW + _dt.timedelta(seconds=5),
+    ])
+    session = FakeSession([
+        FakeResponse(200, _page([_row("page-a")], next_url="https://api.massive.com/v2/reference/news?cursor=b")),
+        FakeResponse(200, _page([_row("page-b")])),
+    ])
+    batch = _poll(MassiveNewsClient(_TOKEN, session=session, clock=lambda: next(clocks)))
+    assert batch.through == _FIXED_NOW
+    assert [revision.received_at for revision in batch.revisions] == [
+        _FIXED_NOW + _dt.timedelta(seconds=2), _FIXED_NOW + _dt.timedelta(seconds=5),
+    ]

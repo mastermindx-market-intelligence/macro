@@ -58,7 +58,7 @@ from engine.qbus_news_universe import QualifiedSecurity, qualify_universe
 from engine.qbus_news_receipts import additional_rights_paths, combine_news_rights, load_rights_set
 from engine.qbus_news_quality import publisher_identity, story_quality
 from lib import config
-from app.ticker_news_stream import SharedChangeReader
+from app.ticker_news_stream import BlockingReadPool, SharedChangeReader
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +100,7 @@ class _PrivateValidationRoute(APIRoute):
 
 router = APIRouter(route_class=_PrivateValidationRoute)
 _STREAM_CHANGE_READER = SharedChangeReader()
+_STREAM_BLOCKING_READER = BlockingReadPool()
 
 
 # W11-07 additive snapshot provenance.  The snapshot route installs a fresh
@@ -592,19 +593,6 @@ def _security_or_404(ticker: str, *, now: datetime) -> tuple[str, str]:
     return normalized, security_id
 
 
-def _rights_generation() -> tuple:
-    path = _rights_receipt_path()
-    paths = ((path,) if path is not None else ()) + _additional_rights_paths()
-    generation = []
-    for carrier in paths:
-        try:
-            stat = carrier.stat()
-            generation.append((str(carrier), stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_ctime_ns, stat.st_size))
-        except OSError:
-            generation.append((str(carrier), None))
-    return tuple(generation)
-
-
 def _derivative_permitted_after_rights() -> bool | frozenset[str]:
     """Derivative flag for this request. Caller already holds qualified rights."""
     if _additional_rights_paths():
@@ -872,6 +860,13 @@ def _sse_encode(event: str, payload: Mapping[str, Any]) -> str:
     return f"event: {event}\ndata: {body}\n\n"
 
 
+def _stream_scope(user: Mapping[str, Any]) -> tuple[NewsReadRights | None, bool | frozenset[str]]:
+    """Read display and derivative scope together in one worker context."""
+    rights = _rights_for_user(user)
+    permitted = _derivative_permitted_after_rights() if rights and rights.allowed_sources else False
+    return rights, permitted
+
+
 async def _sse_events(
     *,
     ticker: str,
@@ -880,9 +875,8 @@ async def _sse_events(
     poll_seconds: float = 0.1,
     max_cycles: int | None = None,
 ) -> AsyncIterator[str]:
-    normalized, security_id = _security_or_404(
-        ticker,
-        now=datetime.now(timezone.utc),
+    normalized, security_id = await _STREAM_BLOCKING_READER.read(
+        lambda: _security_or_404(ticker, now=datetime.now(timezone.utc)),
     )
     sequence = int(after_sequence)
     cycles = 0
@@ -892,7 +886,8 @@ async def _sse_events(
     previous_rights = None
     while max_cycles is None or cycles < max_cycles:
         cycles += 1
-        rights = _rights_for_user(user)
+        scope = await _STREAM_BLOCKING_READER.read(lambda: _stream_scope(user))
+        rights = scope[0]
         if (rights is None or not rights.allowed_sources
                 or (previous_rights is not None and rights != previous_rights)):
             yield _sse_encode(
@@ -905,7 +900,6 @@ async def _sse_events(
             )
             return
         previous_rights = rights
-        scope = (rights, _derivative_permitted_after_rights())
         if previous_scope is not None and scope != previous_scope:
             yield _sse_encode(
                 "restricted",
@@ -935,7 +929,7 @@ async def _sse_events(
             )
             return
         for row in page.rows:
-            if (_rights_for_user(user), _derivative_permitted_after_rights()) != scope:
+            if await _STREAM_BLOCKING_READER.read(lambda: _stream_scope(user)) != scope:
                 yield _sse_encode(
                     "restricted",
                     {"schema": "ticker_news.restricted.v1", "ticker": normalized,

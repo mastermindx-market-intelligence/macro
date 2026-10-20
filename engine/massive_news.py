@@ -284,6 +284,7 @@ class MassiveNewsClient:
             seen_urls.add(url)
 
             status, content = self._fetch(url, params, timeout_seconds)
+            received_at = _require_aware(self._clock(), "clock")
             params = None  # query params only on the fixed first-page endpoint
             pages += 1
 
@@ -316,7 +317,7 @@ class MassiveNewsClient:
                 # Approved fields only; insights/body/image and anything else
                 # are dropped here before the parent normalizer sees them.
                 approved: dict[str, Any] = {}
-                for field in ("id", "title", "article_url", "description", "published_utc"):
+                for field in ("id", "title", "article_url", "description", "published_utc", "keywords"):
                     if field in row:
                         approved[field] = row[field]
                 if isinstance(publisher, dict):
@@ -330,7 +331,7 @@ class MassiveNewsClient:
                     approved["tickers"] = row["tickers"]
 
                 try:
-                    revisions.append(normalize_massive_news(approved, received_at=through))
+                    revisions.append(normalize_massive_news(approved, received_at=received_at))
                 except Exception:
                     # Fail closed: no silent cursor advancement past bad rows.
                     raise MassivePollError(CODE_ROW_MALFORMED, "row failed normalization") from None

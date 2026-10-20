@@ -181,7 +181,7 @@ def test_accepted_correction_stays_visible_over_an_older_high_quality_report(tmp
             rights=NewsReadRights(frozenset({"massive:reuters.com"})),
         ).rows[0]
         assert restricted.title == original
-        assert restricted.reporting_state == "no_material_difference"
+        assert restricted.reporting_state == "not_compared"
         from app import ticker_news
         full = ticker_news._story_row(current, permitted=frozenset({"benzinga", "massive:reuters.com"}))
         partial = ticker_news._story_row(current, permitted=frozenset({"benzinga"}))
@@ -529,3 +529,108 @@ def test_current_group_order_does_not_skip_unconsumed_journal_rows(tmp_path):
         assert second.rows[0].sequence == second.next_sequence == 2
         assert second.rows[0].projection_sequence == snapshot.rows[1].sequence == 2
         assert "factory" in second.rows[0].title
+
+
+def test_comparison_requires_two_visible_reports():
+    from types import SimpleNamespace
+    from engine.qbus_news_quality import reporting_state
+
+    first = {"source": "benzinga", "title": "Nvidia wins a $10 billion contract"}
+    second = {"source": "massive:reuters.com", "title": "Nvidia wins a $20 billion contract"}
+    assert reporting_state([]) == "not_compared"
+    assert reporting_state([first]) == "not_compared"
+    assert reporting_state([first, second]) == "reports_differ"
+    visible_first_only = SimpleNamespace(allows=lambda source, field: source == "benzinga")
+    assert reporting_state([first, second], visible_first_only) == "not_compared"
+    no_titles = SimpleNamespace(allows=lambda source, field: False)
+    assert reporting_state([first, second], no_titles) == "not_compared"
+    assert reporting_state([first, {**second, "title": first["title"]}]) == "no_material_difference"
+
+
+def test_receipt_read_keeps_event_loop_responsive_and_rechecks_revocation(stream_scope, monkeypatch):
+    ticker_news, _, rights_path, policy, _ = stream_scope
+    original = ticker_news._rights_for_user
+    entered, release = threading.Event(), threading.Event()
+    event_loop_thread = threading.get_ident()
+
+    def blocked_rights(user):
+        assert threading.get_ident() != event_loop_thread, "receipt IO blocked the event loop"
+        entered.set()
+        assert release.wait(3), "test did not release the receipt reader"
+        return original(user)
+
+    monkeypatch.setattr(ticker_news, "_rights_for_user", blocked_rights)
+
+    async def scenario():
+        stream = ticker_news._sse_events(
+            ticker="NVDA", user={}, after_sequence=0, poll_seconds=0, max_cycles=1,
+        )
+        first = asyncio.create_task(anext(stream))
+        try:
+            async def until_read_started():
+                while not entered.is_set():
+                    if first.done():
+                        await first
+                    await asyncio.sleep(0)
+            await asyncio.wait_for(until_read_started(), 2)
+            # The loop can process revocation while filesystem work is pending.
+            assert not first.done()
+            policy["status"] = "revoked"
+            rights_path.write_text(json.dumps(policy))
+            release.set()
+            frame = await asyncio.wait_for(first, 2)
+            assert frame.startswith("event: restricted") and "$10" not in frame
+        finally:
+            release.set()
+            first.cancel()
+            await asyncio.gather(first, return_exceptions=True)
+            await stream.aclose()
+    asyncio.run(scenario())
+
+
+def test_blocking_read_pool_bounds_cancelled_work_and_never_reuses_permissions():
+    from app.ticker_news_stream import BlockingReadPool
+
+    async def scenario():
+        pool = BlockingReadPool(concurrency=2)
+        release = threading.Event()
+        started = []
+        def blocked(value):
+            started.append(value)
+            assert release.wait(3)
+            return value
+        first = asyncio.create_task(pool.read(lambda: blocked("first")))
+        second = asyncio.create_task(pool.read(lambda: blocked("second")))
+        third = None
+        try:
+            async def until_two_reads():
+                while len(started) < 2:
+                    await asyncio.sleep(0)
+            await asyncio.wait_for(until_two_reads(), 2)
+            first.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await first
+            third = asyncio.create_task(pool.read(lambda: blocked("third")))
+            for _ in range(20):
+                await asyncio.sleep(0)
+            assert started == ["first", "second"] or started == ["second", "first"]
+            assert not third.done()
+            release.set()
+            assert await asyncio.wait_for(second, 2) == "second"
+            assert await asyncio.wait_for(third, 2) == "third"
+            current = ["grant"]
+            assert await pool.read(lambda: current[0]) == "grant"
+            current[0] = "revoked"
+            assert await pool.read(lambda: current[0]) == "revoked"
+            def fail():
+                raise OSError("fixture failure")
+            with pytest.raises(OSError):
+                await pool.read(fail)
+            assert await pool.read(lambda: "recovered") == "recovered"
+        finally:
+            release.set()
+            tasks = [task for task in (first, second, third) if task is not None]
+            for task in tasks:
+                task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+    asyncio.run(scenario())

@@ -364,11 +364,25 @@ def parse_health_receipt(
                     extra_state = "degraded"
             except NewsReceiptError:
                 extra_state, last_poll = "unavailable", None
-            projected.append({
+            extra = {
                 "provider": "massive", "state": extra_state,
                 "last_successful_poll": last_poll.isoformat() if last_poll else None,
-                "delivery": "polled", "upstream_recency": "hourly",
-            })
+                "delivery": "polled",
+            }
+            # These describe admission and this writer process, not observed
+            # publisher coverage or an upstream publication schedule.
+            publishers = item.get("publishers")
+            if isinstance(publishers, list) and len(publishers) <= 64 and all(
+                isinstance(domain, str) and len(domain) <= 253 and re.fullmatch(
+                    r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}", domain
+                )
+                for domain in publishers
+            ):
+                extra["configured_publishers"] = sorted(set(publishers))
+            accepted = item.get("accepted_reports")
+            if type(accepted) is int and 0 <= accepted <= 9007199254740991:
+                extra["accepted_reports_since_start"] = accepted
+            projected.append(extra)
         if projected:
             result["additional_sources"] = projected
     return result

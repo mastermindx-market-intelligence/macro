@@ -26,9 +26,9 @@ import re
 
 from engine import qkernel
 
-# Discriminator behavior changed in v2 (word/stuck amount scales, compact and
-# spelled fiscal periods, contraction negation). new_cluster_id is unchanged.
-CLUSTER_POLICY_VERSION = "qbus_news_cluster.v2"
+# v3 also bounds fuzzy joins by both known immutable publication clocks.
+# Receipt-time retrieval and the source/item identity digest stay unchanged.
+CLUSTER_POLICY_VERSION = "qbus_news_cluster.v3"
 # Label for a cluster row minted before the column existed (NULL), or a
 # member whose cluster row is missing.
 UNKNOWN_CLUSTER_POLICY_VERSION = "unknown (pre-column)"
@@ -42,6 +42,7 @@ class ClusterItem:
     observed_at: datetime
     subject_ids: tuple[str, ...]
     event_family: str = ""
+    published_at: datetime | None = None
 
     @property
     def story_id(self) -> str:
@@ -56,6 +57,7 @@ class ClusterCandidate:
     anchor_observed_at: datetime
     subject_ids: tuple[str, ...]
     event_family: str = ""
+    anchor_published_at: datetime | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -386,6 +388,15 @@ def cluster_candidates(
             continue
         if (
             _seconds(incoming.observed_at, candidate.anchor_observed_at)
+            > policy.window_seconds
+        ):
+            continue
+        # A historical polling batch can receive unrelated old reports at once.
+        # Publication is an additional guard, never a substitute arrival clock.
+        if (
+            incoming.published_at is not None
+            and candidate.anchor_published_at is not None
+            and _seconds(incoming.published_at, candidate.anchor_published_at)
             > policy.window_seconds
         ):
             continue

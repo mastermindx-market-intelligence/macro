@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 from datetime import datetime, timedelta, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -88,12 +89,39 @@ async def measure(path, *, readers, events, interval, shared):
             "database_reads":actual_reads,"subscriber_read_requests":calls}
 
 
+def source_digests():
+    """Bind fixture results to the actual loaded repository Python sources."""
+    paths = {Path(__file__).resolve()}
+    for module in tuple(sys.modules.values()):
+        raw = getattr(module, "__file__", None)
+        if raw:
+            path = Path(raw).resolve()
+            if path.suffix == ".py" and path.is_relative_to(ROOT):
+                paths.add(path)
+    return {
+        path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted(paths)
+    }
+
+
 async def main(output,readers,events):
     with tempfile.TemporaryDirectory(prefix="ticker-news-benchmark-") as temporary:
-        root=Path(temporary);(root/"control").mkdir();(root/"candidate").mkdir()
+        root=Path(temporary)
+        for arm in ("warmup", "control", "candidate"):
+            (root / arm).mkdir()
+        # Resolve lazy imports before binding source and comparing either arm.
+        await measure(root / "warmup", readers=1, events=1, interval=.1, shared=True)
+        sources_before = source_digests()
         control=await measure(root/"control",readers=readers,events=events,interval=1.0,shared=False)
         candidate=await measure(root/"candidate",readers=readers,events=events,interval=.1,shared=True)
+    sources_after = source_digests()
+    if sources_before != sources_after:
+        changed = sorted(path for path in sources_before.keys() | sources_after.keys()
+                         if sources_before.get(path) != sources_after.get(path))
+        raise RuntimeError(f"benchmark source set changed during measurement: {changed}")
     result={"schema":"qbus.news_latency_benchmark.v1","observed_at":datetime.now(timezone.utc).isoformat(),
+            "source_sha256":sources_after,"source_stable_during_run":True,
+            "warmup":{"subscribers":1,"events":1,"excluded_from_results":True},
             "platform":platform.platform(),"proof_scope":"controlled local SQLite-to-SSE fanout; both arms use current projection and authorization; excludes vendor, WAN, Terminal BFF and browser paint",
             "control":control,"candidate":candidate}
     output.parent.mkdir(parents=True,exist_ok=True);output.write_text(json.dumps(result,indent=2)+"\n")
