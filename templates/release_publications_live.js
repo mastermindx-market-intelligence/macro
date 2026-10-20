@@ -157,6 +157,14 @@
       "border-color:var(--line);background:var(--panel2)}" +
       ".mx-live-event-face .mx5-events-sub{color:var(--mx-live-ok)!important;font-weight:700}" +
       ".mx-live-resolved{opacity:.9}" +
+      // Reuse the existing governed stylesheet for report disclosure styles.
+      ".mx-live-report-details{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}" +
+      ".mx-live-report-details summary{cursor:pointer;font-weight:650;padding:4px 0}" +
+      ".mx-live-report-details dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;margin:12px 0;font-size:12px}" +
+      ".mx-live-report-details dt{overflow-wrap:anywhere}.mx-live-report-details dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}" +
+      ".mx-live-refresh{display:inline-flex;margin:10px 0 0 14px;padding:6px 10px;border:1px solid var(--line);border-radius:7px;" +
+      "background:var(--panel2);color:var(--text);font:inherit;font-size:11px;cursor:pointer}" +
+      ".mx-live-refresh:disabled{opacity:.55;cursor:wait}.mx-live-event-card{overflow-wrap:anywhere}" +
       "@media(max-width:640px){.mx-live-event-top{align-items:flex-start;flex-direction:column;gap:4px}}";
     (document.head || document.documentElement).appendChild(style);
   }
@@ -264,22 +272,7 @@
     if (scrollParent) scrollParent.scrollTop = scrollTop;
   }
 
-  function ensureReportDetailStyles() {
-    if (document.getElementById("mx-live-report-detail-css")) return;
-    var style = document.createElement("style");
-    style.id = "mx-live-report-detail-css";
-    style.textContent = ".mx-live-report-details{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}" +
-      ".mx-live-report-details summary{cursor:pointer;font-weight:650;padding:4px 0}" +
-      ".mx-live-report-details dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;margin:12px 0;font-size:12px}" +
-      ".mx-live-report-details dt{overflow-wrap:anywhere}.mx-live-report-details dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}" +
-      ".mx-live-refresh{display:inline-flex;margin:10px 0 0 14px;padding:6px 10px;border:1px solid var(--line);border-radius:7px;" +
-      "background:var(--panel2);color:var(--text);font:inherit;font-size:11px;cursor:pointer}" +
-      ".mx-live-refresh:disabled{opacity:.55;cursor:wait}.mx-live-event-card{overflow-wrap:anywhere}";
-    (document.head || document.documentElement).appendChild(style);
-  }
-
   function renderPublicationCard(row) {
-    ensureReportDetailStyles();
     var progress = publicationProgress(row);
     var verified = progress.state === "verified";
     var actual = verified ? row.actual : {};
