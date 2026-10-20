@@ -29,6 +29,17 @@ actually serves at one ``as_of`` cutoff:
   not-presented / qualified mapping is kept for the day production serves
   those verdicts; the governed pack identity is recorded in the header with
   ``applied_by_kernel: false``.
+* The windowless deep components run their production producers.  Every
+  ``specialist:PKnn`` cell is the registered pack producer's envelope over
+  the served generation's admitted packages (the producers build their own
+  ledger from those packages), and the ``packet`` cell is the financial
+  intelligence packet built for the member's A1 slot under the frozen
+  request (seat ruling ``DEC:FIF-MANIFEST-PACKET-REQUEST-FROZEN-2026-10-20``).
+  A refused producer or builder is one absent cell — never a refused
+  manifest — and every answered specialist cell pins the producer bytes
+  through ``pack_content_sha256`` / ``pack_schema_digest``.  The ``journey``
+  cell keeps ``no_production_producer`` until the journey ledger has an
+  engine home.
 
 The module never imports the coverage proof or any script: the producer and
 the proof are independent reimplementations of the same rules, and the proof
@@ -40,18 +51,29 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from dataclasses import asdict, dataclass, field
+from datetime import date, datetime, timedelta, timezone
 from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import yaml
 
+from .financial_intelligence_packet import (
+    DEFAULT_REQUESTED_METRICS,
+    EntityInput,
+    PacketQueryRequest,
+    build_financial_intelligence_packet_from_repo,
+    visible_query_from_request,
+)
 from .issuer_sic import resolve_issuer_sic
 from .metric_registry import CATALOG_SCHEMA, FORMULAS_SCHEMA
 from .not_presented import NA_BASIS_NOT_PRESENTED_ITEM, load_not_presented_pack
-from .production_datasets import build_production_dataset_store, load_latest_generation
+from .production_datasets import (
+    build_production_dataset_store,
+    load_entity_role,
+    load_latest_generation,
+)
 from .production_provider import (
     ProductionFinancialQueryProvider,
     ProductionFinancialStatementProvider,
@@ -74,6 +96,16 @@ from .query_service import (
     validate_supplied_dataset,
 )
 from .raw_ledger import canonical_json, parse_utc
+from .revision_service import occurrence_keyed_filing_metadata
+from .specialist_pack_contract import load_pack_schema
+from .specialist_packs import (
+    PackInput,
+    SpecialistPackError,
+    produce_pack,
+    registered_pack_ids,
+)
+from .specialist_packs.base import _primary_duration_opening_bound
+from .statement_graph import StatementGraphError
 
 MANIFEST_SCHEMA = "fundamental_forensics.coverage_manifest/v1"
 TIERS_SCHEMA = "fundamental_forensics.coverage_tiers/v1"
@@ -142,7 +174,11 @@ REASON_METRIC_UNSUPPORTED = "metric_unsupported"
 REASON_KERNEL_REFUSED = "kernel_refused"
 REASON_KERNEL_UNSPECIFIED = "kernel_reason_unspecified"
 REASON_NO_PRODUCTION_PRODUCER = "no_production_producer"
-REASON_PACKET_REQUEST_UNFROZEN = "packet_request_unfrozen"
+REASON_PACK_PRODUCER_REFUSED = "pack_producer_refused"
+REASON_PACK_REQUIRED_FIELDS_ABSENT = "pack_required_fields_absent"
+REASON_PACKET_BUILDER_REFUSED = "packet_builder_refused"
+REASON_PACKET_NO_VALUED_CELL = "packet_no_valued_cell"
+REASON_PACKET_IDENTITY_INCOMPLETE = "packet_identity_incomplete"
 REASON_PACKAGE_ROLE_ABSENT = "package_role_absent"
 REASON_PACKAGE_MEMBER_NOT_STORED = "package_member_not_stored"
 REASON_PACKAGE_BYTES_ABSENT = "package_bytes_absent"
@@ -152,6 +188,28 @@ REASON_STATEMENT_EMPTY = "statement_empty"
 
 _COMPLETE_BAND = "complete"
 _NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
+
+# Windowless deep-component literals (the producer framework's own closed
+# vocabularies, kept private here so the manifest's constants stay its own).
+# The packet contract admits exactly two evaluation modes; the seat ruling's
+# ``production_manifest`` label is not among them (EVALUATION_MODES and the
+# packet schema enum both refuse it), so the frozen request carries the
+# contract's default label — recorded as a lane deviation.  The SIC resolver
+# exposes no source label of its own, and the pack envelope contract's closed
+# ``sic_source`` enum admits only sec_submissions/dei/unbound/null, so the
+# coverage-contract resolver's answer rides as ``unbound``.
+_PACKET_EVALUATION_MODE = "historical_replay"
+_IDENTITY_BASIS = "production_generation_binding_v1"
+_SIC_SOURCE_LABEL = "unbound"
+_APPLICABILITY_APPLICABLE = "applicable"
+_APPLICABILITY_NOT_APPLICABLE = "not_applicable"
+_APPLICABILITY_NOT_EVALUABLE = "not_evaluable"
+_ROW_VALUED = "valued"
+_CLASS_NA_CODES = frozenset(
+    {"issuer_class_not_bank", "issuer_class_unknown", "sic_outside_biotech_codes"}
+)
+_MISSING_FIELD_IDS_BOUND = 32
+_PRODUCER_REASON_BOUND = 128
 
 
 class CoverageManifestError(ValueError):
@@ -469,6 +527,9 @@ class ServedIssuer:
     dataset: Any
     binding: Any
     packages: tuple[Any, ...]
+    # The served generation's stored issuer display name (the entity role's
+    # ``entity.name``); ``None`` when the generation stored no name.
+    name: str | None = None
 
 
 @dataclass
@@ -559,6 +620,12 @@ def serve_issuer(
                 f"the statement provider served a different generation for cik {cik}",
             )
         packages.append(package)
+    try:
+        entity_role = load_entity_role(generation)
+        stored_name = entity_role.get("entity", {}).get("name")
+    except Exception:  # noqa: BLE001 - a damaged entity role stores no name
+        stored_name = None
+    name = stored_name if isinstance(stored_name, str) and stored_name else None
     return _ServeResult(
         SERVE_SERVED,
         ServedIssuer(
@@ -567,6 +634,7 @@ def serve_issuer(
             dataset=dataset,
             binding=served_binding,
             packages=tuple(packages),
+            name=name,
         ),
     )
 
@@ -1010,12 +1078,252 @@ def statement_reason(package: Any, kind: str) -> str | None:
     return REASON_STATEMENT_EMPTY
 
 
+# ---------------------------------------------------------------------------
+# Windowless deep components: the specialist pack producers and the packet
+# ---------------------------------------------------------------------------
+
+
+def _producer_entity_input(served: ServedIssuer, cik: str, name: str) -> EntityInput:
+    """A.2: the packet ``EntityInput`` for the served generation binding."""
+    return EntityInput(
+        entity_id=served.binding.entity_id,
+        cik=cik,
+        ticker=served.binding.ticker,
+        name=name,
+        identity_basis=_IDENTITY_BASIS,
+        source_entity_id=served.binding.source_entity_id,
+    )
+
+
+def _frozen_packet_request(
+    served: ServedIssuer,
+    thresholds: ManifestThresholds,
+    slots: Mapping[tuple[str, int], Slot],
+    *,
+    policy: QueryPolicy,
+) -> PacketQueryRequest | str:
+    """B.2: the frozen packet request over the A1 slot, or its absent reason.
+
+    The A1 fiscal start is the pack framework's primary fiscal duration
+    start — the earliest start of a duration context ending exactly at the
+    report date inside the annual window — so the packet's A1 window and the
+    packs' primary period share one basis by construction.
+    """
+    period = next(
+        (p for p in thresholds.deep_periods if p.period_id == "A1"),
+        None,
+    )
+    slot = slots.get((period.family, period.rank)) if period is not None else None
+    if slot is None:
+        return REASON_SLOT_NOT_FILED
+    opening = _primary_duration_opening_bound(
+        served.dataset.ledger, date.fromisoformat(slot.period_of_report)
+    )
+    if opening is None:
+        return REASON_PERIOD_NOT_IN_LEDGER
+    try:
+        return PacketQueryRequest(
+            policy=policy,
+            metrics=DEFAULT_REQUESTED_METRICS,
+            periods=(
+                PeriodRequest.duration(
+                    (opening + timedelta(days=1)).isoformat(),
+                    slot.period_of_report,
+                    label="A1",
+                ),
+                PeriodRequest.instant(slot.period_of_report, label="A1_instant"),
+            ),
+            evaluation_mode=_PACKET_EVALUATION_MODE,
+        )
+    except (TypeError, ValueError):  # noqa: BLE001 - the frozen request was refused
+        return REASON_PACKET_BUILDER_REFUSED
+
+
+def _pack_query_mapping(
+    request: PacketQueryRequest | str, policy: QueryPolicy
+) -> dict[str, Any]:
+    """A.3: the frozen request as the packet query object the pack CLI takes.
+
+    A request that could not be built (no A1 slot, no qualifying duration)
+    still renders the six query keys: the packs are produced over the served
+    packages whatever the slot census says, and no period is invented.
+    """
+    if isinstance(request, PacketQueryRequest):
+        return visible_query_from_request(request)
+    clocks = policy.to_dict()
+    return {
+        "policy": clocks["selection"],
+        "source_event_cutoff": clocks["source_snapshot_at"],
+        "system_recorded_cutoff": clocks["recorded_at"],
+        "requested_metrics": list(DEFAULT_REQUESTED_METRICS),
+        "requested_periods": [],
+        "evaluation_mode": _PACKET_EVALUATION_MODE,
+    }
+
+
+def _required_fields_missing(envelope: Mapping[str, Any], pack: str) -> list[str]:
+    """A.1: required catalogue field ids the envelope did not answer valued."""
+    required: list[str] = []
+    for field in load_pack_schema(pack).get("fields") or ():
+        if isinstance(field, Mapping) and field.get("required") is True:
+            field_id = field.get("field_id")
+            if isinstance(field_id, str) and field_id:
+                required.append(field_id)
+    rows: dict[str, list[Mapping[str, Any]]] = {}
+    for row in envelope.get("fields") or ():
+        if isinstance(row, Mapping) and isinstance(row.get("field_id"), str):
+            rows.setdefault(row["field_id"], []).append(row)
+    missing = [
+        field_id
+        for field_id in sorted(required)
+        if not rows.get(field_id)
+        or any(row.get("quality_state") != _ROW_VALUED for row in rows[field_id])
+    ]
+    return missing[:_MISSING_FIELD_IDS_BOUND]
+
+
+def _specialist_cell(
+    cik: str,
+    pack: str,
+    served: ServedIssuer,
+    serve_generation: str,
+    *,
+    query: Mapping[str, Any],
+    issuer_sic: str | None,
+) -> dict[str, Any]:
+    """A.1: one ``specialist:PKnn`` cell from the registered producer."""
+    field_id = f"specialist:{pack}"
+    if pack not in registered_pack_ids():
+        return _absent(
+            cik, WILDCARD_PERIOD, field_id, REASON_NO_PRODUCTION_PRODUCER, serve_generation
+        )
+    try:
+        pack_input = PackInput(
+            packages=tuple(served.packages),
+            # EntityInput rejects an empty name, so a generation that stored
+            # none falls back to the binding ticker (A.5).
+            entity=asdict(
+                _producer_entity_input(served, cik, served.name or served.binding.ticker)
+            ),
+            query=dict(query),
+            issuer_sic=issuer_sic,
+            sic_source=_SIC_SOURCE_LABEL,
+            packet_id=None,
+        )
+        envelope = produce_pack(pack, pack_input)
+    except (SpecialistPackError, ValueError, KeyError, StatementGraphError) as exc:
+        cell = _absent(
+            cik, WILDCARD_PERIOD, field_id, REASON_PACK_PRODUCER_REFUSED, serve_generation
+        )
+        # The class name alone: a message may carry paths.
+        cell["producer_reason"] = type(exc).__name__[:_PRODUCER_REASON_BOUND]
+        return cell
+    applicability = envelope.get("applicability")
+    state = applicability.get("state") if isinstance(applicability, Mapping) else None
+    raw_reason = (
+        applicability.get("reason") if isinstance(applicability, Mapping) else None
+    )
+    code = str(raw_reason or "").split(":", 1)[0]
+    if not _BARE_REASON.fullmatch(code):
+        code = REASON_PACK_PRODUCER_REFUSED
+    if state == _APPLICABILITY_NOT_APPLICABLE:
+        cell = {
+            "cik": cik,
+            "period_id": WILDCARD_PERIOD,
+            "field_id": field_id,
+            "status": STATUS_NOT_APPLICABLE,
+            "reason_code": code,
+            "na_basis": NA_BASIS_CLASS if code in _CLASS_NA_CODES else NA_BASIS_KERNEL,
+            "source_generation_id": serve_generation,
+        }
+    elif state == _APPLICABILITY_NOT_EVALUABLE:
+        cell = _absent(cik, WILDCARD_PERIOD, field_id, code, serve_generation)
+    elif state == _APPLICABILITY_APPLICABLE:
+        missing = _required_fields_missing(envelope, pack)
+        if missing:
+            cell = _absent(
+                cik, WILDCARD_PERIOD, field_id, REASON_PACK_REQUIRED_FIELDS_ABSENT, serve_generation
+            )
+            cell["missing_required_fields"] = missing
+        else:
+            cell = _present(cik, WILDCARD_PERIOD, field_id, serve_generation)
+    else:
+        cell = _absent(
+            cik, WILDCARD_PERIOD, field_id, REASON_PACK_PRODUCER_REFUSED, serve_generation
+        )
+        cell["producer_reason"] = "applicability_state_unknown"
+        return cell
+    # Pin which producer bytes answered (the envelope always carries both).
+    cell["pack_content_sha256"] = envelope.get("pack_content_sha256")
+    cell["pack_schema_digest"] = envelope.get("pack_schema_digest")
+    return cell
+
+
+def _packet_cell(
+    cik: str,
+    served: ServedIssuer,
+    serve_generation: str,
+    *,
+    request: PacketQueryRequest | str,
+    sic_resolver: Callable[[str], Any],
+) -> dict[str, Any]:
+    """B: the ``packet`` cell from the production packet builder."""
+    if not served.name:
+        return _absent(
+            cik, WILDCARD_PERIOD, "packet", REASON_PACKET_IDENTITY_INCOMPLETE, serve_generation
+        )
+    if isinstance(request, str):
+        return _absent(cik, WILDCARD_PERIOD, "packet", request, serve_generation)
+    try:
+        packet = build_financial_intelligence_packet_from_repo(
+            entity=_producer_entity_input(served, cik, served.name),
+            ledger=served.dataset.ledger,
+            # The production store keys filing metadata by accession while
+            # the packet assembler resolves it by occurrence id; rekey at
+            # this boundary exactly as the packet service does.
+            filing_metadata=occurrence_keyed_filing_metadata(
+                served.dataset.ledger, served.dataset.filing_metadata
+            ),
+            query_request=request,
+            repo_root=_REPO_ROOT,
+            issuer_sic_resolver=sic_resolver,
+        )
+    except (ValueError, TypeError, KeyError) as exc:
+        cell = _absent(
+            cik, WILDCARD_PERIOD, "packet", REASON_PACKET_BUILDER_REFUSED, serve_generation
+        )
+        cell["producer_reason"] = type(exc).__name__[:_PRODUCER_REASON_BOUND]
+        return cell
+    valued = any(
+        isinstance(row, Mapping) and row.get("quality_state") == _ROW_VALUED
+        for row in packet.get("cells") or ()
+    )
+    receipts = packet.get("receipts")
+    digest = (
+        receipts.get("query_request_digest") if isinstance(receipts, Mapping) else None
+    )
+    if valued:
+        cell = _present(cik, WILDCARD_PERIOD, "packet", serve_generation)
+    else:
+        cell = _absent(
+            cik, WILDCARD_PERIOD, "packet", REASON_PACKET_NO_VALUED_CELL, serve_generation
+        )
+    # The packet bytes themselves never ride on the manifest; the two
+    # digests pin which build answered.
+    cell["packet_id"] = packet.get("packet_id")
+    cell["query_request_digest"] = digest
+    return cell
+
+
 def _deep_component_cells(
     cik: str,
     served: ServedIssuer | None,
     serve_generation: str,
     thresholds: ManifestThresholds,
     slots: Mapping[tuple[str, int], Slot],
+    *,
+    policy: QueryPolicy,
+    sic_resolver: Callable[[str], Any],
 ) -> list[dict[str, Any]]:
     cells: list[dict[str, Any]] = []
     # A served issuer's empty slot is unfiled; an unserved issuer has no slots.
@@ -1036,18 +1344,39 @@ def _deep_component_cells(
                 cells.append(_present(cik, period.period_id, field_id, serve_generation))
             else:
                 cells.append(_absent(cik, period.period_id, field_id, reason, serve_generation))
-    windowless: list[tuple[str, str]] = [
-        (f"specialist:{pack}", REASON_NO_PRODUCTION_PRODUCER)
-        for pack in thresholds.specialist_packs
-    ]
+    if served is None:
+        windowless: list[tuple[str, str]] = [
+            (f"specialist:{pack}", REASON_NOT_SERVED)
+            for pack in thresholds.specialist_packs
+        ]
+        if thresholds.require_packet:
+            windowless.append(("packet", REASON_NOT_SERVED))
+        if thresholds.require_journey:
+            windowless.append(("journey", REASON_NOT_SERVED))
+        for field_id, reason in windowless:
+            cells.append(_absent(cik, WILDCARD_PERIOD, field_id, reason, serve_generation))
+        return cells
+    issuer_sic = sic_resolver(served.binding.source_entity_id)
+    request = _frozen_packet_request(served, thresholds, slots, policy=policy)
+    query = _pack_query_mapping(request, policy)
+    for pack in thresholds.specialist_packs:
+        cells.append(
+            _specialist_cell(
+                cik, pack, served, serve_generation, query=query, issuer_sic=issuer_sic
+            )
+        )
     if thresholds.require_packet:
-        windowless.append(("packet", REASON_PACKET_REQUEST_UNFROZEN))
+        cells.append(
+            _packet_cell(
+                cik, served, serve_generation, request=request, sic_resolver=sic_resolver
+            )
+        )
     if thresholds.require_journey:
-        windowless.append(("journey", REASON_NO_PRODUCTION_PRODUCER))
-    for field_id, reason in windowless:
-        if served is None:
-            reason = REASON_NOT_SERVED
-        cells.append(_absent(cik, WILDCARD_PERIOD, field_id, reason, serve_generation))
+        cells.append(
+            _absent(
+                cik, WILDCARD_PERIOD, "journey", REASON_NO_PRODUCTION_PRODUCER, serve_generation
+            )
+        )
     return cells
 
 
@@ -1241,7 +1570,15 @@ def build_coverage_manifest(
             ]
         if is_deep:
             cells.extend(
-                _deep_component_cells(member.cik, served, generation, thresholds, slots)
+                _deep_component_cells(
+                    member.cik,
+                    served,
+                    generation,
+                    thresholds,
+                    slots,
+                    policy=policy,
+                    sic_resolver=resolver,
+                )
             )
         entry: dict[str, Any] = {
             "cik": member.cik,
