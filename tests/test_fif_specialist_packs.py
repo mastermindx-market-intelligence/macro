@@ -3990,7 +3990,120 @@ def test_pk10_deafa14a_only_is_still_not_supplied() -> None:
     )
     assert result["applicability"]["state"] == "not_evaluable"
     assert result["applicability"]["reason"] == "proxy_package_not_supplied"
-    assert "proxy_forms_seen=DEFA14A" in result["receipts"]
+    assert "proxy_forms_seen=none" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+def _pk10_package(
+    form: str, body: str, accession: str, por: str
+) -> GoldenFilingPackage:
+    """A synthetic proxy package with an explicit accession and period, so a
+    DEF 14A / DEFA14A pair can differ on both (the shared builder is fixed)."""
+    package = _synthetic_package(form, body)
+    return replace(
+        package,
+        manifest={**package.manifest, "accession": accession, "period_of_report": por},
+    )
+
+
+def test_pk10_def14a_governs_over_a_later_defa14a() -> None:
+    # Review F1: only DEF 14A is an admitted form, so a later one-line
+    # DEFA14A soliciting letter never becomes the governing document and no
+    # absence is asserted over it.
+    def14a = _pk10_package(
+        "DEF 14A", _PK10_PROXY_BODY, "0000000099-26-000001", "2026-03-01"
+    )
+    defa14a = _pk10_package(
+        "DEFA14A",
+        "<div>Test Co filed additional soliciting material. Please vote.</div>",
+        "0000000099-26-000002",
+        "2026-04-10",
+    )
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(def14a, defa14a), entity=SYNTHETIC_ENTITY),
+    )
+    assert result["applicability"]["state"] == "applicable"
+    assert "form=DEF 14A" in result["receipts"]
+    assert "form=DEFA14A" not in result["receipts"]
+    for field_id in PK10_TEXT_SPAN_FIELDS:
+        assert _row(result, field_id)["source_span"]["accession"] == (
+            "0000000099-26-000001"
+        )
+    assert _row(result, "say_on_pay_frequency")["text_value"] == "annual"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_defa14a_alone_is_not_a_governing_proxy() -> None:
+    # Review F1: a DEFA14A-only package list keeps the frozen not-supplied
+    # path — never applicable with not_disclosed rows over a soliciting
+    # letter.
+    result = produce_pack(
+        "PK10",
+        _pk10_input(
+            packages=(
+                _pk10_package(
+                    "DEFA14A",
+                    "<div>Test Co filed additional soliciting material."
+                    " Please vote.</div>",
+                    "0000000099-26-000002",
+                    "2026-04-10",
+                ),
+            ),
+            entity=SYNTHETIC_ENTITY,
+        ),
+    )
+    assert result["applicability"]["state"] == "not_evaluable"
+    assert result["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_evaluable"
+        assert row["reason"] == "proxy_package_not_supplied"
+        assert row["text_value"] is None and row["source_span"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_triennial_beats_leftmost_annual_meeting() -> None:
+    # Review F2, the reviewer's text: the annual-meeting preamble must not
+    # satisfy the annual arm; the vote-frequency sentence governs.
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The Board recommends that the say-on-pay vote is held every"
+        " three years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "triennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_say_on_pay_biennial() -> None:
+    body = (
+        "<div>Our advisory vote on executive compensation is held every two"
+        " years.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "biennial"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_annual_meeting_alone_is_not_a_frequency() -> None:
+    # Review F2: "annual meeting"/"annual report" alone never satisfies the
+    # annual arm; with no frequency sentence the row stays the valued
+    # absence not_disclosed (the existing absent path).
+    body = (
+        "<div>Proxy statement for the 2026 annual meeting of stockholders."
+        "</div>"
+        "<div>The annual report is incorporated by reference.</div>"
+    )
+    result = _pk10_supplied_result(body)
+    row = _row(result, "say_on_pay_frequency")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
     assert contract.validate_pack_result(result) == []
 
 

@@ -47,7 +47,7 @@ from .base import (
 
 SPEC = PackSpec(
     pack_id="PK10",
-    forms=frozenset({"DEF 14A", "DEFA14A"}),
+    forms=frozenset({"DEF 14A"}),
     applicability_rule_id="pack.pk10.applicability/v1",
     applicable_classes=None,
 )
@@ -57,10 +57,20 @@ SPEC = PackSpec(
 PERFORMANCE_MEASURE = r"(?:most important|selected) (?:financial )?performance measure"
 DIRECTOR_INDEPENDENCE = r"independent (?:director|under the)"
 RELATED_PARTY = r"related[- ]party transaction"
+# B.2 pattern revision v2 (review F2, 2026-10-20): every arm is anchored to
+# the vote-frequency sentence — the pre-context must name the advisory vote on
+# executive compensation / say-on-pay / the frequency, with a gap that never
+# crosses a sentence boundary, so an "annual meeting" preamble can never
+# satisfy the annual arm (which also refuses the meeting / report / proxy
+# collocations outright).
 SAY_ON_PAY_FREQUENCY = (
-    r"(?P<annual>every year|annual(?:ly)?|one year)"
-    r"|(?P<biennial>every two years)"
-    r"|(?P<triennial>every three years)"
+    r"(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
+    r"|frequency of)[^.]{0,240}?"
+    r"(?P<annual>every year|annual(?:ly)?(?! (?:meeting|report|proxy))|one year)"
+    r"|(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
+    r"|frequency of)[^.]{0,240}?(?P<biennial>every two years)"
+    r"|(?:say[- ]on[- ]pay|advisory vote[^.]{0,120}?(?:executive )?compensation"
+    r"|frequency of)[^.]{0,240}?(?P<triennial>every three years)"
 )
 
 # The catalogue field name declares no "(annual | ...)" literal list, so the
