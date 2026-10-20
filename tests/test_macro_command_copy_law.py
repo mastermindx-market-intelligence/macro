@@ -455,6 +455,28 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+
+    source = {
+        "en": "US labor-market state cannot be classified: axis coverage is below "
+              "the disclosed floor. No quadrant is asserted rather than defaulting "
+              "to a neutral state.",
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    before = dict(source)
+    reading, original = apply_plain_producer(source)
+    assert reading is not None and reading != source
+    assert original == before and source == before
+    assert "no overall reading" in reading["en"]
+    assert "not treated as a neutral reading" in reading["en"]
+    html = (f'<p><span class="l-en">{reading["en"]}</span>'
+            f'<span class="l-zh">{reading["zh"]}</span></p>')
+    assert guard.find_violations(html) == []
+    ordinary = {"en": "Payrolls increased this month.", "zh": "本月就业人数增加。"}
+    assert apply_plain_producer(ordinary) == (ordinary, None)
+
+
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     from lib.macro_suite_labels import machine_text_hits
     assert machine_text_hits("sticky_led in the mix")
@@ -4738,25 +4760,3 @@ def test_no_unlisted_identical_png_pairs() -> None:
         if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
             illegal[sha] = uniq
     assert not illegal, illegal
-
-
-def test_labor_coverage_refusal_is_plain_without_changing_source_pair() -> None:
-    """A low-coverage labor snapshot must not leak its technical refusal prose."""
-    from lib import macro_suite_labels as labels
-
-    original = {
-        "en": "US labor-market state cannot be classified: axis coverage is below the disclosed "
-              "floor. No quadrant is asserted rather than defaulting to a neutral state.",
-        "zh": "劳动力市场数据覆盖不足，不能判定当前状态，不默认视为中性。",
-    }
-    raw_before = dict(original)
-    plain, technical = labels.apply_plain_producer(original)
-    assert plain is not None
-    assert "axis" not in plain["en"].lower()
-    assert "coverage" in plain["en"].lower()
-    assert "neutral" in plain["en"].lower()
-    assert plain["zh"] and plain["zh"] != plain["en"]
-    assert technical == raw_before
-    assert original == raw_before
-    html = '<main class="mc-shell"><p>' + plain["en"] + '</p></main>'
-    assert guard.find_violations(html) == []

@@ -2381,3 +2381,39 @@ def test_owner_receipt_failed_batch_exposes_no_partial_acknowledgement(tmp_path)
         assert store.db.execute("SELECT count(*) FROM stories WHERE story_id='new'").fetchone()[0] == 0
     finally:
         store.close()
+
+
+def test_owner_receipt_duplicate_batch_counts_unique_changes_in_both_orders(tmp_path):
+    """One story changed once is distinct from duplicate or superseded ACKs."""
+    for index, order in enumerate((("r1", "r2"), ("r2", "r1"), ("r2", "r2"))):
+        root = tmp_path / str(index)
+        root.mkdir()
+        packets = {
+            "r1": dict(_history_packet(), source_revision="r1", headline="Earlier R1",
+                       source_updated_at="2026-07-29T17:55:00Z"),
+            "r2": dict(_history_packet(), source_revision="r2", headline="Current R2",
+                       source_updated_at="2026-07-29T17:59:00Z"),
+        }
+        kwargs = dict(root=root, cfg={"source_health": _history_health()},
+                      db_path=root / "desk.db", snapshot_path=root / "desk.json")
+        receipt = {}
+        first = update_intelligence_desk([packets[revision] for revision in order],
+                                        now=NOW, acceptance_receipt=receipt, **kwargs)
+        item = receipt["items"]["retained-one"]
+        assert set(receipt["items"]) == {"retained-one"}
+        assert item["submitted_revision"] == order[-1]
+        assert item["source_revision"] == "r2" and item["changed"] is True
+        assert receipt["feeds"]["official"]["changed_item_count"] == 1
+        assert receipt["feeds"]["official"]["accepted_item_count"] == int(order[-1] == "r2")
+        assert first["source_health"][0]["last_changed_item_count"] == 1
+        assert len(first["stories"]) == 1 and first["stories"][0]["headline"] == "Current R2"
+        accepted_at = item["accepted_revision_at"]
+        replay_receipt = {}
+        replay = update_intelligence_desk([packets[revision] for revision in order],
+                                         now=NOW + timedelta(minutes=2),
+                                         acceptance_receipt=replay_receipt, **kwargs)
+        assert replay_receipt["items"]["retained-one"]["changed"] is False
+        assert replay_receipt["feeds"]["official"]["changed_item_count"] == 0
+        assert replay_receipt["feeds"]["official"]["last_outcome"] == "unchanged"
+        assert replay["source_health"][0]["last_accepted_at"] == accepted_at
+        assert replay["stories"][0]["accepted_revision_at"] == accepted_at

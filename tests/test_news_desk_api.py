@@ -673,3 +673,55 @@ def test_private_history_read_lock_cannot_block_aggregate_delivery(monkeypatch, 
         with desk._history_cache_lock:
             delivery = pool.submit(desk._read_snapshot_delivery).result(timeout=2)
     assert b"event: snapshot" in delivery[2]
+
+
+def test_default_quiet_stream_has_five_second_heartbeat_margin_and_finite_auth_renewal(monkeypatch):
+    """Quiet transport must not sit on the observed 15-second edge idle boundary."""
+    clock = {"now": 100.0}
+    sleeps, reads, disconnects = [], [], []
+    initial = packet()
+    unchanged = copy.deepcopy(initial)
+    delivery = desk._snapshot_delivery(initial)
+
+    async def sleep(seconds):
+        sleeps.append(seconds)
+        clock["now"] += seconds
+
+    async def to_thread(function, *args):
+        return function(*args)
+
+    def read():
+        reads.append(clock["now"])
+        return delivery
+
+    class Connection:
+        async def is_disconnected(self):
+            disconnects.append(clock["now"])
+            return False
+
+    monkeypatch.setattr(desk, "time", types.SimpleNamespace(monotonic=lambda: clock["now"]))
+    monkeypatch.setattr(desk, "asyncio", types.SimpleNamespace(sleep=sleep, to_thread=to_thread))
+    monkeypatch.setattr(desk, "_read_snapshot_delivery", read)
+
+    async def collect():
+        frames = []
+        async for frame in desk._events(Connection(), initial):
+            text = frame.decode() if isinstance(frame, bytes) else frame
+            frames.append((clock["now"], text))
+        return frames
+
+    frames = asyncio.run(collect())
+    assert frames[0][0] == 100.0 and "event: snapshot" in frames[0][1]
+    heartbeats = [(at, text) for at, text in frames if "event: heartbeat" in text]
+    assert len(heartbeats) >= 11
+    times = [frames[0][0], *(at for at, _ in heartbeats)]
+    assert max(b - a for a, b in zip(times, times[1:])) <= 5.1
+    assert frames[-1][0] == 160.0 and "event: reconnect" in frames[-1][1]
+    assert "refresh_session" in frames[-1][1]
+    assert len(reads) == 60 and len(disconnects) == 61
+    assert sleeps == [desk.POLL_SECONDS] * 60
+    assert sum("event: snapshot" in text for _, text in frames) == 1
+    assert not any("event: update" in text for _, text in frames)
+    assert initial == unchanged
+    assert all("last_source_published_at" not in text and "stories" not in text
+               for _, text in heartbeats)

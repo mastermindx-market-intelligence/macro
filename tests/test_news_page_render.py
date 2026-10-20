@@ -1096,10 +1096,157 @@ def test_page_width_and_mobile_dialog_are_scoped_to_news():
     assert not re.search(r'\.site-nav\s*\{', css)
 
 
-@pytest.mark.parametrize("asset", ["news_desk.js", "news_company.js", "news_research.js", "news_desk.css"])
+@pytest.mark.parametrize("asset", ["news_desk.js", "news_company.js", "news_research.js"])
 def test_committed_news_page_contains_current_canonical_asset(asset):
     # Caddy serves the committed page, not this suite's freshly rendered VM.
     # An old inline asset must therefore fail even when source-only DOM tests pass.
     source = (ROOT / "templates" / asset).read_text(encoding="utf-8").strip()
     page = (ROOT / "site" / "news.html").read_text(encoding="utf-8")
     assert source and page.count(source) == 1, f"stale or duplicated committed News asset: {asset}"
+
+
+# Integrated from Fabric leaf news-9612-css-externalization-repair-20261020-01.
+# Parent hardening uses the HTML parser rather than attribute-looking regexes.
+from html.parser import HTMLParser
+from urllib.parse import unquote, urlsplit
+
+
+class _NewsStyleReferences(HTMLParser):
+    """Only real style/link nodes count; comments and data-* attributes do not."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.inline: list[str] = []
+        self.hrefs: list[str] = []
+        self._style: list[str] | None = None
+
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if tag == "style":
+            self._style = []
+        elif tag == "link" and "stylesheet" in (values.get("rel") or "").lower().split():
+            if values.get("href") is not None:
+                self.hrefs.append(values["href"])
+
+    def handle_data(self, data):
+        if self._style is not None:
+            self._style.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == "style" and self._style is not None:
+            self.inline.append("".join(self._style))
+            self._style = None
+
+
+def _safe_local_news_stylesheet(site_dir: Path, href: str) -> Path | None:
+    """No network or directory search; resolve only the page's actual local ref."""
+    try:
+        url = urlsplit(href.strip())
+        if url.scheme or url.netloc or not url.path or "\\" in href:
+            return None
+        relative = unquote(url.path).lstrip("/")
+        target = (site_dir / relative).resolve()
+        target.relative_to(site_dir.resolve())
+        return target if target.is_file() and target.suffix.lower() == ".css" else None
+    except (OSError, ValueError, RuntimeError):
+        return None
+
+
+def _canonical_news_css_occurrences(site_dir: Path, page_html: str) -> tuple[int, list[str]]:
+    canonical = (ROOT / "templates/news_desk.css").read_text(encoding="utf-8").strip()
+    assert canonical, "canonical News CSS must not be empty"
+    refs = _NewsStyleReferences()
+    refs.feed(page_html)
+    refs.close()
+    occurrences = sum(block.count(canonical) for block in refs.inline)
+    rejected = []
+    for href in refs.hrefs:
+        sheet = _safe_local_news_stylesheet(site_dir, href)
+        if sheet is None:
+            rejected.append(href)
+            continue
+        occurrences += sheet.read_text(encoding="utf-8").count(canonical)
+    return occurrences, rejected
+
+
+def test_committed_news_page_carries_current_canonical_css_inline_or_linked():
+    # The normal externalize_css lane preserves CSS bytes but moves them into
+    # a content-hashed sheet, often combined with other page CSS. Only the
+    # sheet actually referenced by this page may prove its source parity.
+    site = ROOT / "site"
+    count, rejected = _canonical_news_css_occurrences(site, (site / "news.html").read_text())
+    assert count == 1, f"canonical News CSS ships {count} times; rejected refs: {rejected}"
+
+
+@pytest.mark.parametrize("shape,expected", [
+    ("inline", 1), ("linked", 1), ("root_link", 1), ("single_quotes", 1),
+    ("query_fragment", 1), ("combined", 1), ("stale", 0), ("missing", 0),
+    ("wrong_ref", 0), ("preload_only", 0), ("data_rel", 0), ("data_href", 0),
+    ("comment_link", 0), ("comment_style", 0), ("duplicate_link", 2),
+    ("duplicate_inline_link", 2),
+])
+def test_news_css_reference_contract(tmp_path, shape, expected):
+    canonical = (ROOT / "templates/news_desk.css").read_text().strip()
+    site = tmp_path / "site"
+    assets = site / "assets/css"
+    assets.mkdir(parents=True)
+    (assets / "current.css").write_text(canonical)
+    (assets / "stale.css").write_text("/* old CSS */")
+    link = '<link rel="stylesheet" href="assets/css/current.css?v=123#same">'
+    forms = {
+        "inline": "<style>" + canonical + "</style>",
+        "linked": link,
+        "root_link": '<link rel="stylesheet" href="/assets/css/current.css">',
+        "single_quotes": "<LINK REL='stylesheet' HREF='assets/css/current.css'>",
+        "query_fragment": link,
+        "combined": link,
+        "stale": '<link rel="stylesheet" href="assets/css/stale.css">',
+        "missing": '<link rel="stylesheet" href="assets/css/missing.css">',
+        "wrong_ref": '<link rel="stylesheet" href="assets/css/stale.css">',
+        "preload_only": '<link rel="preload" as="style" href="assets/css/current.css">',
+        "data_rel": '<link data-rel="stylesheet" href="assets/css/current.css">',
+        "data_href": '<link rel="stylesheet" data-href="assets/css/current.css">',
+        "comment_link": "<!--" + link + "-->",
+        "comment_style": "<!--<style>" + canonical + "</style>-->",
+        "duplicate_link": link + link,
+        "duplicate_inline_link": "<style>" + canonical + "</style>" + link,
+    }
+    if shape == "combined":
+        (assets / "current.css").write_text("/* shared */\n" + canonical + "\n.other{display:block}")
+    count, _ = _canonical_news_css_occurrences(site, forms[shape])
+    assert count == expected
+
+
+@pytest.mark.parametrize("href", [
+    "../outside.css", "%2e%2e/outside.css", "https://cdn.example.com/current.css",
+    "//cdn.example.com/current.css", "data:text/css,body{}", "file:///tmp/current.css",
+    "assets\\current.css", "assets/css/escape.css",
+])
+def test_news_css_unsafe_reference_is_not_evidence(tmp_path, href):
+    site = tmp_path / "site"
+    assets = site / "assets/css"
+    assets.mkdir(parents=True)
+    outside = tmp_path / "outside.css"
+    outside.write_text((ROOT / "templates/news_desk.css").read_text())
+    (assets / "escape.css").symlink_to(outside)
+    count, rejected = _canonical_news_css_occurrences(site, f'<link rel="stylesheet" href="{href}">')
+    assert count == 0 and rejected == [href]
+
+
+def test_news_css_contract_accepts_real_externalizer_output(tmp_path):
+    import hashlib
+    from scripts.externalize_css import externalize
+
+    site = tmp_path / "site"
+    site.mkdir()
+    canonical = (ROOT / "templates/news_desk.css").read_text().strip()
+    block = "/* shared page */\n" + canonical + "\n.after{display:block}"
+    page = site / "news.html"
+    page.write_text("<!doctype html><html><head><style>" + block + "</style></head><body></body></html>")
+    assert externalize(site) == 1
+    html = page.read_text()
+    digest = hashlib.sha256(block.encode()).hexdigest()[:8]
+    assert f'assets/css/{digest}.css?v={digest}' in html
+    assert _canonical_news_css_occurrences(site, html) == (1, [])
+    assert externalize(site) == 0
+    assert _canonical_news_css_occurrences(site, page.read_text()) == (1, [])

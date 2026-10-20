@@ -74,7 +74,7 @@ RSS requests use the configured HTTPS host boundary, bounded redirects, a five-s
 
 The adapter observes file identity on a one-second interval. A per-process locked cache shares one validated read and hash across readers of the same atomic file revision. Authentication occurs before cache access. Missing, oversized, malformed, duplicate-ID or non-JSON-number artifacts fail closed; the cache does not serve the previous file as if it were current. Atomic replacement during a read cannot bind old bytes to the new file identity.
 
-Heartbeat is connection evidence only. Streams emit a heartbeat at 15 seconds and renew after 60 seconds through canonical authentication. Client generation fences ignore late responses from obsolete sessions. A missing first frame or repeated connection failures enters bounded 10-second polling, visibly labelled; a quiet source does not acquire a new publication time because a heartbeat arrived.
+Heartbeat is connection evidence only. Streams emit a heartbeat at five seconds and renew after 60 seconds through canonical authentication. The five-second interval follows the accepted company-news edge-idle repair in Macro #9893; it is not publisher-to-screen latency or proof of deployed aggregate-stream behavior. Client generation fences ignore late responses from obsolete sessions. A missing first frame or repeated connection failures enters bounded 10-second polling, visibly labelled; a quiet source does not acquire a new publication time because a heartbeat arrived.
 
 ### Company protocol
 

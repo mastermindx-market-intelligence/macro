@@ -193,3 +193,62 @@ Original earlier evidence retains its original source scope. The parent mission
 remains incomplete: this composed head still needs hosted checks, independent
 review of repaired semantics, the protected release process, actual installed
 reader/collector identity, signed-in desk/history and rights/freshness proof.
+
+## Pro recovery: canonical assets and transport margin — 20 October 2026
+
+The original three dirty Labor files were preserved in separate commit
+`f3f079c203eec49e65c40342990d6cb734704082`, with their hashes and the Shared Shell
+comparison recorded. Main `8128e4085d8aa346c969de186f05694afbbe6274` already contains
+an accepted equivalent repair; the final Labor files are exactly that main version.
+No original bytes were lost, no broad stash/reset occurred, and no unrelated Shell
+navigation was imported. The News branch stays on its original operation and PR.
+
+Actual conflicts were resolved in the API restart trigger, generated News page,
+Labor page and packing tests. All 341 main CI jobs and the seven explicit News
+history registrations remain. Canonical measurements require only the existing
+News ten-unit weight addition: index 135 jobs / 5,832 / 10 packs; free-content
+135 / 5,805 / 10; plan-book 128 / 5,581 / 10. Main's job limits and all selectors,
+suites, plan-book weight and pack ceiling are preserved.
+
+Both P1 findings from the independent 8d76 review are addressed. The canonical
+externalizer and asset optimizer processed News and Plans; their actual linked
+CSS/JS files are present, version-stamped and follow the owner's defer rules.
+No hand-authored-page exemption was introduced. The old inline-only CSS guard
+failed on real externalization before repair. Its replacement verifies the exact
+canonical CSS once inline or in stylesheets actually linked by the page, with
+HTML parsing, same-site path containment, query handling and strict duplicate,
+stale, missing, unlinked, pseudo-attribute/comment and unsafe-reference cases.
+The three JavaScript source checks are unchanged. The paid leaf repair proposal
+was accepted as an implementation input, not as independent approval of this head.
+
+Aggregate heartbeat timing now matches the accepted company-stream margin in
+Macro #9893: five seconds, preserving one-second reads and 60-second renewal.
+The old default failed the new real-generator regression with only four heartbeats.
+A real loopback HTTP stream subsequently delivered twelve heartbeat frames with
+maximum observed gap 5.014 seconds and explicit reconnect at 60.109 seconds.
+Those measurements use a fixture identity and do not establish production latency,
+capacity, entitlement, authentication or CDN behavior.
+
+Verification on this composition: **582 Python tests**, **87 Node tests**, clean
+inline JavaScript parsing, and canonical contract-delta **0 introduced / 0 inherited**.
+The local audit initially encountered omitted sparse code and a pre-existing ignored
+AAPL render cache absent from its base checkout. Code was materialized normally;
+that one cache was temporarily held for a source-equivalent audit and restored with
+its exact original SHA-256. No checker was weakened and no fictitious AAPL source
+trigger was retained. All original rights/access boundaries remain unchanged.
+
+The generated News page passed eight real Chrome states (desktop/mobile touch,
+dark/light, English/Chinese); Plans passed four viewport/language states with its
+source notices and loaded, stamped assets. History search and mobile forward/reverse
+Tab wrapping were exercised. The preview used the ordinary synthetic sign-in event
+and fixture backend identity; this is not a real account login. Temporary servers
+stopped, and both selected screenshots were inspected. Evidence, exact source
+hashes and executable probes are in `docs/evidence/news-cockpit-20261020-recovery/`
+(`integration-main-8128.json`, `browser-assets-8128.json`, `heartbeat-wire-8128.json`).
+
+Release is still held for fresh exact-head hosted CI, an accepted independent
+review of this repaired candidate, protected merge and actual deployed News
+verification. The independent direct SSH-origin inspection refusal is not bypassed.
+Shared Company News and its normal deploy remain separate owners; the rendered
+News consumer, live source-health clocks and signed-in retained-history behavior
+must be verified after the normal release path, not inferred from these fixtures.

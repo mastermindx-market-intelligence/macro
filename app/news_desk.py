@@ -35,7 +35,9 @@ SCHEMA = "intelligence.desk/v1"
 MAX_BYTES = 4 * 1024 * 1024
 MAX_STORIES = 1000
 POLL_SECONDS = 1.0
-HEARTBEAT_SECONDS = 15.0
+# Match the accepted company-news quiet-stream margin (Macro #9893).
+# This is connection liveness only; it never advances reporting/source clocks.
+HEARTBEAT_SECONDS = 5.0
 CONNECTION_SECONDS = 60.0
 PRIVATE_HEADERS = {
     "Cache-Control": "private, no-store",

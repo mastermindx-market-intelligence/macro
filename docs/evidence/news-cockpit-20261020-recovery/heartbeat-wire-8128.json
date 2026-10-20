@@ -1,0 +1,72 @@
+{
+  "scope": "one real loopback HTTP stream; fixture identity override; not production/auth/capacity proof",
+  "api_sha256": "5b54dd30a5cb2fd4891f24d0f6649a04f81ce00f85f6eb66fefed6822d8f55d6",
+  "events": [
+    {
+      "event": "snapshot",
+      "elapsed_seconds": 0.004
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 5.018
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 10.029
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 15.038
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 20.047
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 25.056
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 30.064
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 35.071
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 40.078
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 45.084
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 50.092
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 55.099
+    },
+    {
+      "event": "heartbeat",
+      "elapsed_seconds": 60.108
+    },
+    {
+      "event": "reconnect",
+      "elapsed_seconds": 60.109
+    }
+  ],
+  "headers": {
+    "cache-control": "private, no-store",
+    "content-type": "text/event-stream; charset=utf-8",
+    "vary": "Cookie, Authorization"
+  },
+  "snapshot_revision": "e6de856c504a1654d506bf9e5e1d820b9e1ede08e5c0c1ad23cdb0f2b6c0397f",
+  "stories": 14,
+  "elapsed_seconds": 60.109,
+  "max_heartbeat_gap_seconds": 5.014,
+  "fixture_server_stopped": true
+}

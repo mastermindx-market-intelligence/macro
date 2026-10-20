@@ -54,6 +54,30 @@ test("auth loss clears open coverage and mobile modal protected state",async t=>
  assert.ok(!h.doc.getElementById("ndCoverageBody").textContent.includes("18 Oct 2026"));
  assert.equal(h.doc.getElementById("ndDetail").getAttribute("aria-modal"),null);
 });
+test("initial stream handshake deadline preserves reporting and fences obsolete frames after polling",async t=>{
+ const h=harness(t);await settle();selected(h);
+ const requests=h.requests(),stalled=h.streams[0];
+ const expectStory=(headline,brief)=>{
+  assert.deepEqual(Array.from(h.doc.querySelectorAll("#ndFeed .nd-row"),n=>n.dataset.id),["a"]);
+  assert.equal(h.doc.querySelector("#ndFeed .nd-title").textContent,headline);
+  assert.equal(h.app.getState().selected,"a");
+  assert.equal(h.doc.getElementById("ndStoryTitle").textContent,headline);
+  assert.equal(h.doc.querySelector("#ndStorySection .nd-section p").textContent,brief);
+ };
+ expectStory("Source report a","Source details a");
+ await h.advance(11999);assert.equal(h.app.getState().mode,"connecting");
+ assert.equal(stalled.closed,false);assert.equal(h.requests(),requests);
+ await h.advance(1);assert.equal(stalled.closed,true);assert.equal(h.app.getState().mode,"polling");
+ assert.deepEqual(["ndConnection","ndConnectionMobile"].map(id=>h.doc.getElementById(id).textContent),["Auto refresh · 10s","Auto refresh · 10s"]);
+ expectStory("Source report a","Source details a");assert.equal(h.requests(),requests);
+ h.setPayload(snapshot([story("a",{headline:"Newer poll report",brief:"Newer poll details"})]));
+ await h.advance(9999);assert.equal(h.requests(),requests);
+ await h.advance(1);assert.equal(h.requests(),requests+1);assert.equal(h.streams.length,1);
+ expectStory("Newer poll report","Newer poll details");
+ stalled.emit("snapshot",snapshot([story("a",{headline:"Obsolete report",brief:"Obsolete details"})]));await settle();
+ expectStory("Newer poll report","Newer poll details");
+ assert.equal(h.app.getState().mode,"polling");assert.equal(h.requests(),requests+1);assert.equal(h.streams.length,1);
+});
 test("heartbeat expiry schedules an actual generation-fenced recovery",async t=>{
  const h=harness(t);await settle();h.streams[0].emit("snapshot",snapshot([story()]));
  const requests=h.requests();await h.advance(46000);
