@@ -5471,7 +5471,12 @@ def main(now: datetime | None = None) -> int:
                 rec["view"]["provenance"] = _build_prov(_ticker, rec, _prov_ctx)
             except Exception as _prov_e:  # noqa: BLE001 — additive, never fatal
                 log.debug("provenance sidecar failed for %s: %s", safe, _prov_e)
-        (outdir / f"{safe}.json").write_text(json.dumps(rec, default=str))
+        # F08 adds one guarded raw-source field at the existing publication seam.
+        # Legacy board metrics and all scoring/view construction stay unchanged.
+        from scripts.stock_liquidity_profile import write_record as _write_liquidity_record
+        _write_liquidity_record(
+            outdir / f"{safe}.json", rec, data_root=config.data_dir(),
+            recorded_at=_board_observed_at)
     # flush the accruing ladder-transition log in one idempotent, atomic write
     try:
         added = ticker_alerts.write_ladder_log_batch(ladder_rows)
