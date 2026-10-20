@@ -10,6 +10,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if lite %}China thematic baskets · 同花顺 — vs CSI 300{% else %}China thematic baskets — performance vs CSI 300{% endif %}</title>
 {% set seo_title = "China Thematic Baskets vs CSI 300 — Mastermind" %}{% set seo_desc = "China thematic baskets tracked against the CSI 300 — theme scores, leadership health and entry radar, updated after each Asia close." %}{% set seo_path = "baskets_china.html" %}
+{%- if lite %}{% set seo_path = "baskets_china_ths.html" %}{#
+#}{% set seo_desc = "Equal-weight A-share baskets from 同花顺 concept boards, vs the CSI 300." %}{#
+#}{% endif %}
 {% include "_seo_head.html.j2" %}
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
@@ -426,6 +429,12 @@
     </div>
     <div id="cards"></div>
     <div id="details"></div>
+    {%- if lite and build_notes %}
+    <details class="tagline" id="build-notes">
+      <summary>{{ t('How these baskets are built', '篮子构建说明') }}</summary>
+      {% for note in build_notes %}<p class="muted sm">{{ note }}</p>{% endfor %}
+    </details>
+    {%- endif %}
   </div>
 
   {# W5-B: Reversal Sleeve strategy card — linked product, CONFIRM verdict 2026-07-03 #}

@@ -39,7 +39,7 @@
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
   var visualScriptVersion = '1d23a300';
-  var visualStyleVersion = '98f7caf6';
+  var visualStyleVersion = '1eb2aabf';
   var visualAssetPromise = null;
   function loadVisualAssets() {
     if (visualAssetPromise) return visualAssetPromise;
