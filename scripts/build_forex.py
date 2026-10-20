@@ -17,6 +17,9 @@ Usage: python -m scripts.build_forex
 from __future__ import annotations
 
 import json
+import hashlib
+import math
+import numbers
 import logging
 import sys
 from datetime import datetime, timezone
@@ -345,11 +348,219 @@ def chart_transmission(tr: dict) -> str:
 # --------------------------------------------------------------------------- #
 # view-models
 # --------------------------------------------------------------------------- #
+
+def _r4_currency_rows(strength: dict, horizon: str = "1m") -> dict:
+    """Build R4 comparison rows on one explicit currency-vs-USD basis.
+
+    strength_meter intentionally exposes both a cross-sectional strength value and
+    the actual trailing vs_usd_pct move.  The R4 decision surface must not mix
+    those scales: ordering, visible values and zero-anchored bar geometry all use
+    vs_usd_pct for the selected horizon.
+
+    USD is the zero reference, not a ranked currency. Missing/non-finite moves stay
+    visible as unavailable rows and never become neutral zeroes.
+    """
+    horizon_rows = (((strength or {}).get("horizons") or {}).get(horizon) or [])
+    rows: list[dict] = []
+    finite_abs: list[float] = []
+
+    for source in horizon_rows:
+        ccy = str(source.get("ccy") or "")
+        if not ccy or ccy == "USD":
+            continue
+        raw = source.get("vs_usd_pct")
+        # Retain #8096's one-basis comparison, using R26's numeric admission.
+        move = _r4_number(raw)
+        if move is not None:
+            finite_abs.append(abs(move))
+        rows.append({
+            "ccy": ccy,
+            "ccy_zh": source.get("ccy_zh") or ccy,
+            "em": bool(source.get("em")),
+            "move_pct": move,
+            "available": move is not None,
+            "cross_section_strength": source.get("strength"),
+        })
+
+    domain = max(finite_abs, default=0.0)
+    scale = domain if domain > 0 else 1.0
+    for row in rows:
+        row["bar_frac"] = (row["move_pct"] / scale) if row["available"] else None
+
+    rows.sort(key=lambda row: (
+        not row["available"],
+        -(row["move_pct"] if row["move_pct"] is not None else 0.0),
+        row["ccy"],
+    ))
+    available = [row for row in rows if row["available"]]
+    return {
+        "basis": "vs_usd",
+        "horizon": horizon,
+        "rows": rows,
+        "domain_abs_pct": domain,
+        "leader": available[0] if available else None,
+        "n_available": len(available),
+        "n_above_usd": sum(row["move_pct"] > 0 for row in available),
+        "n_below_usd": sum(row["move_pct"] < 0 for row in available),
+    }
+
+
+def _r4_number(value):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real):
+        return None
+    return float(value) if math.isfinite(float(value)) else None
+
+
+def _r4_clock(value):
+    if value is None or isinstance(value, (bool, int, float)):
+        return None
+    try:
+        ts = pd.Timestamp(value)
+        return ts.tz_convert("UTC") if pd.notna(ts) and ts.tzinfo is not None else None
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def _r4_readiness(dependencies: dict[str, dict], *, asof=None, checked_at=None,
+                  action_requirements=None) -> dict:
+    """Hardened continuation of #8096's view-contract helper.
+
+    Source-specific clocks/expiry are supplied by owners. This function never
+    promotes build time, calculation date, an empty dependency set or a label
+    into available evidence. It does not activate or persist a watch.
+    """
+    now = _r4_clock(checked_at)
+    receipts, identities = {}, {}
+    for name, source in (dependencies or {}).items():
+        receipt = dict(source) if isinstance(source, dict) else {}
+        identity = receipt.get("dependency_id")
+        reasons = [] if isinstance(source, dict) else ["invalid_source_receipt"]
+        if not isinstance(identity, str) or not identity.strip():
+            reasons.append("missing_or_invalid_dependency_identity")
+            identity = str(name)
+        identities.setdefault(identity, []).append(str(name))
+        if receipt.get("state") not in {"fresh", "slow"}:
+            reasons.append("source_not_qualified")
+        value = receipt.get("value")
+        if receipt.get("value_kind") == "number":
+            if _r4_number(value) is None:
+                reasons.append("missing_or_invalid_value")
+                receipt["value"] = None
+            if not receipt.get("unit"):
+                reasons.append("missing_unit")
+        elif receipt.get("value_kind") == "state":
+            if not isinstance(value, str) or value.strip().lower() in {"", "unknown", "unavailable", "nan", "none", "—"}:
+                reasons.append("missing_or_invalid_value")
+        else:
+            reasons.append("unsupported_or_missing_value_kind")
+            receipt["value"] = None
+        observed = _r4_clock(receipt.get("source_observed_at"))
+        available = _r4_clock(receipt.get("source_available_at"))
+        expires = _r4_clock(receipt.get("expires_at"))
+        if any(x is None for x in (now, observed, available, expires)):
+            reasons.append("unknown_source_clock_or_expiry")
+        elif observed > available or available > now or expires < available:
+            reasons.append("invalid_source_clock_order")
+        elif now >= expires:
+            reasons.append("source_expired")
+        receipt.update(dependency_id=identity, usable=not reasons, withheld_reasons=reasons)
+        receipts[str(name)] = receipt
+    for identity, names in identities.items():
+        if len(names) > 1:
+            for name in names:
+                receipts[name]["usable"] = False
+                receipts[name]["withheld_reasons"].append("duplicate_dependency_identity")
+    actions = {}
+    for action, required in (action_requirements or {}).items():
+        blocked = [name for name in required if not receipts.get(name, {}).get("usable")]
+        if not required:
+            blocked = ["no_declared_dependencies"]
+        actions[action] = {"allowed": not blocked, "blocked_by": blocked}
+    bad = [name for name, r in receipts.items() if not r["usable"]]
+    critical = [name for name in bad if receipts[name].get("critical")]
+    verdict = "unavailable" if not receipts else "stale" if critical else "degraded" if bad else "ok"
+    return {"checked_at": checked_at, "asof": asof, "dependencies": receipts,
+            "verdict": verdict, "banner_message": None if verdict == "ok" else {
+                "en": "Some required evidence is unavailable; affected checks are paused.",
+                "zh": "部分必需证据不可用；相关检查已暂停。"}, "actions": actions}
+
+
+def _decision_context(results, pairs, dollar, kinematics_view, cfg, events, *,
+                      checked_at, source_revision=None, event_withheld=None):
+    """One display-only projection consumed by both template and latest.json.
+
+    Existing producers retain calculations, event IDs and timestamps. Unknown
+    source observation/availability clocks remain null. Current daily inputs do
+    not establish finalized intraday closes; no intraday capability is admitted.
+    """
+    dependencies, requirements, pair_rows, seen = {}, {}, [], set()
+    for p in pairs:
+        key = p.get("key")
+        if not isinstance(key, str) or len(key) != 6 or key in seen:
+            raise ValueError("missing_or_duplicate_pair_identity")
+        seen.add(key)
+        df = results.get(key)
+        asof = str(df.index[-1].date()) if df is not None and not df.empty else None
+        source = dict((getattr(df, "attrs", {}).get("source_receipts") or {}).get("literal_quote") or {})
+        quote = _r4_number(p.get("quote"))
+        dep_id = key + ":literal_quote"
+        dependencies[dep_id] = {**source, "dependency_id": dep_id,
+            "source": "forex_inputs.load_price", "field": "literal_market_quote",
+            "value": quote, "value_kind": "number", "unit": key[3:] + " per " + key[:3],
+            "calculated_asof": asof, "state": source.get("state", "unknown"),
+            "source_observed_at": source.get("source_observed_at"),
+            "source_available_at": source.get("source_available_at"),
+            "expires_at": source.get("expires_at"), "critical": True}
+        # Explicit source capability, not a synthetic-OHLC assumption.
+        final_id = key + ":final_4h_close"
+        dependencies[final_id] = {"dependency_id": final_id, "value": None,
+            "value_kind": "number", "unit": key[3:] + " per " + key[:3],
+            "state": "missing", "critical": False, "source_observed_at": None,
+            "source_available_at": None, "expires_at": None,
+            "reason": "current_owner_supplies_daily_close_not_finalized_4h_bars"}
+        requirements[key + ":price_close_4h"] = [final_id]
+        assessed = p.get("base")
+        if assessed not in {key[:3], key[3:]}:
+            raise ValueError("assessed_currency_not_in_pair")
+        pair_rows.append({"pair": key, "display_base": key[:3], "display_quote": key[3:],
+            "assessed_currency": assessed, "assessed_to_pair_direction": "same" if assessed == key[:3] else "opposite",
+            "literal_quote": quote, "calculated_asof": asof,
+            "technical_state": {"trend": p.get("ts_trend"), "structure": p.get("structure_state"),
+                "sampling": "daily_observations", "pipeline": "forex_signals.compute_asset",
+                "source_fields": ["ts_trend", "structure_state"],
+                "basis": "assessed_currency_residual_pipeline",
+                "trend_lookback_observations": (cfg.get("trend") or {}).get("lookback_d"),
+                "structure_swing_observations": (cfg.get("structure") or {}).get("swing_window_d"),
+                "structure_breakout_observations": (cfg.get("structure") or {}).get("breakout_lookback_d"),
+                "residual_method": (str(df.iloc[-1].get("residual_method")) if df is not None and not df.empty and pd.notna(df.iloc[-1].get("residual_method")) else None),
+                "residual_dollar_carried": (bool(df.iloc[-1].get("residual_dollar_carried")) if df is not None and not df.empty and pd.notna(df.iloc[-1].get("residual_dollar_carried")) else None),
+                "provenance_projection": "kinematics_view"},
+            "multi_timeframe": {"source": "forex_mtf.mtf_ladder via pair_vm", "basis": "assessed_currency_price", "rows": p.get("mtf_rows") or []},
+            "quote_dependency_id": dep_id, "price_rule_capability_id": key + ":price_close_4h"})
+    readiness = _r4_readiness(dependencies, checked_at=checked_at, action_requirements=requirements)
+    canonical_changes = [{k: e.get(k) for k in ("id", "ts", "type", "asset", "context", "anchor", "headline", "severity")} for e in events]
+    snapshot = {"schema": "mastermind.forex.decision-context.v1", "source_revision": source_revision,
+        "pairs": pair_rows, "current_read": {"risk": dollar.get("risk_word"), "regime": dollar.get("regime"),
+            "available": bool(dollar.get("current_available")), "reason": dollar.get("unavailable_reason"),
+            "last_confirmed": dollar.get("last_confirmed")},
+        "changes": canonical_changes, "change_window": "recent_48_hours_not_user_last_seen",
+        "withheld_event_refs": event_withheld or [],
+        "authority": "display_only", "probability_policy": "withheld",
+        "movement_projection_schema": kinematics_view.get("schema_version") if isinstance(kinematics_view, dict) else None,
+        "dependencies": readiness["dependencies"], "capabilities": readiness["actions"]}
+    encoded = json.dumps(snapshot, sort_keys=True, separators=(",", ":"), allow_nan=False, default=str)
+    snapshot.update(snapshot_id=hashlib.sha256(encoded.encode()).hexdigest(), assembled_at=checked_at,
+                    readiness=readiness["verdict"])
+    return snapshot
+
+
 def dollar_vm(dol: pd.DataFrame) -> dict:
     last = dol.iloc[-1]
-    reg = last.get("smile_regime", "Neutral")
+    raw_reg = last.get("smile_regime")
+    risk = _r4_number(last.get("risk_off"))
+    roc = _r4_number(last.get("dollar_roc"))
+    reg = raw_reg if risk is not None and roc is not None and isinstance(raw_reg, str) and raw_reg in REGIME_ZH else None
     fav_en, fav_zh = FAVORED.get(reg, ([], []))
-    roc = last.get("dollar_roc")
     # F2 — hero sparkline: broad-dollar rebased to 100 + risk-off composite
     _broad_tail = dol["broad"].dropna().tail(126) if "broad" in dol.columns else pd.Series(dtype=float)
     _last_broad = float(_broad_tail.iloc[0]) if len(_broad_tail) > 0 else None
@@ -367,16 +578,22 @@ def dollar_vm(dol: pd.DataFrame) -> dict:
         "n": len(_broad_rebased),
     }
     return {
-        "regime": reg, "regime_zh": REGIME_ZH.get(reg, reg),
+        "regime": reg, "regime_zh": REGIME_ZH.get(reg),
+        "current_available": reg is not None,
+        "unavailable_reason": last.get("smile_unavailable_reason") if reg is None else None,
+        "last_confirmed": {
+            "regime": last.get("smile_last_confirmed") if pd.notna(last.get("smile_last_confirmed")) else None,
+            "asof": str(last.get("smile_last_confirmed_asof")) if pd.notna(last.get("smile_last_confirmed_asof")) else None,
+        },
         "zone_en": REGIME_ZONE_EN.get(reg, reg),
         "zone_zh": REGIME_ZONE_ZH.get(reg, reg),
         "color": REGIME_COLOR.get(reg, C["ink"]),
-        "dollar_dir": "weakening" if (roc or 0) < 0 else ("strengthening" if (roc or 0) > 0 else "flat"),
-        "dollar_dir_zh": "走软" if (roc or 0) < 0 else ("走强" if (roc or 0) > 0 else "持平"),
-        "roc": _r(100 * (roc or 0), 1),
-        "risk_off": _r(last.get("risk_off"), 2),
-        "risk_word": "risk-off" if (last.get("risk_off") or 0) > 0 else "risk-on",
-        "risk_word_zh": "避险" if (last.get("risk_off") or 0) > 0 else "偏好风险",
+        "dollar_dir": None if roc is None else ("weakening" if roc < 0 else ("strengthening" if roc > 0 else "flat")),
+        "dollar_dir_zh": None if roc is None else ("走软" if roc < 0 else ("走强" if roc > 0 else "持平")),
+        "roc": _r(100 * roc, 1) if roc is not None else None,
+        "risk_off": _r(risk, 2),
+        "risk_word": None if risk is None else ("risk-off" if risk > 0 else "risk-on"),
+        "risk_word_zh": None if risk is None else ("避险" if risk > 0 else "偏好风险"),
         "broad": _r(last.get("broad"), 2), "dxy": _r(last.get("dxy"), 2),
         "afe": _r(last.get("broad_afe"), 1), "eme": _r(last.get("broad_eme"), 1),
         "dollar_day_z": _r(last.get("dollar_day_z"), 2),
@@ -644,6 +861,8 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
         word_en, word_zh, tone = "Get ready", "做好准备", "alert"
     elif dollar_day_flag:
         word_en, word_zh, tone = "Watch — don't chase", "观望，别追", "watch"
+    elif risk_word not in {"risk-on", "risk-off"}:
+        word_en, word_zh, tone = "Risk context unavailable", "风险背景不可用", "unavailable"
     else:
         word_en, word_zh, tone = "Watch — don't chase", "观望，别追", "calm"
 
@@ -696,8 +915,8 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
         sentence_en = f"A {dir_word} dollar is leaning on {' and '.join(lean_en)}."
         sentence_zh = f"美元{dir_word_zh}，正压制{'与'.join(lean_zh)}。"
     else:
-        sentence_en = "The dollar is quiet today."
-        sentence_zh = "美元今日平静。"
+        sentence_en = "Risk context is unavailable; no calm state is inferred." if risk_word not in {"risk-on", "risk-off"} else "The dollar is quiet today."
+        sentence_zh = "风险背景不可用；不推断平静状态。" if risk_word not in {"risk-on", "risk-off"} else "美元今日平静。"
 
     return {
         "word_en": word_en, "word_zh": word_zh, "tone": tone,
@@ -782,6 +1001,21 @@ def _state_changes(today_vals: dict, dol: "pd.DataFrame") -> dict:
         prev_val = None
         changed_on = None
         days_in = None
+        if cur is None:
+            out[k] = {"current": None, "prev": None, "changed_on": None, "days_in_state": None}
+            continue
+
+        if k == "smile_regime" and dol is not None and not dol.empty and "smile_regime" in dol:
+            values = dol["smile_regime"]
+            i = len(values) - 1
+            while i >= 0 and pd.notna(values.iloc[i]) and values.iloc[i] == cur:
+                i -= 1
+            if i >= 0 and pd.isna(values.iloc[i]):
+                out[k] = {"current": cur, "prev": None, "changed_on": None,
+                          "days_in_state": None,
+                          "observed_since": str(values.index[i + 1].date()),
+                          "continuity": "resumed_after_gap"}
+                continue
 
         if sorted_dates:
             # walk back to find the last different value
@@ -1144,14 +1378,16 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — timeline is optional, never break the page
         log.warning("forex alerts rebuild failed (%s)", e)
         all_events = forex_alerts.load_events()
-    recent_events = forex_alerts.recent(all_events, acfg["timeline_days"])
+    event_projection = forex_alerts.qualified_current_events(all_events, dol)
+    visible_events = event_projection["events"]
+    recent_events = forex_alerts.recent(visible_events, acfg["timeline_days"])
     timeline = _group_timeline(recent_events)
 
     # F4 — assemble fx_state AFTER rebuild; load_events() now returns tonight's events.
     # F1 — normalize tz on each event ts before comparing to tz-aware now.
     _cutoff_utc = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=2)
     _changes_today = []
-    for _ev in all_events:
+    for _ev in visible_events:
         try:
             _t = pd.Timestamp(_ev["ts"])
             _t = _t.tz_localize("UTC") if _t.tzinfo is None else _t.tz_convert("UTC")
@@ -1171,6 +1407,8 @@ def main() -> int:
         "transmission_effects": {k: v.get("effect") for k, v in _tr_latest.get("assets", {}).items()},
         "changes_today": [
             {
+                "id": e.get("id"), "ts": e.get("ts"),
+                "context": e.get("context"), "anchor": e.get("anchor"),
                 "type": e.get("type"),
                 "asset": e.get("asset"),
                 "headline_en": e.get("headline"),
@@ -1188,6 +1426,10 @@ def main() -> int:
 
     # One validated display projection serves both the page and machine snapshot.
     kinematics_view = project_kinematics(kinematics, cfg)
+    decision_context = _decision_context(
+        results, pairs, dollar, kinematics_view, cfg, _changes_today,
+        checked_at=datetime.now(timezone.utc).isoformat(),
+        event_withheld=event_projection["withheld"])
     from engine.i18n import tr, td
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
@@ -1195,7 +1437,7 @@ def main() -> int:
         C=C, as_of=as_of, built=built, cal_span=cal_span,
         dollar=dollar, desk=desk, real_rate_chart=real_rate_chart,
         transmission=transmission, strength=strength, scorecards=scorecards,
-        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view,
+        regime=regime, kinematics=kinematics, kinematics_view=kinematics_view, decision_context=decision_context,
         pairs=pairs, sections=sections, carry_table=ctable, cot_ok=cot_ok,
         timeline=timeline, timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
         # B1.4 new view-model vars (populated in the new template; stub values for
@@ -1298,6 +1540,9 @@ def main() -> int:
         "date": as_of, "asof": _asof_str,
         "regime": dollar["regime"], "favored": dollar["favored"],
         "risk": dollar["risk_word"],
+        "risk_off": dollar.get("risk_off"),
+        "current_available": dollar.get("current_available", False),
+        "last_confirmed": dollar.get("last_confirmed"),
         "pairs": _pairs_latest,
         # the deepened dollar read
         "dollar_desk": _desk_latest(desk),
@@ -1306,6 +1551,7 @@ def main() -> int:
         "strength": strength if strength else {},
         # R12: existing computed values, explicit units and unknown per-metric clocks.
         "kinematics": kinematics_view,
+        "decision_context": decision_context,
         # MSX-1: regime_radar gains 'scenarios' compact receipts (additive)
         "regime_radar": ({"as_of": regime.get("as_of"), "dominant": regime.get("dominant"),
                           "active": [s["key"] for s in regime.get("scenarios", []) if s.get("active")],

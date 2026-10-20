@@ -1057,8 +1057,18 @@ def test_r12_actual_builder_writes_kinematics_without_changing_other_snapshot_fi
     assert got['kinematics']['table_as_of'] == '2026-09-25'
     assert got['asof'] != got['kinematics']['table_as_of'], 'build/market date must not stamp the metric date'
     assert contexts[0]['kinematics'] == original == table
-    assert {k: v for k, v in got.items() if k != 'kinematics'} == {
-        k: v for k, v in baseline.items() if k != 'kinematics'}
+    # R26 adds an explicit assembly clock; two builds may differ in that clock
+    # without changing evidence. Keep all other decision fields under equality,
+    # especially the stable evidence ID and source/capability qualification.
+    comparable = copy.deepcopy(got)
+    comparable_baseline = copy.deepcopy(baseline)
+    for snapshot in (comparable, comparable_baseline):
+        snapshot.pop('kinematics')
+        context = snapshot.get('decision_context', {})
+        assembled = context.pop('assembled_at', None)
+        if context:
+            assert pd.Timestamp(assembled).tzinfo is not None
+    assert comparable == comparable_baseline
     assert got['regime_radar']['active'] == []
     assert baseline['kinematics']['value_status'] == 'unavailable'
 

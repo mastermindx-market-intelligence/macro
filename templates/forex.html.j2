@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% include "_interfonts.html.j2" %}
-<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'light');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Forex Vector — {{ as_of }}</title>
 {% set seo_title = 'Forex Vector — US Dollar Regime and FX Transmission | Mastermind' %}{% set seo_desc = 'An FX hub tracking the US dollar regime, major currency crosses and how currency moves transmit into equities and macro.' %}{% set seo_path = 'forex.html' %}
 {% include "_seo_head.html.j2" %}
@@ -68,6 +68,7 @@ html[data-theme="dark"] .hero-state.tone-usd_up{text-shadow:0 0 32px rgba(40,95,
 html[data-theme="dark"] .hero-state.tone-usd_dn{color:#e06464;text-shadow:0 0 32px rgba(224,100,100,.34),0 0 8px rgba(224,100,100,.2)}
 html[data-theme="dark"] .hero-state.tone-mixed{text-shadow:0 0 32px rgba(200,165,59,.38),0 0 8px rgba(200,165,59,.22)}
 .stance-chip{display:inline-block;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.01em;margin:0 6px 0 0}
+.stance-chip.unavailable{background:#fff4e2;color:#7d5922}
 .stance-chip.calm{background:#eef1f6;color:var(--muted)}
 html[data-theme="dark"] .stance-chip.calm{background:#222732}
 .stance-chip.watch{background:rgba(245,173,66,.16);color:#9a6a10}
@@ -108,6 +109,9 @@ html[data-theme="dark"] .stance-chip.calm{background:#222732}
 /* ---- tooltip system (B1.6) ---- */
 [data-tip-en],[data-tip-zh]{position:relative}
 .tip-pop{position:absolute;z-index:99;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) translateY(4px);background:var(--ink);color:#fff;font-size:11.5px;line-height:1.5;border-radius:8px;padding:7px 11px;min-width:180px;max-width:280px;white-space:normal;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;box-shadow:0 4px 16px rgba(0,0,0,.22)}
+/* The light theme's --ink is a dark surface, but dark theme remaps --ink to
+   foreground text. Keep the same popover contrast by inverting onto --card. */
+html[data-theme="dark"] .tip-pop{background:var(--card);color:var(--ink)}
 [data-tip-en]:hover .tip-pop,[data-tip-en]:focus .tip-pop,
 [data-tip-zh]:hover .tip-pop,[data-tip-zh]:focus .tip-pop{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 /* ---- §2 transmission ---- */
@@ -277,6 +281,15 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
   {# infer hero tone from dollar direction for glow color #}
   {% set _hero_tone = 'usd_up' if (dollar.dollar_dir or '') in ('strengthening','up') else ('usd_dn' if (dollar.dollar_dir or '') in ('weakening','down') else 'mixed') %}
 
+
+  {% if decision_context is defined and decision_context %}
+  <script id="forex-decision-context" type="application/json">{{ decision_context|tojson }}</script>
+  <details class="card" style="padding:14px 18px;margin:0 0 16px" data-fx-decision-readiness="{{ decision_context.readiness }}">
+    <summary style="cursor:pointer;font-weight:600">{{ t('Current checks', '当前检查') }} · {{ t('Source qualification retained', '保留来源资格状态') }}</summary>
+    <p style="margin:10px 0 0">{{ t('Daily observations remain visible. Automatic 4H confirmation requires finalized literal-price bars and source clocks.', '每日观测仍然可见。自动4小时确认需要最终报价柱和来源时钟。') }}</p>
+  </details>
+  {% endif %}
+
   <div class="hero-glass">
     <div class="hero-grid">
       {# Left: state + stance + KPIs #}
@@ -299,8 +312,8 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
         <div class="hero-kpi-row">
           <div class="hkpi">{{ t('Broad USD', '广义美元') }}<b>{{ dollar.broad or '—' }}</b></div>
           <div class="hkpi">DXY<b class="nb-px" data-sym="DX-Y.NYB" data-mkt="fx">{{ dollar.dxy or '—' }}</b></div>
-          <div class="hkpi">{{ t('63d move', '63日走势') }}<b>{{ (dollar.roc or 0)|round(1) }}%</b></div>
-          <div class="hkpi">{{ t('Risk mood', '风险情绪') }}<b>{{ t(dollar.risk_word, dollar.risk_word_zh) }}</b></div>
+          <div class="hkpi">{{ t('63d move', '63日走势') }}<b>{% if dollar.roc is not none %}{{ dollar.roc|round(1) }}%{% else %}—{% endif %}</b></div>
+          <div class="hkpi">{{ t('Risk mood', '风险情绪') }}<b>{{ t(dollar.risk_word or 'Unavailable', dollar.risk_word_zh or '不可用') }}</b></div>
         </div>
         {% if dollar.dollar_day %}<span class="hero-badge flash">⚡ {{ t('Unusually big dollar move today', '美元今日异常大幅波动') }}</span>{% endif %}
         {% if desk and desk.triple_red %}<span class="hero-badge triple">⚑ {{ t('Dollar not acting as a safe haven today', '美元今日未发挥避险作用') }}</span>{% endif %}
@@ -333,9 +346,9 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
             <circle cx="220" cy="105" r="5" fill="{{ C.green }}" opacity="0.6"/>
             <circle cx="440" cy="20" r="5" fill="{{ C.red }}" opacity="0.6"/>
             {# State dot with breathing animation — sits ON the curve #}
-            <circle class="smile-dot" cx="{{ _dot_x|round(1) }}" cy="{{ _dot_y|round(1) }}"
+            {% if dollar.current_available %}<circle class="smile-dot" cx="{{ _dot_x|round(1) }}" cy="{{ _dot_y|round(1) }}"
               r="7" fill="{{ C.indigo }}"
-              filter="drop-shadow(0 0 6px {{ C.indigo }}88)"/>
+              filter="drop-shadow(0 0 6px {{ C.indigo }}88)"/>{% endif %}
           </svg>
           {# Zone labels as absolute-positioned HTML overlays (NOT svg text — LETHAL) #}
           <div class="smile-labels">
@@ -349,7 +362,7 @@ html[data-lang="zh"][data-theme="light"] .hero-state.tone-usd_dn { text-shadow:n
         </div>
         <div class="smile-zone-line">
           {{ t('Why the dollar is here: ', '美元处于此位置的原因：') }}
-          <b><span class="l-en">{{ dollar.zone_en or dollar.regime }}</span><span class="l-zh">{{ dollar.zone_zh or dollar.regime_zh }}</span></b>
+          <b><span class="l-en">{{ dollar.zone_en or dollar.regime or 'Current regime unavailable' }}</span><span class="l-zh">{{ dollar.zone_zh or dollar.regime_zh or '当前格局不可用' }}</span></b>
         </div>
 
         {# Dollar sparkline (126d, rebased 100) + risk-off series #}

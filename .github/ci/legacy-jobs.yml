@@ -14673,8 +14673,8 @@ jobs:
         run: python -m pytest tests/test_builder_shim_writes.py -q
       # Hermetic Forex producer/projector/writer/HTML contracts belong to PR code CI,
       # not the main-only data-health plane. Preserve real-data macro tests below.
-      - name: Forex context bus and movement evidence (synthetic inputs, temporary output)
-        run: python -m pytest tests/test_forex_context_bus.py -q
+      - name: Forex context bus, R26 decision truth and R4 compatibility (synthetic inputs, temporary output)
+        run: python -m pytest tests/test_forex_context_bus.py tests/test_forex_r26_decision_contract.py tests/test_forex_r4_contract.py -q
 
   quant-q09-venue-concentration:
     if: ${{ false }}
