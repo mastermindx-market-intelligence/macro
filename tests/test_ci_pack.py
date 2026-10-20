@@ -5089,8 +5089,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_829),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_704),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6041,6 +6041,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+
+    2026-10-20 (original PR #7949, accepted 5c2d0a04 integration):
+    The actual four-node run on frozen combined index
+    1a008b73af0ef56634ce89bb07c62b7a5e0a5988 passed all three scope
+    contracts and reproduced the two packing-weight breaches below.
+    Applying incoming-main manifest weights to those SAME candidate-selected
+    IDs gives the left column; this is not an incoming-tree selection run.
+
+        templates/index.html          135 jobs, 5,822 -> 5,829 weight
+        scripts/build_free_content.py 134 jobs, 5,697 -> 5,704 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,578 weight
+
+    All three use ten packs. The only changed declared weights are retained
+    Shared Shell coverage: data-base-shim 7 -> 12 (+5) and unrun-nav-chrome
+    30 -> 32 (+2). Both jobs are present in every measured row. Fund only
+    the two breached weight ceilings: 5,822 -> 5,829 and 5,697 -> 5,704.
+    Preserve the plan-book ceiling 5,600, every job-count and pack bound,
+    all suites, selectors, scope/closure audits and duration overrides.
+    These are deterministic planning weights, not execution timings.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

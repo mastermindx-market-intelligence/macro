@@ -1020,6 +1020,7 @@ jobs:
       - "collectors/edgar_share_quality.py"
       - "collectors/edgar_stock_quality.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "config.yml"
       - "config/market_memory_canary.v1.json"
       - "engine/__init__.py"
@@ -6587,6 +6588,30 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Qualified joint exposure and the existing Hub publisher share this lane.
+      - "engine/etf_flows.py"
+      - "engine/exposure_math.py"
+      - "engine/grading_stats.py"
+      - "engine/levels_engine.py"
+      - "engine/levels_grade.py"
+      - "engine/levels_publish.py"
+      - "engine/moves_engine.py"
+      - "engine/options_exposure_projection.py"
+      - "engine/intelligence_workspace/options_contract_identity.py"
+      - "tests/test_options_contract_identity.py"
+      - "lib/options_source_receipts.py"
+      - "lib/options_reference_pages.py"
+      - "tests/test_options_reference_pages.py"
+      - "tests/test_options_source_receipts.py"
+      - "tests/test_options_dated_projection.py"
+      - "scripts/massive_entitlement_probe.py"
+      - "engine/options_hub.py"
+      - "engine/vex_engine.py"
+      - "scripts/build_options_hub_nightly.py"
+      - "tests/test_build_options_hub_nightly.py"
+      - "tests/test_options_exposure_projection.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_hub_contract_v2.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -7249,6 +7274,8 @@ jobs:
         run: python -m pytest tests/test_topup_thetadata_legacy.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_scheduler.py -q
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
+      - name: qualified joint exposure and legacy Hub publication compatibility
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -9754,10 +9781,12 @@ jobs:
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
+      - "tests/test_fif_z0_gap_a23_a38.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -9837,7 +9866,9 @@ jobs:
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
+          tests/test_fif_z0_gap_a23_a38.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
           tests/test_fif_pf_health_entity.py
@@ -30568,6 +30599,7 @@ jobs:
       - "collectors/sec_filing_parser.py"
       - "collectors/sec_request_pacer.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "collectors/us_names_zh.py"
       - "collectors/usaspending_awards.py"
       - "collectors/usaspending_idv_graph.py"
