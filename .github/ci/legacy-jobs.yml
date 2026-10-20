@@ -5055,6 +5055,24 @@ jobs:
   local-projections:
     if: ${{ false }}
     gate: code
+    # The native CLI test enumerates tmp_path fixtures only. Pin the measured
+    # import closure so that opaque traversal never selects unrelated builders.
+    # All estimator/ingestion cases and packing ceilings remain unchanged.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/local_projections.py"
+      - "engine/seasonality/__init__.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "engine/trial_ledger.py"
+      - "engine/validation.py"
+      - "scripts/__init__.py"
+      - "scripts/run_local_projections.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_local_projections.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -5908,9 +5926,11 @@ jobs:
         #     COLLECTION error (pytest exit 2), which fails the whole step rather than one
         #     test — measured on this PR's first run (ci-pack-11, job 96210580631).
         # B-F07-3 round 7 widening 2026-09-19 (contract-delta): event_versions_io
-        # reads committed parquet; pandas needs pyarrow. Do not add requests —
-        # the valuation producer must stay collector-free in this venv.
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
+        # reads committed parquet; pandas needs pyarrow. F07 source-context
+        # tests also exercise the existing archive reader and an injected collector
+        # with no network calls; their imports require beautifulsoup4 and requests.
+        # Reported-input valuation remains pure and never fetches during computation.
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow beautifulsoup4 requests
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -28441,6 +28461,14 @@ jobs:
       # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
       - name: E1c4 regime-outlook publication beside the rates command board
         run: python -m pytest tests/test_build_rates_command_outlook.py -q
+      # W23-L10/L12 (Country cycles, 2026-10-19): scripts/build_country_cycles.py renders four
+      # read-only panels from the model it already holds -- the projection receipt, hazard
+      # availability, the canonical phase read and the currency move. The suites import the
+      # builder's pure helpers (never run main()) and render the template with fixtures. They
+      # ride this data-gated job because the exclusive sanctions-map-page job cannot host the
+      # builder's import closure. Their own step so a wiring regression is named.
+      - name: W23-L10/L12 country cycles - receipt, hazard availability, canonical read, FX move
+        run: python -m pytest tests/test_country_cycles_projection_receipt.py tests/test_country_cycles_hazard_availability.py tests/test_country_cycles_canonical_phase.py tests/test_country_cycles_fx_contribution.py -q
       # RIC B0 (Rates & Inflation Command e2e, 2026-10-14): engine/rates_command_basis.py is the
       # pure basis-aware comparison contract rates_command_basis.v1 (A06: no numerical gap unless
       # basket/index/reference interval/unit/vintage and calculation rule support it). Its first
@@ -28451,6 +28479,15 @@ jobs:
       # contracts/rates_command_basis.v1.schema.json. Paths widened for the suite, module, contract.
       - name: RIC B0 basis-aware comparison contract (rates_command_basis.v1)
         run: python -m pytest tests/test_rates_command_basis.py -q
+      # W23-L9 SPR page (2026-10-19): tests/test_strategic_reserves.py was listed in
+      # config/unrun_test_baseline.json — no `run:` step named it, so engine/strategic_reserves.py,
+      # scripts/build_spr.py and templates/spr.html.j2 could not start CI. It joins this job (the
+      # macro panels) with the two W23-L9 suites: the JODI world-total vintage (as-of month, stale
+      # reporters named) and the zh assess-badge words. All three use inline fixtures and need only
+      # pandas/jinja2 from the install line above. Its own step so an SPR regression is named rather
+      # than masked by the panel step. Paths widened for the suites, builder, engine and template.
+      - name: W23-L9 SPR page — JODI world-total vintage + zh assess badges
+        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -28489,6 +28526,12 @@ jobs:
       - "contracts/rates_command_basis.v1.schema.json"
       - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
+      - "tests/test_country_cycles_projection_receipt.py"
+      - "tests/test_country_cycles_hazard_availability.py"
+      - "tests/test_country_cycles_canonical_phase.py"
+      - "tests/test_country_cycles_fx_contribution.py"
+      - "scripts/build_country_cycles.py"
+      - "templates/country_cycles.html.j2"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
       - "site/bonds.html"
@@ -28496,6 +28539,12 @@ jobs:
       - "engine/commodity_index.py"
       - "templates/commodities.html.j2"
       - "templates/bonds.html.j2"
+      - "tests/test_strategic_reserves.py"
+      - "tests/test_spr_jodi_vintage.py"
+      - "tests/test_spr_assess_badge_zh.py"
+      - "engine/strategic_reserves.py"
+      - "scripts/build_spr.py"
+      - "templates/spr.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
