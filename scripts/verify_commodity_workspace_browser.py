@@ -1,0 +1,241 @@
+"""Exercise the rendered commodity research journey in an anonymous local browser.
+
+Serve the existing site only. No collector, economic recomputation, credentials,
+monitor activation or production write is involved.
+"""
+from __future__ import annotations
+
+import argparse
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import json
+from pathlib import Path
+import tempfile
+from threading import Thread
+from urllib.parse import parse_qs, urlsplit
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *_args):
+        pass
+
+
+def verify(receipt: Path) -> None:
+    from playwright.sync_api import sync_playwright
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=str(ROOT / "site")))
+    thread = Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    checks, errors = [], []
+    result = {"scope": "anonymous local rendered page", "production_verified": False}
+    try:
+        with tempfile.TemporaryDirectory(prefix="commodity-browser-") as folder, sync_playwright() as browser_api:
+            browser = browser_api.chromium.launch(headless=True)
+            context = browser.new_context(viewport={"width": 1440, "height": 900}, accept_downloads=True)
+            context.add_init_script("localStorage.setItem('theme','dark');localStorage.setItem('lang','en');localStorage.removeItem('themeAuto');")
+            page = context.new_page()
+            page.on("pageerror", lambda error: errors.append(str(error)))
+            page.goto(f"http://127.0.0.1:{server.server_address[1]}/commodities.html", wait_until="load")
+            page.locator("#cw-panel-overview").wait_for(state="visible")
+            page.evaluate("document.fonts.ready")
+            style = page.locator(".cw-hero h2").evaluate("(el)=>getComputedStyle(el).fontSize")
+            radius = page.locator(".cw-focus").first.evaluate("(el)=>getComputedStyle(el).borderRadius")
+            assert style == "46px", style
+            assert radius == "14px", radius
+            checks.append("canonical typography and documented panel radius resolve")
+            entry = page.locator("#cw-brain-entry")
+            entry.wait_for(state="visible")
+            assert not page.locator("#mmb-boot").is_visible()
+            brain_requests = []
+            page.on("request", lambda request: brain_requests.append(request.url) if urlsplit(request.url).path.endswith("/mm_brain.js") else None)
+            page.route("**/mm_brain.js*", lambda route: route.abort())
+            entry.focus()
+            page.keyboard.press("Enter")
+            page.wait_for_function("document.querySelector('#cw-brain-status').textContent.includes('Could not open')")
+            assert entry.get_attribute("aria-busy") == "false"
+            checks.append("failed assistant load remains visible and retryable through the inline entry")
+            page.unroute("**/mm_brain.js*")
+            page.keyboard.press("Enter")
+            page.locator("#mmb-panel.open").wait_for(state="visible")
+            page.wait_for_function("document.querySelector('#mmb-panel').contains(document.activeElement)")
+            assert not page.locator("#mmb-launch").is_visible()
+            page.keyboard.press("Escape")
+            page.wait_for_function("!document.querySelector('#mmb-panel').classList.contains('open')")
+            assert entry.evaluate("(el)=>document.activeElement === el")
+            request_count = len(brain_requests)
+            page.keyboard.press("Enter")
+            page.locator("#mmb-panel.open").wait_for(state="visible")
+            page.wait_for_function("document.querySelector('#mmb-panel').contains(document.activeElement)")
+            assert len(brain_requests) == request_count
+            page.keyboard.press("Escape")
+            page.wait_for_function("!document.querySelector('#mmb-panel').classList.contains('open')")
+            assert entry.evaluate("(el)=>document.activeElement === el")
+            checks.append("keyboard retry opens shared Brain, reuses mounted owner and returns focus on close")
+            result["assistant_scope"] = "anonymous local widget; no prompt submitted"
+            def check_unobstructed_returns():
+                numbers = page.locator("#cw-panel-overview .cw-focus-value, #cw-panel-overview .cw-market .cw-number")
+                for number in numbers.all():
+                    number.scroll_into_view_if_needed()
+                    assert number.evaluate("(el)=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return el===hit||el.contains(hit);}"), number.inner_text()
+                return numbers.count()
+            result["unobstructed_desktop_returns"] = check_unobstructed_returns()
+            checks.append("overview numeric values remain unobstructed at desktop scroll positions")
+            page.locator('#cw-panel-overview .cw-focus[data-cw-open="oil"]').click()
+            primary_number = page.locator('[data-cw-asset="oil"] .cw-detail-price strong .cw-number')
+            assert primary_number.evaluate("(el)=>parseFloat(getComputedStyle(el).fontSize)") >= 30
+            return_number = page.locator('[data-cw-asset="oil"] .cw-return strong .cw-number').first
+            assert return_number.evaluate("(el)=>parseFloat(getComputedStyle(el).fontSize)") >= 22
+            checks.append("primary and session returns retain numeric hierarchy instead of caption styling")
+            physical = page.locator("#cw-physical-oil")
+            assert physical.is_visible()
+            assert "Product stocks tight" in page.locator("#cw-physical-title").inner_text()
+            assert "2026-10-02" in physical.locator(".cw-physical-clock").inner_text()
+            assert "release vintage unavailable" in physical.locator(".cw-physical-clock").inner_text()
+            assert "not met" in physical.locator(".cw-physical-consequences").inner_text()
+            assert physical.locator(".cw-stock").count() == 3
+            physical.locator("summary").click()
+            assert "2021-09-10" in physical.inner_text()
+            assert "2026-09-11" in physical.inner_text()
+            physical.locator("summary").click()
+            checks.append("dated physical synthesis preserves product divergence, release uncertainty and independent inflation check")
+            page.locator('[data-cw-hypothesis="oil"] input[value="supply"]').check()
+            page.locator("#cw-tab-relationships").click()
+            assert "Supply disruption" in page.locator("#cw-investigation-title").inner_text()
+            assert "has not established" in page.locator("#cw-investigation-state").inner_text()
+            assert page.locator('.cw-physical-summary[data-cw-chain-asset="oil"]').is_visible()
+            page.locator("[data-cw-go-physical]").click()
+            assert page.locator("#cw-panel-explore").is_visible()
+            page.wait_for_function("document.activeElement.id === 'cw-physical-oil'")
+            assert page.locator('[data-cw-hypothesis="oil"] input[value="supply"]').is_checked()
+            page.locator("#cw-tab-relationships").click()
+            checks.append("physical evidence navigation preserves the selected explanation and keyboard focus")
+            supply = page.locator("#cw-investigation-mechanism").inner_text()
+            page.locator("#cw-investigation-tests summary").click()
+            assert page.locator("#cw-investigation-support").is_visible()
+            assert page.locator("#cw-investigation-invalidate").is_visible()
+            checks.append("oil supply selection carries a conditional mechanism and evidence questions")
+            page.locator("#cw-tab-explore").click()
+            page.locator('[data-cw-hypothesis="oil"] input[value="demand"]').check()
+            page.locator("#cw-tab-relationships").click()
+            assert "Demand expansion" in page.locator("#cw-investigation-title").inner_text()
+            assert page.locator("#cw-investigation-mechanism").inner_text() != supply
+            checks.append("changing explanation changes the investigation")
+            company_links = page.locator('[data-cw-chain-asset="oil"] .cw-cohorts a')
+            result["available_company_continuations"] = company_links.count()
+            if company_links.count():
+                href = company_links.first.get_attribute("href")
+                assert href, href
+                target = urlsplit(href)
+                params = parse_qs(target.query)
+                assert target.scheme == "https" and target.netloc == "app.mastermind-x.com"
+                assert target.path == "/analysis"
+                assert set(params) == {"symbol", "page", "mo_from", "mo_chain", "mo_channel", "mo_asof", "mo_security"}, params
+                assert params["page"] == ["intelligence"] and params["mo_from"] == ["transmission"]
+                assert params["symbol"][0] and params["mo_security"][0].startswith("SEC:")
+                assert company_links.first.get_attribute("target") == "_blank"
+                result["company_continuation_href"] = href
+                checks.append("company continuation retains its verified identity and opens separately")
+            page.locator("#cw-tab-research").click()
+            form = page.locator("#cw-research-form")
+            form.locator('[name="window_sessions"]').select_option("20")
+            form.locator('[name="threshold"]').fill("0")
+            form.locator('[name="expires_on"]').fill("2099-01-01")
+            with page.expect_download() as download_info:
+                form.locator('button[type="submit"]').click()
+            downloaded = Path(folder) / "condition.json"
+            download_info.value.save_as(downloaded)
+            draft = json.loads(downloaded.read_text())
+            assert draft["asset"] == "oil" and draft["hypothesis"] == "demand"
+            assert draft["threshold"] == 0 and draft["metric_contract"]["field"] == "velocity.r20"
+            assert draft["monitoring_active"] is False and draft["effect"] == "export_only"
+            assert draft["as_saved_evidence"]["physical"]["classification"] == "product_tightness"
+            assert draft["as_saved_evidence"]["physical"]["stocks"][1]["anomaly"]["value"] == -2.03
+            assert draft["as_saved_evidence"]["physical"]["point_in_time_verified"] is False
+            assert downloaded.stat().st_size <= 131072
+            checks.append("real research export retains dated physical evidence and fits its import limit")
+            checks.append("real download preserves exact condition, hypothesis and inactive monitoring")
+            result["research_as_of"] = draft["as_of"]
+            result["workspace_fingerprint"] = draft["snapshot_fingerprint"]
+            page.locator("#cw-tab-relationships").click()
+            page.locator("[data-cw-relationship-asset]").select_option("gold")
+            assert "Gold" in page.locator("#cw-investigation-title").inner_text()
+            assert "Supply disruption" not in page.locator("#cw-investigation-title").inner_text()
+            assert not page.locator('.cw-physical-summary[data-cw-chain-asset="oil"]').is_visible()
+            assert not page.locator("#cw-physical-oil").is_visible()
+            checks.append("changing commodity removes the oil explanation and petroleum claims")
+            assert page.locator('.cw-physical-summary[data-cw-chain-asset="gold"]').is_visible()
+            page.locator("#cw-tab-explore").click()
+            gold_physical = page.locator("#cw-gold-physical")
+            assert gold_physical.is_visible()
+            assert "close-based proxy" in gold_physical.locator(".cw-eyebrow").inner_text().lower()
+            assert gold_physical.locator(".cw-gold-value").inner_text() == "+0.28%"
+            assert "2026-10-14 07:30 UTC" in gold_physical.locator(".cw-physical-clock").inner_text()
+            assert "Official benchmark unavailable" in gold_physical.locator(".cw-physical-clock").inner_text()
+            assert "Rate readings differ" in page.locator('[data-cw-asset="gold"] .cw-reading').inner_text()
+            checks.append("Gold proxy retains its own timestamp, percentage units and unresolved rate disagreement")
+
+            page.locator("#cw-tab-research").click()
+            page.locator("#cw-import-file").set_input_files(downloaded)
+            page.wait_for_function("document.querySelector('#cw-export-status').textContent.includes('Draft reopened')")
+            page.locator("#cw-tab-relationships").click()
+            assert "Demand expansion" in page.locator("#cw-investigation-title").inner_text()
+            assert page.locator("[data-cw-relationship-asset]").input_value() == "oil"
+            checks.append("real file import restores the same investigation")
+            page.locator("#cw-tab-research").click()
+            page.go_back()
+            page.locator("#cw-panel-relationships").wait_for(state="visible")
+            assert "Demand expansion" in page.locator("#cw-investigation-title").inner_text()
+            checks.append("browser history preserves investigation context")
+            page.locator("[data-cw-relationship-asset]").select_option("corn")
+            assert "Corn" in page.locator("#cw-investigation-title").inner_text()
+            assert not page.locator("#cw-investigation-tests").is_visible()
+            assert page.locator("#cw-investigation-support").text_content() == ""
+            checks.append("partial coverage clears stale support and invalidation text")
+            page.evaluate("window.setLang('zh')")
+            page.set_viewport_size({"width": 390, "height": 844})
+            page.locator("[data-cw-relationship-asset]").select_option("oil")
+            assert "需求" in page.locator("#cw-investigation-title").inner_text()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
+            checks.append("Chinese mobile investigation retains meaning without horizontal overflow")
+            page.evaluate("window.setTheme('light')")
+            page.wait_for_timeout(1400)
+            assert page.evaluate("document.documentElement.dataset.theme") == "light"
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
+            checks.append("light mobile view retains the investigation and layout")
+            page.locator("[data-cw-go-physical]").click()
+            assert "成品油库存偏紧" in page.locator("#cw-physical-title").inner_text()
+            for card in page.locator("#cw-physical-oil .cw-stock").all():
+                card.scroll_into_view_if_needed()
+                assert card.locator(".cw-stock-level").is_visible()
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth + 1")
+            checks.append("Chinese mobile physical evidence retains all stock cards and dates without page overflow")
+
+            page.locator("#cw-tab-overview").click()
+            result["unobstructed_mobile_returns"] = check_unobstructed_returns()
+            assert not page.locator("#mmb-launch").is_visible()
+            checks.append("overview numeric values remain unobstructed at mobile scroll positions")
+            assert not errors, errors
+            checks.append("no uncaught browser errors")
+            context.close()
+            browser.close()
+        result["passed"] = True
+    except Exception as exc:
+        result["passed"] = False
+        result["failure"] = f"{type(exc).__name__}: {exc}"
+        raise
+    finally:
+        server.shutdown()
+        server.server_close()
+        result["checks"] = checks
+        result["browser_errors"] = errors
+        receipt.parent.mkdir(parents=True, exist_ok=True)
+        receipt.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+        print(json.dumps(result, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--receipt", type=Path, required=True)
+    verify(parser.parse_args().receipt)

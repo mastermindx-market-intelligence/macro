@@ -1,0 +1,135 @@
+{
+  "schema": "mmx.commodities.review_receipt.v1",
+  "accepted_base": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+  "research_as_of": "2026-10-16",
+  "workspace_fingerprint": "e272f5d3492c9b91cc4b416281224c2eff79fd036f96c8a4f59f27bebba83497",
+  "accepted_page_sha256": "e261c79eca541ee168a7b2b6d0f3ccc167d7671cba787f7084d9caab3c233c31",
+  "review_page_sha256": "7a729c9c9c14edbb2e217d52c1663050a71e3fe89d5720a92300b2860676d3c8",
+  "assets": 17,
+  "chains": 3,
+  "source_files": {
+    "commodities": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/commodity/complex_latest.json",
+      "file_sha256": "45ba814a68432ec2e38bcbef063526a3c612005759ddfe5a7c255ddba1e25842"
+    },
+    "rates": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/transmission/latest.json",
+      "file_sha256": "009792baf7887564c51f1336f97ecd2e98038a202868db1bde20794509004bf6"
+    },
+    "fx": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/forex/latest.json",
+      "file_sha256": "0b8f557957348dbb5479007238a0bd63de2bd8dbfa5b69eb13ee1a355febca14"
+    },
+    "chains": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/transmission/chain_state.json",
+      "file_sha256": "29d74b30580e7122e17616089a80875dff4502be3c7351f5f1bff70d46e925f6"
+    },
+    "ratios": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/commodity/latest.json",
+      "file_sha256": "c68f60d3940bc1030952977b9fdd35d835e350b50c0423c159fe196bba5856b5"
+    },
+    "company_aliases": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "data/reference/vendor_aliases.parquet",
+      "file_sha256": "d6eaabba0f737ec1e454a9211bf8be205851f4735415d71f8afd4f48bbefa8de"
+    },
+    "physical": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "files": {
+        "crude_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/crude_stocks.parquet",
+          "file_sha256": "41db9e6c63093360bee7434ab3edc64a26bf2cd632e93ccf825a482c6da938ff"
+        },
+        "cushing_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/cushing_stocks.parquet",
+          "file_sha256": "00ca99656b24580ad46b5f18d316b19567f48ec7277537f8b5d21fadaabd11d0"
+        },
+        "gasoline_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/gasoline_stocks.parquet",
+          "file_sha256": "0e03b911c39a423b3a5ada1559bbda57573097172ee781e011f3c99a598fe8d6"
+        },
+        "distillate_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/distillate_stocks.parquet",
+          "file_sha256": "e9966131001045d562d5fcad48896932fba1a391db996402c83f6dfd07ff80ae"
+        },
+        "refinery_inputs": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/refinery_inputs.parquet",
+          "file_sha256": "3ae0e70164eb7817b44504bbe3a1e3aa9485121a8d0f327041e0f912c4c5f81a"
+        },
+        "gasoline_supplied": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/gasoline_supplied.parquet",
+          "file_sha256": "172c5b981d962c5e087d5995848c78567a92ee8be8204bc36928e4854d2b7724"
+        },
+        "distillate_supplied": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/distillate_supplied.parquet",
+          "file_sha256": "654c170dd615861981acce82fd6c138cf7c5a83d0f7c6dea2bd71f1281e11000"
+        },
+        "crude_production": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/crude_production.parquet",
+          "file_sha256": "d144e45583fe530c05b7bc269ae128363ce05bac1640a7734dd511ab23af2704"
+        },
+        "refinery_util": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/refinery_util.parquet",
+          "file_sha256": "e41c1f5516abb9159562b51c0a0b7a6884eff9ea11e472d42f89f170910d93d2"
+        },
+        "spr_stocks": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+          "path": "data/eia/spr_stocks.parquet",
+          "file_sha256": "b0377dabee9212630dd3ab97c031894e0241b42891737a001992107df9375775"
+        }
+      },
+      "configuration": {
+        "path": "config.yml",
+        "file_sha256": "47034f8b9fb865a6b3272cd9f5bf0e7c5d5bde3a39ab691d17e51c41e8a971e0"
+      },
+      "method_revision": "eia-seasonal-balance-20261020-r2",
+      "reconstruction": "display_only_from_accepted_series",
+      "release_vintage_verified": false
+    },
+    "canonical_theme": {
+      "repository": "mastermindx-market-intelligence/macro",
+      "commit": "654bbd3797ffe36b12410acbd6648184af6a1a9d",
+      "path": "templates/theme.css",
+      "file_sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a"
+    }
+  },
+  "economic_recomputation": true,
+  "recomputation_scope": "display_only_petroleum_balance_from_accepted_EIA_series",
+  "collectors_run": false,
+  "scoring_run": false,
+  "forecasts_run": false,
+  "release_vintage_verified": false,
+  "physical_classification": "product_tightness",
+  "production_acceptance": false
+}
