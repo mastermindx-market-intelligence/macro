@@ -212,9 +212,42 @@ c54e71371e80e5eb7d62ab4f9ed67e72494e916050ff266e78c01f3f867ee824.
 No existing assertion was weakened, skipped or removed. The 406 passing intake
 tests do not replace these broader gate obligations.
 
-At this checkpoint there is no committed canonical Yahoo admission or qualified
-SPY adjusted history. The reviewed source and ordinary data must be committed
-before an actual bounded admission so its code_version binds the committed
-implementation. The explicit one-alias write, delivery checks and separate
-closed consumer remain required. No production data was changed. The frozen
-Returns predictive candidate and its losing comparison are unchanged.
+## Actual bounded admission — 2026-10-19
+
+The reviewed implementation and ordinary inputs were committed first at
+cd67e7d2025ceae95583505063eaa8f905c3952b. The existing owner then admitted the
+one Yahoo relation with that exact code_version:
+
+| Fact | Actual value |
+| --- | --- |
+| Relation | yahoo_fetch/SPY to SEC:US-ARCX-SPY |
+| Current relation valid_from | 2026-10-19 |
+| Required sources available | 2026-10-19T08:27:52.695357+00:00 |
+| Admission reference read complete | 2026-10-19T11:39:12.998214+00:00 |
+| Decision / admission / known_at | 2026-10-19T11:39:12.998232+00:00 |
+| Alias rows before / after | 8,926 / 8,927 |
+| Evidence SHA-256 | 2a1570ec0e11663b5e3d4e4da0138c660603815d69a7e31640cc99ec9ccbf7de |
+| Alias binding SHA-256 | efe9aa30a8c4a781cc411f796cd9f16dd3397ab094a82ae3c1e2e3e72ccf3f35 |
+
+Every prior alias was preserved and all four other reference tables stayed
+byte-identical. The original prospective-reference, direct-registrant and
+option-root evidence also remained unchanged. No stock-store alias was added.
+
+Actual output vendor_aliases.parquet is 71,186 bytes, SHA-256
+d240db4fb7c49d21d389f02ed7d395be83f3b7bd46ac28cbfec16c03ff32d3f8.
+Actual output _receipt.json is 42,916 bytes, SHA-256
+263728d5ba2cddd21b5d3a267f8ed4a4d14924f2c4781ff8d286744204805135.
+
+The owner command returned successfully. A post-write evidence wrapper then
+assumed a nested receipt field and failed after its exact-delta assertions.
+A same-carrier read-only reconciliation validated the actual flat receipt,
+alias seal and all preserved tables; the owner write was not repeated.
+The log written after the successful command supplies a conservative completion
+upper bound of 11:39:24.196095 UTC, not an atomic publication clock.
+A subsequent ordinary dry run passed and left all six files unchanged,
+observed at 11:45:08.197101 UTC.
+
+This admission is local to the owned delivery branch. Repository acceptance,
+installed-owner activation and the separate closed SPY price consumer remain
+required. It does not qualify adjusted history by itself. No production data
+was changed, and the frozen Returns predictive candidate remains withheld.
