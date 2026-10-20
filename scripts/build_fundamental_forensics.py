@@ -1641,6 +1641,8 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
         state_summary=counts,
         active_section="research",
         active_page="fundamental_forensics",
+        holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],
+        holding_css_version=hashlib.sha256((root / "templates" / "institutional_holding_research.css").read_bytes()).hexdigest()[:8],
     )
     page = site / "fundamental_forensics.html"
     page_temp = _temp_sibling(page)
