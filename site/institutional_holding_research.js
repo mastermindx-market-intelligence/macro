@@ -201,7 +201,7 @@
     var controller = createController({
       AbortController: win.AbortController,
       fetch: win.fetch.bind(win),
-      session: async function () { var auth = win.MDXAuth, client = auth && auth.client && auth.client(); if (!client || !client.auth) return null; var response = await client.auth.getSession(); return response && !response.error && response.data && response.data.session; },
+      session: async function () { var auth = win.MDXAuth, client = auth && auth.client && await auth.client(); if (!client || !client.auth) return null; var response = await client.auth.getSession(); return response && !response.error && response.data && response.data.session; },
       clear: function () { empty(result); result.hidden = true; },
       busy: function (busy) { button.disabled = busy; form.setAttribute('aria-busy', String(busy)); },
       status: setStatus,

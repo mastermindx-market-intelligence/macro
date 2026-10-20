@@ -175,3 +175,35 @@ The tail's complete log contains only **1525.04 seconds of logical command group
 A real local Git regression builds a two-parent merge with divergent20-commit histories and two independent shallow clones. Original source fetches three extra times for the second consumer and fails the regression. The candidate retains complete ancestry without a second fetch, while the separate shallow clone must still fetch and prove its own ancestry. All nine fetch/recovery tests pass. The proof/authority corpus passed199 tests; its one mock assuming unconditional fetch was corrected to model missing-then-ready ancestry, and that remaining test passed independently. Manifest validation passes for329 legacy jobs across both gate classes. All runs retain42 inherited pytest temporary-directory cleanup warnings. Hosted normal CI remains the release gate.
 
 The first deepening may be necessary; the two intervals must not both be advertised as savings. Intervening job commands can change local ancestry, in which case the new precheck correctly falls through. The hosted trial must show actual reuse and cost before claiming a fleet improvement. Rollback is a normal revert of this precheck and its notice, with no cache, configuration or runtime state to unwind.
+
+
+## Exact-ancestry trial landed with hosted reuse
+
+[PR9791](https://github.com/mastermindx-market-intelligence/macro/pull/9791) merged at **2026-10-19T21:52:31Z** as `c3c67487f42e1c54986b2e95dca327946fdc5ed0`. [Run39324251115](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39324251115) passed all **258 logical jobs / 554 semantic proof units**, with zero infrastructure findings and all active authority/fence checks. All eight intended source, test and report blobs match the landed commit. `ancestry-success-result.json` retains exact plan, source and stage identities.
+
+The hosted runner emitted **one** `exact tested-tree ancestry already complete; retaining local history` notice before `ruling-graph` in pack10. Five other consumers still deepened incomplete history from depth2 to8. This demonstrates both real reuse and continued recovery when needed. It does not measure the counterfactual cost of the skipped fetch, nor prove that the historical 726-second interval was saved here.
+
+The full trial took **2527 seconds / 42.12 minutes** from run creation to gate, **362.57 summed job wall minutes**, and **3 seconds** from last pack completion to gate start. Pack checkout totaled2945 seconds; command groups totaled15075.19 seconds;177 dependency-install groups totaled1679.59 seconds. FIF alone was critical: pack0 took2396 seconds, including229 seconds checkout and2120.20 seconds of commands. Pack5 followed at2379 seconds. The ancestry reuse occurred in noncritical pack10 (1837 seconds), so this observation does not establish an end-to-end benefit from reuse.
+
+Compared with natural global run39309256542, both select258 jobs, but FIF, prelaunch-hardening and research-vault have changed execution definitions. Compared with the previous successful weighted full trial, the selected population also changed. The apparent latency decrease is descriptive, not a causal gain or cost-neutrality proof. Keep twelve packs and both calibrated weights; no further source expansion is justified yet.
+
+The next natural cohort starts at this merge, requires tested planner blob `f92be10fc37455fd427829f0f964c5ef581b3a80` and base ancestry from the merge, and remains separate from the prior weighted cohort. At21:54Z one first-attempt run was in progress and none had completed. Preserve exact selected/execution-proof matching and pending/failure/cancellation strata. Batch its comparison with this result when informative; do not create a report PR for each wake.
+
+
+## First natural ancestry cohort: real reuse, no matched gain estimate
+
+At **2026-10-19T23:56Z**,29 post-merge first attempts comprise **12 successful completions,13 pending and4 cancelled**; no reruns or completed failures. All12 completed runs verify the exact planner blob and merge ancestry. The previously missing metadata for run39332378137 is now retained. `ancestry-natural-comparison.json` includes the rows, exposure/critical-stage summaries and source/matching limitations.
+
+| Metric | Original scoped successes | Ancestry scoped successes |
+| --- | ---: | ---: |
+| N | 14 | 11 |
+| Run-to-gate p50 / p95 | 54.43 / 67.90 min | 33.02 / 47.72 min |
+| Summed job wall p50 / p95 | 223.02 / 257.63 min | 196.25 / 278.23 min |
+
+The sole global success39336503626 took52.17 minutes and329.15 summed job wall minutes for258 jobs. There are no completed failures from which to estimate actionable-red latency. Thirteen pending observations can materially change the tail; atN11 nearest-rank p95 is simply the largest scoped success. These different-work summaries prove neither the30% target nor cost neutrality.
+
+One scoped selected-set match exists: run39341997524 and original control39235580372 both select105 jobs, but `dataos-identity-seams` and `research-factory-authority` execution definitions differ. There are **zero full execution-proof matches** to the original baseline or the retained19 weighted completions. The global run shares a selected set with two weighted observations but also lacks a full proof match. Do not relax these identities to manufacture a causal estimate.
+
+Eight of12 plans put multiple fetch-depth-zero consumers in one pack; in only two runs does such a pack finish last (39336610321 and39333873303). This is potential exposure, not evidence of reuse. The inspected natural log for [39330880213](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39330880213) actually shows five incomplete-history deepening notices and one retained-history notice in pack8. Its critical pack11 has no such consumer and takes1588 seconds including217 seconds checkout and1349 seconds wrapper execution. Actual reuse therefore does not establish end-to-end latency savings in this observation.
+
+**Decision:** publish the landed trial and this first natural comparison as one batch. Retain twelve packs, the two calibrated weights and the exact ancestry precheck. Before considering another implementation slice, inspect the two naturally exposed critical packs and extend the same cohort, preserving pending/cancelled/failure strata. Do not rerun CI, broaden shards or claim a causal improvement from an unmatched p95.
