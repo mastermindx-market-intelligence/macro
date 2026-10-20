@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-ci-20261020/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 6.794,
+  "finished_at": "2026-10-20T13:02:59.375596+00:00",
+  "manifest_sha256": "4efc954abce961813e4295af1cfacedbf8b70e401ee76079e9db0ecb74c6f301"
+}

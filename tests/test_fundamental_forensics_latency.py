@@ -11,6 +11,7 @@ same entitlement as health and never reports an unreadable config as within.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -288,6 +289,17 @@ def test_f_health_carries_server_timing_and_records_its_template(
 def test_f_recorder_failure_never_changes_status_or_body(
     paid_client, monkeypatch
 ) -> None:
+    # Hold the health evaluation clock constant so response equality isolates
+    # recorder behavior even when the requests cross a wall-clock second.
+    evaluation_time = datetime(2026, 10, 20, 11, 16, 30, tzinfo=timezone.utc)
+    evaluate_health = forensics_api.evaluate_health
+
+    def _evaluate_with_fixed_clock(repo, *, now):
+        return evaluate_health(repo, now=evaluation_time)
+
+    monkeypatch.setattr(
+        forensics_api, "evaluate_health", _evaluate_with_fixed_clock
+    )
     baseline = paid_client.get(_HEALTH_PATH)
     assert baseline.status_code == 200
 
