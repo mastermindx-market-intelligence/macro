@@ -155,9 +155,19 @@ html[data-lang="zh"] .lose{color:var(--ink-ok, var(--green))}
       </div>
       <div class="chips">
         <span class="chip" style="border-color:{{ '#cfa' if not disloc.put_absent else '#f6b' }}">{{ t('Fed-put','美联储看跌') }}: <b>{{ t('present','在场') if not disloc.put_absent else t('absent (knife)','缺席（落刀）') }}</b></span>
-        <span class="chip">{{ t('Dislocation','错位') }}: <b>{{ t(disloc.verdict, disloc.verdict_zh) }}</b></span>
+        <span class="chip">{{ t('Re-deploy gate','再部署闸门') }}: <b>{{
+            t(disloc.verdict, disloc.verdict_zh) }}</b></span>
         <span class="chip">{{ t('Capitulation','投降') }}: <b>{{ disloc.capitulation }}/3</b></span>
       </div>
+      {% if disloc.put_legs %}<div class="sub faint">{{
+        t('Fed-put inputs','美联储看跌条件') }}: {{
+        t('Sahm recession signal quiet','萨姆衰退信号未触发')
+        if not disloc.put_legs.recession else
+        t('Sahm recession signal firing','萨姆衰退信号已触发') }} · {{
+        t('inflation expectations low enough for the Fed to ease',
+          '通胀预期低到足以让美联储宽松') if not disloc.put_legs.fedput_off
+        else t('inflation expectations too high for the Fed to ease',
+          '通胀预期过高，美联储难以宽松') }}</div>{% endif %}
     </div>
   </div>
 

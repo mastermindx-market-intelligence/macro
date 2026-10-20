@@ -287,6 +287,9 @@ def _compute_cohort_rollup(df) -> dict:
         return {"accruing": True, "reason": str(exc), "horizons": {}}
 
 
+_BOARD_LANES = ("buy", "watch", "leaders", "ran", "laggards")
+
+
 def _compute_board_series(snapshots_path: Path) -> dict:
     """Board-size + lane-mix series from snapshots.jsonl, ordered by ``as_of``.
 
@@ -313,15 +316,22 @@ def _compute_board_series(snapshots_path: Path) -> dict:
                     continue
                 snap = json.loads(line)
                 as_of = snap.get("as_of", "")
-                board = snap.get("board", [])
-                by_lane: dict[str, int] = {}
-                for entry in board:
-                    lane = entry.get("lane", "unknown")
-                    by_lane[lane] = by_lane.get(lane, 0) + 1
+                board = snap.get("board")
+                if isinstance(board, list):
+                    by_lane: dict[str, int] = {}
+                    for entry in board:
+                        lane = entry.get("lane", "unknown")
+                        by_lane[lane] = by_lane.get(lane, 0) + 1
+                    total = len(board)
+                else:
+                    # Real rows carry lane LISTS, not a board list (TR-3).
+                    by_lane = {ln: len(snap[ln]) for ln in _BOARD_LANES
+                               if isinstance(snap.get(ln), list)}
+                    total = sum(by_lane.values())
                 series.append(
                     {
                         "as_of": as_of,
-                        "total": len(board),
+                        "total": total,
                         "by_lane": by_lane,
                     }
                 )
@@ -466,7 +476,10 @@ def build() -> int:
         per_h = board_track_json.get("per_horizon", {})
         for h_key in ["h5", "h10", "h21", "h63"]:
             cell = per_h.get(h_key, {})
-            ovs = cell.get("overall_vs_spy", {})
+            all_vs = cell.get("overall_vs_spy") or {}
+            buy_vs = (cell.get("buy_lane") or {}).get("vs_spy") or {}
+            use_buy = bool(buy_vs.get("n"))
+            ovs = buy_vs if use_buy else all_vs
             raw_n = ovs.get("n", 0)
             # Also get effective_n from cohort_rollup
             cr_cell = cohort_rollup.get("horizons", {}).get(h_key, {})
@@ -484,6 +497,9 @@ def build() -> int:
                     "median_excess": ovs.get("median_excess"),
                     "mean_excess": ovs.get("mean_excess"),
                     "accruing": accruing,
+                    "lane": "buy" if use_buy else "all",
+                    "all_n": all_vs.get("n", 0),
+                    "all_hit_rate": all_vs.get("hit_rate"),
                 }
             )
 
@@ -503,6 +519,24 @@ def build() -> int:
 
     # Outcomes table rows (top 60 shown)
     outcomes_rows = (outcomes_json or {}).get("rows", [])
+
+    # Buy-board size span over the sorted snapshot series (TR-3, display-only).
+    _bs = board_series.get("series", [])
+    board_buy_span = None
+    if len(_bs) >= 2:
+        _b0 = _bs[0].get("by_lane", {}).get("buy", 0)
+        _b1 = _bs[-1].get("by_lane", {}).get("buy", 0)
+        if _b0 > 0 and _b1 > 0:
+            board_buy_span = {"first_as_of": _bs[0].get("as_of"),
+                              "first_n": _b0,
+                              "last_as_of": _bs[-1].get("as_of"),
+                              "last_n": _b1,
+                              "snapshots": len(_bs)}
+
+    # 21-day accrual counts for the clock sentence (TR-2, display-only).
+    _h21 = (cohort_rollup.get("horizons") or {}).get("h21") or {}
+    clock_h21 = {"raw_n": int(_h21.get("raw_n") or 0),
+                 "effective_n": int(_h21.get("effective_n") or 0)}
 
     # Survivorship note
     survivorship = (board_track_json or {}).get("survivorship", {})
@@ -537,6 +571,10 @@ def build() -> int:
         "board_series_accruing": board_series.get("accruing", True),
         # Outcomes table
         "outcomes_rows": outcomes_rows,
+        "n_flat": outcomes_summary.get("n_flat"),
+        "n_total_exits": outcomes_summary.get("n_total"),
+        "board_buy_span": board_buy_span,
+        "clock_h21": clock_h21,
         # Failure mix
         "failure_mix_data_gap": failure_mix.get("data_gap", True),
         "failure_mix": failure_mix.get("mix", {}),

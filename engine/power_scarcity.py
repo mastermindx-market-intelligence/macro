@@ -66,7 +66,11 @@ def _queue_pull() -> float | None:
 
 
 def _queue_vintage() -> int | None:
-    """The EDITION YEAR the queue leg is actually quoting, or None when absent.
+    """The DATA YEAR the queue leg is actually quoting, or None when absent.
+
+    This is the end-of-year queue snapshot (`asof_year`, "latest data year" in
+    collectors/lbnl_queue.py), not an edition year: LBNL names each "Queued Up"
+    edition a year after its data, so the 2026 Edition reports queues at end-2025.
 
     Disclosure, not decoration (2026-08-06). `_queue_pull()` above returns a number
     with no age attached, and the collector that refreshes it has failed every night
@@ -91,7 +95,7 @@ def _queue_figures() -> dict:
 
     `_queue_pull()` squashes the queue into one z-score. That is what the composite
     needs and what a reader cannot check; the physical fact is the totals themselves
-    (the 2023 edition: 2,600 GW queued against 2,058 GW the prior year). They ride the
+    (the 2026 Edition: 2,061 GW queued at end-2025 against 2,290 GW at end-2024). They ride the
     payload as their own keys so the card can print them. Never raises, and a figure
     that is not a finite positive number is simply absent — an absent key is an
     unprinted clause, not a zero. Nothing here touches the z, the legs or the band."""
@@ -172,10 +176,11 @@ def compute_power_scarcity(write_ledger: bool = True) -> dict | None:
         # UTC year, matching collectors/lbnl_queue.py's own as-of basis.
         if vintage is not None and vintage < datetime.now(timezone.utc).year - 1:
             payload["queue_buildout_stale"] = (
-                f"the interconnection-queue leg quotes the LBNL {vintage} edition; "
+                f"the interconnection-queue leg quotes LBNL data through end-{vintage}; "
                 f"newer editions exist but the collector's download URL is dead "
                 f"(see collectors/lbnl_queue.py). Leg kept and labelled, not dropped.")
-            log.warning("power_scarcity: queue_buildout leg is the %s LBNL edition", vintage)
+            log.warning("power_scarcity: queue_buildout leg quotes LBNL data through end-%s",
+                        vintage)
     if write_ledger:
         try:
             _append_ledger(payload)
