@@ -1814,6 +1814,17 @@ def producer_trips_copy_guard(text: str) -> bool:
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
+        "US labor-market state cannot be classified: axis coverage is below "
+        "the disclosed floor.",
+        _pair(
+            "Too few labor-market readings are available to classify US labor "
+            "demand and supply today. The overall assessment stays unavailable; "
+            "available indicators are still shown below.",
+            "现有劳动力市场读数不足以对当前美国劳动力需求与供给作出综合判断。"
+            "整体判断仍不可用；已有指标仍在下方展示。",
+        ),
+    ),
+    (
         "This page publishes no dual-axis state and no headline quadrant: the "
         "frozen Market Ontology architecture document defines twelve macro "
         "workspaces, each with its own headline blueprint (or an explicit note "

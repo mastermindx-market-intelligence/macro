@@ -9870,6 +9870,7 @@ jobs:
           tests/test_fundamental_forensics_ingest.py
           tests/test_fundamental_forensics_kernel_literal_guard.py
           tests/test_fundamental_forensics_latency.py
+          tests/test_fundamental_forensics_mapping_pack_v1_1.py
           tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
