@@ -8929,6 +8929,9 @@ jobs:
       - "contracts/capital_structure_source_manifest.schema.json"
       - "contracts/fundamental_forensics_cost_ledger.v1.schema.json"
       - "contracts/fundamental_forensics_coverage_proof.v1.schema.json"
+      - "contracts/specialist_pack_catalogue.v1.schema.json"
+      - "contracts/specialist_pack_result.v1.schema.json"
+      - "contracts/specialist_packs/**"
       - "engine/capital_structure/authorized_shares.py"
       - "engine/capital_structure/capacity.py"
       - "engine/capital_structure/capacity_joint.py"
@@ -8962,6 +8965,7 @@ jobs:
       - "scripts/fif_latency_benchmark.py"
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
+      - "scripts/fif_specialist_packs.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -9004,6 +9008,7 @@ jobs:
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
       - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_fif_specialist_packs.py"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9808,6 +9813,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_fif_a1_journey_ledger.py
+          tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_gsrc_capture.py
