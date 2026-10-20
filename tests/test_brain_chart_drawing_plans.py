@@ -162,6 +162,49 @@ def run_model(chart, monkeypatch, rounds, *, stream=True, ack=None, lane="fast")
     return client, events
 
 
+@pytest.mark.parametrize("stream", [True, False], ids=["stream", "nonstream"])
+def test_clear_explicit_null_args_are_rejected_before_emission(chart, monkeypatch, stream):
+    identity = "malformed-clear"
+    client, output = run_model(
+        chart, monkeypatch,
+        [[block("emit_chart_command", {"op": "ai.clear", "args": None}, identity)]],
+        stream=stream,
+    )
+    wires = ([event for event in output if event.get("type") == "command"]
+             if stream else output.get("commands", []))
+    assert wires == []
+    assert result_for(client, identity) == {"error": "args must be an object"}
+
+
+@pytest.mark.parametrize("stream", [True, False], ids=["stream", "nonstream"])
+@pytest.mark.parametrize("argument_fields", [{}, {"args": {}}], ids=["omitted", "empty-object"])
+def test_clear_optional_args_preserve_host_targeted_command(chart, monkeypatch, stream, argument_fields):
+    identity = "valid-clear"
+    client, output = run_model(
+        chart, monkeypatch,
+        [[block("emit_chart_command", {"op": "ai.clear", **argument_fields}, identity)]],
+        stream=stream,
+    )
+    wires = ([event for event in output if event.get("type") == "command"]
+             if stream else output.get("commands", []))
+    assert len(wires) == 1
+    wire = wires[0]
+    assert wire["v"] == 2 and wire["op"] == "ai.clear"
+    assert wire["target"] == {
+        "schema": "chart.command_target.v1", "origin_id": chart["origin"],
+        "context_revision": chart["revision"], "pane_id": 1, "symbol": "NVDA", "tf": "D",
+    }
+    assert ("args" in wire) == ("args" in argument_fields)
+    if "args" in argument_fields:
+        assert wire["args"] == {}
+    receipt = result_for(client, identity)
+    assert receipt["command_status"] == "unverified"
+    assert receipt["command_outcome"] == "unverified"
+    assert receipt["effect_state"] == "unknown"
+    assert receipt["automatic_retry_allowed"] is False
+    assert receipt["reason"] == ("ack_timeout" if stream else "nonstream_client_not_yet_received")
+
+
 @pytest.mark.parametrize("kind", [row["kind"] for row in MANIFEST["tools"]])
 def test_every_reviewed_receiver_kind_is_admitted_without_a_server_tool_catalog(chart, kind):
     out = dispatch(chart, "emit_chart_command", native(kind))

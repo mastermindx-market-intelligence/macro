@@ -3397,6 +3397,8 @@ def _tool_chart_command(params: dict) -> dict:
             return {"error": f"caption exceeds {_CAPTION_MAX} chars"}
 
     args = params.get("args")
+    if "args" in params and not isinstance(args, dict):
+        return {"error": "args must be an object"}
     if op == "chart.set_indicators" and isinstance(args, dict):
         edit_mode = args.get("mode", "replace")
         if edit_mode not in ("replace", "patch"):
