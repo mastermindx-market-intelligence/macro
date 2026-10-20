@@ -10,6 +10,7 @@ import sys
 
 from .assessment import build_stock_assessment
 from .assessment_v2 import INPUT_SCHEMA as V2_INPUT_SCHEMA, build_stock_assessment_v2
+from .assessment_v3 import INPUT_SCHEMA as V3_INPUT_SCHEMA, build_stock_assessment_v3
 from .peer_context import canonical
 
 MAX_INPUT_BYTES = 4 * 1024 * 1024
@@ -22,8 +23,9 @@ def main() -> int:
         return 2
     try:
         request = json.loads(raw)
-        builder = (build_stock_assessment_v2 if isinstance(request, dict)
-                   and request.get("schema") == V2_INPUT_SCHEMA else build_stock_assessment)
+        schema = request.get("schema") if isinstance(request, dict) else None
+        builder = {V2_INPUT_SCHEMA: build_stock_assessment_v2,
+                   V3_INPUT_SCHEMA: build_stock_assessment_v3}.get(schema, build_stock_assessment)
         packet = builder(request)
     except (ValueError, TypeError, KeyError, RecursionError) as exc:
         # Local replay diagnostics only; this executable is not a public route.

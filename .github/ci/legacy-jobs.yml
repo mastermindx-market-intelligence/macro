@@ -36884,6 +36884,8 @@ jobs:
       - "research/catalyst_intelligence/stock_context_r1/**"
       - "tests/__init__.py"
       - "tests/test_catalyst_stock_context.py"
+      - "tests/test_catalyst_time_envelope.py"
+      - "research/catalyst_intelligence/company_assessment_v2_r5/fixtures/**"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -36894,4 +36896,4 @@ jobs:
       - name: install Catalyst owner-contract dependencies
         run: pip install pytest jsonschema pandas pyarrow pyyaml requests
       - name: Catalyst peer, news, and entry research consumer contracts
-        run: python -m pytest tests/test_catalyst_stock_context.py -q
+        run: python -m pytest tests/test_catalyst_stock_context.py tests/test_catalyst_time_envelope.py -q

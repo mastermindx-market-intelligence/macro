@@ -293,11 +293,17 @@ prior NewsImpact evidence. The inspected native B4 reader still supplies no admi
 availability record, and the available source tree does not itself establish a native
 forward fact ledger. Missing owner data remains unavailable rather than being synthesized.
 
-The supplied-snapshot v1/v2 contract also needs a separate native time-envelope decision:
-its current inequalities collapse a qualified native cut to equal decision/as-of/known-at
-times. Actual acquisition or materialization must not be backdated to satisfy those checks.
-Native integration must preserve information cutoff, owner knowability and materialization
-as distinct facts while keeping existing supplied-snapshot compatibility.
+R8 now adds a separate v3 research time envelope while preserving the supplied-snapshot
+v1/v2 contract. It keeps information cutoff, artifact materialization, receipt and composition
+as distinct clocks; NewsImpact and peer visibility remain bound to the information cutoff.
+An artifact assembled later can reconstruct supplied earlier state without backdating it,
+but does not establish historical owner knowability or actual decision availability. All
+source-admission and authority flags remain false. Independent C3 source review accepted
+this scope; 128 consumer tests and two existing CI ownership/packing contracts passed.
+Two actual v3 CLI cases and five byte-identical baseline/current legacy replays are captured
+with exact source hashes in [R8 scope and evidence](time_envelope_r8/README.md).
+Native owner qualification and historical availability remain owed; a supplied digest is
+not an admission receipt.
 
 For serving, reconcile and preserve #6712's original source custody and unpublished tests,
 close WMN provenance/identity gaps, bind the entitlement-aware host, and prove logout,
