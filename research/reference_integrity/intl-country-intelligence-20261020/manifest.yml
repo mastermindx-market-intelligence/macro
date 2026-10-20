@@ -1,7 +1,7 @@
 schema: mastermind.rig_manifest.v1
 reference_id: intl-country-intelligence-20261020
 scope: full
-status: draft
+status: in_review
 surface:
   route: intl.html
   registry_row: macro:intl
@@ -9,7 +9,9 @@ surface:
 author:
   identity: /root
   role: designer
-reference_files: []
+reference_files:
+- path: research/reference_integrity/intl-country-intelligence-20261020/proposed/intl.html
+  frozen_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
 files:
   baseline: baseline.yml
   proposal: proposal.yml
