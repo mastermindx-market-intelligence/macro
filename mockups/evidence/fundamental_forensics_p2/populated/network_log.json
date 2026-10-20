@@ -243,51 +243,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
     "method": "GET",
-    "path": "/fonts/Inter-600.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 17,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
-    "method": "GET",
-    "path": "/fonts/Inter-400.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 18,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
-    "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 19,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
-    "method": "GET",
     "path": "/account.js",
     "query": "v=20261015-mm-return-language",
     "request_body_bytes": null,
@@ -296,7 +251,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 20,
+    "seq": 17,
     "status": null
   },
   {
@@ -311,7 +266,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 21,
+    "seq": 18,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "method": "GET",
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 19,
     "status": null
   },
   {
@@ -326,7 +296,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 22,
+    "seq": 20,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "method": "GET",
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 21,
     "status": null
   },
   {
@@ -341,8 +326,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 23,
+    "seq": 22,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "method": "GET",
+    "path": "/api/forensics/state",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "seq": 23,
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -375,25 +375,25 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
-    "seq": 26,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
     "method": "GET",
     "path": "/script.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 26,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -415,7 +415,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "4ab822245b80819e817ca244c6dd4e0fb5c8899da680fbd75b0fd2b9053202bb",
+    "response_sha256": "a296963c456f59dd4371b441bcbc0396bc07e494e8435dab3bc1d03cf00224ce",
     "seq": 28,
     "status": 200
   },
@@ -835,7 +835,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "fe38011648c12df09f607e10013493a682fb034d34986b8913146b4fab79e071",
+    "response_sha256": "a60b4be62e263b5c4a2e56cd40ce62e4877a4190cab7abb826584a2a05d14bb5",
     "seq": 56,
     "status": 200
   },
@@ -1083,36 +1083,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 73,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/supabase.js",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 74,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
-    "method": "GET",
     "path": "/fonts/Inter-600.woff2",
     "query": "",
     "request_body_bytes": null,
@@ -1121,22 +1091,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 75,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/fonts/Inter-700.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 76,
+    "seq": 73,
     "status": null
   },
   {
@@ -1151,7 +1106,67 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
+    "seq": 74,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 75,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 76,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/supabase.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 77,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 78,
     "status": null
   },
   {
@@ -1166,23 +1181,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 78,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 79,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -1215,25 +1215,25 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 82,
-    "status": null
+    "status": 200
   },
   {
-    "category": "static_continued",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -1255,7 +1255,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "b84ca1e2ce6e4dbdb25faca907926b9db78ebe448aa43403c809fb96b4eab956",
+    "response_sha256": "71f3bae2c53aa3fb87a96ef25863ad7e8833352b9f5393aadbbf3110f559af91",
     "seq": 84,
     "status": 200
   },
@@ -1605,19 +1605,19 @@
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 108,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -1650,19 +1650,19 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 111,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -1675,7 +1675,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "d97df00133f933710eb8173330da4b06f5af060b6e36f5749f84836fcaa60cc6",
+    "response_sha256": "d2f5199d49fb1a9e60ce01bfa4cb4eaab95b9550ef49b620e95cab15ebe1be4b",
     "seq": 112,
     "status": 200
   },
@@ -2070,6 +2070,21 @@
     "status": 200
   },
   {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "a23f5ce655fbaf28f63b6ef917cc95cac75c0f3541bfc99085085409305c901a",
+    "seq": 139,
+    "status": 200
+  },
+  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
     "method": "GET",
@@ -2081,23 +2096,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 139,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "82be57da7a008467130b0cea936cb1e0bb7e31636683293bbef852d196ece81d",
     "seq": 140,
-    "status": 200
+    "status": null
   },
   {
     "category": "static_continued",
@@ -2343,8 +2343,8 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
@@ -2358,7 +2358,7 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/fonts/Inter-600.woff2",
+    "path": "/fonts/Inter-400.woff2",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -2388,8 +2388,8 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/fonts/Inter-400.woff2",
-    "query": "",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
@@ -2515,7 +2515,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "578c13f22c2668a60d05110c722dbff543985eb6d8b3114e3a0eced900165c71",
+    "response_sha256": "3f4b6ffda50fdac473cff390a0c357a37f93ea63ea9f52335abf109502127d0e",
     "seq": 168,
     "status": 200
   },
@@ -2910,21 +2910,6 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "281bb4ce7cb213dd169daefa080b21c936e61a3377c824acb3fd66fdfd45b6ce",
-    "seq": 195,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|lead_open_focus",
     "method": "GET",
@@ -2936,8 +2921,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 196,
+    "seq": 195,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "c5ef27298662d95c151bac7649f98a88e75045c92c9db2af66391da31713c69b",
+    "seq": 196,
+    "status": 200
   },
   {
     "category": "static_continued",
@@ -3355,7 +3355,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "c436cc3700c3b1e07237036c7d310e530c130982be6b2c2f2bb78b71127dd147",
+    "response_sha256": "2fdfd1499b748b9bdc39b7296fc9b0de85c0d2c9d616da6dc93ce81c9cc4bdac",
     "seq": 224,
     "status": 200
   },
@@ -3775,7 +3775,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "69894f8abdb00b4e7317c64db1d7ae60d09899433b706e3c6e136ecb0c48ae99",
+    "response_sha256": "6441c41352362ee3f1705b139f7d3a1e4aaaccdfb2309db87741a6b31cdc4034",
     "seq": 252,
     "status": 200
   },
@@ -4200,21 +4200,6 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|source_hover",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "8edec0e8f1f3977d887eeca97551a1f88f71d6c595862c0dab35411c6187c6cb",
-    "seq": 281,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|source_hover",
     "method": "GET",
@@ -4226,8 +4211,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 282,
+    "seq": 281,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|source_hover",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "521a4be397d21aa5c80aa50bf76c44c32f178ce9240bbb82a494777491861d39",
+    "seq": 282,
+    "status": 200
   },
   {
     "category": "static_continued",
@@ -4503,36 +4503,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 301,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/supabase.js",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 302,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
-    "method": "GET",
     "path": "/fonts/Inter-600.woff2",
     "query": "",
     "request_body_bytes": null,
@@ -4541,22 +4511,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 303,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/fonts/Inter-700.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 304,
+    "seq": 301,
     "status": null
   },
   {
@@ -4571,7 +4526,67 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
+    "seq": 302,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 303,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 304,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/supabase.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 305,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 306,
     "status": null
   },
   {
@@ -4586,23 +4601,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 306,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 307,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -4635,25 +4635,25 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 310,
-    "status": null
+    "status": 200
   },
   {
-    "category": "static_continued",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -4675,7 +4675,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "31a7910f416840f22741ec94f540b2d384efbe81601e51e48f45dc3493cbaaee",
+    "response_sha256": "09bfa736684e9297e70ab064c62ac65cf3905f90fa61427aa1428faabb1104e2",
     "seq": 312,
     "status": 200
   },
@@ -5055,19 +5055,19 @@
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 338,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -5100,19 +5100,19 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 341,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -5125,7 +5125,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "88ad796b258700b4936bbd63ac9f7ef73cf4103d76138b32a6f7dc1530ffef5e",
+    "response_sha256": "6b3d3f604d1ebafe52fb1e599a87018c2190d52f62940eff504461003b319c10",
     "seq": 342,
     "status": 200
   },
@@ -5550,21 +5550,6 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "d265c07b9e277d4a77f90c683452030af9112a9bad60b220b21352b0b29e5b7a",
-    "seq": 371,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
     "method": "GET",
@@ -5576,8 +5561,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 372,
+    "seq": 371,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "572486bd19e858e299a30ce67d63d2be9abcb7e27a3c0a431230d9c28f6e0948",
+    "seq": 372,
+    "status": 200
   },
   {
     "category": "static_continued",
@@ -6000,6 +6000,21 @@
     "status": 200
   },
   {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "f265762c5976a6d2940459667895b025c7ba2623efc063a0bb7fb4e31e8204bf",
+    "seq": 401,
+    "status": 200
+  },
+  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|source_hover",
     "method": "GET",
@@ -6011,23 +6026,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 401,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "f0fe0090cba88856e3323488074065d6506356dc2080e9045834c466ec289118",
     "seq": 402,
-    "status": 200
+    "status": null
   },
   {
     "category": "static_continued",
@@ -6303,51 +6303,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/fonts/Inter-600.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 421,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/fonts/Inter-400.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 422,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 423,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
-    "method": "GET",
     "path": "/account.js",
     "query": "v=20261015-mm-return-language",
     "request_body_bytes": null,
@@ -6356,7 +6311,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 424,
+    "seq": 421,
     "status": null
   },
   {
@@ -6371,7 +6326,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 425,
+    "seq": 422,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 423,
     "status": null
   },
   {
@@ -6386,7 +6356,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 426,
+    "seq": 424,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 425,
     "status": null
   },
   {
@@ -6401,8 +6386,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 427,
+    "seq": 426,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/api/forensics/state",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "seq": 427,
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -6435,25 +6435,25 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
-    "seq": 430,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
     "method": "GET",
     "path": "/script.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 430,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|lead_open_focus",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -6475,7 +6475,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "41d419fe674f506c3dfe45bc3763bdb9aac4a50f76a4175af38cceb06798a3d9",
+    "response_sha256": "13e70ccbbd8d16b351b9aa4fe38e8a8240107b8c2d79946af4b791163bdaf716",
     "seq": 432,
     "status": 200
   },
@@ -6925,7 +6925,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "66ac27d1c2d797628a3e69d7092769642edccdb472b136dc5f3a6e25ccef8e69",
+    "response_sha256": "062bf58ee306a51cc37b0514cb62da1c128e1a0550c9468feca1710d9f9d4f78",
     "seq": 462,
     "status": 200
   },
@@ -7305,19 +7305,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 488,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -7350,19 +7350,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 491,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -7375,7 +7375,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "48ce7fc5fe94491a0be05df32949ec45cbd35a7745e057eee10ec4af3bce85bb",
+    "response_sha256": "161f23ea409214f0591418f9e6b61a95bb903f3e4f7cc1568b8e83a31a1d7064",
     "seq": 492,
     "status": 200
   },
@@ -7725,19 +7725,19 @@
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 516,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -7770,19 +7770,19 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 519,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -7795,7 +7795,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "7ab1800ca8b9124f3528a27ba6e54290767cabd983ba05e4d7d95316bc93d502",
+    "response_sha256": "a565f9e25509e1a9e7e0af9a44c6d75da54e53cffe7e3e31fff6d757cda49d56",
     "seq": 520,
     "status": 200
   },
@@ -8215,7 +8215,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "4baf90f94027cab6237177667d78ad4bb135a7404ebe35e1fce04464aa212ba4",
+    "response_sha256": "5857b1e76431f71e762f27e5ec706425a380287ca3ca96e5a6a0dabd4bd342dd",
     "seq": 548,
     "status": 200
   },
@@ -8565,19 +8565,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 572,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -8610,19 +8610,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 575,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -8635,7 +8635,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "84cd043f69f6d5848a18a6cc4b1bd787ef4120c893907108307dd1be26fe8ade",
+    "response_sha256": "95b917a23c2a0c1ef9351fab4ea1a2a2b8b1d045db764942c74e42f65f64f76d",
     "seq": 576,
     "status": 200
   },
@@ -8985,19 +8985,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 600,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -9030,19 +9030,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 603,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -9055,7 +9055,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "d448269c3adafb6581c548e8fb70a411ec79eb0b6dec984447736b43e7699ec8",
+    "response_sha256": "d95cfc3c832128cfab925c7a0896fb7584252e8428610eb3d55706a3bb4de62d",
     "seq": 604,
     "status": 200
   },
@@ -9405,19 +9405,19 @@
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 628,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -9450,19 +9450,19 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 631,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -9475,7 +9475,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "fb5243eeb45052e5f9476902a7c2f6712924ecd62f9d9999beae9f968d237c43",
+    "response_sha256": "797baec5d7d5c206efd06fc171fb9d2d342c596a504cf13869c997e56ae623ce",
     "seq": 632,
     "status": 200
   },
@@ -9895,7 +9895,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "73b0fd7d536b748db8c07a4cec74e5e5816435ab6e737ce0b0e374e934a93bbb",
+    "response_sha256": "bd8fb8f95b0a4e9f9e233754930bfe32507aa215c2cbf3f5c35f9f5e775cfa55",
     "seq": 660,
     "status": 200
   },
@@ -10143,51 +10143,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/fonts/Inter-600.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 677,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/fonts/Inter-400.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 678,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 679,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
-    "method": "GET",
     "path": "/account.js",
     "query": "v=20261015-mm-return-language",
     "request_body_bytes": null,
@@ -10196,7 +10151,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 680,
+    "seq": 677,
     "status": null
   },
   {
@@ -10211,7 +10166,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 681,
+    "seq": 678,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 679,
     "status": null
   },
   {
@@ -10226,7 +10196,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 682,
+    "seq": 680,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 681,
     "status": null
   },
   {
@@ -10241,23 +10226,38 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 683,
+    "seq": 682,
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "seq": 683,
+    "status": 200
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/api/forensics/state",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 684,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -10275,34 +10275,34 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 686,
-    "status": 200
+    "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/fonts/Inter-900.woff2",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 687,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -10315,7 +10315,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "61f76698d3db91fc45e270f54167584d051565ce4efbe15cce1e732207b6d361",
+    "response_sha256": "b38cddaa9fb6a4535a94cd78da873862edbf18e562dcb19ee04b3e3a53dfc524",
     "seq": 688,
     "status": 200
   },
@@ -10735,7 +10735,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "0d5d8d45aec01f254a83002130c1c3874fbf9355a97d3fc5d97f4dc3eba13f26",
+    "response_sha256": "843591199180617f6113431b3a8094b950082f66920ba9c6db5c1452fd7bf2b4",
     "seq": 716,
     "status": 200
   },
@@ -11100,19 +11100,19 @@
     "status": null
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 741,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -11145,19 +11145,19 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 744,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -11170,7 +11170,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "be0fc0fc67d532fed305a15e4a09fbee8a313a43b59b5548a46fb6e5ebb5b753",
+    "response_sha256": "508b2ba08d8439c2ac2bf4e65114fffecb873b70906f8f46044fc3489587e506",
     "seq": 745,
     "status": 200
   },
@@ -11535,19 +11535,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 770,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -11580,19 +11580,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 773,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -11605,7 +11605,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "74166793f548b87daa01a113925c91cd1fc65eb7a3727d42a8644bd451097830",
+    "response_sha256": "b27e52ecd07cd25ed8e458c91bec0e32018dd32e1d8e3ea6e6972f5d1a764aa7",
     "seq": 774,
     "status": 200
   },
@@ -11868,36 +11868,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 792,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/supabase.js",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 793,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
-    "method": "GET",
     "path": "/fonts/Inter-600.woff2",
     "query": "",
     "request_body_bytes": null,
@@ -11906,22 +11876,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 794,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/fonts/Inter-700.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 795,
+    "seq": 792,
     "status": null
   },
   {
@@ -11936,7 +11891,67 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
+    "seq": 793,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 794,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 795,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/supabase.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 796,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/fonts/Inter-700.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 797,
     "status": null
   },
   {
@@ -11951,7 +11966,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 797,
+    "seq": 798,
     "status": null
   },
   {
@@ -11966,23 +11981,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 798,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 799,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -12015,19 +12015,19 @@
     "status": 200
   },
   {
-    "category": "static_continued",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
     "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 802,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -12040,7 +12040,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "699bde041216abe07f651ef9973fb6b4c13b36883c7530b76ec3701036b907e8",
+    "response_sha256": "efaa98085701a85fac5ecf990adefa41616f1397902a67ec2f7d05f69bf33a84",
     "seq": 803,
     "status": 200
   },
@@ -12405,19 +12405,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 828,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -12450,19 +12450,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 831,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -12475,7 +12475,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "b0326c049073ae44efe707fc4d8e42ddeffd4e91c8710a117b85a98b9ead70b5",
+    "response_sha256": "c3efc6a8991b7700447610ddaf0c44c2e105de13673236612b1e5a2e430dc11e",
     "seq": 832,
     "status": 200
   },
@@ -12738,51 +12738,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/fonts/Inter-600.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 850,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/fonts/Inter-400.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 851,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 852,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
-    "method": "GET",
     "path": "/account.js",
     "query": "v=20261015-mm-return-language",
     "request_body_bytes": null,
@@ -12791,7 +12746,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 853,
+    "seq": 850,
     "status": null
   },
   {
@@ -12806,7 +12761,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 854,
+    "seq": 851,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/fonts/Inter-600.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 852,
     "status": null
   },
   {
@@ -12821,7 +12791,22 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 855,
+    "seq": 853,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/fonts/Inter-400.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 854,
     "status": null
   },
   {
@@ -12836,8 +12821,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 856,
+    "seq": 855,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/api/forensics/state",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "seq": 856,
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -12870,25 +12870,25 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
-    "seq": 859,
-    "status": 200
-  },
-  {
     "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
     "method": "GET",
     "path": "/script.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 859,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
@@ -12910,7 +12910,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "6565abb0116155bfb5ef49afcdc2efbca5f73e7b7027e13bfcb00cf128c86a3e",
+    "response_sha256": "f03214888ddce8f5dfb954c1b060f2044d31e279a2737fc1d78b75ff8c1094af",
     "seq": 861,
     "status": 200
   },
@@ -13345,7 +13345,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "d77e6b62486abcff6440ae6a3c145ee100069040bf81ac8c71134448565e9137",
+    "response_sha256": "6b6dbbf297e28165e81ce96400bf9a0a065c516eec22441c76ceeb57cb82be6b",
     "seq": 890,
     "status": 200
   },
@@ -13780,7 +13780,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "e32b05fd52538bb9a095160a0cb70914494a98dcfe5654fde913ea1bc9ac3038",
+    "response_sha256": "3406e07b8da9782abbbe90b2dab4c18059c1bacb180fa308ee8157902e4eea99",
     "seq": 919,
     "status": 200
   },
@@ -14200,7 +14200,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "4028c7071c487136a2588578a7b692b58c67cb59e0ba08e2af80051383efb1fe",
+    "response_sha256": "86dd29db8e8ce28ce327b565c39b8af9efd681cf5e4ce82cf2e51ad5dc65bd25",
     "seq": 947,
     "status": 200
   },
@@ -14535,19 +14535,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 970,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -14580,19 +14580,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|source_hover",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 973,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -14605,7 +14605,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "a364e9d98c8870bd98af87bb93d884a4f30582885cb438ac4c7e8f1bde806efc",
+    "response_sha256": "ac7a276248b6a5c3021af2d513550c7ca8e3221d10a238d0a1c08b9cc2f23b48",
     "seq": 974,
     "status": 200
   },
@@ -14940,19 +14940,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 997,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -14985,19 +14985,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1000,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -15010,7 +15010,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "6a4b3d73ed98eebc8fdeca3525b00c08fb640a5fd6e165fac71678fc87346085",
+    "response_sha256": "bd15c5d3015aec969ea71c1fdfb2a50bb20e501bdf1d1fcf0930c549d9ee9ad5",
     "seq": 1001,
     "status": 200
   },
@@ -15415,7 +15415,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "4ad0a6a9681d5e3eed6e53f6f862e369c83a413d7f7f2d01f3b4a2517e8270bd",
+    "response_sha256": "36c941274e7186a518e860f30f41d98b24d9937faaba6bb65b4407e229ea4457",
     "seq": 1028,
     "status": 200
   },
@@ -15663,36 +15663,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 1045,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
-    "method": "GET",
-    "path": "/supabase.js",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 1046,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
-    "method": "GET",
     "path": "/fonts/Inter-600.woff2",
     "query": "",
     "request_body_bytes": null,
@@ -15701,7 +15671,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1047,
+    "seq": 1045,
     "status": null
   },
   {
@@ -15716,7 +15686,52 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
+    "seq": 1046,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 1047,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "method": "GET",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 1048,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "method": "GET",
+    "path": "/supabase.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 1049,
     "status": null
   },
   {
@@ -15731,7 +15746,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1049,
+    "seq": 1050,
     "status": null
   },
   {
@@ -15746,23 +15761,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1050,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1051,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -15795,19 +15795,19 @@
     "status": 200
   },
   {
-    "category": "static_continued",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
     "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1054,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -15820,7 +15820,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "5b738573ff568ae0279506903032f5cd68527ae7e15a2958d7b96774c9122fc3",
+    "response_sha256": "c37bdb0b28ebe60ae0f80758aa8abe836d4000541abdec1fca7851f8faf4be1f",
     "seq": 1055,
     "status": 200
   },
@@ -16068,36 +16068,6 @@
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/account.js",
-    "query": "v=20261015-mm-return-language",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 1072,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/supabase.js",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
-    "seq": 1073,
-    "status": null
-  },
-  {
-    "category": "static_continued",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
-    "method": "GET",
     "path": "/fonts/Inter-600.woff2",
     "query": "",
     "request_body_bytes": null,
@@ -16106,7 +16076,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1074,
+    "seq": 1072,
     "status": null
   },
   {
@@ -16121,7 +16091,52 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
+    "seq": 1073,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/fonts/Inter-900.woff2",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 1074,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/account.js",
+    "query": "v=20261015-mm-return-language",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 1075,
+    "status": null
+  },
+  {
+    "category": "static_continued",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
+    "method": "GET",
+    "path": "/supabase.js",
+    "query": "",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
+    "seq": 1076,
     "status": null
   },
   {
@@ -16136,7 +16151,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1076,
+    "seq": 1077,
     "status": null
   },
   {
@@ -16151,23 +16166,8 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1077,
-    "status": null
-  },
-  {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
-    "method": "GET",
-    "path": "/api/forensics/state",
-    "query": "",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1078,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -16200,19 +16200,19 @@
     "status": 200
   },
   {
-    "category": "static_continued",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|source_hover",
     "method": "GET",
-    "path": "/fonts/Inter-900.woff2",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1081,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -16225,7 +16225,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "62bdac724d032153519283ed7256267e534160ad9256f3a11441bdeb5194282a",
+    "response_sha256": "6804392c4a3522dcd721d5c14cb290c82b3ef3642353216154f527f8d11f9275",
     "seq": 1082,
     "status": 200
   },
@@ -16630,7 +16630,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "003e1eddf2e6546379b0c60e9f3b178802e36b746612c2341c8bef101a1471c7",
+    "response_sha256": "ac1f31286fb2bb51f124fb90dc425d0e7e87365aee65cb0d78689861d818edd7",
     "seq": 1109,
     "status": 200
   },
@@ -17035,7 +17035,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "d92ca1f846f8842495a7305381a9646d3c5f75ca5bccc099b05ec93fe28a9aa9",
+    "response_sha256": "e2fcb7c6ba978002ce70fc6faa392593f6ceb1465193577c4359619978f06603",
     "seq": 1136,
     "status": 200
   },
@@ -17370,19 +17370,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 1159,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -17415,19 +17415,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1162,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -17440,7 +17440,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "ce3aa9276edeeac7ec13d2d3b670477c0de5f13d614cf069ebcc71efed43b436",
+    "response_sha256": "bc2f43329743a464121d4fb9bfd8d0b41887a3b0a09bef37b4016c9938f5642f",
     "seq": 1163,
     "status": 200
   },
@@ -17865,21 +17865,6 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|source_hover",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "461206bfa7ccfa09653eb7ba06d3b95a04001c4207c82c96687375af7ec4e2f9",
-    "seq": 1192,
-    "status": 200
-  },
-  {
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|source_hover",
     "method": "GET",
@@ -17891,7 +17876,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1193,
+    "seq": 1192,
     "status": null
   },
   {
@@ -17906,8 +17891,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1194,
+    "seq": 1193,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|source_hover",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "476a8542570991a3b1729915a46f0a96d2a4e80c78a227483feeee72eb001dff",
+    "seq": 1194,
+    "status": 200
   },
   {
     "category": "static_continued",
@@ -18310,7 +18310,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "b091ac9fc1a4304afbef6f4a1d7226e5baebba0de05649d11c3bc00ec53bde26",
+    "response_sha256": "1568e8729562b9a96c12736cae3d0a7ceee5f5281243e7afffb1379e7f58c780",
     "seq": 1221,
     "status": 200
   },
@@ -18735,21 +18735,6 @@
     "status": 200
   },
   {
-    "category": "forensics_forwarded",
-    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
-    "method": "GET",
-    "path": "/api/forensics/health",
-    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
-    "request_body_bytes": null,
-    "request_body_json": null,
-    "request_body_sha256": null,
-    "response_bytes": 544,
-    "response_content_type": "application/json",
-    "response_sha256": "efd4af9204270d755af98bfbfe23923b489fceaf3bedfb62122b604a4528eedb",
-    "seq": 1250,
-    "status": 200
-  },
-  {
     "category": "static_continued",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
     "method": "GET",
@@ -18761,7 +18746,7 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1251,
+    "seq": 1250,
     "status": null
   },
   {
@@ -18776,8 +18761,23 @@
     "response_bytes": null,
     "response_content_type": null,
     "response_sha256": null,
-    "seq": 1252,
+    "seq": 1251,
     "status": null
+  },
+  {
+    "category": "forensics_forwarded",
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
+    "method": "GET",
+    "path": "/api/forensics/health",
+    "query": "entity_id=ISS%3AUS-XNAS-AAPL",
+    "request_body_bytes": null,
+    "request_body_json": null,
+    "request_body_sha256": null,
+    "response_bytes": 544,
+    "response_content_type": "application/json",
+    "response_sha256": "019de2b1b2b013d520c4637ddcecc8ed33525cc02013d474e6cacdcb2ab6c9e6",
+    "seq": 1252,
+    "status": 200
   },
   {
     "category": "static_continued",
@@ -19180,7 +19180,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "c7ff0bcdc1ddce1b2952a5e21e5c82e80bedf4018af6ce13994919a3600c4428",
+    "response_sha256": "913da37e4e9e82c315f35c5fd0ca6cd15269326cb4595bbe8a2113edb25766ac",
     "seq": 1279,
     "status": 200
   },
@@ -19615,7 +19615,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "49ab1dd51ebfbacf10c26cc7859811debd2ed13f623cdebab0317a0cc3d5afba",
+    "response_sha256": "8a979861163de50ad2bc277d3d52f31777ce48248079d59b25a380d61d25d477",
     "seq": 1308,
     "status": 200
   },
@@ -19980,19 +19980,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 1333,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -20025,19 +20025,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|lead_open_focus",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1336,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -20050,7 +20050,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "d86d69bd528b028f837652584989e7ef79227738b974f93f4459c293535b99bc",
+    "response_sha256": "5ecd875da40c1af60e3989273443aadd664be961e8968fe199733f1431e2b66a",
     "seq": 1337,
     "status": 200
   },
@@ -20415,19 +20415,19 @@
     "status": null
   },
   {
-    "category": "forensics_forwarded",
+    "category": "external_aborted",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/api/forensics/state",
+    "path": "/script.js",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": 760400,
-    "response_content_type": "application/gzip",
-    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
+    "response_bytes": null,
+    "response_content_type": null,
+    "response_sha256": null,
     "seq": 1362,
-    "status": 200
+    "status": null
   },
   {
     "category": "forensics_forwarded",
@@ -20460,19 +20460,19 @@
     "status": 200
   },
   {
-    "category": "external_aborted",
+    "category": "forensics_forwarded",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_open",
     "method": "GET",
-    "path": "/script.js",
+    "path": "/api/forensics/state",
     "query": "",
     "request_body_bytes": null,
     "request_body_json": null,
     "request_body_sha256": null,
-    "response_bytes": null,
-    "response_content_type": null,
-    "response_sha256": null,
+    "response_bytes": 760400,
+    "response_content_type": "application/gzip",
+    "response_sha256": "3b9d60faad94ce9832e4a58afef03c4e46c1ceb56284a36422489664b7a268f0",
     "seq": 1365,
-    "status": null
+    "status": 200
   },
   {
     "category": "forensics_forwarded",
@@ -20485,7 +20485,7 @@
     "request_body_sha256": null,
     "response_bytes": 544,
     "response_content_type": "application/json",
-    "response_sha256": "4ab00d72f47c1c59e420397a5b65018888bc914b4a38ce232818ea5d34cdd42a",
+    "response_sha256": "5ee4d66ce62830476ac4ccf883584076e355c706e5e4ea3df0d2e956f9d143a0",
     "seq": 1366,
     "status": 200
   },
