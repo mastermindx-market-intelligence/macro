@@ -140,7 +140,8 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Resume the original live Library-to-Stock return only after Chris completes or dismisses the recorded Chrome extension UI; otherwise consume genuine new qualification, Compare/Saved contract or original review-owner input without inventing contracts, replaying accepted cases or polling held surfaces.
+next_action: Publish the recovered ten-candidate batch and current-main integration through existing Macro8754, consume exact-head CI, and resolve existing review/publication gates before served ten-view acceptance. Original artifact retrieval is complete; IW2 retains Terminal804 and Saved/cutover, and the original Chrome extension UI remains held for Chris.
+
 artifacts:
 - research/paper_international_wave1_wave2/TRADE_PRESSURE_METHOD_ACCEPTANCE.json
 - research/paper_international_wave1_wave2/FRAGILITY_COVERAGE_SCOPE_ACCEPTANCE.json
@@ -297,3 +298,13 @@ Eight source-fixture cases at256px height cover320/820px, Dark/Light andEN/ZH.32
 Credit/bond absence source repair adds ten passing render cases and four bilingual/theme keyboard cases over eight widths, with eight canonical captures and four focused parent views. Six source-render failures plus one browser failure establish causality. No live or complete panel acceptance: separate standardized-velocity direction semantics remain, bound by an actual-helper counterexample. Source not deployed; independent review pending. See CREDIT_BOND_ABSENCE_ACCEPTANCE.json and external credit-bond-absence-20261014-r1 evidence.
 
 Credit velocity meaning source repair supersedes the prior open semantic note: three actual-owner counterexamples now render above/below/near-usual-change with neutral styling, preserving owner data and thresholds. Thirteen affected Python and eight browser cases pass, with overlapping absence coverage explicitly retained; eight canonical captures and four parent views. Independent review and live delivery remain pending. Next trace regional Credit clocks from actual owner fields; no inferred qualification. See CREDIT_VELOCITY_MEANING_ACCEPTANCE.json.
+
+## October 20 delivery recovery
+
+Chris's renewed commission retains the complete ten-view International programme and ordinary delivery ownership in original root01a1101f. The interrupted merge9dba is already committed as232756563d55 in the original carrier lineage; source custody is reconciled rather than transferred to a replacement checkout. The same Sol6.1/high integration coordinator saved all ten prepared Stock candidates in613f93, merged main9e09 as244856a, then saved actual existing HK/Canada browser receipts as976582d8a2f2707beb28101a8bbd306026228e43. This is local source acceptance, not deployment.
+
+The original2f21 CI run38751445578 is fully consumed after a scoped same-gh administrative recovery: all12original fragments reconcile exactly with hosted final evidence,145logicaljobs/379semanticstepsPASS. It does not cover current source. Current-source checks pass within scope:61combined Stock cases plus1incumbent ordering case;46access-boundary tests;13shared-theme/language affected cases;132template/site pairs; one cache check;330inventory jobs; zero canonical transitive-closure findings; two existing mobile verifiers each48primary/16degraded controls;3receipt-binding tests and existing P0B closure. These counts overlap and are not summed. Fresh16images equal retained images; receipts retain truthful source/asset lineage.
+
+The new composition-only review paper-01a1101f-caddy-merge-risk-20261020-r1 is unresolved on its original coordinator/exec49321, with workerUNKNOWN and current-output refusal original_current_output_unconfirmed. No START or approval is claimed and no replacement was launched. Original frozen nine-asset review, actual GitHub CHANGES_REQUESTED disposition, source/rights/frozen-effect/release/migration and original browser gates remain. IW2 exclusively owns Terminal804/Saved/cutover. Full served/source-linked ten-view journeys and subsequent ordinary publication remain incomplete.
+
+Verified by git show613f93/244856a/976582d and retained original-run native reconcile_evidence; current integration logs are under /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/ci-admission-aa50ff-20261015-r1/UPSTREAM_*_20261020.log. Current operational continuation is /Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/CHECKPOINT.md.
