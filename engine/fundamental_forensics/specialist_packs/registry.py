@@ -10,10 +10,36 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Mapping
 
-from . import pk06_leases
+from . import (
+    pk01_debt,
+    pk02_sbc,
+    pk03_segments,
+    pk04_revenue,
+    pk05_tax,
+    pk06_leases,
+    pk07_mna,
+    pk08_contingencies,
+    pk09_controls,
+    pk10_proxy,
+    pk11_bank,
+    pk12_biotech,
+)
 from .base import PackInput, PackProducer, SpecialistPackError, produce_pack_result
 
-_PRODUCER_MODULES = (pk06_leases,)
+_PRODUCER_MODULES = (
+    pk01_debt,
+    pk02_sbc,
+    pk03_segments,
+    pk04_revenue,
+    pk05_tax,
+    pk06_leases,
+    pk07_mna,
+    pk08_contingencies,
+    pk09_controls,
+    pk10_proxy,
+    pk11_bank,
+    pk12_biotech,
+)
 
 
 def _build() -> Mapping[str, PackProducer]:
@@ -31,11 +57,23 @@ PACK_PRODUCERS: Mapping[str, PackProducer] = _build()
 
 
 def produce_pack(pack_id: str, pack_input: PackInput) -> dict:
-    """Produce one pack result through the registered producer."""
+    """Produce one pack result through the registered producer.
+
+    A producer may declare ``finalize_result(result, pack_input)`` — an
+    additive hook for pack semantics the shared framework cannot express
+    (prior-instant rollforward operands, ratio-tolerance cross checks). The
+    hook runs only after the framework's own envelope passes the contract
+    validator and owns re-digesting + re-checking its result; producers
+    without the hook (every framework-native pack) are untouched.
+    """
     producer = PACK_PRODUCERS.get(pack_id)
     if producer is None:
         raise SpecialistPackError(f"no producer registered: {pack_id}")
-    return produce_pack_result(producer, pack_input)
+    result = produce_pack_result(producer, pack_input)
+    finalize = getattr(producer, "finalize_result", None)
+    if finalize is not None:
+        result = finalize(result, pack_input)
+    return result
 
 
 def registered_pack_ids() -> tuple[str, ...]:
