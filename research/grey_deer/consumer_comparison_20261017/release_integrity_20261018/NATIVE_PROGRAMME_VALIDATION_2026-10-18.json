@@ -1,0 +1,756 @@
+{
+  "schema": "risk_radar.programme_evidence_validation.v1",
+  "observed_at_utc": "2026-10-18T08:49:03.667245+00:00",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-release-qualification-20261018-0304",
+  "base": "084ac334a2bf4beb76bd22b5bf7d37a8eb93e051",
+  "programme_files": [
+    {
+      "relative": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md",
+      "bytes": 9598,
+      "sha256": "6f304efd10a3265d7f95d087fc431a0c14af6feca5f8ef63790e6dc199ef5980"
+    },
+    {
+      "relative": "research/grey_deer/all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+      "bytes": 9001,
+      "sha256": "b387a92d6d3d29033b947d8e0fdaf59a39fdb260b01f5485c8f1e5d01f669057"
+    },
+    {
+      "relative": "research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "bytes": 24836,
+      "sha256": "687bfed7c3cae90b350c7fd33f5301dc9c33bd09596553566790d131f77ebd67"
+    },
+    {
+      "relative": "research/grey_deer/all_date_census/ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+      "bytes": 5196,
+      "sha256": "251bc01db0d915b4ca8322881b3b852c7d44101a488fce77eb5904eabcea9dbd"
+    },
+    {
+      "relative": "research/grey_deer/consumer_comparison_20261017/LIVE_RELEASE_QUALIFICATION_2026-10-18.json",
+      "bytes": 5342,
+      "sha256": "1c2be69a788f812eec8ca41242c2015519c2ffca7b23531e0ac0b1989d6731ee"
+    },
+    {
+      "relative": "research/grey_deer/consumer_comparison_20261017/FIRST_RUN_GUARD_INPUTS_2026-10-18.json",
+      "bytes": 922,
+      "sha256": "938b293dfec4a617e2340d1f12facbc9ff6fcbbc5ded4732d3007f747d5c216b"
+    },
+    {
+      "relative": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "bytes": 46840,
+      "sha256": "104f1a4f6383fd03565531177c5f655527d74b5ac81e855a4b41002a4bfd3276"
+    },
+    {
+      "relative": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "bytes": 52095,
+      "sha256": "d05c2bfce5672853137372e4275da52aa78350441cceb45c497c68085a9899e2"
+    },
+    {
+      "relative": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "bytes": 47546,
+      "sha256": "d40968899dfc07a20be2c3a3045812d2f6e3b05387a8c5da9c0726be3f7e4efc"
+    },
+    {
+      "relative": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "bytes": 48052,
+      "sha256": "1fa0378f16c241f36b01043a4055b4356e0a1a7e010dc70bf0b925d1f8dd294f"
+    },
+    {
+      "relative": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "bytes": 33207,
+      "sha256": "394c9395ae91cdc2a15854a535da600f46a437b3aa875c45387f904b96cd8c04"
+    }
+  ],
+  "all_transfer_hashes_match": true,
+  "original_packet_hashes_verified": 56,
+  "unchanged_original_presentation_files": 55,
+  "normalized_original_retained_exactly": true,
+  "review_sha256": "cadc5c5d4520c4164c087b9adf5414e1c473b9f4ed09512612b3b6f5a6f92c3e",
+  "new_index_relative_links": [
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-ci-39109519443-result.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-ci-failure-draft-disposition-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-ci-39109519443-watch-receipt.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "FORWARD_ACTIVATION_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "FORWARD_DEPENDENCY_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "SETTLEMENT_FINALIZATION_CALLER_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_REPAIR_PROPOSAL_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_NATIVE_DIAGNOSTIC_ASSERTION_FIX_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "candidate/scripts/deploy_code_to_vps.sh",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "candidate/tests/test_deploy_provenance.py",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_RED_BASELINE_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_ACTIVE_COHORT_REVIEW_RED_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_RECEIPT_SCAN_REVIEW_RED_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "helper_fixture_driver_20261018.py",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-pytest-receipt-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-pytest-receipt-20261018-run2.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-pytest-receipt-20261018-run3.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-pytest-20261018-run2.xml",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-pytest-20261018-run3.xml",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-native-macro-dependency-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-source-pr-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "native/rr-helper-source-pr-state-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "HELPER_EXCLUDED_CACHE_REVIEW_CONTROL_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "PUBLICATION_NORMALIZATION_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "README.md",
+      "target": "source/SETTLEMENT_DEPENDENCY_STATIC_NOTES_ORIGINAL_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../risk_radar_source_consumer_audit_20261017.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../../../agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../../../agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../all_date_census/ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "README.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_RESULT_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../risk_radar_source_consumer_audit_20261017.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../../../agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "../../../../agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "native/rr-helper-ci-39109519443-result.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "native/rr-helper-ci-39109519443-watch-receipt.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "native/rr-helper-ci-failure-draft-disposition-20261018.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "PUBLICATION_NORMALIZATION_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+      "target": "source/SETTLEMENT_DEPENDENCY_STATIC_NOTES_ORIGINAL_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "target": "../risk_radar_research_protocol_20261017.md",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "target": "NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "target": "ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "target": "../../licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+      "target": "../PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+      "target": "t12_frozen_sample_20261017/POST_EXECUTION_REVIEW_2026-10-18.md",
+      "exists": true
+    },
+    {
+      "source": "../../all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+      "target": "../risk_radar_research_protocol_20261017.md",
+      "exists": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "agentos",
+      "argv": [
+        "python3",
+        "scripts/agentos.py",
+        "validate"
+      ],
+      "exit_code": 0,
+      "output_sha256": "2824c0359c9f529f03406e0fa3801a52ab3a69315cdfd6830e12ea449da9f7c1",
+      "summary": [
+        "agentos: 1868 records (99 workstreams, 503 decisions, 540 discoveries, 726 handoffs) \u2014 0 error(s), 162 warning(s)"
+      ]
+    },
+    {
+      "name": "scoped_staged_diff_check",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "staged_files": 90
+    }
+  ],
+  "previous_checkpoint": {
+    "sha256": "dc076fc6472e8b4560f04f813ae84fa7e044a26a88b00b210d29442438511b59",
+    "validation": {
+      "schema": "risk_radar.programme_evidence_validation.v1",
+      "observed_at_utc": "2026-10-18T08:19:14.948391+00:00",
+      "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-release-qualification-20261018-0304",
+      "base": "084ac334a2bf4beb76bd22b5bf7d37a8eb93e051",
+      "programme_files": [
+        {
+          "relative": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md",
+          "bytes": 8990,
+          "sha256": "52076cd63f7edcd08c85f5d648e52c55cdcc0b148b2722900352d48d0327e377"
+        },
+        {
+          "relative": "research/grey_deer/all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+          "bytes": 9001,
+          "sha256": "b387a92d6d3d29033b947d8e0fdaf59a39fdb260b01f5485c8f1e5d01f669057"
+        },
+        {
+          "relative": "research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "bytes": 24836,
+          "sha256": "687bfed7c3cae90b350c7fd33f5301dc9c33bd09596553566790d131f77ebd67"
+        },
+        {
+          "relative": "research/grey_deer/all_date_census/ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+          "bytes": 5196,
+          "sha256": "251bc01db0d915b4ca8322881b3b852c7d44101a488fce77eb5904eabcea9dbd"
+        },
+        {
+          "relative": "research/grey_deer/consumer_comparison_20261017/LIVE_RELEASE_QUALIFICATION_2026-10-18.json",
+          "bytes": 5342,
+          "sha256": "1c2be69a788f812eec8ca41242c2015519c2ffca7b23531e0ac0b1989d6731ee"
+        },
+        {
+          "relative": "research/grey_deer/consumer_comparison_20261017/FIRST_RUN_GUARD_INPUTS_2026-10-18.json",
+          "bytes": 922,
+          "sha256": "938b293dfec4a617e2340d1f12facbc9ff6fcbbc5ded4732d3007f747d5c216b"
+        },
+        {
+          "relative": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+          "bytes": 45095,
+          "sha256": "f9fbac93336397d6c55f58fd8137227d4e7dec5b43dabb62bd36b31299690565"
+        },
+        {
+          "relative": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+          "bytes": 50868,
+          "sha256": "54c695854d41dcc25cf558dbd326e1be4e1b57b50a73d1153bd8152933960795"
+        },
+        {
+          "relative": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+          "bytes": 46314,
+          "sha256": "046d8536c6666645eb2f3c68670401c99e41f292f4f5c2d4983dbcc6a2a590e8"
+        },
+        {
+          "relative": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+          "bytes": 43937,
+          "sha256": "ad41e0c970500085265d313cc01a96a6f184c764d54143562f8d4a73a1b89dc8"
+        },
+        {
+          "relative": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+          "bytes": 32364,
+          "sha256": "1e33d6fcdfd90bcfe041485342d3c2376293ece4050129c742fa20d71840657a"
+        }
+      ],
+      "all_transfer_hashes_match": true,
+      "checks": [
+        {
+          "name": "diff_check",
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "exit_code": 0,
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "agentos",
+          "argv": [
+            "python3",
+            "scripts/agentos.py",
+            "validate"
+          ],
+          "exit_code": 0,
+          "output_sha256": "2824c0359c9f529f03406e0fa3801a52ab3a69315cdfd6830e12ea449da9f7c1",
+          "summary": [
+            "agentos: 1868 records (99 workstreams, 503 decisions, 540 discoveries, 726 handoffs) \u2014 0 error(s), 162 warning(s)"
+          ],
+          "warning_count": 162
+        },
+        {
+          "name": "staged_diff_check_after_publication_normalization",
+          "argv": [
+            "git",
+            "diff",
+            "--cached",
+            "--check"
+          ],
+          "exit_code": 0
+        }
+      ],
+      "new_index_relative_links": [
+        {
+          "source": "README.md",
+          "target": "MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "FORWARD_ACTIVATION_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "FORWARD_DEPENDENCY_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "SETTLEMENT_FINALIZATION_CALLER_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_REPAIR_PROPOSAL_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_NATIVE_DIAGNOSTIC_ASSERTION_FIX_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "candidate/scripts/deploy_code_to_vps.sh",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "candidate/tests/test_deploy_provenance.py",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_RED_BASELINE_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_ACTIVE_COHORT_REVIEW_RED_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_RECEIPT_SCAN_REVIEW_RED_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "helper_fixture_driver_20261018.py",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-pytest-receipt-20261018.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-pytest-receipt-20261018-run2.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-pytest-receipt-20261018-run3.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-pytest-20261018-run2.xml",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-pytest-20261018-run3.xml",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-native-macro-dependency-20261018.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-source-pr-20261018.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "native/rr-helper-source-pr-state-20261018.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "HELPER_EXCLUDED_CACHE_REVIEW_CONTROL_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "PUBLICATION_NORMALIZATION_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "README.md",
+          "target": "source/SETTLEMENT_DEPENDENCY_STATIC_NOTES_ORIGINAL_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../risk_radar_source_consumer_audit_20261017.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../../../agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../../../agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../all_date_census/ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "README.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "PROGRAMME_FRONTIER_REVIEW_2026-10-18.md",
+          "target": "../../all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_RESULT_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "target": "../risk_radar_research_protocol_20261017.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "target": "NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "target": "ARTIFACT_ADMISSION_READBACK_2026-10-18.json",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "target": "../../licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md",
+          "target": "../PULLBACK_SOURCE_RIGHTS_QUALIFICATION_2026-10-11.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+          "target": "t12_frozen_sample_20261017/POST_EXECUTION_REVIEW_2026-10-18.md",
+          "exists": true
+        },
+        {
+          "source": "../../all_date_census/NEXT_SCIENTIFIC_PHASE_RECOMMENDATION_2026-10-18.md",
+          "target": "../risk_radar_research_protocol_20261017.md",
+          "exists": true
+        }
+      ],
+      "programme_accepted": false,
+      "production_mutated": false,
+      "previous_validation_receipt_sha256": "02d1987801d39c5bdb2deec610d3fdc8e18efa80bb451c3cd141cff0d67021a3",
+      "publication_verified_at_utc": "2026-10-18T08:24:37.774234+00:00",
+      "retained_original_packet_hashes_verified": 56,
+      "unchanged_original_presentation_files": 55,
+      "normalized_original_retained_exactly": true,
+      "prior_staged_check": {
+        "exit_code": 2,
+        "file": "SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md",
+        "lines": [
+          3,
+          4
+        ],
+        "reason": "Two Markdown hard-break trailing-space warnings; original preserved, presentation normalized."
+      },
+      "agentos_reuse": "The exact five canonical record bytes and source base match the 08:19:14 validation; the later changes are presentation/provenance documents outside AgentOS records. No optional AgentOS rerun."
+    }
+  },
+  "programme_accepted": false,
+  "production_mutated": false
+}
