@@ -464,7 +464,12 @@
         {% for e in special.unlocks.events[:5] %}
         <div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:12px">
           <span>{{ e.name or e.name_zh or e.ticker }}</span>
-          <span class="cad-asof">{{ e.date or e.unlock_date or '' }}{% if e.pct_float is defined and e.pct_float %} · {{ '%.0f'|format(e.pct_float) }}%{% endif %}</span>
+          {%- set fp = e.float_pct if e.float_pct is defined and e.float_pct is not none
+                       else (e.pct_float if e.pct_float is defined else none) %}
+          <span class="cad-asof">{{ e.date or e.unlock_date or '' }}{% if fp %} · {% if fp >= 100 %}
+          {{- t('%.1f× the free float'|format(fp / 100), '为流通量的%.1f倍'|format(fp / 100)) }}
+          {%- else %}{{ t('%.0f%% of free float'|format(fp), '占流通量%.0f%%'|format(fp)) }}
+          {%- endif %}{% endif %}</span>
         </div>
         {% endfor %}
       </div>
@@ -476,7 +481,7 @@
         <p class="sub">{{ t('Regulators asking hard questions — a risk flag, not a verdict.', '监管层发问——风险信号，非定论。') }}</p>
         {% for e in special.inquiry.letters[:5] %}
         <div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:12px">
-          <span>{{ e.name or e.name_zh or e.ticker }}</span>
+          <span>{{ e.name or e.name_zh or e.secName or e.ticker or e.secCode }}</span>
           <span class="cad-asof">{{ e.date or '' }}</span>
         </div>
         {% endfor %}
@@ -525,10 +530,20 @@
       <div class="cad-card">
         <h3>{{ t('Earnings pre-announcements','业绩预告') }} <span class="cad-chip">{{ special.preannounce.n_total or 0 }}</span></h3>
         <p class="sub">{{ t('Companies flagging results early — the biggest guided swings.', '提前预告业绩的公司——预告变动最大者。') }}</p>
+        {%- set TYPEN = {'预增': ('profit up', '预增'), '略增': ('profit slightly up', '略增'),
+                         '续盈': ('still profitable', '续盈'), '扭亏': ('back to profit', '扭亏'),
+                         '预减': ('profit down', '预减'), '略减': ('profit slightly down', '略减'),
+                         '减亏': ('smaller loss', '减亏'), '增亏': ('larger loss', '增亏'),
+                         '首亏': ('first loss', '首亏'), '续亏': ('still loss-making', '续亏'),
+                         '不确定': ('uncertain', '不确定')} %}
         {% for e in special.preannounce.top_movers[:5] %}
         <div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:12px">
           <span>{{ e.name or e.name_zh or e.ticker }}</span>
-          <span class="cad-asof">{% if e.p_change is defined and e.p_change is not none %}{{ '%+.0f'|format(e.p_change) }}%{% endif %}</span>
+          {%- set pc = e.pct_change if e.pct_change is defined and e.pct_change is not none
+                       else (e.p_change if e.p_change is defined else none) %}
+          {%- set ty = TYPEN.get(e.type, (e.type, e.type)) if e.type else none %}
+          <span class="cad-asof">{% if ty %}{{ bl(ty[0], ty[1]) }}{% endif %}
+          {%- if pc is not none %}{{ ' ' if ty }}{{ '%+.0f'|format(pc) }}%{% endif %}</span>
         </div>
         {% endfor %}
       </div>

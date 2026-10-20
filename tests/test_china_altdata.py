@@ -160,3 +160,123 @@ def test_signal_lab_scorecard():
     for tier, items in sc["tiers"].items():
         for r in items:
             assert r["name_en"] and r["name_zh"] and r["tier"] == tier
+
+
+# ------------------------------------------------ page render: event-catalyst cards ----
+# Synthetic records shaped like the committed site/chinaspecialdata/special.json emit
+# (engine/china_special_situations.py): inquiry letters carry secName/secCode, pre-announcements
+# carry pct_change plus a Chinese-only type, unlocks carry float_pct (unlock shares as a % of the
+# free float). The page must print each, and the legacy name/p_change/pct_float keys still work.
+_TYPES = {"预增": "profit up", "略增": "profit slightly up", "续盈": "still profitable",
+          "扭亏": "back to profit", "预减": "profit down", "略减": "profit slightly down",
+          "减亏": "smaller loss", "增亏": "larger loss", "首亏": "first loss",
+          "续亏": "still loss-making", "不确定": "uncertain"}
+
+
+def _altdata_env():
+    from pathlib import Path
+
+    from jinja2 import Environment, FileSystemLoader
+
+    from engine import i18n
+
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
+    return env
+
+
+def _render_altdata(special, env=None):
+    return (env or _altdata_env()).get_template("china_altdata.html.j2").render(
+        ad=None, lab=None, mm=None, crowd_labels={}, broker_gold=[], guidance={},
+        guidance_labels={}, tape=None, tape_spark="", special=special, narr=[],
+        narr_asof=None, zt=[], zt_breadth=[])
+
+
+def _card_rows(html, title):
+    import re
+
+    a = html.find('id="catalysts"')
+    j = html.find(f'<span class="l-en">{title}</span>', a)
+    assert 0 < a < j, title
+    k = html.find('<div class="cad-card">', j)
+    seg = html[j:k] if k > 0 else html[j:html.find("</section>", j)]
+    return re.findall(r'font-size:12px">\s*(.*?)\s*</div>', seg, re.S)
+
+
+def test_catalyst_inquiry_row_prints_producer_name():
+    letter = {"secCode": "920493", "secName": "并行科技", "date": "2026-10-15",
+              "reply_state": "open"}
+    rows = _card_rows(_render_altdata({"inquiry": {"n_letters": 1, "letters": [letter]}}),
+                      "Exchange inquiries")
+    assert len(rows) == 1 and "<span>并行科技</span>" in rows[0], rows
+    assert "<span></span>" not in rows[0]
+    code_only = {"inquiry": {"letters": [{"secCode": "002155", "date": "2026-10-13"}]}}
+    assert "<span>002155</span>" in _card_rows(_render_altdata(code_only), "Exchange inquiries")[0]
+
+
+def test_catalyst_preannounce_row_prints_swing_and_type():
+    movers = [{"ticker": "002466.SZ", "name": "天齐锂业", "type": "预增", "pct_change": 265430.305},
+              {"ticker": "002368.SZ", "name": "太极股份", "type": "增亏", "pct_change": -31094.37}]
+    rows = _card_rows(_render_altdata({"preannounce": {"n_total": 2, "top_movers": movers}}),
+                      "Earnings pre-announcements")
+    assert len(rows) == 2, rows
+    assert '<span class="l-en">profit up</span><span class="l-zh">预增</span> +265430%' in rows[0]
+    assert '<span class="l-en">larger loss</span><span class="l-zh">增亏</span> -31094%' in rows[1]
+    assert not any('<span class="cad-asof"></span>' in r for r in rows)
+
+
+def test_catalyst_unlock_row_prints_float_share():
+    events = [{"ticker": "688783.SS", "name": "西安奕材", "unlock_date": "2026-10-28",
+               "float_pct": 1054.9871502417},
+              {"ticker": "600000.SS", "name": "浦发银行", "unlock_date": "2026-11-02",
+               "float_pct": 42.4}]
+    rows = _card_rows(_render_altdata({"unlocks": {"n_large": 2, "events": events}}),
+                      "Share unlocks")
+    assert len(rows) == 2, rows
+    assert ('2026-10-28 · <span class="l-en">10.5× the free float</span>'
+            '<span class="l-zh">为流通量的10.5倍</span>') in rows[0]
+    assert "1055%" not in rows[0]
+    assert ('2026-11-02 · <span class="l-en">42% of free float</span>'
+            '<span class="l-zh">占流通量42%</span>') in rows[1]
+
+
+def test_catalyst_preannounce_type_falls_back_to_raw_when_unmapped():
+    sp = {"preannounce": {"top_movers": [{"name": "X", "type": "未映射", "pct_change": 5.0}]}}
+    row = _card_rows(_render_altdata(sp), "Earnings pre-announcements")[0]
+    assert '<span class="cad-asof"><span class="l-en">未映射</span><span class="l-zh">未映射</span>' \
+        ' +5%</span>' in row, row
+
+
+def test_catalyst_cards_survive_legacy_name_keys():
+    sp = {"unlocks": {"events": [{"name": "X", "ticker": "600000.SS", "date": "2026-10-20",
+                                  "pct_float": 3.0}]},
+          "inquiry": {"letters": [{"name": "Y", "date": "2026-10-19"}]},
+          "preannounce": {"top_movers": [{"name": "Z", "ticker": "600001.SS", "p_change": 12.0}]}}
+    html = _render_altdata(sp)
+    unlock = _card_rows(html, "Share unlocks")[0]
+    assert "<span>X</span>" in unlock and '<span class="l-en">3% of free float</span>' in unlock
+    assert "<span>Y</span>" in _card_rows(html, "Exchange inquiries")[0]
+    pre = _card_rows(html, "Earnings pre-announcements")[0]
+    assert "<span>Z</span>" in pre and '<span class="cad-asof">+12%</span>' in pre, pre
+
+
+def test_zh_and_en_both_carry_the_new_labels():
+    import re
+
+    env = _altdata_env()
+    legs = re.compile(r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>')
+    cjk = re.compile(r"[一-鿿]")
+    for zh, en in _TYPES.items():
+        sp = {"preannounce": {"top_movers": [{"name": "N", "type": zh, "pct_change": 1.0}]}}
+        row = _card_rows(_render_altdata(sp, env), "Earnings pre-announcements")[0]
+        asof = row.split('<span class="cad-asof">', 1)[1].rsplit("</span>", 1)[0]
+        assert legs.findall(asof) == [(en, zh)], (zh, asof)
+        assert not re.search(r"[A-Za-z]|[一-鿿]", legs.sub("", asof)), asof
+    sp = {"unlocks": {"events": [{"name": "N", "unlock_date": "2026-10-28", "float_pct": 250.0},
+                                 {"name": "M", "unlock_date": "2026-10-29", "float_pct": 7.0}]}}
+    for row in _card_rows(_render_altdata(sp, env), "Share unlocks"):
+        asof = row.split('<span class="cad-asof">', 1)[1].rsplit("</span>", 1)[0]
+        (en_leg, zh_leg), = legs.findall(asof)
+        assert not cjk.search(en_leg) and cjk.search(zh_leg), asof
+        assert not re.search(r"[A-Za-z]|[一-鿿]", legs.sub("", asof)), asof

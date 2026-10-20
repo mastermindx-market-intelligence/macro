@@ -4348,6 +4348,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "options-pilot-chronology-code",
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
@@ -4713,6 +4714,12 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
+    # template and imports the builder (lib/config, lib/pages, lib/site_assets,
+    # engine/i18n). As an ordinary job its inferred scope would widen the
+    # templates/index.html packing probe past its ceiling. scope: exclusive
+    # pins the measured static closure plus templates and ancestor inits.
+    "china-mechanics-display",
     # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
     # reader import (world_state -> theme_state_generation_reader ->
     # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
@@ -4869,6 +4876,11 @@ CURATED_EXCLUSIVE = {
     # As a step in china-native-collectors it moved templates/index.html to
     # 5,816 > 5,800; its own exclusive job keeps the import closure only.
     "grey-deer-pboc-liquidity",
+    # 2026-10-20 W27-L27: the China Alt-Data catalyst-card render tests. As a
+    # step in unrun-template-chips they moved the index-template (5,825 > 5,822)
+    # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
+    # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
+    "china-altdata-catalysts",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -4892,6 +4904,11 @@ CURATED_EXCLUSIVE = {
     # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
     # scope: exclusive pins the job to its measured suite_dependency_closure.
     "leadership-rotation-science",
+    # 2026-10-20 W27-L26: the China Sector Desk turn-signature gate render tests.
+    # As a step in unrun-template-chips they moved the index-template
+    # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes; its
+    # own exclusive job keeps the static import closure plus ancestor inits.
+    "china-sector-desk-gate",
     # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
@@ -4910,12 +4927,47 @@ CURATED_EXCLUSIVE = {
     # 2 introduced. scope: exclusive pins it to its declared static import
     # closure plus ancestor inits; ceilings stay fixed.
     "c19-wp31-incremental-information",
+    # 2026-10-20 W28-L28: the CN Pick Lab SCOREABLE/close_at_fire render tests.
+    # Appended to pick-lab-liquidity's run line they moved the index-template
+    # packing probe (5,824 > 5,822); its own exclusive job keeps the static
+    # import closure, the engine/pick_lab package imports and ancestor inits.
+    "pick-lab-cn-render",
+    # 2026-10-20 W28G-L31: the THS basket browser notes suite renders the factorwatch
+    # template and its five includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "ths-factorwatch-build-notes",
+    # 2026-10-20 W28F-L30: the China narrative radar display suites render the page
+    # template and its six includes with jinja2 alone. As an ordinary job their
+    # inferred scope would ride the shared template packing probes; scope:
+    # exclusive pins the template closure, both suites and the tests inits.
+    "narrative-radar-display",
+    # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
+    # template and its six includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "commodity-strategies-grid-fields",
+    # 2026-10-20 W28E-L32: the China reversal sleeve display suite renders the page
+    # template and its three includes with jinja2 alone. As an ordinary job its
+    # inferred scope would ride the shared template packing probes; scope:
+    # exclusive pins the template closure, the suite and the tests inits.
+    "cn-reversal-sleeve-display",
+    # 2026-10-20 W28B-L34: the HK / Canada scoreboard suite renders both desk
+    # templates and their five includes with jinja2 and the new pure helper alone. As
+    # an ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "regional-baskets-scorecard",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-20 W28D-L35: the China strategies income-tile suite renders the page
+    # template and its six includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "china-strategies-income-tile",
     # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
     # fixtures, which opaque inference smeared onto build_free_content
     # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
@@ -6913,6 +6965,24 @@ def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_
     assert not selected, reason
 
 
+def test_options_pilot_chronology_runs_on_source_changes_without_unrelated_probes():
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    job = jobs["options-pilot-chronology-code"]
+    assert job.exclusive
+    for dependency in (
+        "scripts/options_pilot_study_adapter.py",  # ci-trigger-closure: data — selector name only
+        "tests/test_options_pilot_chronology.py",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/pilot-study-spec.v1.json",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/pilot-p3-reference.py",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/gex-published-board-extract.json",  # ci-trigger-closure: data — selector name only
+    ):
+        selected, _ = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], dependency
+    selected, _ = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data — selector name only
+    assert selected == []
+    manifest = _yaml(MANIFEST)["jobs"][job.job_id]
+    assert any("tests/test_options_pilot_chronology.py" in shlex.split(step.get("run", ""))  # ci-trigger-closure: data — command membership only
+               for step in manifest["steps"])
 # ---------------------------------------------------------------------------
 # W15-F-AIC lane — REPORT-ONLY ancestor-init census for curated-exclusive jobs.
 #
