@@ -453,3 +453,113 @@ to force a pass. Corrective owner evidence and review remain required.
 This integration preserves real merge ancestry. Hosted CI and independent
 review must evaluate the resulting published source before the draft release
 hold can be reconsidered; these local results are not production proof.
+
+
+### 2026-10-20 recovery: identity integration with main 3dc26674
+
+The original branch integrated exact main
+`3dc26674901a53bc03ac209906fbc49a42567308` into published parent
+`8716552c3020e9cb71efef02e3c1e99a1fc22674`. Main now includes #9649
+(`877702bfd078a9d40f0dc3ea408726302278c442`): TXSE, paired KHC/ET venue
+transfers, attributed DOMO/HUCK and YYGH/YFOR renames, acquisition exits, and
+the correction that distinguishes retained historical refusals from later
+BOUND direct-registrant evidence. The source and CI manifest merged normally.
+
+#### Reference history reconciliation
+
+The committed parent records were compared before resolving the three generated
+file conflicts. All 3,105 prior security rows survive exactly in main's 3,106-row
+master; main's only additional identity is `SEC:US-TXSE-TCBI`, admitted at
+`2026-10-19T06:10:18`. The issuer and security migration records match exactly.
+The aliases shared by both parents match on every field. Main contributes
+exactly four TCBI aliases; the SPY parent contributes exactly one sealed
+`yahoo_fetch/SPY` relation.
+
+Those already-committed, nonconflicting alias records were deduplicated on
+the declared grain, checked for exact equality on every shared key, and passed
+through the incumbent `merge_alias_rows` with no fresh admissions. The canonical
+builder then performed one complete build using those predecessor records,
+main's canonical master/migrations, the retained SPY receipt and the current
+2026-10-19 directory/CIK inputs. No source observation was replayed or resealed.
+
+The rebuild preserves every parent alias field and timestamp, every canonical
+security field, both migration histories, and the complete retained
+`prospective_reference`, `direct_registrant_intake`, `spy_option_root` and
+`spy_yahoo_catalog` documents. SPY evidence remains
+`2a1570ec0e11663b5e3d4e4da0138c660603815d69a7e31640cc99ec9ccbf7de`,
+with binding
+`efe9aa30a8c4a781cc411f796cd9f16dd3397ab094a82ae3c1e2e3e72ccf3f35`.
+
+No new security was minted by the combined build. The current CECO and IBOC
+venue changes remain explicit pending-transition refusals; the builder did not
+invent transfers. Coverage is **1,624 resolved / 1,636 total / 12 unresolved**.
+Both existing unresolved ceilings remain 16. The output has 3,106 securities,
+1,932 issuers, 8,931 aliases, three issuer migrations and one security migration.
+
+The resolved receipt, issuer master and aliases are whole-builder outputs.
+The semantically unchanged security master and migration files retain exact
+main bytes. An initial byte-level comparison of regenerated migration Parquets
+failed; comparison through the canonical reader proved every field and
+timestamp unchanged, so those existing main artifacts were preserved.
+
+| Integrated file | SHA-256 |
+| --- | --- |
+| `scripts/build_security_master.py` | `f57cb5687495b9fcd9fd93e171ca3518df3d9d7d1336c4590500b7dab7e21d0b` |
+| `.github/ci/legacy-jobs.yml` | `14704614244ef3a3891451e9c01a77fd91d618e69149f0bc238749e2919ebe5a` |
+| `tests/test_dataos_security_master.py` | `95685b7fe34b6fed1b8db067a728635b04130e2ccbfa669d332a50272dc84322` |
+| `data/reference/_receipt.json` | `c7ea9058c1ecd1bc6148d6ce8254c15e3b6476a386576486a6b78c6bfa20602d` |
+| `data/reference/issuer_master.parquet` | `f5d669926e166f258e5a81c12565f6860bf516a2c0fe2db88e071a1f4c7739b0` |
+| `data/reference/vendor_aliases.parquet` | `208493872db9485f75a6fa4e797afa1e6c92896553479ceb011aa4154e472e41` |
+
+The reviewed SPY helper remains SHA-256
+`6e635a475bb480428e88ea6bbc70a87adb087cf3ac08737bc6ca6833df7b2c80`;
+the materializer remains
+`7cc89bcf499e69fff9eaa88783b4f2a4593d373997ad7e3219e48f2fd5bb050b`.
+
+#### Actual verification and the remaining global-test failure
+
+The combined fifteen-suite owner run completed with **1,008 passed, two failed,
+one existing strict expected failure, and 14 subtests passed** in 189.32 seconds.
+It included the complete security-master suite, the three SPY/direct/prospective
+suites, six C04 suites and five SEC identity suites. This was not an all-green run.
+
+The receipt failure now arose from a distinct integration mismatch: `lost_rows`
+contains immutable security IDs whose inception codes remain DOMO and YYGH,
+while the documented continuity census uses current symbols HUCK and YFOR.
+The comparison now resolves those rows through the owner's current-symbol
+function and still requires exact set equality, real active identities, distinct
+lost rows, typed refusals and unminted refused listing keys. The existing
+historical-refusal / later-BOUND test correction from main remains intact.
+That corrected test and both coverage tests then passed: **3 passed** in
+3.92 seconds. No coverage assertion was relaxed.
+
+The two actual import-closure and packing tests passed: **2 passed** in
+210.42 seconds. The named suite paths and dependency closure are retained;
+no packing ceiling, job condition, timeout or threshold was relaxed.
+
+`test_every_produced_row_names_a_real_store_and_a_real_producer` remains a
+reported failure. Its function and the company-intelligence registry row are
+unchanged from main 3dc26674. The test interprets the closed
+`private:company-intelligence/state/generations/{sha256}.json` address as a
+path below this checkout. The registry instead records a real, source-owner
+accepted STAGE generation, with separate serving/adoption requirements.
+The exact retained operation, outcome, manifest and parent acceptance were
+read and their hashes and bindings checked against
+`research/theme_graph/issuer_disclosures_20261011/real_stage_20261012/README.md`.
+They agree on generation
+`05811e172eda94d6d07e63ad151284317d68af3781c6635150a586dfedbb22d0`,
+status `MEMBERS_OBSERVED_NOT_ADOPTED`, manifest written, no current pointer
+written, and no production acceptance. This is evidence of that accepted stage;
+it does not establish present private-store availability.
+
+The only legacy invocation of this global suite is `house-law-registry`, whose
+`if: ${{ false }}` condition is identical in main and this branch. This inherited
+cross-host path assumption is recorded for its test owner; it is not an active
+SPY release gate and no assertion, dataset status or producer was changed to
+hide it. The ordinary hosted gates, independent integration review and actual
+installed-owner/consumer qualification remain required.
+
+PR #9835 remains draft at this checkpoint. The independent 8716552 integration
+review is still outstanding; its result must be reconciled with this later main
+integration. Terminal #1043 retains its separately recorded UNKNOWN original
+push and has not been republished. Forecast probabilities remain withheld.
