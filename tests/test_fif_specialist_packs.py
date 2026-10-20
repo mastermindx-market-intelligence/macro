@@ -452,8 +452,13 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12"}
+    # PK03 lane: the BASE set plus PK03, sorted (never a removal).
+    assert registered_pack_ids() == (
+        "PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK11", "PK12",
+    )
+    assert set(PACK_PRODUCERS) == {
+        "PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK11", "PK12",
+    }
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -2040,7 +2045,9 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12")
+    assert registered_pack_ids() == (
+        "PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK11", "PK12",
+    )
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -3610,3 +3617,957 @@ def test_pk04_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert len(envelope["fields"]) == 20
     assert envelope["coverage"]["valued_fields"] == 15
+
+
+# 38. PK03: segments and geographic/product dimensions --------------------------
+#
+# Fixture-verified through the raw ledger (FY2025 = 2024-09-29..2025-09-27):
+# the filing tags no segment-count fact (the narrative "five reportable
+# segments" is not extractable, R-K4'); segment-table facts carry BOTH the
+# business-segment axis and ConsolidationItemsAxis = OperatingSegmentsMember;
+# the only FY2025 eliminations-side fact under an allowlisted member is
+# OperatingIncomeLoss -42,627,000,000 under CorporateNonSegmentMember (no
+# revenue-basis ConsolidationItems row exists, so the revenue bridge ties on
+# the parts alone: 178,353 + 111,032 + 64,377 + 28,703 + 33,696 = 416,161 =
+# consolidated revenue); the geographic and product mirrors reproduce PK04's
+# revenue_disaggregated rows exactly.
+
+from engine.fundamental_forensics.specialist_packs import (  # noqa: E402
+    pk03_segments,
+)
+
+PK03_QUERY = {**QUERY, "requested_metrics": ["segments"]}
+# A.6: sha256 of the canonical JSON bytes of every BASE pack's envelope under
+# this module's own inputs, recorded before the PK03 lane's edits; PK03 edits
+# must not move any of them.
+BASE_PACK_ENVELOPE_SHA256 = {
+    "PK01": (
+        "2c2e4623bf084b08b1652bc9b0b8ad209dfa280d6fc459274b6ea38d75761a57"
+    ),
+    "PK02": (
+        "bab1af7e7ee25465d45ebd7ed8bac5315184f664d5bb8ebb77de9d0c48ae8356"
+    ),
+    "PK04": (
+        "eefb6db8a185e63f676fb2b9109687bc368c2782f675659f136cef05174f2561"
+    ),
+    "PK06": (
+        "36eb40f96a1bc8560fedf52268e3d522008eff8cdd259d242ec681269f37cd38"
+    ),
+    "PK09": (
+        "78f5243b1c8b030edc598de0532c4ce18bc66cbd81067cbde467dd856885f949"
+    ),
+    "PK11": (
+        "02295cda96fa64d1750a0cf709ce0a85bfeb3c55047e3ee94345f4e95cc14a8e"
+    ),
+    "PK12": (
+        "c70e3ee97b56cffd43962dbb725b8e6ea356fa1f66976d06ffd35077f56f2a25"
+    ),
+}
+SEGMENT_LEDGER_AXIS = "us-gaap:StatementBusinessSegmentsAxis"
+CONSOLIDATION_ITEMS_LEDGER_AXIS = "{http://fasb.org/srt/2025}ConsolidationItemsAxis"
+GEOGRAPHICAL_LEDGER_AXIS = "{http://fasb.org/srt/2025}StatementGeographicalAxis"
+PRODUCT_OR_SERVICE_LEDGER_AXIS = (
+    "{http://fasb.org/srt/2025}ProductOrServiceAxis"
+)
+
+
+def _aapl_member(local: str) -> str:
+    return f"{{http://www.apple.com/20250927}}{local}"
+
+
+# B.4: canonical member order, values in the facts' own scale (USD units).
+SEGMENT_REVENUE_ROWS = [
+    (_aapl_member("AmericasSegmentMember"), "178353000000"),
+    (_aapl_member("EuropeSegmentMember"), "111032000000"),
+    (_aapl_member("GreaterChinaSegmentMember"), "64377000000"),
+    (_aapl_member("JapanSegmentMember"), "28703000000"),
+    (_aapl_member("RestOfAsiaPacificSegmentMember"), "33696000000"),
+]
+SEGMENT_PROFIT_ROWS = [
+    (_aapl_member("AmericasSegmentMember"), "72480000000"),
+    (_aapl_member("EuropeSegmentMember"), "47739000000"),
+    (_aapl_member("GreaterChinaSegmentMember"), "26917000000"),
+    (_aapl_member("JapanSegmentMember"), "13955000000"),
+    (_aapl_member("RestOfAsiaPacificSegmentMember"), "14586000000"),
+]
+GEOGRAPHIC_ROWS = [
+    (_aapl_member("OtherCountriesMember"), "199994000000"),
+    ("{http://xbrl.sec.gov/country/2025}CN", "64377000000"),
+    ("{http://xbrl.sec.gov/country/2025}US", "151790000000"),
+]
+PRODUCT_SERVICE_ROWS = [
+    (_aapl_member("IPadMember"), "28023000000"),
+    (_aapl_member("IPhoneMember"), "209586000000"),
+    (_aapl_member("MacMember"), "33708000000"),
+    (_aapl_member("WearablesHomeandAccessoriesMember"), "35686000000"),
+    ("us-gaap:ProductMember", "307003000000"),
+    ("us-gaap:ServiceMember", "109158000000"),
+]
+
+
+def _pk03_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK03_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk03_result() -> dict:
+    return produce_pack("PK03", _pk03_input())
+
+
+def test_pk03_result_passes_contract_validator(pk03_result: dict) -> None:
+    assert contract.validate_pack_result(pk03_result) == []
+
+
+def test_pk03_result_passes_jsonschema_envelope(pk03_result: dict) -> None:
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:  # pragma: no cover - CI carries referencing
+        pytest.skip("referencing unavailable; validate_pack_result half only")
+    schema = contract.load_envelope_schema()
+    packet = json.loads(
+        (ROOT / "contracts" / "financial_intelligence_packet.schema.json").read_text(
+            "utf-8"
+        )
+    )
+    registry = Registry()
+    for contents in (schema, packet):
+        registry = registry.with_resource(
+            contents["$id"],
+            Resource.from_contents(contents, default_specification=DRAFT202012),
+        )
+    errors = list(
+        Draft202012Validator(schema, registry=registry).iter_errors(pk03_result)
+    )
+    assert errors == []
+
+
+def test_pk03_rows_follow_catalogue_order_with_twenty_three_rows(
+    pk03_result: dict,
+) -> None:
+    catalogue = contract.load_pack_schema("PK03")
+    expected = [item["field_id"] for item in catalogue["fields"]]
+    produced = [row["field_id"] for row in pk03_result["fields"]]
+    assert len(produced) == 23  # 8 catalogue fields; the maps repeat
+    compacted = [
+        field_id
+        for index, field_id in enumerate(produced)
+        if index == 0 or produced[index - 1] != field_id
+    ]
+    assert compacted == expected
+    position = produced.index("segment_revenue")
+    assert produced[position + 4] == "segment_revenue"  # adjacent block
+    assert [row["check_id"] for row in pk03_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+
+
+def test_pk03_segment_revenue_rows(pk03_result: dict, ledger) -> None:
+    rows = _rows(pk03_result, "segment_revenue")
+    assert len(rows) == 5
+    for row, (member, value) in zip(rows, SEGMENT_REVENUE_ROWS):
+        assert row["quality_state"] == "valued"
+        assert row["concept"] == (
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+        )
+        assert row["value"] == value
+        assert row["unit"] == "USD"
+        assert row["period"] == {
+            "kind": "duration",
+            "start": "2024-09-29",
+            "end": "2025-09-27",
+        }
+        # Each row carries BOTH the segment member and the fact's
+        # ConsolidationItemsAxis = OperatingSegmentsMember dimension (the
+        # framework records the fact's dimensions in canonical axis order).
+        assert row["dimensions"] == [
+            {"axis": SEGMENT_LEDGER_AXIS, "member": member},
+            {
+                "axis": CONSOLIDATION_ITEMS_LEDGER_AXIS,
+                "member": "us-gaap:OperatingSegmentsMember",
+            },
+        ]
+        assert row["mapping_rule_id"] == "PK03.segment_revenue.dimensioned_fact/v1"
+        assert ledger.by_id(row["source_occurrence_ids"][0]) is not None
+
+
+def test_pk03_segment_profit_rows(pk03_result: dict) -> None:
+    rows = _rows(pk03_result, "segment_profit_or_loss")
+    assert len(rows) == 5
+    for row, (member, value) in zip(rows, SEGMENT_PROFIT_ROWS):
+        assert row["quality_state"] == "valued"
+        assert row["concept"] == "us-gaap:OperatingIncomeLoss"
+        assert row["value"] == value
+        assert row["dimensions"][0]["axis"] == SEGMENT_LEDGER_AXIS
+        assert row["dimensions"][0]["member"] == member
+
+
+def test_pk03_eliminations_row_is_signed_non_segment_fact(
+    pk03_result: dict,
+) -> None:
+    rows = _rows(pk03_result, "unallocated_corporate_and_eliminations")
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["quality_state"] == "valued"
+    assert row["concept"] == "us-gaap:OperatingIncomeLoss"
+    assert row["value"] == "-42627000000"  # the fact carries sign="-"
+    assert row["dimensions"] == [
+        {
+            "axis": CONSOLIDATION_ITEMS_LEDGER_AXIS,
+            "member": "us-gaap:CorporateNonSegmentMember",
+        }
+    ]
+    assert row["mapping_rule_id"] == (
+        "PK03.unallocated_corporate_and_eliminations.dimensioned_fact/v1"
+    )
+
+
+def test_pk03_geographic_and_product_mirrors(pk03_result: dict) -> None:
+    geographic = _rows(pk03_result, "geographic_revenue")
+    assert len(geographic) == 3
+    for row, (member, value) in zip(geographic, GEOGRAPHIC_ROWS):
+        assert row["quality_state"] == "valued"
+        assert row["value"] == value
+        assert row["dimensions"] == [
+            {"axis": GEOGRAPHICAL_LEDGER_AXIS, "member": member}
+        ]
+    product = _rows(pk03_result, "product_service_revenue")
+    assert len(product) == 6
+    for row, (member, value) in zip(product, PRODUCT_SERVICE_ROWS):
+        assert row["quality_state"] == "valued"
+        assert row["value"] == value
+        assert row["dimensions"] == [
+            {"axis": PRODUCT_OR_SERVICE_LEDGER_AXIS, "member": member}
+        ]
+
+
+def test_pk03_segment_count_is_missing_standard_fact(pk03_result: dict) -> None:
+    row = _row(pk03_result, "number_of_operating_segments")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:NumberOfOperatingSegments"
+    )
+
+
+def test_pk03_text_fields_are_unsupported(pk03_result: dict) -> None:
+    for field_id in ("segment_definition_change_note", "segment_reporting_text_block"):
+        row = _row(pk03_result, field_id)
+        assert row["quality_state"] == "unsupported"
+        assert row["non_value_state"] == "unsupported"
+        assert row["evidence_kind"] == "text_span"
+        assert row["required_evidence_kind"] == "text_span"
+        assert row["value"] is None
+
+
+def test_pk03_revenue_bridge_passes_with_exact_tie_limitation(
+    pk03_result: dict,
+) -> None:
+    check = _check(pk03_result, "segment_sum_plus_eliminations_equals_consolidated")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1000000"
+    assert check["evidence_field_ids"] == [
+        "segment_revenue",
+        "unallocated_corporate_and_eliminations",
+    ]
+    # 178,353 + 111,032 + 64,377 + 28,703 + 33,696 = 416,161 exactly, and the
+    # eliminations field carries no revenue-basis row: the exact-tie note.
+    assert (
+        "pk03.segment_sum_plus_eliminations_equals_consolidated: eliminations"
+        " absent, exact tie" in pk03_result["limitations"]
+    )
+
+
+def test_pk03_internal_revenue_not_double_counted_passes(
+    pk03_result: dict,
+) -> None:
+    check = _check(pk03_result, "fp_internal_revenue_not_double_counted")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1000000"
+    assert check["evidence_field_ids"] == [
+        "segment_revenue",
+        "unallocated_corporate_and_eliminations",
+    ]
+
+
+def test_pk03_segment_count_consistent_awaits_count_fact(
+    pk03_result: dict,
+) -> None:
+    check = _check(pk03_result, "segment_count_consistent")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert check["evidence_field_ids"] == [
+        "number_of_operating_segments",
+        "segment_revenue",
+    ]
+
+
+def test_pk03_coverage_counts(pk03_result: dict) -> None:
+    assert pk03_result["coverage"] == {
+        "valued_fields": 20,
+        "missing_fields": 1,
+        "unsupported_fields": 2,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+# 39. PK03 A.4/A.5/A.3 synthetic checks -----------------------------------------
+
+
+def _syn_check_ledger(*events) -> RawFactLedger:
+    return RawFactLedger(events=tuple(events))
+
+
+def _syn_undim_occurrence(concept: str, value: str) -> RawFactOccurrence:
+    return _synthetic_occurrence(
+        concept, start=_date(2024, 9, 29), end=_date(2025, 9, 27), value=value
+    )
+
+
+def _syn_segment_row(member: str, value: str) -> dict:
+    return {
+        "field_id": "segment_revenue",
+        "quality_state": "valued",
+        "value": value,
+        "concept": "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+        "unit": "USD",
+        "reason": None,
+        "dimensions": [
+            {
+                "axis": CONSOLIDATION_ITEMS_LEDGER_AXIS,
+                "member": "us-gaap:OperatingSegmentsMember",
+            },
+            {"axis": SEGMENT_LEDGER_AXIS, "member": member},
+        ],
+    }
+
+
+def _syn_elimination_row(
+    value: str,
+    concept: str = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+) -> dict:
+    return {
+        "field_id": "unallocated_corporate_and_eliminations",
+        "quality_state": "valued",
+        "value": value,
+        "concept": concept,
+        "unit": "USD",
+        "reason": None,
+        "dimensions": [
+            {
+                "axis": CONSOLIDATION_ITEMS_LEDGER_AXIS,
+                "member": "us-gaap:IntersegmentEliminationMember",
+            }
+        ],
+    }
+
+
+def _syn_field_outcome(field_id: str, rows: list, concept: str) -> object:
+    if rows:
+        return pack_base._FieldOutcome(
+            row=rows[0],
+            value=None,
+            decimals=-6,
+            unit="USD",
+            extra_rows=tuple(rows[1:]),
+        )
+    return pack_base._FieldOutcome(
+        row={
+            "field_id": field_id,
+            "quality_state": "missing",
+            "value": None,
+            "concept": concept,
+            "unit": "USD",
+            "reason": "missing_dependency",
+            "dimensions": [],
+        },
+        value=None,
+        decimals=None,
+        unit="USD",
+    )
+
+
+class _SynCheckPackage:
+    manifest = {
+        "form": "10-K",
+        "period_of_report": "2025-09-27",
+        "accession": "0000000000-00-000000",
+    }
+    members: dict = {}
+
+
+_SYN_PK03_INPUT = PackInput(
+    packages=(_SynCheckPackage(),), entity={"entity_id": "syn"}, query={"q": 1}
+)
+
+
+def _pk03_check_outcomes(
+    segment_rows: list, elimination_rows: list
+) -> dict:
+    return {
+        "segment_revenue": _syn_field_outcome(
+            "segment_revenue",
+            segment_rows,
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+        ),
+        "unallocated_corporate_and_eliminations": _syn_field_outcome(
+            "unallocated_corporate_and_eliminations",
+            elimination_rows,
+            "us-gaap:OperatingIncomeLoss",
+        ),
+    }
+
+
+def _run_pk03_catalogue_check(
+    check_id: str, outcomes: dict, ledger_events: tuple
+) -> dict:
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK03")["checks"]
+        if item["check_id"] == check_id
+    )
+    specs = [
+        spec
+        for spec in pk03_segments.PRODUCER.checks
+        if spec.check_id == check_id
+    ]
+    resolver = pack_base._OperandResolver(
+        outcomes,
+        _SYN_PK03_INPUT,
+        foreign_cache={},
+        ledger=_syn_check_ledger(*ledger_events),
+        por=_date(2025, 9, 27),
+    )
+    return pack_base._evaluate_check(
+        catalogue_check,
+        specs,
+        resolver,
+        check_rules=pk03_segments.PRODUCER.check_rules,
+        limitation_sink=[],
+        pack_id="PK03",
+    )
+
+
+_SYN_FIVE_SEGMENTS = [
+    _syn_segment_row(member, "100000000") for member in "abcde"
+]
+_SYN_REVENUE_CONCEPT = "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+
+
+def _pk03_a4_check(segment_rows, elimination_rows, consolidated) -> tuple:
+    outcomes = _pk03_check_outcomes(segment_rows, elimination_rows)
+    events = (
+        (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, consolidated),)
+        if consolidated is not None
+        else ()
+    )
+    sink: list[str] = []
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK03")["checks"]
+        if item["check_id"] == "segment_sum_plus_eliminations_equals_consolidated"
+    )
+    specs = [
+        spec
+        for spec in pk03_segments.PRODUCER.checks
+        if spec.check_id == "segment_sum_plus_eliminations_equals_consolidated"
+    ]
+    resolver = pack_base._OperandResolver(
+        outcomes,
+        _SYN_PK03_INPUT,
+        foreign_cache={},
+        ledger=_syn_check_ledger(*events),
+        por=_date(2025, 9, 27),
+    )
+    row = pack_base._evaluate_check(
+        catalogue_check, specs, resolver, limitation_sink=sink, pack_id="PK03"
+    )
+    return row, sink
+
+
+def test_pk03_a4_passes_with_valued_elimination_and_no_tie_limitation() -> None:
+    # parts 500M + elimination -100M = 400M = consolidated revenue.
+    row, sink = _pk03_a4_check(
+        _SYN_FIVE_SEGMENTS, [_syn_elimination_row("-100000000")], "400000000"
+    )
+    assert row["status"] == "pass"
+    assert row["reason"] is None
+    assert row["tolerance"] == "1000000"
+    assert sink == []
+
+
+def test_pk03_a4_fails_when_parts_plus_elimination_off_by_two_million() -> None:
+    # 500M - 98M = 402M vs 400M consolidated: outside the 1M tolerance.
+    row, _sink = _pk03_a4_check(
+        _SYN_FIVE_SEGMENTS, [_syn_elimination_row("-98000000")], "400000000"
+    )
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+
+
+def test_pk03_a4_elimination_absent_and_parts_not_tying_is_not_evaluable() -> None:
+    row, sink = _pk03_a4_check(_SYN_FIVE_SEGMENTS, [], "400000000")
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert sink == []  # never an implied zero, never the exact-tie note
+
+
+def test_pk03_a4_exact_tie_emits_the_limitation_string() -> None:
+    row, sink = _pk03_a4_check(_SYN_FIVE_SEGMENTS, [], "500000000")
+    assert row["status"] == "pass"
+    assert row["reason"] is None
+    assert sink == [
+        "pk03.segment_sum_plus_eliminations_equals_consolidated: eliminations"
+        " absent, exact tie"
+    ]
+
+
+def test_pk03_a4_profit_basis_elimination_row_is_not_revenue_basis() -> None:
+    # The only elimination row is OperatingIncomeLoss (a profit figure): it
+    # never joins the revenue bridge, so the bridge ties on the parts alone.
+    row, sink = _pk03_a4_check(
+        _SYN_FIVE_SEGMENTS,
+        [_syn_elimination_row("-100000000", concept="us-gaap:OperatingIncomeLoss")],
+        "500000000",
+    )
+    assert row["status"] == "pass"
+    assert sink == [
+        "pk03.segment_sum_plus_eliminations_equals_consolidated: eliminations"
+        " absent, exact tie"
+    ]
+
+
+def test_pk03_a4_consolidated_not_valued_is_not_evaluable() -> None:
+    row, _sink = _pk03_a4_check(
+        _SYN_FIVE_SEGMENTS, [_syn_elimination_row("-100000000")], None
+    )
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+
+
+def _run_pk03_fp_check(segment_rows, elimination_rows, ledger_events):
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK03")["checks"]
+        if item["check_id"] == "fp_internal_revenue_not_double_counted"
+    )
+    outcomes = _pk03_check_outcomes(segment_rows, elimination_rows)
+    ledger = _syn_check_ledger(*ledger_events) if ledger_events is not None else None
+    produced = pk03_segments._fp_internal_revenue_not_double_counted(
+        _SYN_PK03_INPUT, ledger, outcomes, catalogue_check
+    )
+    assert produced is not None
+    row, limitations = produced
+    assert limitations == ()
+    return row
+
+
+def test_pk03_a5_repeated_member_fails() -> None:
+    duplicated = _SYN_FIVE_SEGMENTS + [_syn_segment_row("a", "50000000")]
+    row = _run_pk03_fp_check(
+        duplicated, [], (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, "550000000"),)
+    )
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+
+
+def test_pk03_a5_sum_exceeding_consolidated_fails() -> None:
+    row = _run_pk03_fp_check(
+        _SYN_FIVE_SEGMENTS,
+        [],
+        (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, "400000000"),),
+    )
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+
+
+def test_pk03_a5_within_tolerance_and_revenue_eliminations_count() -> None:
+    # 500M parts + 40M revenue-basis elimination = 540M <= 540M + 1M.
+    row = _run_pk03_fp_check(
+        _SYN_FIVE_SEGMENTS,
+        [_syn_elimination_row("40000000")],
+        (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, "540000000"),),
+    )
+    assert row["status"] == "pass"
+    # 500M + 60M = 560M > 540M + 1M: the elimination rows do count.
+    row = _run_pk03_fp_check(
+        _SYN_FIVE_SEGMENTS,
+        [_syn_elimination_row("60000000")],
+        (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, "540000000"),),
+    )
+    assert row["status"] == "fail"
+
+
+def test_pk03_a5_missing_dependencies_are_not_evaluable() -> None:
+    row = _run_pk03_fp_check(_SYN_FIVE_SEGMENTS, [], None)
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    row = _run_pk03_fp_check(
+        [], [], (_syn_undim_occurrence(_SYN_REVENUE_CONCEPT, "400000000"),)
+    )
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+
+
+def _run_pk03_count_check(count_value: str | None, segment_rows) -> dict:
+    outcomes = _pk03_check_outcomes(segment_rows, [])
+    if count_value is None:
+        outcomes["number_of_operating_segments"] = _syn_field_outcome(
+            "number_of_operating_segments", [], "us-gaap:NumberOfOperatingSegments"
+        )
+    else:
+        outcomes["number_of_operating_segments"] = pack_base._FieldOutcome(
+            row={
+                "field_id": "number_of_operating_segments",
+                "quality_state": "valued",
+                "value": count_value,
+                "concept": "us-gaap:NumberOfOperatingSegments",
+                "unit": None,
+                "reason": None,
+                "dimensions": [],
+            },
+            value=Decimal(count_value),
+            decimals=None,
+            unit=None,
+        )
+    return _run_pk03_catalogue_check(
+        "segment_count_consistent", outcomes, ()
+    )
+
+
+def test_pk03_a3_count_five_with_five_rows_passes() -> None:
+    row = _run_pk03_count_check("5", _SYN_FIVE_SEGMENTS)
+    assert row["status"] == "pass"
+    assert row["reason"] is None
+
+
+def test_pk03_a3_count_four_with_five_rows_fails() -> None:
+    row = _run_pk03_count_check("4", _SYN_FIVE_SEGMENTS)
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+
+
+def test_pk03_a3_missing_count_is_not_evaluable() -> None:
+    row = _run_pk03_count_check(None, _SYN_FIVE_SEGMENTS)
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+
+
+# 40. PK03 A.1/A.2 mapping semantics on synthetic ledgers -----------------------
+
+
+def _syn_dim_occurrence(
+    concept: str, dimensions: tuple, value: str
+) -> RawFactOccurrence:
+    return _synthetic_occurrence(
+        concept,
+        start=_date(2024, 9, 29),
+        end=_date(2025, 9, 27),
+        explicit=tuple(sorted(dimensions)),
+        value=value,
+    )
+
+
+def _pk03_catalogue_field(field_id: str) -> dict:
+    return next(
+        item
+        for item in contract.load_pack_schema("PK03")["fields"]
+        if item["field_id"] == field_id
+    )
+
+
+def test_pk03_a2_allowlist_emits_declared_concept_then_member_order() -> None:
+    mapping = pk03_segments._FIELD_MAPPINGS[
+        "unallocated_corporate_and_eliminations"
+    ]
+    events = [
+        # IntersegmentEliminationMember is allowlisted (3rd) and canonically
+        # first; CorporateNonSegmentMember is allowlisted 1st. Two concepts
+        # carry facts; concept order dominates, then allowlist declaration
+        # order — never canonical member order.
+        _syn_dim_occurrence(
+            "us-gaap:OperatingIncomeLoss",
+            (
+                (
+                    CONSOLIDATION_ITEMS_LEDGER_AXIS,
+                    "us-gaap:IntersegmentEliminationMember",
+                ),
+            ),
+            "-5000000",
+        ),
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            ((CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:CorporateNonSegmentMember"),),
+            "7000000",
+        ),
+        _syn_dim_occurrence(
+            "us-gaap:OperatingIncomeLoss",
+            ((CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:CorporateNonSegmentMember"),),
+            "-42000000",
+        ),
+    ]
+    outcome = pack_base._resolve_allowlist_dimensioned_fact_mapping(
+        pack_id="PK03",
+        catalogue_field=_pk03_catalogue_field(
+            "unallocated_corporate_and_eliminations"
+        ),
+        mapping=mapping,
+        ledger=_syn_check_ledger(*events),
+        por=_date(2025, 9, 27),
+    )
+    rows = [outcome.row, *outcome.extra_rows]
+    assert [
+        (row["concept"], row["dimensions"][0]["member"], row["value"])
+        for row in rows
+    ] == [
+        ("us-gaap:Revenues", "us-gaap:CorporateNonSegmentMember", "7000000"),
+        (
+            "us-gaap:OperatingIncomeLoss",
+            "us-gaap:CorporateNonSegmentMember",
+            "-42000000",
+        ),
+        (
+            "us-gaap:OperatingIncomeLoss",
+            "us-gaap:IntersegmentEliminationMember",
+            "-5000000",
+        ),
+    ]
+    assert outcome.value == Decimal("-40000000")
+
+
+def test_pk03_a2_ignores_other_members_and_extra_dimensions() -> None:
+    mapping = pk03_segments._FIELD_MAPPINGS[
+        "unallocated_corporate_and_eliminations"
+    ]
+    events = [
+        # A non-allowlisted member on the admitted axis: silently ignored.
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            ((CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OtherMember"),),
+            "999",
+        ),
+        # An allowlisted member that also carries another explicit dimension:
+        # ignored (facts must carry no other explicit dimension).
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            (
+                (
+                    CONSOLIDATION_ITEMS_LEDGER_AXIS,
+                    "us-gaap:MaterialReconcilingItemsMember",
+                ),
+                (SEGMENT_LEDGER_AXIS, _aapl_member("AmericasSegmentMember")),
+            ),
+            "888",
+        ),
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            ((CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:CorporateNonSegmentMember"),),
+            "7000000",
+        ),
+    ]
+    outcome = pack_base._resolve_allowlist_dimensioned_fact_mapping(
+        pack_id="PK03",
+        catalogue_field=_pk03_catalogue_field(
+            "unallocated_corporate_and_eliminations"
+        ),
+        mapping=mapping,
+        ledger=_syn_check_ledger(*events),
+        por=_date(2025, 9, 27),
+    )
+    rows = [outcome.row, *outcome.extra_rows]
+    assert len(rows) == 1
+    assert rows[0]["dimensions"][0]["member"] == "us-gaap:CorporateNonSegmentMember"
+    assert rows[0]["value"] == "7000000"
+
+
+def test_pk03_a2_zero_rows_missing_names_first_concept() -> None:
+    mapping = pk03_segments._FIELD_MAPPINGS[
+        "unallocated_corporate_and_eliminations"
+    ]
+    outcome = pack_base._resolve_allowlist_dimensioned_fact_mapping(
+        pack_id="PK03",
+        catalogue_field=_pk03_catalogue_field(
+            "unallocated_corporate_and_eliminations"
+        ),
+        mapping=mapping,
+        ledger=_syn_check_ledger(),
+        por=_date(2025, 9, 27),
+    )
+    assert outcome.row["quality_state"] == "missing"
+    assert outcome.row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueFromContractWithCustomer"
+        "ExcludingAssessedTax"
+    )
+    assert outcome.value is None
+
+
+def test_pk03_a1_grouped_emits_per_concept_in_declared_order() -> None:
+    mapping = pk03_segments._FIELD_MAPPINGS["segment_revenue"]
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    def_xml = next(
+        payload
+        for name, payload in sorted(package.members.items())
+        if name.endswith("_def.xml")
+    )
+    groups = definition_linkbase.parse_axis_member_groups(def_xml)
+    events = [
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            (
+                (SEGMENT_LEDGER_AXIS, _aapl_member("JapanSegmentMember")),
+                (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+            ),
+            "1",
+        ),
+        _syn_dim_occurrence(
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            (
+                (SEGMENT_LEDGER_AXIS, _aapl_member("AmericasSegmentMember")),
+                (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+            ),
+            "2",
+        ),
+        _syn_dim_occurrence(
+            "us-gaap:Revenues",
+            (
+                (SEGMENT_LEDGER_AXIS, _aapl_member("AmericasSegmentMember")),
+                (CONSOLIDATION_ITEMS_LEDGER_AXIS, "us-gaap:OperatingSegmentsMember"),
+            ),
+            "3",
+        ),
+    ]
+    outcome = pack_base._resolve_grouped_dimensioned_fact_mapping(
+        pack_id="PK03",
+        catalogue_field=_pk03_catalogue_field("segment_revenue"),
+        mapping=mapping,
+        ledger=_syn_check_ledger(*events),
+        por=_date(2025, 9, 27),
+        axis_groups=groups,
+        limitation_sink=None,
+    )
+    rows = [outcome.row, *outcome.extra_rows]
+    # Concept-major order: every first-concept row (canonical member order),
+    # then the second concept's rows — each row names its own concept.
+    assert [
+        (row["concept"], row["dimensions"][0]["member"], row["value"])
+        for row in rows
+    ] == [
+        (
+            "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+            _aapl_member("AmericasSegmentMember"),
+            "2",
+        ),
+        ("us-gaap:Revenues", _aapl_member("AmericasSegmentMember"), "3"),
+        ("us-gaap:Revenues", _aapl_member("JapanSegmentMember"), "1"),
+    ]
+
+
+# 41. PK03 bank probe, determinism, invariance, registry, CLI, A33 ---------------
+
+
+def test_pk03_bank_probe_keeps_pack_applicable(pk03_result: dict) -> None:
+    bank = produce_pack("PK03", _pk03_input(issuer_sic="6021", sic_source="dei"))
+    assert bank["applicability"]["state"] == "applicable"
+    assert bank["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert bank["fields"] == pk03_result["fields"]
+    assert bank["checks"] == pk03_result["checks"]
+    assert "issuer_class=bank" in bank["receipts"]
+    assert contract.validate_pack_result(bank) == []
+
+
+def test_pk03_unknown_sic_keeps_pack_applicable() -> None:
+    result = produce_pack("PK03", _pk03_input(issuer_sic=None, sic_source=None))
+    # PK03 declares no applicable_classes: the class gate is never consulted.
+    assert result["applicability"]["state"] == "applicable"
+
+
+def test_pk03_production_is_deterministic() -> None:
+    first = produce_pack("PK03", _pk03_input())
+    second = produce_pack("PK03", _pk03_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+def test_base_pack_envelopes_unchanged_by_pk03_edits() -> None:
+    for pack_id, expected in BASE_PACK_ENVELOPE_SHA256.items():
+        result = produce_pack(pack_id, _pk03_input())
+        payload = json.dumps(
+            result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        )
+        assert sha256(payload.encode("utf-8")).hexdigest() == expected, pack_id
+
+
+def test_registered_pack_ids_is_base_set_plus_pk03() -> None:
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK06",
+        "PK09",
+        "PK11",
+        "PK12",
+    )
+
+
+def test_pk03_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk03.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK03_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK03",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert len(envelope["fields"]) == 23
+    assert envelope["coverage"]["valued_fields"] == 20
+
+
+def test_pk03_no_issuer_literals_in_specialist_pack_code() -> None:
+    # A33: the specialist-pack production surface (every producer module, the
+    # shared framework and the offline CLI) carries no issuer literal.
+    production_files = sorted(
+        (ROOT / "engine" / "fundamental_forensics" / "specialist_packs").glob("*.py")
+    ) + [ROOT / "scripts" / "fif_specialist_packs.py"]
+    assert production_files
+    for path in production_files:
+        text = path.read_text("utf-8")
+        for literal in ("0000320193", "AAPL", "Apple"):
+            assert literal not in text, f"{path.name} carries {literal!r}"

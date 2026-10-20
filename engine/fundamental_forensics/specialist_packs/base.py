@@ -183,7 +183,7 @@ class DimensionedFactMapping:
     local names contain an excluded substring (case-insensitive) are skipped.
     """
 
-    concept: str
+    concept: str = ""
     # A.4: ``primary_axis`` defaults to ``""`` so a multi-axis mapping may
     # declare ``primary_axes`` alone; every BASE producer passes the single
     # axis positionally and is unaffected.
@@ -197,6 +197,16 @@ class DimensionedFactMapping:
     primary_axes: tuple[str, ...] = ()
     member_filter: str = ""
     optional_other_members: Mapping[str, str] | None = None
+    # A.1/A.2 additions (PK03 lane): ``concepts`` is the tuple form of
+    # ``concept`` — rows are emitted per concept in declared order, each row's
+    # ``concept`` naming the concept it came from, and zero rows over all
+    # concepts emit one ``missing`` row for the first concept. A
+    # ``member_allowlist`` admits only primary-axis members it lists, in
+    # declared (never canonical) order; facts under other members are ignored
+    # silently (they belong to other fields). Both default to the PK01/PK04
+    # behaviour and enter the mapping digest only when used.
+    concepts: tuple[str, ...] = ()
+    member_allowlist: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -851,6 +861,15 @@ def _dimensioned_mapping_digest(mapping: DimensionedFactMapping) -> str:
                 ),
             }
         )
+    if mapping.concepts or mapping.member_allowlist:
+        # A.1/A.2 (PK03): same rule — the digest moves only for a mapping
+        # that actually declares the concept tuple or the member allowlist.
+        payload.append(
+            {
+                "concepts": list(mapping.concepts),
+                "member_allowlist": list(mapping.member_allowlist),
+            }
+        )
     return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
@@ -1356,10 +1375,15 @@ class _OperandResolver:
         outcomes: Mapping[str, _FieldOutcome],
         pack_input: PackInput,
         foreign_cache: dict[str, dict[str, Any]],
+        ledger: RawFactLedger | None = None,
+        por: date | None = None,
     ) -> None:
         self._outcomes = outcomes
         self._pack_input = pack_input
         self._foreign_cache = foreign_cache
+        # A.4 (PK03): the ledger + primary period a ``core:`` operand probes.
+        self._ledger = ledger
+        self._por = por
 
     def own(self, name: str) -> bool:
         head, sep, _tail = name.partition(_CROSS_OPERAND_SEPARATOR)
@@ -1400,6 +1424,18 @@ class _OperandResolver:
         self, name: str
     ) -> tuple[Decimal | None, int | None, str | None]:
         """Return ``(value, decimals, unit)``; value ``None`` if unresolvable."""
+        if name == _CORE_REVENUE_OPERAND:
+            # A.4 (PK03): a core-catalogue operand resolves through the same
+            # core-alias mapping the revenue field uses, probed undimensioned
+            # over the ledger (no row is minted for it).
+            if self._ledger is None or self._por is None:
+                return None, None, None
+            value = probe_core_fact(
+                FactMapping(concepts=CORE_REVENUE_CONCEPTS),
+                self._ledger,
+                self._por,
+            )
+            return value, None, None
         if self.own(name):
             outcome = self._outcomes.get(name)
             if outcome is None:
@@ -1600,6 +1636,30 @@ def _evaluate_check(
                 "pass" if abs(expected - resolved[-1][0]) <= tolerance else "fail"
             )
             reasons.append(None)
+        elif isinstance(spec, ReconcileToConsolidated):
+            # A.4 (PK03): parts + eliminations vs the consolidated value; the
+            # elimination operand may name a concept-filtered row subset and
+            # an absent elimination is never an implied zero. The evaluator
+            # (module end) owns the semantics; this branch only dispatches.
+            own_operands.extend(
+                name
+                for name in (
+                    *spec.parts,
+                    *spec.eliminations,
+                    spec.consolidated,
+                )
+                if resolver.outcome(name) is not None
+            )
+            status, reason = _evaluate_reconcile_to_consolidated(
+                spec,
+                resolver,
+                limitation_sink=limitation_sink,
+                pack_id=pack_id,
+            )
+            statuses.append(status)
+            reasons.append(reason)
+            rule_tolerance = spec.tolerance
+            continue
         elif isinstance(spec, Reconcile):
             names = [*spec.parts, spec.consolidated]
             own_operands.extend(name for name in names if resolver.own(name))
@@ -1967,6 +2027,16 @@ def produce_pack_result(
                         axis_groups=_axis_groups(),
                         limitation_sink=mapping_limitations,
                     )
+                elif mapping.concepts or mapping.member_allowlist:
+                    # A.1/A.2 (PK03): concept tuple and/or primary-axis member
+                    # allowlist emission, no definition-linkbase filter.
+                    outcomes[field_id] = _resolve_allowlist_dimensioned_fact_mapping(
+                        pack_id=pack_id,
+                        catalogue_field=catalogue_field,
+                        mapping=mapping,
+                        ledger=ledger,
+                        por=por,
+                    )
                 else:
                     outcomes[field_id] = _resolve_dimensioned_fact_mapping(
                         pack_id=pack_id,
@@ -2101,7 +2171,9 @@ def produce_pack_result(
         specs_by_check: dict[str, list[CheckSpec]] = {}
         for check_spec in producer.checks:
             specs_by_check.setdefault(check_spec.check_id, []).append(check_spec)
-        resolver = _OperandResolver(outcomes, pack_input, foreign_cache={})
+        resolver = _OperandResolver(
+            outcomes, pack_input, foreign_cache={}, ledger=ledger, por=por
+        )
         for catalogue_check in catalogue["checks"]:
             check_id = catalogue_check["check_id"]
             # Additive hook (module end): a registered producer check fn owns
@@ -2798,10 +2870,20 @@ def _resolve_grouped_dimensioned_fact_mapping(
     per-(axis, group) breakdown for the A.5 grouped sum identity; its
     ``value`` stays ``None`` because a multi-axis member sum is not a
     meaningful operand.
+
+    A.1 (PK03): a mapping that declares ``concepts`` runs the whole per-axis
+    emission once per concept in declared order (concept-major, then axis,
+    then member), each emitted row's ``concept`` naming the concept it came
+    from; a concept with no admitted fact contributes no rows, and one
+    breakdown is exposed per (concept, axis) pass — an empty pass keeps its
+    incomplete breakdown so a grouped identity never mistakes it for complete.
+    With no ``concepts`` declared the single-concept BASE behaviour is
+    unchanged byte for byte.
     """
     field_id = catalogue_field["field_id"]
     period_kind = catalogue_field["period_kind"]
     axes = tuple(mapping.primary_axes) or (mapping.primary_axis,)
+    concepts = mapping.concepts or (mapping.concept,)
     optional_members = dict(mapping.optional_other_members or {})
     excluded_lower = tuple(
         substring.lower() for substring in mapping.exclude_member_substrings
@@ -2809,96 +2891,133 @@ def _resolve_grouped_dimensioned_fact_mapping(
     rule_id = f"{pack_id}.{field_id}.dimensioned_fact/v1"
     digest = _dimensioned_mapping_digest(mapping)
 
-    period_candidates = [
-        occurrence
-        for occurrence in ledger.events
-        if occurrence.concept_qname == mapping.concept
-        and not occurrence.is_nil
-        and _period_matches(occurrence, period_kind, por)
-    ]
-
+    all_candidates: list[Any] = []
     emitted: list[dict[str, Any]] = []
     decimals_seen: list[int] = []
     breakdowns: list[_AxisGroupBreakdown] = []
     admitted_ids: set[str] = set()
 
-    for axis in axes:
-        by_member: dict[str, list[Any]] = {}
-        for occurrence in period_candidates:
-            context = occurrence.context
-            if context.typed_dimensions:
-                continue  # typed axes are never admitted on this mapping kind
-            explicit = dict(context.explicit_dimensions)
-            ledger_axis = next(
-                (
-                    candidate
-                    for candidate in explicit
-                    if _dimension_qname_matches(candidate, axis)
-                ),
-                None,
-            )
-            if ledger_axis is None:
-                continue
-            admissible = True
-            for other_axis, other_member in explicit.items():
-                if other_axis == ledger_axis:
-                    continue
-                admitted_member = next(
-                    (
-                        member
-                        for declared, member in optional_members.items()
-                        if _dimension_qname_matches(other_axis, declared)
-                    ),
-                    None,
-                )
-                if admitted_member is None or str(other_member) != admitted_member:
-                    admissible = False
-                    break
-            if not admissible:
-                continue
-            member = str(explicit[ledger_axis])
-            if any(
-                substring in _local_name(member).lower()
-                for substring in excluded_lower
-            ):
-                continue
-            by_member.setdefault(member, []).append(occurrence)
-            admitted_ids.add(occurrence.occurrence_id)
+    for concept in concepts:
+        period_candidates = [
+            occurrence
+            for occurrence in ledger.events
+            if occurrence.concept_qname == concept
+            and not occurrence.is_nil
+            and _period_matches(occurrence, period_kind, por)
+        ]
+        all_candidates.extend(period_candidates)
 
-        groups = axis_groups.get(axis, ()) if axis_groups else ()
-        member_values: dict[str, Decimal | None] = {}
-        if groups:
-            union = sorted({m for group in groups for m in group})
-            outside = 0
-            ledger_by_member_key: dict[str, list[str]] = {}
-            for ledger_member in sorted(by_member):
-                target = next(
+        for axis in axes:
+            by_member: dict[str, list[Any]] = {}
+            for occurrence in period_candidates:
+                context = occurrence.context
+                if context.typed_dimensions:
+                    continue  # typed axes are never admitted on this mapping kind
+                explicit = dict(context.explicit_dimensions)
+                ledger_axis = next(
                     (
-                        group_member
-                        for group_member in union
-                        if _dimension_qname_matches(ledger_member, group_member)
+                        candidate
+                        for candidate in explicit
+                        if _dimension_qname_matches(candidate, axis)
                     ),
                     None,
                 )
-                if target is None:
-                    outside += 1
-                else:
-                    # Two ledger members may bind one group member through the
-                    # local-name fallback; both rows emit, and the LAST value
-                    # is the one the group sum sees (a collision then surfaces
-                    # as a failed group, never as silent double counting).
-                    ledger_by_member_key.setdefault(target, []).append(
-                        ledger_member
+                if ledger_axis is None:
+                    continue
+                admissible = True
+                for other_axis, other_member in explicit.items():
+                    if other_axis == ledger_axis:
+                        continue
+                    admitted_member = next(
+                        (
+                            member
+                            for declared, member in optional_members.items()
+                            if _dimension_qname_matches(other_axis, declared)
+                        ),
+                        None,
                     )
-            if outside and limitation_sink is not None:
-                limitation_sink.append(
-                    f"{field_id}: {outside} {axis} member(s) outside every"
-                    " definition group not emitted"
-                )
-            for group_member in union:
-                for ledger_member in sorted(
-                    ledger_by_member_key.get(group_member, ())
+                    if (
+                        admitted_member is None
+                        or str(other_member) != admitted_member
+                    ):
+                        admissible = False
+                        break
+                if not admissible:
+                    continue
+                member = str(explicit[ledger_axis])
+                if any(
+                    substring in _local_name(member).lower()
+                    for substring in excluded_lower
                 ):
+                    continue
+                by_member.setdefault(member, []).append(occurrence)
+                admitted_ids.add(occurrence.occurrence_id)
+
+            groups = axis_groups.get(axis, ()) if axis_groups else ()
+            member_values: dict[str, Decimal | None] = {}
+            if groups:
+                union = sorted({m for group in groups for m in group})
+                outside = 0
+                ledger_by_member_key: dict[str, list[str]] = {}
+                for ledger_member in sorted(by_member):
+                    target = next(
+                        (
+                            group_member
+                            for group_member in union
+                            if _dimension_qname_matches(
+                                ledger_member, group_member
+                            )
+                        ),
+                        None,
+                    )
+                    if target is None:
+                        outside += 1
+                    else:
+                        # Two ledger members may bind one group member through
+                        # the local-name fallback; both rows emit, and the
+                        # LAST value is the one the group sum sees (a
+                        # collision then surfaces as a failed group, never as
+                        # silent double counting).
+                        ledger_by_member_key.setdefault(target, []).append(
+                            ledger_member
+                        )
+                if outside and limitation_sink is not None:
+                    limitation_sink.append(
+                        f"{field_id}: {outside} {axis} member(s) outside every"
+                        " definition group not emitted"
+                    )
+                for group_member in union:
+                    for ledger_member in sorted(
+                        ledger_by_member_key.get(group_member, ())
+                    ):
+                        outcome = _dimensioned_row(
+                            catalogue_field=catalogue_field,
+                            por=por,
+                            mapping=mapping,
+                            occurrences=by_member[ledger_member],
+                        )
+                        outcome.row["mapping_rule_id"] = rule_id
+                        outcome.row["mapping_rule_digest"] = digest
+                        if mapping.concepts:
+                            # A.1: the row names the concept it came from.
+                            outcome.row["concept"] = concept
+                            outcome.row["taxonomy"] = (
+                                "extension"
+                                if concept.startswith("{")
+                                else concept.split(":", 1)[0]
+                            )
+                        emitted.append(outcome.row)
+                        member_values[group_member] = outcome.value
+                        if outcome.decimals is not None:
+                            decimals_seen.append(outcome.decimals)
+                groups_used = groups
+            else:
+                if limitation_sink is not None:
+                    limitation_sink.append(
+                        f"{field_id}: {axis} has no definition group; member"
+                        " rows unpartitioned"
+                    )
+                for ledger_member in sorted(by_member):
                     outcome = _dimensioned_row(
                         catalogue_field=catalogue_field,
                         por=por,
@@ -2907,40 +3026,27 @@ def _resolve_grouped_dimensioned_fact_mapping(
                     )
                     outcome.row["mapping_rule_id"] = rule_id
                     outcome.row["mapping_rule_digest"] = digest
+                    if mapping.concepts:
+                        outcome.row["concept"] = concept
+                        outcome.row["taxonomy"] = (
+                            "extension"
+                            if concept.startswith("{")
+                            else concept.split(":", 1)[0]
+                        )
                     emitted.append(outcome.row)
-                    member_values[group_member] = outcome.value
+                    member_values[ledger_member] = outcome.value
                     if outcome.decimals is not None:
                         decimals_seen.append(outcome.decimals)
-            groups_used = groups
-        else:
-            if limitation_sink is not None:
-                limitation_sink.append(
-                    f"{field_id}: {axis} has no definition group; member rows"
-                    " unpartitioned"
+                groups_used = (tuple(sorted(by_member)),) if by_member else ()
+            breakdowns.append(
+                _AxisGroupBreakdown(
+                    axis=axis, groups=groups_used, member_values=dict(member_values)
                 )
-            for ledger_member in sorted(by_member):
-                outcome = _dimensioned_row(
-                    catalogue_field=catalogue_field,
-                    por=por,
-                    mapping=mapping,
-                    occurrences=by_member[ledger_member],
-                )
-                outcome.row["mapping_rule_id"] = rule_id
-                outcome.row["mapping_rule_digest"] = digest
-                emitted.append(outcome.row)
-                member_values[ledger_member] = outcome.value
-                if outcome.decimals is not None:
-                    decimals_seen.append(outcome.decimals)
-            groups_used = (tuple(sorted(by_member)),) if by_member else ()
-        breakdowns.append(
-            _AxisGroupBreakdown(
-                axis=axis, groups=groups_used, member_values=dict(member_values)
             )
-        )
 
     if not emitted:
         foreign_axis_seen = False
-        for occurrence in period_candidates:
+        for occurrence in all_candidates:
             if occurrence.occurrence_id in admitted_ids:
                 continue
             context = occurrence.context
@@ -2954,9 +3060,9 @@ def _resolve_grouped_dimensioned_fact_mapping(
             (
                 "disallowed_dimension"
                 if foreign_axis_seen
-                else f"missing_standard_fact:{mapping.concept}"
+                else f"missing_standard_fact:{concepts[0]}"
             ),
-            concept=mapping.concept,
+            concept=concepts[0],
         )
         absence.row["mapping_rule_id"] = rule_id
         absence.row["mapping_rule_digest"] = digest
@@ -3102,6 +3208,7 @@ __all__ = [
     "CheckRule",
     "CheckRuleFn",
     "CheckSpec",
+    "CORE_REVENUE_CONCEPTS",
     "CrossStatement",
     "DISPLAY_ONLY_LIMITATION",
     "DimensionedFactMapping",
@@ -3118,6 +3225,7 @@ __all__ = [
     "PackSpec",
     "Presence",
     "Reconcile",
+    "ReconcileToConsolidated",
     "Rollforward",
     "RuleOperand",
     "RuleOutcome",
@@ -3261,3 +3369,256 @@ def probe_core_fact(
         extension_prefixes={},
     )
     return outcome.value
+
+
+# ---------------------------------------------------------------------------
+# A.1/A.2/A.4 additions (PK03 lane; strictly additive, appended after the
+# PK12 banner so parallel pack lanes stay mechanically mergeable)
+# ---------------------------------------------------------------------------
+
+# A.4: the shared core-catalogue revenue alias tuple, priority order 10/20/30
+# (``SalesRevenueNet`` is a 2009–2017 taxonomy element; ``Revenues`` is the
+# pre-606/other-basis residual). Copied from the core mapping PK04's
+# ``revenue`` field consumes, so the ``core:revenue`` check operand and any
+# revenue-basis row filter bind the same aliases without coupling producers.
+CORE_REVENUE_CONCEPTS = (
+    "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
+    "us-gaap:SalesRevenueNet",
+    "us-gaap:Revenues",
+)
+_CORE_REVENUE_OPERAND = "core:revenue"
+
+
+@dataclass(frozen=True)
+class ReconcileToConsolidated:
+    """A.4: ``sum(parts rows) + sum(elimination rows)`` vs the consolidated.
+
+    Row-level, signed ledger values, Decimal only. ``eliminations`` names
+    fields whose valued rows join the parts side; ``elimination_concepts``
+    (optional) admits only rows whose ``concept`` is listed — the revenue
+    basis of a mixed revenue/profit eliminations field. An eliminations
+    operand with NO valued admitted row is never an implied zero: the check
+    passes only when the parts alone tie within ``tolerance`` (emitting the
+    ``<pack>.<check>: eliminations absent, exact tie`` limitation), and is
+    ``not_evaluable`` / ``missing_dependency`` otherwise. A consolidated
+    operand that does not resolve (``core:revenue`` probes the ledger) or an
+    empty parts side is equally ``not_evaluable`` / ``missing_dependency``.
+    """
+
+    check_id: str
+    parts: tuple[str, ...]
+    eliminations: tuple[str, ...]
+    consolidated: str
+    tolerance: Decimal
+    elimination_concepts: tuple[str, ...] | None = None
+
+
+_KIND_BY_SPEC["ReconcileToConsolidated"] = "reconcile_to_consolidated"
+
+
+def _valued_row_decimal(row: Mapping[str, Any]) -> Decimal:
+    """A valued row's signed value as a Decimal (rows store decimal text)."""
+    return Decimal(str(row["value"]))
+
+
+def _evaluate_reconcile_to_consolidated(
+    spec: ReconcileToConsolidated,
+    resolver: _OperandResolver,
+    *,
+    limitation_sink: list[str] | None,
+    pack_id: str,
+) -> tuple[str, str | None]:
+    """A.4: evaluate one parts + eliminations vs consolidated reconciliation."""
+    names = (*spec.parts, *spec.eliminations, spec.consolidated)
+    for name in names:
+        outcome = resolver.outcome(name)
+        if outcome is not None and outcome.row.get("quality_state") == (
+            "not_applicable"
+        ):
+            return "not_applicable", outcome.row.get("reason")
+    parts_rows: list[Mapping[str, Any]] = []
+    for name in spec.parts:
+        outcome = resolver.outcome(name)
+        if outcome is None:
+            continue
+        parts_rows.extend(
+            row
+            for row in (outcome.row, *outcome.extra_rows)
+            if row.get("quality_state") == "valued"
+        )
+    elimination_rows: list[Mapping[str, Any]] = []
+    for name in spec.eliminations:
+        outcome = resolver.outcome(name)
+        if outcome is None:
+            continue
+        elimination_rows.extend(
+            row
+            for row in (outcome.row, *outcome.extra_rows)
+            if row.get("quality_state") == "valued"
+            and (
+                spec.elimination_concepts is None
+                or row.get("concept") in spec.elimination_concepts
+            )
+        )
+    consolidated, _decimals, _unit = resolver.resolve(spec.consolidated)
+    if consolidated is None or not parts_rows:
+        return "not_evaluable", "missing_dependency"
+    parts_sum = sum(
+        (_valued_row_decimal(row) for row in parts_rows), Decimal("0")
+    )
+    if elimination_rows:
+        eliminations_sum = sum(
+            (_valued_row_decimal(row) for row in elimination_rows), Decimal("0")
+        )
+        if abs(parts_sum + eliminations_sum - consolidated) <= spec.tolerance:
+            return "pass", None
+        return "fail", None
+    # The eliminations field carries no valued admitted row: never zero.
+    if abs(parts_sum - consolidated) <= spec.tolerance:
+        if limitation_sink is not None:
+            limitation_sink.append(
+                f"{pack_id.lower()}.{spec.check_id}:"
+                " eliminations absent, exact tie"
+            )
+        return "pass", None
+    return "not_evaluable", "missing_dependency"
+
+
+def _admitted_allowlist_occurrence(
+    occurrence: Any, mapping: DimensionedFactMapping, declared_member: str
+) -> bool:
+    """A.2: the fact carries the primary axis, no other dimension, and its
+    primary-axis member binds the declared allowlist qname."""
+    context = occurrence.context
+    if context.typed_dimensions:
+        return False
+    explicit = dict(context.explicit_dimensions)
+    ledger_axis = next(
+        (
+            axis
+            for axis in explicit
+            if _dimension_qname_matches(axis, mapping.primary_axis)
+        ),
+        None,
+    )
+    if ledger_axis is None:
+        return False
+    if any(axis != ledger_axis for axis in explicit):
+        return False  # facts must carry no other explicit dimension
+    return _dimension_qname_matches(str(explicit[ledger_axis]), declared_member)
+
+
+def _resolve_allowlist_dimensioned_fact_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: DimensionedFactMapping,
+    ledger: RawFactLedger,
+    por: date,
+) -> _FieldOutcome:
+    """A.1/A.2: concept tuple + primary-axis member allowlist emission.
+
+    Rows are emitted per concept in declared order, then per the allowlist's
+    declared member order — never canonical. A fact is admitted only when it
+    carries the primary axis and no other explicit or typed dimension and its
+    member binds an allowlisted qname; facts under other members are ignored
+    silently (they belong to other fields). Zero rows over all concepts emit
+    one ``missing`` row for the first concept; same-member value conflicts
+    follow the FactMapping conflict rule. The outcome's ``value`` is the sum
+    of every valued row when all rows are valued, else ``None``.
+    """
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    concepts = mapping.concepts or (mapping.concept,)
+    rule_id = f"{pack_id}.{field_id}.dimensioned_fact/v1"
+    digest = _dimensioned_mapping_digest(mapping)
+
+    emitted: list[dict[str, Any]] = []
+    decimals_seen: list[int] = []
+    for concept in concepts:
+        candidates = [
+            occurrence
+            for occurrence in ledger.events
+            if occurrence.concept_qname == concept
+            and not occurrence.is_nil
+            and _period_matches(occurrence, period_kind, por)
+        ]
+        for declared_member in mapping.member_allowlist:
+            occurrences = [
+                occurrence
+                for occurrence in candidates
+                if _admitted_allowlist_occurrence(
+                    occurrence, mapping, declared_member
+                )
+            ]
+            if not occurrences:
+                continue
+            distinct = {str(item.parsed_value) for item in occurrences}
+            if len(distinct) > 1:
+                # Same admitted member, different values: the FactMapping
+                # conflict rule, kept row-level.
+                units = {_unit_measure(item.unit) for item in occurrences}
+                row = _base_row(catalogue_field, por)
+                row["quality_state"] = "not_evaluable"
+                row["non_value_state"] = "not_evaluable"
+                row["coverage_state"] = "unmapped"
+                row["reason"] = (
+                    "unit_mismatch" if len(units) > 1 else "missing_dependency"
+                )
+                row["concept"] = concept
+                row["taxonomy"] = (
+                    "extension"
+                    if concept.startswith("{")
+                    else concept.split(":", 1)[0]
+                )
+                row["source_occurrence_ids"] = sorted(
+                    {item.occurrence_id for item in occurrences}
+                )
+                row["mapping_rule_id"] = rule_id
+                row["mapping_rule_digest"] = digest
+                emitted.append(row)
+                continue
+            representative = min(
+                occurrences, key=lambda item: item.occurrence_id
+            )
+            row, value, decimals = _axes_valued_row(
+                catalogue_field=catalogue_field,
+                por=por,
+                occurrences=occurrences,
+                representative=representative,
+                dimensions=sorted(representative.context.explicit_dimensions),
+            )
+            row["mapping_rule_id"] = rule_id
+            row["mapping_rule_digest"] = digest
+            emitted.append(row)
+            if decimals is not None:
+                decimals_seen.append(decimals)
+
+    if not emitted:
+        absence = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            f"missing_standard_fact:{concepts[0]}",
+            concept=concepts[0],
+        )
+        absence.row["mapping_rule_id"] = rule_id
+        absence.row["mapping_rule_digest"] = digest
+        return absence
+
+    values = [
+        None if row["value"] is None else Decimal(str(row["value"]))
+        for row in emitted
+    ]
+    total = (
+        sum((value for value in values if value is not None), Decimal("0"))
+        if all(value is not None for value in values)
+        else None
+    )
+    return _FieldOutcome(
+        row=emitted[0],
+        value=total,
+        decimals=min(decimals_seen) if decimals_seen else None,
+        unit=emitted[0]["unit"],
+        extra_rows=tuple(emitted[1:]),
+    )
