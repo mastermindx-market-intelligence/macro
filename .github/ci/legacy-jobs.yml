@@ -33141,6 +33141,8 @@ jobs:
       # pandas-free dataos-foundation lane (whose tripwire a pandas import would destroy).
       - engine/price_ladder.py
       - scripts/emit_view_contract.py
+      - lib/dataos/terminal_materialization.py
+      - tests/terminal_materialization_golden.json
       - tests/test_emit_view_contract.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
