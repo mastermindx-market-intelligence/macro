@@ -28405,6 +28405,15 @@ jobs:
       # contracts/rates_command_basis.v1.schema.json. Paths widened for the suite, module, contract.
       - name: RIC B0 basis-aware comparison contract (rates_command_basis.v1)
         run: python -m pytest tests/test_rates_command_basis.py -q
+      # W23-L9 SPR page (2026-10-19): tests/test_strategic_reserves.py was listed in
+      # config/unrun_test_baseline.json — no `run:` step named it, so engine/strategic_reserves.py,
+      # scripts/build_spr.py and templates/spr.html.j2 could not start CI. It joins this job (the
+      # macro panels) with the two W23-L9 suites: the JODI world-total vintage (as-of month, stale
+      # reporters named) and the zh assess-badge words. All three use inline fixtures and need only
+      # pandas/jinja2 from the install line above. Its own step so an SPR regression is named rather
+      # than masked by the panel step. Paths widened for the suites, builder, engine and template.
+      - name: W23-L9 SPR page — JODI world-total vintage + zh assess badges
+        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -28450,6 +28459,12 @@ jobs:
       - "engine/commodity_index.py"
       - "templates/commodities.html.j2"
       - "templates/bonds.html.j2"
+      - "tests/test_strategic_reserves.py"
+      - "tests/test_spr_jodi_vintage.py"
+      - "tests/test_spr_assess_badge_zh.py"
+      - "engine/strategic_reserves.py"
+      - "scripts/build_spr.py"
+      - "templates/spr.html.j2"
 
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
