@@ -121,6 +121,7 @@ def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
     expected_paths |= {
         "tests/test_clinicaltrials_biocatalyst.py",
         "tests/test_clinicaltrials_history.py",
+        "tests/test_company_intelligence_catalyst_event.py",
         "tests/test_sector_dossier_contract.py",
         "tests/test_sector_intelligence_contracts.py",
         "tests/test_sector_intelligence_ownership.py",
@@ -758,6 +759,10 @@ def _fake_runtime(tmp_path: Path) -> tuple[Path, Path, Path]:
     stamp.chmod(0o640)
     current_link = runtime_root / "current"
     current_link.symlink_to(runtime_path)
+    # Temporary directories can inherit a group different from this process.
+    # Build the fixture with the same explicit service group the verifier uses.
+    for path in (runtime_root, runtimes_root, runtime_path, bin_dir, python_path, stamp, current_link):
+        os.chown(path, -1, os.getgid(), follow_symlinks=False)
     return runtime_root, runtime_path, current_link
 
 

@@ -5089,8 +5089,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_830),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_705),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6007,6 +6007,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+    2026-10-20 BioCatalyst R9/R9a on exact main 16f7269bb72a:
+    existing GitHub composition f0613dfb5c22 retains all 330 jobs. The
+    biocatalyst-contracts job adds four required suites (Company catalyst
+    events, Data OS CIK reader, research priority and What Matters Next).
+    The unchanged estimator has three commands and one command-length unit
+    on both sides; explicit test mentions rise 24 -> 28, weight 52 -> 60.
+    No observed-duration override applies to that job. Serving/worker keep
+    their existing observed overrides of 272/274.
+
+    The actual combined-tree probes reproduce hosted run 39397016723:
+    index 135 jobs / 5,830 weight; build-free 134 / 5,705; plan-book 128 /
+    5,579, each ten packs. Fund only index 5,822 -> 5,830 and build-free
+    5,697 -> 5,705. Keep all job-count bounds, the plan-book bound, ten-pack
+    limit, suite commands, existing assertions and inference/closure gates.
+    The seven explicit Bio import-closure additions select no extra job on
+    these three probes. These are planning weights, not measured runtime.
+
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
