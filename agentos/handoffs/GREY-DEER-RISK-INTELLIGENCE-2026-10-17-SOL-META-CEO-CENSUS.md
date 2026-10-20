@@ -221,12 +221,22 @@ verified:
     and 14 pooled ridge fits, totaling 532 units. Yahoo model-use remains UNKNOWN/not a source and no estimator
     executable/runtime is accepted, so estimation is NOT_ADMITTED. Zero fits; T13 h21 refusal, FRED HOLD and
     original trial budgets remain unchanged.
+- claim: Full eligible archive startup and restoration are now qualified in the actual installed Linux runtime.
+  command: recovery_oct20/ISOLATED_REHEARSAL_attempt2-REHEARSAL_RESULT.json
+  result: Actual a755 registered startup completed, 18 jobs, all first-run states false, zero denied network/process
+    attempts, unchanged established cohort and zero-difference eligible baseline restoration. First failed audit
+    fixture retained. Live installed 732cf7be and PID1627652 unchanged. Literal production helper/systemd not invoked.
+- claim: New protected 8bce candidate is qualified by bounded compatibility with the executed a755 rehearsal.
+  command: recovery_oct20/SUCCESSOR_DELTA_QUALIFICATION_2026-10-20.json; recovery_oct20/SUCCESSOR_ARCHIVE_RECEIVER_COMPARISON_2026-10-20.json
+  result: Exact archive 102789120 bytes, 5152 members, SHA256 28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92.
+    Application/portfolio/brain/control-plane/dependency/helper/wrapper identities unchanged. Read-only receiver
+    comparison exit0, 3325 entries, zero deletions; 1286 file-content/creation/link, 1671 metadata, 368 directory.
+    Independent principal adjudication permits presenting the reserved decision; no production authorization.
 unverified:
-- claim: Full Mastermind release qualification, production decision and actual delivery of the merged source
-    correction.
-  what_would_verify: Bind exact current-master archive and actual live baseline; qualify the broader bundle
-    and standard backup/rollback/activation transaction. Canonical strategic state prohibits autonomous production
-    deployment. Obtain the decision for that complete release, reconcile later master advances, then verify
+- claim: Reserved production decision, exact installed release and actual changed-consumer delivery.
+  what_would_verify: Reuse the accepted actual a755 Linux startup/restore and exact 8bce successor archive/bindings.
+    Canonical strategic state prohibits autonomous production deployment. Obtain approval for the full 8bce
+    archive upgrade/restart, recheck live namespace/state/custody and any master advance, then verify
     installed source/health, unchanged policy/book invariants under existing owners, changed-path consumer
     behavior and actual entitled user delivery. No two-file deployment approval is implied.
 - claim: Current entitled warning delivery, long-open refresh, expiry and backend-to-user clocks.
@@ -240,10 +250,12 @@ unresolved:
 - >-
   Mastermind 1610 is merged as a7553e0a18339c910eef9687c730b06605dd710e, with all five owned blobs
   and startup identity separately verified at 04:23:34.958762Z on October 20. Original observer 80374
-  is terminal. Full merged-archive, current receiver/cohort and isolated startup/recovery qualification
-  remain open before the reserved production decision; see the linked landing and recovery receipts.
+  is terminal. Actual a755 full-archive Linux startup/recovery and service-namespace state are qualified;
+  8bce successor compatibility is accepted through unchanged critical bindings and a fresh archive comparison.
+  The exact production upgrade/restart remains reserved; see recovery_oct20 receipts.
 - >-
-  Macro 9595 remains the existing draft evidence carrier at ac08d5bd630d480a97fcbd0d9814946724250011.
+  Macro 9595 is the original evidence carrier; recovery head 5a228eb5bd392fa9a047c54bac3f0a4a09f9b3f0
+  was published with native remote readback. This enclosing successor carries the completed qualification.
   Its CI 39118765804 failed only three RIG paths from tested base b912fd97827cca925a7123aa2012e9765077f3f7.
   Those paths are absent in ac08; current main 247677 retains the same blobs under design_candidates via #7100.
   No speculative RIG repair is needed. The substantive continuation commit requires its own integrated gates
@@ -270,7 +282,8 @@ unresolved:
 - >-
   October 20 reads confirm installed 732cf7be. A 07:19 health timeout was followed by direct HTTP 200
   at 07:26; its cause remains unresolved and no restart occurred. Current book/cohort/settlement proof,
-  complete merged-archive comparison and isolated replacement/restoration remain open. Code rollback
+  complete merged-archive comparison and isolated replacement/restoration are now qualified for a755,
+  with bounded 8bce successor compatibility accepted. Production is not deployed. Code rollback
   does not reverse all startup effects. See recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json.
 - >-
   Parent programme incomplete: warning publisher HOLD/expiry semantics, Paper write-catalog qualification,
@@ -283,14 +296,17 @@ unresolved:
 
 next_actions:
 - >-
-  Reuse the completed five-file source landing and unchanged dependency bindings for Mastermind 1610.
-  Bind the exact a7553e0a merged archive, current receiver/book state and actual startup effects; perform
-  the isolated matching-runtime rehearsal before the reserved production decision. Observer 80374 is closed.
+  Complete this enclosing Macro 9595 evidence update through actual integrated CI, the normal main merge
+  controller and a separate main fetch with owned-blob landing comparison. Never push an armed or closed
+  carrier. Preserve all earlier failed runs; no RIG or inactive-pilot context waiver is required.
 - >-
-  Publish the substantive evidence update in existing draft Macro 9595 after exact-head and unarmed-state checks.
-  Preserve lossless archived source, failed runs, R1, natural W5, October 16 map and current Copilot proof.
-  Obtain actual integrated CI; source paths removed from current main do not retroactively make ac08 green.
-  Separately fetch main and compare owned artifacts after normal landing. Never push an armed/closed carrier.
+  Present the reserved full-archive VPS upgrade/restart decision for Mastermind
+  8bce27bb731f475885352add0be7f885e0862714, archive SHA256
+  28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92. Actual a755 startup/restore
+  and unchanged successor bindings qualify this proposal; they do not authorize deployment.
+  Before an approved execution recheck current master, service namespace/health, established cohort,
+  readable NAV, absent pending/WAL/receipts and release custody. Use the accepted explicit-SHA wrapper;
+  never silently deploy a successor or apply the shipped provider/Parall installers.
 - >-
   Use the accepted October 16 map as the dated policy-review agenda. Refresh actual market/execution inputs
   before action. Preserve the separate absolute preservation and relative opportunity tests, contained-rotation
@@ -308,10 +324,6 @@ next_actions:
   Resolve actual recorded source-purpose and freeze an accepted executable/runtime before any of the proposed
   532 B0/B1 units. Keep R1 reporting deterministic, T13 h21 refusal, FRED hold, null independent N and original
   failed claims. No source substitution, frozen-study rerun or T13/T14/T19 trial spend is authorized by this record.
-- >-
-  After verified helper landing, bind the exact merged archive and current installed comparison. Complete
-  registered-startup effect and isolated-runtime replacement/restoration proof, then make the reserved production
-  decision concrete. Do not call brain/macro_risk.risk_state as a read because its dwell path writes.
 - >-
   Continue original publisher/consumer/Paper paths under existing holds and actual writers. Update MAS-258
   from the verified canonical source frontier. Parent mission remains active; no autonomous wake or completion is claimed.
@@ -352,6 +364,8 @@ prs:
 
 # Cumulative Meta-CEO continuation
 
+**Qualified release for the reserved decision — October 20:** actual full-archive Linux startup/restore was executed at **a7553e0a18339c910eef9687c730b06605dd710e**. Its first audit-harness file-descriptor failure is retained; the corrected run completed actual registered startup, 18 jobs, readable-history first-run guards, no blocked network/process attempt, unchanged established cohort and zero-difference eligible-code restoration. The live PID **1627652** and installed **732cf7be** release were unchanged. Protected master subsequently advanced to **8bce27bb731f475885352add0be7f885e0862714** through #1647/#1228. The new archive is **102,789,120 bytes / 5,152 members**, SHA256 **28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92**; actual non-writing receiver comparison returned 0. Its application, portfolio, brain, control-plane, dependency, wrapper and helper identities match the rehearsed version. Independent principal review accepts bounded successor compatibility, not a relabeled successor startup run. [Qualification and next action](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/QUALIFIED_RELEASE_DECISION_2026-10-20.json). Live deployment remains unapproved and full programme acceptance remains open.
+
 ## Current frontier — October 20 UTC
 
 **Useful descriptive intelligence and first natural W5 issuance are accepted within scope. The five-file release-helper repair is merged and separately verified. Full programme acceptance remains open.** The [October 16 exposure map](../../research/grey_deer/action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md) ranks conditional protection, defensive candidates, hold/watch and recovery work for the existing policy owners. It does not supply October 20 execution prices or a validated allocation rule.
@@ -360,11 +374,11 @@ The snapshot uses 36 fixed ETF proxies; 32 have October 16 observations, while D
 
 **Mastermind source #1610 is merged and separately verified.** Candidate **7b5ccfffef4e90b89496751dd7bc0f55b711ed25** landed as protected master **a7553e0a18339c910eef9687c730b06605dd710e**. The completed original observer receipt is dated **04:06:15 UTC on October 20**; the separate master fetch and five-file blob comparison completed at **04:23:34.958762 UTC**. All five owned paths and startup-source identity matched. The helper remains SHA256 **1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8**. PR-head CI **39359674398**, CodeQL **39359671270**, and the recorded native queue stages remain bound to their original heads. Observer PID **80374** is terminal; no new queue watcher is needed. Source acceptance does not establish runtime installation. [Landing receipt](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/SOURCE_LANDING_READBACK_2026-10-20.json) and [recovered current readback](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json) establish this superseding frontier. Earlier failed CI/native cases, the 113 unchanged passes plus separately corrected case, and #1586/#642/#124 custody/HOLDs remain intact.
 
-**Current runtime observation — October 20:** the installed marker and later local /health response identify **732cf7be88e7159b4995a8885fbd381cd1484e3e**. The **07:19:05 UTC** six-second health request timed out; bounded process/resource/listener checks found no measured saturation, and a direct request at **07:26:31 UTC** returned **HTTP 200 / status:ok**, with scheduled runtime reported healthy. The cause of the earlier timeout remains unresolved; this is subsequent liveness, not continuous-health or product-delivery proof. No service operation was performed. Current effective service settings are authoritative, non-serve-only, with an in-memory jobstore. Current book/cohort/settlement state and complete merged-archive rehearsal remain separate qualification work. [Observation receipt](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json).
+**Current runtime observation — October 20:** the installed marker and later local /health response identify **732cf7be88e7159b4995a8885fbd381cd1484e3e**. The **07:19:05 UTC** six-second health request timed out; bounded process/resource/listener checks found no measured saturation, and a direct request at **07:26:31 UTC** returned **HTTP 200 / status:ok**, with scheduled runtime reported healthy. The cause of the earlier timeout remains unresolved; this is subsequent liveness, not continuous-health or product-delivery proof. No service operation was performed. Current effective service settings are authoritative, non-serve-only, with an in-memory jobstore. The later **07:41:31 UTC** service-namespace readback resolves the real bind mount to /opt/mastermind-live-data: autonomous/china/hk NAV histories have 88/86/87 valid rows through October 19, with no pending target, WAL or settlement receipt at that observation. The host /opt/mastermind/data view is stale and is not the service data. The real isolated startup and full eligible-code restoration completed at **07:54:17 UTC**; current-before-execution state still requires a fresh check. [Observation receipt](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json).
 
 The [evidence index](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md) preserves the failed original hosted CI, companion SDK failure, spaced-venv launch failure, and failed first wrapper-identity regression. V2 owning tests passed 59/59; the final combined native run passed 113 of 114, then the corrected single new regression passed separately. This is **113 unchanged passes plus one separately corrected case**, not an invented fresh 114/114 run. Full hosted CI subsequently passed on 7b. Prior 44-case and 49-case receipts remain tied to their original source pairs.
 
-**Macro evidence #9595:** continue the existing draft carrier, currently **ac08d5bd630d480a97fcbd0d9814946724250011**, without pushing into an armed or closed PR. Its actual CI **39118765804** remains failed only on three reference-integrity findings in ci-pack-1; the other eleven packs and contract-delta passed. The failed integrated base was **b912fd97827cca925a7123aa2012e9765077f3f7**, not current main. All three offending paths are absent from ac08 itself and were subsequently preserved byte-exact under current main's design-draft namespace by #7100. The [exact CI adjudication](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) therefore calls for no fabricated RIG receipt, guard exception or competing repair. The substantive continuation commit still needs its own actual native integrated checks and separate landing readback. Earlier #9515 and #9573 source landings remain accepted; #9573's 44 artifacts were independently verified, and its old checkout stays closed read-only.
+**Evidence publication — Macro #9595:** the first recovered continuation was committed and pushed as **5a228eb5bd392fa9a047c54bac3f0a4a09f9b3f0** on October 20; native commit/push and remote readback succeeded. Its CI **39388326725** is separately bound. This enclosing qualification update adds actual Linux startup/restore, service-namespace state and successor-release evidence, and must pass its own current integrated gates before normal landing. The earlier ac08 run **39118765804** remains a retained failure; #7100 had already preserved the three base-supplied design documents under design_candidates. No RIG waiver or competing repair was needed. The main authority context passes; inactive ci-authority/codex/merge-queue-pilot is non-binding for a main-target PR under the existing controller. All edits precede arming; a closed carrier must remain read-only.
 
 **W5's first natural issuance gate is now closed within operational scope.** The [root acceptance](../../research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md) binds one naturally scheduled writer invocation, 30 SPY records for October 16 issued on Sunday October 18, approved merge ancestry, exact producer/preregistration blobs, the six-file recipe fingerprint, the full retained job-log scan and all 50 reported check annotations. No relevant Grey Deer error warning is present. Every outcome is immature; this is one batch, not 30 independent warnings. The later nightly failure/cancellation remains failed/cancelled. Friday label-origin returns cannot represent a Sunday-issued executable action; source availability, first user display and execution clocks remain unknown. Let the original natural writer/grader advance; no backfill, manual nightly or early grading.
 
@@ -372,7 +386,7 @@ The [R1 scoring clarification](../../research/grey_deer/all_date_census/PRICE_ON
 
 The [current Copilot comparison](../../research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/CURRENT_SOURCE_2026-10-20.md) confirms that the original exclusion-only portfolio classifier and caveat-only finalization counterexample still apply to the exact inspected source at active integrated producer **#8014 d63e59bcd4203732fe3b9097002f9451dcf61955**. Earlier #9447 is now at **aed92aaa474ebf3802b6f43ac55138dedfe4c8aa**; #9548 is at **bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc**. Their actual writers remain controlling. The source review is not a fresh failed user turn or a repaired product. Qualify useful answer content before metadata, preserve separately qualified public visuals and existing screening/Stop/persistence boundaries, then require served source and one useful authenticated original-question answer.
 
-**Next release phase:** after source landing, freeze the operation's exact merged archive, reconcile it with the reviewed source closure, qualify actual registered startup effects and rehearse replacement/restoration in an isolated matching runtime. The last VPS/cohort/book observations are **October 18** snapshots of installed `732cf7be…`; they are not current October 20 runtime proof. The optional later startup-read request returned no result and its temporary extract was observed absent; no production uncertainty or successful startup proof is inferred. The full release decision remains reserved under the actual programme constraints. No production deployment or service operation is performed by this continuation. Portfolio/Prophet retain numerical allocation and execution.
+**Next release phase:** qualification is complete for the named 8bce full archive through actual a755 rehearsal and unchanged successor bindings. The remaining live upgrade/restart is reserved for a concrete Chairman decision because canonical strategic state prohibits autonomous production deployment. Refresh exact master, service-visible state and release custody immediately before any approved execution. Use the explicit-SHA wrapper; a further master advance requires material-delta review. No provider-policy or Parall installer execution is included. After installation, separately qualify the changed authenticated Risk Radar consumer; preserve Portfolio/Prophet numerical authority.
 
 The sections below preserve earlier source and experimental history. This current frontier supersedes their immediate next-action/status language where later evidence differs; no accepted capability or failed experiment is erased.
 

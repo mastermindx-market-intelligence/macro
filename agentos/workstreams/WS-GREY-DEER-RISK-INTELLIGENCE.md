@@ -456,42 +456,37 @@ waves:
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Continue the existing masterplan section0A and cumulative Meta-CEO handoff at their October 20 frontier.
-  Mastermind 1610 head 7b5ccfffef4e90b89496751dd7bc0f55b711ed25 owns the unchanged helper plus four tests.
-  Mastermind 1610 is merged as a7553e0a18339c910eef9687c730b06605dd710e; the separate 04:23:34.958762Z
-  landing receipt verifies all five blobs and startup identity. Observer 80374 is terminal. October 20
-  runtime reads still identify 732cf7be; a 07:19 timeout was followed by direct HTTP 200 at 07:26, without
-  a restart. Reuse the linked landing/recovery receipts; qualify the exact merged archive, current book
-  state and isolated startup/recovery before the reserved production decision. No deployment is claimed.
-  Keep companion-custody findings and #1586/#642/#124 ownership/HOLDs intact. Preserve every original failed
-  CI/native run. The final native evidence is 113 unchanged passes plus one separately corrected case;
-  do not invent a fresh 114/114 run. Hosted CI subsequently passed at 7b.
-  Publish this substantive evidence continuation through existing draft Macro 9595 at ac08d5bd630d480a97fcbd0d9814946724250011.
-  Its old CI39118765804 failed only three base-supplied RIG paths; the paths are absent in the carrier and
-  current main 247677 preserves identical drafts under design_candidates through #7100. No invented RIG
-  receipt or competing repair. The next substantive commit needs actual integrated CI and landing readback;
-  never push into an armed/closed PR. Macro 9515/9573 and their verified landings remain accepted.
-  Use the accepted October 16 action map for dated exposure-policy review: SPY drawdown 2.03%, semis 14.85%-16.31%,
-  selective defensive absolute gains and wider damage coexist. Four proxies remainOctober 14; no October 20
-  execution quote, literal Composite reconstruction, flows or systemic-contagion qualification is supplied.
-  W5 now has first natural operational issuance accepted: one 30-row SPY batch with exact producer ancestry,
-  preregistration/recipe and complete warning checks. All outcomes are immature; independent N remains null.
-  Sunday issuance is not Friday-close executability. Consume only new natural records/mature outcomes under
-  the original writer/grader; no backfill, manual nightly or early grade.
-  R1 reporting clarification is adopted as proposed design. All 532 proposed B0/B1 fits remain NOT_ADMITTED,
-  zero executed, pending actual Yahoo purpose and estimator/runtime acceptance. Preserve FRED HOLD,
-  T13 h21 refusal, original 2,138 unscored records, prior failed studies and unspent T13/T14/T19 budgets.
-  The current integrated Copilot writer is 8014 d63e59bcd4203732fe3b9097002f9451dcf61955; 9447 aed92aaa
-  and 9548 bc96a20f remain actual writers. The original classifier and caveat-only finalization counterexample
-  remain applicable to inspected source. Qualify useful prose or separately admitted public visuals before
-  metadata, preserve safety/Stop/persistence, and require served source plus one useful authenticated answer.
-  After helper landing, bind the exact merged archive, current installed comparison, actual startup effects
-  and isolated replacement/restoration. October 18 runtime/cohort/book evidence is dated, not current October 20 proof.
-  The complete-release production decision remains reserved; autonomous deployment is prohibited.
-  Preserve publisher 8132/8721 HOLDs, 9428 refusal and QLedger/nightly custody; Paper writes need actual catalog
-  qualification. Forecast qualifiers, current Terminal proof and complete action/recovery delivery remain open.
-  Keep Envelope rank/gate/size/execute false and Portfolio/Prophet numerical authority intact.
-  Update MAS-258 from verified canonical evidence. Whole programme stays active and not finally accepted.
+  Complete the enclosing Macro 9595 evidence continuation through actual integrated CI, normal controller
+  landing and separate fetched-main owned-blob readback; all edits must precede arming. Recovery head5a228eb5
+  was already published. Old ac08 failure stays failed; three base RIG paths were fixed byte-preservingly by
+  7100, and inactive ci-authority/codex/merge-queue-pilot is non-binding for main. No guard waiver.
+  Mastermind 1610 source landed as a7553e0a with all five blobs separately verified; observer80374 is terminal.
+  Actual full eligible-archive startup/restore at a755 passed in the installed Linux Python/runtime using
+  isolated canonical book/cohort state. Initial audit-fixture failure is retained; corrected startup registered18
+  jobs with readable-history first-run guards and unchanged cohort. Real rsync restoration had zero differences.
+  The actual service data bind is /opt/mastermind-live-data, verified through /proc/1627652/root; host data is stale.
+  The 07:41 read showed88/86/87 NAV rows throughOctober19 and no pending/WAL/settlement receipts for3 active books.
+  Live release732cf7be and PID1627652 were unchanged. The 07:19 health timeout and later07:26 HTTP200 both remain.
+  Protected master8bce27bb731f475885352add0be7f885e0862714 is now qualified through unchanged critical implementation
+  bindings and its newly manifested102789120-byte/5152-member archive, SHA256
+  28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92. Actual non-writing receiver comparison exit0.
+  Present the reserved exact full-archive VPS upgrade/restart decision after source evidence lands.
+  Before any approved execution recheck exact master, runtime/namespace, cohort/NAV/pending/WAL/receipts and custody.
+  Invoke the accepted wrapper with explicit8bce so further master movement refuses; no provider/Parall installer
+  execution is included. Production remains unapproved; source restore cannot undo runtime data effects.
+  Preserve all failed experiments, 113 unchanged passes plus the separately corrected source regression, and
+  original1586/642/124 ownership/HOLDs. Macro9515/9573 source acceptance remains.
+  Use the accepted October16 map only as dated exposure review; four proxies remainOctober14. No current quote,
+  flows/systemic-contagion claim or numerical allocation authority follows.
+  W5 first natural operational issuance is accepted: one30-rowSPY batch with lineage and warning checks,
+  all outcomes immature. No30-independent-events, Friday-close execution, manual nightly, backfill or early grade.
+  R1 remains proposed deterministic reporting; all532 B0/B1 fits NOT_ADMITTED/zero executed pending actual Yahoo
+  source-purpose and executable/runtime acceptance. Preserve FRED HOLD, T13h21 refusal, null independentN and failed studies.
+  Existing Copilot8014/9447 and Radar9548 actual writers retain intersections; source counterexamples remain.
+  Require served source and a useful authenticated answer after writer reconciliation; no provider replay is implied.
+  Preserve publisher8132/8721 HOLDs,9428 refusal and QLedger/nightly custody. Forecast qualifiers, Terminal proof,
+  full warning/recovery delivery and empirical promotion remain open. Envelope rank/gate/size/execute stay false.
+  Update MAS-258 from verified canonical evidence. Whole programme remains active; no autonomous wake is claimed.
 
 ---
 
