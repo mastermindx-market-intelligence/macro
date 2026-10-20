@@ -6,7 +6,7 @@ import pytest
 from datetime import date
 from hashlib import sha256
 
-from engine.biocatalyst.company_event_adapter import resolve_current_event_identity
+from engine.biocatalyst.company_event_adapter import compose_wmn_owner_inputs
 from engine.biocatalyst.publication import PublicGenerationPublisher
 from engine.biocatalyst.what_matters_next import validate_wmn_inputs
 from engine.company_intelligence.contracts import canonical_json_sha256
@@ -70,15 +70,7 @@ def _wmn_inputs() -> dict:
             "valid_to": None,
         }
     ])
-    identity = resolve_current_event_identity(
-        event,
-        issuer_master=master,
-        alias_table=aliases,
-        identity_cut_date=date(2026, 8, 1),
-        identity_observed_at="2026-08-01T15:00:00Z",
-        generation_cutoff=CUTOFF,
-    )
-    return {
+    declared = {
         "contract_id": "biocatalyst_wmn_inputs.v2",
         "schema_version": "2.0.0",
         "input_cut": {
@@ -112,7 +104,6 @@ def _wmn_inputs() -> dict:
         },
         "events": [event],
         "relationships": [],
-        "identity_projection": {event["event_id"]: identity},
         "coverage": {
             "declared_universe_ref": "bio:first-company-event-slice",
             "source_health": "current",
@@ -134,6 +125,17 @@ def _wmn_inputs() -> dict:
         },
         "authority": event["authority"],
     }
+    # Synthetic owner admission remains explicit. Exercise the real composition
+    # entrypoint before the actual service/publisher transaction below.
+    return compose_wmn_owner_inputs(
+        events=declared["events"],
+        input_cut=declared["input_cut"],
+        issuer_master=master,
+        alias_table=aliases,
+        identity_cut_date=date(2026, 8, 1),
+        identity_observed_at="2026-08-01T15:00:00Z",
+        coverage=declared["coverage"],
+    )
 
 
 def test_worker_can_publish_pointer_bound_wmn_owner_cut(tmp_path) -> None:

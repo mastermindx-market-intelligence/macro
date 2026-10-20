@@ -147,3 +147,65 @@ def resolve_current_event_identity(
         "identity_cut_date": identity_cut_date.isoformat(),
         "issuers": issuers,
     }
+
+
+def compose_wmn_owner_inputs(
+    *,
+    events: object,
+    input_cut: object,
+    issuer_master: object,
+    alias_table: object,
+    identity_cut_date: object,
+    identity_observed_at: object,
+    coverage: object,
+) -> dict[str, Any]:
+    """Compose the native owners' selected cut for the existing WMN publisher.
+
+    The caller must independently admit Company events and the two Data OS
+    sources, and bind these readers to the supplied cut. This pure projection
+    does not attest those admissions, sample acceptance clocks, load a "latest"
+    file, or publish anything. In particular, declared Data OS digests are not
+    authenticated by passing an in-memory reader.
+
+    Identity is recomputed with the canonical readers instead of accepting a
+    caller-authored identity projection. The existing v2 validator owns the
+    complete cut, event hash, coverage, clock and authority checks.
+    """
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+    from engine.company_intelligence.contracts import (
+        CATALYST_SOURCE_FACT_AUTHORITY,
+        ContractError,
+    )
+    from lib.dataos.identity import IssuerMaster, VendorAliasTable
+
+    if not isinstance(issuer_master, IssuerMaster):
+        raise ContractError("issuer_master must be the canonical IssuerMaster reader")
+    if not isinstance(alias_table, VendorAliasTable):
+        raise ContractError("alias_table must be the canonical VendorAliasTable reader")
+    if not isinstance(input_cut, dict) or "cutoff" not in input_cut:
+        raise ContractError("input_cut must supply the owner-selected cutoff")
+    if not isinstance(events, list) or len(events) > 100_000:
+        raise ContractError("wmn_inputs events must be a bounded list")
+    identities = {}
+    for event in events:
+        owner = validate_company_catalyst_event(
+            event, generation_cutoff=input_cut["cutoff"]
+        )
+        identities[owner["event_id"]] = resolve_current_event_identity(
+            owner,
+            issuer_master=issuer_master,
+            alias_table=alias_table,
+            identity_cut_date=identity_cut_date,
+            identity_observed_at=identity_observed_at,
+            generation_cutoff=input_cut["cutoff"],
+        )
+    return validate_current_wmn_inputs({
+        "contract_id": "biocatalyst_wmn_inputs.v2",
+        "schema_version": "2.0.0",
+        "input_cut": input_cut,
+        "events": events,
+        "relationships": [],
+        "identity_projection": identities,
+        "coverage": coverage,
+        "authority": CATALYST_SOURCE_FACT_AUTHORITY,
+    })

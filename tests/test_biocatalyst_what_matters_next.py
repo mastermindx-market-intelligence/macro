@@ -5,7 +5,10 @@ from datetime import date
 
 import pytest
 
-from engine.biocatalyst.company_event_adapter import resolve_current_event_identity
+from engine.biocatalyst.company_event_adapter import (
+    compose_wmn_owner_inputs,
+    resolve_current_event_identity,
+)
 from engine.biocatalyst.research_priority import sort_research_priority_rows
 from engine.biocatalyst.what_matters_next import compose_company_event_rows
 from engine.company_intelligence.events import project_catalyst_event
@@ -313,6 +316,77 @@ def _wmn_inputs(event, identity, *, cutoff=CUTOFF):
         },
         "authority": event["authority"],
     }
+
+
+def _compose_owner_inputs(event, *, aliases=True, **overrides):
+    security, alias = _security("SEC:US-XNAS-AMLX", "ISS:US-XNAS-AMLX", "AMLX")
+    declared = _wmn_inputs(event, _identity(event, [security], [alias]))
+    args = {
+        "events": [event],
+        "input_cut": declared["input_cut"],
+        "issuer_master": IssuerMaster.from_records([security]),
+        "alias_table": VendorAliasTable.from_records([alias] if aliases else []),
+        "identity_cut_date": date(2026, 9, 6),
+        "identity_observed_at": "2026-09-06T10:00:00Z",
+        "coverage": declared["coverage"],
+    }
+    args.update(overrides)
+    return compose_wmn_owner_inputs(**args)
+
+
+def test_owner_composition_uses_canonical_readers_and_preserves_declared_cut() -> None:
+    event = _event()
+    before = deepcopy(event)
+    inputs = _compose_owner_inputs(event)
+    assert inputs["contract_id"] == "biocatalyst_wmn_inputs.v2"
+    identity = inputs["identity_projection"][event["event_id"]]
+    assert identity["issuers"][0]["securities"][0]["display_symbol"] == "AMLX"
+    assert inputs["coverage"]["family_states"]["registry_primary_completion"]["state"] == "not_built"
+    assert inputs["authority"]["decision_authority"] is False
+    assert event == before
+    # This consumes declared owner receipts; it does not mint real admission.
+    members = {m["contract_id"]: m for m in inputs["input_cut"]["members"]}
+    assert members["dataos_vendor_aliases.current"]["sha256"] == "3" * 64
+    assert members["company_catalyst_event.v1"]["accepted_at"] == event["observed_at"]
+
+
+def test_owner_composition_does_not_invent_a_missing_symbol() -> None:
+    event = _event()
+    inputs = _compose_owner_inputs(event, aliases=False)
+    security = inputs["identity_projection"][event["event_id"]]["issuers"][0]["securities"][0]
+    assert security["security_id"] == "SEC:US-XNAS-AMLX"
+    assert security["display_symbol"] is None
+
+
+@pytest.mark.parametrize("defect", ["event_hash", "missing_alias", "future_acceptance"])
+def test_owner_composition_refuses_incoherent_admitted_cut(defect) -> None:
+    event = _event()
+    cut = _wmn_inputs(event, _identity(event))["input_cut"]
+    if defect == "event_hash":
+        cut["members"][0]["sha256"] = "0" * 64
+    elif defect == "missing_alias":
+        cut["members"].pop()
+    else:
+        cut["members"][1]["accepted_at"] = "2026-09-07T00:00:00Z"
+    with pytest.raises(ContractError):
+        _compose_owner_inputs(event, input_cut=cut)
+
+
+def test_owner_composition_refuses_old_event_receipt_after_correction() -> None:
+    event = _event()
+    old_cut = _wmn_inputs(event, _identity(event))["input_cut"]
+    corrected = _event(revision_ref="doc_2026_08_18:r2")
+    with pytest.raises(ContractError, match="hash mismatch"):
+        _compose_owner_inputs(corrected, input_cut=old_cut)
+    new_inputs = _compose_owner_inputs(corrected)
+    assert new_inputs["events"][0]["revision_ref"] == "doc_2026_08_18:r2"
+    assert new_inputs["events"][0]["event_id"] == event["event_id"]
+
+
+@pytest.mark.parametrize("field", ["issuer_master", "alias_table"])
+def test_owner_composition_rejects_untyped_identity_inputs(field) -> None:
+    with pytest.raises(ContractError, match="canonical"):
+        _compose_owner_inputs(_event(), **{field: {}})
 
 
 def test_wmn_inputs_require_vendor_alias_cut_and_validate_nested_resolved_identity() -> None:
