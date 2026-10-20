@@ -35,8 +35,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT))
 
 import engine.local_projections as lp
 from engine.trial_ledger import TrialLedger
