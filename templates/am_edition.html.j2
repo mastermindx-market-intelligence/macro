@@ -436,6 +436,7 @@
       <span class="mx-rw-meta">
         {% if row.since %}{{ t('since', '起始') }} {{ row.since[:10] }}{% endif %}
         {% if row.as_of %} · {{ t('as of', '数据截至') }} {{ row.as_of[:10] }}{% endif %}
+        {% if row.check_by %} · {{ t('check by', '核查日') }} {{ row.check_by[:10] }}{% endif %}
         {% if block.calibration_note_en %} · {{ t(block.calibration_note_en, block.calibration_note_zh or block.calibration_note_en) }}{% endif %}
       </span>
     </div>
