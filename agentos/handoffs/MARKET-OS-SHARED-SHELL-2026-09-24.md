@@ -5,11 +5,10 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: 'Same original commission. Macro published e22 was reconciled with immutable main6397 and its exact
-  partial merge staging was completed; current source index586960f5 is validated. Terminal #1062 merged and its
-  one R38 bootstrap failed at generated NFT0664; original successor #1080 is now protected R93. Application A remains
-  qualified #859/e45. Historical body is preserved verbatim; newest continuation and original PR checkpoint supply
-  current effects.'
+state_before: 'Same original commission. Published b98 remained the sole reconciled Macro branch; ordinary merge
+  d528 and minimal two-file CI repair passed locally at index1996dbf7. Original Terminal correction #1080 is protected
+  R93, canonical bootstrap A succeeded, and separate runtime36-check/filesystem acceptance passed. Historical body
+  is retained; subsequent source publication and public gates remain distinct.'
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -44,6 +43,12 @@ changed:
   what: Reconciled exact five-conflict main6397 merge and the two-file sparse staging refusal in original worktree.
     Preserved incoming bytes, 329 job identities and every branch-owned delta. Extended the same proof pack with
     actual failures, protected R93 admission and fresh host state; no renderer or production mutation.
+- path: .github/ci/legacy-jobs.yml; tests/test_ci_pack.py; site/etfs.html; site/us_stocks.html; existing proof pack
+    and handoff
+  what: Reconciled ordinary d528 merge on original writer, preserved incoming page bytes through exact existing
+    adapters, added the exact research-vault shared_shell dependency and measured seven-unit packing correction.
+    Persisted full hosted/local failures, focused/full canonical green, protected bootstrap and actual filesystem
+    receipts without another installer or renderer.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -149,45 +154,67 @@ verified:
   result: Beta inactive PID0/A/original9aac source receipt; real.runtime-accepted and pending absent; distinct esbuild
     nlink1/mode0744; lock empty; root36925825024B/mount16296984576B. Production50a8 PID2336355/start7552363880288,
     owner6d05/Caddy6de6. No programme production or cleanup effect.
+- claim: The original protected R93 canonical beta bootstrap and separate installed-runtime postread completed successfully.
+  command: Exact private terminal-build.sh --target beta --bootstrap --target-sha e45bde2cac07ac3b29285ff70c40d68900fad62c;
+    frozen V3 postreader. Full invocation/result/log/binding/raw receipt in this proof pack and PR7949 comment6281354124.
+  result: Bootstrap exit0 at01:31:21.932840Z; separate postread exit0/all36checks true at01:37:46.379068Z. Accepted
+    runtimec6295082 binds applicationA and CLEAN preflightd1d41bea; service active/enabled, original source receipt
+    preserved, production matched actual entry baseline and no pending/stage/hold remains. No further bootstrap.
+- claim: Actual beta mount/root/credential/filesystem acceptance passed after the exactly reconciled diagnostic
+    entry failure.
+  command: Frozen beta-namespace-fs-probe-v2.py SHA7f7e3179b6f46844e13f293d78be6c4019c8564d2cc3109f45cd3e5e5089c5a5;
+    exact original SSH surface, nsenter --wdns=/ and dropped observed service identity.
+  result: Actual exit0 at03:10:01.179582Z; outer all_checks_pass true, stderr empty, cache create/read/update/read/exact
+    cleanup complete, both public aliases unchanged and write-open refused EACCES corroborated by actual descriptor
+    RO mounts. Beta/runtime/HTTP identity stable. Scope excludes full cgroup/seccomp/LSM/network equivalence; prior
+    exit126 and absence/control proof retained.
+- claim: Two exact CI-contract failures were reproduced and corrected without removing coverage or assertions.
+  command: /opt/homebrew/bin/python3.12 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure
+    tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs; after run used its own recorded --basetemp.
+  result: Before2failed/exit1 at original merged index; after2passed184.79s/exit0, source/index6d1ff535 unchanged.
+    Only missing lib/shared_shell.py declaration and build_free_content weight5642to5649 changed; +5/+2 retained-test
+    attribution, incomingW23+4 and other bounds remain.
+- claim: The full canonical contract comparison passed on the final wording-corrected source candidate.
+  command: CONTRACT_DELTA_NO_REAP=1 /opt/homebrew/bin/python3.12 scripts/check_contract_delta.py --base d52827f26b062f67d594350a65becf406710d4d1
+  result: Exit0 at03:10:47.408012Z; zero introduced/zero inherited; source/index1996dbf7 unchanged. Override only
+    disables unrelated stale-base cleanup; assertions and own temporary base remain. Exact patch42dec7c9 and producing
+    evidence independently reviewed NONBLOCKING. Fresh published-head hosted admission is still due.
 unverified:
-- claim: New merged Macro head hosted admission and publication.
-  what_would_verify: Normal original-branch commit/push followed by exact current-head CI/review. After healthy
-    accepted beta only, arm last through incumbent owner; consume original renderer generated-main and macro-update
-    served-tree identities.
-- claim: Protected R93 canonical bootstrap and accepted healthy beta.
-  what_would_verify: Final reviewed entry/postread probes, fresh unchanged entry fences and one private protected
-    script invocation with canonical beta/bootstrap/target-sha A. Require final installer exit, actual accepted
-    record/preflight/attempt/build/service and cleanup evidence; reconcile any partial effect before further action.
-- claim: Installed isolation, public DNS/TLS/auth/browser and applicable rollback.
-  what_would_verify: Namespace/cache/read-only-data probes, current DNSPod access, original-owner Caddy/DNS route,
-    real auth/public desktop-tablet-mobile/history/error/native-handoff paths and truthful first-install containment/future-baseline
-    scope.
+- claim: New Macro published-head hosted admission, generated-main and actual served publication.
+  what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
+    arm LAST. Consume covering existing render.yml/engine-render and macro-update served-tree identity; no native
+    auto-merge, post-arm push or duplicate render.
+- claim: Public beta DNS/TLS/auth/browser and applicable rollback acceptance.
+  what_would_verify: DNSPod account access and direct beta A146.190.142.17/TLS through original owner; real auth,
+    public1440/820/390 navigation/history/theme/language/native handoff/errors. First accepted runtime has previous
+    null and future rollback eligibility; do not call that an executed rollback.
 - claim: Sector redesign and broader About visual acceptance.
-  what_would_verify: Original Full RIG/consuming migration; six views and sector-to-basket remain until then. Paper
-    REVISE; historical About styling/overflow and fixture network limitations remain disclosed.
+  what_would_verify: Original Full RIG and consuming migration; preserve six views/sector-to-basket while Paper
+    REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
+    findings remain disclosed.
 unresolved:
-- 'Programme OPEN; source index586960f5 is validated but this merge/proof snapshot is not yet committed or pushed.
-  Original #7949 remains unarmed until admitted source and durable healthy beta.'
-- 'Terminal #1080 is merged R93/c6759; its private script is staged, but no R93 bootstrap at01:02 snapshot. The
-  prior R38 failure is retained as source-only containment.'
-- Latest host00:51:36 remains a point-in-time baseline; exact entry must refuse on production, lock, receipt, dependency
-  or capacity change.
-- DNSPod tab1065716971 remains at sign-in. Supabase13 redirects are earlier configuration proof; public auth/browser/TLS/isolation/rollback
-  acceptance remains due.
-- Six Sector views and sector-to-basket remain; Paper REVISE; C4 and provenance suggestions SPEC_ONLY/UNAPPLIED/UNRUN.
-- Session Bridge lookup backend_unavailable; bounded advisers are not Fabric execution workers; no duplicate source
-  carrier or watcher.
+- Programme OPEN. Current locally tested candidate1996dbf7 is not yet committed/pushed in this frontier; original
+  PR7949 remains unarmed pending exact published-head gates and durable proof.
+- Canonical R93 bootstrap and runtime/filesystem acceptance are complete. Do not repeat them. Public DNS/TLS/auth/browser
+  and original Macro publication remain separate.
+- Fresh03:23:45 remote fence observed main d19e1fb148397af3c62adde06a1869aa6bc510b3 with unrelated CI/Caddy changes;
+  immutable read did not merge or rewrite the tested d528 candidate. Same original remote branch remains b98.
+- DNSPod last actual account state was sign-in; resumed extension currently lacks originating browser context. A
+  fresh cloud beta tab opens but returns upstream connection failure. Supabase13 redirects are configuration proof
+  only.
+- Six Sector views and sector-to-basket remain; Paper REVISE; C4/provenance suggestions SPEC_ONLY/UNAPPLIED/UNRUN.
+- SessionBridge lookup backend_unavailable; previously retained principal exception applies. Advisers remain bounded
+  consultations, not replacement Fabric execution workers.
 next_actions:
-- Commit/push the same original Macro merge and proof, consume current-head hosted CI, and keep it unarmed until
-  accepted healthy beta is durably proven.
-- Complete final reviewed entry/postread binding and invoke exact protected R93 once through its canonical beta/bootstrap/A
-  entrance after fresh gates; reconcile final exit and every partial effect.
-- Complete installed namespace/cache/read-only aliases and healthy beta; refresh DNS and arm Macro last through
-  the incumbent owner without native auto-merge or post-arm push.
-- Consume original render.yml/engine-render and macro-update source/generated/served identities. Complete DNSPod
-  direct-A/TLS/auth/public browser/history/native handoff/error recovery and applicable first-install rollback proof.
-- 'Persist actual follow-on receipts in original #7949 checkpoint and same evidence pack; keep programme OPEN until
-  required outcomes are demonstrated.'
+- Finish normal original-branch commit/push with the same evidence pack and obtain exact new-head hosted CI. Preserve
+  measured local source proof and unrelated incoming work.
+- Refresh actual public DNS and publication prerequisites, then arm incumbent Macro merge-on-green LAST after required
+  gates; no native auto-merge or post-arm push.
+- Consume existing render.yml/engine-render covering generated-main and macro-update served-tree/asset/capability/header
+  proof.
+- Complete original DNSPod direct-A/TLS/auth/public responsive navigation/history/theme/language/native-handoff/error
+  and applicable initial/rollback acceptance.
+- Persist actual follow-on receipts in original PR7949 checkpoint and same handoff; keep programme OPEN until accepted.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -204,6 +231,8 @@ do_not_redo:
 - Preserve the historical body, existing global WS owner, active status and cross-programme source/approval boundaries.
 - The native R2 two-route16-cell CSS matrix is complete at sourceb2ff and manifest4bd3631f; do not repeat without
   a material source/state invalidator. Its fixture failures and inherited About findings remain disclosed.
+- 'Canonical protected R93 bootstrap completed exit0 and runtime36-check/filesystem acceptance passed; do not repeat
+  bootstrap, cleanup or completed acceptance absent a material invalidator. Application #859/A remains unchanged.'
 danger_areas:
 - Production identity and disk capacity changed externally between observations; historical PID or free-space values
   cannot serve as a fresh isolation baseline.
@@ -1035,3 +1064,53 @@ Keep Macro **unarmed until accepted healthy beta is durably proven**: existing m
 Then complete installed namespace/cache/read-only-alias proof, original render.yml/engine-render generated-main and served-tree identity, current DNS reconciliation and reviewed DNSPod direct-A/TLS, real auth/public desktop-tablet-mobile navigation/history/theme/language/native handoff/error recovery, and truthful first-install rollback scope. DNSPod browser is available but remains at sign-in; Supabase's earlier actual13-redirect read is configuration proof only. Do not claim acceptance of a runtime or public path not exercised.
 
 C4 comments6255134033 through6255716294 and provenance suggestions remain **SPEC_ONLY / UNAPPLIED / UNRUN**. No duplicate PR, renderer, source carrier or watcher. Session Bridge lookup remained backend_unavailable; the retained principal exception and bounded adviser role continue. All prior evidence stays historical at its exact producing input and time.
+
+## Attended continuation — 2026-10-20 — beta runtime and filesystem accepted; Macro contract repair complete locally
+
+Same **WS:MARKET-OS**, original root **market-os-shared-shell-design-20260924-sol-001**, attended parent **shared-shell-production-20261018-c1**, sole Macro **#7949**, original branch and **shared-shell-r27** worktree. Programme **OPEN**. This is the source-and-evidence frontier before the next normal commit/push. The original PR checkpoint records subsequent publication identities. Protected compatible INDEX and required laws remain pinned to **065b7fe719bb07407eae965ffb15e300ae2395f6**.
+
+### Canonical beta recovery completed — no further bootstrap
+
+Terminal **#859** remains merged and browser-qualified at application **A=e45bde2cac07ac3b29285ff70c40d68900fad62c**. Its application and completed qualification were not redone or replaced. The original release owner's sequential correction **#1080** merged at protected **R=93e303cc32566e72fb086af6d04ba3aa41866c5c**, with all 13 hosted jobs successful and independent source reviews nonblocking. Exact protected owner SHA256 **c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d**.
+
+After the fresh original-source, receipt, policy, capacity, lock and production gates, the one private R93 script ran the canonical arguments **--target beta --bootstrap --target-sha A**. Actual native PID35824 ran **01:22:30.178711–01:31:21.932840Z**, **exit 0**, attempt **5099c71dba9f4fb78a3088308688a9a4**. The build produced 65 pages; the owner inspected 2,565 generated entries, privately normalized 2,109 explained output modes, published the accepted transaction, enabled beta and released the shared build lock. Stage **/opt/terminal/beta/.stage.0frO0j** is gone. The complete log is retained, SHA256 **b4de2cac7cbc581a44a9ee7c46af7e250d0cb28c5be453bb81054a5c911b2afa**. The original source-provisioned identity was resumed unchanged.
+
+The separately frozen V3 postreader ran **01:37:44.235492–01:37:46.379068Z**, **exit 0**, **all 36 checks true**, no failed/unobserved checks or errors. Raw JSON SHA256 **d18c7b0ffe2c7dbe988a5fcdf96a66385df66b27ba0307d55e38360fb92286f2**. It observed beta active/running/enabled at **PID2427329/start7560285026653**, application A in source/deployment/status, the accepted runtime and CLEAN preflight/audit, private/no-store and noindex/nofollow status headers, and no pending marker, stage, hold, scratch marker or release owner.
+
+Accepted runtime record ID **c62950826aca6fd8aa98c393097d22efd12639228a5c62db4e821eabb948c0dc** binds CLEAN release-preflight **d1d41bea5d47e17b7b1c44c25c1fea24cf95c30806f0046fcde528ebfd6788bb** and source audit **1bcd1ef2c5eb51a68793d3e7407fa46955e517689d06c318d6f0952418c0acc2**. Production service/process/build, installed global owner and Caddy matched the actual canonical entry baseline. No programme production mutation, additional cleanup, archive deletion, receipt rewrite or global-owner replacement occurred. The earlier ENOSPC and R38 publication failure remain historical evidence. Entry capacity increased independently; no actor or cleanup is invented.
+
+The complete invocation/result/log/binding/postread receipt/raw bytes are also durably retained in [success proof6281354124](https://github.com/mastermindx-market-intelligence/macro/pull/7949#issuecomment-6281354124). The [original release-owner checkpoint](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1062#issuecomment-6267675280) was updated and read back at **02:18:29Z**. **Do not repeat bootstrap.** The first accepted runtime has previous-runtime null and future rollback-baseline eligibility true; this is **not an executed accepted-runtime rollback**.
+
+### Actual filesystem acceptance, including the diagnostic failure
+
+The frozen filesystem diagnostic uses the actual beta mount namespace/root, UID987/GID981/observed supplementary group981, zero capability sets and NoNewPrivs. It reads representative app/dependency/build files and markers, validates actual opened-descriptor mount IDs, exercises one uniquely named private cache file with exact cleanup, and attempts non-creating/non-truncating write-open refusals against both shared-data aliases. No public-data write bytes, production mutation, restart, installer or environment-secret read is performed.
+
+The first diagnostic at **03:03:51.849884–03:03:54.239001Z** exited 1; nsenter child2502448 exited126 before inner Python or file operations. Exact recovered stderr was **48 bytes**, SHA256 **6988da67d7a9ba80ad644fba7086262b55cd6163d2826a1a68f56a76ab42f727**: nsenter attempted to execute the standalone slash argument. Installed util-linux2.39.3 source and the bounded installed grammar control proved that its optional --wdns argument requires **--wdns=/**. The read-only **03:06:27.965656Z** reconciliation proved the old child absent and the exact cache leaf absent through both host and service-root aliases, with beta unchanged. The **03:08:15.330199Z** control reproduced exit126 for the old syntax and exit0 for the corrected syntax without joining the service namespace or touching its files.
+
+The only operational V2 delta is that argument serialization and retention of exact child stderr bytes. Source SHA256 **7f7e3179b6f46844e13f293d78be6c4019c8564d2cc3109f45cd3e5e5089c5a5**, independently reviewed nonblocking before invocation. The earlier **12 helper-validation groups** are bound to the retained f3 source/helper artifact; they are not relabeled as a new V2 test run.
+
+Corrected native **PID43723** ran **03:09:58.402213–03:10:01.179582Z**, **exit0**, child2507963 exit0, stderr empty. The outer receipt reports **ACCEPTED_BETA_MOUNT_ROOT_CREDENTIAL_FILESYSTEM_PASS**, all checks true, errors empty, owned child completion resolved and cache_cleanup_unobserved false. Raw stdout **30,072 bytes**, SHA256 **6a402fc92a8a65e3e18569342214a0034866d9b427afdeaf23aa8db3c98b7d5e**; wrapper receipt SHA256 **dba1a6a384e8bb58dc6a56120cf84ffd24bc8db0784e5dd982b2a9e44f741b18**.
+
+The service and probe share mount namespace **4026532427** and root identity; credentials and zero capabilities match the declared gate. Five representative app/dependency/build/marker files were readable. The cache file was created0600 by UID987, 59 known bytes were written/read and updated/read, and exact inode/name/byte-bound cleanup completed. Both public-data aliases resolve to the same **dev2048/inode81163**, **439,132-byte** coverage.json with unchanged SHA256 **761307f6977e2418c941696effb7b635436448faf14ccbc992a504541be78d11**. Each write-open was refused with **EACCES**, corroborated by its actual descriptor's read-only mount (**1051** and **1027**), with no hidden/stacked writable subtree found. This is not an observed EROFS refusal. Beta PID/start, loaded unit, accepted record, build markers, mount state and status200 remained unchanged before/after.
+
+Scope is **filesystem/mount/root/DAC acceptance**. The probe did not join the service cgroup, PID/user/network namespaces or reproduce its seccomp/LSM execution profile; it does not prove full sandbox equivalence. The inner record retains its conservative default disposition string while explicitly reporting all_checks_pass true; the outer accepted disposition, exact gates and actual exit govern this bounded result. Raw JSON nanosecond integers are preserved byte-for-byte.
+
+### Original Macro source and exact CI cause
+
+Published **b98c5d1bbf3f50ce7b0fdc9df8dbc9882500a1b0** remained OPEN/unarmed, with the original writer/remote branch reconciled. Its hosted run **39352502392** finished with **contract-delta118399691090** and **ci-pack-1/118400090203** failing on the same two source-contract defects; the other 11 packs succeeded, trusted-ci was skipped, and the aggregate failed. Full logs are retained, including original BOMs. Tested merge **8a32fbdde43e10e7b78bfaa98263dc6384c393ce**, compared base **1797655a0109f7cad7e2f4b294a69492745bbe3a**. No CI rerun, dispatch or watcher was created.
+
+The ordinary pending merge integrates immutable main **d52827f26b062f67d594350a65becf406710d4d1**, true merge base6397. Its 1,178 incoming paths and entire source/CI fields were inventoried. Only ETF and US Stocks conflicted; exact stage-side checks, incumbent injection and adapter transforms reproduce the complete branch delta, invert to complete incoming pages and remain idempotent. Their staged hashes are ETF **76acbf0e808f4ae7024451c85eccf2f0674cf554a43c8d95ad14d375a361097b** and US **7efd196446e66409b0ea3c1e883103abc7da32c58c709470936aeeed760e7d73**. No merge restart, reset, alternate worktree or renderer was used.
+
+The native discriminating two-test run reproduced both failures at unchanged pre-repair index212504aa. The repair adds only **lib/shared_shell.py** to research-vault's existing dependency declaration and raises only the **build_free_content** estimated-weight ceiling **5,642→5,649**. The extra seven estimator units come from retained coverage: **data-base-shim7→12 (+5)** and **unrun-nav-chrome30→32 (+2)**. Selected jobs stay134 and packs stay10. Incoming W23+4 history, commands, suites, selectors, all job-count bounds and both other weight ceilings remain. This is estimator weight, not measured elapsed runtime.
+
+The same two tests then passed **2/2 in184.79s**, actual exit0 at **02:57:18.543906Z**, source/index unchanged at6d1ff535. A subsequent factual docstring-only correction changed “5,649 excess” to “5,649 total”; full executable AST was unchanged. Final repair patch **2,556 bytes**, SHA256 **42dec7c9a86bdd21ae12732213341cb77c763ee0a25174edc4dd2636e9ed169b**.
+
+The full canonical **python3.12 scripts/check_contract_delta.py --base d52827f26b062f67d594350a65becf406710d4d1** ran **03:02:45.622747–03:10:47.408012Z**, **exit0, zero introduced / zero inherited**, final source/index unchanged at **1996dbf7a6b9f754c67ed5726bcd4d505482b80b**. Its log SHA256 is **5f5a9540ff4004b131508a2cbd6f54efde4ac550275989bbd2a57f5b186b5c4a** and receipt SHA256 **dfe5b64c53abace6ff47130c10d1a9d18a469c4709b697b85b7034d10a7eb192**. CONTRACT_DELTA_NO_REAP=1 disables only cleanup of unrelated stale base trees; canonical comparisons, assertions and the command's own temporary base remain unchanged. Independent final repair/evidence review is NONBLOCKING. Local success is not fresh hosted admission.
+
+### Remaining publication and acceptance
+
+Preserve all six Sector views **overview/map/moving/money/explore/confluence** and sector-to-basket; Paper remains **REVISE**. The historical 16-cell CSS matrix remains bound to its original source/fixture. Current generated pixels and public beta are not accepted by that old proof. About light-only styling/mobile English overflow and historical blocked-request/stream observations remain disclosed. C4 comments6255134033 through6255716294 and provenance proposals remain **SPEC_ONLY / UNAPPLIED / UNRUN**.
+
+Last completed native public DNS/TLS reads at01:51/01:56 still show the EdgeOne CNAME and addresses43.159.98.106/43.159.99.101, with strict TLS hostname validation failing. Reviewed desired beta A target is146.190.142.17; no DNS cutover occurred. DNSPod's last accessible connected-browser state was sign-in. On this resume the extension reports that its originating browser context is unavailable. A fresh cloud browser was opened for public beta and displayed an upstream connection failure; this is no application/browser acceptance. No security warning or authentication bypass occurred. Supabase's 13-redirect configuration proof remains separate from a real auth journey.
+
+Next, finish the same original Macro commit/push and exact-head hosted gates, then arm the incumbent merge-on-green owner LAST with no native auto-merge or post-arm push. Consume the existing render.yml/engine-render generated-main and macro-update served-tree evidence separately. Complete direct beta DNS/TLS, real auth, public1440/820/390 navigation/history/theme/language/native handoff/error recovery, and applicable initial/rollback acceptance. No new PR, renderer, source carrier or watcher. SessionBridge backend_unavailable and the previously recorded principal exception remain bounded to this commission. Continue until accepted; this checkpoint is not completion.
