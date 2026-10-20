@@ -384,6 +384,14 @@ class MetricDefinition:
 
 
 @dataclass(frozen=True)
+class MetricDefinition:
+    """Rule-versioned statement of the scope a metric identifier measures."""
+
+    scope: str
+    rule: ImmutableRule
+
+
+@dataclass(frozen=True)
 class MetricContract:
     """Complete no-fallback contract for one normalized metric."""
 

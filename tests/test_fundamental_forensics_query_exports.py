@@ -1603,3 +1603,71 @@ def test_a38_x1p_pre_clock_not_presented_pack_exports_equal_the_plain_engine() -
             tickers=["AAA"], metrics=metrics, periods=[_NP_INSTANT], policy=policy
         )
         assert _x1p_export_payloads(matrix) == _x1p_export_payloads(plain)
+
+
+def test_a54_reissue_after_a_new_generation_binds_the_new_receipt(
+    router_app, monkeypatch
+) -> None:
+    """A re-issued export is bound to the generation latest at re-issue time.
+
+    Export is stateless re-issue: nothing is cached between posts. The CSV and
+    Parquet bodies carry cell bytes only, so the generation identity rides the
+    receipt header, which is the hash of the JSON receipt that names it.
+    """
+    import dataclasses
+    from datetime import timedelta
+
+    from engine.fundamental_forensics import production_datasets as PDS
+    from engine.fundamental_forensics.production_provider import (
+        ProductionFinancialQueryProvider,
+    )
+    from tests.test_fundamental_forensics_production_provider import (
+        T_ADMITTED,
+        _fip1_material,
+        _query_body,
+    )
+
+    store = PDS.InMemoryStrictConditionalStore()
+    first = _fip1_material()
+    PDS.publish_production_dataset(store, first)
+    monkeypatch.setattr(
+        forensics_api,
+        "_financial_query_provider",
+        lambda: ProductionFinancialQueryProvider(store),
+    )
+    router_app.dependency_overrides[forensics_api.require_site_full_user] = lambda: {
+        "id": "paid-user"
+    }
+
+    def issue(client):
+        query = _post(client, _JSON_PATH, _query_body())
+        assert query.status_code == 200
+        receipt = query.headers["x-fif-response-sha256"]
+        assert receipt == hashlib.sha256(query.content).hexdigest()
+        generation = query.json()["delivery"]["dataset_generation_id"]
+        exports = {}
+        for path in _EXPORT_PATHS:
+            response = _post(client, path, _query_body())
+            assert response.status_code == 200
+            assert response.headers["x-fif-receipt-sha256"] == receipt
+            exports[path] = response
+        return generation, receipt, exports
+
+    with TestClient(router_app, raise_server_exceptions=False) as client:
+        old_generation, old_receipt, old_exports = issue(client)
+        assert old_generation == PDS.load_latest_generation(store, first.binding.entity_id).generation_id
+
+        second = dataclasses.replace(
+            first,
+            admitted_at=T_ADMITTED + timedelta(days=2),
+            source_recorded_at_floor=first.source_recorded_at_floor + timedelta(days=2),
+        )
+        PDS.publish_production_dataset(store, second)
+        new_generation, new_receipt, new_exports = issue(client)
+
+    assert new_generation == PDS.load_latest_generation(store, first.binding.entity_id).generation_id
+    assert new_generation != old_generation
+    assert new_receipt != old_receipt
+    for path in _EXPORT_PATHS:
+        assert new_exports[path].headers["x-fif-receipt-sha256"] == new_receipt
+        assert old_exports[path].headers["x-fif-receipt-sha256"] == old_receipt

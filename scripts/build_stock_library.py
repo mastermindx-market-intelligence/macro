@@ -3625,12 +3625,13 @@ def main(now: datetime | None = None) -> int:
             geo_rev_map = (json.loads(_geo_p.read_text()) or {}).get("by_ticker", {})
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("geo_revenue.json unreadable (%s)", e)
-    # valuation_scenario.v1 -- FROZEN SPEC B-F07-1. V1 = one pinned issuer only
-    # (AAPL); pure function over already-collected SEC companyfacts statements
+    # valuation_scenario.v1 -- B-F07-1 plus the source-qualified VCYT extension.
+    # Pure function over already-collected SEC companyfacts statements
     # (engine.stock_fundamentals._load_statements(), read once here). No new
     # collector, no network, no licensed data -- ~one extra parquet read plus
-    # ~20 float ops for one ticker, well under the render budget.
-    _VS_TICKERS = ("AAPL",)
+    # bounded admitted display cohort; A6/A7 qualification remains unchanged.
+    from engine.guidance_source_evidence import DISPLAY_TICKERS
+    _VS_TICKERS = DISPLAY_TICKERS
     _vs_statements: dict = {}
     try:
         _vs_statements = _vs_load_statements()
@@ -4338,7 +4339,7 @@ def main(now: datetime | None = None) -> int:
         # revenue-by-geography block (collectors/edgar_geo_revenue.py; TXI W2 #3431)
         if geo_rev_map.get(ticker):
             rec["geo_revenue"] = geo_rev_map[ticker]
-        # valuation_scenario.v1 -- pinned V1 issuer only (FROZEN SPEC B-F07-1)
+        # valuation_scenario.v1 -- bounded admitted display cohort
         if ticker in _VS_TICKERS:
             try:
                 _vs_price = (rec.get("tech") or {}).get("price")
@@ -4376,12 +4377,11 @@ def main(now: datetime | None = None) -> int:
         if _vs_v1 is not None:
             try:
                 from engine import valuation_assumptions as _valuation_assumptions
-                # as_of is the build's own point-in-time ceiling: an event
-                # dated after it has not happened yet as far as this build
-                # knows, and may not propose an assumption change.
+                # The actual build instant bounds evidence retrieval. The market
+                # price session remains separately identified by rec["asof"].
                 rec.setdefault("valuation_scenario", {})["controls"] = (
                     _valuation_assumptions.controls_blob(
-                        _vs_v1, as_of=rec.get("asof")
+                        _vs_v1, as_of=_board_observed_at.isoformat()
                     )
                 )
             except Exception as e:  # noqa: BLE001 — additive, never fatal
@@ -5471,7 +5471,12 @@ def main(now: datetime | None = None) -> int:
                 rec["view"]["provenance"] = _build_prov(_ticker, rec, _prov_ctx)
             except Exception as _prov_e:  # noqa: BLE001 — additive, never fatal
                 log.debug("provenance sidecar failed for %s: %s", safe, _prov_e)
-        (outdir / f"{safe}.json").write_text(json.dumps(rec, default=str))
+        # F08 adds one guarded raw-source field at the existing publication seam.
+        # Legacy board metrics and all scoring/view construction stay unchanged.
+        from scripts.stock_liquidity_profile import write_record as _write_liquidity_record
+        _write_liquidity_record(
+            outdir / f"{safe}.json", rec, data_root=config.data_dir(),
+            recorded_at=_board_observed_at)
     # flush the accruing ladder-transition log in one idempotent, atomic write
     try:
         added = ticker_alerts.write_ladder_log_batch(ladder_rows)

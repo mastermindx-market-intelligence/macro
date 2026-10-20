@@ -81,8 +81,8 @@ def test_reported_holding_reader_is_a_separate_private_read_action():
     assert 'data-holding-example="current"' in holding
     assert '<div id="ff-holding-result" hidden></div>' in holding
     assert 'id="ff-holding-status" role="status" aria-live="polite"' in holding
-    assert 'href="institutional_holding_research.css?v=20261019-f09"' in html
-    assert 'src="institutional_holding_research.js?v=20261019-f09"' in html
+    assert 'href="institutional_holding_research.css"' in html
+    assert 'src="institutional_holding_research.js"' in html
     assert html.index('src="theme.js"') < html.index('src="institutional_holding_research.js')
     assert "1279" not in holding
     assert "1238" not in holding
