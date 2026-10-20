@@ -1,0 +1,160 @@
+{
+  "schema": "mmx.commodities.provenance_repin.v1",
+  "from_base": "ef029bd56030c313bc36906a31f6b508c199410b",
+  "to_base": "53c380daf74247672d62cca270743555d52fd409",
+  "component_content_identical_except_provenance": true,
+  "changed_fields": [
+    {
+      "path": "$.fingerprint",
+      "before": "46ae1e030c0bc34d4573a578ba31ada16ddf065b03c9d798535ce3e9d0ac4839",
+      "after": "622ea8ef4536469d71f95e580287d20b2757a7e71b9cfe574a39dbdf7a3d36f5"
+    },
+    {
+      "path": "$.gold_physical.source_receipt.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.crude_production.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.crude_stocks.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.cushing_stocks.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.distillate_stocks.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.distillate_supplied.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.gasoline_stocks.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.gasoline_supplied.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.refinery_inputs.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.refinery_util.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.physical.source_dependencies.spr_stocks.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.chains.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.commodities.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.fx.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.gold_physical.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.fingerprint",
+      "before": "8fc44cddda86505129e70a146c797406d803530be2d67cfdd5bb2617da33df56",
+      "after": "bf8a1513ab81215bfb4e87c11de33238679e104b28af7564fcd94fdbac852dd0"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.crude_production.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.crude_stocks.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.cushing_stocks.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.distillate_stocks.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.distillate_supplied.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.gasoline_stocks.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.gasoline_supplied.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.refinery_inputs.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.refinery_util.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.physical.immutable_source.files.spr_stocks.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.rates.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    },
+    {
+      "path": "$.sources.ratios.immutable_source.commit",
+      "before": "ef029bd56030c313bc36906a31f6b508c199410b",
+      "after": "53c380daf74247672d62cca270743555d52fd409"
+    }
+  ],
+  "visual_evidence_base": "ef029bd56030c313bc36906a31f6b508c199410b",
+  "note": "Existing 56 captures retain reviewed semantics and layout; source commit references and resulting fingerprints were repinned. Upstream legacy page changes update two build timestamps."
+}

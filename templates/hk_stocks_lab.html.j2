@@ -1,6 +1,10 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
+{%- macro co_name(x) -%}
+{% if x.name and x.name != x.ticker %} <span class="pick-rank pick-nm">{{ t(x.name, x.name_zh) -}}
+</span>{% endif %}
+{%- endmacro %}
 {#
   HK Pick Lab — HK candidate pick engine evaluation (display_only, ACCRUING).
   Spec: research/HK_PICK_LAB_MASTERPLAN_BY_FABLE.md §7.
@@ -328,7 +332,7 @@
         <div class="pick-card">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
-            <span class="pick-tk">{{ p.ticker }}</span>
+            <span class="pick-tk">{{ p.ticker }}{{ co_name(p) }}</span>
             <span class="pick-close">{{ p.close_fmt }}</span>
           </div>
           {% if p.sector %}<div class="pick-sector">{{ p.sector }}</div>{% endif %}
@@ -362,7 +366,8 @@
         <tbody>
           {% for f in book.recent_fires %}
           <tr>
-            <td>{{ f.ticker }}{% if f.halt_chip_en %}<span class="halt-chip"><span class="l-en">{{ f.halt_chip_en }}</span><span class="l-zh">{{ f.halt_chip_zh }}</span></span>{% endif %}</td>
+            <td>{{ f.ticker }}{{ co_name(f) }}{% if f.halt_chip_en %}<span class="halt-chip">
+              {{- t(f.halt_chip_en, f.halt_chip_zh) }}</span>{% endif %}</td>
             <td>{{ f.fire_date }}</td>
             <td class="neu">{{ f.fill_basis_label }}</td>
             <td class="{{ 'pos' if f.ret21_excess is not none and f.ret21_excess > 0 else ('neg' if f.ret21_excess is not none and f.ret21_excess < 0 else '') }}">{{ f.ret21_excess_fmt }}</td>
@@ -513,7 +518,7 @@
         <div class="pick-card{{ ' avoid-card' if book.is_inverse else '' }}">
           <div class="pick-top">
             <span class="pick-rank">#{{ p.rank }}</span>
-            <span class="pick-tk">{{ p.ticker }}</span>
+            <span class="pick-tk">{{ p.ticker }}{{ co_name(p) }}</span>
             <span class="pick-close">{{ p.close_fmt }}</span>
           </div>
           {% if p.sector %}<div class="pick-sector">{{ p.sector }}</div>{% endif %}
@@ -549,7 +554,8 @@
         <tbody>
           {% for f in book.recent_fires %}
           <tr>
-            <td>{{ f.ticker }}{% if f.halt_chip_en %}<span class="halt-chip"><span class="l-en">{{ f.halt_chip_en }}</span><span class="l-zh">{{ f.halt_chip_zh }}</span></span>{% endif %}</td>
+            <td>{{ f.ticker }}{{ co_name(f) }}{% if f.halt_chip_en %}<span class="halt-chip">
+              {{- t(f.halt_chip_en, f.halt_chip_zh) }}</span>{% endif %}</td>
             <td>{{ f.fire_date }}</td>
             <td class="neu">{{ f.fill_basis_label }}</td>
             <td class="{{ 'pos' if f.ret21_excess is not none and f.ret21_excess > 0 else ('neg' if f.ret21_excess is not none and f.ret21_excess < 0 else '') }}">{{ f.ret21_excess_fmt }}</td>
