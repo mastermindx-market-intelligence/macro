@@ -13275,6 +13275,71 @@ jobs:
       - name: stocktwits sentiment collector tests
         run: python -m pytest tests/test_stocktwits.py -q
 
+  china-sector-desk-gate:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # China Sector Desk turn-signature gate row + cohort label (W27-L26, 2026-10-20). The row
+    # read only gate.passed, so an unavailable gate (available=False, passed=True) painted a
+    # tick for checks that never ran; the ZH leg printed the English word "review"; and the h6
+    # band said "setup ~ today" for a top-third cohort that is false today for three of four
+    # sectors. Five render tests pin the pooled n, median percentiles, the CI band, "not run"
+    # and "(not today)". tests/test_china_sector_desk.py leaves config/unrun_test_baseline.json
+    # here; its three older tests read the china_sectors parquet store and SKIP without data/.
+    # Own job, not a step in unrun-template-chips: that step moved the index-template
+    # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes. scope: exclusive
+    # pins it to its static import closure plus ancestor inits; the probe ceilings stay fixed.
+    paths:
+      - "templates/china_sector_desk.html.j2"
+      - "tests/test_china_sector_desk.py"
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/china_sectors.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/canon.py"
+      - "engine/china_sector_desk.py"
+      - "engine/china_sector_index.py"
+      - "engine/china_sector_pathway.py"
+      - "engine/china_sector_pathway_backtest.py"
+      - "engine/conditions.py"
+      - "engine/cycles.py"
+      - "engine/grading_stats.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+      - name: China Sector Desk — turn-signature gate row prints its sample + band; cohort label is the top third
+        run: python -m pytest tests/test_china_sector_desk.py -q -p no:cacheprovider
+
   china-native-w2:
     if: ${{ false }}
     gate: code

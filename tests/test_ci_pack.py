@@ -4892,6 +4892,11 @@ CURATED_EXCLUSIVE = {
     # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
     # scope: exclusive pins the job to its measured suite_dependency_closure.
     "leadership-rotation-science",
+    # 2026-10-20 W27-L26: the China Sector Desk turn-signature gate render tests.
+    # As a step in unrun-template-chips they moved the index-template
+    # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes; its
+    # own exclusive job keeps the static import closure plus ancestor inits.
+    "china-sector-desk-gate",
     # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.

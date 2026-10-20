@@ -176,7 +176,6 @@
     "tests/test_china_sector_central.py",
     "tests/test_china_sector_cycles.py",
     "tests/test_china_sector_cycles_grader.py",
-    "tests/test_china_sector_desk.py",
     "tests/test_china_sector_intelligence_page.py",
     "tests/test_china_sector_pathway.py",
     "tests/test_china_sector_turn.py",
