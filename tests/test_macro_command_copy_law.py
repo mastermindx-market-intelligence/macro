@@ -455,6 +455,27 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_unavailable_implication_is_plain_without_changing_source() -> None:
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces import labor
+    from lib import macro_suite_view as view
+
+    items = labor._implications(
+        {"state_id": None}, None, None, {"present": False}, "CURRENT", 0.0)
+    snapshot = {"implications": {"items": items}}
+    before = deepcopy(snapshot)
+    reading = view._implications(snapshot)["entries"][0]["text"]
+
+    assert reading["en"] == (
+        "There are too few available inputs to classify the US labor market. "
+        "No category is assigned; the missing reading does not mean conditions are neutral.")
+    assert reading["zh"] == "可用输入不足，无法判断美国劳动力市场状态。暂不分类；缺少读数不代表情况中性。"
+    visible = f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>'
+    assert guard.find_violations(visible) == []
+    assert snapshot == before
+    assert "axis coverage is below the disclosed floor" in items[0]["text"]["en"]
+
+
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     from lib.macro_suite_labels import machine_text_hits
     assert machine_text_hits("sticky_led in the mix")
