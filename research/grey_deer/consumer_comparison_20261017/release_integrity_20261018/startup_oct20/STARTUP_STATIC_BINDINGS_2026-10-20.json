@@ -1,0 +1,339 @@
+{
+  "schema": "mastermind.review.static-startup-bindings.v1",
+  "source_ref": "7b5ccfffef4e90b89496751dd7bc0f55b711ed25",
+  "source_manifest_sha256": "f2f62a2739da06de915d7253fcfc4e29f52cb8f0fd8a04c8fd8f7560848b7c29",
+  "method": "stdlib parsing and hashing only; no first-party imports or calls",
+  "files": [
+    {
+      "path": "app/main.py",
+      "git_blob": "fdb22dc1a2650ff57d50a1c9c1cfebcf10521da4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/app/main.py",
+      "bytes": 34012,
+      "sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "app/scheduler.py",
+      "git_blob": "979ae223b87c85b14a5906c009de4eb78fda31d4",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/app/scheduler.py",
+      "bytes": 111145,
+      "sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "app/web.py",
+      "git_blob": "3cff8680694edc84aeb8dc64361422ba4c5e7944",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/app/web.py",
+      "bytes": 167964,
+      "sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "control_plane/executive_incident_composition.py",
+      "git_blob": "729c66cda35b5fd631c753c5536ae87e4d8a6195",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/control_plane/executive_incident_composition.py",
+      "bytes": 7936,
+      "sha256": "9a896d764c0f056df88db6513bb7335f3464ab05e426705a42935690727f3fe8",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "ops/executive_os/provider_readiness.py",
+      "git_blob": "21173eaf67b90becc4119b397b877c4c857f6df8",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/ops/executive_os/provider_readiness.py",
+      "bytes": 92708,
+      "sha256": "e240f648fde0396617c1a88490fbfea46a51926c9c38013227a4b6dfec85d722",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "bot/overnight.py",
+      "git_blob": "2e4e7ba161ef06e0fc83446c9be9716e36cc993c",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/bot/overnight.py",
+      "bytes": 7427,
+      "sha256": "6a8252980c483880561352334fd9706569f3d40d709fe44a97fc6356d68169a2",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    },
+    {
+      "path": "control_plane/worker_adapter.py",
+      "git_blob": "c7514e76e19b1d1e05edf142fa0c1352cb40c4eb",
+      "source_url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/7b5ccfffef4e90b89496751dd7bc0f55b711ed25/control_plane/worker_adapter.py",
+      "bytes": 10074,
+      "sha256": "657c05c3c273ae886aa82c02f31173c0d948885577840724974bbc4c4775cf74",
+      "verified_bytes": true,
+      "verified_sha256": true,
+      "verified_git_blob": true
+    }
+  ],
+  "registered_jobs": [
+    {
+      "line": 1738,
+      "id": "macro_refresh",
+      "callable": "_macro_refresh_job",
+      "trigger": "CronTrigger(hour='*/3', minute=30)",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1748,
+      "id": "daily_mark",
+      "callable": "_daily_mark_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=hour, minute=35, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1752,
+      "id": "autonomous_daily",
+      "callable": "_autonomous_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=a_hour, minute=10, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1756,
+      "id": "china_daily",
+      "callable": "_china_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=cn_hour, minute=0, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1760,
+      "id": "hk_daily",
+      "callable": "_hk_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=hk_hour, minute=0, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1767,
+      "id": "settle_pending",
+      "callable": "_settle_pending_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=settle_hour, minute=0, timezone='UTC')",
+      "misfire_grace_time": "7200",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1775,
+      "id": "settle_brain_asia",
+      "callable": "_settle_brain_asia_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=asia_settle_hour, minute=35, timezone='UTC')",
+      "misfire_grace_time": "7200",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1785,
+      "id": "watch_us_overnight",
+      "callable": "_watch_us_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=us_watch_hours, minute=20, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1787,
+      "id": "watch_asia_overnight",
+      "callable": "_watch_asia_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=asia_watch_hours, minute=20, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1794,
+      "id": "derisk_us_intraday",
+      "callable": "_derisk_us_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=derisk_hours, minute='0,30', timezone='UTC')",
+      "misfire_grace_time": "1800",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1802,
+      "id": "publish_macro_snapshot",
+      "callable": "_snapshot_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=snap_hours, minute=25, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1817,
+      "id": "vps_state_sync",
+      "callable": "_vps_state_sync_job",
+      "trigger": "CronTrigger(minute=vps_sync_minute, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "MASTERMIND_VPS_AUTHORITATIVE not one of 1,true,yes,on"
+    },
+    {
+      "line": 1825,
+      "id": "cio_weekly",
+      "callable": "_cio_weekly_job",
+      "trigger": "CronTrigger(day_of_week=cio_dow, hour=cio_hour, minute=0, timezone='UTC')",
+      "misfire_grace_time": "7200",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1833,
+      "id": "improvement_agenda_weekly",
+      "callable": "_improvement_agenda_job",
+      "trigger": "CronTrigger(day_of_week=agenda_dow, hour=agenda_hour, minute=30, timezone='UTC')",
+      "misfire_grace_time": "7200",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1846,
+      "id": "loop_maintenance",
+      "callable": "_loop_maintenance_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=lm_hour, minute=45, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1854,
+      "id": "experiment_maturity",
+      "callable": "_experiment_maturity_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=lm_hour, minute=50, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1862,
+      "id": "portfolio_risk_compose",
+      "callable": "_portfolio_risk_compose_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour='13-20', minute='0,30', timezone='UTC')",
+      "misfire_grace_time": "1800",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1869,
+      "id": "portfolio_risk_daily",
+      "callable": "_portfolio_risk_daily_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=15, minute=5, timezone='UTC')",
+      "misfire_grace_time": "3600",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    },
+    {
+      "line": 1879,
+      "id": "prewarm_marks",
+      "callable": "_prewarm_marks_job",
+      "trigger": "CronTrigger(day_of_week='mon-fri', hour=prewarm_hours, minute=prewarm_min, timezone='UTC')",
+      "misfire_grace_time": "120",
+      "coalesce": "True",
+      "replace_existing": "True",
+      "registration_condition": "scheduler.start reaches this registration"
+    }
+  ],
+  "scheduler_module_level_nondefinition_nodes": [
+    {
+      "line": 46,
+      "text": "from __future__ import annotations"
+    },
+    {
+      "line": 48,
+      "text": "import logging"
+    },
+    {
+      "line": 49,
+      "text": "import os"
+    },
+    {
+      "line": 50,
+      "text": "from pathlib import Path"
+    },
+    {
+      "line": 52,
+      "text": "import bot"
+    },
+    {
+      "line": 54,
+      "text": "log = logging.getLogger(__name__)"
+    },
+    {
+      "line": 56,
+      "text": "_DB = Path(__file__).resolve().parent.parent / \"data\" / \"scheduler.sqlite\""
+    },
+    {
+      "line": 57,
+      "text": "_scheduler = None"
+    },
+    {
+      "line": 156,
+      "text": "_BENIGN_SETTLEMENT_SKIPS = frozenset({\"market_closed\", \"nothing_queued\"})"
+    },
+    {
+      "line": 210,
+      "text": "_BRAIN_RETRY_COUNTS: dict[tuple[str, str], int] = {}"
+    },
+    {
+      "line": 215,
+      "text": "_ARCHIVED_BOOK_JOBS: dict[str, str] = {\n    \"daily_loop\": \"flagship\",\n    \"heavyweight_daily\": \"heavyweight\",\n    \"etf_daily\": \"etf\",\n}"
+    },
+    {
+      "line": 257,
+      "text": "_BRAIN_RETRY_JOBS: dict[str, str] = {\n    \"autonomous_daily\":  \"autonomous\",\n    \"china_daily\":       \"china\",\n    \"hk_daily\":          \"hk\",\n}"
+    },
+    {
+      "line": 967,
+      "text": "_MATURED_EMITTED = Path(__file__).resolve().parent.parent / \"data\" / \"governance\" / \"experiment_matured_emitted.json\""
+    },
+    {
+      "line": 1172,
+      "text": "_MARK_BOOK_IDS = [\"autonomous\", \"china\", \"hk\"]"
+    },
+    {
+      "line": 1177,
+      "text": "_MARK_BOOK_VENUES = {\"autonomous\": \"US\", \"china\": \"CN\", \"hk\": \"HK\"}"
+    },
+    {
+      "line": 1179,
+      "text": "_SELF_DIRECTED_VENUE = \"US\""
+    }
+  ],
+  "production_settings_observed": false,
+  "runtime_or_network_effects_executed": false,
+  "final_merged_release_known": false
+}

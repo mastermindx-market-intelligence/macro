@@ -1,0 +1,449 @@
+{
+  "classification": "STATIC_EVIDENCE_PACKET_APPLIED_AND_READ_BACK",
+  "completed_at": "2026-10-20T04:22:43.717374+00:00",
+  "worktree": "/Volumes/Mastermind 2/agent-workspaces/macro/web/risk-radar-release-qualification-20261018-0304",
+  "head": "ac08d5bd630d480a97fcbd0d9814946724250011",
+  "zip_bytes": 740274,
+  "zip_sha256": "77540bebc25bfc66c60da06bd4bc209211865a423604faa4b4f586c5dc88c664",
+  "manifest_sha256": "17b6d560ffaa99f53cbf2cf345ccd8dc88da2b3752dbb3c932b0280ce3670646",
+  "files": [
+    {
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "bytes": 51196,
+      "before_sha256": "1fa0378f16c241f36b01043a4055b4356e0a1a7e010dc70bf0b925d1f8dd294f",
+      "after_sha256": "cc09cd9d49cb935c05568e422143f12a50e880282e657e6df5c78d520f648e1c",
+      "changed": true
+    },
+    {
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "bytes": 32533,
+      "before_sha256": "394c9395ae91cdc2a15854a535da600f46a437b3aa875c45387f904b96cd8c04",
+      "after_sha256": "952fbde8096ed4687dbb3e1722c66022818a0f7ebd64066ead40cdd89fd358d9",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "bytes": 47973,
+      "before_sha256": "104f1a4f6383fd03565531177c5f655527d74b5ac81e855a4b41002a4bfd3276",
+      "after_sha256": "c360c24c02b563f9fef1a7da22a1d1d03b2630c906cc0d734876465e0fa75b47",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "bytes": 53064,
+      "before_sha256": "d05c2bfce5672853137372e4275da52aa78350441cceb45c497c68085a9899e2",
+      "after_sha256": "3a0bb7d3288ecf4252e0f24e24f6645d07c71fafc1169eb3de019c97036f6100",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md",
+      "bytes": 14943,
+      "before_sha256": "783bf218f9b3797cccaf2b0b40a2fe083beac7d4cd10c83be561861cc0df1f04",
+      "after_sha256": "6eb0fc48c2ee07e665d8d086e0e2d157637ff783b58d266b18c14dfd9b5e2c1f",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/build_report.py.txt",
+      "bytes": 15872,
+      "before_sha256": "1c17c0b03d98b268913fdda153e2a2dd21616cc734d185b97f54fea0700ae72b",
+      "after_sha256": "f4153562f4847465a35f92a7779ae10c9852867a10baa99a82365d8e1698e626",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/review/DATED_ACTION_MAP_REVIEWED_VERSION_2026-10-20.md.txt",
+      "bytes": 14889,
+      "before_sha256": null,
+      "after_sha256": "783bf218f9b3797cccaf2b0b40a2fe083beac7d4cd10c83be561861cc0df1f04",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.ORIGINAL.md.txt",
+      "bytes": 10430,
+      "before_sha256": null,
+      "after_sha256": "c4bdc9905018a31d7f610213d7e899b6cafd1467934ab37fa03394630adb6f5a",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md",
+      "bytes": 10434,
+      "before_sha256": null,
+      "after_sha256": "9c07b6798e5ba7c9c61a2f226a67275afd7cd0042c799b2d6ffa2f1ed23c65be",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/action_snapshot_20261020/review/WORDING_AMENDMENT_2026-10-20.json",
+      "bytes": 1173,
+      "before_sha256": null,
+      "after_sha256": "6b7093f9f39e2cdffac6d7741b7f4674a940ff1a6b0cb2da06b7ac1f4d9c4397",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md",
+      "bytes": 20726,
+      "before_sha256": "7ab81e6f718c2cd189588ea909469dab09353447e314e8230daf981a11e6230f",
+      "after_sha256": "4e673631e8556d57251288554488c0d79e3e8fbc2b252033c6a97ffc207b71b8",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/archive_originals_oct20/README_AC08_2026-10-20.md.txt",
+      "bytes": 11949,
+      "before_sha256": null,
+      "after_sha256": "7ab81e6f718c2cd189588ea909469dab09353447e314e8230daf981a11e6230f",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/AC08_FAILED_CI_PACK_1_117650324539.log",
+      "bytes": 92453,
+      "before_sha256": null,
+      "after_sha256": "3f026febcbb0447ed844ddd86fc4ddf46747d473b220f2b98fc0b43f55d46b4d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/CI_AND_CURRENT_SOURCE_METADATA_2026-10-20.json",
+      "bytes": 36036,
+      "before_sha256": null,
+      "after_sha256": "2936834f82ad9e343e5237f6281bc0ed19cf774db245e57c502b995440cf112d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md",
+      "bytes": 5359,
+      "before_sha256": null,
+      "after_sha256": "cee25b0d4632f188e9c78f3605e152eb77c3b217ac4da024285192497224f065",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/CURRENT_RELOCATION_NATIVE_READ_2026-10-20.json",
+      "bytes": 31148,
+      "before_sha256": null,
+      "after_sha256": "c170c7d2b097d1f8949d548dcd00bcd6b17e61c306f96c338414cf7ac1784cc8",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/EXACT_PATH_AND_BASE_BLOB_READ_2026-10-20.json",
+      "bytes": 5398,
+      "before_sha256": null,
+      "after_sha256": "09d11dd030e4a35e627ae8868da19a6e6e5eefe53271240f318acb4b1752abad",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/review/CI_ADJUDICATION_REVIEWED_VERSION_2026-10-20.md.txt",
+      "bytes": 4644,
+      "before_sha256": null,
+      "after_sha256": "79265ffbadcba89d861b2e1f51fecdad586dc92acfdf4f21a5947e0b25e902e8",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/review/INDEPENDENT_CI_ADJUDICATION_2026-10-20.md",
+      "bytes": 6820,
+      "before_sha256": null,
+      "after_sha256": "22d4bddb89fd1c6bb49e2504590d8923d93d25068cf337db9d5fd554dd3f12ed",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/review/ROOT_REVIEW_RESPONSE_2026-10-20.md",
+      "bytes": 1840,
+      "before_sha256": null,
+      "after_sha256": "be14f9b59032674e03352aba99908e3ef968e8da19be15ac9f67949cdd78ee3a",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/reconciliation_oct20/CANONICAL_FRONTIER_UPDATE_2026-10-20.json",
+      "bytes": 38198,
+      "before_sha256": null,
+      "after_sha256": "d315aab9ff9c2f0b705c0f391c3d8206144622b1d7e7a66d3283dddf3520198d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/reconciliation_oct20/build_frontier_packet.py.txt",
+      "bytes": 35222,
+      "before_sha256": null,
+      "after_sha256": "0cee625ec419b0984858510459036ba399d7fc32bf86db57a9b2af228e019c09",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/reconciliation_oct20/build_release_index.py.txt",
+      "bytes": 11922,
+      "before_sha256": null,
+      "after_sha256": "a6903fa0fcdb7b1f13c8ef37d452fa4f45b4bab62866843fdc612ec430b09820",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/LIMITED_RELEASE_SCOPE_HANDBACK_2026-10-20.md",
+      "bytes": 8862,
+      "before_sha256": null,
+      "after_sha256": "3b957c6f3e28908c812378b120209ccb69ab0eea578f71b2f75e12fc3259713b",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/STARTUP_EFFECT_REVIEW_2026-10-20.md",
+      "bytes": 20659,
+      "before_sha256": null,
+      "after_sha256": "69f4cac7b2ad08373d2a3d89a2a77ebd82878eea754eee3d0e65876ca9391354",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/STARTUP_STATIC_BINDINGS_2026-10-20.json",
+      "bytes": 12627,
+      "before_sha256": null,
+      "after_sha256": "cd3a5fd8a9615cd8bf4ac43022f3e50f87bec95f9af2a6f2220ea39a8838d45c",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/SOURCE_MANIFEST.json",
+      "bytes": 2880,
+      "before_sha256": null,
+      "after_sha256": "f2f62a2739da06de915d7253fcfc4e29f52cb8f0fd8a04c8fd8f7560848b7c29",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/app__main.py.txt",
+      "bytes": 34012,
+      "before_sha256": null,
+      "after_sha256": "7fcdcbb9e9affeede32caa993df796c31fdf0de56ea7b062f519dfdf970c71f8",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/app__scheduler.py.txt",
+      "bytes": 111145,
+      "before_sha256": null,
+      "after_sha256": "e1e1965a172e7edf168fca6d144b59f572cff1f662b6a683d2d040c0707e9333",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/app__web.py.txt",
+      "bytes": 167964,
+      "before_sha256": null,
+      "after_sha256": "721b792941160c962adf99c28febd048163be5c39eb8a5c8d67786c93fdc8a2d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/bot__overnight.py.txt",
+      "bytes": 7427,
+      "before_sha256": null,
+      "after_sha256": "6a8252980c483880561352334fd9706569f3d40d709fe44a97fc6356d68169a2",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/control_plane__executive_incident_composition.py.txt",
+      "bytes": 7936,
+      "before_sha256": null,
+      "after_sha256": "9a896d764c0f056df88db6513bb7335f3464ab05e426705a42935690727f3fe8",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/control_plane__worker_adapter.py.txt",
+      "bytes": 10074,
+      "before_sha256": null,
+      "after_sha256": "657c05c3c273ae886aa82c02f31173c0d948885577840724974bbc4c4775cf74",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/source/ops__executive_os__provider_readiness.py.txt",
+      "bytes": 92708,
+      "before_sha256": null,
+      "after_sha256": "e240f648fde0396617c1a88490fbfea46a51926c9c38013227a4b6dfec85d722",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/CURRENT_SOURCE_2026-10-20.md",
+      "bytes": 4770,
+      "before_sha256": null,
+      "after_sha256": "930e0a334716d6130c0f550424b3aa63ea6c78d50ef4fd8bca915cdbd32a83ed",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/SOURCE_COMPATIBILITY_2026-10-20.json",
+      "bytes": 6938,
+      "before_sha256": null,
+      "after_sha256": "3da820c3a71f3184b755f282d39ae5a1525e0743e149757c59ae2de4688c38e2",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/current_source_compatibility_20261020.py.txt",
+      "bytes": 4947,
+      "before_sha256": null,
+      "after_sha256": "25e4d550fc18fd97dde2a4d771feceff485ac420d8706252484c2b290e33b3b6",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/review/INDEPENDENT_COMPATIBILITY_REVIEW_2026-10-20.ORIGINAL.md.txt",
+      "bytes": 10226,
+      "before_sha256": null,
+      "after_sha256": "f09c6a22258e74cbee51872fb1db56bf83e1476d25dc2a7559aa3cfdfb5041d1",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/review/INDEPENDENT_COMPATIBILITY_REVIEW_2026-10-20.md",
+      "bytes": 10230,
+      "before_sha256": null,
+      "after_sha256": "20785124f2f74ecff18385a575d5c27f65bd774ae14ea9a73a1ff0cb7dd101a4",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/source/ask_brain.py.txt",
+      "bytes": 141013,
+      "before_sha256": null,
+      "after_sha256": "a982ab591c3d1a4f940d69bf95e7b499f61af505e35c1f40e3ff50070c758a9d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/source/brain_gateway.py.txt",
+      "bytes": 714053,
+      "before_sha256": null,
+      "after_sha256": "bf36beeff804a751523b16f3357932398ed84795bce48d1316c0b4cd548cf0d9",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.ORIGINAL.md.txt",
+      "bytes": 47835,
+      "before_sha256": null,
+      "after_sha256": "f0d59eec5af0972af8d521c34f96f8ae34a459ecf65fd0bbf10c82512eadd668",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "bytes": 47851,
+      "before_sha256": "d40968899dfc07a20be2c3a3045812d2f6e3b05387a8c5da9c0726be3f7e4efc",
+      "after_sha256": "d6a238106519b716d4f9c3b4e153d047972a449634b65f27fbdfab129c5e5d30",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/COMPLETE_JOB_WARNING_SCAN_2026-10-20.json",
+      "bytes": 1111,
+      "before_sha256": null,
+      "after_sha256": "c824095bc6f4dbd2544a6dea0793753700be732dc8279d38419ddca888a18f33",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/PARSED_ANNOTATIONS_2026-10-20.json",
+      "bytes": 32760,
+      "before_sha256": null,
+      "after_sha256": "c6bee9d6de772ef315276382cffd3ebb759b565701225eaa8cbaad2b9f508891",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/PRODUCER_SOURCE_METADATA_2026-10-20.json",
+      "bytes": 3085,
+      "before_sha256": null,
+      "after_sha256": "99066f3f550ca3ac24ab1c20f9198933ff4fc052d6e925c0d8d521f3a7c25531",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md",
+      "bytes": 6695,
+      "before_sha256": null,
+      "after_sha256": "f4138ad6ec02cea3d2626774009c9d6a96ccda7f526dda690b49b3e87a0568d2",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/VERIFIED_PRODUCER_LINEAGE_2026-10-20.json",
+      "bytes": 5808,
+      "before_sha256": null,
+      "after_sha256": "4af90e68656bd8a615bb3a7dc02d3698eeb4ff20cf40a4c8775d8ccbbf86b2d3",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/review/INDEPENDENT_OPERATIONAL_ACCEPTANCE_2026-10-20.md",
+      "bytes": 8251,
+      "before_sha256": null,
+      "after_sha256": "78d2e12f3ae468b4742e8ab14540327e9685b819ab398a1c82df63edefb9714d",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/engine__grey_deer_pullback_forward.py.txt",
+      "bytes": 32655,
+      "before_sha256": null,
+      "after_sha256": "875eba9e1cd1c0068f478b82eab63c2da8fb2ec58220f6f174e901f2a262ee41",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/engine__vol_forecast.py.txt",
+      "bytes": 2638,
+      "before_sha256": null,
+      "after_sha256": "bcd6ec2cc8c116b469173ab475dc495be7e024b4ea452b9d1cf6de58301e06c0",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/lib__nyse_calendar.py.txt",
+      "bytes": 29814,
+      "before_sha256": null,
+      "after_sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/lib__observed_moves.py.txt",
+      "bytes": 5456,
+      "before_sha256": null,
+      "after_sha256": "1bc3447e6c57cc4eaf8aafb51a549b86f901d1e1e36056eeff9b332496d7dd5a",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/research__grey_deer__PULLBACK_PREREGISTRATION_2026-10-11.md.txt",
+      "bytes": 29695,
+      "before_sha256": null,
+      "after_sha256": "b50ab2430b3450900d87f42d71b8accd61c30f0a326a795a9b2856a4115b07ee",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/scripts__ci__daily_engine_regional_desk_builders.sh.txt",
+      "bytes": 22737,
+      "before_sha256": null,
+      "after_sha256": "4ada20301de940695bf6ff38a7cb755738f00b8d43141868b7353cdea13679d0",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/scripts__grey_deer_pullback_nightly.py.txt",
+      "bytes": 5985,
+      "before_sha256": null,
+      "after_sha256": "ffff822cdec270f7a1f971a34c31a3cac97b02b8d77774feae3844e6fb75ef42",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/source/scripts__research__grey_deer_pullback_stage1.py.txt",
+      "bytes": 133159,
+      "before_sha256": null,
+      "after_sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_review/COMPLETED_ENGINE_EXTRACT_READ.json",
+      "bytes": 1932,
+      "before_sha256": null,
+      "after_sha256": "5e3f277f6c04dbb48c672223c7f48fc341d6fcedbf2758401f9d2df2efd3d5a4",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_review/COMPLETED_PR_9128_READ.json",
+      "bytes": 4324,
+      "before_sha256": null,
+      "after_sha256": "691e10377a9c6c5b6219134ce47ec868ff0c7f4b40617030902c575199e4c9cb",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_review/UNRETURNED_READ_REQUEST.json",
+      "bytes": 1634,
+      "before_sha256": null,
+      "after_sha256": "0e35a6070374f5620d06a5b676847022acf44e1530735ab8329f307965b7bc6f",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/w5_natural_issuance_20261018/oct20_review/W5_FINITE_ACCEPTANCE_HANDBACK_2026-10-20.md",
+      "bytes": 7908,
+      "before_sha256": null,
+      "after_sha256": "9768271237eba7b78314453bf1fd5ab3986d1f47cb9f5b1b7d2df9a611e85b36",
+      "changed": true
+    },
+    {
+      "path": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/FRONTIER_PACKET_MAP_2026-10-20.json",
+      "bytes": 25758,
+      "before_sha256": null,
+      "after_sha256": "17b6d560ffaa99f53cbf2cf345ccd8dc88da2b3752dbb3c932b0280ce3670646",
+      "changed": true
+    }
+  ],
+  "file_count": 62,
+  "uncompressed_bytes": 2379784,
+  "source_code_executed": false,
+  "production_operations": 0
+}

@@ -5664,6 +5664,10 @@ jobs:
       - "research/US_BOARD_MEASUREMENT.md"
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
+      - "scripts/_baskets_scorecard.py"
+      - "scripts/_china_income_card.py"
+      - "scripts/_commodity_card_fields.py"
+      - "scripts/_ths_build_notes.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -6610,6 +6614,7 @@ jobs:
       - "lib/options_reference_pages.py"
       - "tests/test_options_reference_pages.py"
       - "tests/test_options_source_receipts.py"
+      - "tests/test_snapshot_source_receipts.py"
       - "tests/test_options_dated_projection.py"
       - "scripts/massive_entitlement_probe.py"
       - "engine/options_hub.py"
@@ -7283,7 +7288,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_snapshot_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_observed_qqq.py tests/test_repair_gex_history.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -9058,9 +9063,12 @@ jobs:
       - "tests/test_fif_a0_production_mode_unit.py"
       - "tests/test_fif_a18_publish_fault_drill.py"
       - "scripts/fif_coverage_writer.py"
+      - "scripts/fif_coverage_manifest.py"
       - "tests/test_fif_coverage_writer.py"
+      - "tests/test_fif_coverage_manifest.py"
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
+      - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
       - "app/deploy/macro-api.service"
@@ -9876,6 +9884,7 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a21_publish_observation.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
@@ -9885,6 +9894,7 @@ jobs:
           tests/test_fif_a0_production_mode_unit.py
           tests/test_fif_a18_publish_fault_drill.py
           tests/test_fif_coverage_writer.py
+          tests/test_fif_coverage_manifest.py
           tests/test_filing_forensics_broad_sec_lane.py
           tests/test_filing_forensics_sec_lane.py
           tests/test_forensics_api.py
@@ -17148,6 +17158,10 @@ jobs:
       - research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md
       - research/US_BOARD_MEASUREMENT.md
       - scripts/_active_render.py
+      - scripts/_baskets_scorecard.py
+      - scripts/_china_income_card.py
+      - scripts/_commodity_card_fields.py
+      - scripts/_ths_build_notes.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
       - scripts/build_baskets_china.py
@@ -18303,6 +18317,40 @@ jobs:
       - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
         run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
 
+  ths-factorwatch-build-notes:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # 同花顺 basket browser build notes and lite-page SEO (W28G-L31). The suite renders the
+    # real templates/baskets_china_factorwatch.html.j2 (autoescape on, as the THS builder
+    # renders it) and imports only re, sys, pathlib, jinja2 and scripts/_ths_build_notes.py; it
+    # never runs the builder. It pins the server-rendered construction / history notes on the
+    # lite page and the lite page's own canonical, og:url and description. Exclusive so the
+    # page's suite does not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/baskets_china_factorwatch.html.j2"
+      - "templates/_baskets_desk.html.j2"
+      - "templates/_forming_narratives.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_ths_build_notes.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_baskets_china_factorwatch_notes.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: THS basket browser — build notes, lite canonical and description
+        run: python -m pytest tests/test_baskets_china_factorwatch_notes.py -q -p no:cacheprovider
+
   narrative-radar-display:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
     gate: code
@@ -18338,6 +18386,107 @@ jobs:
       - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
         run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
 
+  commodity-strategies-grid-fields:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # Commodity strategies grid card fields (W28D-L33). The suite renders the real
+    # templates/commodity_strategies.html.j2 (autoescape on) from synthetic cards and imports
+    # only re, sys, pathlib, jinja2 and scripts/_commodity_card_fields.py; it never runs the
+    # builder. It pins the active cards' average-leverage tile (no longer printed as Income),
+    # the split-half chip in the card foot, and the byte-identical non-active cards.
+    # Exclusive so the page's suite does not widen any shared job's inferred scope.
+    scope: exclusive
+    paths:
+      - "templates/commodity_strategies.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_commodity_card_fields.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_commodity_strategies_grid_fields.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: Commodity strategies grid — average-leverage tile, split-half chip
+        run: python -m pytest tests/test_commodity_strategies_grid_fields.py -q -p no:cacheprovider
+
+  cn-reversal-sleeve-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China reversal sleeve page display contract (W28E-L32). The suite renders the real
+    # templates/cn_reversal_sleeve.html.j2 (autoescape on) from a synthetic payload shaped
+    # like the committed site/factordata/cn_reversal_sleeve.json; it imports only copy,
+    # pathlib and jinja2 and never runs the builder. It pins the graded-window block (date
+    # span, registered-but-ungraded count, horizon, median excess, overlapping-window note)
+    # and the sizing chip's bilingual dominant driver. Exclusive so the page's own suite does
+    # not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/cn_reversal_sleeve.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_cn_reversal_sleeve_ledger_display.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China reversal sleeve — graded window, overlap note, sizing-chip driver
+        run: python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py -q -p no:cacheprovider
+
+  regional-baskets-scorecard:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # HK / Canada basket desks' ignition scoreboard (W28B-L34). The suite renders the real
+    # templates/baskets_hk.html.j2 and templates/baskets_canada.html.j2 (autoescape on) and
+    # imports only re, sys, pathlib, jinja2 and scripts/_baskets_scorecard.py; it never runs a
+    # builder. It pins the graded-ignition scoreboard block, its absence when nothing is
+    # graded, and that its id never shadows the desk partial's script target. Exclusive so
+    # the pages' suite does not widen any shared job's inferred scope.
+    scope: exclusive
+    paths:
+      - "templates/baskets_hk.html.j2"
+      - "templates/baskets_canada.html.j2"
+      - "templates/_baskets_desk.html.j2"
+      - "templates/_forming_narratives.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_baskets_scorecard.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_baskets_regional_scorecard_block.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: HK / Canada basket desks — ignition scoreboard block
+        run: python -m pytest tests/test_baskets_regional_scorecard_block.py -q -p no:cacheprovider
+
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -18370,6 +18519,41 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jsonschema
       - name: global liquidity state producers — legacy parity and W-LIQ.1 contract
         run: python -m pytest tests/test_global_liquidity.py tests/test_global_liquidity_transmission.py tests/test_global_liquidity_transmission_liveness_v2.py -q
+
+  china-strategies-income-tile:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China strategies grid Income-Vector tile (W28D-L35). The suite renders the real
+    # templates/china_strategies.html.j2 (autoescape on) from synthetic cards and imports
+    # only re, sys, pathlib, jinja2 and scripts/_china_income_card.py; it never runs the builder.
+    # It pins the drawdown-count tile that replaces the CAGR printed as Income, the fallback
+    # card's Income tile and the byte-identical other cards. Exclusive so the page's suite
+    # does not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/china_strategies.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "scripts/__init__.py"
+      - "scripts/_china_income_card.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_strategies_income_tile.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China strategies grid — Income-Vector drawdown-count tile
+        run: python -m pytest tests/test_china_strategies_income_tile.py -q -p no:cacheprovider
 
   global-liquidity-transmission-contracts:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -23405,6 +23589,10 @@ jobs:
       - research/crypto_science/r9_prebreak_study.py
       - scripts/__init__.py
       - scripts/_active_render.py
+      - scripts/_baskets_scorecard.py
+      - scripts/_china_income_card.py
+      - scripts/_commodity_card_fields.py
+      - scripts/_ths_build_notes.py
       - scripts/backfill_crypto.py
       - scripts/backtest_ladder_history.py
       - scripts/build_baskets_canada.py
@@ -27823,6 +28011,10 @@ jobs:
       - "research/prophet_fusion/pr2_c2/era_frame_pin.json"
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
+      - "scripts/_baskets_scorecard.py"
+      - "scripts/_china_income_card.py"
+      - "scripts/_commodity_card_fields.py"
+      - "scripts/_ths_build_notes.py"
       - "scripts/backtest_ladder_history.py"
       - "scripts/build_baskets_canada.py"
       - "scripts/build_baskets_china.py"
@@ -37439,3 +37631,27 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: short-pressure availability guard
         run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+
+  options-pilot-chronology-code:
+    # Synthetic guards must run on source PRs; flow-surface is data-gated.
+    # These are the literal source/reference inputs of the two offline suites.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    scope: exclusive
+    paths:
+      - scripts/options_pilot_study_adapter.py
+      - tests/test_options_pilot_study_adapter.py
+      - tests/test_options_pilot_chronology.py
+      - research/options_intelligence/2026-10-03/pilot-study-spec.v1.json
+      - research/options_intelligence/2026-10-03/pilot-p3-reference.py
+      - research/options_intelligence/2026-10-03/gex-published-board-extract.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: frozen study refusal and chronology guards (no empirical execution)
+        run: |
+          python tests/test_options_pilot_study_adapter.py
+          python tests/test_options_pilot_chronology.py
