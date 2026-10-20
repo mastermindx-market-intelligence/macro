@@ -2560,3 +2560,180 @@ def test_qledger_carve_park_failure_withholds_market_publication(
         have = _git(h["repo"], "hash-object", "--no-filters", "--", rel).stdout.strip()
         assert have == want, f"{rel} bytes changed after a failed park ({want} -> {have})"
     assert (h["repo"] / "data" / "qledger" / "claims.jsonl").stat().st_size == _LIMIT + 4096
+
+
+# --------------------------------------------------------------------------
+# Collect-tail independent GH001: real Git snapshot, park and EXIT restoration.
+# No production push, QLedger format migration or shared-helper modification.
+# --------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def collect_tail_step() -> str:
+    doc = yaml.safe_load(DAILY.read_text())
+    steps = doc["jobs"]["collect_tail"]["steps"]
+    owned = [s for s in steps if s.get("name") == "commit tail data"]
+    assert len(owned) == 1, "tail publisher identity changed"
+    assert owned[0].get("if") == "always()", "cancel-window protection regressed"
+    return owned[0]["run"]
+
+
+def _exercise_tail_gh001(
+    tmp_path, step, *,
+    real_oversize=False,
+    fake_oversize=False,
+    commit_tree_refusal=False,
+    park_refusal=False,
+    market_change=True,
+):
+    """Run the ACTUAL workflow shell in a disposable real Git repository."""
+    from hashlib import sha256
+
+    path = tmp_path / "tail-repo"
+    path.mkdir()
+    env = dict(os.environ)
+    env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+    def git(*args, check=True):
+        return subprocess.run(
+            ["git", *args], cwd=path, env=env, check=check,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        )
+
+    git("init", "-q", "-b", "main")
+    git("config", "user.name", "fixture")
+    git("config", "user.email", "fixture@example.com")
+    for rel, content in (
+        (".gitattributes", b"data/qledger/*.jsonl merge=union\n"),
+        ("data/qledger/claims.jsonl", b'{"claim_id":"accepted"}\n'),
+        ("site/qledger/track_record.json", b"{}\n"),
+        ("site/basketdata/tail.json", b"old\n"),
+    ):
+        file = path / rel
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_bytes(content)
+    stub = path / "scripts/ci/push_retry.sh"
+    stub.parent.mkdir(parents=True, exist_ok=True)
+    # The push seam is intentionally inert, but records whether a job entered
+    # it. Git staging/snapshot/commit/restore are the real Git commands.
+    stub.write_text(
+        "push_retry_init(){ :; }\n"
+        "push_attempt(){ printf 'push-entered\\n' >> \"$GITHUB_WORKSPACE/push_trace\"; return 1; }\n"
+        "push_lost(){ :; }\n"
+    )
+    git("add", ".")
+    git("commit", "-qm", "accepted source")
+    base = git("rev-parse", "HEAD").stdout.strip()
+
+    claims = path / "data/qledger/claims.jsonl"
+    claims.write_bytes(b'{"claim_id":"pending"}\n')
+    if real_oversize:
+        with claims.open("r+b") as handle:
+            handle.truncate(104857600 + 4096)
+    if market_change:
+        (path / "site/basketdata/tail.json").write_bytes(b"fresh\n")
+
+    # Real byte identity before the step, not merely file size.
+    def digest():
+        h = sha256()
+        with claims.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
+    before = (claims.stat().st_size, digest())
+    git_exe = shutil.which("git")
+    assert git_exe is not None
+    bindir = tmp_path / "bin"
+    bindir.mkdir()
+    wrapper = bindir / "git"
+    checks = []
+    if fake_oversize:
+        checks.append(
+            "if [ \"$1\" = cat-file ] && [ \"$2\" = -s ]; then echo 104857601; exit 0; fi"
+        )
+    if commit_tree_refusal:
+        checks.append(
+            "if [ \"$1\" = commit-tree ]; then exit 73; fi"
+        )
+    if park_refusal:
+        checks.append(
+            "if [ \"$1\" = restore ] && [ \"$2\" = --source=HEAD ]; then exit 74; fi"
+        )
+    wrapper.write_text(
+        "#!/bin/sh\n" + "\n".join(checks) + "\nexec " + git_exe + ' "$@"\n'
+    )
+    wrapper.chmod(0o755)
+    env.update(
+        PATH=str(bindir) + os.pathsep + os.environ["PATH"],
+        GITHUB_WORKSPACE=str(path),
+        GITHUB_RUN_ID="tail-fixture",
+    )
+    proc = subprocess.run(
+        ["bash", "-e", "-o", "pipefail", "-c", step],
+        cwd=path, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, timeout=160,
+    )
+    after = (claims.stat().st_size, digest())
+    return path, proc, base, before, after, git
+
+
+def test_tail_gh001_isolates_real_oversize_and_restores_claims(tmp_path, collect_tail_step):
+    path, proc, base, before, after, git = _exercise_tail_gh001(
+        tmp_path, collect_tail_step, real_oversize=True,
+    )
+    assert proc.returncode == 0, (proc.stdout[-2400:], proc.stderr[-2400:])
+    assert before == after, "unpublished QLedger bytes lost or rewritten"
+    assert before[0] > 104857600
+    assert git("show", "HEAD:data/qledger/claims.jsonl").stdout == '{"claim_id":"accepted"}\n'
+    assert git("show", "HEAD:site/basketdata/tail.json").stdout == "fresh\n"
+    assert git("rev-parse", "HEAD").stdout.strip() != base
+    assert "tail QLedger publication withheld" in proc.stdout
+    assert "tail QLedger not published" in proc.stdout
+    assert "push-entered" in (path / "push_trace").read_text()
+
+
+def test_tail_gh001_snapshot_refusal_never_commits_or_pushes(tmp_path, collect_tail_step):
+    path, proc, base, before, after, git = _exercise_tail_gh001(
+        tmp_path, collect_tail_step, fake_oversize=True,
+        commit_tree_refusal=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert before == after
+    assert git("rev-parse", "HEAD").stdout.strip() == base
+    assert not (path / "push_trace").exists()
+    assert "NEITHER tail data NOR QLedger was published" in proc.stdout
+
+
+def test_tail_gh001_park_refusal_never_pushes_and_restores(tmp_path, collect_tail_step):
+    path, proc, base, before, after, git = _exercise_tail_gh001(
+        tmp_path, collect_tail_step, fake_oversize=True,
+        park_refusal=True,
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    assert before == after, "park refusal destroyed unpublished QLedger bytes"
+    assert git("rev-parse", "HEAD").stdout.strip() != base
+    assert not (path / "push_trace").exists()
+    assert "tail market push withheld (qledger park failed)" in proc.stdout
+    assert "tail QLedger not published" in proc.stdout
+
+
+def test_tail_gh001_only_ledger_has_no_other_commit(tmp_path, collect_tail_step):
+    path, proc, base, before, after, git = _exercise_tail_gh001(
+        tmp_path, collect_tail_step, fake_oversize=True,
+        market_change=False,
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    assert before == after
+    assert git("rev-parse", "HEAD").stdout.strip() == base
+    assert not (path / "push_trace").exists()
+    assert "only deferred QLedger data changed" in proc.stdout
+
+
+def test_tail_gh001_small_ledger_retains_legacy_path(tmp_path, collect_tail_step):
+    path, proc, base, before, after, git = _exercise_tail_gh001(
+        tmp_path, collect_tail_step,
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    assert git("rev-parse", "HEAD").stdout.strip() != base
+    assert git("show", "HEAD:data/qledger/claims.jsonl").stdout == '{"claim_id":"pending"}\n'
+    assert "tail QLedger publication withheld" not in proc.stdout
+    assert "push-entered" in (path / "push_trace").read_text()
