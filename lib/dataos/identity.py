@@ -71,7 +71,7 @@ from zoneinfo import ZoneInfo
 
 __all__ = [
     "IdentityError",
-    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "TXSE", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "ListingKey",
@@ -122,6 +122,7 @@ XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
 ARCX = "ARCX"   # ISO 10383 NYSE Arca segment; reference-probe admission only
+TXSE = "TXSE"   # Texas Stock Exchange (ISO 10383 operating MIC; dark segment TXSD not admitted)
 XSHG = "XSHG"   # Shanghai Stock Exchange
 XSHE = "XSHE"   # Shenzhen Stock Exchange
 XBSE = "XBSE"   # Beijing Stock Exchange
@@ -130,20 +131,23 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 #: D00.A1.1 — CLOSED venue-clock map (same human-once-in-a-diff law as KNOWN_MICS).
 VENUE_TZ: Mapping[str, str] = MappingProxyType({
     BATS: "America/New_York", XNYS: "America/New_York", XNAS: "America/New_York",
     XASE: "America/New_York", ARCX: "America/New_York",
+    # TXSE is a Dallas venue but trades the national-market Eastern session, the same
+    # reason BATS (Lenexa, KS) reads the New York clock: the trade date is the tape's.
+    TXSE: "America/New_York",
     XTSE: "America/Toronto", XTSX: "America/Toronto",
     XHKG: "Asia/Hong_Kong",
     XSHG: "Asia/Shanghai", XSHE: "Asia/Shanghai", XBSE: "Asia/Shanghai",
 })
 #: D00.A1.2 — CLOSED listing-currency map; no FX is ever applied anywhere.
 VENUE_CURRENCY: Mapping[str, str] = MappingProxyType({
-    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD",
+    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD", TXSE: "USD",
     XTSE: "CAD", XTSX: "CAD",
     XHKG: "HKD",
     XSHG: "CNY", XSHE: "CNY", XBSE: "CNY",

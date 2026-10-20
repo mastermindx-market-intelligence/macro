@@ -1,0 +1,626 @@
+{
+  "schema": "critical_minerals_supply.v1",
+  "as_of": "2026-10-20",
+  "generated_at": "2026-10-20T04:12:51Z",
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_escalate": false,
+    "is_context_only": true,
+    "framing": "critical_minerals_supply_context",
+    "rotation_calls": false,
+    "short_calls": false,
+    "fused_obs_z_fence": "SEPARATE_DISPLAY_LEG — never fold into fused_obs_z"
+  },
+  "honesty_header": {
+    "en": "These figures come from the USGS Mineral Commodity Summaries, an annual public report. They are context only. They do not rank, size, or gate any position.",
+    "zh": "这些数字来自美国地质调查局《矿产商品摘要》年度公开报告。仅作背景披露，不用于排名、仓位或门槛。"
+  },
+  "edition": {
+    "year": 2026,
+    "item_id": "696a75d5d4be0228872d3bf8",
+    "published": "2026-02-06"
+  },
+  "commodities": {
+    "rare_earths": {
+      "label_en": "Rare earths",
+      "label_zh": "稀土",
+      "theme_id": "rare_earth_critical_min",
+      "us_net_import_reliance": {
+        "value": 67.0,
+        "qualifier": "",
+        "text_en": "The United States imported about 67 percent of what it used.",
+        "text_zh": "美国进口了其用量的约67%。",
+        "inputs": [
+          "T7.Net_Import_Reliance"
+        ]
+      },
+      "leading_producer": {
+        "country": "China",
+        "share_pct": 69.0,
+        "world_total": 390000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      },
+      "import_sources_2021_24": [
+        {
+          "country": "China",
+          "pct": 71.0
+        },
+        {
+          "country": "Malaysia",
+          "pct": 13.0
+        },
+        {
+          "country": "Japan",
+          "pct": 5.0
+        },
+        {
+          "country": "Estonia",
+          "pct": 5.0
+        },
+        {
+          "country": "Other",
+          "pct": 6.0
+        }
+      ],
+      "top3_import_share_pct": 89.0,
+      "top3_import_sources": [
+        {
+          "country": "China",
+          "pct": 71.0
+        },
+        {
+          "country": "Malaysia",
+          "pct": 13.0
+        },
+        {
+          "country": "Estonia",
+          "pct": 5.0
+        }
+      ],
+      "china_share_world_production_pct": 69.23076923076923,
+      "world_production": {
+        "period": "2025",
+        "unit": "metric tons",
+        "total": 390000.0,
+        "by_country": [
+          {
+            "country": "United States",
+            "value": 51000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Australia",
+            "value": 29000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Brazil",
+            "value": 2000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Burma",
+            "value": 22000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Canada",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "China",
+            "value": 270000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Greenland",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "India",
+            "value": 2900.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Madagascar",
+            "value": 2700.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Malaysia",
+            "value": 110.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Nigeria",
+            "value": 1500.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Russia",
+            "value": 2600.0,
+            "qualifier": ""
+          },
+          {
+            "country": "South Africa",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "Tanzania",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "Thailand",
+            "value": 4800.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Vietnam",
+            "value": 150.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Other countries",
+            "value": 550.0,
+            "qualifier": ""
+          },
+          {
+            "country": "World total",
+            "value": 390000.0,
+            "qualifier": ""
+          }
+        ],
+        "inputs": [
+          "Commodities_Data.China",
+          "Commodities_Data.World total"
+        ]
+      },
+      "reserves_top": [
+        {
+          "country": "China",
+          "value": 44000000.0
+        },
+        {
+          "country": "Brazil",
+          "value": 21000000.0
+        },
+        {
+          "country": "Australia",
+          "value": 6300000.0
+        }
+      ],
+      "read_en": "China mined about 69% of the world's rare earths in 2025, and the US imported about 67 percent of what it used.",
+      "read_zh": "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。",
+      "nulls": []
+    },
+    "lithium": {
+      "label_en": "Lithium",
+      "label_zh": "锂",
+      "theme_id": "rare_earth_critical_min",
+      "us_net_import_reliance": {
+        "value": 50.0,
+        "qualifier": ">",
+        "text_en": "The United States imported more than 50 percent of what it used.",
+        "text_zh": "美国进口了其用量的超过50%。",
+        "inputs": [
+          "T7.Net_Import_Reliance"
+        ]
+      },
+      "leading_producer": {
+        "country": "Australia",
+        "share_pct": 32.0,
+        "world_total": 290000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      },
+      "import_sources_2021_24": [
+        {
+          "country": "Chile",
+          "pct": 54.0
+        },
+        {
+          "country": "Argentina",
+          "pct": 43.0
+        },
+        {
+          "country": "Other",
+          "pct": 3.0
+        }
+      ],
+      "top3_import_share_pct": 97.0,
+      "top3_import_sources": [
+        {
+          "country": "Chile",
+          "pct": 54.0
+        },
+        {
+          "country": "Argentina",
+          "pct": 43.0
+        }
+      ],
+      "china_share_world_production_pct": 21.379310344827587,
+      "world_production": {
+        "period": "2025",
+        "unit": "metric tons",
+        "total": 290000.0,
+        "by_country": [
+          {
+            "country": "United States",
+            "value": null,
+            "qualifier": "W"
+          },
+          {
+            "country": "Argentina",
+            "value": 23000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Australia",
+            "value": 92000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Brazil",
+            "value": 12000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Canada",
+            "value": 5600.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Chile",
+            "value": 56000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "China",
+            "value": 62000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Mali",
+            "value": 9400.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Portugal",
+            "value": 380.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Zimbabwe",
+            "value": 28000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Other countries",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "World total",
+            "value": 290000.0,
+            "qualifier": ""
+          }
+        ],
+        "inputs": [
+          "Commodities_Data.China",
+          "Commodities_Data.World total"
+        ]
+      },
+      "reserves_top": [
+        {
+          "country": "Chile",
+          "value": 9200000.0
+        },
+        {
+          "country": "Australia",
+          "value": 8400000.0
+        },
+        {
+          "country": "China",
+          "value": 4600000.0
+        }
+      ],
+      "read_en": "Australia mined about 32% of the world's lithium in 2025, and the US imported more than 50 percent of what it used.",
+      "read_zh": "澳大利亚在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。",
+      "nulls": []
+    },
+    "cobalt": {
+      "label_en": "Cobalt",
+      "label_zh": "钴",
+      "theme_id": "rare_earth_critical_min",
+      "us_net_import_reliance": {
+        "value": 79.0,
+        "qualifier": "",
+        "text_en": "The United States imported about 79 percent of what it used.",
+        "text_zh": "美国进口了其用量的约79%。",
+        "inputs": [
+          "T7.Net_Import_Reliance"
+        ]
+      },
+      "leading_producer": {
+        "country": "Congo (Kinshasa)",
+        "share_pct": 74.0,
+        "world_total": 310000.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      },
+      "import_sources_2021_24": [
+        {
+          "country": "Norway",
+          "pct": 26.0
+        },
+        {
+          "country": "Finland",
+          "pct": 16.0
+        },
+        {
+          "country": "Canada",
+          "pct": 14.0
+        },
+        {
+          "country": "Japan",
+          "pct": 14.0
+        },
+        {
+          "country": "Other",
+          "pct": 30.0
+        }
+      ],
+      "top3_import_share_pct": 56.0,
+      "top3_import_sources": [
+        {
+          "country": "Norway",
+          "pct": 26.0
+        },
+        {
+          "country": "Finland",
+          "pct": 16.0
+        },
+        {
+          "country": "Canada",
+          "pct": 14.0
+        }
+      ],
+      "china_share_world_production_pct": 0.6451612903225806,
+      "world_production": {
+        "period": "2025",
+        "unit": "metric tons",
+        "total": 310000.0,
+        "by_country": [
+          {
+            "country": "United States",
+            "value": 300.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Australia",
+            "value": 3700.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Canada",
+            "value": 3500.0,
+            "qualifier": ""
+          },
+          {
+            "country": "China",
+            "value": 2000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Congo (Kinshasa)",
+            "value": 230000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Cuba",
+            "value": 2000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Indonesia",
+            "value": 44000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Madagascar",
+            "value": 3900.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Papua New Guinea",
+            "value": 2800.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Philippines",
+            "value": 3700.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Russia",
+            "value": 7700.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Turkey",
+            "value": 1900.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Other countries",
+            "value": 9100.0,
+            "qualifier": ""
+          },
+          {
+            "country": "World total",
+            "value": 310000.0,
+            "qualifier": ""
+          }
+        ],
+        "inputs": [
+          "Commodities_Data.China",
+          "Commodities_Data.World total"
+        ]
+      },
+      "reserves_top": [
+        {
+          "country": "Congo (Kinshasa)",
+          "value": 6000000.0
+        },
+        {
+          "country": "Australia",
+          "value": 1700000.0
+        },
+        {
+          "country": "Russia",
+          "value": 800000.0
+        }
+      ],
+      "read_en": "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025, and the US imported about 79 percent of what it used.",
+      "read_zh": "刚果（金）在2025年开采了全球约74%的钴，美国进口了其用量的约79%。",
+      "nulls": []
+    },
+    "gallium": {
+      "label_en": "Gallium",
+      "label_zh": "镓",
+      "theme_id": "rare_earth_critical_min",
+      "us_net_import_reliance": {
+        "value": 100.0,
+        "qualifier": "",
+        "text_en": "The United States imported about 100 percent of what it used.",
+        "text_zh": "美国进口了其用量的约100%。",
+        "inputs": [
+          "T7.Net_Import_Reliance"
+        ]
+      },
+      "leading_producer": {
+        "country": "China",
+        "share_pct": 100.0,
+        "world_total": 900.0,
+        "unit": "metric tons",
+        "period": "2025",
+        "inputs": [
+          "T7.Leading_source_country",
+          "T7.Leading_source_precent_world",
+          "T7.World_total_prod"
+        ]
+      },
+      "import_sources_2021_24": [
+        {
+          "country": "Canada",
+          "pct": 28.0
+        },
+        {
+          "country": "Japan",
+          "pct": 22.0
+        },
+        {
+          "country": "China",
+          "pct": 18.0
+        },
+        {
+          "country": "Germany",
+          "pct": 16.0
+        },
+        {
+          "country": "Other",
+          "pct": 16.0
+        }
+      ],
+      "top3_import_share_pct": 68.0,
+      "top3_import_sources": [
+        {
+          "country": "Canada",
+          "pct": 28.0
+        },
+        {
+          "country": "Japan",
+          "pct": 22.0
+        },
+        {
+          "country": "China",
+          "pct": 18.0
+        }
+      ],
+      "china_share_world_production_pct": 100.0,
+      "world_production": {
+        "period": "2025",
+        "unit": "kilograms",
+        "total": 900000.0,
+        "by_country": [
+          {
+            "country": "United States",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "China",
+            "value": 900000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Japan",
+            "value": 3000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Russia",
+            "value": 6000.0,
+            "qualifier": ""
+          },
+          {
+            "country": "Other countries",
+            "value": null,
+            "qualifier": "dash"
+          },
+          {
+            "country": "World total",
+            "value": 900000.0,
+            "qualifier": ""
+          }
+        ],
+        "inputs": [
+          "Commodities_Data.China",
+          "Commodities_Data.World total"
+        ]
+      },
+      "reserves_top": null,
+      "read_en": "China produced about 100% of the world's gallium in 2025, and the US imported about 100 percent of what it used.",
+      "read_zh": "中国在2025年生产了全球约100%的镓，美国进口了其用量的约100%。",
+      "nulls": []
+    }
+  },
+  "coverage_stats": {
+    "commodities_configured": 4,
+    "commodities_with_rows": 4,
+    "parquet_absent": false
+  },
+  "source_note": "USGS Mineral Commodity Summaries via ScienceBase NMIC. Public-domain US Government work. Display-only context. Leading-producer share uses T7 Leading_source_precent_world; top-3 import share sums the three largest named-country shares, excluding Other/其他 rows, sorted by (-pct, name) for ties; China share of world production is China divided by World total from Commodities_Data for the same period."
+}

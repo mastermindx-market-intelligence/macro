@@ -192,6 +192,7 @@ _FIELD_MAPPINGS = {
             "net_cash_from_operating_activities",
         ),
         fn=_cash_runway_quarters,
+        operand_unit="USD",  # R-FOLD-F1: USD cash over USD burn -> quarters
     ),
 }
 
