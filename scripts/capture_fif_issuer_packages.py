@@ -106,6 +106,11 @@ from engine.fundamental_forensics.sec_document_spine import (
     archive_index_url,
     canonical_cik,
 )
+from engine.fundamental_forensics.source_rights import (
+    SourceRightsError,
+    read_source_rights,
+    rights_hold,
+)
 from engine.fundamental_forensics.statement_graph import mint_fixture_recorded_at
 
 GOLDEN_PACKAGE_SCHEMA = "fundamental_forensics.golden_filing_package/v1"
@@ -1104,8 +1109,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         contract = load_contract(contract_path)
         declared_reason = contract_declared_reason(contract)
+        # Z0 A52: source rights are a release control — a hold refuses ONLY
+        # this contract's dependent capture, before any issuer row is read
+        # and before any pacer/fetcher is constructed. Independent work on
+        # other contracts proceeds; the hold names only the provider.
+        rights = read_source_rights(contract)
+        hold = rights_hold(rights)
+        if hold is not None:
+            print(f"gsrc_refusal: {hold.code}: {hold.provider}")
+            return 2
     except SelectionError as exc:
         print(f"gsrc_refusal: {exc.code}: {exc}")
+        return 2
+    except SourceRightsError as exc:
+        print(f"gsrc_refusal: {exc.code}: {contract_path}")
         return 2
     except (OSError, json.JSONDecodeError) as exc:
         print(f"gsrc_refusal: contract_unreadable: {contract_path}: {exc}")

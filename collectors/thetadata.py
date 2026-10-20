@@ -152,6 +152,8 @@ from typing import Iterator
 import pandas as pd
 import requests
 
+from lib.options_source_receipts import ACQUISITION_COLUMN, THETA_ENDPOINTS, theta_acquisition
+
 
 class _StreamTruncated(Exception):
     """Raised internally when a mid-stream read fails.
@@ -333,7 +335,8 @@ def list_expirations(symbol: str) -> list[str] | None:
 # Low-level HTTP helpers — CSV streaming
 # --------------------------------------------------------------------------- #
 
-def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame | None:
+def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry") -> pd.DataFrame | None:
     """Single streaming CSV GET; returns a parsed DataFrame or None on any error.
 
     v3 returns chunked streaming CSV.  No pagination — one continuous response.
@@ -346,17 +349,37 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
     url = f"{_base_url()}{path}"
     params = dict(params)
     params.setdefault("format", "csv")
+    if request_budget is not None:
+        profiles = {"selected_expiry": (262144, 100), "observed_root": (16 * 1024 * 1024, 100000)}
+        if limit_profile not in profiles:
+            raise ValueError("Unknown bounded CSV limit profile")
+        byte_cap, row_cap = profiles[limit_profile]
+        if type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= byte_cap and 0 < max_rows <= row_cap):
+            raise ValueError("Bounded CSV needs explicit byte/row caps")
+        request_budget.begin(session, url)
     try:
-        r = session.get(url, params=params, timeout=_TIMEOUTS, stream=True)
+        r = session.get(url, params=params, timeout=_TIMEOUTS, stream=True,
+                        **({"allow_redirects": False} if request_budget is not None else {}))
     except requests.exceptions.ConnectionError:
         log.warning("thetadata: terminal unreachable at %s — skip", _base_url())
+        if request_budget is not None:
+            request_budget.stop()
         return None
     except requests.exceptions.ReadTimeout as e:
+        if request_budget is not None:
+            request_budget.stop()
         raise _StreamTruncated(f"read timeout (no bytes for {READ_TIMEOUT_BETWEEN_BYTES}s): {e}") from e
     except Exception as e:  # noqa: BLE001
         log.warning("thetadata: request error %s %s — %s", path, params, e)
+        if request_budget is not None:
+            request_budget.stop()
         return None
 
+    if request_budget is not None and r.status_code != 200:
+        request_budget.stop()
+        r.close()
+        log.warning("thetadata: bounded acquisition HTTP%d", r.status_code)
+        return None
     if r.status_code in (404, 472):
         # 404: empty range for this request
         # 472: ThetaData NO_DATA — valid empty response (e.g., holiday, pre-history date)
@@ -387,8 +410,13 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
 
     try:
         chunks = []
+        size = 0
         for chunk in r.iter_content(chunk_size=65536):
             if chunk:
+                size += len(chunk)
+                if request_budget is not None and size > max_bytes:
+                    request_budget.stop()
+                    raise _StreamTruncated("bounded CSV byte limit exceeded")
                 chunks.append(chunk)
         raw = b"".join(chunks)
     except requests.exceptions.ReadTimeout as e:
@@ -399,6 +427,13 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
     except Exception as e:  # noqa: BLE001
         raise _StreamTruncated(f"unexpected stream error: {e}") from e
 
+    finally:
+        if request_budget is not None:
+            import sys
+            if sys.exc_info()[0] is not None:
+                request_budget.stop()
+            r.close()
+
     if not raw or raw.strip() in (b"", b"No data found for your request"):
         return pd.DataFrame()
 
@@ -407,9 +442,21 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
         # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
         df = pd.read_csv(io.BytesIO(raw), low_memory=False,
                          keep_default_na=False, na_values=[""])
+        if request_budget is not None and len(df) > max_rows:
+            request_budget.stop()
+            raise ValueError("bounded CSV row limit exceeded")
+        if path in THETA_ENDPOINTS.values() and not df.empty:
+            try:
+                df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=_base_url())
+            except (ValueError, TypeError):
+                # Additive evidence cannot discard otherwise valid legacy rows.
+                # Without this receipt the qualification adapter fails closed.
+                log.warning("thetadata: acquisition provenance unavailable for %s", path)
         return df
     except Exception as e:  # noqa: BLE001
         log.warning("thetadata: CSV parse error for %s %s — %s", path, params, e)
+        if request_budget is not None:
+            request_budget.stop()
         return None
 
 
@@ -845,8 +892,38 @@ def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
+def bounded_observed_root_history(root: str, day: date | str | int, kind: str, *,
+                                  request_budget, max_bytes: int, max_rows: int,
+                                  version: str | None = None) -> pd.DataFrame | None:
+    """One explicit full observed-root history GET through the native normalizers.
+
+    This does not assert market completeness, identity, terms, or rights. No
+    health probe, concurrent windows, retry, pagination, store mutation or
+    publication occurs. A failed acquisition closes the supplied budget. Existing
+    selected-expiry bounds and ordinary legacy callers remain unchanged.
+    """
+    if (root not in {"SPY", "QQQ"} or kind not in THETA_ENDPOINTS or request_budget is None
+            or (kind == "greeks" and version != "1") or (kind == "oi" and version is not None)):
+        raise ValueError("Observed-root history requires an explicit supported source profile")
+    session_day = _date_int(day)
+    params = dict(symbol=root, expiration="*", start_date=session_day, end_date=session_day,
+                  right="both", format="csv")
+    if version is not None:
+        params["version"] = version
+    try:
+        frame = _get_csv(_session(), THETA_ENDPOINTS[kind], params, request_budget=request_budget,
+                         max_bytes=max_bytes, max_rows=max_rows, limit_profile="observed_root")
+    except _StreamTruncated:
+        request_budget.stop()
+        return None
+    if frame is None or frame.empty:
+        return frame
+    return _normalize_greeks_df(frame, order=3) if kind == "greeks" else _normalize_oi_df(frame)
+
+
 def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str | int,
-                       end_date: date | str | int) -> pd.DataFrame | None:
+                       end_date: date | str | int, *, request_budget=None, strike_range=None,
+                       max_bytes=None, max_rows=None) -> pd.DataFrame | None:
     """Open interest for all contracts of a given root+expiry over a date range.
 
     Endpoint: GET /v3/option/history/open_interest  (bulk; wildcard supported)
@@ -861,11 +938,17 @@ def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str 
     Returns DataFrame: root, expiration, strike, right, date, open_interest
     or None if terminal is unreachable.
     """
-    if not reachable():
+    exp_param = _normalize_expiration_param(exp) if request_budget is not None else None
+
+    if request_budget is not None and (exp_param == "*" or _date_int(start_date) != _date_int(end_date)
+            or type(strike_range) is not int or not 0 <= strike_range <= 5):
+        raise ValueError("Bounded history requires one exact expiry/session and at most11strikes")
+    if request_budget is None and not reachable():
         log.warning("thetadata: terminal not reachable — bulk_open_interest returning None")
         return None
 
-    exp_param = _normalize_expiration_param(exp)
+    if exp_param is None:
+        exp_param = _normalize_expiration_param(exp)
 
     if exp_param == "*":
         # STALL FIX: iterate in ≤WINDOW_DAYS windows concurrently.
@@ -889,9 +972,14 @@ def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str 
             "start_date": _date_int(start_date),
             "end_date": _date_int(end_date),
         }
+        if request_budget is not None:
+            params["right"] = "both"
+        if strike_range is not None:
+            params["strike_range"] = strike_range
+        bounded = {} if request_budget is None else dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows)
         session = _session()
         try:
-            df = _get_csv(session, "/v3/option/history/open_interest", params)
+            df = _get_csv(session, "/v3/option/history/open_interest", params, **bounded)
         except _StreamTruncated as e:
             log.warning("thetadata: bulk_open_interest(%s, %s, start=%s, end=%s) truncated — "
                         "returning None: %s", root, exp_param, start_date, end_date, e)
@@ -944,7 +1032,9 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
     if "symbol" in df.columns:
         df = df.rename(columns={"symbol": "root"})
 
-    keep = ["root", "expiration", "strike", "right", "date", "open_interest"]
+    # Retain supplied report-observation text without timezone or availability
+    # inference. The legacy analytics view preserves pre-clock row equality.
+    keep = ["root", "expiration", "strike", "right", "date", "open_interest", "timestamp", ACQUISITION_COLUMN]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
@@ -965,7 +1055,8 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
-                end_date: date | str | int, *, order: int = 1) -> pd.DataFrame | None:
+                end_date: date | str | int, *, order: int = 1, request_budget=None,
+                strike_range=None, version=None, max_bytes=None, max_rows=None) -> pd.DataFrame | None:
     """Greeks for all contracts of a given root+expiry, one row per contract per day (EOD).
 
     Endpoint: GET /v3/option/history/greeks/eod  (all orders in one buffered response)
@@ -994,7 +1085,10 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
 
     exp_param = _normalize_expiration_param(exp)
 
-    if not reachable():
+    if request_budget is not None and (exp_param == "*" or _date_int(start_date) != _date_int(end_date)
+            or type(strike_range) is not int or not 0 <= strike_range <= 5):
+        raise ValueError("Bounded history requires one exact expiry/session and at most11strikes")
+    if request_budget is None and not reachable():
         log.warning("thetadata: terminal not reachable — bulk_greeks(order=%d) returning None",
                     order)
         return None
@@ -1008,6 +1102,8 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
             "symbol": root.upper(),
             "expiration": "*",
         }
+        if version is not None:
+            base_params["version"] = version
         df = _concurrent_windows(
             "/v3/option/history/greeks/eod", base_params, start_date, end_date,
             root=root, window_days=1)
@@ -1025,9 +1121,16 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
             "start_date": _date_int(start_date),
             "end_date": _date_int(end_date),
         }
+        if request_budget is not None:
+            params["right"] = "both"
+        if strike_range is not None:
+            params["strike_range"] = strike_range
+        if version is not None:
+            params["version"] = version
+        bounded = {} if request_budget is None else dict(request_budget=request_budget, max_bytes=max_bytes, max_rows=max_rows)
         session = _session()
         try:
-            df = _get_csv(session, "/v3/option/history/greeks/eod", params)
+            df = _get_csv(session, "/v3/option/history/greeks/eod", params, **bounded)
         except _StreamTruncated as e:
             log.warning("thetadata: bulk_greeks(%s, exp=%s, start=%s, end=%s) truncated — "
                         "returning None: %s", root, exp_param, start_date, end_date, e)
@@ -1090,8 +1193,12 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     else:
         greek_cols = _ALL_GREEK_COLS
 
+    # Retain supplied observation text, including naive/unknown clocks. Neither
+    # is first availability; date derivation above remains the historical rule.
+    # Missing columns stay absent. Different observations must not dedup merely
+    # because their rounded Greek values happen to match.
     id_cols = ["root", "expiration", "strike", "right", "date", "bid", "ask",
-               "underlying_price"]
+               "underlying_price", "timestamp", "underlying_timestamp", ACQUISITION_COLUMN]
     keep = id_cols + [c for c in greek_cols if c not in id_cols and c in df.columns]
     keep += [c for c in ("timestamp", "underlying_timestamp") if c in df.columns]
     available = [c for c in keep if c in df.columns]
