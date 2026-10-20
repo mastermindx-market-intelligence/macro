@@ -195,7 +195,7 @@ def normalize_publication(raw, *, observed_at=None):
 
     # Optional provenance is still untrusted input. Validate it before hashing
     # or serializing so one malformed source cannot abort unrelated countries.
-    for key, limit in (("coverage_note", 2000), ("parser_version", 100),
+    for key, limit in (("coverage_note", 2000), ("coverage_note_zh", 2000), ("parser_version", 100),
                        ("source_table", 100), ("source_sha256", 128),
                        ("source_row_sha256", 128), ("supersedes_record_id", 200)):
         if raw.get(key) is not None and (not isinstance(raw[key], str) or len(raw[key]) > limit):
@@ -213,6 +213,8 @@ def normalize_publication(raw, *, observed_at=None):
                 "information_cutoff": cutoff, "actual_through": actual_through,
                 "reported_revisions": revisions, "precision": precision,
                 "coverage_note": raw.get("coverage_note")}
+    if raw.get("coverage_note_zh") is not None:
+        semantic["coverage_note_zh"] = raw["coverage_note_zh"]
     identity = _digest({k: semantic[k] for k in ("cc", "provider", "family", "edition", "series_id")})[:20]
     normalized_hash = _digest(semantic)
     result = {**semantic, "schema": PUBLICATION_SCHEMA, "kind": "sourced_forecast",
@@ -260,6 +262,16 @@ def merge_publications(previous, incoming, *, observed_at=None):
             diagnostics.append({"kind": "invalid_publication"})
             continue
         known = lookup.get(record["record_id"])
+        if known is None and record["correction_sequence"] == 0 and not record.get("supersedes_record_id"):
+            # A stateless source refresh can repeat a previously corrected
+            # publication. Bind only identical content to its real latest
+            # accepted identity; never create a sequence-zero alias or rebase a
+            # withdrawal/correction onto different or superseded content.
+            accepted = [r for r in archive if r["publication_key"] == record["publication_key"]
+                        and r["admission_status"] == "accepted"]
+            latest = max(accepted, key=lambda r: r["correction_sequence"]) if accepted else None
+            if latest is not None and latest["normalized_sha256"] == record["normalized_sha256"]:
+                known = latest
         if known:
             # A withdrawal is an event, even when the underlying numbers match.
             if record.get("withdrawn_at") and not known.get("withdrawn_at"):

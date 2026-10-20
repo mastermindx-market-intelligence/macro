@@ -27,7 +27,7 @@ def load_country_inputs(data_root, source_root):
     source_root, data_root = Path(source_root), Path(data_root)
     baseline = _read(source_root / "config/intl_country_baseline.json")
     refreshed = _read(data_root / "intl_macro/country_inputs.json")
-    inputs = merge_country_inputs(baseline, refreshed)
+    inputs = merge_country_inputs(baseline, refreshed, preserve_custody=True)
     commentary = _read(source_root / "config/intl_country_commentary.json")
     inputs["commentary"] = (commentary.get("countries") or {}) if commentary.get("schema") == "intl_country_commentary.v1" else {}
     return inputs

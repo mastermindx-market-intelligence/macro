@@ -31,7 +31,7 @@
 .imc-country-rail a:hover{background:var(--panel)}
 .imc-country-rail a>span{font-size:var(--fs-micro);color:var(--muted);font-weight:600}
 .imc-country-list{display:grid;gap:10px}
-.imc-country{padding:0;scroll-margin-top:100px}
+.imc-country{min-width:0;padding:0;scroll-margin-top:100px}
 .imc-country>summary{display:grid;grid-template-columns:220px minmax(170px,1fr) 130px 136px 18px;gap:20px;align-items:center;padding:18px 24px;cursor:pointer;list-style:none;min-height:88px}
 .imc-country>summary::-webkit-details-marker,.imc-evidence>summary::-webkit-details-marker{display:none}
 .imc-country>summary:hover{background:var(--imc-summary-hover)}
@@ -80,9 +80,11 @@
 .imc .imc-dated-label{font-style:italic}
 .imc-market-read{padding-top:20px}
 .imc-market-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:15px;margin:18px 0 14px}
-.imc-market-grid>div{display:grid;gap:5px}
-.imc-market-grid span{font-size:var(--fs-label);color:var(--muted)}
+.imc-market-grid>div{display:grid;align-content:start;gap:5px}
+.imc-market-grid>div>span{font-size:var(--fs-label);color:var(--muted)}
 .imc-market-grid strong{font-size:var(--fs-h2);font-weight:600;font-variant-numeric:tabular-nums}
+.imc-market-grid .imc-fx-date{font-size:var(--fs-micro);line-height:1.45;font-variant-numeric:tabular-nums}
+.imc-fx-read[data-fx-quality="dated"] strong{color:var(--muted)}
 .imc-market-explanation,.imc-scope-note{font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
 .imc-scope-note{margin-top:8px!important;padding-left:12px;border-left:2px solid var(--line)}
 .imc-driver{margin-top:22px;padding:18px 0 22px;border-top:1px solid var(--line)}
@@ -170,7 +172,7 @@ html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface
  .imc-vitals strong{font-size:var(--fs-h2)}
  .imc-market-grid{grid-template-columns:1fr 1fr;row-gap:16px}
  .imc-market-grid>div:first-child{grid-column:1/-1}
- .imc-market-grid span{font-size:var(--fs-micro)}.imc-market-grid strong{font-size:var(--fs-md)}
+ .imc-market-grid>div>span{font-size:var(--fs-micro)}.imc-market-grid strong{font-size:var(--fs-md)}
  .imc-paths{padding:18px 16px}.imc-paths>h3{font-size:var(--fs-md)}
  .imc-evidence>summary{font-size:var(--fs-label)}
  .imc-evidence th,.imc-evidence td{font-size:var(--fs-label);min-width:96px}
@@ -294,7 +296,9 @@ body.imc-page #mmb-boot,body.imc-page #mmb-launch{
 .imc-policy-value{display:flex;align-items:center;gap:20px;margin-top:16px}
 .imc-policy-value>strong{font-size:32px;line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .imc-policy-value>strong small{font-size:16px;margin-left:3px}
-.imc-policy-value>div{display:grid;gap:5px}
+.imc-policy-value>strong .imc-policy-qualifier{display:block;margin:0 0 3px;font-size:11px;letter-spacing:0;color:var(--muted)}
+.imc-policy-value>div{display:grid;gap:5px;min-width:0}
+.imc-policy-support{display:flex;flex-wrap:wrap;gap:6px 16px}
 .imc-policy-value b{font-size:13px}
 .imc-policy-value span{color:var(--muted);font-size:12px}
 @media(max-width:600px){

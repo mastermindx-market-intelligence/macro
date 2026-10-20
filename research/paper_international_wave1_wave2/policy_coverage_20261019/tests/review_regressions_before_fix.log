@@ -1,0 +1,145 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+____ test_future_announcement_does_not_restore_withdrawn_effective_decision ____
+
+    def test_future_announcement_does_not_restore_withdrawn_effective_decision():
+        current = normalize_policy_decision(raw(source_sha256="b" * 64))
+        future = future_bank_rate()
+        events = [review_event(current, "review_required", "2026-10-19T10:00:00+00:00"),
+                  review_event(future, "verified", "2026-10-19T10:05:00+00:00")]
+        result = select_policy_decision([current, future], "GB", review_events=events,
+                                        operational_as_of="2026-10-19T10:06:00+00:00")
+        assert result["record_id"] == current["record_id"]
+>       assert result["state"] == "review_required" and not result["current"]
+E       AssertionError: assert ('verified' == 'review_required'
+E
+E         - review_required
+E         + verified)
+
+tests/test_intl_policy_evidence.py:414: AssertionError
+_______________ test_announcement_requires_its_own_qualification _______________
+
+    def test_announcement_requires_its_own_qualification():
+        current = normalize_policy_decision(raw(source_sha256="b" * 64))
+        future = future_bank_rate()
+        events = [review_event(future, "review_required", "2026-10-19T10:00:00+00:00")]
+        result = select_policy_decision([current, future], "GB", review_events=events,
+                                        operational_as_of="2026-10-19T10:01:00+00:00")
+        assert not result["current"]
+>       assert result["announced"]["state"] == "review_required"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'state'
+
+tests/test_intl_policy_evidence.py:429: KeyError
+________ test_custody_reconstruction_keeps_the_earliest_complete_record ________
+
+    def test_custody_reconstruction_keeps_the_earliest_complete_record():
+        early = baseline_policy("AU")
+        later = deepcopy(early)
+        later["first_observed_at"] = "2026-10-19T10:30:00+00:00"
+        later["source_sha256"] = "d" * 64
+        for support in later["supporting_sources"]:
+            support["source_sha256"] = "e" * 64
+            support["retrieved_at"] = "2026-10-19T10:20:00+00:00"
+        for baseline, refreshed in ((later, early), (early, later)):
+            merged = merge_policy_decisions([baseline], [refreshed], preserve_custody=True)
+            assert len(merged) == 1
+>           assert merged[0]["first_observed_at"] == early["first_observed_at"]
+E           AssertionError: assert '2026-10-19T10:30:00+00:00' == '2026-10-19T0....036453+00:00'
+E
+E             - 2026-10-19T09:46:23.036453+00:00
+E             + 2026-10-19T10:30:00+00:00
+
+tests/test_intl_policy_evidence.py:444: AssertionError
+__ test_first_qualification_failure_has_review_state_without_an_invented_rate __
+
+    def test_first_qualification_failure_has_review_state_without_an_invented_rate():
+        item = baseline_policy("AU")
+        event = review_event(item, "review_required", "2026-10-19T10:00:00+00:00")
+        assert select_policy_decision([], "AU", review_events=[event],
+                   operational_as_of="2026-10-19T09:59:59+00:00") is None
+        result = select_policy_decision([], "AU", review_events=[event],
+                                        operational_as_of="2026-10-19T10:01:00+00:00")
+>       assert result is not None and result["state"] == "review_required"
+E       assert (None is not None)
+
+tests/test_intl_policy_evidence.py:460: AssertionError
+___________ test_other_release_url_cannot_restore_a_withdrawn_source ___________
+
+    def test_other_release_url_cannot_restore_a_withdrawn_source():
+        one = normalize_policy_decision(raw(source_sha256="b" * 64))
+        two = normalize_policy_decision(raw(source_sha256="c" * 64,
+                            source_url="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-reviewed-copy"))
+        before = select_policy_decision([one, two], "GB", operational_as_of="2026-10-19T10:00:00+00:00")
+        selected_record = next(r for r in (one, two) if r["record_id"] == before["record_id"])
+        other = next(r for r in (one, two) if r["record_id"] != before["record_id"])
+        events = [review_event(selected_record, "review_required", "2026-10-19T10:01:00+00:00"),
+                  review_event(other, "verified", "2026-10-19T10:02:00+00:00")]
+        after = select_policy_decision([one, two], "GB", review_events=events,
+                                       operational_as_of="2026-10-19T10:03:00+00:00")
+>       assert after["state"] == "review_required" and not after["current"]
+E       AssertionError: assert ('verified' == 'review_required'
+E
+E         - review_required
+E         + verified)
+
+tests/test_intl_policy_evidence.py:476: AssertionError
+____ test_first_failed_policy_qualification_withholds_same_bank_commentary _____
+
+    def test_first_failed_policy_qualification_withholds_same_bank_commentary():
+        from datetime import datetime, timezone
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        item = next(r for r in base["policy_decisions"] if r["cc"] == "AU")
+        event = {**item, "schema": "intl_policy_review.v1", "status": "review_required",
+                 "record_id": None, "observed_at": datetime.now(timezone.utc).isoformat()}
+        model = current_policy_model(
+            policy_decisions=[r for r in base["policy_decisions"] if r["cc"] != "AU"],
+            policy_reviews=[event])
+        country = next(c for c in model["countries"] if c["cc"] == "AU")
+>       assert country["research"] is None
+E       AssertionError: assert {'kind': 'attributed_assessment', 'published': '2026-09-29', 'provider': 'Reserve Bank of Australia', 'source_url': 'https://www.rba.gov.au/media-releases/2026/mr-26-27.html', ...} is None
+
+tests/test_intl_country_cockpit.py:350: AssertionError
+_ test_new_announcement_retires_older_national_interpretation_before_effective_date _
+
+    def test_new_announcement_retires_older_national_interpretation_before_effective_date():
+        from datetime import datetime, timezone
+        from lib.intl_policy_evidence import normalize_policy_decision
+        base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+        item = next(r for r in base["policy_decisions"] if r["cc"] == "GB")
+        future = normalize_policy_decision({**item, "value": 4.0, "previous_value": 3.75,
+            "action": "increase", "decision_date": "2026-10-15", "published": "2026-10-15",
+            "effective_date": "2026-11-01", "last_change_date": "2026-11-01",
+            "first_observed_at": datetime.now(timezone.utc).isoformat()})
+        assert future is not None
+        model = current_policy_model(policy_decisions=[*base["policy_decisions"], future])
+        country = next(c for c in model["countries"] if c["cc"] == "GB")
+        assert country["policy_decision"]["current"]
+        assert country["policy_decision"]["value"] == 3.75
+>       assert country["research"] is None
+E       AssertionError: assert {'kind': 'attributed_assessment', 'published': '2026-09-17', 'provider': 'Bank of England', 'source_url': 'https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-2026', ...} is None
+
+tests/test_intl_country_cockpit.py:370: AssertionError
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-89e099f6-8d85-4cb0-ae7b-69039a3d7479/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-89e099f6-8d85-4cb0-ae7b-69039a3d7479/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-89e099f6-8d85-4cb0-ae7b-69039a3d7479/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-89e099f6-8d85-4cb0-ae7b-69039a3d7479/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_intl_policy_evidence.py::test_future_announcement_does_not_restore_withdrawn_effective_decision
+FAILED tests/test_intl_policy_evidence.py::test_announcement_requires_its_own_qualification
+FAILED tests/test_intl_policy_evidence.py::test_custody_reconstruction_keeps_the_earliest_complete_record
+FAILED tests/test_intl_policy_evidence.py::test_first_qualification_failure_has_review_state_without_an_invented_rate
+FAILED tests/test_intl_policy_evidence.py::test_other_release_url_cannot_restore_a_withdrawn_source
+FAILED tests/test_intl_country_cockpit.py::test_first_failed_policy_qualification_withholds_same_bank_commentary
+FAILED tests/test_intl_country_cockpit.py::test_new_announcement_retires_older_national_interpretation_before_effective_date
+7 failed, 101 deselected, 2 warnings in 3.60s

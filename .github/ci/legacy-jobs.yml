@@ -5590,15 +5590,19 @@ jobs:
       - "config/intl_country_commentary.json"
       - "config/intl_country_releases.json"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
       - "lib/intl_policy_evidence.py"
       - "tests/test_intl_country_cockpit.py"
+      - "tests/test_intl_currency_observation.py"
+      - "tests/fixtures/intl_currency_observations_20261020.json"
       - "tests/test_intl_forecast_vintages.py"
       - "tests/test_intl_outlook_interpretation.py"
       - "tests/test_intl_policy_evidence.py"
       - "tests/fixtures/intl_weo_october_2026_tables.json"
+      - "tests/fixtures/intl_weo_october_2026_fiscal_api.json"
       - "templates/intl_country_cockpit.css"
       - "templates/intl_country_cockpit.html.j2"
       - "templates/intl_country_cockpit.js"
@@ -5914,7 +5918,7 @@ jobs:
       - name: International return identity, windows and observation provenance
         run: python -m pytest tests/test_intl_performance_records.py tests/test_intl_source_snapshot.py tests/test_intl_source_qualification.py tests/test_intl_performance_charts.py tests/test_intl_chart_publication.py tests/test_intl_chart_geometry.py tests/test_intl_chart_template.py tests/test_intl_chart_mount.py tests/test_intl_workspace_overview.py tests/test_intl_library_view.py tests/test_intl_library_public_copy.py tests/test_intl_library_mount.py tests/test_intl_inspector_view.py tests/test_intl_compare_view.py tests/test_intl_compare_mount.py tests/test_intl_history_read_receipt.py tests/test_intl_history_read_projection.py tests/test_intl_history_projection_regression.py tests/test_intl_history_projection_independent.py tests/test_intl_cycle_component_evidence.py tests/test_intl_regime.py tests/test_intl_compare.py tests/test_intl_workspace_macro.py tests/test_intl_ecb_deposit_admission.py tests/test_intl_macro_mount.py tests/test_intl_macro_publication.py tests/test_intl_workspace_risk.py tests/test_intl_workspace_risk_regression.py tests/test_intl_workspace_risk_currency.py tests/test_intl_workspace_risk_currency_independent.py tests/test_intl_workspace_risk_currency_numerical.py tests/test_intl_workspace_risk_pressure.py tests/test_intl_workspace_risk_pressure_independent.py tests/test_intl_workspace_risk_section.py tests/test_intl_risk_mount.py tests/test_intl_workspace_risk_section_independent.py tests/test_intl_policy_comparison.py tests/test_intl_policy_comparison_independent.py tests/test_intl_workspace_history.py tests/test_intl_workspace_history_independent.py tests/test_intl_history_mount.py tests/test_intl_eod_publication.py tests/test_intl_eod_publication_review.py -q
       - name: International country evidence, outlook and publication custody
-        run: python -m pytest tests/test_intl_country_cockpit.py tests/test_intl_forecast_vintages.py tests/test_intl_outlook_interpretation.py tests/test_intl_policy_evidence.py -q
+        run: python -m pytest tests/test_intl_country_cockpit.py tests/test_intl_forecast_vintages.py tests/test_intl_outlook_interpretation.py tests/test_intl_policy_evidence.py tests/test_intl_currency_observation.py -q
 
   international-workspace-browser:
     if: ${{ false }}
@@ -5929,6 +5933,7 @@ jobs:
       - "config/intl_country_commentary.json"
       - "config/intl_country_releases.json"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
@@ -8538,6 +8543,7 @@ jobs:
       - "collectors/intl_policy_sources.py"
       - "collectors/intl_weo.py"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
@@ -13296,6 +13302,7 @@ jobs:
       - "config/intl_country_commentary.json"
       - "config/intl_country_releases.json"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
@@ -13626,6 +13633,7 @@ jobs:
       - "config/intl_country_commentary.json"
       - "config/intl_country_releases.json"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
@@ -16171,6 +16179,7 @@ jobs:
       - engine/intl_risk.py
       - engine/intl_rotation.py
       - engine/intl_run.py
+      - lib/intl_currency_observation.py
       - engine/intl_stocks.py
       - engine/intl_workspace_overview.py
       - engine/ird_velocity.py
@@ -22283,6 +22292,7 @@ jobs:
       - "config/intl_country_commentary.json"
       - "config/intl_country_releases.json"
       - "lib/intl_country_assessment.py"
+      - "lib/intl_currency_observation.py"
       - "lib/intl_country_inputs.py"
       - "lib/intl_country_outlook.py"
       - "lib/intl_forecast_vintages.py"
@@ -23710,6 +23720,7 @@ jobs:
       - "engine/intl_risk.py"
       - "engine/intl_rotation.py"
       - "engine/intl_run.py"
+      - "lib/intl_currency_observation.py"
       - "engine/intl_stocks.py"
       - "engine/ird_velocity.py"
       - "engine/rri_shadow.py"

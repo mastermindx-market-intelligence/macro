@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 from datetime import timezone
 from lib.intl_forecast_vintages import merge_publications, select_publications
-from lib.intl_policy_evidence import merge_policy_decisions
+from lib.intl_policy_evidence import merge_policy_decisions, merge_policy_reviews
 from collectors.intl_policy_sources import collect_registered_policy
 from collectors.intl_weo import collect_registered_weo
 from zipfile import ZipFile, BadZipFile
@@ -241,7 +241,7 @@ def collect_country_inputs(fetch_bytes, *, retrieved_at, releases=None):
     return {"schema": SCHEMA, "retrieved_at": retrieved_at,
             "official": official, "forecasts": forecasts,
             "forecast_archive": current["forecast_archive"] + policy["forecast_archive"], "cpi_series": series,
-            "policy_decisions": policy["policy_decisions"],
+            "policy_decisions": policy["policy_decisions"], "policy_reviews": policy["policy_reviews"],
             "sources": sources + current["sources"] + policy["sources"], "errors": errors + current["errors"] + policy["errors"]}
 
 def _mapping(value):
@@ -281,7 +281,7 @@ def _valid_incoming(value, *, cc, metric=None):
             and sum(str(k).isdigit() for k in values) >= 2)
 
 
-def merge_country_inputs(previous, incoming, *, today=None):
+def merge_country_inputs(previous, incoming, *, today=None, preserve_custody=False):
     """Retain publications, then select each country; never replace by arrival."""
     today = today or date.today()
     result = deepcopy(previous) if type(previous) is dict and previous.get("schema") == SCHEMA else {}
@@ -308,7 +308,10 @@ def merge_country_inputs(previous, incoming, *, today=None):
     observed_at = datetime.now(timezone.utc).isoformat()
     archive, diagnostics = merge_publications(publications(result), publications(incoming), observed_at=observed_at)
     result["forecast_archive"] = archive
-    result["policy_decisions"] = merge_policy_decisions(result.get("policy_decisions"), incoming.get("policy_decisions"), observed_at=observed_at)
+    result["policy_decisions"] = merge_policy_decisions(result.get("policy_decisions"), incoming.get("policy_decisions"),
+                                                       observed_at=observed_at, preserve_custody=preserve_custody)
+    result["policy_reviews"] = merge_policy_reviews(result.get("policy_reviews"), incoming.get("policy_reviews"),
+                                                   observed_at=observed_at, preserve_custody=preserve_custody)
     result["forecast_diagnostics"] = diagnostics
     result["forecasts"] = {}
     for cc in set(AREAS.values()):

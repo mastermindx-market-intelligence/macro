@@ -1,0 +1,138 @@
+{
+  "started_at": "2026-10-20T07:25:55.110254+00:00",
+  "carrier": "Studio Direct C2 Personal",
+  "operation_id": "intl-country-cockpit-20261018",
+  "workspace": "/Volumes/Mastermind 2/agent-workspaces/macro/web/intl-country-cockpit-20261018",
+  "installed_files": {
+    "private-tunnel-gateway.mjs": {
+      "exists": true,
+      "bytes": 9961,
+      "sha256": "fd4eb541590cafc3c92a0b0ac1f7080baa76193704a2219e58b02462ef4d5540",
+      "mtime_utc": "2026-10-04T22:46:43.627171+00:00"
+    },
+    "gateway.mjs": {
+      "exists": true,
+      "bytes": 101068,
+      "sha256": "17157fa5f8739dbe17aae767a335e97dd713a978dde9b192feb1b41a7b036b30",
+      "mtime_utc": "2026-10-18T10:31:57.942025+00:00"
+    },
+    "git-publish.mjs": {
+      "exists": true,
+      "bytes": 48311,
+      "sha256": "d8f7f7712129094ce0ffac2eaeb66d15dd3f063a3ade9fa354de7af0d412477a",
+      "mtime_utc": "2026-10-18T10:31:57.942867+00:00"
+    },
+    "workspace-access.mjs": {
+      "exists": true,
+      "bytes": 15775,
+      "sha256": "9c4c20dd4edbc426c8561801708ee205e19bb47b48134ec8f5654a10f1cb7cf3",
+      "mtime_utc": "2026-10-18T10:31:57.943557+00:00"
+    },
+    "manifest.json": {
+      "exists": true,
+      "bytes": 2083,
+      "sha256": "4bb0b40cbc7849487c0d886b30261f70fd6e1828d1d217643a56e3fa6aea40fb",
+      "mtime_utc": "2026-10-18T10:31:57.944919+00:00"
+    },
+    "config.json": {
+      "exists": true,
+      "bytes": 2923,
+      "sha256": "be30698505af33ced7a8209aa802345885248e1a7350e0a193a49b58bd3de925",
+      "mtime_utc": "2026-10-18T10:31:57.943976+00:00"
+    }
+  },
+  "log_matches": [
+    {
+      "file": "err.log",
+      "line": 667469,
+      "text": "{\"ts\":\"2026-10-19T05:48:48.211Z\",\"level\":\"warn\",\"event\":\"tool_call\",\"sid\":\"811d8d20\",\"tool\":\"studio_git_push_current_branch\",\"durationMs\":84980,\"classification\":\"tool_error\",\"effect\":\"EFFECT_UNKNOWN\"}"
+    }
+  ],
+  "manifest_keys": [
+    "account",
+    "backend",
+    "backendHash",
+    "configHash",
+    "dependencyTreeHash",
+    "files",
+    "host",
+    "label",
+    "node",
+    "nodeHash",
+    "plistHash",
+    "port",
+    "source",
+    "version"
+  ],
+  "manifest_identity": {
+    "account": "chatgpt2-personal",
+    "version": 2
+  },
+  "config_top_level_keys": [
+    "accountLabel",
+    "args",
+    "childEnv",
+    "command",
+    "cwd",
+    "fleetRouting",
+    "fleetStatus",
+    "gitPublish",
+    "host",
+    "idleTimeoutMs",
+    "maxPerSessionConcurrency",
+    "maxQueuedPerSession",
+    "maxSessions",
+    "paperDesign",
+    "port",
+    "reclaimIdleGraceMs",
+    "repositoryWorkspaces",
+    "requestTimeoutMs",
+    "stateDir",
+    "testMode"
+  ],
+  "numeric_timeout_configuration": [
+    {
+      "key": "fleetRouting.requestTimeoutMs",
+      "value": 300000
+    },
+    {
+      "key": "fleetStatus.fabricTimeoutMs",
+      "value": 8000
+    },
+    {
+      "key": "fleetStatus.timeoutMs",
+      "value": 15000
+    },
+    {
+      "key": "gitPublish.commandTimeoutMs",
+      "value": 15000
+    },
+    {
+      "key": "gitPublish.pushTimeoutMs",
+      "value": 60000
+    },
+    {
+      "key": "idleTimeoutMs",
+      "value": 1800000
+    },
+    {
+      "key": "paperDesign.commandTimeoutMs",
+      "value": 70000
+    },
+    {
+      "key": "requestTimeoutMs",
+      "value": 300000
+    }
+  ],
+  "process_observation": {
+    "started_at": "2026-10-20T07:25:55.296100+00:00",
+    "method": "ps pid,ppid,comm filtered to git, git-remote-*, git-send-pack, git-receive-pack, ssh; lsof cwd only; no command arguments or signals",
+    "filtered_process_count": 11,
+    "workspace_matches": [],
+    "cwd_unresolved": [],
+    "lsof_exit_code": 0,
+    "lsof_stderr_nonempty": false,
+    "completed_at": "2026-10-20T07:25:55.602376+00:00"
+  },
+  "completed_at": "2026-10-20T07:25:55.602415+00:00"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/tmp/intl-country-cockpit-testenv-20261018/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_intl_policy_evidence.py",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_forecast_vintages.py",
+    "tests/test_intl_outlook_interpretation.py",
+    "tests/test_intl_policy_comparison.py",
+    "tests/test_intl_policy_comparison_independent.py"
+  ],
+  "started_at": "2026-10-19T10:49:12.771377+00:00",
+  "finished_at": "2026-10-19T10:49:24.649789+00:00",
+  "exit": 0,
+  "log": "/tmp/intl-policy-coverage-20261019/policy_country_tests_v3.log"
+}

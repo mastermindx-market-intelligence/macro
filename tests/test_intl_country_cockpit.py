@@ -124,11 +124,11 @@ def test_contraction_cannot_be_called_slower_expansion():
     assert "contraction" in c["title_en"].lower()
 
 
-def test_fx_requires_its_own_clock():
+def test_legacy_fx_score_is_not_a_currency_return():
     rec=record();rec["macro"]["fx_strength_3m"]=4.95
     assert view(rec)["market"]["fx_3m"] is None
     rec["macro_asof"]["fx_strength_3m"]="2026-10-14"
-    assert view(rec)["market"]["fx_3m"]==4.95
+    assert view(rec)["market"]["fx_3m"] is None
 
 
 def test_input_is_not_mutated_and_duplicate_countries_fail():
@@ -205,7 +205,10 @@ def test_conflicting_source_observation_is_rejected():
 
 def test_bad_archive_does_not_stop_other_sources():
     result=collect_country_inputs(lambda url,**kw:b"invalid",retrieved_at="2026-10-18")
-    assert len(result["errors"])==7
+    from collectors.intl_policy_sources import RELEASES
+    policy_errors = [error for error in result["errors"] if error.get("status") == "release_not_verified"]
+    assert {error["source_url"] for error in policy_errors} == {release["source_url"] for release in RELEASES}
+    assert {"inflation", "policy", "imf", "taiwan"} <= {error["source"] for error in result["errors"]}
     assert result["official"]=={} and result["forecasts"]=={}
 
 
@@ -279,3 +282,140 @@ def test_input_loader_contains_malformed_nested_json(tmp_path):
     result = build_country_assessments({"records": [record()]}, today=TODAY,
                                       official=inputs["official"], forecasts=inputs["forecasts"])
     assert len(result["countries"]) == 1
+
+
+
+def current_policy_model(*, policy_reviews=None, policy_decisions=None):
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    commentary = json.loads((ROOT / "config/intl_country_commentary.json").read_text())["countries"]
+    return build_country_assessments(
+        {"records": [record(cc) for cc in ("JP", "KR", "TW", "IN", "AU", "GB", "EZ")]},
+        today=date(2026, 10, 19), official=base["official"], forecasts=base["forecasts"],
+        forecast_archive=base["forecast_archive"], commentary=commentary,
+        policy_decisions=policy_decisions if policy_decisions is not None else base["policy_decisions"],
+        policy_reviews=policy_reviews if policy_reviews is not None else base.get("policy_reviews"))
+
+
+def render_policy_model(model):
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"))
+    env.globals.update(t=i18n.t, td=i18n.td, tr=i18n.tr)
+    return env.get_template("intl_country_cockpit.html.j2").render(intl_analysis=model)
+
+
+def test_current_country_views_expose_all_seven_named_decisions():
+    model = current_policy_model()
+    assert len(model["countries"]) == 7
+    assert all(c["policy_decision"]["current"] for c in model["countries"])
+    assert all(c["research"] is not None for c in model["countries"])
+    html = render_policy_model(model)
+    for country in model["countries"]:
+        policy = country["policy_decision"]
+        block = html.split(f'aria-labelledby="imc-policy-{country["cc"]}"', 1)[1].split("</section>", 1)[0]
+        assert policy["instrument_en"] in block
+        assert policy["decision_date"] in block and policy["effective_date"] in block
+        for support in policy.get("supporting_sources", []):
+            assert support["label_en"] in block
+    jp = html.split('aria-labelledby="imc-policy-JP"', 1)[1].split("</section>", 1)[0]
+    assert "imc-policy-qualifier" in jp and "Around" in jp and "around " in jp
+    assert "1.25" in jp and "1.00" in jp
+
+
+def test_source_review_suppresses_the_dependent_national_thesis_and_policy_rationale():
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    old = next(r for r in base["policy_decisions"] if r["cc"] == "AU")
+    event = {**old, "schema": "intl_policy_review.v1", "status": "review_required", "record_id": None,
+             "observed_at": "2026-10-19T12:00:00+00:00"}
+    model = current_policy_model(policy_reviews=[*base.get("policy_reviews", []), event])
+    country = next(c for c in model["countries"] if c["cc"] == "AU")
+    assert country["policy_decision"]["state"] == "review_required"
+    assert country["research"] is None
+    assert country["title_en"] != "Inflation persists as demand cools"
+    block = render_policy_model(model).split('aria-labelledby="imc-policy-AU"', 1)[1].split("</section>", 1)[0]
+    assert "source needs review" in block
+    assert "imc-policy-value" not in block and "imc-policy-rationale" not in block
+    assert old["rationale_en"] not in block
+
+
+def test_first_failed_policy_qualification_withholds_same_bank_commentary():
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    item = next(r for r in base["policy_decisions"] if r["cc"] == "AU")
+    event = {**item, "schema": "intl_policy_review.v1", "status": "review_required",
+             "record_id": None, "observed_at": "2026-10-19T12:00:00+00:00"}
+    model = current_policy_model(
+        policy_decisions=[r for r in base["policy_decisions"] if r["cc"] != "AU"],
+        policy_reviews=[event])
+    country = next(c for c in model["countries"] if c["cc"] == "AU")
+    assert country["research"] is None
+    assert country["policy_decision"]["state"] == "review_required"
+    block = render_policy_model(model).split('aria-labelledby="imc-policy-AU"', 1)[1].split("</section>", 1)[0]
+    assert "source needs review" in block and "imc-policy-value" not in block
+
+
+def test_new_announcement_retires_older_national_interpretation_before_effective_date():
+    from lib.intl_policy_evidence import normalize_policy_decision
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    item = next(r for r in base["policy_decisions"] if r["cc"] == "GB")
+    future = normalize_policy_decision({**item, "value": 4.0, "previous_value": 3.75,
+        "action": "increase", "decision_date": "2026-10-15", "published": "2026-10-15",
+        "effective_date": "2026-11-01", "last_change_date": "2026-11-01",
+        "first_observed_at": "2026-10-19T12:00:00+00:00"})
+    assert future is not None
+    model = current_policy_model(policy_decisions=[*base["policy_decisions"], future])
+    country = next(c for c in model["countries"] if c["cc"] == "GB")
+    assert country["policy_decision"]["current"]
+    assert country["policy_decision"]["value"] == 3.75
+    assert country["research"] is None
+    block = render_policy_model(model).split('aria-labelledby="imc-policy-GB"', 1)[1].split("</section>", 1)[0]
+    assert "Announced change" in block and "4.00%" in block and "2026-11-01" in block
+
+
+@pytest.mark.parametrize("withdrawn, heading, heading_zh", [
+    (("current_account", "fiscal_balance"), "Fiscal position", "财政状况"),
+    (("current_account", "government_debt"), "Fiscal position", "财政状况"),
+    (("fiscal_balance",), "External & fiscal position", "外部与财政状况"),
+    (("government_debt",), "External & fiscal position", "外部与财政状况"),
+    (("fiscal_balance", "government_debt"), "External position", "外部状况"),
+])
+def test_partial_withdrawal_names_only_the_remaining_and_missing_fiscal_measures(
+        withdrawn, heading, heading_zh):
+    import re
+    from html import unescape
+    from lib.intl_forecast_vintages import merge_publications, select_publications
+
+    source = load_country_inputs(ROOT / "data", ROOT)
+    as_of = date(2026, 10, 19)
+    selected = [series for metric in withdrawn for series in select_publications(
+        source["forecast_archive"], "KR", series_id=metric, today=as_of)]
+    withdrawals = [{**series, "withdrawn_at": "2026-10-19T23:45:00+00:00",
+                    "withdrawal_source_url": "https://www.imf.org/en/withdrawal"}
+                   for series in selected if series["series_id"] in withdrawn]
+    assert len(withdrawals) == len(withdrawn)
+    archive, diagnostics = merge_publications(
+        source["forecast_archive"], withdrawals, observed_at="2026-10-19T23:50:00+00:00")
+    assert diagnostics == []
+    model = build_country_assessments(
+        {"records": [record()]}, today=as_of, official=source["official"],
+        forecasts=source["forecasts"], commentary=source["commentary"],
+        forecast_archive=archive)
+    balances = {b["series_id"] for b in model["countries"][0]["outlook"]["balances"]}
+    assert balances == {"current_account", "fiscal_balance", "government_debt"} - set(withdrawn)
+    env = Environment(loader=FileSystemLoader(ROOT / "templates"))
+    env.globals.update(t=i18n.t, td=i18n.td, tr=i18n.tr)
+    html = env.get_template("intl_country_cockpit.html.j2").render(intl_analysis=model)
+    panel = unescape(re.search(r'<section class="imc-balances"[^>]*>(.*?)</section>', html, re.S).group(1))
+    assert heading in panel and heading_zh in panel
+    if "current_account" not in balances:
+        assert "External position" not in panel and "外部状况" not in panel
+    fiscal_missing = set(withdrawn) & {"fiscal_balance", "government_debt"}
+    if len(fiscal_missing) == 2:
+        assert "Fiscal projections have not been verified for this country." in html
+    else:
+        assert "Fiscal projections have not been verified for this country." not in html
+        if "fiscal_balance" in fiscal_missing:
+            assert "A government balance projection has not been verified" in html
+            assert "政府财政收支预测尚未核验" in html
+            assert "A government debt projection has not been verified" not in html
+        else:
+            assert "A government debt projection has not been verified" in html
+            assert "政府债务预测尚未核验" in html
+            assert "A government balance projection has not been verified" not in html

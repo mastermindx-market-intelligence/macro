@@ -1,39 +1,39 @@
 {
   "schema": "intl_country_commentary.v1",
-  "reviewed_at": "2026-10-18",
+  "reviewed_at": "2026-10-19",
   "countries": {
     "JP": {
       "kind": "attributed_assessment",
-      "published": "2026-07-31",
+      "published": "2026-09-18",
       "provider": "Bank of Japan",
-      "source_url": "https://www.boj.or.jp/en/mopo/outlook/gor2607a.pdf",
+      "source_url": "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf",
       "title": [
-        "Wages and technology demand cushion the energy shock",
-        "工资与科技需求缓冲能源冲击"
+        "Wage inflation keeps normalization in play",
+        "工资通胀推动政策正常化"
       ],
       "read": [
-        "The Bank of Japan expects higher energy costs to weigh on activity in fiscal 2026. Wage gains, government support and AI demand provide offsets; easing energy pressure and stronger income-to-spending transmission underpin its later pickup.",
-        "日本央行预计能源成本上升拖累2026财年经济。工资增长、政府支持与AI需求提供缓冲；能源压力缓解、收入更有效地转化为支出，构成后续增长改善的基础。"
+        "Wage and input costs are spreading into prices. AI demand and household income support activity; dearer energy limits the recovery.",
+        "工资与投入成本正向价格传导。AI需求和家庭收入支撑经济活动，能源涨价则制约复苏。"
       ],
       "theme": [
-        "Energy costs versus household income",
-        "能源成本与家庭收入"
+        "Wages, prices and policy",
+        "工资、价格与政策"
       ],
       "driver": [
-        "Energy imports reduce purchasing power when prices rise faster than household income. The Bank of Japan sees wage gains and fiscal measures cushioning that pressure.",
-        "能源价格涨幅超过家庭收入时，进口能源会削弱购买力。日本央行认为工资增长与财政措施有助于缓冲压力。"
+        "Wage gains support spending and price pass-through.",
+        "工资增长支撑消费，也推动成本向售价传导。"
       ],
       "upside": [
-        "If energy costs ease while wage gains hold, real incomes and household spending could improve; broader demand would support domestic-facing earnings.",
-        "若能源成本下降且工资增长持续，实际收入与家庭支出可能改善，更广泛的需求将支持内需型企业利润。"
+        "Energy relief supports real incomes and margins.",
+        "能源压力缓解将支撑实际收入与利润率。"
       ],
       "downside": [
-        "If energy and import costs stay high, they could absorb wage gains and constrain consumption even with strong technology demand.",
-        "若能源与进口成本持续偏高，可能抵消工资增长并限制消费，即使科技需求仍强。"
+        "Persistent import costs could require more tightening.",
+        "进口成本持续偏高可能要求进一步收紧政策。"
       ],
       "watch": [
-        "Real wages, household spending, energy import costs and the next Bank of Japan outlook.",
-        "实际工资、家庭支出、能源进口成本与下一份日本央行展望。"
+        "Wages, services prices and the yen.",
+        "工资、服务价格与日元汇率。"
       ]
     },
     "KR": {
@@ -72,70 +72,70 @@
     },
     "AU": {
       "kind": "attributed_assessment",
-      "published": "2026-08-11",
+      "published": "2026-09-29",
       "provider": "Reserve Bank of Australia",
-      "source_url": "https://www.rba.gov.au/publications/smp/2026/aug/",
+      "source_url": "https://www.rba.gov.au/media-releases/2026/mr-26-27.html",
       "title": [
-        "Earlier rate rises are still working through spending",
-        "此前加息仍在传导至支出"
+        "Inflation persists as demand cools",
+        "需求降温，通胀仍在持续"
       ],
       "read": [
-        "The RBA expects earlier interest-rate increases to slow spending, with their full effect still ahead. Its August outlook places inflation’s return to the midpoint of its target range in early 2028 and anticipates a gradual rise in unemployment.",
-        "澳大利亚央行预计此前加息将减缓支出，其完整影响尚未显现。8月展望预计通胀于2028年初回到目标区间中点，失业率则逐步上升。"
+        "Energy and capacity pressures keep inflation elevated. Spending and housing are cooling, leaving the RBA balancing price stability against weaker activity.",
+        "能源与产能压力使通胀持续偏高；消费与住房降温，澳储行需在物价稳定和经济走弱之间权衡。"
       ],
       "theme": [
-        "Borrowing costs and household demand",
-        "借贷成本与家庭需求"
+        "Inflation versus domestic demand",
+        "通胀与国内需求"
       ],
       "driver": [
-        "Rate increases can reduce household spending capacity and investment demand. The RBA expects slowing demand to help reduce inflation.",
-        "加息可能压低家庭支出能力与投资需求。澳大利亚央行预计需求放缓将有助于通胀回落。"
+        "Higher input costs spread beyond fuel.",
+        "投入成本上涨正从燃料向其他领域传导。"
       ],
       "upside": [
-        "If inflation falls with only a modest slowdown in employment and spending, households could regain purchasing power without a sharp contraction.",
-        "若通胀回落，同时就业与支出仅温和放缓，家庭购买力可能恢复，而无需经历剧烈收缩。"
+        "Easing costs allow inflation to fall.",
+        "成本压力缓解将有助通胀回落。"
       ],
       "downside": [
-        "If higher borrowing costs weaken spending more than expected while energy inflation persists, growth could slow before households receive price relief.",
-        "若借贷成本上升对支出的打击超出预期，而能源通胀持续，经济可能在家庭获得价格缓解之前先行放缓。"
+        "A deeper housing downturn weakens consumption.",
+        "房市进一步下行可能削弱消费。"
       ],
       "watch": [
-        "Household spending, unemployment, housing activity and inflation’s response to earlier rate increases.",
-        "家庭支出、失业率、住房活动与通胀对先前加息的反应。"
+        "Core inflation, household spending and housing.",
+        "核心通胀、家庭消费与住房。"
       ]
     },
     "EZ": {
       "kind": "attributed_assessment",
       "published": "2026-09-10",
       "provider": "European Central Bank",
-      "source_url": "https://www.ecb.europa.eu/press/projections/html/ecb.projections202609_ecbstaff~8e340fc69d.en.html",
+      "source_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~314e508016.en.html",
       "title": [
-        "A firmer outlook still depends on energy relief",
-        "前景改善仍取决于能源压力缓解"
+        "Resilient growth faces an energy constraint",
+        "增长有韧性，能源成约束"
       ],
       "read": [
-        "The ECB’s September assessment finds the economy more resilient than expected. Its baseline relies on the energy shock fading, real incomes recovering and infrastructure and defence spending supporting demand; persistent export competitiveness problems remain a constraint.",
-        "欧洲央行9月研判认为经济韧性强于预期。其基准情景依赖能源冲击消退、实际收入恢复，以及基建与国防支出支持需求；出口竞争力问题仍构成限制。"
+        "Activity proved stronger than expected, but the energy shock prolonged inflation. Policy stays dependent on each meeting’s evidence.",
+        "经济活动强于预期，能源冲击却延长了通胀压力。政策仍取决于每次会议获得的新证据。"
       ],
       "theme": [
-        "Energy, real incomes and public investment",
-        "能源、实际收入与公共投资"
+        "Energy costs and policy",
+        "能源成本与政策"
       ],
       "driver": [
-        "Lower energy inflation can restore household purchasing power, while infrastructure and defence spending support investment. Those are assumptions behind the ECB’s improving growth path.",
-        "能源通胀下降可能恢复家庭购买力，基建与国防支出则支持投资。这些构成欧洲央行增长路径改善的前提。"
+        "Resilient demand cushions the energy shock.",
+        "需求韧性缓冲能源冲击。"
       ],
       "upside": [
-        "If energy pressure eases as assumed and public investment reaches activity, domestic demand could carry more of the growth pickup.",
-        "若能源压力按预期缓解，公共投资转化为实际活动，内需可能为增长改善提供更多动力。"
+        "Energy relief improves growth and inflation together.",
+        "能源压力缓解有望同时改善增长与通胀。"
       ],
       "downside": [
-        "If the energy shock persists, real-income gains could be delayed while higher input costs pressure margins and slow the projected pickup.",
-        "若能源冲击持续，实际收入改善可能推迟，投入成本上升则可能压缩利润率、拖慢预期中的增长改善。"
+        "Persistent energy costs squeeze demand and margins.",
+        "能源成本持续偏高将挤压需求与利润率。"
       ],
       "watch": [
-        "Energy prices, real household incomes, investment spending and bank lending.",
-        "能源价格、家庭实际收入、投资支出与银行信贷。"
+        "Energy prices, underlying inflation and credit conditions.",
+        "能源价格、基础通胀与信贷条件。"
       ]
     },
     "GB": {
@@ -204,6 +204,40 @@
       "watch": [
         "AI export orders, production, capital spending and subsequent CBC growth revisions.",
         "AI出口订单、生产、资本支出与台湾央行后续增长预测修订。"
+      ]
+    },
+    "IN": {
+      "kind": "attributed_assessment",
+      "published": "2026-10-07",
+      "provider": "Reserve Bank of India",
+      "source_url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+      "title": [
+        "Strong demand meets renewed inflation pressure",
+        "需求强劲，通胀压力再起"
+      ],
+      "read": [
+        "Consumption and investment sustain expansion. Food and energy risks complicate disinflation; the RBI has shifted to calibrated tightening.",
+        "消费与投资支撑扩张。食品和能源风险令降通胀更复杂；印度央行已转向审慎收紧。"
+      ],
+      "theme": [
+        "Demand, inflation and policy",
+        "需求、通胀与政策"
+      ],
+      "driver": [
+        "Domestic demand sustains growth.",
+        "国内需求支撑增长。"
+      ],
+      "upside": [
+        "Easing supply pressure protects real purchasing power.",
+        "供给压力缓解将保护实际购买力。"
+      ],
+      "downside": [
+        "Broader price pressures could prolong tightening.",
+        "涨价进一步扩散可能延长收紧周期。"
+      ],
+      "watch": [
+        "Food prices, core inflation and credit.",
+        "食品价格、核心通胀与信贷。"
       ]
     }
   }

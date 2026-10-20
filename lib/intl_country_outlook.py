@@ -20,8 +20,29 @@ LABELS = {
 }
 
 
+COVERAGE_TRANSLATIONS = {
+    "General government. Sector and instrument coverage can differ across countries; this is not a sovereign-risk ranking.":
+        "政府部门。各经济体的部门与债务工具口径可能不同；这些数据不构成主权风险排名。",
+    "General government. Sector and instrument coverage can differ across countries; this is not a sovereign-risk ranking. Japan gross debt is reported on a nonconsolidated basis.":
+        "政府部门。各经济体的部门与债务工具口径可能不同；这些数据不构成主权风险排名。日本总债务采用未合并口径。",
+    "Euro-area aggregate adjusted for reporting discrepancies in intra-area transactions.":
+        "欧元区汇总数据已调整区内交易的报告差异。",
+}
+
+
 def _direction(value):
     return "up" if value > 0.15 else "down" if value < -0.15 else "steady"
+
+
+def _aligned_views(*views):
+    """Combine projections only when their source vintage and intervals match."""
+    if not views or any(not v or v.get("next_period") is None for v in views):
+        return False
+    first = views[0]
+    return all(
+        all(v.get(k) == first.get(k) for k in ("provider", "family", "edition", "information_cutoff"))
+        and all(v[p][k] == first[p][k] for p in ("current_period", "next_period") for k in ("start", "end"))
+        for v in views[1:])
 
 
 def _evidence(view, points=None):
@@ -71,6 +92,8 @@ def build_country_outlook(cc, archive, *, today, growth=None, metrics=(), market
         if selected:
             view = publication_view(selected[0], archive, today=today, operational_as_of=operational_as_of)
             view["label_en"], view["label_zh"] = LABELS[key]
+            if not view.get("coverage_note_zh"):
+                view["coverage_note_zh"] = COVERAGE_TRANSLATIONS.get(view.get("coverage_note"))
             series[key] = view
     growth = growth or series.get("real_gdp_growth")
     if growth:
@@ -79,10 +102,7 @@ def build_country_outlook(cc, archive, *, today, growth=None, metrics=(), market
     inflation = series.get("inflation_average")
     propositions, balances = [], []
     title = summary = policy = None
-    comparable = (growth and inflation and growth["next"] is not None and inflation["next"] is not None
-                  and all(growth[key] == inflation[key] for key in ("provider", "family", "edition", "information_cutoff"))
-                  and growth["current_period"]["start"] == inflation["current_period"]["start"]
-                  and growth["next_period"]["end"] == inflation["next_period"]["end"])
+    comparable = _aligned_views(growth, inflation)
     if comparable:
         gd, pi = _direction(growth["change"]), _direction(inflation["change"])
         if growth["next"] < 0:
@@ -163,9 +183,25 @@ def build_country_outlook(cc, archive, *, today, growth=None, metrics=(), market
                            ("预测赤字占GDP比率收窄，但财政仍为赤字。" if change > 0.15 else
                             "预测赤字占GDP比率扩大。" if change < -0.15 else
                             "预测赤字占GDP比率大致不变。"))
+            elif first < 0 <= second:
+                reading = (("The baseline moves from deficit to surplus." if second > 0 else
+                            "The baseline moves from deficit to a balanced budget."),
+                           ("基准预测由赤字转为盈余。" if second > 0 else "基准预测由赤字转为收支平衡。"))
+            elif first >= 0 > second:
+                reading = ("The baseline moves into deficit.", "基准预测转为财政赤字。")
+            elif first > 0 and second > 0:
+                reading = (("The projected surplus widens as a share of GDP." if change > 0.15 else
+                            "The projected surplus narrows as a share of GDP." if change < -0.15 else
+                            "The projected surplus is broadly unchanged as a share of GDP."),
+                           ("预测盈余占GDP比率扩大。" if change > 0.15 else
+                            "预测盈余占GDP比率收窄。" if change < -0.15 else
+                            "预测盈余占GDP比率大致不变。"))
             else:
-                reading = ("The balance tracks annual government revenue less spending; debt dynamics also depend on growth and financing costs.",
-                           "该收支衡量政府全年收入减支出；债务变化还取决于增长与融资成本。")
+                reading = (("The baseline moves into surplus." if second > 0 else
+                            "The baseline reaches a balanced budget." if first > 0 else
+                            "The baseline remains balanced."),
+                           ("基准预测转为财政盈余。" if second > 0 else
+                            "基准预测转为收支平衡。" if first > 0 else "基准预测维持收支平衡。"))
         else:
             reading = (("Debt rises relative to GDP in the baseline." if change > 0.15 else
                         "Debt falls relative to GDP in the baseline." if change < -0.15 else
@@ -194,13 +230,13 @@ def build_country_outlook(cc, archive, *, today, growth=None, metrics=(), market
             title = (f'Growth slows to {n:.1f}% as inflation eases', f'通胀回落，增长预计放缓至{n:.1f}%')
         elif cc == "GB":
             fb, debt = series.get("fiscal_balance"), series.get("government_debt")
-            if (fb and debt and fb["change"] is not None and debt["change"] is not None
+            if (_aligned_views(growth, inflation, fb, debt)
                     and fb["current"] < fb["next"] < 0 and debt["change"] > 0.15):
                 title = ("A smaller deficit, with the debt ratio still rising", "赤字收窄，但债务比率仍上升")
                 views.extend([fb, debt])
         elif cc == "EZ" and 0 < growth["change"] <= 0.15:
             fb = series.get("fiscal_balance")
-            if fb and fb["next"] is not None and fb["next"] < 0:
+            if _aligned_views(growth, inflation, fb) and fb["next"] < 0:
                 title = ("Growth edges up; the fiscal deficit persists", "增长小幅回升，财政赤字持续")
                 views.append(fb)
         propositions.append(_proposition(cc, "country_thesis", *title, views,

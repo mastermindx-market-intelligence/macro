@@ -54,6 +54,7 @@ owns_paths:
 - config/intl_country_baseline.json
 - config/intl_country_commentary.json
 - lib/intl_country_assessment.py
+- lib/intl_currency_observation.py
 - lib/intl_country_inputs.py
 - engine/intl_equity_risk.py
 - engine/intl_run.py
@@ -61,6 +62,8 @@ owns_paths:
 - templates/intl_country_cockpit.css
 - templates/intl_country_cockpit.js
 - tests/test_intl_country_cockpit.py
+- tests/test_intl_currency_observation.py
+- tests/fixtures/intl_currency_observations_20261020.json
 - collectors/intl_weo.py
 - collectors/intl_policy_sources.py
 - config/intl_country_releases.json
@@ -71,6 +74,7 @@ owns_paths:
 - tests/test_intl_policy_evidence.py
 - tests/test_intl_outlook_interpretation.py
 - tests/fixtures/intl_weo_october_2026_tables.json
+- tests/fixtures/intl_weo_october_2026_fiscal_api.json
 waves:
 - id: IM00
   title: Shared performance, presentation and route foundation
@@ -151,11 +155,26 @@ waves:
   - IM04
   - IM08
   - IM09
-next_action: Conclude exact-current-head hosted CI and independent release review on the original PR9596
-  carrier. Consume the genuine Sector Central reference-review repair on existing owner PR9592 and resolve
-  the unavailable Session Bridge through its owner. Then complete normal main-branch render, deployment
-  and served acceptance. Retain PR8754 and its separate rights, browser, Saved and release obligations.
+next_action: Publish the completed country-analysis, seven-bank policy, fiscal, currency and public-asset
+  increments through the original registered workspace, existing branch and native fenced publisher.
+  Original-owner evidence reconciles attempted action d07df7c6 as NOT_APPLIED; preserve its historical
+  EFFECT_UNKNOWN receipt. Qualify the real current composition and hosted CI without carrying forward
+  the withdrawn blanket Sector packet blocker. Complete genuine independent release review, the normal
+  render/updater path and real served acceptance. Retain PR8754 and its separate rights, browser, Saved
+  and release obligations.
 artifacts:
+- research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.json
+- research/paper_international_wave1_wave2/publisher_reconciliation_20261020/OWNER_RECONCILIATION_20261020.md
+- research/paper_international_wave1_wave2/publisher_reconciliation_20261020/currency_prepublication_source_snapshot.json
+- research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.md
+- research/paper_international_wave1_wave2/fx_coverage_20261020/CURRENCY_COVERAGE_20261020.json
+- research/paper_international_wave1_wave2/fx_coverage_20261020/paper_currency_coverage_receipt.json
+- research/paper_international_wave1_wave2/fx_coverage_20261020/ci_dependency_coverage.json
+- mockups/evidence/intl-currency-coverage-20261020/EVIDENCE.yml
+- research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.md
+- research/paper_international_wave1_wave2/fiscal_coverage_20261019/FISCAL_COVERAGE_20261020.json
+- research/paper_international_wave1_wave2/fiscal_coverage_20261019/paper_fiscal_coverage_receipt.json
+- mockups/evidence/intl-fiscal-coverage-20261020/EVIDENCE.yml
 - research/paper_international_wave1_wave2/CI_INTEGRATION_R12_20261019.json
 - research/paper_international_wave1_wave2/RELEASE_PATH_R12_20261019.md
 - mockups/evidence/intl-country-r12/EVIDENCE.yml
@@ -245,3 +264,49 @@ The same-carrier follow-up is prepared against published R12 parent `88b6f192c3e
 The original controller is inlined by the real template; the separate-asset hypothesis was disproved. The real HTML writer and opt-in script externalizer preserve it, and the fresh build/public-HTML selection passes ten cases. No access-policy or Caddy change is made. The existing collector and builder call chain was traced through actual country-input publication and incumbent market records. The paired shared-theme output is byte-identical to its source. Real Chrome computed-style comparisons match all 3,168 country-cockpit elements across both themes at rest, hover and focus. Canonical capture gaps and fixture-only failures remain disclosed in its receipt.
 
 The release dependency is now precise: original Sector Central owner PR9592/comment6248814344, updated 04:40:45Z, requires genuine Full RIG approval for all three October migration packets. Its inherited-base classification does not release dependent CI. Session discovery separately returns backend_unavailable because the installed Session Bridge owner is unavailable; no formal reviewer was dispatched. These are not waived by native principal advice or by local proof. Current source, proof identities, ordinary render path and remaining real deployment edge are bound in the CI integration receipt and release-path document. Production remains unproven, and the original carrier remains unarmed pending concluded binding gates.
+
+
+## 2026-10-19 — seven-bank policy coverage, Paper update and preserved release fence
+
+The original International writer completed the next country-analysis increment in this same workspace without advancing frozen local HEAD `11c83bb5dfb0c8199a0fb0cb2c6e70452c724984`. Five newly qualified bank decisions extend policy coverage from GB/TW to all seven economies. Eleven primary/support documents were acquired over normal TLS with HTTP 200 and byte hashes. The real collector/normalizer/input/assessment/build path now preserves instrument and date semantics, supporting evidence, Japan's around qualifier, correction and withdrawal state, and separately qualified future announcements. All three final principal defects were fixed after seven regression failures demonstrated them. GB/TW identities and the 37-record forecast archive remain preserved.
+
+Fresh verification passes 263 affected-suite tests and 10 normal build/public-HTML tests; two existing Chrome.app cleanup warnings remain disclosed in each run. Real Chrome passes 12 canonical rest states, 84 country/state checks and two history journeys with no page exceptions or visible policy overflow. Design and visual-evidence gates pass on the working-tree delta. The original HTML bytes remain bound by the browser receipt, with the two integrated snapshots stored losslessly as gzip evidence. All access/degraded-state gaps and fixture request failures remain disclosed.
+
+Paper file `01M3P1TW5Y3XWQC37ADDS8K5AG`, page `p-G-0`, now has four revised country headlines and expanded Korea policy sections on the four desktop/mobile/theme boards. Fourteen native effects and final finish were observed applied; 16 headline readbacks passed, with four real JSX extractions and three saved native images. The original R12 receipt is preserved and a separate update receipt records this scope. The new Australia Article IV fiscal candidate is not admitted: original-byte acquisition returned HTTP 403 and table/debt-definition qualification remains incomplete.
+
+Evidence and the implementation report are under `research/paper_international_wave1_wave2/policy_coverage_20261019/`. The earlier nine-asset Caddy/site-access repair remains unchanged against its tested three source-file hashes and immutable receipt. Last observed remote PR9596 head remains `88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4`, draft. The original push action `d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56` remains `EFFECT_UNKNOWN / PUSH_RESULT_UNCERTAIN`; current refs do not resolve it. No commit, push replay, alternate publisher, Ready, merge, deploy or restart was performed. Original-owner resolution, actual combined-head CI/review, normal render/updater adoption and real anonymous served acceptance remain required. No watcher or background release action is armed.
+
+
+## 2026-10-20 — fiscal coverage, completed Paper parity and currency frontier
+
+The same International writer admitted eight qualified October WEO fiscal records for KR/TW/IN/AU at 2026-10-19T23:39:17.696032Z. All seven countries now have current-account, government-balance and gross-debt paths. Two original IMF API responses returned HTTP 200 and remain byte-bound. The source's September30 information cutoff replaces the earlier October1 metadata through 28 explicit corrections; all 37 prior archive records, official observations and seven-bank policy records remain intact. The archive now has 73 records. India retains April–March fiscal-year labels, and country-specific government coverage/accounting is exposed in EN/ZH.
+
+The ordinary collector, forecast archive and assessment path own the changes. Refresh recognition preserves accepted correction identities and withdrawal state. Joint interpretation requires aligned vintages and periods. Partial withdrawals now change the visible section heading and missing-data note correctly. A real 320px source-disclosure overflow was fixed with min-width:0 on the country grid item.
+
+Final verification passes 208 selected Python/build/public-HTML checks, 84/84 country-browser checks, 12 canonical captures and two history journeys with zero page exceptions. Existing design and visual-evidence gates pass; two existing Chrome.app cleanup warnings and all anonymous fixture limitations remain disclosed. Market observations retain the October15 replay clock.
+
+Paper R12 page p-G-0 has complete fiscal parity on all six existing boards. Fifty-six text checks and sixteen style checks pass. Seven operations including finish were observed applied. Six original responses are retained; one layer-name effect was reconstructed through twelve native name readbacks after an app-context refresh lost its unsaved response, without mutation replay. Six native screenshots and six JSX exports are retained. Taiwan's light-theme contrast defect was corrected and recaptured.
+
+The new report, source acquisition/admission, Paper receipts, browser proof, unchanged asset hashes and file fingerprints are under fiscal_coverage_20261019. The 20 October 01:52 UTC same-carrier recovery check found no new original-action resolution. Frozen local HEAD 11c83bb and remote PR9596 head 88b6f19 remain different. Original push d07df7c6 remains EFFECT_UNKNOWN / PUSH_RESULT_UNCERTAIN; no commit, retry, alternate publisher, Ready, merge, deploy or restart followed. Root continues the bounded investigation of missing currency observations through the existing feed while the original publisher owner remains the release dependency.
+
+
+## Currency coverage completion — 20 October 2026 UTC
+
+The existing-feed investigation is complete. Seven original Yahoo Finance daily histories qualify dated currency-versus-USD returns through 19 October. The normal engine assembles the same display contract from its existing FX store; the assessment verifies it. Exact inverse quote math, three-calendar-month references, independent equity/currency clocks, acquired-response cutoffs and current/dated/missing behavior are implemented. No canonical FX store was populated by the retained-response qualification. The legacy regime strength calculation and collector remain unchanged.
+
+The final selected Python run passed 298 cases, including 80 currency cases. The final browser matrix passed 84 country states, eight explicit ageing controls and both history journeys, with no JavaScript page exceptions. Both caption breakpoints were repaired, and 84 computed-font checks pass. Twelve canonical states are captured. Existing design and visual-evidence gates pass. Six currency Paper effects retain their original observed responses; 20 text, 12 style and four order checks pass across the four overview boards. The unchanged fiscal parent covers the two detail boards.
+
+Canonical current-working-tree CI inference returned zero uncovered import closures and zero unwired suites. All seven engine scopes include the helper, and the foundation job enrolls the new test and fixture. This proof is separate from hosted combined-source contract-delta. The fiscal checkpoint and exact 13-source snapshot, 73-record forecast archive, policy admissions and three public-asset repair hashes retain their prior custody.
+
+The new report and checksum checkpoint bind source, retained responses, browser evidence, Paper originals and lossless HTML. The original uncertain publication action remains unresolved; local HEAD is frozen at 11c83bb and the last observed Draft PR9596 remote head is 88b6f192. No commit, push replay, alternate publisher, Ready transition, merge, deploy or restart was performed. Release continues through the owners and gates named in the current next action.
+
+
+## 2026-10-20 — original publication reconciled and integration requirements corrected
+
+The original owner reconciled attempted push d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56 as NOT_APPLIED at 07:30Z. Its original EFFECT_UNKNOWN receipt remains unchanged. The actual C2 Personal installed generation and original session-tagged completion log were verified, followed by a scoped process check with zero original-workspace Git/helper matches and no unresolved working directories. Subsequent canonical exact-ref all-activity history contained only the two earlier branch events and no pagination; GitHub explicitly reported the expected 11c83bb commit absent. A fresh native status retained local11c83bb/remote88b6f19. Independent principal review found no remaining evidence defect. This is an original-owner adjudication, not a fabricated native publisher result. No runtime migration, restart, alternate publisher or force push was used.
+
+The suspected GDP Q4 label was disproved against the retained assessment, generated HTML and controller: Korea is tagged 2026-04 and the template preserves that string. No future-quarter value or period formatter defect was established, and no speculative data edit was made.
+
+The original Sector owner updated PR9592/comment6248814344 at 07:19:18Z. Its material correction, independently checked against canonical de-admission source at main13e098071ab2799c41a170d21ad522f751dfb15a, withdraws the three unreleased October proposal packets from admitted migration scope while preserving their exact candidate blobs. Their historical global RIG failures are not a blanket International release dependency after genuine current-source composition and CI. Actual Sector consuming-build Full RIG, International independent review, normal CI, rights/access and served product gates remain intact.
+
+All 164 currency checkpoint fingerprints were verified unchanged before this status update. Its 19 source, test, CI, tracker and preview/capture files are archived at currency_prepublication_source_snapshot.tar.gz with exact per-file identities; the original currency checkpoint, fiscal parent and browser/Paper evidence remain historical proof for those exact bytes. Source publication continues in the existing International branch and PR9596.

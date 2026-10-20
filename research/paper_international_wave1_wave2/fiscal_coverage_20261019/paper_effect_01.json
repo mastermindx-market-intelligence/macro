@@ -1,0 +1,103 @@
+{
+  "schema": "mastermind.intl_paper_fiscal_effect.v1",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "operation_id": "intl-country-cockpit-20261018-fiscal-paper-text-20261019",
+  "tool": "set_text_content",
+  "arguments": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "updates": [
+      {
+        "nodeId": "DOS-0",
+        "textContent": "13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "E2P-0",
+        "textContent": "13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "EBI-0",
+        "textContent": "13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "EIK-0",
+        "textContent": "13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "DR9-0",
+        "textContent": "IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "E0Y-0",
+        "textContent": "IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "E9R-0",
+        "textContent": "IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "EGT-0",
+        "textContent": "IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep"
+      },
+      {
+        "nodeId": "EOA-0",
+        "textContent": "External & fiscal position"
+      },
+      {
+        "nodeId": "EOS-0",
+        "textContent": "External & fiscal position"
+      },
+      {
+        "nodeId": "EPA-0",
+        "textContent": "External & fiscal position"
+      },
+      {
+        "nodeId": "EPS-0",
+        "textContent": "External & fiscal position"
+      },
+      {
+        "nodeId": "EOB-0",
+        "textContent": "% GDP · FORECAST"
+      },
+      {
+        "nodeId": "EOT-0",
+        "textContent": "% GDP · FORECAST"
+      },
+      {
+        "nodeId": "EPB-0",
+        "textContent": "% GDP · FORECAST"
+      },
+      {
+        "nodeId": "EPT-0",
+        "textContent": "% GDP · FORECAST"
+      },
+      {
+        "nodeId": "ESX-0",
+        "textContent": "2026 → 2027 · % GDP · Forecast"
+      },
+      {
+        "nodeId": "ETI-0",
+        "textContent": "IMF October outlook ↗ · Published 13 Oct 2026 · Information through 30 Sep"
+      }
+    ]
+  },
+  "expected_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "state": "APPLIED_RESPONSE_OBSERVED",
+  "retry_allowed": false,
+  "before_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "after_snapshot": "f30219933163994b44569fd5449921bb0e363312162e02f723dfdf1fcc13a7f7",
+  "observed_at": "2026-10-20T01:41:24.242Z",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"file\": {\n    \"id\": \"01M3P1TW5Y3XWQC37ADDS8K5AG\",\n    \"name\": \"International Markets · R10 · Current Build\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"501cd923\"\n  }\n}"
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"DOS-0\",\n      \"textContent\": \"13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"E2P-0\",\n      \"textContent\": \"13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"EBI-0\",\n      \"textContent\": \"13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"EIK-0\",\n      \"textContent\": \"13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"DR9-0\",\n      \"textContent\": \"IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"E0Y-0\",\n      \"textContent\": \"IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"E9R-0\",\n      \"textContent\": \"IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"EGT-0\",\n      \"textContent\": \"IMF ↗ · Published 13 Oct 2026 · Information through 30 Sep\"\n    },\n    {\n      \"nodeId\": \"EOA-0\",\n      \"textContent\": \"External & fiscal position\"\n    },\n    {\n      \"nodeId\": \"EOS-0\",\n      \"textContent\": \"External & fiscal position\"\n    },\n    {\n      \"nodeId\": \"EPA-0\",\n      \"textContent\": \"External & fiscal position\"\n    },\n    {\n      \"nodeId\": \"EPS-0\",\n      \"textContent\": \"External & fiscal position\"\n    },\n    {\n      \"nodeId\": \"EOB-0\",\n      \"textContent\": \"% GDP · FORECAST\"\n    },\n    {\n      \"nodeId\": \"EOT-0\",\n      \"textContent\": \"% GDP · FORECAST\"\n    },\n    {\n      \"nodeId\": \"EPB-0\",\n      \"textContent\": \"% GDP · FORECAST\"\n    },\n    {\n      \"nodeId\": \"EPT-0\",\n      \"textContent\": \"% GDP · FORECAST\"\n    },\n    {\n      \"nodeId\": \"ESX-0\",\n      \"textContent\": \"2026 → 2027 · % GDP · Forecast\"\n    },\n    {\n      \"nodeId\": \"ETI-0\",\n      \"textContent\": \"IMF October outlook ↗ · Published 13 Oct 2026 · Information through 30 Sep\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "tool_publication_drift": "Stale file-exclusive/focus wording; protected current procedure and live binding admit target-scoped multi-writer explicit-file operations."
+}

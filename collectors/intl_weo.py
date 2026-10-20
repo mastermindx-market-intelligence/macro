@@ -15,7 +15,7 @@ from lib.intl_forecast_vintages import normalize_publication
 
 WEO_OCTOBER_2026 = {
     "provider": "IMF", "family": "WEO", "edition": "2026-10",
-    "published": "2026-10-13", "information_cutoff": "2026-10-01",
+    "published": "2026-10-13", "information_cutoff": "2026-09-30",
     "source_url": "https://www.imf.org/en/publications/weo/issues/2026/10/13/world-economic-outlook-october-2026",
     "dataset_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/tablea.pdf",
     "documentation_url": "https://www.imf.org/-/media/files/publications/weo/2026/october/english/statsappendix.pdf",
@@ -204,10 +204,13 @@ def collect_registered_weo(fetch_bytes, *, releases, retrieved_at):
         if published > day:
             continue
         try:
-            if release.get("format") != "weo_statistical_tables":
+            parsers = {"weo_statistical_tables": parse_weo_statistical_tables,
+                       "weo_fiscal_datamapper": parse_weo_fiscal_datamapper}
+            parser = parsers.get(release.get("format"))
+            if parser is None:
                 raise ValueError("unsupported_registered_weo_format")
             blob = fetch_bytes(release["dataset_url"], max_bytes=release["max_bytes"])
-            parsed = parse_weo_statistical_tables(blob, release=release, retrieved_at=retrieved_at)
+            parsed = parser(blob, release=release, retrieved_at=retrieved_at)
             records.extend(parsed)
             sources.append({"provider": "IMF", "edition": release["edition"],
                             "published": release["published"], "information_cutoff": release["information_cutoff"],
@@ -218,3 +221,117 @@ def collect_registered_weo(fetch_bytes, *, releases, retrieved_at):
                            "detail": str(exc)[:180], "published": release["published"],
                            "source_url": release["source_url"], "status": "new_release_not_verified"})
     return {"forecast_archive": records, "sources": sources, "errors": errors}
+
+# DataMapper is a transport for the same WEO edition, not a second forecaster.
+# Only the four missing fiscal economies are admitted from this route. The API
+# currently returns a wider panel even when country/period filters are requested.
+FISCAL_ECONOMIES = {
+    "KOR": ("KR", 1, "CG_LG_SS:accrual",
+            "Central and local government, including social security funds; accrual basis. The overall balance differs from Korea's managed fiscal balance.",
+            "中央与地方政府，含社会保障基金；权责发生制。整体收支不同于韩国的管理财政收支。"),
+    "TWN": ("TW", 1, "CG_LG:cash",
+            "Central and local government; cash basis. General-government coverage is not the whole public sector.",
+            "中央与地方政府；现金收付制。政府部门口径不等于整个公共部门。"),
+    "IND": ("IN", 4, "CG_SG:cash",
+            "Central and state governments; cash basis, April–March fiscal years. This is not the central government's budget deficit target.",
+            "中央与邦政府；现金收付制，财年为4月至次年3月。该口径不同于中央政府预算赤字目标。"),
+    "AUS": ("AU", 1, "CG_SG_LG:accrual",
+            "Central, state and local government; accrual basis. WEO reports calendar years here, distinct from Australian July–June budget years.",
+            "中央、州及地方政府；权责发生制。此处WEO采用自然年，与澳大利亚7月至次年6月的预算财年不同。"),
+}
+FISCAL_INDICATORS = {
+    "GGXCNL_NGDP": ("fiscal_balance", "General government net lending/borrowing"),
+    "GGXWDG_NGDP": ("government_debt", "General government gross debt"),
+}
+WEO_DATABASE_DOCUMENTATION = (
+    "https://data.imf.org/-/media/iData/External-Storage/Documents/"
+    "C4182C5C54794FC48892DE8F6C74FF82/en/October-2026-WEO-Database-Appendix.pdf"
+)
+WEO_FISCAL_RELEASES = [
+    {**WEO_OCTOBER_2026, "format": "weo_fiscal_datamapper",
+     "parser_version": "weo_fiscal_datamapper_v1", "max_bytes": 2_000_000,
+     "dataset_url": "https://www.imf.org/external/datamapper/api/v2/" + indicator
+                    + "/KOR/TWN/IND/AUS?periods=2026,2027",
+     "documentation_url": WEO_DATABASE_DOCUMENTATION,
+     "indicator_id": indicator}
+    for indicator in FISCAL_INDICATORS
+]
+
+
+def _unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("weo_datamapper_duplicate_key")
+        result[key] = value
+    return result
+
+
+def _invalid_json_number(value):
+    raise ValueError("weo_datamapper_nonfinite_number")
+
+
+def parse_weo_fiscal_datamapper(blob, *, release, retrieved_at):
+    """Validate edition, measure, government coverage and exact annual periods."""
+    import json
+    import math
+
+    if type(release) is not dict:
+        raise ValueError("unregistered_weo_fiscal_contract")
+    indicator = release.get("indicator_id")
+    registered = next((r for r in WEO_FISCAL_RELEASES if r["indicator_id"] == indicator), None)
+    if registered is None or any(release.get(k) != v for k, v in registered.items()):
+        raise ValueError("unregistered_weo_fiscal_contract")
+    if not isinstance(blob, bytes) or not 0 < len(blob) <= registered["max_bytes"]:
+        raise ValueError("weo_datamapper_size_or_format")
+    try:
+        data = json.loads(blob, object_pairs_hook=_unique_json_object,
+                          parse_constant=_invalid_json_number)
+    except (UnicodeError, ValueError) as exc:
+        raise ValueError("weo_datamapper_invalid_json") from exc
+    if type(data) is not dict or data.get("api") != {"version": "2", "output-method": "json"}:
+        raise ValueError("weo_datamapper_api_changed")
+    indicators, values = data.get("indicators"), data.get("values")
+    if (type(indicators) is not dict or set(indicators) != {indicator}
+            or type(values) is not dict or indicator not in values
+            or set(values) - {indicator, ""} or values.get("") is not None):
+        # Original v2 responses include an unnamed null series. Only that
+        # observed null placeholder is harmless; another measure is not.
+        raise ValueError("weo_datamapper_measure_changed")
+    metadata = indicators[indicator]
+    series_id, label = FISCAL_INDICATORS[indicator]
+    expected = {"label": label, "source": "World Economic Outlook (October 2026)",
+                "dataset": "WEO", "unit": "Percent of GDP", "projection-year": 2026}
+    if (type(metadata) is not dict or any(metadata.get(k) != v for k, v in expected.items())
+            or type(metadata.get("projection-year")) is not int):
+        raise ValueError("weo_datamapper_edition_or_unit_changed")
+    # The server's last-modified field is transport metadata. It never becomes
+    # the publication date, statistical cutoff or first observation clock.
+    panel = values[indicator]
+    if type(panel) is not dict:
+        raise ValueError("weo_datamapper_missing_panel")
+    records = []
+    for iso, (cc, month, coverage, note_en, note_zh) in FISCAL_ECONOMIES.items():
+        row = panel.get(iso)
+        if type(row) is not dict:
+            raise ValueError("weo_datamapper_country_missing:" + cc)
+        selected = {year: row.get(year) for year in ("2026", "2027")}
+        if any(type(v) not in (int, float) or not math.isfinite(v) for v in selected.values()):
+            raise ValueError("weo_datamapper_period_missing_or_invalid:" + cc)
+        basis = "fiscal_year" if month != 1 else "calendar_year"
+        raw = {**registered, "cc": cc, "series_id": series_id, "kind": "sourced_forecast",
+               "unit": "percent_gdp", "period_basis": basis, "fiscal_start_month": month,
+               "definition_id": indicator + ":general_government:" + coverage + ":" + basis,
+               "values": selected, "actual_through": None, "precision": 1,
+               "coverage_note": note_en, "coverage_note_zh": note_zh,
+               "source_sha256": sha256(blob).hexdigest(),
+               "source_row_sha256": sha256(json.dumps(
+                   {"indicator": indicator, "economy": iso, "values": selected},
+                   sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
+               "source_table": "DataMapper · " + indicator,
+               "retrieved_at": retrieved_at}
+        record = normalize_publication(raw, observed_at=retrieved_at)
+        if record is None:
+            raise ValueError("weo_datamapper_admission_failed:" + cc)
+        records.append(record)
+    return records

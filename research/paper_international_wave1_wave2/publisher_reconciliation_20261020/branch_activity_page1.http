@@ -1,0 +1,29 @@
+HTTP/2.0 200 OK
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset, Warning
+Cache-Control: private, max-age=60, s-maxage=60
+Content-Security-Policy: default-src 'none'
+Content-Type: application/json; charset=utf-8
+Date: Tue, 20 Oct 2026 07:15:40 GMT
+Etag: W/"217bb9b15d92af691a38cd4733ac5c454bbe0110faea8b129ce7d944c2feb9f2"
+Referrer-Policy: origin-when-cross-origin, strict-origin-when-cross-origin
+Server: github.com
+Strict-Transport-Security: max-age=31536000; includeSubdomains; preload
+Vary: Accept, Authorization, Cookie, X-GitHub-OTP,Accept-Encoding, Accept, X-Requested-With
+X-Accepted-Oauth-Scopes: 
+X-Content-Type-Options: nosniff
+X-Frame-Options: deny
+X-Github-Api-Version-Selected: 2022-11-28
+X-Github-Edge-Region: sea
+X-Github-Media-Type: github.v3; format=json
+X-Github-Request-Id: C156:31BF03:10D469:192397:6AD7151C
+X-Oauth-Client-Id: 178c6fc778ccc68e1d6a
+X-Oauth-Scopes: gist, read:org, repo, workflow
+X-Ratelimit-Limit: 5000
+X-Ratelimit-Remaining: 4476
+X-Ratelimit-Reset: 1792481378
+X-Ratelimit-Resource: core
+X-Ratelimit-Used: 524
+X-Xss-Protection: 0
+
+[{"id":46952872284,"node_id":"PSH_kwLOS4LjIs8AAAAK7pv5XA","before":"9eb408279e7ea8de99a667e296c4b0ddebfd799b","after":"88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4","ref":"refs/heads/sol/web-intl-country-cockpit-20261018","timestamp":"2026-10-19T01:32:48Z","activity_type":"push","actor":{"login":"mastermindxryan","id":333722846,"node_id":"U_kgDOE-Q03g","avatar_url":"https://avatars.githubusercontent.com/u/333722846?v=4","gravatar_id":"","url":"https://api.github.com/users/mastermindxryan","html_url":"https://github.com/mastermindxryan","followers_url":"https://api.github.com/users/mastermindxryan/followers","following_url":"https://api.github.com/users/mastermindxryan/following{/other_user}","gists_url":"https://api.github.com/users/mastermindxryan/gists{/gist_id}","starred_url":"https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/mastermindxryan/subscriptions","organizations_url":"https://api.github.com/users/mastermindxryan/orgs","repos_url":"https://api.github.com/users/mastermindxryan/repos","events_url":"https://api.github.com/users/mastermindxryan/events{/privacy}","received_events_url":"https://api.github.com/users/mastermindxryan/received_events","type":"User","user_view_type":"public","site_admin":false}},{"id":46894447974,"node_id":"PSH_kwLOS4LjIs8AAAAK6yB9Zg","before":"0000000000000000000000000000000000000000","after":"9eb408279e7ea8de99a667e296c4b0ddebfd799b","ref":"refs/heads/sol/web-intl-country-cockpit-20261018","timestamp":"2026-10-18T10:38:06Z","activity_type":"branch_creation","actor":{"login":"mastermindxryan","id":333722846,"node_id":"U_kgDOE-Q03g","avatar_url":"https://avatars.githubusercontent.com/u/333722846?v=4","gravatar_id":"","url":"https://api.github.com/users/mastermindxryan","html_url":"https://github.com/mastermindxryan","followers_url":"https://api.github.com/users/mastermindxryan/followers","following_url":"https://api.github.com/users/mastermindxryan/following{/other_user}","gists_url":"https://api.github.com/users/mastermindxryan/gists{/gist_id}","starred_url":"https://api.github.com/users/mastermindxryan/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/mastermindxryan/subscriptions","organizations_url":"https://api.github.com/users/mastermindxryan/orgs","repos_url":"https://api.github.com/users/mastermindxryan/repos","events_url":"https://api.github.com/users/mastermindxryan/events{/privacy}","received_events_url":"https://api.github.com/users/mastermindxryan/received_events","type":"User","user_view_type":"public","site_admin":false}}]

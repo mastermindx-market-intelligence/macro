@@ -14,6 +14,7 @@ import json
 from urllib.parse import urlparse
 from lib.intl_forecast_vintages import merge_publications, select_publications, publication_view
 from lib.intl_country_outlook import build_country_outlook
+from lib.intl_currency_observation import currency_observation_view
 from lib.intl_policy_evidence import INSTRUMENTS, select_policy_decision
 
 SCHEMA = "intl_country_assessment.v1"
@@ -245,15 +246,16 @@ def _market(record, today):
         state = "unknown"
     dd = _number(equity.get("off_52w_high"))
     dd = dd if current and dd is not None and -100 <= dd <= 0 else None
-    fx_date = _mapping(record.get("macro_asof")).get("fx_strength_3m")
-    fx_current = _fresh(fx_date, today, 14)
-    fx = _number(_mapping(record.get("macro")).get("fx_strength_3m")) if fx_current else None
+    currency = currency_observation_view(record.get("currency_observation"), record.get("cc"), today=today)
+    fx_date = currency["end_date"]
+    fx = currency["value"]
     en, zh, tone = STATES[state]
     window = equity.get("high_window_observations")
     window = window if type(window) is int and 60 <= window <= 252 else None
     return {"state": state, "label_en": en, "label_zh": zh, "tone": tone,
             "as_of": observed, "current": current, "above_50d": fast,
             "above_200d": slow, "drawdown": dd, "fx_3m": fx, "fx_as_of": fx_date,
+            "currency_observation": currency,
             "high_window_observations": window,
             "high_window_start": equity.get("high_window_start")}
 
@@ -313,9 +315,13 @@ def _world_brief(countries, archive, today):
         reading = (f'{f["provider"]} projects {f["current"]:.1f}% growth in {f["year"]} and {f["next"]:.1f}% in {f["next_year"]}.',
                    f'{f["provider"]}预计{f["year"]}年全球增长{f["current"]:.1f}%，{f["next_year"]}年为{f["next"]:.1f}%。')
     mechanism = None
-    if f["record_id"] == "71d3f4c854d8671a3f19:dfd4f47c95806d555157:0":
-        # This reviewed narrative is bound to the exact admitted world series.
-        # A corrected or later release needs review before inheriting it.
+    if f["record_id"] in {
+        "71d3f4c854d8671a3f19:dfd4f47c95806d555157:0",
+        "71d3f4c854d8671a3f19:5cb54ee7064816010341:1",
+    }:
+        # Both reviewed identities have exactly the same forecast values. The
+        # second corrects our information-cutoff metadata to September 30.
+        # Changed values or a later release still require a new narrative review.
         mechanism = ("AI investment supports technology supply chains; expensive energy weighs on purchasing power. Countries can face both forces.",
                      "AI投资支持科技供应链；高能源成本削弱购买力。同一经济体可能同时受到两股力量影响。")
     return {"title_en": title[0], "title_zh": title[1], "read_en": reading[0], "read_zh": reading[1],
@@ -326,9 +332,9 @@ def _world_brief(countries, archive, today):
             "current": f["current"], "next": f["next"]}
 
 
-def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None, forecast_archive=None, policy_decisions=None):
+def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None, forecast_archive=None, policy_decisions=None, policy_reviews=None):
     """Build a deterministic, non-mutating view from a single publication input."""
-    today = today or date.today()
+    today = today or datetime.now(timezone.utc).date()
     if type(today) is not date or type(latest) is not dict:
         raise ValueError("invalid_country_assessment_input")
     records = latest.get("records")
@@ -356,7 +362,8 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
         record = by_cc[cc]
         market = _market(record, today)
         forecast = _forecast(forecasts.get(cc), cc, today, archive)
-        policy = select_policy_decision(policy_decisions, cc, today=today, monthly=_mapping(official.get(cc)).get("policy"))
+        policy = select_policy_decision(policy_decisions, cc, today=today, monthly=_mapping(official.get(cc)).get("policy"),
+                                        review_events=policy_reviews)
         metrics = [_metric(key, record, official.get(cc, {}), today)
                    for key in ("gdp", "inflation", "policy", "unemployment")]
         title_en, title_zh, read_en, read_zh = _headlines(cc, forecast, metrics)
@@ -376,9 +383,11 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
         same_policy_bank = policy and research_ok and (
             policy["provider"] == research["provider"] or research_host == policy_host or
             research_host.endswith("." + policy_host))
+        policy_publication = max(policy["published"],
+                                 _mapping(policy.get("announced")).get("published", policy["published"])) if policy else None
         if (research_ok and policy and (
-                policy["published"] > research["published"] or
-                (policy["state"] == "conflict" and same_policy_bank))):
+                policy_publication > research["published"] or
+                (policy["state"] in ("conflict", "review_required") and same_policy_bank))):
             research_ok = False
         if research_ok:
             for key in ("theme", "driver", "upside", "downside", "watch", "title", "read"):

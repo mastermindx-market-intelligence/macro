@@ -254,3 +254,192 @@ def test_pdf_schema_drift_cannot_silently_change_the_measure(change):
     with pytest.raises(ValueError, match="weo_"):
         parse_weo_table_texts(data["tables"], release=WEO_OCTOBER_2026,
                              retrieved_at=NOW, source_sha256=data["source_sha256"])
+
+
+def fiscal_fixture(indicator="GGXCNL_NGDP"):
+    data = json.loads((ROOT / "tests/fixtures/intl_weo_october_2026_fiscal_api.json").read_text())
+    return deepcopy(data["responses"][indicator])
+
+
+def fiscal_parse(payload=None, indicator="GGXCNL_NGDP", **kwargs):
+    from collectors.intl_weo import parse_weo_fiscal_datamapper, WEO_FISCAL_RELEASES
+    release = deepcopy(next(r for r in WEO_FISCAL_RELEASES if r["indicator_id"] == indicator))
+    return parse_weo_fiscal_datamapper(
+        json.dumps(payload if payload is not None else fiscal_fixture(indicator)).encode(),
+        release=release, retrieved_at=kwargs.get("retrieved_at", NOW))
+
+
+def test_fiscal_api_projects_only_the_qualified_economies_and_periods():
+    balances = {r["cc"]: r for r in fiscal_parse()}
+    debt = {r["cc"]: r for r in fiscal_parse(indicator="GGXWDG_NGDP")}
+    assert set(balances) == set(debt) == {"KR", "TW", "IN", "AU"}
+    assert {cc: r["values"] for cc, r in balances.items()} == {
+        "KR": {"2026": -1.3, "2027": 1.4}, "TW": {"2026": 0.3, "2027": 0.3},
+        "IN": {"2026": -7.5, "2027": -7.2}, "AU": {"2026": -3.2, "2027": -3.0}}
+    assert {cc: r["values"] for cc, r in debt.items()} == {
+        "KR": {"2026": 47.3, "2027": 46.2}, "TW": {"2026": 21.1, "2027": 20.0},
+        "IN": {"2026": 83.1, "2027": 81.3}, "AU": {"2026": 52.6, "2027": 53.2}}
+    india = balances["IN"]["periods"][0]
+    assert (india["label"], india["start"], india["end"]) == (
+        "FY2026/27", "2026-04-01", "2027-03-31")
+    assert balances["AU"]["periods"][0]["start"] == "2026-01-01"
+    for r in [*balances.values(), *debt.values()]:
+        assert r["family"] == "WEO" and r["information_cutoff"] == "2026-09-30"
+        assert r["published"] == "2026-10-13" and r["actual_through"] is None
+        assert all(p["status"] == "projection" for p in r["periods"])
+        assert r["coverage_note_zh"] and len(r["source_sha256"]) == 64
+
+
+@pytest.mark.parametrize("key,value", [
+    ("source", "Fiscal Monitor (October 2026)"), ("source", "World Economic Outlook (April 2027)"),
+    ("unit", "Billions of national currency"), ("dataset", "FM"),
+    ("label", "General government net debt"), ("projection-year", 2025)])
+def test_fiscal_api_rejects_a_different_edition_or_measure(key, value):
+    p = fiscal_fixture()
+    p["indicators"]["GGXCNL_NGDP"][key] = value
+    with pytest.raises(ValueError, match="edition_or_unit"):
+        fiscal_parse(p)
+
+
+@pytest.mark.parametrize("value", [None, True, "0.3", float("nan"), float("inf"), [], -2001])
+def test_fiscal_api_does_not_turn_invalid_cells_into_zero(value):
+    p = fiscal_fixture()
+    p["values"]["GGXCNL_NGDP"]["TWN"]["2027"] = value
+    with pytest.raises(ValueError):
+        fiscal_parse(p)
+
+
+def test_fiscal_api_missing_year_or_economy_fails_qualification():
+    for economy, year in [("IND", "2027"), ("KOR", None)]:
+        p = fiscal_fixture()
+        if year:
+            p["values"]["GGXCNL_NGDP"][economy].pop(year)
+        else:
+            p["values"]["GGXCNL_NGDP"].pop(economy)
+        with pytest.raises(ValueError):
+            fiscal_parse(p)
+
+
+def test_fiscal_api_rejects_duplicate_json_keys():
+    from collectors.intl_weo import parse_weo_fiscal_datamapper, WEO_FISCAL_RELEASES
+    payload = json.dumps(fiscal_fixture()).replace('"2026": -1.3', '"2026": 0, "2026": -1.3')
+    with pytest.raises(ValueError, match="invalid_json"):
+        parse_weo_fiscal_datamapper(payload.encode(), release=WEO_FISCAL_RELEASES[0], retrieved_at=NOW)
+
+
+def test_failed_fiscal_source_preserves_accepted_country_data_and_other_source():
+    from collectors.intl_weo import collect_registered_weo, WEO_FISCAL_RELEASES
+    previous = admit(fiscal_parse() + fiscal_parse(indicator="GGXWDG_NGDP"))
+    def fetch(url, **kwargs):
+        if "/GGXCNL_NGDP/" in url:
+            raise OSError("source unavailable")
+        return json.dumps(fiscal_fixture("GGXWDG_NGDP")).encode()
+    result = collect_registered_weo(fetch, releases=WEO_FISCAL_RELEASES, retrieved_at=NOW)
+    assert len(result["errors"]) == 1 and len(result["forecast_archive"]) == 4
+    merged, diagnostics = merge_publications(previous, result["forecast_archive"], observed_at=NOW)
+    assert diagnostics == [] and merged == previous
+
+
+def corrected_cutoff_archive():
+    old = raw(information_cutoff="2026-10-01")
+    original = admit([old])
+    fix = {**old, "information_cutoff": "2026-09-30", "correction_sequence": 1,
+           "supersedes_record_id": original[0]["record_id"],
+           "correction_source_url": WEO_OCTOBER_2026["documentation_url"]}
+    return old, admit([fix], original, now="2026-10-19T12:00:00+00:00")
+
+
+def test_corrected_cutoff_keeps_old_replay_and_identical_refresh_custody():
+    old, archive = corrected_cutoff_archive()
+    before = select_publications(archive, "KR", operational_as_of=NOW)[0]
+    after = select_publications(archive, "KR", operational_as_of="2026-10-19T13:00:00+00:00")[0]
+    assert before["information_cutoff"] == "2026-10-01"
+    assert after["information_cutoff"] == "2026-09-30"
+    refresh = {**old, "information_cutoff": "2026-09-30"}
+    merged, diagnostics = merge_publications(archive, [refresh], observed_at="2026-10-19T14:00:00+00:00")
+    assert diagnostics == [] and merged == archive
+    assert after["first_observed_at"] == "2026-10-19T12:00:00+00:00"
+
+
+def test_refresh_withdrawal_keeps_real_corrected_identity_and_cannot_backdate():
+    old, archive = corrected_cutoff_archive()
+    withdrawal = {**old, "information_cutoff": "2026-09-30",
+                  "withdrawn_at": "2026-10-19T12:30:00+00:00",
+                  "withdrawal_source_url": WEO_OCTOBER_2026["source_url"]}
+    merged, diagnostics = merge_publications(archive, [withdrawal], observed_at="2026-10-19T14:00:00+00:00")
+    assert diagnostics == [] and len(merged) == 2
+    corrected = next(r for r in merged if r["correction_sequence"] == 1)
+    assert corrected["withdrawal_admitted_at"] == "2026-10-19T14:00:00+00:00"
+    assert select_publications(merged, "KR", operational_as_of="2026-10-19T13:00:00+00:00")
+    assert not select_publications(merged, "KR", operational_as_of="2026-10-19T15:00:00+00:00")
+
+
+def test_stale_corrected_refresh_cannot_withdraw_newer_different_content():
+    old, archive = corrected_cutoff_archive()
+    predecessor = next(r for r in archive if r["correction_sequence"] == 1)
+    second = {**predecessor, "values": {"2026": 2.0, "2027": 2.1}, "periods": [],
+              "correction_sequence": 2, "supersedes_record_id": predecessor["record_id"]}
+    archive = admit([second], archive, now="2026-10-19T14:00:00+00:00")
+    stale = {**old, "information_cutoff": "2026-09-30",
+             "withdrawn_at": "2026-10-19T14:30:00+00:00",
+             "withdrawal_source_url": WEO_OCTOBER_2026["source_url"]}
+    merged, diagnostics = merge_publications(archive, [stale], observed_at="2026-10-19T15:00:00+00:00")
+    assert any(d["kind"] == "publication_conflict" for d in diagnostics)
+    active = select_publications(merged, "KR", operational_as_of="2026-10-19T16:00:00+00:00")[0]
+    assert active["correction_sequence"] == 2 and not active.get("withdrawn_at")
+
+
+def test_fiscal_api_accepts_only_the_observed_unnamed_null_placeholder():
+    p = fiscal_fixture()
+    p["values"][""] = {"TWN": {"2027": 999}}
+    with pytest.raises(ValueError, match="measure_changed"):
+        fiscal_parse(p)
+
+
+def test_corrected_refresh_does_not_create_a_synthetic_predecessor():
+    old, archive = corrected_cutoff_archive()
+    refresh = {**old, "information_cutoff": "2026-09-30"}
+    synthetic = normalize_publication(refresh, observed_at=NOW)["record_id"]
+    second = {**refresh, "values": {"2026": 2.0, "2027": 2.1},
+              "correction_sequence": 2, "supersedes_record_id": synthetic,
+              "correction_source_url": WEO_OCTOBER_2026["source_url"]}
+    merged, diagnostics = merge_publications(archive, [refresh, second], observed_at="2026-10-19T15:00:00+00:00")
+    assert any(d["kind"] == "publication_conflict" for d in diagnostics)
+    assert all(r["record_id"] != synthetic for r in merged)
+    assert select_publications(merged, "KR", operational_as_of="2026-10-19T16:00:00+00:00")[0]["correction_sequence"] == 1
+
+
+@pytest.mark.parametrize("cc,phrase", [
+    ("KR", "from deficit to surplus"), ("TW", "surplus is broadly unchanged"),
+    ("IN", "deficit narrows"), ("AU", "deficit narrows")])
+def test_fiscal_country_readings_describe_the_actual_published_path(cc, phrase):
+    archive = admit(fiscal_parse() + fiscal_parse(indicator="GGXWDG_NGDP"))
+    view = build_country_outlook(cc, archive, today=TODAY)
+    b = next(r for r in view["balances"] if r["series_id"] == "fiscal_balance")
+    assert phrase in b["reading_en"] and b["reading_zh"]
+    debt = next(r for r in view["balances"] if r["series_id"] == "government_debt")
+    assert ("rises" if cc == "AU" else "falls") in debt["reading_en"]
+    assert all(word not in b["reading_en"].lower() + debt["reading_en"].lower()
+               for word in ("nominal borrowing", "fiscal space", "solvent", "tightening"))
+
+
+@pytest.mark.parametrize("cc", ["GB", "EZ"])
+@pytest.mark.parametrize("mismatch", ["family", "edition", "information_cutoff", "period"])
+def test_joint_fiscal_thesis_does_not_mix_publication_vintages_or_intervals(cc, mismatch):
+    growth = raw(cc=cc, values={"2026": 1.3 if cc == "GB" else 1.1, "2027": 1.2},
+                 information_cutoff="2026-09-30")
+    inflation = {**growth, "series_id": "inflation_average", "values": {"2026": 3.3, "2027": 2.8}}
+    balance = {**growth, "series_id": "fiscal_balance", "unit": "percent_gdp",
+               "values": {"2026": -3.8, "2027": -3.0}}
+    debt = {**balance, "series_id": "government_debt", "values": {"2026": 102.0, "2027": 102.5}}
+    aligned = build_country_outlook(cc, admit([growth, inflation, balance, debt]), today=TODAY)
+    aligned_thesis = next(p for p in aligned["propositions"] if p["id"] == cc + ":country_thesis")
+    assert ("debt" if cc == "GB" else "fiscal") in aligned_thesis["text_en"]
+    for r in (balance, debt):
+        if mismatch == "period":
+            r.update(period_basis="fiscal_year", fiscal_start_month=4)
+        else:
+            r[mismatch] = {"family": "Article IV", "edition": "2026-09", "information_cutoff": "2026-09-29"}[mismatch]
+    mixed = build_country_outlook(cc, admit([growth, inflation, balance, debt]), today=TODAY)
+    thesis = next(p for p in mixed["propositions"] if p["id"] == cc + ":country_thesis")
+    assert not ({"fiscal_balance", "government_debt"} & {e["series_id"] for e in thesis["evidence"]})

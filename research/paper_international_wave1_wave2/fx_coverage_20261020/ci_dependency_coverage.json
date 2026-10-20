@@ -1,0 +1,100 @@
+{
+  "schema": "mastermind.intl_currency_ci_dependency_coverage.v1",
+  "started_at": "2026-10-20T04:58:54.040033+00:00",
+  "workspace_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "scope": "Canonical shared primitives against the materialized working tree, including held uncommitted source; not hosted PR-versus-base contract-delta.",
+  "owners": [
+    "scripts.run_ci_pack.curated_exclusive_closure_findings",
+    "scripts.audit_unrun_tests.gated_unrun_suites"
+  ],
+  "inputs": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1747545,
+      "sha256": "cf48a86a4dd7a8bbfce028bdd3641062e8166fc01efa6b6fa5289bc262074309"
+    },
+    {
+      "path": "lib/intl_currency_observation.py",
+      "bytes": 11646,
+      "sha256": "915a3b10ec60a760e50b2d2283c677e5d8aa67627cd876eff3e8bbc2dcad628b"
+    },
+    {
+      "path": "engine/intl_run.py",
+      "bytes": 9829,
+      "sha256": "2cf905292d14de983e232f89ca939fbbc70e1f093944b6acfc46335f8119e079"
+    },
+    {
+      "path": "tests/test_intl_currency_observation.py",
+      "bytes": 15744,
+      "sha256": "384640aa4a6dc6cda4a97a7f0c044512f42ed36a2e92178d7b000515936458dc"
+    },
+    {
+      "path": "tests/fixtures/intl_currency_observations_20261020.json",
+      "bytes": 74794,
+      "sha256": "5165bbf43f2ae38a677d1f3183918abec8f8ca1bb5da42c6f0459c2696bcc01a"
+    },
+    {
+      "path": "scripts/run_ci_pack.py",
+      "bytes": 234741,
+      "sha256": "b5adcb521a2c6b2561c344d9506da9f21873a0db5f3ed35358b5912c1b5de5c3"
+    },
+    {
+      "path": "scripts/ci_scope_dependencies.py",
+      "bytes": 41920,
+      "sha256": "74f9afe96de53fd01c1630fdcef8db6c13680442085acb16c262a5927f090546"
+    },
+    {
+      "path": "scripts/audit_unrun_tests.py",
+      "bytes": 50447,
+      "sha256": "e50ba44cb678761d55f1c5bb9828390bd7c21c1672760d6f52781ca194dd7d47"
+    }
+  ],
+  "engine_job_coverage": [
+    {
+      "job": "international-workspace-foundation",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "international-workspace-browser",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "itr-turn-rotation",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "nw-lobe-unfreeze",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "biocatalyst-serving",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "washout-turn-organ",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    },
+    {
+      "job": "unrun-picks-boards",
+      "currency_helper_explicit": true,
+      "exclusive": true
+    }
+  ],
+  "currency_suite_enrollment": {
+    "job": "international-workspace-foundation",
+    "test_explicit_path": true,
+    "fixture_explicit_path": true,
+    "test_named_in_execution": true
+  },
+  "import_closure_findings": {},
+  "unwired_suites": [],
+  "input_bytes_unchanged": true,
+  "finished_at": "2026-10-20T05:01:21.005672+00:00",
+  "passed": true
+}

@@ -1,0 +1,826 @@
+{
+  "schema": "mastermind.intl_policy_coverage_verification.v1",
+  "recorded_at": "2026-10-19T11:53:03.978328+00:00",
+  "operation": "intl-country-cockpit-20261018",
+  "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9596",
+  "state": "IMPLEMENTED_AND_LOCALLY_VERIFIED_NOT_PUBLISHED",
+  "mission_complete": false,
+  "frozen_local_head": "11c83bb5dfb0c8199a0fb0cb2c6e70452c724984",
+  "last_observed_remote_head": "88b6f192c3e2a7a94f5cf7ff4d9d06bc225324a4",
+  "source_delta_to_frozen_head": [
+    "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+    "app/deploy/Caddyfile",
+    "collectors/intl_country_sources.py",
+    "collectors/intl_policy_sources.py",
+    "config/intl_country_baseline.json",
+    "config/intl_country_commentary.json",
+    "config/site_access.yml",
+    "lib/intl_country_assessment.py",
+    "lib/intl_country_inputs.py",
+    "lib/intl_policy_evidence.py",
+    "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+    "scripts/build_intl.py",
+    "templates/intl_country_cockpit.css",
+    "templates/intl_country_cockpit.html.j2",
+    "tests/test_intl_country_cockpit.py",
+    "tests/test_intl_policy_evidence.py",
+    "tests/test_site_access_boundary.py"
+  ],
+  "implementation_report": "POLICY_COVERAGE_20261019.md",
+  "accepted_policy_records": [
+    {
+      "cc": "AU",
+      "record_id": "AU:cash_rate_target:d405aed30fa1f66e4141eed4",
+      "instrument": "cash_rate_target",
+      "value": 4.6,
+      "previous_value": 4.35,
+      "setting_qualifier": null,
+      "decision_date": "2026-09-29",
+      "published": "2026-09-29",
+      "effective_date": "2026-09-30",
+      "first_observed_at": "2026-10-19T09:46:23.036453+00:00"
+    },
+    {
+      "cc": "EZ",
+      "record_id": "EZ:deposit_facility_rate:b32bca58733532aee5436b3d",
+      "instrument": "deposit_facility_rate",
+      "value": 2.5,
+      "previous_value": 2.25,
+      "setting_qualifier": null,
+      "decision_date": "2026-09-10",
+      "published": "2026-09-10",
+      "effective_date": "2026-09-16",
+      "first_observed_at": "2026-10-19T09:46:23.036453+00:00"
+    },
+    {
+      "cc": "GB",
+      "record_id": "GB:bank_rate:1acacb67d1c6b4a2fb4242ee",
+      "instrument": "bank_rate",
+      "value": 3.75,
+      "previous_value": 3.75,
+      "setting_qualifier": null,
+      "decision_date": "2026-09-16",
+      "published": "2026-09-17",
+      "effective_date": "2026-09-16",
+      "first_observed_at": "2026-10-18T23:56:41.866724+00:00"
+    },
+    {
+      "cc": "IN",
+      "record_id": "IN:policy_repo_rate:b66fd556c4f4413a29870e0c",
+      "instrument": "policy_repo_rate",
+      "value": 5.5,
+      "previous_value": 5.25,
+      "setting_qualifier": null,
+      "decision_date": "2026-10-07",
+      "published": "2026-10-07",
+      "effective_date": "2026-10-07",
+      "first_observed_at": "2026-10-19T09:46:23.036453+00:00"
+    },
+    {
+      "cc": "JP",
+      "record_id": "JP:uncollateralized_overnight_call_rate_target:1a43e89c1a169e5d124f0a83",
+      "instrument": "uncollateralized_overnight_call_rate_target",
+      "value": 1.25,
+      "previous_value": 1.0,
+      "setting_qualifier": "around",
+      "decision_date": "2026-09-18",
+      "published": "2026-09-18",
+      "effective_date": "2026-09-24",
+      "first_observed_at": "2026-10-19T09:46:23.036453+00:00"
+    },
+    {
+      "cc": "KR",
+      "record_id": "KR:bok_base_rate:dce548023e9b40bc2bc2acd9",
+      "instrument": "bok_base_rate",
+      "value": 3.0,
+      "previous_value": 2.75,
+      "setting_qualifier": null,
+      "decision_date": "2026-08-27",
+      "published": "2026-08-27",
+      "effective_date": "2026-08-27",
+      "first_observed_at": "2026-10-19T09:46:23.036453+00:00"
+    },
+    {
+      "cc": "TW",
+      "record_id": "TW:discount_rate:6d770222a2dc6ffad23b01a0",
+      "instrument": "discount_rate",
+      "value": 2.0,
+      "previous_value": 2.0,
+      "setting_qualifier": null,
+      "decision_date": "2026-09-17",
+      "published": "2026-09-17",
+      "effective_date": "2026-09-17",
+      "first_observed_at": "2026-10-18T23:56:41.866724+00:00"
+    }
+  ],
+  "source_qualification": {
+    "acquisition": "source_qualification/acquisition.json",
+    "main_documents": 5,
+    "supporting_documents": 6,
+    "all_http_status": 200,
+    "tls": "Normal certificate validation; no bypass.",
+    "started_at": "2026-10-19T09:33:51.336101+00:00",
+    "finished_at": "2026-10-19T09:33:57.200400+00:00",
+    "qualification_at": "2026-10-19T09:42:39.585914+00:00",
+    "new_baseline_first_observed_at": "2026-10-19T09:46:23.036453+00:00",
+    "verified_reviews_observed_at": "2026-10-19T09:59:11.274191+00:00",
+    "raw_document_custody": "/tmp/intl-policy-coverage-20261019",
+    "full_official_documents_republished": false,
+    "gb_tw_new_acquisition_claimed": false
+  },
+  "preservation": {
+    "forecast_archive_count": 37,
+    "baseline_fields_equal_to_frozen_head": {
+      "official": true,
+      "forecast_archive": true,
+      "cpi_series": true,
+      "forecasts": true,
+      "errors": true
+    },
+    "gb_tw_id_and_observation_preserved": {
+      "GB": true,
+      "TW": true
+    }
+  },
+  "principal_review": {
+    "kind": "Advisory, not formal release approval",
+    "findings_consumed": 3,
+    "fixed": [
+      "Future announcements cannot restore a withdrawn current decision.",
+      "Reconstruction retains earliest complete valid custody.",
+      "Failed first qualification suppresses dependent same-bank commentary."
+    ],
+    "red_regressions": 7,
+    "red_log": "tests/review_regressions_before_fix.log",
+    "post_fix": "All seven regressions are included in the passing 263-case suite selection."
+  },
+  "tests": {
+    "affected_suites": {
+      "passed": 263,
+      "failed": 0,
+      "warnings": 2,
+      "receipt": "tests/policy_country_tests_v3.json",
+      "log": "tests/policy_country_tests_v3.log"
+    },
+    "normal_build_public_html": {
+      "passed": 10,
+      "failed": 0,
+      "warnings": 2,
+      "receipt": "public_html_tests.json",
+      "log": "public_html_tests.log"
+    },
+    "fresh_passed_total": 273,
+    "warning_scope": "Existing Chrome.app pytest temporary-cleanup warnings, preserved in logs.",
+    "inherited_asset_boundary": {
+      "passed": 28,
+      "freshly_rerun": false,
+      "source_hashes_rechecked": true,
+      "receipt": "../PUBLIC_ASSET_REPAIR_R12_20261019.json"
+    }
+  },
+  "browser": {
+    "receipt": "browser_verification.json",
+    "canonical_manifest": "mockups/evidence/intl-policy-coverage-20261019/manifest.json",
+    "canonical_manifest_sha256": "a5b29697943072c43fab283fbd129c1f3c75d34a42fef7f05c8d0281debf129f",
+    "canonical_rest_states": 12,
+    "country_checks": 84,
+    "country_checks_passed": 84,
+    "history_journeys": 2,
+    "page_exceptions": [],
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "source_urls_rendered": true,
+    "visible_country_policy_overflow": false,
+    "root_visual_review": "Integrated dark desktop, Japan desktop dark and mobile Chinese, India narrow light; actual saved Chrome images."
+  },
+  "paper": {
+    "url": "https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-G-0",
+    "receipt": "paper_policy_coverage_receipt.json",
+    "receipt_sha256": "c9aad285a3ee80e54b0b125274f0251122f68d3b1a7862f0b1620227e69f6a24",
+    "updated_boards": [
+      "DMX-0",
+      "DW7-0",
+      "E4D-0",
+      "EC2-0"
+    ],
+    "applied_effects": 14,
+    "native_finish_observed": true,
+    "headline_readbacks": 16,
+    "policy_jsx_exports": 4,
+    "native_images": 3,
+    "parent_receipt": {
+      "path": "../paper_r12_receipt.json",
+      "sha256": "b74bb57b8f724d0d766a88a6a42c61d98329326de9d3fca383691d7785a8e846",
+      "scope": "Original six-board R12 layout; not overwritten by this increment."
+    },
+    "host_identity": null
+  },
+  "preview": {
+    "rendered_at": "2026-10-19T10:52:46.415903+00:00",
+    "kind": "SOURCE_BACKED_LOCAL_RENDER_NOT_PUBLISHED",
+    "html_sha256": {
+      "intl_country_preview.html": "88befdc1844728e0c9ab2c022ebcbbbe9bd9a9833acbbbf1b88518659a284cf6",
+      "intl_integrated_preview.html": "3c72e6b3f8e01095e5eecafad4ce2ee91fec89d011aca7a3dda21b5256820d74",
+      "intl_stocks_integrated_preview.html": "f811c34d59e599ac29919fcba6c88cd6527f479c8c6b1b9f15903eb7f309a3a1"
+    },
+    "html_archives": {
+      "intl_integrated_preview.html": {
+        "archive": "intl_integrated_preview.html.gz",
+        "archive_sha256": "21546c0e8f5235bbc2a3ff1325901db040606fd50d4afef362c5ec5815b9a154",
+        "uncompressed_sha256": "3c72e6b3f8e01095e5eecafad4ce2ee91fec89d011aca7a3dda21b5256820d74",
+        "uncompressed_bytes": 1653216,
+        "encoding": "gzip",
+        "reason": "Preserve the exact browser-tested generated HTML, including pre-existing legacy whitespace, in a lossless evidence artifact."
+      },
+      "intl_stocks_integrated_preview.html": {
+        "archive": "intl_stocks_integrated_preview.html.gz",
+        "archive_sha256": "d242b5697c120d8fc2aa4769a15d801e06afc3ea46972dc17807b0dbaedaa409",
+        "uncompressed_sha256": "f811c34d59e599ac29919fcba6c88cd6527f479c8c6b1b9f15903eb7f309a3a1",
+        "uncompressed_bytes": 97987,
+        "encoding": "gzip",
+        "reason": "Preserve the exact browser-tested generated HTML, including pre-existing legacy whitespace, in a lossless evidence artifact."
+      }
+    },
+    "content_changed_after_browser_checks": false,
+    "market_replay_clock": "2026-10-15"
+  },
+  "gates": {
+    "design_and_visual": "gates/verification.json",
+    "design_introduced_blockers": 0,
+    "visual_evidence_exit_code": 0,
+    "tracked_whitespace_exit_code": 0,
+    "new_text_evidence": "gates/new_evidence_whitespace.json",
+    "supplementary_integrity": "gates/integrity.json"
+  },
+  "fiscal": {
+    "candidate": "australia_fiscal_candidate.json",
+    "admitted": false,
+    "original_pdf_acquisition": "HTTP 403; no bytes or PDF hash",
+    "remaining_missing_fiscal_countries": [
+      "KR",
+      "TW",
+      "IN",
+      "AU"
+    ]
+  },
+  "limitations": [
+    "Anonymous isolated fixture; authenticated free/essential/pro states were not captured.",
+    "Synthetic loading/empty/stale/error states were not captured.",
+    "Fixture live_config.js returned 404 and external analytics was blocked; no page exception occurred.",
+    "Generic width counters include hidden legacy DOM; page overflow is false and all 84 visible policy checks fit.",
+    "A fresh render does not update the frozen October 15 market replay.",
+    "The new Paper update is scoped to four headlines and Korea policy detail; it is not blanket seven-country pixel equivalence.",
+    "Principal review is advisory. Hosted combined-head CI, formal review, render/updater adoption and actual served acceptance remain unproven."
+  ],
+  "release_fence": {
+    "observation": "release_observation.json",
+    "original_action_id": "d07df7c6e45d35c54338808701350ece97c605401ad69a0fd28bb415d05a5a56",
+    "state": "EFFECT_UNKNOWN / PUSH_RESULT_UNCERTAIN",
+    "resolved": false,
+    "pr_draft": true,
+    "commit_or_push_retry_performed": false,
+    "alternate_publisher_used": false,
+    "ready_merge_deploy_or_restart_performed": false,
+    "watcher_armed": false
+  },
+  "fingerprint_scope": "All listed current source and evidence files; this receipt excludes itself. Subsequent GitHub metadata readback remains a separate release record.",
+  "file_count": 105,
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "bytes": 1746984,
+      "sha256": "d76e31b791503d27ff1d7d70f98007a6274092e2b8506aef5cee7261036e943d"
+    },
+    {
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "bytes": 25353,
+      "sha256": "c8428331279ea5db0032d11bd30b4d9e63cf9b06870561df5a2fb07b93cde22f"
+    },
+    {
+      "path": "app/deploy/Caddyfile",
+      "bytes": 74539,
+      "sha256": "eb0abf17c03d1ef5ab2c6378ac67d6dfb71b58b5353810af64a08c4629780190"
+    },
+    {
+      "path": "collectors/intl_country_sources.py",
+      "bytes": 19455,
+      "sha256": "65837c20a24060068fe795a9dd42757c1d05dd76e326729faa1554fd643d7b4a"
+    },
+    {
+      "path": "collectors/intl_policy_sources.py",
+      "bytes": 22285,
+      "sha256": "08e48a54bdfedf006aaad7ded702582368d32cd297bf5e51d3dac11e206c9c84"
+    },
+    {
+      "path": "config/intl_country_baseline.json",
+      "bytes": 160203,
+      "sha256": "970ccd7ec893d9fe75a8f8dcb5a9381e64ee43cce63378a7857865e87057d087"
+    },
+    {
+      "path": "config/intl_country_commentary.json",
+      "bytes": 11546,
+      "sha256": "e1e9c6639e76d92a31a440ded152efd199e860b66737265acb1b725cc19f58d9"
+    },
+    {
+      "path": "config/site_access.yml",
+      "bytes": 44189,
+      "sha256": "127dd1de71c979910601a8df89132244e95c0d1991c194408281072ace6384c9"
+    },
+    {
+      "path": "lib/intl_country_assessment.py",
+      "bytes": 27643,
+      "sha256": "19fa836800dd267ef4fc44118114e85ea91de31f1978ba80834cd5f72ca5e5af"
+    },
+    {
+      "path": "lib/intl_country_inputs.py",
+      "bytes": 1353,
+      "sha256": "5e94af0773273114c6225440516527e3e23f1a7881ec8f4faa8aa9b1616e60e8"
+    },
+    {
+      "path": "lib/intl_policy_evidence.py",
+      "bytes": 20255,
+      "sha256": "b16a1a367c8b1480cb4d1d716ab0db6223500139a12e08c33972af74219a4a3a"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/18d7a191bd7ef520.png",
+      "bytes": 571236,
+      "sha256": "18d7a191bd7ef52042d4a44c87057f7522e8de48dc0fd06513ee45f58f017d3f"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/2464c365a622de00.png",
+      "bytes": 431208,
+      "sha256": "2464c365a622de00153b17e72c19246597191b8e6bed6c670fde683b3ff10ef6"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/29106b4ed8233bef.png",
+      "bytes": 438282,
+      "sha256": "29106b4ed8233befd5d043132637e3c6fc73a21ccce49791bac860aee4b39740"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/3202ce63aaaf8bd0.png",
+      "bytes": 546258,
+      "sha256": "3202ce63aaaf8bd05dea9647f59ed2b65fb946a256288f6a0ed68dc0a30fcbeb"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/43082efaad88ddb3.png",
+      "bytes": 572723,
+      "sha256": "43082efaad88ddb3587e8ede29af6b96779a5bd1e3dd1255d0dfb07f98a150af"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/5e5c01790944cd1d.png",
+      "bytes": 414645,
+      "sha256": "5e5c01790944cd1d165da7d4239152e92aa509462260cb56cf188f3e4f28e960"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/60eb72e48b5e0026.png",
+      "bytes": 420948,
+      "sha256": "60eb72e48b5e002672d21089e1745fd42dd721710e40cd59be4dd31a2e70ebb6"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/777a5e1e910dd4bd.png",
+      "bytes": 419199,
+      "sha256": "777a5e1e910dd4bd75a4f9a7b6eef67cd97b6d4f4cc8dec974cb3e74530b915d"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/944f8172c04fa405.png",
+      "bytes": 543496,
+      "sha256": "944f8172c04fa405f03fab88ac829ec22e546d5f71f14fe5198d487488dc21d3"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/97b7181ac18d70af.png",
+      "bytes": 403346,
+      "sha256": "97b7181ac18d70af72b0b08d5bd479b33f6033b5689f2ab49962b679d1144b22"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/EVIDENCE.yml",
+      "bytes": 212,
+      "sha256": "7db7343d5f7b157fea6be6038e1e8eba9b0de8cf0180649cc24f243873bbbba9"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/baaaeb3309f0945f.png",
+      "bytes": 432482,
+      "sha256": "baaaeb3309f0945f3af5b431e213d038101839aa70d0bc587aa912348d3b1601"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/d35c9714ecfa78aa.png",
+      "bytes": 415535,
+      "sha256": "d35c9714ecfa78aaae1d169247f3649c001a3e9515bee561c9ed8476244bb7a7"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/manifest.json",
+      "bytes": 11876,
+      "sha256": "a5b29697943072c43fab283fbd129c1f3c75d34a42fef7f05c8d0281debf129f"
+    },
+    {
+      "path": "mockups/evidence/intl-policy-coverage-20261019/smells.json",
+      "bytes": 3633,
+      "sha256": "fe7bb5b3b112bc3a133b4695a220dfbbea8bb0b4a6390e1b40fdacc1349af21e"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 3510,
+      "sha256": "8200ac05ab8aa27946cd4ae4237c0deb2171384363bd99ee72d15c683b7ab808"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/CI_INTEGRATION_R12_20261019.json",
+      "bytes": 22175,
+      "sha256": "43baaefd2ee9f0e152be62693bf171ccafb0a34c0dc4961670f70e5630cf0750"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/PUBLIC_ASSET_REPAIR_R12_20261019.json",
+      "bytes": 7574,
+      "sha256": "6aa51b0a92f14637e147c3091f4b768f1e4ad418dfe4e8a62b564edf38301afb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/capture_country_cockpit.py",
+      "bytes": 2315,
+      "sha256": "4ea4a527bb92b9279e0b3ea00696c8c3fb322a70c79a0f0698dac46d1b0d0dc5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/paper_r12_receipt.json",
+      "bytes": 25184,
+      "sha256": "b74bb57b8f724d0d766a88a6a42c61d98329326de9d3fca383691d7785a8e846"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/POLICY_COVERAGE_20261019.md",
+      "bytes": 16661,
+      "sha256": "d59fa824d62d6ec29c1704be48a0e1d19e7924877e67c350fbf17c151967dfee"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_acquisition.json",
+      "bytes": 271,
+      "sha256": "dbc416bf98707a0f520179b828405d71c409fae3eb00d9229a27bf3ab66add33"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.json",
+      "bytes": 6147,
+      "sha256": "e85fc9b4e1604b34062aadd67c871236ad5e1f9896f706a7abfb4df8fca9a5bb"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/australia_fiscal_candidate.md",
+      "bytes": 4537,
+      "sha256": "eaa2ebb4894dd358d71a54e515ee97f21221b767bed65c29c41963ad0de3e660"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/browser_verification.json",
+      "bytes": 76744,
+      "sha256": "f1e00175667e3655c07c5cd51d313f0b2bac7dceb667241296b769366f7116a9"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/canonical_capture.log",
+      "bytes": 347,
+      "sha256": "06534b90d67f9909a99e9937c2ca2802c283ae1981800c0d8f317c380233b615"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/design.log",
+      "bytes": 279,
+      "sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/final_ui_delta.diff.gz",
+      "bytes": 1640,
+      "sha256": "510414e7832ea851135673451bedf88d2a99d69b10fb947e2b818b82049474f2"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/integrity.json",
+      "bytes": 1658,
+      "sha256": "9e73cc4cd4f943be84a9418a73922221172e0c960fe52998c4b294b334803c42"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/new_evidence_whitespace.json",
+      "bytes": 6077,
+      "sha256": "8f3172e967133b132872d92842c7ebd48859da2917e235de9a9f7977561cb2cf"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/new_evidence_whitespace_initial.json.gz",
+      "bytes": 3073,
+      "sha256": "d82197f52aa1e365ce029acd9790a33567787be5e5faedfb6db316d43ffc5332"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/tracked_whitespace.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/verification.json",
+      "bytes": 3065,
+      "sha256": "2a09bbfa86efb51e40bc8e312632de78ed88cd1181700fd89d4bda8d388e7723"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/gates/visual.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/DMX-0.jpg",
+      "bytes": 225866,
+      "sha256": "ef4b51b714502fc60a9869885eb98152d075c15dcba06b21475d55d4892805b3"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/DRZ-0.jsx",
+      "bytes": 2780,
+      "sha256": "814acd72d77e733f33dd8880c6f886758769ef2d185f3a941508ba6ed12efa34"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E0M-0.jsx",
+      "bytes": 2789,
+      "sha256": "987dd7ae147d112bfffeac877dc3cdd84e2d0d36ef2f244371ef45d98147aa3b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E9F-0.jpg",
+      "bytes": 21158,
+      "sha256": "c9cf07dedbf28115bf43a75db40c3f4e030e6d39206ae81c20257386b7259db8"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/E9F-0.jsx",
+      "bytes": 2797,
+      "sha256": "142753fac5cba34e958814a6127c7e876bdcbae1553956c29356a9354fabca5e"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/EC2-0.jpg",
+      "bytes": 91368,
+      "sha256": "5667171d45ad8500e74dad42f8ce39a5a70e1a0aa0e4ebd50c4b39ed6cc93c22"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/EGH-0.jsx",
+      "bytes": 2806,
+      "sha256": "f990506cd3dde5dbb2bb78fffa5eacd4e195d53136ccbb8a93115754d41e9712"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/country_copy_readback.json",
+      "bytes": 1807,
+      "sha256": "0f34c0cbb53d6dc991496c7ecdd626be5fd43a0651fc49656d4f509f44b33b5a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper/effects.json",
+      "bytes": 479787,
+      "sha256": "edb07d566f8aa0f6939a8c229db64bdb5a456586efda8d5b84cad29b4ffd16dc"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/paper_policy_coverage_receipt.json",
+      "bytes": 4740,
+      "sha256": "c9aad285a3ee80e54b0b125274f0251122f68d3b1a7862f0b1620227e69f6a24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/au-mobile-dark-en.png",
+      "bytes": 26028,
+      "sha256": "dc0dda178e331b7b7e5ad15aa2358d38bd66e26aed1d789faf2147e563260aa7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/ez-desktop-light-zh.png",
+      "bytes": 29984,
+      "sha256": "7dd8c6188721bd6b390de6f071f6d93022bc4dd9884b2b64403eb4c452d4df08"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/in-narrow-light-en.png",
+      "bytes": 27290,
+      "sha256": "3638c266e63f4b56137a57a7fbd6e93f2382205ced09e761d1758bcf9a469843"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-dark-en.png",
+      "bytes": 29891,
+      "sha256": "8d55f56e62310e104b5f18428198390009e9b77a9a257b0a13f5429beef4af31"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-desktop-light-en.png",
+      "bytes": 29906,
+      "sha256": "6259bfaf504ff5a430a4a625ec428d68d2cf5f03a77a33217ac965e4689c8e24"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/policy_shots/jp-mobile-dark-zh.png",
+      "bytes": 28394,
+      "sha256": "00eca88aeb7d77b1dc462eccb86fa969faaf40a49d1b772921c2584bf5ffb3c7"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/assessment.json",
+      "bytes": 960718,
+      "sha256": "65b1d6eca1fbceec77aa86c001bcb299cb6057d02db95261bc5a135322ad8a3a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/country_inputs.json",
+      "bytes": 160263,
+      "sha256": "e324afb87de8d98fb8995a4868fb8f6e9c7803c80f636a04660768ecf2bb203b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_country_preview.html",
+      "bytes": 229891,
+      "sha256": "88befdc1844728e0c9ab2c022ebcbbbe9bd9a9833acbbbf1b88518659a284cf6"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_integrated_preview.html.gz",
+      "bytes": 76408,
+      "sha256": "21546c0e8f5235bbc2a3ff1325901db040606fd50d4afef362c5ec5815b9a154"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/intl_stocks_integrated_preview.html.gz",
+      "bytes": 22977,
+      "sha256": "d242b5697c120d8fc2aa4769a15d801e06afc3ea46972dc17807b0dbaedaa409"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/manifest.json",
+      "bytes": 10797,
+      "sha256": "2d4e9de232de29319bc7e974f22443ca4c60c5dcb1a4c5a10f1a4f64a312df8b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/preview/market_replay.json",
+      "bytes": 2903,
+      "sha256": "c4993a42d353c0dd105619b650af4e3bfcfbfd01ed20e92d9c0a58d2eb2ac567"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.json",
+      "bytes": 580,
+      "sha256": "6a9d7a20e5322a2ae4a385503015fe532cdcc3435556085911a251969196c166"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/public_html_tests.log",
+      "bytes": 1768,
+      "sha256": "46532ff6da49f1fdc3e20b2a29cb30981021f63349b7acd28c31289c0f78f915"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/release_observation.json",
+      "bytes": 6728,
+      "sha256": "0b8f2237e9f2cb3c36696ba944fcca58570bdf9e6abc364468b6acd72d6ca640"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render.log",
+      "bytes": 7958,
+      "sha256": "26ba05e891673e84845fb2ff95a36fb6ae935d7ee8b6c561bcbeef8a347fff6c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render.log.raw.gz",
+      "bytes": 2891,
+      "sha256": "b92eec3bc6603ae04575ef8bd0ab8c835ed078e773ea2d95096a473becc4b602"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/render_v3.log",
+      "bytes": 8073,
+      "sha256": "8d92c00fc115d59df0aa3f1f2c104c8ca4b3573d69416d0e9e6a9a264a9eca55"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/acquisition.json",
+      "bytes": 6790,
+      "sha256": "cb2e95271c45987edfb7981353be313c57bcf1d53c19d5eb1ab513102a449f22"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/admission_attempt.json",
+      "bytes": 1236,
+      "sha256": "365ebab4b518852ee883d9d1daa42fe9d39149b04633ec0aa2ad9d99f9ea552d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/baseline_before.json",
+      "bytes": 415,
+      "sha256": "5fc72402581c6e3e60295dc45ca6cd6ca663c5dcc6dcce0a747974f25b5c8dec"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/body_contracts.json",
+      "bytes": 1171,
+      "sha256": "e9b771c8989390923fbc72589a3c1285f98595d34114f68f1996ff9dc94d2d9b"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/source_qualification/qualified_policy.json",
+      "bytes": 9080,
+      "sha256": "8b9c32be008f2d90ae6da977e525191a90972fe846f18087f8b6468885d99c0d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/log_custody.json",
+      "bytes": 1376,
+      "sha256": "fab2c1379aa9bffb5fe3d1ad434de8f256826bd9c513a75a6dd09119440a766d"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests.log",
+      "bytes": 2877,
+      "sha256": "d0cecf260b61fadf4e2e235579efe0e669e9cf477b4c03a1a3e75e9e0cfaa3e4"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v2.log",
+      "bytes": 2010,
+      "sha256": "59d5147e11df99e95f2a30403d3d4f2db7c96fb99a0bb7f9c2f438b0da9b637a"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.json",
+      "bytes": 587,
+      "sha256": "b61325dc8663f96957519668174c9e98b62cc5e68be9c3c297ce99beba77015c"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/policy_country_tests_v3.log",
+      "bytes": 2009,
+      "sha256": "7e820cf9bb37624a891fe264622b3bee79aa546d5995a7535fef3304764a2565"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/review_regressions_before_fix.log",
+      "bytes": 10137,
+      "sha256": "986bd5ffb914de7df9d9b34da12f754020b5a338a9cccc3a131d8132d7ab5559"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/tests/review_regressions_before_fix.log.raw.gz",
+      "bytes": 2338,
+      "sha256": "2a4667038066ef93741191bd7fa3a336d21eb3098a4c607b75c4430605588d43"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/policy_coverage_20261019/verify_policy_coverage_browser.py",
+      "bytes": 9428,
+      "sha256": "3b74663729050b9e72599644587b52c39bb3bed261a6317c832ebb38f24cc0d1"
+    },
+    {
+      "path": "research/paper_international_wave1_wave2/preview_country_cockpit.py",
+      "bytes": 8723,
+      "sha256": "4c53e21f27edf24283b092527adc103352d9b5870dba69d7f5054ebb4a44b249"
+    },
+    {
+      "path": "scripts/build_intl.py",
+      "bytes": 59884,
+      "sha256": "1f71f6f93515655b4adc596b61af0052b6465ad9fc923bdbb15595dc9f42bdf1"
+    },
+    {
+      "path": "scripts/capture_page_evidence.py",
+      "bytes": 104477,
+      "sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+    },
+    {
+      "path": "scripts/check_design_system.py",
+      "bytes": 40561,
+      "sha256": "dcacc3d8cb458e16f280fb6a8286fc1aa385105e663dc3afc495c69734e7e484"
+    },
+    {
+      "path": "scripts/check_ui_visual_evidence.py",
+      "bytes": 65987,
+      "sha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a"
+    },
+    {
+      "path": "templates/intl.html.j2",
+      "bytes": 166075,
+      "sha256": "21f4e94703df9f21bc7b224c91c1e66682dade50610ec492d962118b70896a28"
+    },
+    {
+      "path": "templates/intl_country_cockpit.css",
+      "bytes": 26233,
+      "sha256": "45c800aae8ac492c5b68d9cc816e83e6481bbfe6f92e262bf55d715246e8efc3"
+    },
+    {
+      "path": "templates/intl_country_cockpit.html.j2",
+      "bytes": 27850,
+      "sha256": "151352522a4855c51c43b90910ebc784b727acd653744324ac11f7624f9cc6fb"
+    },
+    {
+      "path": "templates/theme.css",
+      "bytes": 222317,
+      "sha256": "61428c7d20e6b4a47450def2301d1f087eac354d1db4ec04be001e39a74d2eb7"
+    },
+    {
+      "path": "tests/test_intl_build.py",
+      "bytes": 11695,
+      "sha256": "09636fc99c862233dc37704ba862e9ca3e97ac1a41c8dedbc854fb6199ad544c"
+    },
+    {
+      "path": "tests/test_intl_country_cockpit.py",
+      "bytes": 18957,
+      "sha256": "5fdc0bf4a99d9cfd9ecd80657fff210776e74290d8ff2852db0b9f907da0e37e"
+    },
+    {
+      "path": "tests/test_intl_forecast_vintages.py",
+      "bytes": 12246,
+      "sha256": "3906a1568bf243d74622c83d7d96280d92feecdd040f7080733b1db1d6ef39d3"
+    },
+    {
+      "path": "tests/test_intl_outlook_interpretation.py",
+      "bytes": 8007,
+      "sha256": "fad34398f1e4273a36460977dd468fe5ec4fbbcc261dc3c7b511982676cfb3ef"
+    },
+    {
+      "path": "tests/test_intl_policy_comparison.py",
+      "bytes": 9057,
+      "sha256": "879838ba03959de548835fd019835f9de0c47ac9b3f1b5852596944fdd661c8e"
+    },
+    {
+      "path": "tests/test_intl_policy_comparison_independent.py",
+      "bytes": 21961,
+      "sha256": "81b9a8453ee59f15e5624abd39064de579677d8e505a7450f966eccb6d0a2f39"
+    },
+    {
+      "path": "tests/test_intl_policy_evidence.py",
+      "bytes": 24923,
+      "sha256": "6b3207822a2f94229042c17fa3e8551daa551356855e6db1ec713f491b51ab39"
+    },
+    {
+      "path": "tests/test_public_chrome.py",
+      "bytes": 9336,
+      "sha256": "ba3c3f622a2a775ec7b441d29d72d77ba8d7e37a74838df9709ba6c161e3ef2c"
+    },
+    {
+      "path": "tests/test_site_access_boundary.py",
+      "bytes": 41599,
+      "sha256": "220d3790b2a0135b7ea1b8c75a1d0a68192d9e3082a72168c39b8850da5372cf"
+    }
+  ]
+}

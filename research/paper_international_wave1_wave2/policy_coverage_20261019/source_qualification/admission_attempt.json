@@ -1,0 +1,54 @@
+{
+  "evaluated_at": "2026-10-19T09:42:39.585914+00:00",
+  "results": [
+    {
+      "cc": "JP",
+      "status": "qualified",
+      "instrument": "uncollateralized_overnight_call_rate_target",
+      "value": 1.25,
+      "previous_value": 1.0,
+      "effective_date": "2026-09-24",
+      "support_count": 1
+    },
+    {
+      "cc": "KR",
+      "status": "qualified",
+      "instrument": "bok_base_rate",
+      "value": 3.0,
+      "previous_value": 2.75,
+      "effective_date": "2026-08-27",
+      "support_count": 1
+    },
+    {
+      "cc": "AU",
+      "status": "qualified",
+      "instrument": "cash_rate_target",
+      "value": 4.6,
+      "previous_value": 4.35,
+      "effective_date": "2026-09-30",
+      "support_count": 1
+    },
+    {
+      "cc": "EZ",
+      "status": "qualified",
+      "instrument": "deposit_facility_rate",
+      "value": 2.5,
+      "previous_value": 2.25,
+      "effective_date": "2026-09-16",
+      "support_count": 2
+    },
+    {
+      "cc": "IN",
+      "status": "qualified",
+      "instrument": "policy_repo_rate",
+      "value": 5.5,
+      "previous_value": 5.25,
+      "effective_date": "2026-10-07",
+      "support_count": 1
+    }
+  ],
+  "legacy_id_preservation": {
+    "GB": true,
+    "TW": true
+  }
+}

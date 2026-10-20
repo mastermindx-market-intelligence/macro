@@ -1,0 +1,30 @@
+{
+  "au_decision": {
+    "start": "At its meeting today, the Board decided to increase the cash rate target",
+    "end": "Today’s policy decision was unanimous.",
+    "start_offset": 924,
+    "end_offset": 4477,
+    "sha256": "462d8c463fba7e8b977c4ecb92c38219be154f69080d8ab72057ce548a27a94d"
+  },
+  "kr_decision": {
+    "start": "Monetary Policy Decision The Monetary Policy Board of the Bank of Korea",
+    "end": "Opening Remarks to the Press Conference (August 27, 2026)",
+    "start_offset": 8928,
+    "end_offset": 14447,
+    "sha256": "5da422a3d7b5ba658f6426507a26295d14828a86d55bcdf50d04809dceb650ad"
+  },
+  "ez_decision": {
+    "start": "PRESS RELEASE Monetary policy decisions 10 September 2026",
+    "end": "CONTACT European Central Bank",
+    "start_offset": 11261,
+    "end_offset": 14832,
+    "sha256": "da19171579eade1eddd4caa14cfcbf013f0b5e9220c683feadd0517525c13725"
+  },
+  "in_decision": {
+    "start": "Monetary Policy Statement, 2026-27 Resolution of the Monetary Policy Committee",
+    "end": "Press Release:",
+    "start_offset": 1684,
+    "end_offset": 9680,
+    "sha256": "e0d3735a7a1ba5753c5fd1b29934fc6ba22f678bc8214659e0111521c9003098"
+  }
+}

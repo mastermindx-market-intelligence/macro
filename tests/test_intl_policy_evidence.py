@@ -146,7 +146,7 @@ def test_latest_baseline_contains_world_and_distinct_national_forecasts():
     assert world[0]["values"]["2026"] == 3.1 and world[0]["values"]["2027"] == 3.4
     cbc = [x for x in base["forecast_archive"] if x["provider"] == "CBC"]
     assert {x["series_id"] for x in cbc} == {"real_gdp_growth", "inflation_average"}
-    assert len(base["policy_decisions"]) == 2
+    assert {r["cc"] for r in base["policy_decisions"]} == {"JP", "KR", "TW", "IN", "AU", "GB", "EZ"}
 
 
 def test_reviewed_boe_parser_checks_meeting_rate_and_vote():
@@ -159,3 +159,318 @@ def test_reviewed_boe_parser_checks_meeting_rate_and_vote():
     assert result["policy_decisions"][0]["votes"]["increase"] == 3
     with pytest.raises(ValueError, match="decision_changed"):
         parse_registered_policy_release(html.replace(b"3.75%", b"4.25%"), RELEASES[0], retrieved_at=NOW)
+
+
+def baseline_policy(cc):
+    base = json.loads((ROOT / "config/intl_country_baseline.json").read_text())
+    return deepcopy(next(row for row in base["policy_decisions"] if row["cc"] == cc))
+
+
+def test_seven_bank_settings_have_independent_effective_dates():
+    expected = {
+        "JP": ("uncollateralized_overnight_call_rate_target", 1.0, 1.25, "2026-09-24"),
+        "KR": ("bok_base_rate", 2.75, 3.0, "2026-08-27"),
+        "AU": ("cash_rate_target", 4.35, 4.6, "2026-09-30"),
+        "EZ": ("deposit_facility_rate", 2.25, 2.5, "2026-09-16"),
+        "IN": ("policy_repo_rate", 5.25, 5.5, "2026-10-07"),
+    }
+    for cc, fields in expected.items():
+        raw = baseline_policy(cc)
+        result = select_policy_decision([raw], cc, today=date(2026, 10, 19))
+        assert result["current"]
+        assert tuple(result[k] for k in ("instrument", "previous_value", "value", "effective_date")) == fields
+        assert result["action"] == "increase" and result["change_pp"] == 0.25
+        assert result["last_change_date"] == fields[-1]
+        assert result["supporting_sources"]
+        assert all(s["retrieved_at"] <= result["first_observed_at"] for s in result["supporting_sources"])
+
+
+def test_new_evidence_does_not_leak_into_an_earlier_operational_replay():
+    for cc in ("JP", "KR", "AU", "EZ", "IN"):
+        assert select_policy_decision([baseline_policy(cc)], cc,
+                                     operational_as_of="2026-10-18T23:59:59+00:00") is None
+    assert baseline_policy("GB")["record_id"] == "GB:bank_rate:1acacb67d1c6b4a2fb4242ee"
+    assert baseline_policy("TW")["record_id"] == "TW:discount_rate:6d770222a2dc6ffad23b01a0"
+
+
+def test_rate_votes_are_not_stance_votes_or_attendance_counts():
+    assert baseline_policy("IN")["votes"] == {"hold": 0, "increase": 6, "decrease": 0}
+    assert "two separately opposed" in baseline_policy("IN")["rationale_en"]
+    assert baseline_policy("KR")["votes"] == {"hold": 1, "increase": 6, "decrease": 0}
+    assert baseline_policy("JP")["votes"] is None
+    assert "7–2" in baseline_policy("JP")["rationale_en"]
+    for cc in ("AU", "EZ"):
+        assert baseline_policy(cc)["votes"] is None
+        assert "unanimous" in baseline_policy(cc)["rationale_en"].lower()
+
+
+def test_approximate_target_cannot_become_an_exact_setting():
+    jp = baseline_policy("JP")
+    assert normalize_policy_decision(jp)["setting_qualifier_en"] == "Around"
+    jp.pop("setting_qualifier")
+    assert normalize_policy_decision(jp) is None
+    gb = baseline_policy("GB")
+    gb["setting_qualifier"] = "around"
+    assert normalize_policy_decision(gb) is None
+
+
+def test_realized_overnight_rate_does_not_contradict_an_approximate_target():
+    jp = baseline_policy("JP")
+    observation = {"value": 1.247, "period": "2026-09", "instrument": jp["instrument"],
+                   "observation_convention": "end_of_period",
+                   "first_observed_at": "2026-10-01T00:00:00+00:00"}
+    assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["current"]
+    observation.update(setting_qualifier="around", value=0.5)
+    assert select_policy_decision([jp], "JP", today=date(2026, 10, 19), monthly=observation)["state"] == "conflict"
+
+
+@pytest.mark.parametrize("change", [
+    {"source_url": "https://www.rba.gov.au.attacker.example/rates"},
+    {"roles": ["votes"]}, {"roles": ["effective_date", []]},
+    {"roles": ["effective_date", "effective_date"]},
+    {"source_sha256": "not-a-digest"}, {"label": "unregistered"},
+    {"retrieved_at": "2099-01-01T00:00:00+00:00"},
+])
+def test_supporting_source_identity_roles_and_clocks_are_required(change):
+    item = baseline_policy("AU")
+    item["supporting_sources"][0].update(change)
+    assert normalize_policy_decision(item) is None
+
+
+def test_missing_raw_or_supporting_proof_cannot_qualify_new_instruments():
+    for cc in ("JP", "KR", "AU", "EZ", "IN"):
+        item = baseline_policy(cc)
+        item.pop("supporting_sources")
+        assert normalize_policy_decision(item) is None
+        item = baseline_policy(cc)
+        item.pop("source_sha256")
+        assert normalize_policy_decision(item) is None
+
+
+def test_previous_setting_evidence_can_predate_the_new_decision():
+    item = baseline_policy("JP")
+    item["supporting_sources"][0]["retrieved_at"] = "2026-09-17T12:00:00+00:00"
+    item["supporting_sources"][0]["source_url"] = "https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260731a.pdf"
+    assert normalize_policy_decision(item) is not None
+
+
+def test_reviewed_body_detects_corrections_but_ignores_navigation(monkeypatch):
+    from hashlib import sha256
+    from collectors import intl_policy_sources as parser
+    body = "Test decision Rate unchanged; reasoning reviewed End"
+    monkeypatch.setitem(parser.REVIEWED_BODIES, "AU", ("Test decision", "End", sha256(body.encode()).hexdigest()))
+    assert parser._reviewed_body("New navigation " + body + " New footer", "AU") == body
+    with pytest.raises(ValueError, match="body_changed"):
+        parser._reviewed_body(body.replace("reviewed", "contradicted"), "AU")
+    with pytest.raises(ValueError, match="ambiguous"):
+        parser._reviewed_body(body + " " + body, "AU")
+
+
+def test_pdf_correction_requires_a_new_source_review():
+    from collectors import intl_policy_sources as parser
+    with pytest.raises(ValueError, match="reviewed_pdf_changed"):
+        parser._document_text(b"%PDF-1.7 unreviewed bytes", parser.BOJ_URL)
+
+
+def test_failed_supporting_download_isolated_to_one_bank(monkeypatch):
+    from collectors import intl_policy_sources as parser
+    boe = RELEASES[0]
+    rba = next(r for r in RELEASES if r["cc"] == "AU")
+    monkeypatch.setattr(parser, "RELEASES", (boe, rba))
+    html = b"""<p>Published on 17 September 2026</p>
+      <p>At its meeting ending on 16 September 2026, the MPC voted by a majority of 6-3 to maintain Bank Rate at 3.75%.</p>
+      <p>Three members voted to increase Bank Rate by 0.25 percentage points, to 4%.</p>
+      <p>soft labour market conditions; second-round effects</p>"""
+    def fetch(url, *, max_bytes):
+        assert max_bytes == 4_000_000
+        if url == parser.BOE_URL:
+            return html
+        if url == parser.RBA_URL:
+            return b"<p>downloaded, not yet qualified</p>"
+        raise TimeoutError("supporting history unavailable")
+    result = parser.collect_registered_policy(fetch, retrieved_at="2026-10-19T10:00:00+00:00")
+    assert [r["cc"] for r in result["policy_decisions"]] == ["GB"]
+    assert len(result["errors"]) == 1
+    assert result["errors"][0]["failed_url"] == parser.RBA_HISTORY_URL
+    assert result["errors"][0]["status"] == "release_not_verified"
+
+
+
+def review_event(item, status, observed):
+    return {**{k: item[k] for k in ("cc", "instrument", "provider", "source_url", "decision_date", "published", "source_sha256")},
+            "schema": "intl_policy_review.v1", "status": status, "observed_at": observed,
+            "record_id": item["record_id"] if status == "verified" else None}
+
+
+def test_detected_source_change_withdraws_current_status_only_after_observation():
+    item = baseline_policy("AU")
+    changed = review_event(item, "review_required", "2026-10-19T10:00:00+00:00")
+    before = select_policy_decision([item], "AU", review_events=[changed],
+                                   operational_as_of="2026-10-19T09:59:59+00:00")
+    after = select_policy_decision([item], "AU", review_events=[changed],
+                                  operational_as_of="2026-10-19T10:00:01+00:00")
+    assert before["current"]
+    assert after["state"] == "review_required" and not after["current"]
+    assert after["record_id"] == item["record_id"]
+    assert after["first_observed_at"] == item["first_observed_at"]
+
+
+def test_source_requalification_restores_the_same_record_without_rewriting_history():
+    item = baseline_policy("AU")
+    events = [review_event(item, "review_required", "2026-10-19T10:00:00+00:00"),
+              review_event(item, "verified", "2026-10-19T10:05:00+00:00")]
+    assert select_policy_decision([item], "AU", review_events=events,
+                                  operational_as_of="2026-10-19T10:04:00+00:00")["state"] == "review_required"
+    assert select_policy_decision([item], "AU", review_events=events,
+                                  operational_as_of="2026-10-19T10:06:00+00:00")["current"]
+    events[-1]["record_id"] = "AU:cash_rate_target:" + "0" * 24
+    assert not select_policy_decision([item], "AU", review_events=events,
+                                     operational_as_of="2026-10-19T10:06:00+00:00")["current"]
+
+
+def test_review_events_cannot_be_backdated_by_an_incoming_collector():
+    from lib.intl_policy_evidence import merge_policy_reviews
+    item = baseline_policy("AU")
+    old_claim = review_event(item, "review_required", "2026-09-30T00:00:00+00:00")
+    events = merge_policy_reviews([], [old_claim], observed_at="2026-10-19T12:00:00+00:00")
+    assert events[0]["observed_at"] == "2026-10-19T12:00:00+00:00"
+    assert select_policy_decision([item], "AU", review_events=events,
+                                  operational_as_of="2026-10-19T11:59:59+00:00")["current"]
+
+
+def test_qualification_history_compacts_repeats_without_losing_transitions():
+    from lib.intl_policy_evidence import merge_policy_reviews
+    item = baseline_policy("AU")
+    events = [review_event(item, "verified", f"2026-10-19T10:00:{second:02d}+00:00") for second in range(50)]
+    events += [review_event(item, "review_required", "2026-10-19T10:01:00+00:00"),
+               review_event(item, "verified", "2026-10-19T10:02:00+00:00")]
+    merged = merge_policy_reviews([], events, preserve_custody=True)
+    assert [event["status"] for event in merged] == ["verified", "review_required", "verified"]
+    assert merged[0]["observed_at"] == events[0]["observed_at"]
+
+
+def test_same_instant_failed_qualification_wins_independent_of_arrival():
+    from lib.intl_policy_evidence import merge_policy_reviews
+    item = baseline_policy("AU")
+    events = [review_event(item, status, "2026-10-19T10:00:00+00:00")
+              for status in ("verified", "review_required")]
+    for incoming in (events, list(reversed(events))):
+        merged = merge_policy_reviews([], incoming, preserve_custody=True)
+        result = select_policy_decision([item], "AU", review_events=merged,
+                                        operational_as_of="2026-10-19T10:01:00+00:00")
+        assert result["state"] == "review_required"
+
+
+def test_cached_qualification_clocks_survive_repeated_page_reads(tmp_path):
+    from lib.intl_country_inputs import load_country_inputs
+    item = baseline_policy("AU")
+    config = tmp_path / "config"
+    data = tmp_path / "data" / "intl_macro"
+    config.mkdir()
+    data.mkdir(parents=True)
+    (config / "intl_country_baseline.json").write_text(json.dumps({"schema": SCHEMA}))
+    event = review_event(item, "review_required", "2026-10-19T10:00:00+00:00")
+    (data / "country_inputs.json").write_text(json.dumps(
+        {"schema": SCHEMA, "policy_decisions": [item], "policy_reviews": [event]}))
+    for _ in range(2):
+        result = load_country_inputs(tmp_path / "data", tmp_path)
+        assert result["policy_decisions"][0]["first_observed_at"] == item["first_observed_at"]
+        assert result["policy_reviews"][0]["observed_at"] == event["observed_at"]
+
+
+def test_primary_qualification_failure_is_not_attributed_to_a_support_download(monkeypatch):
+    from collectors import intl_policy_sources as parser
+    rba = next(r for r in parser.RELEASES if r["cc"] == "AU")
+    monkeypatch.setattr(parser, "RELEASES", (rba,))
+    source = b"<p>The announcement content requires another review.</p>"
+    history = b"<p>Effective Date Change % points Cash rate target % Related Documents 30 Sep 2026 +0.25 4.60 Statement Minutes 12 Aug 2026 0.00 4.35</p>"
+    result = parser.collect_registered_policy(
+        lambda url, **kwargs: source if url == parser.RBA_URL else history,
+        retrieved_at="2026-10-19T10:00:00+00:00")
+    assert not result["policy_decisions"]
+    assert result["errors"][0]["stage"] == "qualification"
+    assert "failed_url" not in result["errors"][0]
+    assert result["policy_reviews"][0]["status"] == "review_required"
+    old = baseline_policy("AU")
+    assert select_policy_decision([old], "AU", review_events=result["policy_reviews"],
+                                  operational_as_of="2026-10-19T10:01:00+00:00")["state"] == "review_required"
+
+
+def future_bank_rate():
+    return normalize_policy_decision(raw(
+        value=4.0, previous_value=3.75, action="increase", decision_date="2026-10-15",
+        published="2026-10-15", effective_date="2026-11-01", last_change_date="2026-11-01",
+        first_observed_at="2026-10-18T12:00:00+00:00", source_sha256="a" * 64))
+
+
+def test_future_announcement_does_not_restore_withdrawn_effective_decision():
+    current = normalize_policy_decision(raw(source_sha256="b" * 64))
+    future = future_bank_rate()
+    events = [review_event(current, "review_required", "2026-10-19T10:00:00+00:00"),
+              review_event(future, "verified", "2026-10-19T10:05:00+00:00")]
+    result = select_policy_decision([current, future], "GB", review_events=events,
+                                    operational_as_of="2026-10-19T10:06:00+00:00")
+    assert result["record_id"] == current["record_id"]
+    assert result["state"] == "review_required" and not result["current"]
+    assert result["announced"]["record_id"] == future["record_id"]
+    assert result["announced"]["state"] == "announced"
+    effective = select_policy_decision([current, future], "GB", review_events=events,
+                                       operational_as_of="2026-11-01T12:00:00+00:00")
+    assert effective["record_id"] == future["record_id"] and effective["current"]
+
+
+def test_announcement_requires_its_own_qualification():
+    current = normalize_policy_decision(raw(source_sha256="b" * 64))
+    future = future_bank_rate()
+    events = [review_event(future, "review_required", "2026-10-19T10:00:00+00:00")]
+    result = select_policy_decision([current, future], "GB", review_events=events,
+                                    operational_as_of="2026-10-19T10:01:00+00:00")
+    assert not result["current"]
+    assert result["announced"]["state"] == "review_required"
+    assert not result["announced"]["current"]
+
+
+def test_custody_reconstruction_keeps_the_earliest_complete_record():
+    early = baseline_policy("AU")
+    later = deepcopy(early)
+    later["first_observed_at"] = "2026-10-19T10:30:00+00:00"
+    later["source_sha256"] = "d" * 64
+    for support in later["supporting_sources"]:
+        support["source_sha256"] = "e" * 64
+        support["retrieved_at"] = "2026-10-19T10:20:00+00:00"
+    for baseline, refreshed in ((later, early), (early, later)):
+        merged = merge_policy_decisions([baseline], [refreshed], preserve_custody=True)
+        assert len(merged) == 1
+        assert merged[0]["first_observed_at"] == early["first_observed_at"]
+        assert merged[0]["source_sha256"] == early["source_sha256"]
+        assert merged[0]["supporting_sources"] == early["supporting_sources"]
+        assert select_policy_decision(merged, "AU",
+                   operational_as_of="2026-10-19T09:50:00+00:00")["current"]
+    ingested = merge_policy_decisions([later], [early], observed_at="2026-10-19T12:00:00+00:00")
+    assert ingested[0]["first_observed_at"] == later["first_observed_at"]
+
+
+def test_first_qualification_failure_has_review_state_without_an_invented_rate():
+    item = baseline_policy("AU")
+    event = review_event(item, "review_required", "2026-10-19T10:00:00+00:00")
+    assert select_policy_decision([], "AU", review_events=[event],
+               operational_as_of="2026-10-19T09:59:59+00:00") is None
+    result = select_policy_decision([], "AU", review_events=[event],
+                                    operational_as_of="2026-10-19T10:01:00+00:00")
+    assert result is not None and result["state"] == "review_required"
+    assert result["record_id"] is None and not result["current"]
+    assert "value" not in result and "rationale_en" not in result
+
+
+def test_other_release_url_cannot_restore_a_withdrawn_source():
+    one = normalize_policy_decision(raw(source_sha256="b" * 64))
+    two = normalize_policy_decision(raw(source_sha256="c" * 64,
+                        source_url="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/september-reviewed-copy"))
+    before = select_policy_decision([one, two], "GB", operational_as_of="2026-10-19T10:00:00+00:00")
+    selected_record = next(r for r in (one, two) if r["record_id"] == before["record_id"])
+    other = next(r for r in (one, two) if r["record_id"] != before["record_id"])
+    events = [review_event(selected_record, "review_required", "2026-10-19T10:01:00+00:00"),
+              review_event(other, "verified", "2026-10-19T10:02:00+00:00")]
+    after = select_policy_decision([one, two], "GB", review_events=events,
+                                   operational_as_of="2026-10-19T10:03:00+00:00")
+    assert after["state"] == "review_required" and not after["current"]

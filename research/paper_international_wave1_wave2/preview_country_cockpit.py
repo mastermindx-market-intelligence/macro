@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 from hashlib import sha256
+from os.path import relpath
 import json
 from pathlib import Path
 import subprocess
@@ -78,7 +79,8 @@ def main():
         inputs = collect_country_inputs(fetch_bytes, retrieved_at=retrieved)
         inputs.pop("cpi_series", None)
         path.write_text(json.dumps(inputs, ensure_ascii=False, indent=2)+"\n")
-    inputs = merge_country_inputs(json.loads((ROOT/"config/intl_country_baseline.json").read_text()), inputs)
+    inputs = merge_country_inputs(json.loads((ROOT/"config/intl_country_baseline.json").read_text()), inputs,
+                                  preserve_custody=args.reuse_inputs)
     path.write_text(json.dumps(inputs, ensure_ascii=False, indent=2)+"\n")
     result = subprocess.run(["git", "show", BASE+":data/intl/latest.json"], cwd=ROOT,
                             capture_output=True, text=True, check=True)
@@ -89,11 +91,18 @@ def main():
         for record in latest['records']:
             if record['cc'] in replay:
                 record['equity'] = replay[record['cc']]
+    currency_replay_path = args.output_dir / "currency_replay.json"
+    if currency_replay_path.exists():
+        currency_replay = json.loads(currency_replay_path.read_text())
+        for record in latest["records"]:
+            if record["cc"] in currency_replay:
+                record["currency_observation"] = currency_replay[record["cc"]]
     today = datetime.now(timezone.utc).date()
     assessment = build_country_assessments(latest, today=today,
                                           official=inputs["official"], forecasts=inputs["forecasts"],
                                           forecast_archive=inputs.get("forecast_archive"),
                                           policy_decisions=inputs.get("policy_decisions"),
+                                          policy_reviews=inputs.get("policy_reviews"),
                                           commentary=json.loads((ROOT/"config/intl_country_commentary.json").read_text())["countries"])
     environment = Environment(loader=FileSystemLoader(ROOT/"templates"), autoescape=False)
     environment.globals.update(t=i18n.t, tr=i18n.tr, td=i18n.td)
@@ -122,8 +131,9 @@ def main():
     paper_receipt_path = ROOT / "research/paper_international_wave1_wave2/paper_r12_receipt.json"
     paper_receipt = json.loads(paper_receipt_path.read_text()) if paper_receipt_path.exists() else {}
     manifest = {"base":BASE, "kind":"SOURCE_BACKED_LOCAL_RENDER_NOT_PUBLISHED",
-                "paper_design":{"receipt":"../paper_r12_receipt.json",
+                "paper_design":{"receipt":relpath(paper_receipt_path, args.output_dir),
                                 "applied":paper_receipt.get("finish_observed", False),
+                                "scope":"Only effects bound by the named Paper receipt are asserted; later rendered content is not compared.",
                                 "boards":paper_receipt.get("boards", {})},
                 "html_sha256":{"intl_country_preview.html":sha256(html.encode()).hexdigest(),
                                "intl_integrated_preview.html":sha256(macro_html.encode()).hexdigest(),
@@ -133,6 +143,7 @@ def main():
                 "outlook_coverage":{c["cc"]:list(c["outlook"]["series"]) for c in assessment["countries"]}, "sources":inputs.get("sources"),
                 "policy_coverage":{c["cc"]:c["policy_decision"]["state"] for c in assessment["countries"] if c["policy_decision"]},
                 "world_brief":assessment["world_brief"],
+                "currency_coverage":{c["cc"]:c["market"]["currency_observation"] for c in assessment["countries"]},
                 "errors":inputs.get("errors"), "errors_observed_at":inputs.get("errors_observed_at"),
                 "sha256":sha256(html.encode()).hexdigest()}
     (args.output_dir/"manifest.json").write_text(json.dumps(manifest,indent=2)+"\n")
