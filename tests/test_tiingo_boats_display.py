@@ -43,6 +43,14 @@ def test_quote_clock_failure_cannot_erase_or_refresh_a_valid_trade(quote_offset)
  assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
 
 
+@pytest.mark.parametrize('kind', ['Q', 'T', 'B'])
+def test_invalid_identity_remains_fail_closed_for_every_message_kind(kind):
+ r=reducer();consume(r,frame())
+ obj=json.loads(frame(kind,1));obj['data'][3]=123
+ consume(r,json.dumps(obj),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
 def test_malformed_quote_clock_does_not_change_last_trade_state():
  r=reducer();consume(r,frame())
  original=r.snapshot(NOW)['quotes']['AMD'].copy()
