@@ -701,6 +701,7 @@ def _snapshot_payload(
         "security_id": security_id,
         "state": state,
         "rows": [_story_row(row, permitted=permitted) for row in snapshot.rows],
+        "change_sequence": snapshot.change_sequence,
         "next_cursor": snapshot.next_cursor,
         "has_more": snapshot.has_more,
         "source_health": dict(health),

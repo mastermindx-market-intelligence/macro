@@ -13,7 +13,7 @@
   function symbol(value){var s=typeof value==="string"?value.trim().replace(/^\$/,"").toUpperCase():"";return /^[A-Z][A-Z0-9.\-]{0,11}$/.test(s)?s:"";}
   function safeURL(value){try{var u=new URL(value);return /^(https?:)$/.test(u.protocol)&&!u.username&&!u.password?u.href:"";}catch(_){return "";}}
   function validSnapshot(p,ticker){
-    return !!(p&&p.schema==="ticker_news.snapshot.v1"&&p.ticker===ticker&&Array.isArray(p.rows)&&p.rows.length<=200&&typeof p.has_more==="boolean"&&(!p.has_more||Number.isSafeInteger(p.next_cursor)&&p.next_cursor>0)&&p.rows.every(function(r){return r&&typeof r.story_id==="string"&&r.story_id.length>0&&typeof r.title==="string"&&Number.isSafeInteger(r.sequence)&&r.sequence>0;})&&new Set(p.rows.map(function(r){return r.story_id;})).size===p.rows.length);
+    return !!(p&&p.schema==="ticker_news.snapshot.v1"&&p.ticker===ticker&&Array.isArray(p.rows)&&p.rows.length<=200&&(p.change_sequence===undefined||Number.isSafeInteger(p.change_sequence)&&p.change_sequence>=0)&&typeof p.has_more==="boolean"&&(!p.has_more||Number.isSafeInteger(p.next_cursor)&&p.next_cursor>0)&&p.rows.every(function(r){return r&&typeof r.story_id==="string"&&r.story_id.length>0&&typeof r.title==="string"&&Number.isSafeInteger(r.sequence)&&r.sequence>0;})&&new Set(p.rows.map(function(r){return r.story_id;})).size===p.rows.length);
   }
   function parser(emit){var buffer="";return function(chunk){
     buffer+=chunk;if(buffer.length>1048576)throw new Error("stream frame too large");
@@ -29,13 +29,14 @@
     var zh=function(){return doc.documentElement.dataset.lang==="zh";},tx=function(en,cn){return zh()?cn:en;};
     var fixed=symbol(panel.dataset.ticker),current="",cursor=null,packet=null,filter="signal",visibleIds=[],pendingIds=[];
     var generation=0,requests=new Set(),groupRequests=new Map(),timers=new Map(),stream=null,refreshing=false,dirty=false,disposed=false;
+    var inbox=[],holdNews=false,deliverySequence=0,projectionReady=false;
     function node(tag,cls,text){var n=doc.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=String(text);return n;}
     function later(key,fn,ms){cancel(key);timers.set(key,win.setTimeout(function(){timers.delete(key);fn();},ms));}
     function cancel(key){if(timers.has(key))win.clearTimeout(timers.get(key));timers.delete(key);}
     function active(id){return !disposed&&!doc.hidden&&id===generation;}
     function status(state,en,cn){var e=find("status");e.dataset.state=state;e.textContent=tx(en,cn);}
     function stopStream(){cancel("renew");if(stream){stream.abort();stream=null;}}
-    function stop(){generation++;requests.forEach(function(c){c.abort();});requests.clear();groupRequests.forEach(function(c){c.abort();});groupRequests.clear();stopStream();timers.forEach(function(id){win.clearTimeout(id);});timers.clear();refreshing=false;dirty=false;}
+    function stop(){generation++;requests.forEach(function(c){c.abort();});requests.clear();groupRequests.forEach(function(c){c.abort();});groupRequests.clear();stopStream();timers.forEach(function(id){win.clearTimeout(id);});timers.clear();refreshing=false;dirty=false;clearPending();deliverySequence=0;projectionReady=false;}
     function purge(){packet=null;visibleIds=[];pendingIds=[];find("rows").replaceChildren();find("updates").hidden=true;find("more").hidden=true;find("coverage").hidden=true;find("count").textContent="";}
     function message(text){find("message").textContent=text;find("message").hidden=!text;}
     function time(value){var n=Date.parse(value);return Number.isFinite(n)?new Intl.DateTimeFormat(zh()?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short"}).format(n):tx("Time not supplied","未提供时间");}
@@ -97,6 +98,73 @@
         details.appendChild(summary);if(comparisonInfo)details.appendChild(node("p","tn-comparison-note",comparisonInfo.note));details.appendChild(node("div","tn-members"));details.addEventListener("toggle",function(){if(!details.open){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);}else loadGroup(details,row);});card.appendChild(details);
       }return card;
     }
+    function validChange(kind,p){
+      return !!(p&&p.kind===kind&&typeof p.story_id==="string"&&p.story_id.length>0&&p.story_id.length<=256&&Number.isSafeInteger(p.sequence)&&p.sequence>0);
+    }
+    function completeProjection(p){
+      var own=function(k){return Object.prototype.hasOwnProperty.call(p,k);};
+      var nullableTime=function(k){return own(k)&&(p[k]===null||typeof p[k]==="string"&&Number.isFinite(Date.parse(p[k])));};
+      return Number.isSafeInteger(p.projection_sequence)&&p.projection_sequence>0&&
+        ["source","source_item_id","title","url","teaser","publisher"].every(function(k){return typeof p[k]==="string";})&&
+        p.title.length>0&&Number.isSafeInteger(p.item_count)&&p.item_count>0&&
+        Number.isSafeInteger(p.source_count)&&p.source_count>0&&p.source_count<=p.item_count&&
+        ["published_at","updated_at","received_at"].every(nullableTime)&&
+        ["not_compared","reports_differ","no_material_difference","comparison_limited"].includes(p.reporting_state)&&
+        own("quality")&&(p.quality===null||typeof p.quality==="object"&&!Array.isArray(p.quality)&&
+          typeof p.quality.low_value==="boolean"&&Number.isFinite(p.quality.score))&&
+        own("annotation")&&(p.annotation===null||typeof p.annotation==="object"&&!Array.isArray(p.annotation));
+    }
+    function projection(p){
+      var row={sequence:p.projection_sequence};
+      ["story_id","source","source_item_id","title","url","teaser","publisher","provider","source_count",
+        "item_count","published_at","updated_at","received_at","observed_at","universe_revision",
+        "quality","annotation","reporting_state"].forEach(function(k){if(Object.prototype.hasOwnProperty.call(p,k))row[k]=p[k];});
+      return row;
+    }
+    function orderRows(a,b){return b.sequence-a.sequence||(a.story_id<b.story_id?-1:a.story_id>b.story_id?1:0);}
+    function clearPending(){cancel("apply");inbox=[];holdNews=false;}
+    function clearGroupDetails(){
+      groupRequests.forEach(function(c){c.abort();});groupRequests.clear();
+      find("rows").querySelectorAll("details").forEach(function(d){d.open=false;d.dataset.loaded="0";var body=d.querySelector(".tn-members");if(body)body.replaceChildren();});
+    }
+    function removeStory(storyId){
+      if(!packet)return;
+      packet.rows=packet.rows.filter(function(r){return r.story_id!==storyId;});
+      visibleIds=visibleIds.filter(function(id){return id!==storyId;});
+      pendingIds=pendingIds.filter(function(id){return id!==storyId;});
+    }
+    function flushChanges(){
+      if(!packet||cursor!==null||doc.hidden||disposed){clearPending();return;}
+      var rows=new Map(packet.rows.map(function(r){return [r.story_id,r];})),oldVisible=new Set(visibleIds),hold=holdNews;
+      inbox.forEach(function(change){
+        if(change.kind==="remove")rows.delete(change.story_id);
+        else rows.set(change.story_id,projection(change)); // Replace the complete authorized projection as one unit.
+      });
+      inbox=[];holdNews=false;packet.rows=Array.from(rows.values()).sort(orderRows);
+      if(packet.rows.length>40){packet.rows=packet.rows.slice(0,40);packet.has_more=true;}
+      // Snapshot pagination is exclusive (< cursor): use the last KEPT row.
+      if(packet.has_more&&packet.rows.length)packet.next_cursor=packet.rows[packet.rows.length-1].sequence;
+      if(hold){
+        var present=new Set(packet.rows.map(function(r){return r.story_id;}));
+        visibleIds=visibleIds.filter(function(id){return present.has(id);});
+        pendingIds=packet.rows.filter(function(r){return !oldVisible.has(r.story_id);}).map(function(r){return r.story_id;});
+      }else{visibleIds=packet.rows.map(function(r){return r.story_id;});pendingIds=[];}
+      render();
+    }
+    function receiveChange(kind,p){
+      if(!validChange(kind,p)){invalidate();return;}
+      if(p.sequence<=deliverySequence)return;
+      deliverySequence=p.sequence; // Delivery position never orders display rows.
+      if(kind==="upsert"&&(!projectionReady||!completeProjection(p))){
+        // An older/partial contract cannot safely retain omitted permission fields.
+        removeStory(p.story_id);render();invalidate();return;
+      }
+      if(inbox.length>=200){invalidate();return;}
+      holdNews=holdNews||panel.contains(doc.activeElement)||panel.getBoundingClientRect().top<0;
+      inbox.push(p);
+      if(kind==="remove"){cancel("apply");flushChanges();}
+      else if(!timers.has("apply"))later("apply",flushChanges,16);
+    }
     function render(){
       panel.querySelector(".tn-filters").setAttribute("aria-label",tx("News coverage","新闻覆盖"));
       find("symbol").textContent=current;find("terminal").href="https://app.mastermind-x.com/terminal?sym="+encodeURIComponent(current)+"&from=macro-dossier";
@@ -126,38 +194,44 @@
       find("coverage").textContent=extras.map(function(e){var labels={available:tx("Additional reporting: refresh complete","补充报道：刷新完成"),waiting:tx("Additional reporting: awaiting refresh","补充报道：等待刷新"),restricted:tx("Additional reporting: permission required","补充报道：需要授权"),unavailable:tx("Additional reporting: unavailable","补充报道：暂不可用")};return (labels[e.state]||tx("Additional reporting: refresh delayed","补充报道：刷新延迟"))+(e.last_successful_poll?tx(" · Last completed "," · 最近完成 ")+time(e.last_successful_poll):"");}).join(" · ");
     }
     function accept(p,background){
-      var old=new Set(visibleIds);packet=p;
-      var hold=background&&(panel.contains(doc.activeElement)||panel.getBoundingClientRect().top<0);
+      var old=new Set(visibleIds),hold=background&&(panel.contains(doc.activeElement)||panel.getBoundingClientRect().top<0);
+      clearGroupDetails();packet=p;
       if(hold){visibleIds=visibleIds.filter(function(id){return p.rows.some(function(r){return r.story_id===id;});});pendingIds=p.rows.filter(function(r){return !old.has(r.story_id);}).map(function(r){return r.story_id;});}
       else{visibleIds=p.rows.map(function(r){return r.story_id;});pendingIds=[];}
       render();
     }
     function invalidate(){
+      stopStream();clearPending();
       if(refreshing){dirty=true;return;}
       if(!timers.has("change"))later("change",function(){refresh(true);},40);
     }
     async function connectStream(id,after){
       if(!active(id)||cursor!==null||stream)return;
       var controller=new AbortController();stream=controller;
-      later("renew",function(){stopStream();if(active(id))refresh(true);},240000);
+      var connected=function(){return active(id)&&stream===controller&&!controller.signal.aborted&&cursor===null;};
+      later("renew",function(){if(connected())refresh(true);},240000);
       try{
         var response=await request("/api/ticker-news/"+encodeURIComponent(current)+"/stream?after_sequence="+after,controller,"text/event-stream");
-        if(!active(id)||controller.signal.aborted)return;
+        if(!connected())return;
         if(!response.body||typeof response.body.getReader!=="function")throw new Error("stream unsupported");
         var reader=response.body.getReader(),decoder=new TextDecoder(),parse=parser(function(event,p){
-          if(!active(id))return;
-          if(event==="restricted"){stop();purge();status("restricted","Refreshing source access","正在更新来源权限");later("access",function(){refresh(false);},1000);}
-          else if(event==="unavailable"){stopStream();status("degraded","Live updates interrupted","实时更新已中断");later("reconnect",function(){refresh(true);},5000);}
-          else if((event==="upsert"||event==="remove")&&Number.isSafeInteger(p.sequence))invalidate();
+          if(!connected())return;
+          if(event==="restricted"||event==="reset"){stop();purge();status("restricted","Refreshing source access","正在更新来源权限");later("access",function(){refresh(false);},1000);}
+          else if(event==="unavailable"){stopStream();clearPending();status("degraded","Live updates interrupted","实时更新已中断");later("reconnect",function(){refresh(true);},5000);}
+          else if(event==="upsert"||event==="remove")receiveChange(event,p);
+          else invalidate();
         });
-        while(active(id)&&!controller.signal.aborted){var chunk=await reader.read();if(chunk.done)break;parse(decoder.decode(chunk.value,{stream:true}));}
-        if(active(id)&&!controller.signal.aborted)throw new Error("stream closed");
-      }catch(error){if(active(id)&&!controller.signal.aborted){status("degraded","Live updates interrupted","实时更新已中断");later("reconnect",function(){refresh(true);},5000);}}
+        while(connected()){var chunk=await reader.read();if(chunk.done)break;parse(decoder.decode(chunk.value,{stream:true}));}
+        if(connected())throw new Error("stream closed");
+      }catch(error){if(connected()){stopStream();clearPending();status("degraded","Live updates interrupted","实时更新已中断");later("reconnect",function(){refresh(true);},5000);}}
       finally{if(stream===controller){stream=null;cancel("renew");}}
     }
     async function refresh(background){
       if(!current||doc.hidden||disposed)return;
       if(refreshing){dirty=true;return;}
+      // Fence the previous stream before asking for an authoritative snapshot.
+      // Reconnect from its atomic journal watermark; never replay old callbacks.
+      stopStream();clearPending();cancel("change");cancel("reconnect");
       var id=generation,controller=new AbortController();requests.add(controller);refreshing=true;
       var timeout=win.setTimeout(function(){controller.abort();},12000);
       if(!background)status("loading","Loading reporting…","正在加载报道…");
@@ -165,8 +239,10 @@
         var p=await request("/api/ticker-news/"+encodeURIComponent(current)+"?limit=40"+(cursor===null?"":"&cursor="+cursor),controller);
         if(!active(id)||controller.signal.aborted)return;
         if(!validSnapshot(p,current))throw new Error("invalid snapshot");
+        projectionReady=Number.isSafeInteger(p.change_sequence);
+        deliverySequence=projectionReady?p.change_sequence:Math.max(deliverySequence,p.rows.reduce(function(max,r){return Math.max(max,r.sequence);},0));
         accept(p,background);
-        if(cursor===null&&!stream)connectStream(id,p.rows.reduce(function(max,r){return Math.max(max,r.sequence);},0));
+        if(cursor===null)connectStream(id,deliverySequence);
       }catch(error){if(active(id))errorState(error);}
       finally{win.clearTimeout(timeout);requests.delete(controller);if(id===generation){refreshing=false;if(dirty){dirty=false;invalidate();}}}
     }
@@ -184,7 +260,7 @@
     win.addEventListener("mmx-ticker-news",function(event){var next=symbol((event.detail||{}).ticker);if(next&&next!==current)start(next);});
     if(!fixed)win.addEventListener("hashchange",function(){var next=symbol(decodeURIComponent(win.location.hash.slice(1)));if(next&&next!==current)start(next);});
     var initial=fixed||symbol(decodeURIComponent(win.location.hash.slice(1)));if(initial)start(initial);else{status("idle","Choose a company","选择一家公司");message(tx("Choose a stock to see its reporting.","选择股票以查看相关新闻。"));}
-    return {start:start,getState:function(){return {ticker:current,cursor:cursor,filter:filter,ids:visibleIds.slice(),pending:pendingIds.slice()};}};
+    return {start:start,getState:function(){return {ticker:current,cursor:cursor,filter:filter,ids:visibleIds.slice(),pending:pendingIds.slice(),deliverySequence:deliverySequence,projectionReady:projectionReady};}};
   }
   return {symbol:symbol,safeURL:safeURL,validSnapshot:validSnapshot,parser:parser,mount:mount};
 });

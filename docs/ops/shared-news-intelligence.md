@@ -100,9 +100,13 @@ not a claim that the organization has no other agreement or credential.
 
 ## Duplicate groups and quality
 
-Clustering is conservative. Candidate lookup first restricts to the same security
-and immutable anchor-time window, then applies the candidate cap. Unrelated bursts
-can no longer evict relevant candidates before matching. Subject unions are retained
+Clustering is conservative. The derived character-bigram index restricts posting
+reads to the same security and immutable anchor-time window, then uses bounded
+frequency-selected probes and fingerprint scoring before the existing pure matcher.
+The default budgets are 1,024 examined posting rows and 128 fingerprint candidates.
+The reproduced unrelated-burst miss is repaired, but saturated budgets can still
+leave duplicates separate; `retrieval_truncated` records that limitation. Existing
+source/item identity is resolved before fuzzy retrieval. Subject unions are retained
 when a cluster gains a report tagged to another ticker.
 
 Existing number, period, rating-direction, negation and actor guards remain.
@@ -137,10 +141,12 @@ extra poll delay. Rights are checked after in-flight reads and before each
 delivered row; any changed effective scope ends the stream and asks clients to
 clear their old scope.
 
-Change events invalidate current story projection; they are not a historical
-reconstruction of every intermediate report. Journal pages are coalesced by story
-in one read transaction. A removal is emitted when no report remains eligible
-for the requested ticker and audience.
+Change events carry the current authorized story projection; they are not a
+historical reconstruction of every intermediate report. Journal pages are coalesced
+by story in one read transaction. `sequence` consumes the delivery journal while
+`projection_sequence` orders the current group. Snapshot `change_sequence` is the
+global journal watermark from the same SQLite read transaction as its rows. A removal
+is emitted when no report remains eligible for the requested ticker and audience.
 
 Evidence bundles use the same current grouping and field projection. They include
 exact report revision IDs, clocks, receipt references and a content digest, with
@@ -346,3 +352,75 @@ production callers and their explicit audience/source grants remain to be
 qualified. Additional-publisher activation and actual publisher coverage remain
 open. Existing source receipts, the canonical writer and publication authority
 are unchanged by these local proofs.
+
+### Retrieval and direct browser delivery qualification — 20 October 2026, 10:35 UTC
+
+The continuation independently repaired the returned index source and qualified it
+on the original integration branch. Posting keys include the immutable anchor's UTC
+microsecond clock, so out-of-window history cannot consume the current-window raw
+row budget. Retained-subject expansion preserves that clock. A reverse cluster index
+bounds repair work; missing or outdated fingerprints rebuild with consistent document
+frequencies in the writer transaction. Candidate and posting saturation stay explicit.
+The original builder's ineligible execution receipt remains unaccepted.
+
+The existing registered news job passed **757 tests** on the combined candidate,
+including atomic snapshot/read concurrency and distinct delivery/projection cursors.
+All **nine recovered reproduction cases** pass without modifying the tested source.
+New retrieval files are registered through 13 existing exclusive CI scopes; no scope
+ceiling, test or gate was waived. The final differential CI contract check and hosted
+CI remain separate release gates.
+
+The shipped browser applies complete authorized upsert/remove projections directly.
+It replaces the whole row, uses the projection clock for order and the journal clock
+for delivery, and reconciles incomplete or older contracts through a snapshot.
+Every refresh aborts and fences the prior stream before accepting the snapshot and
+reconnecting from its atomic watermark. Restriction, sign-out and ticker changes
+purge prior content and pending callbacks. The 40-row cap uses the last retained
+row as the exclusive pagination cursor, keeping the first dropped report reachable.
+
+The real local SSE fixture passed **49 checks**, with zero scenario failures and zero
+browser errors. The rendered desktop/phone/Chinese fixture passed **11 checks** with
+zero browser errors. Recorded fictional-fixture delivery timings were 22.7 ms for
+an upsert, 25.6 ms for a correction and 5.0 ms for a removal. These measure local
+server-to-DOM behavior only; they are not provider-to-screen production latency.
+
+Reproducible same-host fixtures compare the 4d5f baseline with the repaired source:
+at 2,048 distinct same-security noise reports, ten duplicate full commits had median
+11.56 ms before and 1.44 ms after. The whole initial ingestion rose from 4.49 s to
+10.57 s; the largest 256-item commit in that fixture rose from 0.61 s to 1.43 s.
+These are deliberately repetitive adversarial titles, with truthful saturation
+counts, not a sampled production traffic distribution. The index trades additional
+writer work and storage for bounded retrieval and recovery of the missed duplicate.
+
+A 6,000-cluster fixture, sized against a read-only observation of 5,993 production
+clusters, rebuilt the derived index on first writer open in 1.14 s; warm opens had
+median 5.67 ms and maximum 6.83 ms. It preserved all canonical clusters and rebuilt
+6,000 fingerprints, 139,202 postings and 154 frequency rows. Main database size was
+45.0 MB, with a 16.8 MB WAL after rebuilding, versus a 22.0 MB baseline fixture.
+This qualifies current-size local startup cost, not unlimited-history scaling.
+
+Evidence and its exact source digests are in
+`artifacts/news-shared-integration-20261020-c3/retrieval/`,
+`stream-ui/` and `ui/`. The benchmark harness is
+`scripts/benchmark_qbus_news_retrieval.py`; the live browser harness is
+`scripts/verify_ticker_news_stream_ui.py`.
+
+Terminal #1088 passed independent review and binding CI and merged through the
+normal protected-branch API as `8b8b217fdf799713f8b4a906bc0d4564d8aa20a2`.
+Its exact-target normal production build is underway after a CLEAN source preflight.
+No completed Terminal deployment or Macro production rollout is claimed here.
+Additional-publisher grants and actual research/editorial caller admission remain
+open qualifications; the separately held sidebar and cockpit PRs keep their owners.
+
+### Terminal release readback — 20 October 2026, 10:40 UTC
+
+The normal exact-target owner completed successfully. Terminal's source checkout,
+deployment marker, localhost HTTP and public application HTTP all identify
+`8b8b217fdf799713f8b4a906bc0d4564d8aa20a2`; both readbacks returned 200 and the
+service was active. `terminal-release.json` records this generation proof.
+This establishes deployment of the qualified compatibility code, not activation
+of additional upstream publishers or completion of the held sidebar UI.
+
+The final local differential CI contract check also completed successfully against
+`13e098071ab2799c41a170d21ad522f751dfb15a`: zero introduced and zero inherited
+violations. The expanded manifest stays within all existing job/weight/pack ceilings.

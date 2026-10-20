@@ -392,6 +392,7 @@ def test_live_upsert_contains_the_display_fields_needed_without_another_snapshot
             "received_at", "universe_revision", "reporting_state", "publisher", "quality",
         ):
             assert payload[field] == expected[field], field
+        assert payload["projection_sequence"] == expected["sequence"]
         assert "reporting_sources" not in payload
     asyncio.run(scenario())
 
@@ -454,3 +455,77 @@ def test_evidence_reread_after_correction_carries_new_revision_and_hash(tmp_path
     assert after["evidence_sha256"] != before["evidence_sha256"]
     assert after["stories"][0]["reports"][0]["revision_id"] == correction.revision.revision_id
     assert after["stories"][0]["reports"][0]["title"] == correction.revision.title
+
+
+def test_snapshot_rows_and_delivery_watermark_share_one_read_view(tmp_path):
+    db = tmp_path / "atomic-view.db"
+    with NewsStore(db, source_key="writer") as writer:
+        writer.commit([benzinga()], expected_cursor=None, next_cursor="1")
+        with NewsStore.open_readonly(db, source_key="reader") as reader:
+            fired = []
+
+            def commit_between_snapshot_queries(sql):
+                if not fired and "SELECT m.cluster_id, s.last_sequence" in sql:
+                    fired.append(True)
+                    writer.commit(
+                        [benzinga(title="Nvidia delays new AI accelerator", minute=2)],
+                        expected_cursor="1", next_cursor="2",
+                    )
+
+            reader._conn.set_trace_callback(commit_between_snapshot_queries)
+            before = reader.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights())
+            reader._conn.set_trace_callback(None)
+            assert fired
+            assert before.change_sequence == before.rows[0].sequence == 1
+            assert before.rows[0].title == TITLE
+            assert not reader._conn.in_transaction
+
+            after = reader.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights())
+            assert after.change_sequence == after.rows[0].sequence == 2
+            assert after.rows[0].title == "Nvidia delays new AI accelerator"
+
+
+def test_snapshot_delivery_watermark_is_independent_of_visible_page(tmp_path):
+    from app.ticker_news import _snapshot_payload
+    with NewsStore(tmp_path / "watermark.db", source_key="writer") as store:
+        store.commit(
+            [benzinga(), benzinga("apple", "Apple opens a new service center", securities=("sec-AAPL",))],
+            expected_cursor=None, next_cursor="2",
+        )
+        page = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights())
+        empty = store.snapshot("sec-MSFT", limit=20, cursor=None, rights=all_rights())
+        assert page.rows[0].sequence == 1
+        assert page.change_sequence == empty.change_sequence == 2
+        assert empty.rows == ()
+        payload = _snapshot_payload(
+            ticker="NVDA", security_id="sec-NVDA", snapshot=page,
+            health={"state": "live"}, permitted=False,
+        )
+        assert payload["change_sequence"] == 2
+        assert payload["next_cursor"] == 1
+
+
+def test_current_group_order_does_not_skip_unconsumed_journal_rows(tmp_path):
+    with NewsStore(tmp_path / "projection-order.db", source_key="writer") as store:
+        store.commit(
+            [
+                benzinga("deal", "Nvidia acquisition consideration is $8.2 billion", minute=1),
+                benzinga("factory", "Nvidia wins regulatory approval for a new factory", minute=2),
+                benzinga("deal", "Nvidia acquisition consideration rises to $9.1 billion", minute=3),
+            ],
+            expected_cursor=None, next_cursor="3",
+        )
+        snapshot = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights())
+        first = store.projected_changes_for_security(
+            "sec-NVDA", after_sequence=0, limit=1, rights=all_rights(),
+        )
+        assert first.rows[0].sequence == first.next_sequence == 1
+        assert first.rows[0].projection_sequence == snapshot.rows[0].sequence == 3
+        assert first.rows[0].title == snapshot.rows[0].title
+        assert "$9.1" in first.rows[0].title
+        second = store.projected_changes_for_security(
+            "sec-NVDA", after_sequence=first.next_sequence, limit=1, rights=all_rights(),
+        )
+        assert second.rows[0].sequence == second.next_sequence == 2
+        assert second.rows[0].projection_sequence == snapshot.rows[1].sequence == 2
+        assert "factory" in second.rows[0].title

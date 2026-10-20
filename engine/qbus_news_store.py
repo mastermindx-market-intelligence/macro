@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 import hashlib
 import json
 import os
@@ -32,6 +33,14 @@ from engine.qbus_news_cluster import (
     ClusterPolicy,
     cluster_candidates,
     cluster_policy_version,
+)
+from engine.qbus_news_retrieval import (
+    RETRIEVAL_POLICY_VERSION,
+    RetrievalEvidence,
+    index_cluster_backfill,
+    index_new_anchor,
+    index_subject_expansion,
+    retrieve_candidates,
 )
 from engine.qbus_news_reducer import NewsState, reduce_revision
 from engine.qbus_news_velocity import (
@@ -171,6 +180,7 @@ class NewsSnapshot:
     rows: tuple[StoryRow, ...]
     next_cursor: int | None
     has_more: bool
+    change_sequence: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,6 +203,7 @@ class ChangeRow:
     received_at: datetime | None = None
     reporting_state: str = "not_compared"
     reporting_sources: tuple[str, ...] = ()
+    projection_sequence: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -304,12 +315,48 @@ CREATE TABLE IF NOT EXISTS news_cluster_members (
     source_item_id TEXT NOT NULL,
     cluster_id TEXT NOT NULL,
     story_id TEXT NOT NULL,
+    retrieval_json TEXT,
     PRIMARY KEY(source, source_item_id),
     FOREIGN KEY(cluster_id) REFERENCES news_clusters(cluster_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_news_cluster_members_cluster
 ON news_cluster_members(cluster_id);
+
+-- Derived candidate-retrieval index (engine/qbus_news_retrieval.py). Pure
+-- optimization state for immutable anchors: written in the same transaction
+-- that mints a cluster or expands its retained subject union, never rewritten
+-- on member corrections, and rebuilt writer-only by the open-time backfill.
+-- A cluster is indexed iff it has a fingerprint row.
+CREATE TABLE IF NOT EXISTS news_cluster_fingerprints (
+    cluster_id TEXT PRIMARY KEY,
+    shingle_count INTEGER NOT NULL,
+    shingles_json TEXT NOT NULL,
+    indexed_policy TEXT NOT NULL,
+    FOREIGN KEY(cluster_id) REFERENCES news_clusters(cluster_id)
+) WITHOUT ROWID;
+
+CREATE TABLE IF NOT EXISTS news_cluster_postings (
+    security_id TEXT NOT NULL,
+    shingle TEXT NOT NULL,
+    anchor_observed_us INTEGER NOT NULL,
+    cluster_id TEXT NOT NULL,
+    PRIMARY KEY(security_id, shingle, anchor_observed_us, cluster_id),
+    FOREIGN KEY(cluster_id) REFERENCES news_clusters(cluster_id)
+) WITHOUT ROWID;
+
+CREATE INDEX IF NOT EXISTS idx_news_cluster_postings_cluster
+ON news_cluster_postings(cluster_id);
+
+CREATE TABLE IF NOT EXISTS news_shingle_df (
+    security_id TEXT NOT NULL,
+    shingle TEXT NOT NULL,
+    df INTEGER NOT NULL,
+    PRIMARY KEY(security_id, shingle)
+) WITHOUT ROWID;
+
+CREATE INDEX IF NOT EXISTS idx_news_clusters_anchor_story
+ON news_clusters(anchor_story_id);
 
 CREATE TABLE IF NOT EXISTS news_changes (
     sequence INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -637,6 +684,21 @@ def _cluster_policy_label(versions: list[str], in_force: str) -> str:
     return " + ".join(sorted(versions))
 
 
+def _read_snapshot(method):
+    """Keep a multi-query projection and its journal watermark on one DB view."""
+    @wraps(method)
+    def wrapped(self, *args, **kwargs):
+        own_transaction = not self._conn.in_transaction
+        if own_transaction:
+            self._conn.execute("BEGIN")
+        try:
+            return method(self, *args, **kwargs)
+        finally:
+            if own_transaction:
+                self._conn.execute("ROLLBACK")
+    return wrapped
+
+
 class NewsStore:
     """One local transactional store bound to one provider cursor namespace."""
 
@@ -792,6 +854,30 @@ class NewsStore:
                     )
                 ):
                     raise
+        # Additive column recording per-assignment candidate-retrieval evidence
+        # (engine/qbus_news_retrieval.py). Pre-existing rows stay NULL and read
+        # as "assigned before retrieval evidence existed", like the policy stamp
+        # above.
+        member_columns = self._conn.execute(
+            "PRAGMA table_info(news_cluster_members)"
+        ).fetchall()
+        if not any(str(col[1]) == "retrieval_json" for col in member_columns):
+            try:
+                self._conn.execute(
+                    "ALTER TABLE news_cluster_members"
+                    " ADD COLUMN retrieval_json TEXT"
+                )
+            except sqlite3.OperationalError as exc:
+                recheck = self._conn.execute(
+                    "PRAGMA table_info(news_cluster_members)"
+                ).fetchall()
+                if (
+                    "duplicate column name" not in str(exc).lower()
+                    or not any(
+                        str(col[1]) == "retrieval_json" for col in recheck
+                    )
+                ):
+                    raise
         self._conn.execute(
             "INSERT INTO qbus_meta(key,value) VALUES(?,?)"
             " ON CONFLICT(key) DO UPDATE SET value=excluded.value"
@@ -802,6 +888,39 @@ class NewsStore:
             ),
         )
         self._backfill_read_projection()
+        self._backfill_cluster_index()
+
+    def _backfill_cluster_index(self) -> None:
+        """Writer-only, deterministic derived-index migration.
+
+        Indexes clusters that predate the retrieval index (or were interrupted
+        mid-migration) in cluster_id order, in one transaction, so the next
+        open resumes instead of duplicating. Read-only opens never run this.
+        """
+        columns = {str(row[1]) for row in self._conn.execute(
+            "PRAGMA table_info(news_cluster_postings)"
+        ).fetchall()}
+        if "anchor_observed_us" not in columns:
+            raise StoreSchemaError("qbus_news_store:retrieval_index_layout_mismatch")
+        pending = self._conn.execute(
+            """
+            SELECT 1 FROM news_clusters c
+            LEFT JOIN news_cluster_fingerprints f
+              ON f.cluster_id = c.cluster_id
+            WHERE f.cluster_id IS NULL OR f.indexed_policy <> ?
+            LIMIT 1
+            """,
+            (RETRIEVAL_POLICY_VERSION,),
+        ).fetchone()
+        if pending is None:
+            return
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            index_cluster_backfill(self._conn)
+            self._conn.execute("COMMIT")
+        except Exception:
+            self._conn.execute("ROLLBACK")
+            raise
 
     def _backfill_read_projection(self) -> None:
         rows = self._conn.execute(
@@ -1072,47 +1191,22 @@ class NewsStore:
         ).fetchone()
         return None if row is None else str(row["cluster_id"])
 
-    def _cluster_candidates(self, incoming: ClusterItem) -> tuple[ClusterCandidate, ...]:
-        # Apply the same hard relevance/window constraints as the pure matcher
-        # BEFORE the bounded candidate budget. A market-wide burst must not evict
-        # a matching report for this security from the search horizon. Use the
-        # cluster's retained subject union, including corrected/withdrawn members,
-        # so this is a query optimization rather than a new matching policy.
-        if not incoming.subject_ids:
-            return ()
-        window = timedelta(seconds=self.cluster_policy.window_seconds)
-        rows = self._conn.execute(
-            """
-            SELECT cluster_id, anchor_story_id, anchor_title,
-                   anchor_observed_at, subject_ids_json, event_family
-            FROM news_clusters
-            WHERE anchor_observed_at BETWEEN ? AND ?
-              AND EXISTS (
-                  SELECT 1 FROM json_each(news_clusters.subject_ids_json) subjects
-                  WHERE subjects.value IN (SELECT value FROM json_each(?))
-              )
-            ORDER BY anchor_observed_at DESC, cluster_id
-            LIMIT ?
-            """,
-            (
-                (incoming.observed_at - window).isoformat(),
-                (incoming.observed_at + window).isoformat(),
-                _stable_json(list(incoming.subject_ids)),
-                self.cluster_policy.max_candidates + 1,
-            ),
-        ).fetchall()
-        return tuple(
-            ClusterCandidate(
-                cluster_id=str(row["cluster_id"]),
-                anchor_story_id=str(row["anchor_story_id"]),
-                anchor_title=str(row["anchor_title"]),
-                anchor_observed_at=datetime.fromisoformat(
-                    str(row["anchor_observed_at"])
-                ),
-                subject_ids=tuple(json.loads(row["subject_ids_json"])),
-                event_family=str(row["event_family"]),
-            )
-            for row in rows
+    def _cluster_candidates(
+        self, incoming: ClusterItem
+    ) -> tuple[tuple[ClusterCandidate, ...], "RetrievalEvidence"]:
+        """Bounded candidate anchors plus retrieval evidence for one assignment.
+
+        Delegates to the derived shingle index (engine/qbus_news_retrieval.py).
+        The same hard relevance/window constraints the pure matcher applies are
+        applied through indexed time bounds before candidate materialization.
+        Posting and fingerprint limits remain explicit incomplete-retrieval
+        conditions. The cluster's retained subject union — including
+        corrected/withdrawn members — is what the index covers, so this stays a
+        query optimization rather than a new matching policy: the pure matcher
+        remains the final judge of every candidate it is handed.
+        """
+        return retrieve_candidates(
+            self._conn, incoming, policy=self.cluster_policy
         )
 
     def _ensure_cluster_membership(
@@ -1131,14 +1225,20 @@ class NewsStore:
                     (existing,),
                 ).fetchone()
                 current = set(json.loads(row["subject_ids_json"])) if row else set()
-                merged = tuple(sorted(current | set(security_ids)))
-                self._conn.execute(
-                    """
-                    UPDATE news_clusters SET subject_ids_json=?
-                    WHERE cluster_id=?
-                    """,
-                    (_stable_json(list(merged)), existing),
-                )
+                added = set(security_ids) - current
+                if added:
+                    merged = tuple(sorted(current | set(security_ids)))
+                    self._conn.execute(
+                        """
+                        UPDATE news_clusters SET subject_ids_json=?
+                        WHERE cluster_id=?
+                        """,
+                        (_stable_json(list(merged)), existing),
+                    )
+                    self._expand_cluster_index(
+                        cluster_id=existing,
+                        added_security_ids=added,
+                    )
             return existing
 
         incoming = ClusterItem(
@@ -1149,11 +1249,13 @@ class NewsStore:
             subject_ids=tuple(security_ids),
             event_family="",
         )
+        candidates, retrieval_evidence = self._cluster_candidates(incoming)
         decision = cluster_candidates(
             incoming,
-            self._cluster_candidates(incoming),
+            candidates,
             policy=self.cluster_policy,
         )
+        retrieval_payload = retrieval_evidence.payload(decision=decision)
         cluster_id = decision.cluster_id
         if decision.action == "new":
             self._conn.execute(
@@ -1174,29 +1276,76 @@ class NewsStore:
                     cluster_policy_version(self.cluster_policy),
                 ),
             )
+            # Derived index for the fresh immutable anchor, same transaction.
+            index_new_anchor(
+                self._conn,
+                cluster_id=cluster_id,
+                title=incoming.title,
+                security_ids=incoming.subject_ids,
+                anchor_observed_at=incoming.observed_at,
+            )
         if decision.action != "new":
             row = self._conn.execute(
-                "SELECT subject_ids_json FROM news_clusters WHERE cluster_id=?", (cluster_id,)
+                "SELECT subject_ids_json, anchor_title FROM news_clusters"
+                " WHERE cluster_id=?",
+                (cluster_id,),
             ).fetchone()
-            subjects = set(json.loads(row["subject_ids_json"])) | set(security_ids)
+            current = (
+                set(json.loads(row["subject_ids_json"])) if row else set()
+            )
+            subjects = current | set(security_ids)
             self._conn.execute(
                 "UPDATE news_clusters SET subject_ids_json=? WHERE cluster_id=?",
                 (_stable_json(sorted(subjects)), cluster_id),
             )
+            self._expand_cluster_index(
+                cluster_id=cluster_id,
+                added_security_ids=set(security_ids) - current,
+                anchor_title=None if row is None else str(row["anchor_title"]),
+            )
         self._conn.execute(
             """
             INSERT INTO news_cluster_members(
-                source, source_item_id, cluster_id, story_id
-            ) VALUES(?,?,?,?)
+                source, source_item_id, cluster_id, story_id, retrieval_json
+            ) VALUES(?,?,?,?,?)
             """,
             (
                 state.source,
                 state.source_item_id,
                 cluster_id,
                 incoming.story_id,
+                _stable_json(retrieval_payload),
             ),
         )
         return cluster_id
+
+    def _expand_cluster_index(
+        self,
+        *,
+        cluster_id: str,
+        added_security_ids,
+        anchor_title: str | None = None,
+    ) -> None:
+        """Postings for securities newly retained by a cluster's subject union.
+
+        Same transaction as the union update. The anchor title is immutable;
+        when the caller did not pass it, it is read from the cluster row.
+        """
+        added = set(added_security_ids)
+        if not added:
+            return
+        row = self._conn.execute(
+            "SELECT anchor_title, anchor_observed_at FROM news_clusters WHERE cluster_id=?",
+            (cluster_id,),
+        ).fetchone()
+        title = anchor_title if anchor_title is not None else str(row["anchor_title"])
+        index_subject_expansion(
+            self._conn,
+            cluster_id=cluster_id,
+            title=title,
+            added_security_ids=added,
+            anchor_observed_at=datetime.fromisoformat(str(row["anchor_observed_at"])),
+        )
 
     def _active_cluster_members(self, cluster_id: str) -> int:
         return int(
@@ -1499,6 +1648,7 @@ class NewsStore:
             next_cursor=cursor,
         )
 
+    @_read_snapshot
     def snapshot(
         self,
         security_id: str,
@@ -1518,8 +1668,14 @@ class NewsStore:
             or cursor < 1
         ):
             raise StoreValidationError("qbus_news_store:invalid_cursor")
+        # This first SELECT fixes the SQLite read view used by cluster selection
+        # and member projection. It is an opaque delivery cursor, independent of
+        # the visible page's group ordering and pagination boundary.
+        change_sequence = int(self._conn.execute(
+            "SELECT COALESCE(MAX(sequence), 0) FROM news_changes"
+        ).fetchone()[0])
         if not rights.allowed_sources:
-            return NewsSnapshot(SCHEMA, security_id, (), cursor, False)
+            return NewsSnapshot(SCHEMA, security_id, (), cursor, False, change_sequence)
 
         placeholders = ",".join("?" for _ in rights.allowed_sources)
         params: list[object] = [
@@ -1653,6 +1809,7 @@ class NewsStore:
             rows=rows,
             next_cursor=next_cursor,
             has_more=has_more,
+            change_sequence=change_sequence,
         )
 
 
@@ -1964,15 +2121,39 @@ class NewsStore:
                 security_id, after_sequence=after_sequence, limit=limit, rights=rights,
             )
             latest = {row.story_id: row for row in page.rows}
+            # Match snapshot's per-security, allowed-source group ordering.
+            # The consumed journal row can precede this current projection.
+            group_sequences = {}
+            if latest:
+                source_marks = ",".join("?" for _ in rights.allowed_sources)
+                group_marks = ",".join("?" for _ in latest)
+                group_sequences = {
+                    str(item["cluster_id"]): int(item["sequence"])
+                    for item in self._conn.execute(
+                        f"""
+                        SELECT c.cluster_id, MAX(c.sequence) AS sequence
+                        FROM news_change_targets t
+                        JOIN news_changes c ON c.sequence=t.sequence
+                        WHERE t.security_id=?
+                          AND c.source IN ({source_marks})
+                          AND c.cluster_id IN ({group_marks})
+                        GROUP BY c.cluster_id
+                        """,
+                        (security_id, *sorted(rights.allowed_sources), *latest),
+                    ).fetchall()
+                }
             projected = []
             for row in sorted(latest.values(), key=lambda item: item.sequence):
                 detail = self.story(row.story_id, rights=rights, security_id=security_id)
                 if detail is None:
-                    projected.append(replace(row, kind="remove", title="", url="", teaser=""))
+                    projected.append(replace(row, kind="remove", title="", url="", teaser="", projection_sequence=None))
                     continue
                 best = detail.members[0]
                 projected.append(replace(
                     row, kind="upsert", source=best.source, source_item_id=best.source_item_id,
+                    projection_sequence=group_sequences.get(
+                        row.story_id, max(member.sequence for member in detail.members),
+                    ),
                     title=best.title, url=best.url, teaser=best.teaser,
                     source_count=detail.source_count, item_count=detail.item_count,
                     published_at=best.published_at, updated_at=best.updated_at,

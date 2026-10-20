@@ -688,6 +688,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -2520,6 +2521,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -3401,6 +3403,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -5556,6 +5559,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/rate_inflation_transmission.py"
@@ -6758,6 +6762,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -9497,6 +9502,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -19331,6 +19337,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -19888,6 +19895,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -22355,6 +22363,7 @@ jobs:
       - engine/qbus_news_contract.py
       - engine/qbus_news_receipts.py
       - engine/qbus_news_reducer.py
+      - engine/qbus_news_retrieval.py
       - engine/qbus_news_store.py
       - engine/qbus_news_universe.py
       - engine/qbus_news_velocity.py
@@ -24340,6 +24349,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -29800,6 +29810,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -30860,6 +30871,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -33743,6 +33755,10 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
+      - "tests/test_qbus_news_retrieval.py"
+      - "scripts/benchmark_qbus_news_retrieval.py"
+      - "scripts/verify_ticker_news_stream_ui.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
@@ -34044,6 +34060,7 @@ jobs:
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_qbus_news_retrieval.py
           tests/test_massive_news.py
           tests/test_qbus_news_intake.py
           tests/test_shared_news_intelligence.py
