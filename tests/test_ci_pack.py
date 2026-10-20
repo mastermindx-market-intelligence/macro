@@ -5083,7 +5083,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_638),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_644),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5140,6 +5140,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     (index.html and plan_book also +4, both under their ceilings). No new
     entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
     selector, job/pack bound and both other probe ceilings stay unchanged.
+
+    WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
+    to prophet-lab's existing invocation. The unchanged estimator retains eight
+    commands and one command-length unit; explicit test paths increase 20 -> 23,
+    so the job weight is 49 -> 55. Hosted contract-delta run 39350015873,
+    job 118391740353, tested synthetic 3ccda72 (base a914 + subject d940):
+    build_free_content selects the same 134 jobs / 10 packs, weight 5638 -> 5644,
+    with no new entrant. Index.html and plan_book also gain six units and remain
+    within their bounds. Fund only the measured six-unit excess, 5638 -> 5644.
+    All suites, selectors, job limits, the other weight ceilings and the ten-pack
+    bound remain unchanged; fresh hosted CI must execute this updated assertion.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
