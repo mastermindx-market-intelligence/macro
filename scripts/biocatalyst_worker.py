@@ -63,7 +63,7 @@ from engine.biocatalyst.prospective import (
     build_public_event as build_prospective_public_event,
     validate_public_model as validate_prospective_public_model,
 )  # noqa: E402
-from engine.biocatalyst.what_matters_next import validate_wmn_inputs  # noqa: E402
+from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs  # noqa: E402
 from engine.company_intelligence.contracts import ContractError  # noqa: E402
 from engine.biocatalyst.history import (
     build_history_exact_diff,
@@ -2912,7 +2912,7 @@ def _load_service_wmn_inputs(path: Path | None = None) -> dict[str, Any]:
             raise WorkerConfigError("BIOCATALYST_WMN_OWNER_INPUT_INVALID")
 
         payload = _strict_json_object_bytes(raw)
-        return validate_wmn_inputs(payload)
+        return validate_current_wmn_inputs(payload)
     except WorkerConfigError:
         raise
     except (OSError, PublicationError, ContractError) as exc:

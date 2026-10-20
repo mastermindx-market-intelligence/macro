@@ -4804,11 +4804,13 @@ def what_matters_next_detail(
         )
     except LookupError:
         raise _wmn_http_error(404, "EVENT_NOT_IN_GENERATION") from None
-    except ValueError:
-        raise _wmn_http_error(400, "INVALID_REQUEST") from None
     except contract_error as exc:
+        # Stored owner corruption is a server availability failure. ContractError
+        # inherits ValueError, so classify it before caller-shape errors.
         log.warning("BioCatalyst WMN detail unavailable (%s)", type(exc).__name__)
         raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE") from None
+    except ValueError:
+        raise _wmn_http_error(400, "INVALID_REQUEST") from None
     return _response(payload)
 
 

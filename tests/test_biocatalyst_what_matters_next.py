@@ -6,6 +6,7 @@ from datetime import date
 import pytest
 
 from engine.biocatalyst.company_event_adapter import resolve_current_event_identity
+from engine.biocatalyst.research_priority import sort_research_priority_rows
 from engine.biocatalyst.what_matters_next import compose_company_event_rows
 from engine.company_intelligence.events import project_catalyst_event
 from engine.company_intelligence.contracts import ContractError, canonical_json_sha256
@@ -221,6 +222,15 @@ def test_reconcile_view_retains_unresolved_and_conflicted_without_horizon() -> N
     assert all(r["research_priority"]["lane"] == "RECONCILE" for r in selected)
 
 
+def test_research_priority_sort_uses_nested_timing_and_revision_fields() -> None:
+    later = _event(native_event_key="doc#later", timing=_timing("2026-09-10", "2026-09-10"))
+    sooner = _event(native_event_key="doc#sooner", timing=_timing("2026-09-08", "2026-09-08"))
+    later_row = _rows(later, _resolved_identity(later))[0]
+    sooner_row = _rows(sooner, _resolved_identity(sooner))[0]
+    ordered = sort_research_priority_rows([later_row, sooner_row])
+    assert [row["event_fact_ref"] for row in ordered] == [sooner["event_id"], later["event_id"]]
+
+
 def test_history_view_is_explicit_and_superseded_rows_never_surface() -> None:
     history = _event(native_event_key="doc#history", occurrence="withdrawn")
     superseded = _event(native_event_key="doc#old", revision_is_current=False)
@@ -247,8 +257,8 @@ from engine.biocatalyst.what_matters_next import compose_rows_from_wmn_inputs, v
 
 def _wmn_inputs(event, identity, *, cutoff=CUTOFF):
     return {
-        "contract_id": "biocatalyst_wmn_inputs.v1",
-        "schema_version": "1.0.0",
+        "contract_id": "biocatalyst_wmn_inputs.v2",
+        "schema_version": "2.0.0",
         "input_cut": {
             "cutoff": cutoff,
             "members": [
@@ -264,6 +274,14 @@ def _wmn_inputs(event, identity, *, cutoff=CUTOFF):
                     "contract_id": "dataos_issuer_master.current",
                     "ref": "issuer-master-cut-2026-09-06",
                     "sha256": "2" * 64,
+                    "observed_at": "2026-09-06T10:00:00Z",
+                    "accepted_at": "2026-09-06T10:00:00Z",
+                    "availability": "available",
+                },
+                {
+                    "contract_id": "dataos_vendor_aliases.current",
+                    "ref": "vendor-alias-cut-2026-09-06",
+                    "sha256": "3" * 64,
                     "observed_at": "2026-09-06T10:00:00Z",
                     "accepted_at": "2026-09-06T10:00:00Z",
                     "availability": "available",
@@ -297,11 +315,53 @@ def _wmn_inputs(event, identity, *, cutoff=CUTOFF):
     }
 
 
+def test_wmn_inputs_require_vendor_alias_cut_and_validate_nested_resolved_identity() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+
+    inputs["input_cut"]["members"] = [
+        member for member in inputs["input_cut"]["members"]
+        if member["contract_id"] != "dataos_vendor_aliases.current"
+    ]
+    with pytest.raises(ContractError, match="vendor-alias"):
+        validate_wmn_inputs(inputs)
+
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    inputs["identity_projection"][event["event_id"]]["issuers"][0]["securities"] = []
+    with pytest.raises(ContractError, match="active security"):
+        validate_wmn_inputs(inputs)
+
+
+def test_wmn_inputs_duplicate_event_detection_and_optional_estimate_ports_do_not_force_partial() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    inputs["events"] = [event, deepcopy(event)]
+    with pytest.raises(ContractError, match="duplicate event identity"):
+        validate_wmn_inputs(inputs)
+
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    inputs["coverage"]["family_states"]["issuer_readout_guidance"]["state"] = "supported"
+    inputs["coverage"]["missing_owner_ports"] = [
+        "probability", "materiality", "historical_response", "incorporation",
+    ]
+    # Isolate optional estimates: the shared fixture also declares an unrelated
+    # unbuilt registry family, which must still force partial when present.
+    del inputs["coverage"]["family_states"]["registry_primary_completion"]
+    page = build_what_matters_next(
+        inputs,
+        generation_id="ctgov_run_optional_estimates",
+        query={"view": "upcoming", "horizon_days": 90, "q": None, "event_family": None, "lane": None, "limit": 50},
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+    )
+    assert page["state"] == "ready"
+
+
 def test_wmn_inputs_are_closed_cut_bound_and_compose_rows_without_live_owner_reads() -> None:
     event = _event()
     inputs = _wmn_inputs(event, _resolved_identity(event))
     normalized = validate_wmn_inputs(inputs)
-    assert normalized["contract_id"] == "biocatalyst_wmn_inputs.v1"
+    assert normalized["contract_id"] == "biocatalyst_wmn_inputs.v2"
     rows = compose_rows_from_wmn_inputs(normalized, evaluation_cutoff=CUTOFF, anchor_date=ANCHOR)
     assert len(rows) == 1
     assert rows[0]["event_fact_ref"] == event["event_id"]
@@ -593,3 +653,106 @@ def test_registry_family_coverage_is_derived_from_same_generation_rows() -> None
     }
     assert model["coverage"]["family_states"]["registry_study_completion"]["observed_count"] == 0
     assert any(row["event_family"] == "registry_primary_completion" for row in model["rows"])
+
+
+
+def test_wmn_legacy_version_preserves_original_validation_and_refuses_current_composition():
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+
+    event = _event()
+    legacy = _wmn_inputs(event, _resolved_identity(event))
+    legacy["contract_id"] = "biocatalyst_wmn_inputs.v1"
+    legacy["schema_version"] = "1.0.0"
+    legacy["input_cut"]["members"] = [
+        member for member in legacy["input_cut"]["members"]
+        if member["contract_id"] != "dataos_vendor_aliases.current"
+    ]
+    assert validate_wmn_inputs(legacy) == legacy
+    with pytest.raises(ContractError, match="alias-bound v2"):
+        validate_current_wmn_inputs(legacy)
+    with pytest.raises(ContractError, match="alias-bound v2"):
+        compose_rows_from_wmn_inputs(legacy, evaluation_cutoff=CUTOFF, anchor_date=ANCHOR)
+
+    # Historical compatibility retains the original shape and whitelist.
+    invalid_shape = deepcopy(legacy)
+    invalid_shape["identity_projection"][event["event_id"]]["identity_scope"] = "unowned"
+    with pytest.raises(ContractError, match="current_only"):
+        validate_wmn_inputs(invalid_shape)
+    legacy["input_cut"]["members"].append(_wmn_inputs(event, _resolved_identity(event))["input_cut"]["members"][-1])
+    with pytest.raises(ContractError, match="owner contract"):
+        validate_wmn_inputs(legacy)
+
+
+@pytest.mark.parametrize(
+    "contract_id,schema_version",
+    [
+        ("biocatalyst_wmn_inputs.v1", "2.0.0"),
+        ("biocatalyst_wmn_inputs.v2", "1.0.0"),
+        ("biocatalyst_wmn_inputs.v2", "2.1.0"),
+        ("biocatalyst_wmn_inputs.v3", "3.0.0"),
+    ],
+)
+def test_wmn_wire_version_mismatch_cannot_fall_back(contract_id, schema_version):
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    inputs.update(contract_id=contract_id, schema_version=schema_version)
+    with pytest.raises(ContractError, match="contract_id|schema_version"):
+        validate_wmn_inputs(inputs)
+
+
+def test_wmn_v2_refuses_two_distinct_vendor_alias_cuts():
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    alias = deepcopy(inputs["input_cut"]["members"][-1])
+    alias["ref"] += "-other"
+    inputs["input_cut"]["members"].append(alias)
+    with pytest.raises(ContractError, match="exactly one Data OS vendor-alias"):
+        validate_wmn_inputs(inputs)
+
+
+@pytest.mark.parametrize("identity_cut_date", ["2026-09-07", "2026-02-30", "2026-W36-7"])
+def test_wmn_v2_precomputed_identity_cannot_bypass_alias_lookup_date(identity_cut_date):
+    event = _event()
+    identity = _resolved_identity(event)
+    identity["identity_cut_date"] = identity_cut_date
+    with pytest.raises(ContractError, match="identity_cut_date"):
+        validate_wmn_inputs(_wmn_inputs(event, identity))
+
+
+@pytest.mark.parametrize(
+    "missing_ports,source_health,registry_gap,selected,expected",
+    [
+        (["probability", "materiality", "historical_response", "incorporation"], "current", False, True, "ready"),
+        (["probability", "asset_relationships"], "current", False, True, "partial"),
+        (["unknown_required_owner"], "current", False, True, "partial"),
+        (["probability"], "partial", False, True, "partial"),
+        (["probability"], "unavailable", False, True, "partial"),
+        (["probability"], "stale", False, True, "stale"),
+        (["probability"], "current", True, True, "partial"),
+        (["probability"], "current", False, False, "empty"),
+    ],
+)
+def test_optional_estimates_do_not_hide_real_coverage_or_source_gaps(
+    missing_ports, source_health, registry_gap, selected, expected,
+):
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    coverage = inputs["coverage"]
+    coverage["source_health"] = source_health
+    coverage["missing_owner_ports"] = missing_ports
+    coverage["family_states"]["issuer_readout_guidance"]["state"] = "supported"
+    if not registry_gap:
+        del coverage["family_states"]["registry_primary_completion"]
+    page = build_what_matters_next(
+        inputs,
+        generation_id="ctgov_run_coverage_r9",
+        query={"view": "upcoming", "horizon_days": 90, "q": None if selected else "absent-query", "event_family": None, "lane": None, "limit": 50},
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+    )
+    assert page["state"] == expected
+    assert page["coverage"]["missing_owner_ports"] == missing_ports
+    for row in page["rows"]:
+        for kind in ("probability", "materiality", "historical_response", "incorporation"):
+            assert row[kind]["state"] == "NOT_ESTIMABLE"
+            assert row[kind]["value"] is None

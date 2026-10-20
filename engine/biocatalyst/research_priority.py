@@ -237,11 +237,17 @@ def sort_research_priority_rows(rows: Sequence[Mapping[str, Any]]) -> list[Mappi
         priority = row.get("research_priority")
         if not isinstance(priority, Mapping) or priority.get("lane") not in _LANE_ORDER:
             raise ResearchPriorityError("row lacks a selected research_priority lane")
+        # The classifier accepts flat owner inputs; WMN composes those fields
+        # into timing and revision_summary objects. Preserve both owner shapes.
+        timing = row.get("timing", row)
+        revision = row.get("revision_summary", row)
+        if not isinstance(timing, Mapping) or not isinstance(revision, Mapping):
+            raise ResearchPriorityError("row lacks valid timing or revision fields")
         return (
             _LANE_ORDER[str(priority["lane"])],
-            _date_sort(row.get("upper_date")),
-            _date_sort(row.get("lower_date")),
-            _revision_sort(row.get("last_material_revision_known_at")),
+            _date_sort(timing.get("upper_date")),
+            _date_sort(timing.get("lower_date")),
+            _revision_sort(revision.get("last_material_revision_known_at")),
             str(row.get("event_fact_ref") or ""),
             _exposure_sort(row.get("exposure_ref")),
         )

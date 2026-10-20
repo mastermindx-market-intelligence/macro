@@ -42,7 +42,7 @@ from .prospective import (
     validate_public_model as validate_prospective_public_model,
     validate_publication_evidence as validate_prospective_publication_evidence,
 )
-from .what_matters_next import validate_wmn_inputs
+from .what_matters_next import validate_current_wmn_inputs, validate_wmn_inputs
 from engine.company_intelligence.contracts import ContractError as CompanyContractError
 from .change_tape import (
     ChangeTapeError,
@@ -2102,7 +2102,7 @@ class PublicGenerationPublisher:
         normalized_wmn_inputs: dict[str, Any] | None = None
         if wmn_inputs is not None:
             try:
-                normalized_wmn_inputs = validate_wmn_inputs(
+                normalized_wmn_inputs = validate_current_wmn_inputs(
                     wmn_inputs, forbidden_generation_id=run["run_id"]
                 )
             except CompanyContractError as exc:

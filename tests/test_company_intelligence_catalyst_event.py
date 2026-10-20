@@ -281,6 +281,25 @@ def test_bio_current_identity_distinguishes_unresolved_and_ambiguous_cik() -> No
     assert [row["issuer_id"] for row in ambiguous["issuers"]] == ["ISS:US-XNAS-A", "ISS:US-XNYS-B"]
 
 
+def test_bio_current_identity_refuses_alias_lookup_after_generation_cutoff() -> None:
+    owner = _event()
+    master = _master([
+        _security_row("SEC:US-XNYS-ABC", "ISS:US-XNYS-ABC", CIK, "US-XNYS-ABC"),
+    ])
+    aliases = _aliases([
+        {"vendor": "store", "vendor_symbol": "ABC", "security_id": "SEC:US-XNYS-ABC", "valid_from": None, "valid_to": None},
+    ])
+    with pytest.raises(ContractError, match="identity_cut_date exceeds generation cutoff"):
+        resolve_current_event_identity(
+            owner,
+            issuer_master=master,
+            alias_table=aliases,
+            identity_cut_date=date(2026, 9, 7),
+            identity_observed_at="2026-09-06T10:00:00Z",
+            generation_cutoff=CUTOFF,
+        )
+
+
 def test_bio_current_identity_refuses_future_identity_observation() -> None:
     with pytest.raises(ContractError, match="identity_observed_at"):
         resolve_current_event_identity(

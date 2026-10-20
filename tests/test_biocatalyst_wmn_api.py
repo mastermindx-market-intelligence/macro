@@ -288,6 +288,24 @@ def test_wmn_detail_generation_race_and_absent_event_are_typed(monkeypatch) -> N
     _private(race); _private(missing)
 
 
+def test_wmn_detail_owner_contract_error_is_503_not_invalid_request(monkeypatch) -> None:
+    inputs = _wmn_inputs()
+    projection = _projection(inputs)
+    monkeypatch.setattr(api, "_wmn_now", lambda: datetime(2026, 8, 1, 16, 0, tzinfo=timezone.utc))
+    _build_detail, contract_error = api._wmn_detail_runtime()
+    monkeypatch.setattr(
+        api,
+        "_wmn_detail_runtime",
+        lambda: (lambda *args, **kwargs: (_ for _ in ()).throw(contract_error("bad owner cut")), contract_error),
+    )
+    with _app(lambda: (projection, {})) as client:
+        response = client.get(
+            f"/api/biocatalyst/v1/what-matters-next/detail?generation_id={GENERATION}&event_fact_ref=evt"
+        )
+    assert response.status_code == 503
+    assert response.json() == {"detail": "OWNER_INPUT_UNAVAILABLE"}
+
+
 def test_wmn_detail_invalid_request_and_auth_fail_before_generation_read(monkeypatch) -> None:
     monkeypatch.setattr(api, "_wmn_now", lambda: NOW)
     def forbidden_read():
@@ -369,3 +387,35 @@ def test_wmn_registry_milestone_is_same_generation_reconcile_row_and_detail(monk
     assert dossier["trial"]["nct_id"] == "NCT00000001"
     assert dossier["trial"]["brief_title"] == "Synthetic Phase 2 Study"
     assert dossier["reason_codes"] == []
+
+
+
+def test_selected_legacy_v1_keeps_trial_api_readable_but_refuses_current_wmn(tmp_path, monkeypatch):
+    from tests.test_biocatalyst_wmn_publication import _install_legacy_v1_generation
+
+    public_root = tmp_path / "public"
+    capture = _install_legacy_v1_generation(public_root)
+    monkeypatch.setattr(api, "_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(api, "_wmn_now", lambda: NOW)
+    before_pointer = (public_root / "current.json").read_bytes()
+    # Use the real pointer-bound reader, including materialization of every
+    # historical artifact; only authentication is replaced by the test fixture.
+    with _app(api._read_bundle) as client:
+        trial_before = client.get("/api/biocatalyst/v1/trials")
+        page = client.get("/api/biocatalyst/v1/what-matters-next")
+        detail = client.get(
+            "/api/biocatalyst/v1/what-matters-next/detail",
+            params={"generation_id": capture["generation_id"], "event_fact_ref": "evt_source_" + "a" * 64},
+        )
+        trial_after = client.get("/api/biocatalyst/v1/trials")
+    assert trial_before.status_code == 200
+    assert trial_after.status_code == 200
+    assert trial_after.json() == trial_before.json()
+    trials = trial_before.json()["trials"]
+    assert len(trials) == 1 and trials[0]["nct_id"] == "NCT00000001"
+    assert trials[0]["brief_title"] == "Synthetic Phase 2 Study"
+    for response in (page, detail):
+        assert response.status_code == 503
+        assert response.json() == {"detail": "OWNER_INPUT_UNAVAILABLE"}
+        _private(response)
+    assert (public_root / "current.json").read_bytes() == before_pointer

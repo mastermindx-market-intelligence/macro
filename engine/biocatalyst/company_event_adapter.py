@@ -106,6 +106,8 @@ def resolve_current_event_identity(
         raise ContractError(str(exc)) from exc
     if observed_time > cutoff_time:
         raise ContractError("identity_observed_at exceeds generation cutoff")
+    if identity_cut_date > cutoff_time.date():
+        raise ContractError("identity_cut_date exceeds generation cutoff")
 
     issuer_ids = issuer_master.issuers_for_cik(owner["issuer_cik"])
     known_security_ids = {row.security_id for row in issuer_master.rows}
