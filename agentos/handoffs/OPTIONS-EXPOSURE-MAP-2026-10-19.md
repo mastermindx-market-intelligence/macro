@@ -2,129 +2,45 @@
 workstream: WS:ADVANCED-DATA-OPTIONS
 session: 01a156f1-f450-7793-8951-bddadd4784c2
 model: codex
-ended_because: blocked
+ended_because: checkpointed
 mission: Deliver the Options Exposure Map through Release A, then admitted B/C mechanics and research gates.
-state_before: Planning PR 9713 and the portable handoff existed; the new chart consumer and qualified joint projection were unimplemented.
-changed:
-  - path: engine/options_exposure_projection.py
-    what: Added qualified joint exposure over existing arithmetic, input binding and bounded payloads.
-  - path: scripts/build_options_hub_nightly.py
-    what: Added an explicit existing-owner receipt input to the incumbent builder.
-  - path: mastermind-terminal/terminal/components/exposure-map
-    what: Added the shared price-chart view, source inspector, separate net/gross nodes, pinning and closed-bar MTF context.
 prs: [9815]
-verified:
-  - claim: Producer qualification, missingness, units, input binding and payload bounds pass local checks.
-    command: python3 -m pytest tests/test_options_exposure_projection.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q --disable-warnings
-    result: 144 passed in the exact newly wired CI step; 14 targeted cases passed after review, including two new date/model negative cases.
-  - claim: The chart and existing desk retain responsive interaction and root/source isolation.
-    command: npm run test:e2e:responsive -- e2e/options-exposure-map.spec.ts e2e/options-desk-map.spec.ts --project=desktop --project=tablet --project=mobile --workers=2
-    result: The combined map/desk run passed 22 cases with two duplicate viewport skips. The final feature run passed 13 cases with two skips, then the pin-memo repair passed its affected browser case.
-  - claim: Authenticated production SPY has legacy windowed aggregates, not this qualified projection.
-    command: Chrome DOM-backed read of https://app.mastermind-x.com/api/flow?f=gex%3ASPY
-    result: Source session 2026-10-16, spot_ref 763.25, 160 of 490 strikes, 33 expiries, exposure_projection absent.
-unverified:
-  - claim: Qualified production exposure can be displayed for an admitted SPY/QQQ snapshot.
-    what_would_verify: Exact per-series terms, model and tenor provenance, availability clocks and action-specific display admission bound to actual source rows, followed by browser-to-API-to-rendered-value proof.
-  - claim: Release B/C nonlinear mechanics, observed evolution and empirical research are accepted.
-    what_would_verify: Qualified instrument/model inputs and admitted PIT history, existing-owner scenario/replay integration, and the declared independent numerical/statistical gates.
-unresolved:
-  - Exact qualified source receipt is absent from the current feed. Chris identified Tiingo for futures and Massive for stocks; the checked repository still names ThetaData as canonical options source.
-  - Consumer review terminated at the provider output limit without an assessment; producer findings were consumed and adjudicated, but no independent release approval was established. No merge or deployment occurred.
 next_actions:
-  - Supply an actual admitted owner receipt through the existing builder flag, verify exact numeric source-to-consumer agreement, and complete the still-open scoped independent release assessment against that candidate.
-  - Once source and required checks qualify, use the normal protected merge, git-gated deployment and authenticated browser verification; advance B/C only with their actual inputs.
+  - Complete the scoped dated identity adapter using retained M1 source and canonical evidence, then prove qualified source-to-consumer values.
+  - Complete exact-head protected CI, merge, git-gated deployment and authenticated product verification.
 do_not_redo:
-  - Package manifest and 12 conceptual arithmetic witnesses were verified; they are synthetic and not production proof.
-  - Preserve Macro 8555 and 7328 HOLD, IW2 T03k refusal, and existing Save admission boundaries.
-  - Do not replay the failed Fabric extraction or node-builder operations, create another Options truth store, or replace held source carriers.
-  - Retain the recovered negative QQQ/calibration evidence; no new forecast trial was run.
-danger_areas:
-  - A valid source session or net-only Matrix cell does not certify exact contract terms, gross exposure or joint Vanna/Charm.
-  - Default EOD inputs remain unqualified; receipt input is explicit and cannot be manufactured from generic 100-share rules or current build time.
-  - Native child final returns were consumed automatically; direct peer messaging remains disabled and no child watcher was created.
+  - Preserve Macro 8555 and 7328 HOLD, IW2 T03k refusal, Save admission and recovered negative QQQ/calibration evidence.
+  - Keep original Fabric identities, failed operations and the stopped M2 acquisition distinct; no replay or new truth store.
 ---
 
-# Current implementation checkpoint — 2026-10-20 UTC
+# Current implementation checkpoint — 2026-10-20 08:55 UTC
 
-**MISSION_COMPLETE: false. CHECKPOINTED_CONTINUATION. Release A: BUILT_NOT_PROVEN.**
-[Terminal #1083](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1083)
-is Draft at `3c4bc44c51b3893ae428ff3998a021ff115abb9e`.
-[Macro #9815](https://github.com/mastermindx-market-intelligence/macro/pull/9815) is Draft:
-producer implementation `65953fc41df4614421a12c69e194fcbe0ba97452`, plus CI wiring,
-contract clarification, negative tests and this checkpoint in its current revision.
-Neither is armed for merge or deployed. Combined is a local linear approximation;
-Release B nonlinear/evolution and Release C PIT research remain incomplete.
+**MISSION_COMPLETE: false. Active recovery; no production acceptance.** Chris rejected the initial frontend and incomplete product parity. The target remains the complete handoff and a substantially stronger Antaeus / Quad / Scanner workflow; synthetic checks are not that acceptance.
 
-**Next action:** supply the existing admitted SPY/QQQ receipt through the implemented
-builder flag, verify exact producer/API/inspector agreement, complete the open scoped
-independent release assessment and required hosted checks, then use the protected
-merge/deploy/live-verification path. The receipt needs exact per-series terms,
-model/unit/tenor provenance, availability clocks, input digest and permitted display
-action. Chris answered the source question with Tiingo/futures and Massive/stocks;
-no exact options receipt was supplied. Generic 100-share rules,
-Matrix marginals, paid-view entitlement alone and build timestamps cannot fill it.
+Terminal #1083 source candidate is `481fe6ccc` (pushed, merged abfedf79e): connected Structure, four-market price/exposure comparison with global timeframe and pane expiry overrides, full-screen quad, scanner with source-date fences, exact node inspector, matched-source implied-volatility distance, and actual stored-book navigation through the existing archive. The same ChartPanel and acquisition/cache owners are reused. Archived books are distinguished from current price bars; wrong-root/date archive responses are withheld. Separate Gamma/Vanna layers never masquerade as a sum. Contract scenarios require the actual common qualified population.
 
-The follow-up source check confirms the shared price chart already uses Massive/Polygon
-US bars. `DEC-AD-OPTIONS-CANONICAL-SOURCE-THETADATA` and the current producer keep
-ThetaData as the options authority. The stock entitlement record does not restore the
-retired Options Snapshot path, and that restoration is not a dependency of this work.
-Massive's public contract-reference documentation lists per-series exercise/share/
-adjustment fields under Options plans; no account entitlement or live contract receipt
-was inferred from it, and no refused options endpoint was retried. Exact terms and
-Greek provenance must still qualify through an admitted source path.
+Macro #9815 is pushed at `fc551b22439375f93b9cc0ca37729e2c963244d3`: native Theta receipt clocks/digests, exact Massive reference evidence, bounded acquisition and dated-provider projection through the existing collector, Parquet and builder. Sol coordinator `01a15700-1ae2-7a73-9756-f1546da7ace8` is now implementing scoped dated identity admission through the incumbent identity interfaces, without broadening the old alias or mutating M1 sources. Parent owns Terminal and this checkpoint. Original root remains `01a156f1-f450-7793-8951-bddadd4784c2`; coordinator preserves ancestry and budget.
 
-Two native Sol coordinators returned; their source/mechanics and producer work was
-inspected and integrated with repairs. All Fabric outcomes retain root/parent
-`01a156f1-f450-7793-8951-bddadd4784c2`. Early extraction
-`options-01a156f1-contract-extract` failed source admission; `oem-01a156f1-nodes-v1`
-failed capacity before launch. Neither was replayed. Both later reviews have settled:
+The paired dated class is `dated_provider_approximation` with unchanged v2 tuples. It permits dated Gamma only, explicitly discloses whole-day/.15-day expiry tenor, accepts session-only observation, and denies instantaneous, next-live, joint-scenario, repricing and historical-PIT capability. Strict modeled-exposure qualification remains separate. The actual synthetic producer v2 witness passes the independent Terminal decoder. Unknown Vanna/Charm units are not manufactured.
 
-- `oem-01a156f1-review-v1`: rc=1, provider output limit, no usable assessment. Its earlier
-  adapter observation was `REFUSED: original_run_observation_unconfirmed`; no alternate
-  reader or retry was used. The original controller delivered the terminal result.
-- `oem-01a156f1-producer-review-v1`: rc=0, retained 8,885-byte review consumed (SHA256
-  `82f00e4f9bdd63a5f81bec857ead19dd5586d3e4bae754b759ac83516c9d1c57`). Four findings were
-  adjudicated: civil-date labels are not timestamp inputs; a malformed source identity
-  invalidates population qualification; provider Greeks still require model provenance;
-  `cells_status` explicitly withholds the grid and the consumer checks it and its count.
-  Documentation clarifies date/exclusion semantics; two negative cases preserve the
-  date/model refusals. This return did not establish an accepted release assessment.
+The M1 acquisition succeeded with exactly three data GETs: Theta Greeks and OI each returned20rows, and Massive returned20exact contracts. Ten strikes763–772, calls/puts, source2026-10-19 and expiry2026-10-23; all20keys join. Actual UTC known-by times: Greeks08:42:23.001258, OI08:42:26.542642, reference08:43:25.307134 onOctober20. No retries, pagination or snapshot calls. The stopped development-Mac localhost failure remains separate. A proven prelaunch local argument error was repaired without replaying Theta.
 
-No Fabric acceptance was recorded for either review; no worker result remains pending,
-no peer messaging occurred and no idle Wake is claimed. Preserve the source/HOLD/IW2/
-Save boundaries and recovered negative QQQ evidence listed above.
+Actual offline producer output retains10cells/20contracts and exact rule-backed terms, but security_id is null and Gamma qualified0: the canonical Theta root alias covers only[Oct15,Oct16), notOct19. Parent executed the actual output through Terminal and verified rejection, not promotion to qualified data. The next engineering step is a source-bound relation scoped to exact retained series, effectiveOct19/knownOct20, with old seals intact and before-known-at/scope-widening refusals. It is not a permission wait or production outage.
 
-Local checks are recorded in the frontmatter. Final TypeScript and feature ESLint passed.
-The optimized feature browser run passed 13 cases across desktop/tablet/mobile and EN/ZH
-(two duplicate viewport skips); the final pin-memo adjustment passed its affected case.
-With 500 synthetic strikes and 20 cached samples/device, inspector p95 improved from
-149.9/205.9 ms desktop/mobile to 50.0/52.1/51.0 ms desktop/tablet/mobile. Canvas identity/
-count and one source read were retained. This is local development evidence, not
-production latency or heap/leak proof; automatic appearance-clock transition is untested.
+Verified locally:
+- 31 map/legacy-desk/workspace browser cases passed, two duplicate-viewport skips; the four-chart addition then passed all six EN/ZH responsive cases, and full-screen quad passed both desktop languages with all four panes within the viewport.
+- 73 focused source/consumer/session tests passed; the subsequently added actual dated producer witness passed its 15-case contract suite. TypeScript, affected ESLint and production build passed at603434934. After merging current master,30shared-context cases and36evidence/contract assertions passed. A visual density repair gives the quad more plotting area and clears label/readout overlap; all6EN/ZH responsive workspace cases passed again. Post-repair build remains next.
+- Shared chart-context suite:30/30; scoped genuine recaptures:four ChartChrome,42 EOD states,54 GEX states,five axis captures. All21 existing screenshot/report locks pass.
+- 500-strike local inspector remained below100ms p95 on this run, one source read and stable chart count. This is synthetic device evidence, not production latency or heap proof.
+- Macro dated/acquisition increment passed295affected legacy tests plus102receipt/dated/probe tests;23/23dated tests passed after the last negative case. Flow-surface closure and unwired-suite audit pass.
 
-Macro `contract-delta` run 39358907814/job 118420166823 found the unwired new suite.
-This revision wires it and affected Hub suites into existing `flow-surface`, covers
-all concrete dependencies and prunes only their stale unrun-baseline rows. Local
-manifest, closure and unrun census pass. A real merge conflict with protected main
-`247677efade31ea32d6b6ef5b701de61c47392cd` in this same CI path was resolved by
-preserving both the exposure and guidance-source paths; the merged manifest and
-flow-surface concrete closure passed. Earlier active `ci-authority/main` passed;
-the red pilot context was explicitly `inactive_base_context` (check 118420221524).
+Fabric outcomes: workspace-analysis-v1 and projection-review-v2 retained results were reviewed/integrated and accepted through the original adapter. Projection review repaired discarded joint fields, unbounded v1 cells, ambiguous source-as-of and population caption. The proposed joint-vs-metric digest equality and standalone selectionKey defect were rejected after source inspection: those digests use different namespaces, and actual UI identity includes metric/scope/shock/source generation. Review acceptance is not release approval. `oem-01a156f1-theta-units-v1` settled and was accepted for its narrow official-document gap after parent verification: Vanna/Charm units/sign remain unspecified. The worker external formula-page visit and universal absence claims are excluded from accepted evidence; see theta-units-v1-adjudication.md. Earlier failed extraction/node/review operations remain retained and unreplayed.
 
-Terminal run 39361759055/job 118429585023 found URL-state leakage in the desk test
-fixture and five stale screenshot locks after the shared renderer changes. The
-fixture now resets its route for each case. Actual recaptures passed: 54 GEX and
-42 EOD belt failure/recovery crops, four chart-chrome crops, five options-axis
-captures and the complete 30-case bilingual responsive chart-context suite. All
-six previously failing unit files then passed (69 cases). The new Terminal push
-contains these repairs. Fresh hosted CI remains required for both current heads;
-no all-green, merge, deployment or release claim is made.
+Remaining: post-repair build/protected CI, scoped identity and qualified actual source numeric integration, normal merge/deployment, and authenticated production journey. Chrome automation has an explicit extension-UI block requiring the user's dismissal; no alternate control route was used. No merge or deployment has occurred. Release B nonlinear mechanics and Release C empirical/PIT acceptance remain open; no validated probability, price-path or trade-sizing claim is made.
 
-Exact returns, checks and synthetic captures:
-`/Volumes/Mastermind/evidence/options-exposure-01a156f1/`.
-Protected procedure pin: Mastermind `fd1159695b0491a1b2c8d3042dce1232ad8365b4`.
-The historical planning record below remains dated context, superseded by this checkpoint.
+Evidence and exact operations: `/Volumes/Mastermind/evidence/options-exposure-01a156f1/`. Product fixture captures: Terminal `docs/pr-crops/options-exposure-recovery/`. Protected procedure pin `fd1159695b0491a1b2c8d3042dce1232ad8365b4`.
+
+The historical planning record below is dated context.
 
 # Options Exposure Map - research and local Astra CEO handoff
 
