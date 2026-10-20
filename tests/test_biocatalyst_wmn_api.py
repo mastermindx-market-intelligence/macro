@@ -18,7 +18,15 @@ from fastapi.testclient import TestClient
 import app.biocatalyst as api
 from engine.company_intelligence.contracts import canonical_json_sha256
 from engine.company_intelligence.events import project_catalyst_event
-from tests.test_biocatalyst_wmn_publication import CIK, COMPANY, CUTOFF, _wmn_inputs
+from engine.biocatalyst.publication import PublicGenerationPublisher
+import scripts.biocatalyst_worker as worker
+from tests.test_biocatalyst_wmn_publication import (
+    CIK, COMPANY, CUTOFF, _wmn_inputs, _admit, _alias_correction,
+    _environment_for_wmn, _published_fence, _run_fenced,
+)
+from tests.test_biocatalyst_worker import (
+    FakeCollectorFactory, MemoryStore, NOW as _WORKER_NOW,
+)
 
 NOW = datetime(2026, 8, 1, 15, 0, 4, tzinfo=timezone.utc)
 GENERATION = "ctgov_run_abcdef1234567890"
@@ -72,12 +80,18 @@ def _app(read_bundle, *, auth=None):
     application.include_router(api.router)
     application.dependency_overrides[api.require_site_full_user] = auth or (lambda: {"id": "paid"})
     original = api._read_bundle
+    original_recheck = api._recheck_wmn_current
     api._read_bundle = read_bundle
+    # This existing harness proves pure handler/composer behavior with supplied
+    # owner artifacts. Disk admission and final rechecks are exercised through
+    # the real publisher in test_biocatalyst_wmn_publication.py.
+    api._recheck_wmn_current = lambda _projection: None
     try:
         with TestClient(application) as client:
             yield client
     finally:
         api._read_bundle = original
+        api._recheck_wmn_current = original_recheck
 
 
 def _private(response) -> None:
@@ -398,8 +412,10 @@ def test_selected_legacy_v1_keeps_trial_api_readable_but_refuses_current_wmn(tmp
     monkeypatch.setattr(api, "_PUBLIC_ROOT", public_root)
     monkeypatch.setattr(api, "_wmn_now", lambda: NOW)
     before_pointer = (public_root / "current.json").read_bytes()
-    # Use the real pointer-bound reader, including materialization of every
-    # historical artifact; only authentication is replaced by the test fixture.
+    # Use the real pointer-bound reader and historical artifact materialization.
+    # This existing harness replaces authentication and the new admission gate
+    # to isolate R9's current-composer refusal of v1. Fence migration itself is
+    # tested below with _disk_wmn_client and the actual eligibility gate.
     with _app(api._read_bundle) as client:
         trial_before = client.get("/api/biocatalyst/v1/trials")
         page = client.get("/api/biocatalyst/v1/what-matters-next")
@@ -419,3 +435,230 @@ def test_selected_legacy_v1_keeps_trial_api_readable_but_refuses_current_wmn(tmp
         assert response.json() == {"detail": "OWNER_INPUT_UNAVAILABLE"}
         _private(response)
     assert (public_root / "current.json").read_bytes() == before_pointer
+
+
+# Real publisher and API correction-fence witnesses.
+
+def _disk_wmn_client(monkeypatch, public_root):
+    from contextlib import contextmanager
+    from datetime import timedelta
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    import app.biocatalyst as api
+    from engine.biocatalyst.publication import PublicationError
+
+    @contextmanager
+    def client():
+        application = FastAPI()
+        application.include_router(api.router)
+        # Synthetic entitlement and runtime-import seams only. The generation,
+        # admission state, real bundle reader, composer and final gate are used.
+        application.dependency_overrides[api.require_site_full_user] = lambda: {"id": "test-paid"}
+        with monkeypatch.context() as patch:
+            patch.setattr(api, "_PUBLIC_ROOT", public_root)
+            patch.setattr(api, "_publication_runtime",
+                          lambda: (PublicationError, PublicGenerationPublisher))
+            patch.setattr(api, "_wmn_now", lambda: _WORKER_NOW + timedelta(minutes=1))
+            with TestClient(application) as connection:
+                yield connection
+
+    return client()
+
+
+def _detail_query(page):
+    row = page["rows"][0]
+    query = {
+        "generation_id": page["generation_id"],
+        "event_fact_ref": row["event_fact_ref"],
+    }
+    if row.get("issuer_id") is not None:
+        query["issuer_id"] = row["issuer_id"]
+    return query
+
+
+def _assert_wmn_unavailable(client, detail_query):
+    for route, params in (
+        ("/api/biocatalyst/v1/what-matters-next", {}),
+        ("/api/biocatalyst/v1/what-matters-next/detail", detail_query),
+    ):
+        response = client.get(route, params=params)
+        assert response.status_code == 503
+        assert response.json() == {"detail": "OWNER_INPUT_UNAVAILABLE"}
+        assert response.headers["cache-control"] == "private, no-store"
+        assert response.headers["vary"] == "Authorization"
+
+
+def test_correction_admits_while_old_build_locked_and_failed_replacement_stays_unavailable(
+    tmp_path, monkeypatch
+):
+    from engine.biocatalyst.publication import PublicationError
+
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs.json"
+    inputs = _wmn_inputs()
+    owner_path.write_text(json.dumps(inputs), encoding="utf-8")
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+    first_run = worker.run_from_environment(
+        environ, collector_factory=FakeCollectorFactory(),
+        store_factory=lambda _: MemoryStore(), now_fn=lambda: _WORKER_NOW,
+    )
+    assert first_run.exit_code == worker.EXIT_SUCCESS
+    cfg = worker.load_environment(environ).config
+    publisher = PublicGenerationPublisher(public_root)
+    first = publisher.capture_wmn_admission()
+    pointer_before = publisher.pointer_path.read_bytes()
+    corrected = _alias_correction(inputs)
+    observed = {}
+
+    with _disk_wmn_client(monkeypatch, public_root) as client:
+        first_page = client.get("/api/biocatalyst/v1/what-matters-next")
+        assert first_page.status_code == 200
+        detail_query = _detail_query(first_page.json())
+
+        class InterveningPublisher(PublicGenerationPublisher):
+            def write_pointer(self, prepared):
+                observed["prepared"] = prepared
+                owner_path.write_text(json.dumps(corrected), encoding="utf-8")
+                busy = worker.run_from_environment(
+                    environ, collector_factory=FakeCollectorFactory(),
+                    store_factory=lambda _: MemoryStore(), now_fn=lambda: _WORKER_NOW,
+                )
+                assert busy.status == "locked"
+                observed["second"] = self.capture_wmn_admission()
+                assert observed["second"].sequence == first.sequence + 1
+                super().write_pointer(prepared)
+
+        obsolete = _run_fenced(
+            cfg, inputs, first, watermark="2026-08-01T15:00:10Z",
+            publisher_factory=InterveningPublisher,
+        )
+        assert obsolete.error_code == "WMN_ADMISSION_CHANGED"
+        assert publisher.pointer_path.read_bytes() == pointer_before
+
+        def failed_collection(**_):
+            raise OSError("offline corrected collection fault")
+
+        failed = worker.run_from_environment(
+            environ, collector_factory=failed_collection,
+            store_factory=lambda _: MemoryStore(), now_fn=lambda: _WORKER_NOW,
+        )
+        assert failed.exit_code == worker.EXIT_FAILED
+        assert publisher.pointer_path.read_bytes() == pointer_before
+        restarted = PublicGenerationPublisher(public_root)
+        assert restarted.capture_wmn_admission() == observed["second"]
+        assert restarted.read_trial_projection().trials
+        _assert_wmn_unavailable(client, detail_query)
+        assert client.get("/api/biocatalyst/v1/trials").status_code == 200
+
+        replacement = _run_fenced(
+            cfg, corrected, observed["second"], watermark="2026-08-01T15:00:20Z"
+        )
+        assert replacement.exit_code == worker.EXIT_SUCCESS
+        assert client.get("/api/biocatalyst/v1/what-matters-next").status_code == 200
+        with pytest.raises(PublicationError, match="WMN_ADMISSION_CHANGED"):
+            restarted.write_pointer(observed["prepared"])
+
+
+@pytest.mark.parametrize("detail", [False, True], ids=["list", "detail"])
+def test_api_rejects_correction_admitted_during_composition(tmp_path, monkeypatch, detail):
+    import app.biocatalyst as api
+
+    cfg, publisher, inputs, _ticket = _published_fence(tmp_path)
+    with _disk_wmn_client(monkeypatch, cfg.public_root) as client:
+        initial = client.get("/api/biocatalyst/v1/what-matters-next")
+        assert initial.status_code == 200
+        params = _detail_query(initial.json()) if detail else {}
+        runtime = api._wmn_detail_runtime() if detail else api._wmn_runtime()
+        observed = []
+
+        def correcting_composer(*args, **kwargs):
+            payload = runtime[0](*args, **kwargs)
+            observed.append(_admit(publisher, _alias_correction(inputs)))
+            return payload
+
+        target = "_wmn_detail_runtime" if detail else "_wmn_runtime"
+        monkeypatch.setattr(api, target, lambda: (correcting_composer, *runtime[1:]))
+        route = "/api/biocatalyst/v1/what-matters-next" + ("/detail" if detail else "")
+        response = client.get(route, params=params)
+        assert len(observed) == 1
+        assert response.status_code == 503
+        assert response.json() == {"detail": "OWNER_INPUT_UNAVAILABLE"}
+        assert response.headers["cache-control"] == "private, no-store"
+        assert response.headers["vary"] == "Authorization"
+
+
+def test_pointer_rollback_never_rolls_back_the_admitted_correction(tmp_path, monkeypatch):
+    cfg, publisher, inputs, _first = _published_fence(tmp_path)
+    before = publisher.pointer_path.read_bytes()
+    corrected = _alias_correction(inputs)
+    second = _admit(publisher, corrected)
+
+    def fail_after_replace(_path):
+        raise OSError("post-replace durability fault")
+
+    result = _run_fenced(
+        cfg, corrected, second, watermark="2026-08-01T15:00:10Z",
+        publisher_factory=lambda path: PublicGenerationPublisher(
+            path, pointer_after_replace_hook=fail_after_replace
+        ),
+    )
+    assert result.error_code == "POINTER_WRITE_FAILED"
+    assert publisher.pointer_path.read_bytes() == before
+    restarted = PublicGenerationPublisher(cfg.public_root)
+    assert restarted.capture_wmn_admission() == second
+    projection = restarted.read_trial_projection()
+    assert projection.trials
+    with _disk_wmn_client(monkeypatch, cfg.public_root) as client:
+        _assert_wmn_unavailable(client, {
+            "generation_id": projection.generation.generation_id,
+            "event_fact_ref": inputs["events"][0]["event_id"],
+        })
+
+
+@pytest.mark.parametrize("damage", ["missing", "malformed"])
+def test_admission_state_loss_is_not_reinitialized_and_does_not_erase_trial_facts(
+    tmp_path, monkeypatch, damage
+):
+    from engine.biocatalyst.publication import PublicationError
+
+    cfg, publisher, inputs, _ticket = _published_fence(tmp_path)
+    if damage == "missing":
+        publisher.wmn_admission_path.unlink()
+    else:
+        publisher.wmn_admission_path.write_text("{}", encoding="utf-8")
+    restarted = PublicGenerationPublisher(cfg.public_root)
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_STATE_"):
+        restarted.initialize_wmn_admission()
+    projection = restarted.read_trial_projection()
+    assert projection.trials
+    with _disk_wmn_client(monkeypatch, cfg.public_root) as client:
+        _assert_wmn_unavailable(client, {
+            "generation_id": projection.generation.generation_id,
+            "event_fact_ref": inputs["events"][0]["event_id"],
+        })
+        assert client.get("/api/biocatalyst/v1/trials").status_code == 200
+
+
+def test_old_pointer_with_v2_artifact_requires_fenced_republication(tmp_path, monkeypatch):
+    cfg, publisher, inputs, ticket = _published_fence(tmp_path)
+    pointer = json.loads(publisher.pointer_path.read_text())
+    artifact = (cfg.public_root / "generations" / pointer["generation_id"]
+                / "what_matters_next_inputs.json")
+    original_artifact = artifact.read_bytes()
+    pointer.pop("wmn_admission")
+    pointer["schema_version"] = "1.0.0"
+    publisher.pointer_path.write_text(json.dumps(pointer), encoding="utf-8")
+    assert publisher.read_trial_projection().trials
+    assert artifact.read_bytes() == original_artifact
+    with _disk_wmn_client(monkeypatch, cfg.public_root) as client:
+        _assert_wmn_unavailable(client, {
+            "generation_id": pointer["generation_id"],
+            "event_fact_ref": inputs["events"][0]["event_id"],
+        })
+        result = _run_fenced(
+            cfg, inputs, ticket, watermark="2026-08-01T15:00:10Z"
+        )
+        assert result.exit_code == worker.EXIT_SUCCESS
+        assert client.get("/api/biocatalyst/v1/what-matters-next").status_code == 200

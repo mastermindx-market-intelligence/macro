@@ -42,6 +42,7 @@ from engine.biocatalyst.publication import (
     ProspectivePublicationEvidence,
     PublicationError,
     PublicGenerationPublisher,
+    WmnAdmissionTicket,
     archive_failed_attempt,
     archive_private_stage,
     assert_source_timestamp_monotonic,
@@ -129,6 +130,13 @@ _SAFE_ERROR_CODES = frozenset(
         "BIOCATALYST_ENABLED_INVALID",
         "BIOCATALYST_HISTORY_ENABLED_INVALID",
         "BIOCATALYST_HISTORY_SOURCE_NOT_APPROVED",
+        "WMN_ADMISSION_REQUIRED",
+        "WMN_ADMISSION_CHANGED",
+        "WMN_ADMISSION_LOCK_UNAVAILABLE",
+        "WMN_ADMISSION_STATE_INVALID",
+        "WMN_ADMISSION_STATE_UNAVAILABLE",
+        "WMN_ADMISSION_WRITE_FAILED",
+        "WMN_OWNER_INPUT_INVALID",
         "BIOCATALYST_WMN_ENABLED_INVALID",
         "BIOCATALYST_WMN_OWNER_INPUT_INVALID",
         "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE",
@@ -264,6 +272,10 @@ _TRANSIENT_AVAILABILITY_CODES = frozenset(
         "BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE",
         "HTTP_REQUEST_FAILED",
         "POINTER_WRITE_FAILED",
+        "WMN_ADMISSION_CHANGED",
+        "WMN_ADMISSION_STATE_UNAVAILABLE",
+        "WMN_ADMISSION_LOCK_UNAVAILABLE",
+        "WMN_ADMISSION_WRITE_FAILED",
         "UNEXPECTED_HTTP_STATUS",
     }
 )
@@ -2586,6 +2598,7 @@ def run_once(
     publisher_factory: Callable[[Path], PublicGenerationPublisher] = PublicGenerationPublisher,
     activation_verifier: ActivationVerifier = _default_activation_verifier,
     wmn_inputs: Mapping[str, Any] | None = None,
+    wmn_admission: WmnAdmissionTicket | None = None,
 ) -> WorkerResult:
     """Run one bounded evidence transaction through injectable collector/store seams."""
 
@@ -2610,6 +2623,23 @@ def run_once(
         return WorkerResult(EXIT_FAILED, "failed", error_code=code)
 
     publisher = publisher_factory(config.public_root)
+    try:
+        # Direct callers must carry the ticket captured before composition.
+        # Neither this worker nor preparation may auto-admit a held payload.
+        if wmn_inputs is not None:
+            publisher.require_wmn_admission(wmn_inputs, wmn_admission)
+        elif wmn_admission is not None:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
+        elif config.wmn_enabled:
+            raise PublicationError("BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE")
+    except (OSError, PublicationError) as exc:
+        code = _bounded_code(exc)
+        _try_write_health(
+            publisher, state=_failure_state(code), enabled=True,
+            configured_nct_count=len(config.nct_ids), error_code=code,
+            prior=_actual_committed_or(publisher, None), now=now_fn(),
+        )
+        return WorkerResult(EXIT_FAILED, "failed", error_code=code)
     with _nonblocking_worker_lock(config.state_root) as lock:
         if lock is None:
             return WorkerResult(EXIT_SUCCESS, "locked")
@@ -2760,6 +2790,7 @@ def run_once(
                 prospective_models_by_nct=prospective_models_by_nct,
                 prospective_evidence_by_nct=prospective_evidence_by_nct,
                 wmn_inputs=wmn_inputs,
+                wmn_admission=wmn_admission,
             )
 
             # Construct the dedicated client only after every local source,
@@ -2936,26 +2967,35 @@ def run_from_environment(
     if plan.state == "enabled":
         assert plan.config is not None
         wmn_inputs: Mapping[str, Any] | None = None
+        wmn_admission: WmnAdmissionTicket | None = None
         if plan.config.wmn_enabled:
             try:
+                _prepare_runtime_layout(plan.config)
+                publisher = PublicGenerationPublisher(plan.config.public_root)
+                publisher.initialize_wmn_admission()
+                expected = publisher.capture_wmn_admission()
                 wmn_inputs = _load_service_wmn_inputs()
-            except WorkerConfigError as exc:
+                # The comparison token predates the FD read. Admission must
+                # commit before run_once tries its coarse collection lock.
+                wmn_admission = publisher.admit_wmn_inputs(wmn_inputs, expected=expected)
+            except (WorkerConfigError, PublicationError, OSError) as exc:
+                code = _bounded_code(exc)
                 try:
                     _prepare_runtime_layout(plan.config)
                     publisher = PublicGenerationPublisher(plan.config.public_root)
                 except Exception:
-                    return WorkerResult(EXIT_FAILED, "failed", error_code=exc.code)
+                    return WorkerResult(EXIT_FAILED, "failed", error_code=code)
                 prior = _actual_committed_or(publisher, None)
                 _try_write_health(
                     publisher,
-                    state=_failure_state(exc.code),
+                    state=_failure_state(code),
                     enabled=True,
                     configured_nct_count=len(plan.config.nct_ids),
-                    error_code=exc.code,
+                    error_code=code,
                     prior=prior,
                     now=now_fn(),
                 )
-                return WorkerResult(EXIT_FAILED, "failed", error_code=exc.code)
+                return WorkerResult(EXIT_FAILED, "failed", error_code=code)
         return run_once(
             plan.config,
             collector_factory=collector_factory,
@@ -2964,6 +3004,7 @@ def run_from_environment(
             now_fn=now_fn,
             activation_verifier=activation_verifier,
             wmn_inputs=wmn_inputs,
+            wmn_admission=wmn_admission,
         )
 
     if plan.public_root is not None:

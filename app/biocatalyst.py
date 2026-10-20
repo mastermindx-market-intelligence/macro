@@ -4498,6 +4498,17 @@ def _wmn_runtime() -> tuple[Any, Any, Any, type[Exception]]:
     return build_what_matters_next, normalize_wmn_query, wmn_row_cursor_key, ContractError
 
 
+def _recheck_wmn_current(projection: Any) -> None:
+    """Recheck publisher admission without exposing a local ticket on the wire."""
+    publication_error, publisher_type = _publication_runtime()
+    try:
+        publisher_type(_PUBLIC_ROOT).assert_wmn_current(projection)
+    except (OSError, publication_error) as exc:
+        if getattr(exc, "code", None) == "WMN_GENERATION_CHANGED":
+            raise _wmn_http_error(409, "RELOAD_REQUIRED") from None
+        raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE") from None
+
+
 def _wmn_now() -> datetime:
     """Server-owned request clock; callers never provide evaluation cutoff."""
 
@@ -4690,6 +4701,7 @@ def what_matters_next(
     owner_inputs = getattr(projection, "what_matters_next_inputs", None)
     if not isinstance(owner_inputs, Mapping):
         raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    _recheck_wmn_current(projection)
     try:
         registry_events, _registry_details = _wmn_registry_context(
             projection, anchor_date=anchor_date
@@ -4739,7 +4751,9 @@ def what_matters_next(
         "total": len(rows),
         "next_cursor": next_cursor,
     }
-    return _response(response_payload)
+    response = _response(response_payload)
+    _recheck_wmn_current(projection)
+    return response
 
 
 
@@ -4783,6 +4797,7 @@ def what_matters_next_detail(
     owner_inputs = getattr(projection, "what_matters_next_inputs", None)
     if not isinstance(owner_inputs, Mapping):
         raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
+    _recheck_wmn_current(projection)
 
     now = _wmn_now().astimezone(timezone.utc)
     evaluation_cutoff = now.isoformat(timespec="seconds").replace("+00:00", "Z")
@@ -4811,7 +4826,9 @@ def what_matters_next_detail(
         raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE") from None
     except ValueError:
         raise _wmn_http_error(400, "INVALID_REQUEST") from None
-    return _response(payload)
+    response = _response(payload)
+    _recheck_wmn_current(projection)
+    return response
 
 
 @router.get("/api/biocatalyst/v1/trials/{nct_id}")

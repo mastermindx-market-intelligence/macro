@@ -7,9 +7,11 @@ the small current pointer last.  A failure never rewrites the last good pointer.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 import errno
+import fcntl
 from hashlib import sha256
 import json
 import os
@@ -19,6 +21,7 @@ import shutil
 import stat
 import tempfile
 from typing import Any, Callable, Mapping, Sequence
+from uuid import uuid4
 
 from engine.sector_intelligence import (
     canonical_json_bytes,
@@ -128,6 +131,10 @@ _POINTER_KEYS = frozenset(
         "published_at",
     }
 )
+_WMN_FENCED_POINTER_KEYS = _POINTER_KEYS | {"wmn_admission"}
+_WMN_TICKET_KEYS = frozenset(("sequence", "admission_id", "inputs_sha256"))
+_WMN_ADMISSION_KEYS = frozenset(("contract_id", "schema_version", "ticket"))
+_WMN_LOCK_MARKER = b"biocatalyst-wmn-admission-initialized.v1\n"
 _ARTIFACT_KEYS = frozenset(("name", "sha256", "byte_count"))
 _PUBLIC_GENERATION_SCHEMAS = frozenset(
     ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0")
@@ -224,6 +231,37 @@ class CommittedGeneration:
 
 
 @dataclass(frozen=True)
+class WmnAdmissionTicket:
+    """Local publisher admission identity; not a native owner/source receipt."""
+
+    sequence: int
+    admission_id: str
+    inputs_sha256: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "sequence": self.sequence,
+            "admission_id": self.admission_id,
+            "inputs_sha256": self.inputs_sha256,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Any, *, code: str) -> WmnAdmissionTicket:
+        if not isinstance(value, Mapping) or set(value) != _WMN_TICKET_KEYS:
+            raise PublicationError(code)
+        sequence = value["sequence"]
+        admission_id = value["admission_id"]
+        if (
+            not isinstance(sequence, int) or isinstance(sequence, bool) or sequence < 1
+            or not isinstance(admission_id, str)
+            or re.fullmatch(r"[0-9a-f]{32}", admission_id) is None
+            or not _valid_digest(value["inputs_sha256"])
+        ):
+            raise PublicationError(code)
+        return cls(sequence, admission_id, value["inputs_sha256"])
+
+
+@dataclass(frozen=True)
 class PreparedGeneration:
     generation_id: str
     stage_path: Path
@@ -231,6 +269,7 @@ class PreparedGeneration:
     watermark_after: str
     published_at: str
     source_dataset_timestamp_raw: str
+    wmn_admission: WmnAdmissionTicket | None = None
 
 
 @dataclass(frozen=True)
@@ -243,7 +282,10 @@ class CommittedTrialProjection:
     history_models_by_nct: Mapping[str, dict[str, Any]]
     prospective_models_by_nct: Mapping[str, dict[str, Any]]
     change_tapes_by_nct: Mapping[str, dict[str, Any]] = field(default_factory=dict)
+    # Retained owner artifact, not current eligibility. WMN serving must also
+    # pass assert_wmn_current using this request's exact pointer proof.
     what_matters_next_inputs: Mapping[str, Any] | None = None
+    wmn_pointer: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -1366,6 +1408,209 @@ class PublicGenerationPublisher:
         return self.public_root / "current.json"
 
     @property
+    def wmn_admission_path(self) -> Path:
+        return self.public_root / "wmn_admission.json"
+
+    @contextmanager
+    def _publication_lock(self, *, write: bool):
+        """One stable inode serializes admission, pointer changes and WMN reads.
+
+        Serving opens an existing file read-only. No reader creates state or
+        acquires state-file write access. This lock is never replaced/unlinked.
+        """
+        lock_path = self.public_root / "wmn_publication.lock"
+        descriptor: int | None = None
+        try:
+            if write:
+                _require_real_directory(
+                    self.public_root, code="WMN_ADMISSION_LOCK_UNAVAILABLE", create=True
+                )
+            flags = (os.O_RDWR | os.O_CREAT) if write else os.O_RDONLY
+            flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+            descriptor = os.open(lock_path, flags, 0o644)
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE")
+            fcntl.flock(descriptor, fcntl.LOCK_EX if write else fcntl.LOCK_SH)
+            current = lock_path.lstat()
+            if (
+                not stat.S_ISREG(current.st_mode) or current.st_nlink != 1
+                or (current.st_dev, current.st_ino) != (metadata.st_dev, metadata.st_ino)
+            ):
+                raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE")
+        except (OSError, PublicationError) as exc:
+            if descriptor is not None:
+                os.close(descriptor)
+            if isinstance(exc, PublicationError):
+                raise
+            raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE") from exc
+        try:
+            yield descriptor
+        finally:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+            finally:
+                os.close(descriptor)
+
+    @staticmethod
+    def _wmn_lock_marker(descriptor: int) -> bytes:
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        return os.read(descriptor, len(_WMN_LOCK_MARKER) + 1)
+
+    @staticmethod
+    def _wmn_admission_document(ticket: WmnAdmissionTicket | None) -> dict[str, Any]:
+        return {
+            "contract_id": "biocatalyst_wmn_admission.v1",
+            "schema_version": "1.0.0",
+            "ticket": ticket.as_dict() if ticket is not None else None,
+        }
+
+    def _read_wmn_admission_document(self) -> WmnAdmissionTicket | None:
+        try:
+            metadata = self.wmn_admission_path.lstat()
+        except OSError as exc:
+            raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE") from exc
+        if (
+            not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+            or metadata.st_size > 4096
+        ):
+            raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+        value = _load_json_object(
+            self.wmn_admission_path, code="WMN_ADMISSION_STATE_INVALID"
+        )
+        if (
+            set(value) != _WMN_ADMISSION_KEYS
+            or value.get("contract_id") != "biocatalyst_wmn_admission.v1"
+            or value.get("schema_version") != "1.0.0"
+        ):
+            raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+        ticket = value["ticket"]
+        return (
+            None if ticket is None else WmnAdmissionTicket.from_dict(
+                ticket, code="WMN_ADMISSION_STATE_INVALID"
+            )
+        )
+
+    def _read_wmn_admission_locked(self, descriptor: int) -> WmnAdmissionTicket | None:
+        if self._wmn_lock_marker(descriptor) != _WMN_LOCK_MARKER:
+            raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE")
+        return self._read_wmn_admission_document()
+
+    def initialize_wmn_admission(self) -> None:
+        """Adopt an uninitialized local store; never reset lost admission history.
+
+        The stable lock inode receives a durable initialization marker before
+        any ticket can be admitted. Missing state after that marker is an error,
+        including when the first corrected build never produced a pointer.
+        """
+        with self._publication_lock(write=True) as descriptor:
+            marker = self._wmn_lock_marker(descriptor)
+            if marker == _WMN_LOCK_MARKER:
+                self._read_wmn_admission_locked(descriptor)
+                return
+            if marker:
+                raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+            pointer = self._read_current_pointer()
+            if pointer is not None and pointer.get("schema_version") == "1.1.0":
+                raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE")
+            if self.wmn_admission_path.exists() or self.wmn_admission_path.is_symlink():
+                # Complete only a first-initialization interruption. An admitted
+                # ticket with a missing marker is not an empty store.
+                if self._read_wmn_admission_document() is not None:
+                    raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+            else:
+                atomic_write(
+                    self.wmn_admission_path,
+                    _json_bytes(self._wmn_admission_document(None)),
+                )
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            if os.write(descriptor, _WMN_LOCK_MARKER) != len(_WMN_LOCK_MARKER):
+                raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+            os.fsync(descriptor)
+            _fsync_directory(self.public_root)
+            self._read_wmn_admission_locked(descriptor)
+
+    def capture_wmn_admission(self) -> WmnAdmissionTicket | None:
+        """Capture the token before reading the fixed owner handoff."""
+        with self._publication_lock(write=False) as descriptor:
+            return self._read_wmn_admission_locked(descriptor)
+
+    @staticmethod
+    def _wmn_inputs_digest(inputs: Mapping[str, Any]) -> str:
+        try:
+            normalized = validate_current_wmn_inputs(inputs)
+        except CompanyContractError as exc:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+        # This is the canonical payload digest, not the manifest's artifact
+        # digest, which also covers the on-disk trailing newline.
+        return canonical_json_sha256(normalized)
+
+    def admit_wmn_inputs(
+        self, inputs: Mapping[str, Any], *, expected: WmnAdmissionTicket | None
+    ) -> WmnAdmissionTicket:
+        """CAS-admit a complete cut; a late FD read cannot acquire a newer token.
+
+        This local admission is not evidence of native Data OS admission.
+        accepted_at and cut timestamps do not determine the local sequence.
+        """
+        digest = self._wmn_inputs_digest(inputs)
+        with self._publication_lock(write=True) as descriptor:
+            current = self._read_wmn_admission_locked(descriptor)
+            if current != expected:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+            if current is not None and current.inputs_sha256 == digest:
+                return current
+            ticket = WmnAdmissionTicket(
+                (current.sequence + 1) if current is not None else 1,
+                uuid4().hex,
+                digest,
+            )
+            replacement = _json_bytes(self._wmn_admission_document(ticket))
+            try:
+                atomic_write(self.wmn_admission_path, replacement)
+                if self.wmn_admission_path.read_bytes() != replacement:
+                    raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+                if self._read_wmn_admission_locked(descriptor) != ticket:
+                    raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+            except (OSError, PublicationError) as exc:
+                # Never restore an older admitted cut after a post-replace fault.
+                raise PublicationError("WMN_ADMISSION_WRITE_FAILED") from exc
+            return ticket
+
+    def require_wmn_admission(
+        self, inputs: Mapping[str, Any], ticket: WmnAdmissionTicket | None
+    ) -> None:
+        digest = self._wmn_inputs_digest(inputs)
+        if not isinstance(ticket, WmnAdmissionTicket):
+            raise PublicationError("WMN_ADMISSION_REQUIRED")
+        if ticket.inputs_sha256 != digest:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
+        with self._publication_lock(write=False) as descriptor:
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+
+    def assert_wmn_current(self, projection: CommittedTrialProjection) -> None:
+        """Linearize current WMN eligibility after request-local composition."""
+        pointer = projection.wmn_pointer
+        inputs = projection.what_matters_next_inputs
+        if (
+            not isinstance(pointer, Mapping)
+            or pointer.get("schema_version") != "1.1.0"
+            or not isinstance(inputs, Mapping)
+        ):
+            raise PublicationError("WMN_ADMISSION_REQUIRED")
+        ticket = WmnAdmissionTicket.from_dict(
+            pointer.get("wmn_admission"), code="WMN_ADMISSION_REQUIRED"
+        )
+        if ticket.inputs_sha256 != self._wmn_inputs_digest(inputs):
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
+        with self._publication_lock(write=False) as descriptor:
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+            if self._read_current_pointer() != dict(pointer):
+                raise PublicationError("WMN_GENERATION_CHANGED")
+
+    @property
     def health_path(self) -> Path:
         return self.public_root / "health.json"
 
@@ -1805,9 +2050,19 @@ class PublicGenerationPublisher:
         if not stat.S_ISREG(pointer_metadata.st_mode):
             raise PublicationError("PUBLIC_POINTER_INVALID")
         pointer = _load_json_object(self.pointer_path, code="PUBLIC_POINTER_INVALID")
-        if set(pointer) != _POINTER_KEYS:
+        if pointer.get("contract_id") != "biocatalyst_current_pointer.v1":
             raise PublicationError("PUBLIC_POINTER_INVALID")
-        if pointer.get("contract_id") != "biocatalyst_current_pointer.v1" or pointer.get("schema_version") != "1.0.0":
+        schema = pointer.get("schema_version")
+        if schema == "1.0.0":
+            if set(pointer) != _POINTER_KEYS:
+                raise PublicationError("PUBLIC_POINTER_INVALID")
+        elif schema == "1.1.0":
+            if set(pointer) != _WMN_FENCED_POINTER_KEYS:
+                raise PublicationError("PUBLIC_POINTER_INVALID")
+            WmnAdmissionTicket.from_dict(
+                pointer["wmn_admission"], code="PUBLIC_POINTER_INVALID"
+            )
+        else:
             raise PublicationError("PUBLIC_POINTER_INVALID")
         generation_id = pointer.get("generation_id")
         if not isinstance(generation_id, str) or not _RUN_ID_RE.fullmatch(generation_id):
@@ -1866,12 +2121,7 @@ class PublicGenerationPublisher:
         current = self._read_current_pointer()
         if current is None:
             return False
-        return (
-            current.get("generation_id") == validated.committed.generation_id
-            and current.get("manifest_sha256") == validated.committed.manifest_sha256
-            and current.get("watermark_after") == validated.committed.watermark_after
-            and current.get("published_at") == validated.committed.published_at
-        )
+        return current == dict(validated.pointer)
 
     def read_committed(self) -> CommittedGeneration | None:
         """Read a fully validated committed state, never a loose watermark file."""
@@ -2006,6 +2256,7 @@ class PublicGenerationPublisher:
             raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_BINDING_MISMATCH")
         return CommittedTrialProjection(
             generation=committed,
+            wmn_pointer=dict(validated.pointer),
             trials=tuple(trials),
             protocols_by_nct=protocols_by_nct,
             history_models_by_nct=history_models_by_nct,
@@ -2095,6 +2346,7 @@ class PublicGenerationPublisher:
         prospective_models_by_nct: Mapping[str, Mapping[str, Any]] | None = None,
         prospective_evidence_by_nct: Mapping[str, ProspectivePublicationEvidence] | None = None,
         wmn_inputs: Mapping[str, Any] | None = None,
+        wmn_admission: WmnAdmissionTicket | None = None,
     ) -> PreparedGeneration:
         """Make a complete sanitized generation outside the actual public root."""
 
@@ -2118,6 +2370,9 @@ class PublicGenerationPublisher:
                 raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
             if input_cut_time > published_time:
                 raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            self.require_wmn_admission(normalized_wmn_inputs, wmn_admission)
+        elif wmn_admission is not None:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
         collector_generation = _require_within(
             collector_generation,
             collector_public_root,
@@ -2395,6 +2650,7 @@ class PublicGenerationPublisher:
                 watermark_after=run["watermark_after"],
                 published_at=run["finished_at"],
                 source_dataset_timestamp_raw=run["source_dataset_timestamp_before_raw"],
+                wmn_admission=wmn_admission,
             )
         except Exception:
             if final_stage.exists():
@@ -2443,12 +2699,29 @@ class PublicGenerationPublisher:
         return target
 
     def write_pointer(self, prepared: PreparedGeneration) -> None:
-        """Advance the one last-good pointer only after all earlier stages succeed."""
+        """Compare the consumed admission and promote under one serialization."""
+        with self._publication_lock(write=True) as descriptor:
+            self._write_pointer_locked(prepared, descriptor)
 
-        # Verify the installed target again immediately before its pointer can move.
-        manifest = self._load_generation_manifest(prepared.generation_id)
+    def _write_pointer_locked(self, prepared: PreparedGeneration, descriptor: int) -> None:
+        # Re-prove immutable bytes and the complete normalized input digest.
+        # Hashes in the generation manifest include the artifact's newline.
+        materialized = self._materialize_validated_generation(prepared.generation_id)
+        manifest = materialized.manifest
         if manifest["manifest_sha256"] != prepared.manifest_sha256:
             raise PublicationError("PUBLIC_GENERATION_ARTIFACT_MISMATCH")
+        inputs = materialized.artifacts.what_matters_next_inputs
+        ticket = prepared.wmn_admission
+        if inputs is not None:
+            digest = self._wmn_inputs_digest(inputs)
+            if not isinstance(ticket, WmnAdmissionTicket):
+                raise PublicationError("WMN_ADMISSION_REQUIRED")
+            if ticket.inputs_sha256 != digest:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+        elif ticket is not None:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
         pointer = {
             "contract_id": "biocatalyst_current_pointer.v1",
             "schema_version": "1.0.0",
@@ -2457,6 +2730,9 @@ class PublicGenerationPublisher:
             "watermark_after": prepared.watermark_after,
             "published_at": prepared.published_at,
         }
+        if ticket is not None:
+            pointer["schema_version"] = "1.1.0"
+            pointer["wmn_admission"] = ticket.as_dict()
         replacement = _json_bytes(pointer)
         if self.pointer_path.is_symlink():
             raise PublicationError("POINTER_STATE_UNCERTAIN")
@@ -2471,18 +2747,18 @@ class PublicGenerationPublisher:
                 after_replace=self._pointer_after_replace_hook,
             )
         except Exception as exc:
-            self._rollback_pointer(previous, replacement)
+            self._rollback_pointer_locked(previous, replacement)
             raise PublicationError("POINTER_WRITE_FAILED") from exc
         try:
             actual = self.pointer_path.read_bytes()
         except OSError as exc:
             raise PublicationError("POINTER_STATE_UNCERTAIN") from exc
         if actual != replacement:
-            self._rollback_pointer(previous, replacement)
+            self._rollback_pointer_locked(previous, replacement)
             raise PublicationError("POINTER_STATE_UNCERTAIN")
 
-    def _rollback_pointer(self, previous: bytes | None, replacement: bytes) -> None:
-        """Restore the old pointer after a post-replace durability fault.
+    def _rollback_pointer_locked(self, previous: bytes | None, replacement: bytes) -> None:
+        """Restore only known pointer bytes while holding the publication lock.
 
         An error after ``os.replace`` is not evidence that the old pointer won.
         We inspect the file and either prove it is old, roll the known new bytes

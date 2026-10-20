@@ -148,6 +148,7 @@ def test_worker_can_publish_pointer_bound_wmn_owner_cut(tmp_path) -> None:
         now_fn=lambda: NOW,
         activation_verifier=lambda _config, _now: None,
         wmn_inputs=inputs,
+        wmn_admission=_admit(PublicGenerationPublisher(cfg.public_root), inputs),
     )
 
     assert result.exit_code == worker.EXIT_SUCCESS
@@ -434,17 +435,17 @@ def test_legacy_v1_generation_still_rejects_artifact_tampering(tmp_path):
 def test_new_worker_publication_refuses_legacy_v1_owner_input(tmp_path, monkeypatch):
     from engine.biocatalyst.publication import PublicationError
 
-    original_prepare = PublicGenerationPublisher.prepare_generation
+    original_require = PublicGenerationPublisher.require_wmn_admission
     publication_errors = []
 
-    def observe_prepare(self, *args, **kwargs):
+    def observe_require(self, *args, **kwargs):
         try:
-            return original_prepare(self, *args, **kwargs)
+            return original_require(self, *args, **kwargs)
         except PublicationError as exc:
             publication_errors.append(exc.code)
             raise
 
-    monkeypatch.setattr(PublicGenerationPublisher, "prepare_generation", observe_prepare)
+    monkeypatch.setattr(PublicGenerationPublisher, "require_wmn_admission", observe_require)
     capture = _legacy_v1_capture()
     name = f"generations/{capture['generation_id']}/what_matters_next_inputs.json"
     cfg = config(tmp_path)
@@ -459,9 +460,9 @@ def test_new_worker_publication_refuses_legacy_v1_owner_input(tmp_path, monkeypa
     )
     assert result.exit_code == worker.EXIT_FAILED
     assert publication_errors == ["WMN_OWNER_INPUT_INVALID"]
-    # The worker's existing public-code allowlist projects this publisher error
-    # to COLLECTION_FAILED; the actual preparation refusal is asserted above.
-    assert result.error_code == "COLLECTION_FAILED"
+    # Admission now refuses historical v1 before collection, and preserves its
+    # bounded publisher error instead of collapsing it to COLLECTION_FAILED.
+    assert result.error_code == "WMN_OWNER_INPUT_INVALID"
     assert not (cfg.public_root / "current.json").exists()
     assert store.put_attempts == []
 
@@ -489,3 +490,214 @@ def test_service_handoff_refuses_legacy_v1_before_collection(tmp_path, monkeypat
     assert result.exit_code == worker.EXIT_FAILED
     assert result.error_code == "BIOCATALYST_WMN_OWNER_INPUT_INVALID"
     assert not (public_root / "current.json").exists()
+
+
+# Correction-fence witnesses use only synthetic owner cuts and the offline
+# collector. They do not attest native owner admission or an entitled runtime.
+def _admit(publisher, inputs):
+    publisher.initialize_wmn_admission()
+    expected = publisher.capture_wmn_admission()
+    return publisher.admit_wmn_inputs(inputs, expected=expected)
+
+
+def _alias_correction(inputs):
+    from copy import deepcopy
+
+    changed = deepcopy(inputs)
+    alias = next(member for member in changed["input_cut"]["members"]
+                 if member["contract_id"] == "dataos_vendor_aliases.current")
+    alias["sha256"] = "4" * 64
+    return changed
+
+
+def test_wmn_admission_is_durable_idempotent_and_prevents_aba(tmp_path):
+    from engine.biocatalyst.publication import PublicationError
+
+    publisher = PublicGenerationPublisher(tmp_path / "public")
+    original = _wmn_inputs()
+    first = _admit(publisher, original)
+    assert _admit(publisher, original) == first
+    second = _admit(publisher, _alias_correction(original))
+    assert second.sequence == first.sequence + 1
+    assert second.admission_id != first.admission_id
+    assert second.inputs_sha256 != first.inputs_sha256
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_CHANGED"):
+        publisher.admit_wmn_inputs(original, expected=first)
+    third = _admit(publisher, original)
+    assert third.sequence == second.sequence + 1
+    assert third.inputs_sha256 == first.inputs_sha256
+    assert third.admission_id != first.admission_id
+    restarted = PublicGenerationPublisher(publisher.public_root)
+    assert restarted.capture_wmn_admission() == third
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_CHANGED"):
+        restarted.admit_wmn_inputs(original, expected=first)
+
+
+def test_wmn_direct_worker_requires_a_pre_admitted_ticket(tmp_path):
+    collector = FakeCollectorFactory()
+    result = worker.run_once(
+        config(tmp_path), collector_factory=collector,
+        store_factory=lambda _: MemoryStore(), now_fn=lambda: NOW,
+        activation_verifier=lambda _config, _now: None,
+        wmn_inputs=_wmn_inputs(),
+    )
+    assert result.exit_code == worker.EXIT_FAILED
+    assert result.error_code == "WMN_ADMISSION_REQUIRED"
+    assert collector.calls == []
+
+
+def _run_fenced(cfg, inputs, ticket, *, watermark="2026-08-01T15:00:05Z",
+                publisher_factory=PublicGenerationPublisher, collector_factory=None):
+    from datetime import timedelta
+
+    return worker.run_once(
+        cfg,
+        collector_factory=collector_factory or FakeCollectorFactory(watermark_after=watermark),
+        store_factory=lambda _: MemoryStore(), now_fn=lambda: NOW + timedelta(minutes=1),
+        activation_verifier=lambda _config, _now: None,
+        publisher_factory=publisher_factory, wmn_inputs=inputs, wmn_admission=ticket,
+    )
+
+
+def _published_fence(tmp_path):
+    cfg = config(tmp_path, prospective_enabled=False)
+    publisher = PublicGenerationPublisher(cfg.public_root)
+    inputs = _wmn_inputs()
+    ticket = _admit(publisher, inputs)
+    result = _run_fenced(cfg, inputs, ticket)
+    assert result.exit_code == worker.EXIT_SUCCESS
+    return cfg, publisher, inputs, ticket
+
+
+def test_service_late_owner_read_cannot_adopt_an_intervening_admission(tmp_path, monkeypatch):
+    state_root, public_root, environ = _environment_for_wmn(tmp_path)
+    owner_path = tmp_path / "owner-inputs.json"
+    inputs = _wmn_inputs()
+    owner_path.write_text(json.dumps(inputs), encoding="utf-8")
+    monkeypatch.setattr(worker, "_SERVICE_STATE_ROOT", state_root)
+    monkeypatch.setattr(worker, "_SERVICE_PUBLIC_ROOT", public_root)
+    monkeypatch.setattr(worker, "_SERVICE_WMN_INPUTS_PATH", owner_path)
+    worker._prepare_runtime_layout(worker.load_environment(environ).config)
+    publisher = PublicGenerationPublisher(public_root)
+    first = _admit(publisher, inputs)
+    original_read = worker._load_service_wmn_inputs
+    observed = {}
+
+    def late_read():
+        held_inputs = original_read()
+        corrected = _alias_correction(inputs)
+        owner_path.write_text(json.dumps(corrected), encoding="utf-8")
+        observed["ticket"] = publisher.admit_wmn_inputs(corrected, expected=first)
+        return held_inputs
+
+    monkeypatch.setattr(worker, "_load_service_wmn_inputs", late_read)
+    collector = FakeCollectorFactory()
+    result = worker.run_from_environment(
+        environ, collector_factory=collector,
+        store_factory=lambda _: MemoryStore(), now_fn=lambda: NOW,
+    )
+    assert result.error_code == "WMN_ADMISSION_CHANGED"
+    assert collector.calls == []
+    assert publisher.capture_wmn_admission() == observed["ticket"]
+    assert not publisher.pointer_path.exists()
+
+
+def test_admission_post_replace_failure_does_not_restore_old_state(tmp_path, monkeypatch):
+    import engine.biocatalyst.publication as publication
+
+    cfg, publisher, inputs, first = _published_fence(tmp_path)
+    original_write = publication.atomic_write
+
+    def write_with_admission_fault(path, payload, **kwargs):
+        if path == publisher.wmn_admission_path:
+            def fail_after_replace(_path):
+                raise OSError("admission durability fault")
+            return original_write(path, payload, after_replace=fail_after_replace)
+        return original_write(path, payload, **kwargs)
+
+    monkeypatch.setattr(publication, "atomic_write", write_with_admission_fault)
+    with pytest.raises(publication.PublicationError, match="WMN_ADMISSION_WRITE_FAILED"):
+        publisher.admit_wmn_inputs(_alias_correction(inputs), expected=first)
+    current = PublicGenerationPublisher(cfg.public_root).capture_wmn_admission()
+    assert current.sequence == first.sequence + 1
+    assert current != first
+    with pytest.raises(publication.PublicationError, match="WMN_ADMISSION_CHANGED"):
+        publisher.assert_wmn_current(publisher.read_trial_projection())
+
+
+def test_state_loss_before_first_publication_cannot_reset_sequence(tmp_path):
+    from engine.biocatalyst.publication import PublicationError
+
+    publisher = PublicGenerationPublisher(tmp_path / "public")
+    _admit(publisher, _wmn_inputs())
+    assert not publisher.pointer_path.exists()
+    publisher.wmn_admission_path.unlink()
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_STATE_UNAVAILABLE"):
+        PublicGenerationPublisher(publisher.public_root).initialize_wmn_admission()
+    assert not publisher.wmn_admission_path.exists()
+
+
+def test_aba_cannot_promote_old_ticket_and_pointer_recheck_includes_ticket(tmp_path):
+    from dataclasses import replace
+    from engine.biocatalyst.publication import PreparedGeneration, PublicationError
+
+    cfg, publisher, inputs, first = _published_fence(tmp_path)
+    validated = publisher.read_validated_generation()
+    committed = validated.committed
+    old = PreparedGeneration(
+        generation_id=committed.generation_id,
+        stage_path=cfg.public_root / "generations" / committed.generation_id,
+        manifest_sha256=committed.manifest_sha256,
+        watermark_after=committed.watermark_after,
+        published_at=committed.published_at,
+        source_dataset_timestamp_raw=committed.source_dataset_timestamp_raw,
+        wmn_admission=first,
+    )
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_REQUIRED"):
+        publisher.write_pointer(replace(old, wmn_admission=None))
+    _admit(publisher, _alias_correction(inputs))
+    third = _admit(publisher, inputs)
+    assert third.inputs_sha256 == first.inputs_sha256
+    with pytest.raises(PublicationError, match="WMN_ADMISSION_CHANGED"):
+        publisher.write_pointer(old)
+    moved_pointer = dict(validated.pointer)
+    moved_pointer["wmn_admission"] = third.as_dict()
+    publisher.pointer_path.write_text(json.dumps(moved_pointer), encoding="utf-8")
+    assert not publisher._pointer_matches_validated(validated)
+
+
+def test_payload_digest_is_distinct_from_the_artifact_newline_hash(tmp_path):
+    cfg, installed, inputs, ticket = _published_fence(tmp_path)
+    generation = installed.read_committed()
+    path = cfg.public_root / "generations" / generation.generation_id / "what_matters_next_inputs.json"
+    raw = path.read_bytes()
+    assert raw.endswith(b"\n")
+    assert sha256(raw[:-1]).hexdigest() == ticket.inputs_sha256
+    # Company canonical bytes include a newline. The Bio ticket deliberately
+    # uses canonical payload bytes without it; neither hash is interchangeable.
+    assert sha256(raw).hexdigest() == canonical_json_sha256(validate_wmn_inputs(inputs))
+    assert sha256(raw).hexdigest() != ticket.inputs_sha256
+    installed.assert_wmn_current(installed.read_trial_projection())
+
+
+def test_publication_lock_excludes_a_separate_serving_process(tmp_path):
+    import subprocess
+    import sys
+
+    publisher = PublicGenerationPublisher(tmp_path / "public")
+    publisher.initialize_wmn_admission()
+    probe = (
+        "import fcntl, os, sys\n"
+        "fd = os.open(sys.argv[1], os.O_RDONLY)\n"
+        "try:\n"
+        "    try: fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)\n"
+        "    except BlockingIOError: sys.exit(0)\n"
+        "    else: sys.exit(3)\n"
+        "finally: os.close(fd)\n"
+    )
+    with publisher._publication_lock(write=True):
+        result = subprocess.run(
+            [sys.executable, "-c", probe, str(publisher.public_root / "wmn_publication.lock")],
+            capture_output=True, text=True, timeout=10,
+        )
+        assert result.returncode == 0, result.stderr

@@ -494,3 +494,31 @@ def test_internal_upgrade_cannot_smuggle_nonempty_evidence_through_v1_0():
     event = {**case[0], "public_evidence": [evidence]}
     with pytest.raises(ContractError, match="not admitted in the first producer slice"):
         attach_catalyst_public_evidence(event, [evidence], generation_cutoff=CUTOFF)
+
+
+def test_admission_digest_binds_source_context_at_the_same_event_revision(tmp_path):
+    import json
+    from hashlib import sha256
+
+    from engine.biocatalyst.publication import PublicGenerationPublisher
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+    from tests.test_biocatalyst_wmn_publication import _admit
+
+    case = _case()
+    context = _project(case)
+    original = _api_inputs(attach_catalyst_public_evidence(
+        case[0], [], generation_cutoff=CUTOFF
+    ))
+    corrected = _api_inputs(attach_catalyst_public_evidence(
+        case[0], [context], generation_cutoff=CUTOFF
+    ))
+    assert original["events"][0]["revision_ref"] == corrected["events"][0]["revision_ref"]
+    publisher = PublicGenerationPublisher(tmp_path / "public")
+    first = _admit(publisher, original)
+    second = _admit(publisher, corrected)
+    assert first.inputs_sha256 != second.inputs_sha256
+    canonical_payload = json.dumps(
+        validate_current_wmn_inputs(corrected), ensure_ascii=False, allow_nan=False,
+        sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    assert second.inputs_sha256 == sha256(canonical_payload).hexdigest()
