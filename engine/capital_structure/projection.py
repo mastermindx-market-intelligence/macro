@@ -687,7 +687,32 @@ def validate_projection_bundle(
     bundle: Mapping[str, Any], schema_path: Path | str | None = None
 ) -> None:
     """Validate the serialized public contract, including format checks."""
-    from jsonschema import Draft202012Validator, FormatChecker
+    from jsonschema import Draft202012Validator, FormatChecker, validators
+
+    original_unique_items = Draft202012Validator.VALIDATORS["uniqueItems"]
+
+    def unique_issuer_records(validator, enabled, instance, schema):
+        # Distinct string issuer IDs prove these JSON objects are unequal.
+        # The normal records array would otherwise use pairwise deep equality.
+        # This is only a sufficient proof: missing, repeated or non-string IDs
+        # retain the original JSON Schema equality rules, including 1 == 1.0
+        # but True != 1. All other keywords still validate every record.
+        if enabled and validator.is_type(instance, "array"):
+            issuer_ids = set()
+            for record in instance:
+                if type(record) is not dict:
+                    break
+                issuer_id = record.get("issuer_id")
+                if type(issuer_id) is not str or issuer_id in issuer_ids:
+                    break
+                issuer_ids.add(issuer_id)
+            else:
+                return
+        yield from original_unique_items(validator, enabled, instance, schema)
+
+    projection_validator = validators.extend(
+        Draft202012Validator, {"uniqueItems": unique_issuer_records}
+    )
 
     path = Path(schema_path) if schema_path else (
         Path(__file__).resolve().parents[2]
@@ -695,7 +720,7 @@ def validate_projection_bundle(
         / "capital_structure_projection.schema.json"
     )
     schema = json.loads(path.read_text(encoding="utf-8"))
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    validator = projection_validator(schema, format_checker=FormatChecker())
     errors = sorted(validator.iter_errors(dict(bundle)), key=lambda error: list(error.path))
     if errors:
         messages = [

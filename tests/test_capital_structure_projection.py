@@ -725,3 +725,81 @@ def test_biocatalyst_pit_adapter_schema_refuses_capability_or_authority_widening
         match="read_payload_sha256_mismatch",
     ):
         validate_capital_structure_pit_read(stale_receipt)
+
+
+def test_projection_uniqueness_does_not_compare_every_issuer_pair(monkeypatch):
+    """A normal multi-issuer read must not spend quadratic work on wide records."""
+    import jsonschema._utils as schema_utils
+
+    bundle = _build([
+        _event(f"{index:010d}-26-000001", "S-3", seen="2026-08-01T10:00:00Z",
+               issuer_id=f"sec:cik:{index:010d}", cik=str(index), ticker=f"T{index}")
+        for index in range(1, 41)
+    ])
+    original_equal = schema_utils.equal
+    record_comparisons = 0
+
+    def counted(one, two):
+        nonlocal record_comparisons
+        if (isinstance(one, dict) and isinstance(two, dict)
+                and one.get("schema") == "capital_structure.projection.v1"
+                and two.get("schema") == one.get("schema")):
+            record_comparisons += 1
+        return original_equal(one, two)
+
+    monkeypatch.setattr(schema_utils, "equal", counted)
+    validate_projection_bundle(bundle)
+    assert record_comparisons <= 2 * len(bundle["records"])
+
+
+@pytest.mark.parametrize("values, valid", [
+    ([1, 1.0], False),
+    ([True, 1], True),
+    ([False, 0], True),
+    ([None, None], False),
+    ([{"x": True}, {"x": 1}], True),
+    ([{"x": 1}, {"x": 1.0}], False),
+    ([{"x": [1, {"y": False}]}, {"x": [1.0, {"y": 0}]}], True),
+    ([{"a": 1, "b": 2}, {"b": 2.0, "a": 1.0}], False),
+    ([[1, 2], [2, 1]], True),
+    ([[1, 2], [1.0, 2.0]], False),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "b", "x": 1}], True),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "a", "x": 2}], True),
+    ([{"issuer_id": "a", "x": 1}, {"issuer_id": "a", "x": 1.0}], False),
+    ([{"issuer_id": True}, {"issuer_id": 1}], True),
+    ([{"issuer_id": 1}, {"issuer_id": 1.0}], False),
+    ([{"issuer_id": "a"}, {"x": 1}, {"x": 1.0}], False),
+])
+def test_projection_validation_preserves_json_schema_unique_equality(tmp_path, values, valid):
+    schema_path = tmp_path / "uniqueness.schema.json"
+    schema_path.write_text(json.dumps({
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object", "properties": {"items": {"type": "array", "uniqueItems": True}},
+    }))
+    if valid:
+        validate_projection_bundle({"items": values}, schema_path)
+    else:
+        with pytest.raises(ValueError):
+            validate_projection_bundle({"items": values}, schema_path)
+
+
+@pytest.mark.parametrize("corruption", ["late_duplicate", "late_authority", "late_private_key", "late_bad_date", "late_bad_uri"])
+def test_projection_validation_still_rejects_late_corruption(corruption):
+    bundle = _build([
+        _event(f"{index:010d}-26-000001", "S-3", seen="2026-08-01T10:00:00Z",
+               issuer_id=f"sec:cik:{index:010d}", cik=str(index), ticker=f"T{index}")
+        for index in range(1, 9)
+    ])
+    row = bundle["records"][-1]
+    if corruption == "late_duplicate":
+        bundle["records"].append(copy.deepcopy(row))
+    elif corruption == "late_authority":
+        row["authority"]["sizing_authority"] = True
+    elif corruption == "late_private_key":
+        row["latest_observed_event"]["source"]["object_key"] = "private/key"
+    elif corruption == "late_bad_date":
+        row["latest_observed_event"]["filing_date"] = "2026-13-01"
+    else:
+        row["latest_observed_event"]["source"]["filing_url"] = "https://unapproved.example/filing"
+    with pytest.raises(ValueError):
+        validate_projection_bundle(bundle)
