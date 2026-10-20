@@ -1645,6 +1645,9 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         # already returned — ZERO extra network calls. Server-derived like user_email, so
         # the body can never set it; a guest record carries none and reads as {}.
         account_prefs=user_prefs.read_user_prefs(user),
+        # F11-6 (Sol 5967105152 item 5): the caller's own verified token, already injected
+        # by require_user as `_access_token`; a guest has none. Never re-extracted here.
+        user_jwt="" if is_guest else (user.get("_access_token") or ""),
     )
 
     if result.get("quota_exhausted"):
@@ -1714,6 +1717,8 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             guest_aid=guest_aid,
             guest_ip=guest_ip,
             account_prefs=account_prefs,
+            # F11-6 (Sol 5967105152 item 5): same caller-token pass-through as chat().
+            user_jwt="" if is_guest else (user.get("_access_token") or ""),
         )
 
     # The turn is registered as a server-side RUN before a single byte goes out.
@@ -2552,6 +2557,11 @@ app.include_router(ontology_explorer_router)
 # or a missing optional package on the VPS.
 from app.forensics import _financial_dataset_mode, router as forensics_router  # noqa: E402
 app.include_router(forensics_router)
+
+# Exact, entitled institutional research reads share the existing Forensics
+# authentication/entitlement boundary; the private catalog is never a site asset.
+from app.institutional_research import router as institutional_research_router  # noqa: E402
+app.include_router(institutional_research_router)
 
 # BioCatalyst Intelligence serves only the worker's pointer-bound normalized
 # product projection. Its router performs early site_full enforcement before

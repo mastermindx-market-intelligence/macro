@@ -1,71 +1,71 @@
 ---
 workstream: WS:DATA-OS-COMPLETION
-session: claude/dataos-records-w3c-2026-10-14
-model: fable
-ended_because: ci_handoff
-mission: Complete the equity-data contract through three real consumers under one declared view contract (Terminal daily OHLC + data-origin readout, DataWorkspace canonical read, basket composition), with independent proof and installed production reads; this handoff records the consumer, verification and acceptance waves as of 2026-10-17 12:2xZ.
-state_before: Waves 1-2 landed (handoff 2026-10-13). Consumer wave (ORCH-3) and verification + acceptance wave (ORCH-4) delivered as DRAFT PRs over M2 fabric lanes; the seat wired every delivered lane into CI (legacy-jobs.yml jobs dataos-consumers / dataos-verification / dataos-acceptance), repaired the reds it owned, and merged C01-C03, the wire-3 exports and U03 at their exact heads.
+session: claude/dataos-records-c00-2026-10-17
+model: opus
+ended_because: blocked
+mission: Complete the equity-data contract through three real consumers under one declared view contract (Terminal daily OHLC + data-origin readout, DataWorkspace canonical read, basket composition), with independent numerical/temporal/access proof, installed production reads and second-cycle evidence; close the C00 matrix.
+state_before: "Waves 1-2 landed (handoff 2026-10-13); consumer wave (ORCH-3) and verification + acceptance wave (ORCH-4) delivered as DRAFT PRs over M2 fabric lanes and wired by the seat; U03 #9236, wire-4 #9539, acceptance #9275 and the first records PR #9544 merged on 2026-10-17 before this closeout."
 changed:
-- path: research/data_os_completion/2026-10-13/D00_SEMANTIC_DECISIONS.md
-  what: "D00.D3 clarification (ABSENT vs UNRESOLVED) inserted before D00.D4; Amendments bullet D00.A2 (2026-10-17)."
-- path: agentos/decisions/DEC-DATAOS-D00-D3-ABSENT-VS-UNRESOLVED.md
-  what: "Seat ruling closing ORCH-4 finding Q01-F1: an INFERRED split observation makes the window UNRESOLVED and the SADJ / total-return views refuse NOT_CONFIRMED; the Q01 oracle pin was inverted in #9273 (b1ca917a0b7d), no library change."
+- path: research/data_os_completion/2026-10-13/C00_CLOSEOUT_MATRIX.md
+  what: "Final C00 closeout matrix: every package → PR, squash, ladder rung, evidence pointer, status; main-baseline table; EXPLICITLY UNFINISHED legs named (A02 new-day + vendor-revision, A03 torn-publish lineage, R02.04 history, R03 second cycle owner = nightly)."
+- path: research/data_os_completion/2026-10-13/R02_RECEIPTS.md
+  what: "R02 installed / selected / consumed receipts: consumer B proven on the production host (digests, scratch binding sha256, four runtime envelopes under the service venv, typed DEPENDENCY_UNAVAILABLE under system python); consumer A = Terminal #996 BUILD_ID + live-marker ancestry; consumer C = R03."
+- path: research/data_os_completion/2026-10-13/receipts/R02_B_RUNTIME_RECEIPT_venv.json
+  what: "Runtime receipt (service venv): digests + envelope fields + result shape only, no stored values."
+- path: research/data_os_completion/2026-10-13/receipts/R02_B_RUNTIME_RECEIPT_sys.json
+  what: "Runtime receipt (system python): read refuses DEPENDENCY_UNAVAILABLE (pyarrow absent)."
 - path: agentos/workstreams/WS-DATA-OS-COMPLETION.md
-  what: "consumer wave prs extended (9185, 9188, 9210, 9218, 9220, 9226, 9234, 9236, 9237, 9241, 9539); verification-acceptance in_progress with [9273, 9275]; new decision listed; next_action rewritten for the merge/baseline/wire-5/R02/R03/C00 sequence."
+  what: "consumers wave done (+9555); verification-acceptance done; c00-closeout in_progress; artifacts + next_action rewritten."
 - path: agentos/handoffs/DATA-OS-COMPLETION-2026-10-17.md
-  what: "This handoff."
+  what: "This handoff (rewritten at closeout; supersedes the 2026-10-17 morning version)."
 verified:
-- claim: C01, C02, the lint heal, C03, wire-3 and U03 are merged and every path of each merged head is byte-identical on origin/main.
-  command: git fetch origin main (alone, exit status checked); per path git rev-parse origin/main:<path> vs git rev-parse <head>:<path> (scratchpad/orch/o1/seat/land_proof.sh <pr> <head40>); transient 'cannot lock ref' races re-run, never read as a miss.
-  result: "C01 #9188 squash 6b154e093573; C02 #9210 5a7d43b9ba04; heal #9234 80df7978789e; C03 #9218 91a67bb23cad (3 paths, 0 missing, 11:08Z); wire-3 #9220 8ab6617a8fdc; U03 #9236 a9939167d46b at exact head 884d2e2834f0 (4 paths, 0 missing, 12:15:53Z)."
-- claim: Every red seen on the open DRAFT PRs on 2026-10-17 is attributed, and only one was the PR's own.
-  command: gh api repos/mastermindx-market-intelligence/macro/actions/jobs/<id>/logs > file; grep -a -E '^.{0,40}(FAILED|ERROR) ' file | sort -u
-  result: "(a) tests/test_recurring_briefs.py weekly-zh pair = main-inherited (reads committed site/master_brief.json; healed on main by #9517 at 11:42Z; remedy = refreshed merge ref via update-branch or the next push). (b) contract-delta uncovered-closure counts on dataos-verification (29) / dataos-acceptance (2) = closure gap after main's lib/dataos web seam grew; fixed by paths widenings 0e7ee91b73d4 (#9273) and a452b2c87885 (#9275). (c) #9273 ci-pack-11: Q03 smoke errored at setup because bench_q03.git_show read spec commit 5569baad… under the pack's fetch-depth 1 checkout; fixed by d21798328fd8 (_ensure_commit: git cat-file -e, else git fetch --depth=1 origin <sha>, mirroring ci.yml's contract-delta base fetch)."
-- claim: The Q01 oracle finding F1 is closed by ruling, not by a library change.
-  command: python3 -m pytest tests/verification/test_oracle_q01.py -q -p no:cacheprovider (in the verification lane tree at b1ca917a0b7d)
-  result: "50 passed; test_Q01_06_not_confirmed_is_a_typed_refusal_by_ruling replaces the strict-xfail pin; Q01_ORACLE.md FINDING F1 CLOSED-BY-RULING."
-- claim: The wire-4 export batch is concluded green at its exact head.
-  command: gh pr checks 9539 --json name,state --jq '.[]|select(.state!="SUCCESS")'
-  result: "Only the known-spurious ci-authority/codex/merge-queue-pilot FAILURE and fork-only SKIPPED rows remain at fd28501661d4 (145 names exported)."
+- claim: "Q02-F1 #9654 and gap-A1 #9709 are merged at their exact concluded heads; every #9709 path and 5 of 7 #9654 paths are byte-identical on origin/main, and the two paths both PRs edit (engine/basket_membership_pit.py, tests/test_basket_membership_pit.py) equal the tested three-way merge."
+  command: python3 scratchpad/orch/o1/seat/merge_exact.py <pr> <head40> --merge; bash scratchpad/orch/o1/seat/land_proof.sh <pr> <head40>; git merge-tree --write-tree fe7fd78a 3e6af686; git diff --stat <tree> b3004693
+  result: "#9654 3e6af6865b8d → b300469398ca; #9709 1515008936ed → fc44c814c192; merge-tree(fe7fd78a, 3e6af686) = e42e77de and its diff against b3004693 is empty; 186 basket/Q02 tests passed on that tree."
+- claim: "U04 #9241, M01 #9237, verification #9273, C04 #9226 and wire-5 #9555 are merged at their exact concluded-green heads and every path of each head is byte-identical on origin/main."
+  command: python3 scratchpad/orch/o1/seat/merge_exact.py <pr> <head40> --merge; bash scratchpad/orch/o1/seat/land_proof.sh <pr> <head40> (bare git fetch origin first, exit status checked; per-path git rev-parse origin/main:<path> vs <head>:<path>; a MISS on a sibling-edited shared file is verified by content with git grep -n <needle> origin/main -- <path>)
+  result: "U04 4b087850b4ef → 37df30ea4366 (12:47:43Z); M01 8f2852f79717 → d9b7b9ace151 (12:53:17Z); #9273 a2c9ae94d9da → 83daf2b783ba (13:23:52Z; dataos-verification at tests/test_ci_pack.py:4686 + legacy-jobs.yml:28360 by content); C04 26a47885021349fae9b28986ae4252d206127ba2 → 9b464c9d6ce9db60c7c86b3c6837fe2d5dfc05d6; wire-5 126ad82ea997eca776d6cc0d88b2ad303668fc34 (repair of cb0ba292) → 80f270c44bcdf11f5e71dacc05b11a0875a01d7f (152 names)."
+- claim: Consumer B (DataWorkspace canonical read) is installed, selected and consumed on the production host.
+  command: scp scratchpad/orch/o1/seat/r02_b_remote.py to /tmp on the VPS; python3 -I /tmp/r02_b_remote_972d2923.py /opt/macro/.venv/bin/python /opt/macro (and once with /usr/bin/python3); sha256sum of the four installed files vs git rev-parse origin/main:<path> blobs
+  result: "Installed digests equal origin/main @83daf2b7; no VPS host binding exists (the committed Mac example is what is installed); scratch binding 526c118e15c0d606… removed; service venv: capabilities / describe registry:equity.bars.daily.stocks / read stocks/AAPL.parquet limit 1 / read + expected_version all rc=0 with implementation_revision 83daf2b7…, source_access read_only, production_qualification NOT_ESTABLISHED_BY_THIS_ADAPTER; system python read → typed DEPENDENCY_UNAVAILABLE rc=2."
+- claim: The production Terminal still carries consumer A (#996) after a later swap by another lane.
+  command: ssh (read-only) cat /opt/terminal/terminal/.next/BUILD_ID; head -c 128 /opt/terminal/terminal/.deployment-id; cd /opt/terminal/.gitsrc && git merge-base --is-ancestor fdc7c7f96f56a7b882525de11104acdffe411cd4 3e6e9591d21b849227de3633b4322d7d3b0d3b37
+  result: "BUILD_ID build-TfctsWXpff2fKS unchanged (mtime 2026-10-17 12:56:23Z); live marker 3e6e9591d21b (master 12:47Z) descends from fdc7c7f9 (rc=0, 33 commits ahead, full clone). The anonymous page never embeds the sha (0 hits on the 10-13 copy too) — not a regression instrument."
+- claim: Main CI baselines cleared the CI-authority merged heads.
+  command: gh run view <id> --json status,conclusion,headSha (watched at 180 s by scratchpad/orch/o1/seat/baseline.sh watch <id>; dispatched only after baseline.sh preflight reported FIELD_CLEAR)
+  result: "39034375130 @d9b7b9ace151 completed SUCCESS; 39199517088 @c3abb3f49ba6 (sibling-dispatched 2026-10-19 04:27Z) completed FAILURE — ci-pack-3 reference-integrity L8 packet-without-rig-receipt on the three Sol #9592 MP-20261018-sector-central packets (not this seat's; owner already notified on #9592); 39245121273 @ff1b80af0f5e (first main ci.yml run containing the #7100 heal; descends from C04 9b464c9d, wire-5 80f270c4 and #9273 83daf2b783ba) completed SUCCESS — the C04 / wire-5 / #9273 CI-authority heads are cleared."
 unverified:
-- claim: U04 #9241, C04 #9226, M01 #9237, verification #9273 and acceptance #9275 conclude green at their current heads and land.
-  what_would_verify: One watcher per PR (watch_pr.py 180 s) reporting failed=0 pending=0; merge_exact.py at the exact head; land_proof.sh 0 missing against freshly fetched origin/main.
-- claim: C04's sidecar is produced by the nightly and the Terminal readout leaves the unknown state.
-  what_would_verify: The first daily.yml run after C04 lands commits data/stocks/_view_contract.json; an anonymous read of the Terminal chart status area shows basis = tradj and the per-ticker src (R03 / consumer A PRODUCTION_PROOF).
-- claim: The Q03 shallow-checkout fix makes the smoke pins pass in CI.
-  what_would_verify: ci-pack-11 SUCCESS on #9273 at d21798328fd8 (the pins skip on macOS, so only the ubuntu run proves it).
+- claim: R03 — the nightly commits data/stocks/_view_contract.json and the Terminal readout leaves the unknown state (consumer C runtime).
+  what_would_verify: "The first daily.yml nightly whose 'push market data' step succeeds after #9556 merges commits data/stocks/_view_contract.json on main (git show origin/main:data/stocks/_view_contract.json); one bounded watcher ≥150 s on that run; an anonymous read of the Terminal chart status area shows basis = tradj and per-ticker src. State at close: BLOCKED — the C04 emit ran green inside both nightlies (251 tickers / 250 contracted / 1 unknown / 0 refused) but the daily.yml 'push market data' step died on GH001 (data/qledger/claims.jsonl 100.36 MB) on 2026-10-18 (39081858131) and 2026-10-19 (39180557790), so no sidecar reached main; owner = PR #9556 (carve oversized qledger out of the market commit), OPEN at close; PRODUCTION_PROOF = the first nightly push after #9556 merges."
 unresolved:
-- "Q02-F1 (ORCH-4): an unreadable basket-history parquet is answered as basis=current_membership, so a read failure reads as 'no history yet' — route to the basket reader (U04 lineage, lib/dataos/basket_read.py) as a typed refusal after U04 lands."
-- "A01-F1 (ORCH-4): VendorAliasTable grants rename continuity without evidence_sha256 on non-polygon vendors — route to the identity owner (lib/dataos/identity.py, M01 lineage); not a C00 blocker, recorded as a carried gap."
-- "Q03 GAP 1 (ORCH-4): eager lib/dataos/__init__ imports of price_views / read_contract cost about +26 ms per CLI process (14 REGRESSION verdicts); the fix is a lazy export under lib/dataos/__init__.py, a seat edit (single writer) — schedule with wire-5. GAP 2: R3 describe is +92 B and its digest changes; accepted as a documented delta."
-- "A03-F1 / A03-F3 / A03-F2 (ORCH-4): a mid-publish crash leaves a torn visible set under A's receipt and daily.yml commits it; a later refusal certifies the tear as last-good; refusals leave no durable failed-generation record; rollback is an operator git revert with no generation id or current pointer on data/reference — carried to C00 as EXPLICITLY UNFINISHED acceptance evidence unless a bounded publish-receipt packet is commissioned after R03."
-- "A02 (ORCH-4): rights/refusal field on GenerationRef, current-mode price view, and the new-day + vendor-revision legs are unexercised by the acceptance journey — carried."
-- "CI-authority freeze: #9241 (U04, edits .github/ci/legacy-jobs.yml) and #9226 (C04, edits daily.yml) will freeze their merged heads until a green ci.yml run on a main descendant; dispatch ONE baseline after they merge, never over a live run (39028524650 was live at 11:23Z)."
-- "The verification and acceptance PRs both add a job to .github/ci/legacy-jobs.yml; the second to merge needs gh pr update-branch before its exact-head merge."
+- "Q02-F1 (members_asof answers an unreadable PIT history as current membership): FIXED by #9654 (squash b300469398ca) — strict history read, basis membership_unreadable, basket_read refuses MEMBERSHIP_UNREADABLE, strict-xfail removed; follow-up gap A1 (coverage() reads strict; a corrupt store raises HistoryIntegrityError instead of describing as empty) FIXED by #9709 (squash fc44c814c192). Both merged at their exact concluded heads and land-proofed."
+- "A01-F1 (ORCH-4): VendorAliasTable grants rename continuity without evidence_sha256 on non-polygon vendors — routed to the identity owner (lib/dataos/identity.py, M01 lineage); not a C00 blocker."
+- "A02 new-day + vendor-revision legs and A03 torn-publish lineage (daily.yml commits a torn publish set; no durable failed-generation record) are EXPLICITLY UNFINISHED, routed to the live identity-generation owner: Sol operation `rs-pullback-initial-generation-r13-20261013-c1` (WS:LIVE-ENTRY-RADAR; held R25 writer-exclusion DRAFT PR #9617 on `scripts/build_security_master.py` + `tests/verification/test_a03_recovery.py`, cumulative evidence on #8649). The nightly producer emits no sealed identity publication manifest (no `publication` / `identity_observations` in `data/reference/_receipt.json`), so D00.D5/D6 lineage is unproduced; see matrix row GEN. Never stack a second publisher over that held slice."
+- "The stored AAPL parquet exposes no open column through the DataWorkspace read path (columns Date, close, high, low, volume); recorded, not adjudicated."
+- "VPS root disk re-read 2026-10-19: /dev/vda1 53% (41G used of 77G); the earlier 97% reading no longer holds — operational note, outside this workstream."
+- "R03 BLOCKED by the nightly market-data push outage: the daily.yml collect step 'push market data' died on a GH001 large-file rejection (data/qledger/claims.jsonl 100.36 MB over the 100 MB limit; grades.jsonl 75.99 MB warns) on the 2026-10-18 nightly 39081858131 and the 2026-10-19 nightly 39180557790, AFTER the C04 emit and the local market commit both succeeded (10-19 emit: symbols=251 listings_resolved=250 listings_unresolved=1 refusals=0; the unresolved one is served LISTING_ABSENT). Every market-data push is down, not only the sidecar. Canonical owner = PR #9556 (qledger carve-out out of the market commit); the seat never touches it and never dispatches daily.yml."
+- "Main ci.yml red 2026-10-18 08:57Z → 2026-10-19 08:21Z on ci-pack-3 reference-integrity L8 packet-without-rig-receipt (three Sol #9592 packets, squash 2cca92fb): main ci-pack-3 RIG red HEALED 2026-10-19 08:21:42Z by #7100 (squash b91514a3), which moved the three Sol #9592 MP-20261018-sector-central packets to research/design_candidates/sector_central_20261018/. 39245121273 @ff1b80af0f5e (2026-10-19 11:30Z, first main ci.yml run whose head contains the #7100 heal) — completed SUCCESS (read 2026-10-19 12:53Z); ff1b80af0f5e descends from C04 9b464c9d, wire-5 80f270c4, #9273 83daf2b783ba and heal b91514a3, so this run clears the C04 / wire-5 / #9273 CI-authority heads."
 next_actions:
-- "Consume the six watchers (U04 #9241 @4b087850b4ef, C04 #9226 @36bcb49aecd4, verification #9273 @d21798328fd8, acceptance #9275 @a452b2c87885, M01 #9237 @8f2852f79717, wire-4 #9539 @fd28501661d4): on concluded green, merge_exact.py <pr> <head40> --merge then land_proof.sh <pr> <head40>; on a genuine red, attribute from the job log before touching anything."
-- "After the CI-authority merges: scratchpad/orch/o1/seat/baseline.sh preflight, then ONE gh workflow run ci.yml --ref main over a clear field; ONE watcher."
-- "Wire-5 from the seat: export read_view (U03), the U04 names (read_basket, BasketRead, population_delta, PopulationKind, EvidenceMode, BasketRefusalCode, BasketReadRefusal) and the M01 names; fold the Q03 GAP 1 lazy import into the same single-writer edit."
-- "R02 after R01 + A02 + M01: three separate receipts (installed, selected, consumed) per the seat closeout plan; Terminal release via the documented build script on the Terminal box, never reading its env."
-- "R03 = the first nightly daily.yml after C04 lands; compare generation invariants cycle 1 to cycle 2; never dispatch daily.yml."
-- "Final records PR: C00 closeout matrix (research/data_os_completion/2026-10-13/C00_CLOSEOUT_MATRIX.md) with every package at its proven rung, open carriers empty."
+- "(1) R03 / consumer C production proof: after PR #9556 merges, bind ONE bounded watcher (≥150 s) on the next daily.yml nightly and, when its push step succeeds, verify `git show origin/main:data/stocks/_view_contract.json` plus the generation invariants cycle 1 → cycle 2 (same dataset_version lineage, bar_count monotone, no repriced history); never dispatch daily.yml. (2) DONE — Q02-F1 #9654 (b300469398ca) and gap A1 #9709 (fc44c814c192) merged and land-proofed. (3) Main RIG red healed by #7100 (b91514a3); the next green ci.yml run on a main descendant clears the C04 / wire-5 / #9273 CI-authority heads — never dispatch over a live baseline. (4) D00.D5/D6 generation producer (matrix row GEN): owned by Sol operation `rs-pullback-initial-generation-r13-20261013-c1` (WS:LIVE-ENTRY-RADAR; held R25 writer-exclusion DRAFT PR #9617 on `scripts/build_security_master.py` + `tests/verification/test_a03_recovery.py`, cumulative evidence on #8649); consume its landed lineage, never build a competing publisher. Then flip c00-closeout and this workstream to done. Never redeploy Terminal #996; never re-dispatch a concluded baseline."
 do_not_redo:
-- "C01 #9188 (6b154e093573), C02 #9210 (5a7d43b9ba04), heal #9234 (80df7978789e), C03 #9218 (91a67bb23cad), wire-3 #9220 (8ab6617a8fdc), U03 #9236 (a9939167d46b) are merged and landed at their exact heads; do not re-judge, re-merge or re-heal them."
-- "The Q01-F1 ruling (DEC:DATAOS-D00-D3-ABSENT-VS-UNRESOLVED) is taken; do not re-open the oracle pre-registration or change price_views to compute factor 1."
-- "The paths widenings (0e7ee91b73d4, a452b2c87885) and the Q03 shallow-checkout fetch (d21798328fd8) are pushed; the edit scripts assert their anchors and must not be re-run."
-- "ORCH-3 and ORCH-4 returned and were consumed; never re-spawn them. Terminal #996 is consumer A's PRODUCTION_PROOF; never redeploy or re-merge it. #9147 stays CLOSED (content landed via #9152)."
-- "The weekly-brief red (tests/test_recurring_briefs.py) is healed on main by #9517; it is never a lane's red to fix."
+- "Every merged package in the C00 matrix (D00 … wire-5 #9555, C04 #9226, U04 #9241, M01 #9237, #9273, #9275, records #9544) is accepted at its exact head; do not re-judge, re-merge, re-heal or re-wire."
+- "ORCH-1..ORCH-4 returned and were consumed; never re-spawn them. Terminal #996 is consumer A's PRODUCTION_PROOF; never redeploy or re-merge it; the 12:56Z Terminal swap belongs to another lane."
+- "The Q01-F1 ruling (DEC:DATAOS-D00-D3-ABSENT-VS-UNRESOLVED) is taken; do not re-open the oracle pre-registration."
+- "R02 consumer B receipts are taken on the host with a scratch binding that was removed; do not re-run them unless lib/dataos or scripts/data_workspace.py changes on main. Never write a host binding into /opt/macro from a session."
+- "Never dispatch daily.yml to obtain R03; the nightly owns it. Never dispatch a main baseline over a live run."
 danger_areas:
-- "lib/dataos/__init__.py is STDLIB-ONLY at import time with one writer (the seat); wire-4 #9539 is that writer's batch — a lane must never edit the export list."
-- "Any edit under .github/ci/**, .github/workflows/** or app/deploy/update.sh freezes the merged head's CI authority; only a green ci.yml run on a main descendant clears it, and a re-dispatch over a live main run cancels the proof every pinned session is waiting on."
+- "lib/dataos/__init__.py is STDLIB-ONLY at import time with one writer (the seat); wire-5 made price_views / read_contract / basket_read lazy (PEP 562) — a new export goes into _LAZY_NAMES, never an eager import."
+- "Any edit under .github/ci/**, .github/workflows/**, scripts/** or app/deploy/update.sh freezes the merged head's CI authority; only a green ci.yml run on a main descendant clears it, and a re-dispatch over a live main run cancels the proof every pinned session is waiting on."
 - "A push into an armed merge-on-green PR can land after its merge with no error; the seat never arms the label and merges by hand at the exact head."
-- "bench_q03.py reads a spec-pinned commit with git show; the CI pack checkout is fetch-depth 1, so any new spec commit must stay reachable through the _ensure_commit fetch (never assume a full clone in CI)."
-- "Tiingo paths and the twenty PROPOSED Tiingo registry rows belong to WS:TIINGO-DATA-OS; declaring their names in a CI paths list is not touching them, editing them is."
-- "A sparse session tree truncates committed data/ and site/ artifacts on an unredirected write; never git add -A, and read sparseness with scripts/worktree_sparse.missing_dirs(), not is_dir()."
+- "The VPS /opt/macro clone is shallow: prove liveness by blob digests, never by ancestry. /opt/terminal/.gitsrc is the full Terminal clone."
+- "System python on the VPS has no pyarrow; the production interpreter is /opt/macro/.venv/bin/python. A DEPENDENCY_UNAVAILABLE refusal from the wrong interpreter is not a product defect."
+- "Tiingo paths and the twenty PROPOSED Tiingo registry rows belong to WS:TIINGO-DATA-OS."
+- "A sparse session tree truncates committed data/ and site/ artifacts on an unredirected write; never git add -A."
+- "GitHub refuses any single file over 100 MB (GH001). A nightly-committed append-only ledger that crosses it sinks the whole market-data push, so a product emitter that succeeded in-runner never reaches main. Before blaming an emitter for a missing artifact, read the collect job's 'push market data' step (gh api --allow-escape-sequences repos/<owner>/<repo>/actions/jobs/<id>/logs)."
 ---
 
 ## Reading order for the next session
 
-1. `agentos/workstreams/WS-DATA-OS-COMPLETION.md` `next_action`, then this file's `next_actions`.
-2. The seat's closeout plan and matrix draft live in the seat scratchpad (`orch/SEAT_CLOSEOUT_PLAN_R01_R03_C00.md`, `records/C00_CLOSEOUT_MATRIX_draft.md`); the final matrix is committed by the last records PR.
+1. `research/data_os_completion/2026-10-13/C00_CLOSEOUT_MATRIX.md` (final rungs per package, baselines, EXPLICITLY UNFINISHED legs), then `R02_RECEIPTS.md`.
+2. `agentos/workstreams/WS-DATA-OS-COMPLETION.md` `next_action`, then this file's `next_actions`.
 3. Verify every landing against freshly fetched `origin/main`; a merged PR is a fact about the pull request, never about the bytes in the folder you are standing in.
