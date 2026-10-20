@@ -46,6 +46,7 @@
 .imc-row-forecast small{font-size:var(--fs-micro);color:var(--muted)}
 .imc-market-state{font-size:var(--fs-sm);font-weight:600;display:flex;align-items:center;gap:7px}
 .imc-market-state:before{content:"";width:5px;height:5px;background:currentColor;flex:0 0 5px}
+.imc-market-state small{display:block;font-size:var(--fs-micro);font-weight:400;line-height:1.5;color:var(--muted)}
 .imc-disclosure{font-size:var(--fs-num-lg);color:var(--muted);font-weight:300;text-align:center}
 .imc-country[open]>summary{border-bottom:1px solid var(--line)}
 .imc-country[open]>summary .imc-disclosure{transform:rotate(45deg)}
@@ -201,7 +202,7 @@ html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface
  .imc-world{grid-template-columns:1fr;gap:8px;padding:18px 0}
  .imc-world-label{display:flex;justify-content:space-between;align-items:center}
  .imc-world>a{display:flex;gap:8px;align-items:center;text-align:left}
- .imc-nav{gap:22px;overflow-x:auto}.imc-nav .imc-tools-link{margin-left:0}
+ .imc-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px;overflow:visible}.imc-nav .imc-tools-link{margin-left:0}
  .imc-country[open] .imc-country-thesis{font-size:var(--fs-body)}
  .imc-country[open] .imc-identity strong{font-size:var(--fs-md)}
  .imc-country-thesis{grid-column:1/-1;max-width:none;padding-right:0}.imc-market-state{grid-column:1;grid-row:3;justify-self:start}
@@ -239,14 +240,7 @@ html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface
 body.imc-page{--bg:inherit;--panel:inherit;--panel2:inherit;padding:0}
 html[data-theme="light"] body.imc-page{--bg:inherit;--panel:inherit;--panel2:inherit}
 .imc-page .intl-aurora{display:none}.imc-page .imc h2::before{content:none}
-/* Keep the incumbent assistant in normal footer flow. Its existing loader,
-   event handlers, panel, authentication and focus return remain its owners. */
-body.imc-page #mmb-boot,body.imc-page #mmb-launch{
- position:relative;inset:auto;right:auto;bottom:auto;z-index:2;
- width:max-content;max-width:calc(100% - 28px);
- margin:18px max(32px,calc((100vw - 1376px)/2)) 26px auto;
-}
-@media(max-width:520px){body.imc-page #mmb-boot,body.imc-page #mmb-launch{margin:18px 14px 24px auto}}
+/* The shared assistant keeps its existing persistent launcher and behavior. */
 
 /* October country outlook: data paths, revisions and balance-sheet context. */
 .imc-growth-chart{margin:0 0 16px;max-width:540px}
@@ -319,3 +313,12 @@ body.imc-page #mmb-boot,body.imc-page #mmb-launch{
 @media(max-width:360px){.imc-growth-chart .imc-chart-value,.imc-growth-chart .imc-chart-year{font-size:23px}}
 
 .imc-connection-grid article>div>span{font-size:var(--fs-sm);min-height:32px;display:flex;align-items:center;color:var(--muted)}
+
+/* Detailed calculations are disclosed beside their attributed observations. */
+.imc-evidence-series{display:block;overflow-wrap:anywhere;color:var(--muted);font-size:var(--fs-micro);line-height:1.5}
+.imc-equity-evidence{border-block:1px solid var(--line);padding-block:16px;margin-block:16px}
+.imc-equity-evidence h4{font-size:var(--fs-sm);font-weight:600;margin:0 0 8px}
+.imc-calculation{border-top:1px solid var(--line);padding-block:12px}
+.imc-calculation>summary{cursor:pointer;font-size:var(--fs-label);font-weight:600;line-height:1.6;min-height:24px}
+.imc-calculation[open]>summary{margin-bottom:12px}
+.imc-calculation>summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}

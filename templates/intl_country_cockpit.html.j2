@@ -14,8 +14,8 @@
   </header>
   <nav class="imc-nav" aria-labelledby="imc-title">
     <a href="#imc-world">{{ pair('World brief', '全球简报') }}</a>
-    <a href="#imc-countries">{{ pair('Country assessments', '国家与地区研判') }}</a>
-    <a href="#imc-connections">{{ pair('Global connections', '全球关联') }}</a>
+    <a href="#imc-countries">{{ pair('Countries', '国家与地区') }}</a>
+    <a href="#imc-connections">{{ pair('Connections', '全球关联') }}</a>
     <a class="imc-tools-link" href="#intl-analysis-tools">{{ pair('Data & tools', '数据与工具') }} <span aria-hidden="true">↗</span></a>
   </nav>
 
@@ -41,7 +41,7 @@
           <span class="imc-identity"><span class="imc-country-code">{{ c.cc|e }}</span><span><strong>{{ pair(c.name_en, c.name_zh) }}</strong><small>{% if c.cc == 'EZ' %}{{ pair('European equity proxy: ', '欧洲股市参考：') }}{% endif %}{{ c.index|e }}</small></span></span>
           <span class="imc-country-thesis">{{ pair(c.title_en, c.title_zh) }}</span>
           <span class="imc-row-forecast">{% if c.forecast %}<b>{{ '%.1f'|format(c.forecast.current) }}%{% if c.forecast.next is not none %} <span aria-hidden="true">→</span> {{ '%.1f'|format(c.forecast.next) }}%{% endif %}</b><small>{{ c.forecast.year_label }}{% if c.forecast.next_label %} → {{ c.forecast.next_label }}{% endif %} · {{ pair('GDP forecast', 'GDP预测') }}</small>{% else %}<b>—</b><small>{{ pair('Outlook unavailable', '暂无增长展望') }}</small>{% endif %}</span>
-          <span class="imc-market-state imc-{{ c.market.tone|e }}">{{ pair(c.market.label_en, c.market.label_zh) }}</span>
+          <span class="imc-market-state imc-{{ c.market.tone|e }}"><span><small>{{ pair('Equity trend', '股市趋势') }}</small>{{ pair(c.market.label_en, c.market.label_zh) }}</span></span>
           <span class="imc-disclosure" aria-hidden="true">+</span>
         </summary>
         <div class="imc-country-body">
@@ -126,12 +126,12 @@
                 {% endfor %}
               </section>
               {% endif %}
-              <div class="imc-observations-label">{{ pair('LATEST REPORTED OBSERVATIONS', '最新可用观测') }}</div>
+              <div class="imc-observations-label">{{ pair('ECONOMIC OBSERVATIONS', '经济观测') }}</div>
               <div class="imc-vitals{% if c.policy_decision and c.policy_decision.current %} imc-vitals-two{% endif %}">
                 {% for m in c.metrics if m.key in ['inflation','policy','gdp'] and not (m.key == 'policy' and c.policy_decision and c.policy_decision.current) %}                <div class="{% if not m.current %}imc-vital-dated{% endif %}">
                   <span>{{ pair(m.label_en,m.label_zh) }}</span>
                   <strong>{% if m.value is not none %}{{ '%.2f'|format(m.value) }}<small>%</small>{% else %}—{% endif %}</strong>
-                  <small>{% if m.period %}{{ m.period|e }}{% if m.key in ['inflation','gdp'] %} · {{ pair('year over year','同比') }}{% endif %}{% else %}{{ pair('No current observation','暂无当前观测') }}{% endif %}</small>
+                  <small>{% if m.period %}{{ m.period|e }}{% if m.key in ['inflation','gdp'] %} · {{ pair('year over year','同比') }}{% endif %}{% if m.evidence and m.evidence.kind == 'calculated_from_stored_levels' %} · {{ pair('Calculated','计算值') }}{% endif %}{% else %}{{ pair('No current observation','暂无当前观测') }}{% endif %}</small>
                   {% if m.change_3m_pp is not none %}<small class="imc-vital-change">{{ '%+.2f'|format(m.change_3m_pp) }} {{ pair('pp over 3 months','个百分点 / 3个月') }}</small>{% endif %}
                   {% if m.value is not none and not m.current %}<small class="imc-dated-label">{{ pair('Earlier observation', '较早观测') }}</small>{% endif %}
                 </div>
@@ -152,10 +152,10 @@
                 </div>
                 {% if c.outlook.market_divergence_en %}<p class="imc-market-divergence">{{ pair(c.outlook.market_divergence_en,c.outlook.market_divergence_zh) }}</p>{% endif %}
                 <p class="imc-market-explanation">
-                  {% if c.market.state == 'pressure' %}{{ pair('The index is below its 50- and 200-observation averages.', '指数低于最近50次与200次收盘均值。') }}
+                  {% if c.market.state == 'pressure' %}{{ pair('The index is at or below its 50- and 200-observation averages.', '指数低于或等于最近50次与200次收盘均值。') }}
                   {% elif c.market.state == 'uptrend' %}{{ pair('The index is above its 50- and 200-observation averages.', '指数高于最近50次与200次收盘均值。') }}
-                  {% elif c.market.state == 'pullback' %}{{ pair('The index is below its 50-observation average but above its 200-observation average.', '指数低于最近50次收盘均值，但高于200次收盘均值。') }}
-                  {% elif c.market.state == 'rebound' %}{{ pair('The index is above its 50-observation average and below its 200-observation average.', '指数高于最近50次收盘均值、低于200次收盘均值。') }}
+                  {% elif c.market.state == 'pullback' %}{{ pair('The index is at or below its 50-observation average and above its 200-observation average.', '指数低于或等于最近50次收盘均值，高于200次收盘均值。') }}
+                  {% elif c.market.state == 'rebound' %}{{ pair('The index is above its 50-observation average and at or below its 200-observation average.', '指数高于最近50次收盘均值、低于或等于200次收盘均值。') }}
                   {% else %}{{ pair('The available price evidence does not establish a complete trend reading.', '现有价格证据尚不足以形成完整的趋势判断。') }}{% endif %}
                 </p>
               </section>
@@ -180,15 +180,44 @@
             <div>
               {% if 'fiscal_balance' in c.outlook.missing_series and 'government_debt' in c.outlook.missing_series %}<p>{{ pair('Fiscal projections have not been verified for this country.', '该经济体的财政预测尚未核验。') }}</p>{% elif 'fiscal_balance' in c.outlook.missing_series %}<p>{{ pair('A government balance projection has not been verified for this country.', '该经济体的政府财政收支预测尚未核验。') }}</p>{% elif 'government_debt' in c.outlook.missing_series %}<p>{{ pair('A government debt projection has not been verified for this country.', '该经济体的政府债务预测尚未核验。') }}</p>{% endif %}
               <p>{{ pair('The economic path is an attributed forecast. The near-term paths are conditional interpretations, without assigned probabilities or price targets.', '经济路径为有出处的预测。近期路径是条件解读，不附加概率或价格目标。') }}</p>
-              <p>{{ pair('Equity trends use the most recent 50 and 200 observed closes.', '股市趋势采用最近50次与200次收盘。') }}</p>
-              <p>{{ pair('Recent high reference: ', '近期高点参考：') }}{% if c.market.high_window_observations %}{{ c.market.high_window_observations }} {{ pair('observed closes, ', '次收盘，') }}{{ c.market.high_window_start|e }} → {{ c.market.as_of|e }}{% else %}{{ pair('Observation window unavailable', '暂无完整观测窗口') }}{% endif %}.</p>
+              {% set eq = c.market.equity_evidence %}
+              {% if eq or c.metrics|selectattr('evidence')|list %}<p class="imc-stored-note">{{ pair('Stored economic and equity series may be revised. Their acquisition dates were not retained; the dates below identify the observations.', '存储的经济与股市序列可能修订。未保留获取日期；下方日期标明实际观测时期。') }}</p>{% endif %}
+              {% if eq %}
+              <section class="imc-equity-evidence" aria-labelledby="imc-equity-source-{{ c.cc }}">
+                <h4 id="imc-equity-source-{{ c.cc }}">{{ pair('Equity calculation inputs', '股市计算依据') }}</h4>
+                <p><a href="{{ eq.source.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ eq.source.provider|e }} · {{ eq.source.symbol|e }} ↗</a><br>{{ pair('Provider-adjusted daily Close', '提供商调整后的每日收盘价') }} · {{ eq.as_of|e }} · {{ pair('Latest observation: ', '最近观测：') }}<strong>{{ '%.8g'|format(eq.latest_close) }}</strong></p>
+                <div class="imc-table-wrap"><table><caption>{{ pair('Trend and drawdown reference windows', '趋势与回撤参考窗口') }}</caption><thead><tr><th>{{ pair('Reference','参考项') }}</th><th>{{ pair('Value','数值') }}</th><th>{{ pair('Observations','观测次数') }}</th><th>{{ pair('Dates','日期') }}</th></tr></thead><tbody>
+                  {% for key, en, zh in [('mean_50','50-observation mean','50次观测均值'),('mean_200','200-observation mean','200次观测均值'),('recent_high','Recent high','近期高点')] %}{% set window = eq[key] %}
+                  <tr><td>{{ pair(en,zh) }}{% if window.observations < window.target_observations %}<small class="imc-evidence-series">{{ pair('Partial window','部分窗口') }}</small>{% endif %}</td><td>{% if window.value is not none %}{{ '%.8g'|format(window.value) }}{% else %}—{% endif %}</td><td>{{ window.observations }}</td><td>{{ window.start|e }} → {{ window.end|e }}</td></tr>{% endfor %}
+                </tbody></table></div>
+                <p>{{ pair('High observed ', '高点观测于 ') }}{{ eq.recent_high.high_date|e }} · {{ pair('Most recent date if tied.', '同值时采用最近日期。') }} {{ pair('Drawdown = (latest close / high − 1) × 100.', '回撤 =（最近收盘价 / 高点 − 1）× 100。') }}</p>
+                <p>{{ pair('Comparisons use unrounded values. A complete trend requires 200 observations. Daily dates are provider labels; session completion has not been separately verified.', '比较采用未舍入数值。完整趋势判断需200次观测。每日日期为提供商标记，未另行核验交易时段是否结束。') }}</p>
+                {% if not c.market.current %}<p>{{ pair('These observations are dated; the current trend is withheld.', '这些观测已较早，暂不据此显示当前趋势。') }}</p>{% endif %}
+                <details class="imc-calculation imc-equity-rows"><summary>{{ pair('Daily price inputs', '每日价格输入') }} · {{ eq.rows|length }} {{ pair('observations','次观测') }}</summary>
+                  <div class="imc-table-wrap"><table><caption>{{ eq.source.symbol|e }} · {{ pair('Stored daily observations','存储的每日观测') }}</caption><thead><tr><th>{{ pair('Provider date','提供商日期') }}</th><th>{{ pair('Close','收盘价') }}</th></tr></thead><tbody>
+                    {% for row in eq.rows %}<tr><td>{{ row[0]|e }}</td><td>{{ row[1]|e }}</td></tr>{% endfor %}
+                  </tbody></table></div>
+                </details>
+              </section>
+              {% else %}<p>{{ pair('The stored prices do not provide a verified source and calculation window for an equity reading.', '存储价格缺少已核验的来源或计算窗口，暂无法形成股市判断。') }}</p>{% endif %}
               <p class="imc-currency-basis">{{ pair('Currency change measures the value of the local currency against USD, without interest income. A positive value means appreciation. It uses dated daily quotes over three calendar months, with the last available quote on or before the reference date.', '汇率变化衡量本币兑美元的价值变化，不含利息收益。正值表示本币升值。计算采用带日期的每日汇率，以三个日历月前的参考日或之前最近一次观测为基准。') }}</p>
               {% set fx = c.market.currency_observation %}
               {% if fx.available %}<p class="imc-currency-quotes">{{ pair('Quoted rates: ', '原始报价：') }}{{ '%.6g'|format(fx.start_quote) }} → {{ '%.6g'|format(fx.end_quote) }} {% if fx.quote_convention == 'local_per_USD' %}{{ c.currency|e }} {{ pair('per USD', '/ 美元') }}{% else %}USD {{ pair('per ', '/ ') }}{{ c.currency|e }}{% endif %}. {{ pair('Reference date: ', '参考日：') }}{{ fx.reference_target|e }}{% if fx.reference_gap_days %} · {{ pair('observed ', '实际观测 ') }}{{ fx.start_date|e }}{% endif %}.</p>{% endif %}
               <div class="imc-table-wrap"><table><caption>{{ pair('Observation ledger', '观测记录') }}</caption><thead><tr><th>{{ pair('Measure','指标') }}</th><th>{{ pair('Observation','观测') }}</th><th>{{ pair('Period','时期') }}</th><th>{{ pair('Source','来源') }}</th></tr></thead><tbody>
-              {% for m in c.metrics %}<tr><td>{{ pair(m.label_en,m.label_zh) }}</td><td>{% if m.value is not none %}{{ '%.2f'|format(m.value) }} {{ m.unit|e }}{% else %}—{% endif %}</td><td>{{ m.period|default('—',true)|e }}</td><td>{% if m.source_url %}<a href="{{ m.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ m.source|e }} ↗</a>{% else %}{{ m.source|default('—',true)|e }}{% endif %}</td></tr>{% endfor %}
+              {% for m in c.metrics %}<tr><td>{{ pair(m.label_en,m.label_zh) }}</td><td>{% if m.value is not none %}{{ '%.2f'|format(m.value) }} {{ m.unit|e }}{% else %}—{% endif %}</td><td>{{ m.period|default('—',true)|e }}</td><td>{% if m.source_url %}<a href="{{ m.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ m.source|e }} ↗</a>{% else %}{{ m.source|default('—',true)|e }}{% endif %}{% if m.evidence %}<small class="imc-evidence-series">{{ m.evidence.series_id|e }}</small>{% endif %}</td></tr>{% endfor %}
               <tr class="imc-currency-ledger"><td>{{ c.currency|e }} {{ pair('vs USD · 3 months', '兑美元 · 3个月') }}</td><td>{% if fx.available %}{{ '%+.2f'|format(fx.value if fx.value|abs >= 0.005 else 0) }}%{% else %}—{% endif %}</td><td>{% if fx.available %}{{ fx.start_date|e }} → {{ fx.end_date|e }}{% else %}—{% endif %}</td><td>{% if fx.source_url %}<a href="{{ fx.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ fx.provider|e }} ↗</a>{% else %}—{% endif %}</td></tr>
               </tbody></table></div>
+              {% for m in c.metrics if m.evidence %}{% set evidence = m.evidence %}
+              <details class="imc-calculation imc-macro-inputs" data-metric="{{ m.key|e }}">
+                <summary>{{ pair(m.label_en,m.label_zh) }} · {{ pair('Calculation inputs','计算依据') if evidence.kind == 'calculated_from_stored_levels' else pair('Stored observation','存储观测') }}</summary>
+                <p>{{ evidence.geography|e }} · {{ evidence.native_unit|e }} · {{ pair('Seasonally adjusted','经季节调整') }}</p>
+                {% if evidence.kind == 'calculated_from_stored_levels' %}<p>{{ pair('Year-over-year growth = (last level / first level − 1) × 100. The five consecutive quarters span one year; source dates label quarter starts.', '同比增长 =（末期水平 / 首期水平 − 1）× 100。连续五个季度跨越一年，来源日期标记季度起点。') }}</p>{% endif %}
+                <div class="imc-table-wrap"><table><caption>{{ evidence.series_id|e }} · {{ pair('Native source values','来源原始数值') }}</caption><thead><tr><th>{{ pair('Source date','来源日期') }}</th><th>{{ pair('Level','水平值') }}</th></tr></thead><tbody>
+                  {% for point in evidence.observations %}<tr><td>{{ point.date|e }}</td><td>{{ point.value|e }}</td></tr>{% endfor %}
+                </tbody></table></div>
+                <p><a href="{{ evidence.source_request_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Open source series','打开来源序列') }} ↗</a> · {{ pair('Observation period ends ', '观测期结束于 ') }}{{ m.period_end|e }}</p>
+              </details>
+              {% endfor %}
               <div class="imc-table-wrap"><table><caption>{{ pair('Projection sources', '预测来源') }}</caption><thead><tr><th>{{ pair('Measure','指标') }}</th><th>{{ pair('Edition','版本') }}</th><th>{{ pair('Reporting period','报告期') }}</th><th>{{ pair('Source table','来源表格') }}</th></tr></thead><tbody>
               {% for key, series in c.outlook.series.items() %}<tr><td>{{ pair(series.label_en,series.label_zh) }}</td><td>{{ series.provider|e }} · {{ series.published|e }}</td><td>{{ series.year_label }}{% if series.next_label %} / {{ series.next_label }}{% endif %}</td><td>{% if series.dataset_url %}<a href="{{ series.dataset_url|e }}{% if series.source_page %}#page={{ series.source_page }}{% endif %}" target="_blank" rel="noopener noreferrer">{{ series.source_table|default('Data',true)|e }} ↗</a>{% else %}<a href="{{ series.source_url|e }}" target="_blank" rel="noopener noreferrer">{{ pair('Release','公告') }} ↗</a>{% endif %}</td></tr>{% endfor %}
               </tbody></table></div>

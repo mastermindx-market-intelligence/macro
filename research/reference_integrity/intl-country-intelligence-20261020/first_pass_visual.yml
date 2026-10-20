@@ -1,0 +1,30 @@
+role: visual_taste
+reviewer_identity: /root/intl_rig_visual_quarantined
+pass: 1
+verdict: PASS_WITH_CONDITIONS
+findings:
+  - id: VTC-001
+    severity: major
+    finding: >-
+      In the English 390px and 320px entry views, the Data & tools navigation item is respectively reduced to a sliver or entirely off-screen, while its alternative appears near the end of the report, making the preserved Compare, Macro, Risk, History and Library views unnecessarily difficult to discover (after_full/viewport-mobile-en-light.png, after_full/viewport-narrow-en-light.png, after_full/8269cad1004b37dd.png; templates/intl_country_cockpit.css:204).
+  - id: VTC-002
+    severity: major
+    finding: >-
+      Ask Mastermind loses the persistent visible entry present in the captured production view and appears only at the end of the proposed page, removing immediate access to the assistant while reading country research even though its underlying control remains present (before/viewport-desktop-en-light.png, before/viewport-mobile-en-light.png, after_full/6e6f66d8f4dd124b.png, after_full/8269cad1004b37dd.png; templates/intl_country_cockpit.css:244).
+  - id: VTC-003
+    severity: major
+    finding: >-
+      Country summaries place an unlabeled colored Under pressure or Uptrend status beside the economic thesis and GDP forecasts, while the explicit Equity trend label appears inside the expanded Market conditions section, leaving the compact country overview ambiguous about whether the status describes equities or the wider economy (after_full/viewport-desktop-en-light.png, after_full/6e6f66d8f4dd124b.png; templates/intl_country_cockpit.html.j2:44 and :144).
+strengths:
+  - >-
+    The opening establishes a clear sequence from world brief to country selection and a specific country thesis, materially improving orientation over the captured production page's unstyled, disabled workspace without assuming that its source capabilities were absent.
+  - >-
+    The GDP block compresses the published path effectively through prominent year values, a compact chart, solid historical and dashed projected segments, units, a legend and visible source dates.
+  - >-
+    On desktop, placing change conditions beside the published projection helps readers connect the baseline path with developments that could alter it.
+  - >-
+    The six collapsed country rows retain a useful compact overview through country identity, a short thesis and both forecast years, allowing comparison without expanding every assessment.
+  - >-
+    The shared Mastermind navigation, blue accents, restrained rules and consistent surface hierarchy preserve recognizable product identity across the inspected English and Chinese light and dark views.
+  - >-
+    The complete mobile captures maintain readable single-column country content, including the forecast chart and policy information, without the overlaps or horizontal page clipping that would undermine basic research reading.

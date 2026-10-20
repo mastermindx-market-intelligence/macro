@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-20T14:51:21.336690+00:00",
+  "source_parent": "f17c92562bb51cbf7572024b0f721ba8034bf04b",
+  "patch_sha256": "f38485f3d158183f231da84ac11ad27094d643e86a1158590f723005c8e3a3da",
+  "before_sha256": {
+    "lib/intl_country_inputs.py": "5e94af0773273114c6225440516527e3e23f1a7881ec8f4faa8aa9b1616e60e8",
+    "lib/intl_country_assessment.py": "b1fd1d4730dc96a9dddad68a760e90c61b940bf502e8be06ba532ece93be535b",
+    "engine/intl_equity_risk.py": "6e6ab463ea63abb24d6543dfd16d15d81e7d6fe893c3da9dc6cbd353a17aa38c",
+    "scripts/build_intl.py": "1bf350f28aa294aa7f56d33effed2a6853cce42ddda2926c5cb0a862bfd84bd9",
+    "tests/test_intl_country_cockpit.py": "8a557e9bb83d78f46c43ef5bb5adbecae1b4c571cc1b2dfefe6cf6f8b9892785",
+    "tests/test_intl_equity_risk.py": "8a927b3e817e11ffba934d8094fda7efb7ea4f3b674b91e2e747f056d0121bac",
+    "tests/test_intl_build.py": "2919f16fed5554bd066b4e148b184200f8294377b619847ab48cbaeec76324ef"
+  },
+  "after_sha256": {
+    "lib/intl_country_inputs.py": "a7d9205597b960e72da41c640fc725ddb59716c60b40226f8e3fb79598065108",
+    "lib/intl_country_assessment.py": "34be50dc9ddda218deeb265aa7090c209a04ddbb00c9b548668ab8041a897919",
+    "engine/intl_equity_risk.py": "2ab13f6accdeb181fc74475d5f800c11b510a55dc7ac03477fe3d1bbb9fc528d",
+    "scripts/build_intl.py": "41e2d7c791c4022f9165c267d31fc5cc4b22b188fbfba2c48a9a1980742a61f0",
+    "tests/test_intl_country_cockpit.py": "d4b544af112578c1564503e40a7e489ad093d005f4195a364185f5b7c0e57e00",
+    "tests/test_intl_equity_risk.py": "9599196fae0ad7d09e48caa5f22131d06759d9075a9d9e57aca08332b28d5d23",
+    "tests/test_intl_build.py": "52d2d882f862307f76920ff04504ca4c0d34c29fe304dc7e99c7dacac0b563d6"
+  },
+  "scope": "Four production Python files and three existing test files. Templates integrated by root separately."
+}

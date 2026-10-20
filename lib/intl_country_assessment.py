@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from lib.intl_forecast_vintages import merge_publications, select_publications, publication_view
 from lib.intl_country_outlook import build_country_outlook
 from lib.intl_currency_observation import currency_observation_view
+from lib.intl_country_inputs import stored_observation_view, validate_equity_evidence
 from lib.intl_policy_evidence import INSTRUMENTS, select_policy_decision
 
 SCHEMA = "intl_country_assessment.v1"
@@ -158,6 +159,12 @@ def _day(value):
 def _period_end(value):
     if type(value) is not str:
         return None
+    if len(value) == 7 and value[4:6] == "-Q" and value[6] in "1234":
+        try:
+            y, m = int(value[:4]), int(value[6]) * 3
+            return date(y, m, monthrange(y, m)[1])
+        except (ValueError, TypeError):
+            return None
     if len(value) == 7:
         try:
             y, m = (int(x) for x in value.split("-"))
@@ -185,46 +192,53 @@ def _https(value):
 def _mapping(value):
     return value if type(value) is dict else {}
 
-def _metric(key, record, official, today):
+def _metric(key, record, official, today, stored_observations=None):
     fields = {
-        "inflation": ("cpi_yoy", "cpi_yoy", "Inflation", "通胀", "% y/y", 105),
-        "gdp": ("gdp_yoy", "gdp", "GDP growth", "GDP增长", "% y/y", 220),
-        "unemployment": ("unemployment", "unemployment", "Unemployment", "失业率", "%", 130),
-        "policy": ("policy_rate", "policy_rate", "Policy rate", "政策利率", "%", 45),
+        "inflation": ("Inflation", "通胀", "% y/y", 105),
+        "gdp": ("GDP growth", "GDP增长", "% y/y", 220),
+        "unemployment": ("Unemployment", "失业率", "%", 130),
+        "policy": ("Policy rate", "政策利率", "%", 45),
     }
-    raw_key, date_key, en, zh, unit, limit = fields[key]
+    en, zh, unit, limit = fields[key]
     receipt = official.get(key) if type(official) is dict else None
+    evidence = None
+    value = period = source = source_url = None
     if type(receipt) is dict:
         value = _number(receipt.get("value"))
         period = receipt.get("period")
         source = receipt.get("provider")
         source_url = _https(receipt.get("source_url"))
-        # New official receipts must identify the metric/unit and public observation.
+        # Existing qualified national/official inputs retain precedence.
         admitted = (receipt.get("metric") == key and receipt.get("unit") == unit
                     and receipt.get("status") in ("observed", "provisional")
                     and bool(source) and bool(source_url))
         if not admitted:
             value = None
-    elif key == "policy":
-        # The legacy field can be a 3-month market rate, not a central-bank rate.
-        value = period = source = source_url = None
-    else:
-        value = _number(_mapping(record.get("macro")).get(raw_key))
-        period = _mapping(record.get("macro_asof")).get(date_key)
-        source = "Existing international macro series"
-        source_url = None
-    # Invalid or future observation periods cannot be labeled as earlier facts.
-    # Genuine old observations remain available with their dated treatment.
     period_end = _period_end(period)
     if period_end is None or period_end > today:
         value = None
-    current = value is not None and _fresh(period, today, limit)
+    if value is None and key in ("gdp", "unemployment"):
+        evidence = stored_observation_view(_mapping(stored_observations).get(key),
+                                           record.get("cc"), key, today=today)
+        if evidence:
+            value, period = evidence["value"], evidence["period"]
+            source, source_url = evidence["source"], evidence["source_url"]
+    # Anonymous legacy scalars are preserved in their original tools, but cannot
+    # supply source-attributed country observations. In particular, a legacy 3m
+    # market rate cannot become a central-bank policy rate.
+    period_end = _period_end(period)
+    if period_end is None or period_end > today:
+        value = None
+    age = (today - period_end).days if value is not None else None
+    # This is observation-period recency, not acquisition or revision freshness.
+    current = age is not None and 0 <= age <= limit
     return {
         "key": key, "label_en": en, "label_zh": zh, "value": value,
-        "period": period, "unit": unit, "current": current,
+        "period": period, "period_end": period_end.isoformat() if period_end else None,
+        "unit": unit, "current": current, "observation_age_days": age,
         "quality": "current" if current else "dated" if value is not None else "missing",
-        "source": source, "source_url": source_url,
-        "change_3m_pp": _number(receipt.get("change_3m_pp")) if type(receipt) is dict and current else None,
+        "source": source, "source_url": source_url, "evidence": evidence,
+        "change_3m_pp": _number(receipt.get("change_3m_pp")) if type(receipt) is dict and evidence is None and current else None,
     }
 
 
@@ -238,31 +252,27 @@ def _forecast(raw, cc, today, archive=None):
 
 def _market(record, today):
     equity = _mapping(record.get("equity"))
-    # A publication date is not an observation clock. Old envelopes without an
-    # instrument clock intentionally do not become current on a fresh page build.
-    observed = equity.get("as_of")
-    current = _fresh(observed, today, 14)
-    fast = equity.get("above_50d") if current else None
-    slow = equity.get("above_200d") if current and equity.get("trend_200d_complete") is True else None
+    evidence = validate_equity_evidence(equity, record.get("cc"), today=today)
+    observed = evidence["as_of"] if evidence else None
+    current = bool(evidence is not None and 0 <= evidence["observation_age_days"] <= 14)
+    fast = evidence["above_50d"] if current else None
+    slow = evidence["above_200d"] if current and evidence["trend_200d_complete"] else None
     if type(fast) is bool and type(slow) is bool:
         state = {(True, True): "uptrend", (False, True): "pullback",
                  (False, False): "pressure", (True, False): "rebound"}[(fast, slow)]
     else:
         state = "unknown"
-    dd = _number(equity.get("off_52w_high"))
-    dd = dd if current and dd is not None and -100 <= dd <= 0 else None
+    dd = round(evidence["drawdown_pct"], 1) if current else None
     currency = currency_observation_view(record.get("currency_observation"), record.get("cc"), today=today)
-    fx_date = currency["end_date"]
-    fx = currency["value"]
     en, zh, tone = STATES[state]
-    window = equity.get("high_window_observations")
-    window = window if type(window) is int and 60 <= window <= 252 else None
+    high = evidence["recent_high"] if evidence else None
     return {"state": state, "label_en": en, "label_zh": zh, "tone": tone,
             "as_of": observed, "current": current, "above_50d": fast,
-            "above_200d": slow, "drawdown": dd, "fx_3m": fx, "fx_as_of": fx_date,
-            "currency_observation": currency,
-            "high_window_observations": window,
-            "high_window_start": equity.get("high_window_start")}
+            "above_200d": slow, "drawdown": dd, "fx_3m": currency["value"],
+            "fx_as_of": currency["end_date"], "currency_observation": currency,
+            "high_window_observations": high["observations"] if high else None,
+            "high_window_start": high["start"] if high else None,
+            "equity_evidence": evidence}
 
 
 def _path_label(forecast):
@@ -337,7 +347,7 @@ def _world_brief(countries, archive, today):
             "current": f["current"], "next": f["next"]}
 
 
-def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None, forecast_archive=None, policy_decisions=None, policy_reviews=None):
+def build_country_assessments(latest, *, today=None, official=None, forecasts=None, commentary=None, forecast_archive=None, policy_decisions=None, policy_reviews=None, stored_observations=None):
     """Build a deterministic, non-mutating view from a single publication input."""
     today = today or datetime.now(timezone.utc).date()
     if type(today) is not date or type(latest) is not dict:
@@ -356,6 +366,7 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
     official = official if type(official) is dict else {}
     forecasts = forecasts if type(forecasts) is dict else {}
     commentary = _mapping(commentary)
+    stored_observations = _mapping(stored_observations)
     records_for_archive = list(forecast_archive) if type(forecast_archive) is list else []
     records_for_archive.extend(value for value in forecasts.values() if type(value) is dict)
     archive, archive_diagnostics = merge_publications(records_for_archive, [],
@@ -369,7 +380,7 @@ def build_country_assessments(latest, *, today=None, official=None, forecasts=No
         forecast = _forecast(forecasts.get(cc), cc, today, archive)
         policy = select_policy_decision(policy_decisions, cc, today=today, monthly=_mapping(official.get(cc)).get("policy"),
                                         review_events=policy_reviews)
-        metrics = [_metric(key, record, official.get(cc, {}), today)
+        metrics = [_metric(key, record, official.get(cc, {}), today, stored_observations.get(cc))
                    for key in ("gdp", "inflation", "policy", "unemployment")]
         title_en, title_zh, read_en, read_zh = _headlines(cc, forecast, metrics)
         if forecast:

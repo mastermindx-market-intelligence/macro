@@ -10,6 +10,8 @@ backtested signal — it is a cross-country market-stress comparator.
 """
 from __future__ import annotations
 
+import numbers
+
 import numpy as np
 import pandas as pd
 
@@ -17,6 +19,7 @@ from engine import intl_inputs
 from engine.extension import extension_signals
 from engine.technicals import rsi
 from lib import config
+from lib.intl_country_inputs import EQUITY_OBSERVATION_SCHEMA, equity_source_for
 
 
 def _band(x: float | None) -> str:
@@ -36,7 +39,55 @@ def index_matrix() -> pd.DataFrame:
     return pd.DataFrame(cols).sort_index()
 
 
+
+def _valid_equity_source_series(px: pd.Series) -> bool:
+    """Require unambiguous provider daily labels and finite positive stored prices."""
+    if not isinstance(px, pd.Series) or len(px) < 60:
+        return False
+    index = px.index
+    if (not isinstance(index, pd.DatetimeIndex) or index.tz is not None or index.hasnans
+            or index.has_duplicates or not index.is_monotonic_increasing
+            or not index.equals(index.normalize())):
+        return False
+    for value in px:
+        if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real):
+            return False
+        try:
+            if not np.isfinite(value) or value <= 0 or float(value) != value:
+                return False
+        except (TypeError, ValueError, OverflowError):
+            return False
+    return True
+
+
+def _window_evidence(window, value, *, target, minimum, method):
+    return {"method": method, "target_observations": target, "minimum_observations": minimum,
+            "observations": len(window), "start": str(window.index[0].date()),
+            "end": str(window.index[-1].date()),
+            "value": float(value) if np.isfinite(value) else None}
+
+
+def _source_evidence(px, source, *, last, ma50, ma200, hi52):
+    if source is None or not _valid_equity_source_series(px):
+        return None
+    recent = px.iloc[-252:]
+    high_matches = recent[recent.eq(hi52)]
+    if high_matches.empty:
+        return None
+    return {
+        "schema": EQUITY_OBSERVATION_SCHEMA, "source": source, "as_of": str(px.index[-1].date()),
+        "rows": [[str(stamp.date()), float(value)] for stamp, value in recent.items()],
+        "latest_close": float(last),
+        "mean_50": _window_evidence(px.iloc[-50:], ma50, target=50, minimum=25, method="arithmetic_mean"),
+        "mean_200": _window_evidence(px.iloc[-200:], ma200, target=200, minimum=100, method="arithmetic_mean"),
+        "recent_high": {**_window_evidence(recent, hi52, target=252, minimum=60, method="maximum"),
+                        "high_date": str(high_matches.index[-1].date()), "tie_policy": "most_recent"},
+    }
+
+
 def equity_risk_all(mat: pd.DataFrame | None = None) -> dict[str, dict]:
+    canonical_input = mat is None
+    source_countries = intl_inputs.countries() if canonical_input else {}
     if mat is None:
         mat = index_matrix()
     if mat.empty:
@@ -77,4 +128,13 @@ def equity_risk_all(mat: pd.DataFrame | None = None) -> dict[str, dict]:
             "drawdown_risk": ddrisk, "drawdown_band": _band(ddrisk),
             "bubble_flag": bool(bubble),
         }
+
+        # A caller-supplied matrix cannot acquire canonical Yahoo attribution.
+        source = equity_source_for(cc) if canonical_input else None
+        country_config = source_countries.get(cc)
+        if (source is None or type(country_config) is not dict
+                or country_config.get("index") != source["symbol"]):
+            source = None
+        out[cc]["observation_evidence"] = _source_evidence(
+            px, source, last=last, ma50=ma50, ma200=ma200, hi52=hi52)
     return out

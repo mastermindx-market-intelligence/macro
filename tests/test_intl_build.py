@@ -263,3 +263,42 @@ def test_primary_engine_failure_is_not_reported_as_success(monkeypatch):
         raise RuntimeError("controlled primary engine failure")
     monkeypatch.setattr(intl_run, "run", fail)
     assert build_intl.main() != 0
+
+
+def test_primary_builder_passes_explicit_stored_observations_with_one_evaluation_day(tmp_path, monkeypatch):
+    from datetime import date
+    from scripts import build_intl
+    from lib import intl_country_inputs, intl_country_assessment
+    data, site = _isolated_primary_build(tmp_path, monkeypatch)
+    seen = {}
+
+    def reader(data_root, intl_config, *, today):
+        seen.update(data_root=data_root, intl_config=intl_config, today=today)
+        item = intl_country_inputs._stored_observation(
+            "JP", "gdp", [
+                {"date": "2025-04-01", "value": 100}, {"date": "2025-07-01", "value": 101},
+                {"date": "2025-10-01", "value": 102}, {"date": "2026-01-01", "value": 103},
+                {"date": "2026-04-01", "value": 104}],
+            "https://fred.stlouisfed.org/graph/fredgraph.csv?id=JPNRGDPEXP", today=today)
+        return {"JP": {"gdp": item}} if item else {}
+
+    original = intl_country_assessment.build_country_assessments
+
+    def assessment(latest, **kwargs):
+        assert kwargs["today"] == seen["today"] and type(kwargs["today"]) is date
+        assert "stored_observations" in kwargs
+        model = original(latest, **kwargs)
+        seen["model"] = model
+        return model
+
+    monkeypatch.setattr(intl_country_inputs, "load_stored_country_observations", reader)
+    monkeypatch.setattr(intl_country_assessment, "build_country_assessments", assessment)
+    assert build_intl.main() == 0
+    assert seen["data_root"] == data
+    assert seen["intl_config"]["countries"]["JP"]["fred"]["gdp"] == "JPNRGDPEXP"
+    jp = next(country for country in seen["model"]["countries"] if country["cc"] == "JP")
+    gdp = next(metric for metric in jp["metrics"] if metric["key"] == "gdp")
+    if seen["today"] >= date(2026, 6, 30):
+        assert gdp["value"] is not None and gdp["evidence"]["observations"][-1]["value"] == 104
+        assert gdp["source_url"] == "https://fred.stlouisfed.org/series/JPNRGDPEXP"
+    assert (site / "intl.html").exists()

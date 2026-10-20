@@ -1,0 +1,40 @@
+role: visual_taste
+reviewer_identity: /root/intl_rig_visual_quarantined
+pass: 2
+amended_at: "2026-10-20T14:05:03Z"
+amendments:
+  - id: VTC-001
+    disposition: upheld
+    severity: major
+    reason: >-
+      Giving country interpretation priority and placing supporting tools behind a disclosure is a defensible hierarchy choice, which the rationale openly acknowledges.
+      That choice does not require clipping the tools entry in the English mobile navigation: the finding concerns discovery of the retained tools, rather than their reduced prominence or the additional disclosure action.
+  - id: VTC-002
+    disposition: upheld
+    severity: major
+    reason: >-
+      The rationale does not establish an alternative readily visible assistant entry or explain how footer-only placement preserves access during research reading.
+      A restrained research surface can accommodate a compact assistant entry without restoring a large overlay, so the observed discoverability loss remains a mitigable defect.
+  - id: VTC-003
+    disposition: upheld
+    severity: major
+    reason: >-
+      The rationale explicitly limits market-state labels to observed equity windows and distinguishes their clock from economic projections, which supports the need to make that scope visible in the country summary.
+      Describing the state as an equity observation in the rationale does not resolve the unlabeled colored status beside the economic thesis and GDP forecast in the inspected artifact.
+final_verdict: PASS_WITH_CONDITIONS
+conditions:
+  - finding_id: VTC-001
+    requirement: >-
+      Provide a fully visible and understandable entry to Data & tools in the English 320px and 390px initial layouts without requiring horizontal navigation scrolling or reaching the page footer.
+    verification: >-
+      Inspect the revised English light and dark mobile entry screenshots and follow the visible entry to the retained research views.
+  - finding_id: VTC-002
+    requirement: >-
+      Provide a clearly identifiable Ask Mastermind entry that remains readily reachable while reading country content; a compact entry in persistent navigation or reading controls can satisfy this without overlaying the research.
+    verification: >-
+      Inspect desktop and mobile reading states away from the footer and confirm that the entry opens the existing assistant.
+  - finding_id: VTC-003
+    requirement: >-
+      Visibly associate each country-summary status with an equity-specific label, such as Equity trend, in both languages and in collapsed and expanded states.
+    verification: >-
+      Inspect desktop and narrow mobile country summaries to confirm that the equity label remains readable beside its status and cannot be mistaken for the GDP forecast or an overall economic assessment.

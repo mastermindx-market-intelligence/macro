@@ -1,0 +1,19 @@
+[
+  {
+    "argv": [
+      "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_intl_country_cockpit.py",
+      "tests/test_intl_equity_risk.py",
+      "tests/test_intl_build.py",
+      "tests/test_intl_currency_observation.py",
+      "-q"
+    ],
+    "python": "3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "started_at": "2026-10-20T14:56:42.917184+00:00",
+    "finished_at": "2026-10-20T14:56:54.096804+00:00",
+    "exit_code": 0,
+    "log": "research/reference_integrity/intl-country-intelligence-20261020/source_trace_ci312_0.log"
+  }
+]

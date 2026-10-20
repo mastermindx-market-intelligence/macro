@@ -1,6 +1,7 @@
 """Country interpretation: economic meaning, independent clocks and failure isolation."""
 from copy import deepcopy
 from datetime import date
+from math import fsum
 import csv
 import io
 import json
@@ -13,7 +14,10 @@ from jinja2 import Environment, FileSystemLoader
 from engine import i18n
 from engine.intl_equity_risk import equity_risk_all
 from lib.intl_country_assessment import build_country_assessments
-from lib.intl_country_inputs import load_country_inputs
+from lib.intl_country_inputs import (
+    load_country_inputs, load_stored_country_observations, stored_observation_view,
+    equity_source_for, EQUITY_OBSERVATION_SCHEMA,
+)
 from collectors.intl_country_sources import parse_bis, collect_country_inputs, merge_country_inputs, SCHEMA
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,11 +25,33 @@ TODAY = date(2026, 10, 18)
 
 
 def record(cc="KR"):
+    # Synthetic but fully traceable contract fixture; no live Yahoo fetch claimed.
+    dates = pd.bdate_range(end="2026-10-15", periods=252)
+    rows = [[stamp.date().isoformat(), 250.0] for stamp in dates]
+    rows[-1][1] = 152.0
+
+    def mean_window(target, minimum):
+        window = rows[-target:]
+        return {"method": "arithmetic_mean", "target_observations": target,
+                "minimum_observations": minimum, "observations": len(window),
+                "start": window[0][0], "end": window[-1][0],
+                "value": fsum(row[1] for row in window) / len(window)}
+
+    evidence = {
+        "schema": EQUITY_OBSERVATION_SCHEMA, "source": equity_source_for(cc),
+        "as_of": rows[-1][0], "rows": rows, "latest_close": 152.0,
+        "mean_50": mean_window(50, 25), "mean_200": mean_window(200, 100),
+        "recent_high": {"method": "maximum", "target_observations": 252,
+                        "minimum_observations": 60, "observations": 252,
+                        "start": rows[0][0], "end": rows[-1][0], "value": 250.0,
+                        "high_date": rows[-2][0], "tie_policy": "most_recent"},
+    }
     return {"cc":cc,"date":"2026-10-18","macro":{"policy_rate":99,"cpi_yoy":-0.5,"gdp_yoy":2.1},
             "macro_asof":{"cpi_yoy":"2021-06","gdp":"2026-04"},
-            "equity":{"as_of":"2026-10-15","above_50d":False,"above_200d":False,
+            "equity":{"as_of":rows[-1][0],"price":152.0,"above_50d":False,"above_200d":False,
                       "trend_200d_complete":True,"off_52w_high":-39.2,
-                      "high_window_observations":252,"high_window_start":"2025-10-15"}}
+                      "high_window_observations":252,"high_window_start":rows[0][0],
+                      "observation_evidence": evidence}}
 
 
 def forecast(cc="KR", **changes):
@@ -46,10 +72,10 @@ def observation(key="inflation", **changes):
     return value
 
 
-def view(rec=None, official=None, forecasts=None, commentary=None):
+def view(rec=None, official=None, forecasts=None, commentary=None, stored_observations=None):
     return build_country_assessments({"date":"2026-10-18","records":[rec or record()]},
                                     today=TODAY,official=official,forecasts=forecasts,
-                                    commentary=commentary)["countries"][0]
+                                    commentary=commentary, stored_observations=stored_observations)["countries"][0]
 
 
 def test_forecast_and_price_pressure_are_distinct():
@@ -83,7 +109,8 @@ def test_legacy_short_rate_proxy_never_becomes_policy_rate():
 
 
 def test_stale_observation_keeps_date_and_is_not_current():
-    inflation=next(m for m in view()["metrics"] if m["key"]=="inflation")
+    country = view(official={"KR": {"inflation": observation(value=-0.5, period="2021-06")}})
+    inflation=next(m for m in country["metrics"] if m["key"]=="inflation")
     assert inflation["value"]==-0.5 and inflation["period"]=="2021-06"
     assert inflation["quality"]=="dated"
     assert inflation["current"] is False
@@ -431,11 +458,242 @@ def test_future_or_unknown_observed_periods_never_display_as_earlier(key, period
 
 
 @pytest.mark.parametrize("period", ["2026-12", "2026-10-19", "unknown", None])
-def test_legacy_future_observation_is_withheld_but_real_old_value_remains_dated(period):
+def test_anonymous_legacy_gdp_is_withheld_without_changing_legacy_tools(period):
     rec = record()
     rec["macro_asof"]["gdp"] = period
     metric = next(m for m in view(rec)["metrics"] if m["key"] == "gdp")
     assert metric["value"] is None and metric["quality"] == "missing"
     rec["macro_asof"]["gdp"] = "2024-01"
     metric = next(m for m in view(rec)["metrics"] if m["key"] == "gdp")
-    assert metric["value"] == rec["macro"]["gdp_yoy"] and metric["quality"] == "dated"
+    assert metric["value"] is None and metric["quality"] == "missing"
+    assert rec["macro"]["gdp_yoy"] == 2.1 and rec["macro_asof"]["gdp"] == "2024-01"
+
+
+def _stored_case(tmp_path, *, cc="JP", metric="gdp", dates=None, values=None):
+    """A local collector/store fixture, never a claim about live provider values."""
+    root = tmp_path / "data"
+    folder = root / "intl_macro"
+    folder.mkdir(parents=True, exist_ok=True)
+    if dates is None:
+        dates = (["2025-04-01", "2025-07-01", "2025-10-01", "2026-01-01", "2026-04-01"]
+                 if metric == "gdp" else ["2026-07-01"])
+    if values is None:
+        values = [100.0, 101.0, 102.0, 103.0, 104.0] if metric == "gdp" else [2.4]
+    column = f"{cc}_{metric}"
+    frame = pd.DataFrame({column: values}, index=pd.to_datetime(dates))
+    frame.to_parquet(folder / (column + ".parquet"))
+    ids = {"JP": {"gdp": "JPNRGDPEXP", "unemployment": "LRHUTTTTJPM156S"},
+           "KR": {"gdp": "NGDPRSAXDCKRQ", "unemployment": "LRHUTTTTKRM156S"},
+           "AU": {"gdp": "NGDPRSAXDCAUQ", "unemployment": "LRHUTTTTAUM156S"},
+           "GB": {"gdp": "NGDPRSAXDCGBQ", "unemployment": "LRHUTTTTGBM156S"},
+           "EZ": {"gdp": "CLVMNACSCAB1GQEA19"}}
+    cfg = {"countries": {cc: {"fred": ids[cc]}},
+           "macro": {"fred_base_url": "https://fred.stlouisfed.org/graph/fredgraph.csv"}}
+    if (cc, metric) == ("EZ", "unemployment"):
+        cfg["macro"]["official_series"] = {"EZ_unemployment": {
+            "provider": "eurostat", "dataset": "une_rt_m", "since": "2000-01", "unit": "PC_ACT",
+            "params": {"geo": "EA21", "s_adj": "SA", "age": "TOTAL", "unit": "PC_ACT", "sex": "T"}}}
+        metadata = {"provider": "eurostat", "source_id": "une_rt_m", "status": "official", "unit": "PC_ACT",
+                    "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m"
+                                  "?lang=en&geo=EA21&s_adj=SA&age=TOTAL&unit=PC_ACT&sex=T&sinceTimePeriod=2000-01"}
+    else:
+        fid = ids[cc][metric]
+        metadata = {"provider": "fred_fallback", "source_id": fid, "unit": None, "status": "fallback",
+                    "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=" + fid}
+    metadata["last_observation"] = dates[-1]
+    provenance = {"schema": "intl_macro_provenance.v1", "series": {column: metadata}}
+    (folder / "provenance.json").write_text(json.dumps(provenance))
+    return root, cfg, provenance
+
+
+def _rewrite_provenance(root, provenance):
+    (root / "intl_macro/provenance.json").write_text(json.dumps(provenance))
+
+
+def test_stored_gdp_has_actual_quarter_endpoints_without_new_custody(tmp_path):
+    root, cfg, provenance = _stored_case(tmp_path)
+    path = root / "intl_macro/JP_gdp.parquet"
+    original_bytes = path.read_bytes()
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    gdp = mapping["JP"]["gdp"]
+    assert gdp["value"] == pytest.approx(4.0)
+    assert (gdp["period"], gdp["period_end"]) == ("2026-Q2", "2026-06-30")
+    assert [point["date"] for point in gdp["observations"]] == [
+        "2025-04-01", "2025-07-01", "2025-10-01", "2026-01-01", "2026-04-01"]
+    assert [point["value"] for point in gdp["observations"]] == [100, 101, 102, 103, 104]
+    assert gdp["method"] == "(end / start - 1) * 100"
+    assert gdp["source_url"] == "https://fred.stlouisfed.org/series/JPNRGDPEXP"
+    assert gdp["native_unit"] == "Billions of chained 2015 yen"
+    assert gdp["retrieved_at"] is None and gdp["vintage_custody"] == "not_recorded"
+    provenance["series"]["JP_gdp"].update(requested_at="2099-01-01", source_updated="2099-01-01")
+    _rewrite_provenance(root, provenance)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == mapping
+    assert path.read_bytes() == original_bytes
+    rec = record("JP")
+    original_record = deepcopy(rec)
+    metric = next(m for m in view(rec, stored_observations=mapping)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] == pytest.approx(4.0) and metric["evidence"] == gdp
+    assert metric["period_end"] == "2026-06-30" and rec == original_record
+
+
+@pytest.mark.parametrize("cc,series", [
+    ("JP", "JPNRGDPEXP"), ("KR", "NGDPRSAXDCKRQ"), ("AU", "NGDPRSAXDCAUQ"),
+    ("GB", "NGDPRSAXDCGBQ"), ("EZ", "CLVMNACSCAB1GQEA19"),
+])
+def test_each_gdp_uses_its_actual_configured_series(tmp_path, cc, series):
+    root, cfg, _ = _stored_case(tmp_path, cc=cc)
+    item = load_stored_country_observations(root, cfg, today=TODAY)[cc]["gdp"]
+    assert item["series_id"] == series
+    assert item["stored_path"] == f"intl_macro/{cc}_gdp.parquet"
+    assert item["source_url"] == "https://fred.stlouisfed.org/series/" + series
+
+
+@pytest.mark.parametrize("dates", [
+    ["2025-01-01", "2025-04-01", "2025-10-01", "2026-01-01", "2026-04-01"],
+    ["2025-04-01", "2025-07-01", "2025-10-01", "2026-04-01", "2026-04-01"],
+    ["2025-04-01", "2025-07-01", "2025-10-01", "2026-01-01", "2026-05-01"],
+    ["2025-04-01", "2025-07-01", "2025-10-01", "2026-01-01", "2026-04-02"],
+    ["2025-10-01", "2026-01-01", "2026-04-01", "2026-07-01", "2026-10-01"],
+])
+def test_gdp_row_offsets_cannot_stand_in_for_four_calendar_quarters(tmp_path, dates):
+    root, cfg, _ = _stored_case(tmp_path, dates=dates)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+@pytest.mark.parametrize("values", [
+    [0, 101, 102, 103, 104], [100, 101, float("inf"), 103, 104],
+    [True] * 5, [100, 101, None, 103, 104],
+])
+def test_stored_gdp_refuses_invalid_or_missing_window_levels(tmp_path, values):
+    root, cfg, _ = _stored_case(tmp_path, values=values)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+@pytest.mark.parametrize("key,value", [
+    ("source_id", "NGDPRSAXDCGBQ"), ("source_url", "https://www.cao.go.jp/"),
+    ("last_observation", "2026-01-01"), ("provider", "eurostat"),
+    ("status", "missing"), ("unit", "unreviewed_units"),
+])
+def test_stored_macro_requires_matching_producer_identity_and_latest_row(tmp_path, key, value):
+    root, cfg, provenance = _stored_case(tmp_path)
+    provenance["series"]["JP_gdp"][key] = value
+    _rewrite_provenance(root, provenance)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+def test_stored_macro_refuses_wrong_configuration_or_store_column(tmp_path):
+    root, cfg, _ = _stored_case(tmp_path)
+    cfg["countries"]["JP"]["fred"]["gdp"] = "NGDPRSAXDCGBQ"
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+    cfg["countries"]["JP"]["fred"]["gdp"] = "JPNRGDPEXP"
+    path = root / "intl_macro/JP_gdp.parquet"
+    pd.read_parquet(path).rename(columns={"JP_gdp": "GB_gdp"}).to_parquet(path)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+@pytest.mark.parametrize("key,value", [
+    ("period", "2026-04"), ("period_end", "2026-04-30"), ("value", 9.9),
+    ("series_id", "NGDPRSAXDCGBQ"), ("native_unit", "Percent"),
+    ("retrieved_at", "2026-10-18T00:00:00+00:00"),
+])
+def test_caller_mapping_cannot_relabel_or_refresh_a_stored_observation(tmp_path, key, value):
+    root, cfg, _ = _stored_case(tmp_path)
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    mapping["JP"]["gdp"][key] = value
+    assert stored_observation_view(mapping["JP"]["gdp"], "JP", "gdp", today=TODAY) is None
+    metric = next(m for m in view(record("JP"), stored_observations=mapping)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] is None and metric["evidence"] is None
+
+
+@pytest.mark.parametrize("cc,series", [
+    ("JP", "LRHUTTTTJPM156S"), ("KR", "LRHUTTTTKRM156S"),
+    ("AU", "LRHUTTTTAUM156S"), ("GB", "LRHUTTTTGBM156S"),
+])
+def test_stored_unemployment_preserves_exact_monthly_level(tmp_path, cc, series):
+    root, cfg, _ = _stored_case(tmp_path, cc=cc, metric="unemployment", values=[4.48448])
+    item = load_stored_country_observations(root, cfg, today=TODAY)[cc]["unemployment"]
+    assert item["value"] == 4.48448
+    assert item["period"] == "2026-07" and item["period_end"] == "2026-07-31"
+    assert item["observations"] == [{"date": "2026-07-01", "value": 4.48448}]
+    assert item["series_id"] == series and item["method"] == "reported_level"
+    assert item["source_url"] == "https://fred.stlouisfed.org/series/" + series
+    assert item["retrieved_at"] is None
+
+
+def test_euro_area_unemployment_keeps_actual_eurostat_dimensions(tmp_path):
+    root, cfg, provenance = _stored_case(tmp_path, cc="EZ", metric="unemployment", values=[6.2])
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    item = mapping["EZ"]["unemployment"]
+    assert item["source"] == "Eurostat" and item["series_id"] == "une_rt_m"
+    assert "geo=EA21" in item["source_url"] and item["geography"] == "Euro area (EA21)"
+    assert "fred" not in item["source_url"] and item["value"] == 6.2
+    provenance["series"]["EZ_unemployment"]["source_url"] = item["source_url"].replace("geo=EA21", "geo=EA19")
+    _rewrite_provenance(root, provenance)
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+@pytest.mark.parametrize("value", [-0.1, 100.1, float("inf"), True])
+def test_unemployment_requires_a_finite_reported_percentage(tmp_path, value):
+    root, cfg, _ = _stored_case(tmp_path, metric="unemployment", values=[value])
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+
+
+def test_qualified_national_gdp_cpi_and_policy_keep_precedence(tmp_path):
+    root, cfg, _ = _stored_case(tmp_path)
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    for cc in ("JP", "TW", "IN"):
+        official = {cc: {
+            "gdp": observation("gdp", unit="% y/y", period="2026-Q2", value=7.3,
+                               provider="Reviewed national source", source_url="https://example.gov/gdp"),
+            "inflation": observation(value=2.0),
+            "policy": observation("policy", unit="%", period="2026-09", value=1.0),
+        }}
+        country = view(record(cc), official=official, stored_observations=mapping)
+        metrics = {metric["key"]: metric for metric in country["metrics"]}
+        assert metrics["gdp"]["value"] == 7.3 and metrics["gdp"]["evidence"] is None
+        assert metrics["gdp"]["source_url"] == "https://example.gov/gdp"
+        assert metrics["inflation"]["value"] == 2.0 and metrics["policy"]["value"] == 1.0
+        assert metrics["gdp"]["period_end"] == "2026-06-30"
+
+
+def test_dated_matched_stored_observation_remains_available(tmp_path):
+    root, cfg, _ = _stored_case(tmp_path, dates=[
+        "2023-04-01", "2023-07-01", "2023-10-01", "2024-01-01", "2024-04-01"])
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    gdp = next(m for m in view(record("JP"), stored_observations=mapping)["metrics"] if m["key"] == "gdp")
+    assert gdp["value"] == pytest.approx(4.0) and gdp["quality"] == "dated"
+    assert not gdp["current"] and gdp["evidence"]["retrieved_at"] is None
+
+
+def test_corrupt_stored_series_isolated_and_anonymous_observations_missing(tmp_path):
+    root, cfg, _ = _stored_case(tmp_path)
+    (root / "intl_macro/JP_gdp.parquet").write_bytes(b"not a parquet")
+    assert load_stored_country_observations(root, cfg, today=TODAY) == {}
+    country = view()
+    assert all(metric["value"] is None for metric in country["metrics"])
+
+
+@pytest.mark.parametrize("changes", [
+    {"value": None}, {"value": True}, {"status": "missing"},
+    {"unit": "index"}, {"period": "2026-Q4"}, {"source_url": "javascript:invalid"},
+])
+def test_unqualified_official_gdp_does_not_block_a_separately_matched_stored_trace(tmp_path, changes):
+    root, cfg, _ = _stored_case(tmp_path)
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    official = {"JP": {"gdp": observation("gdp", **{
+        "unit": "% y/y", "period": "2026-Q2", "value": 7.3, **changes})}}
+    metric = next(m for m in view(record("JP"), official=official,
+                                  stored_observations=mapping)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] == pytest.approx(4.0)
+    assert metric["source_url"] == "https://fred.stlouisfed.org/series/JPNRGDPEXP"
+    assert metric["evidence"] is not None and metric["change_3m_pp"] is None
+
+
+def test_valid_older_official_gdp_still_has_precedence_over_stored_fallback(tmp_path):
+    root, cfg, _ = _stored_case(tmp_path)
+    mapping = load_stored_country_observations(root, cfg, today=TODAY)
+    official = {"JP": {"gdp": observation("gdp", unit="% y/y", period="2024-Q2", value=7.3)}}
+    metric = next(m for m in view(record("JP"), official=official,
+                                  stored_observations=mapping)["metrics"] if m["key"] == "gdp")
+    assert metric["value"] == 7.3 and metric["quality"] == "dated"
+    assert metric["evidence"] is None and metric["period"] == "2024-Q2"

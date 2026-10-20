@@ -1,0 +1,179 @@
+{
+  "recorded_at": "2026-10-20T14:49:04.982179+00:00",
+  "html_sha256": "00c41272a0918aeccdd8b1aaea5c6b914745cc0609647188e5fb9d3c2c7375af",
+  "prior_receipt": "research/reference_integrity/intl-country-intelligence-20261020/repair_ui/review_counterexamples.json",
+  "sequence": "Keyboard activate launcher; wait for open panel and actual focus inside panel; Escape; inspect close and returned focus.",
+  "scope": "Anonymous isolated assets. No prompt, account mutation or external request.",
+  "checks": [
+    {
+      "id": "desktop-en-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "desktop-en-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "desktop-zh-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "desktop-zh-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "mobile-en-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "mobile-en-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "mobile-zh-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "mobile-zh-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "narrow-en-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "narrow-en-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "narrow-zh-light",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    },
+    {
+      "id": "narrow-zh-dark",
+      "passed": true,
+      "focus_at_panel_visible": "",
+      "settled_focus": {
+        "id": "",
+        "tag": "BUTTON"
+      },
+      "after_escape": {
+        "closed": true,
+        "focus": "mmb-launch"
+      },
+      "errors": []
+    }
+  ],
+  "passed": 12,
+  "failed": 0
+}

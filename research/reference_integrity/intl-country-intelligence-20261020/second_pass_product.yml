@@ -1,0 +1,90 @@
+role: product_regression
+reviewer_identity: /root/intl_rig_product_quarantined
+reviewer_model: GPT-6 Astra Pro
+pass: 2
+artifact_sha: 46f02fa355abbfaa4387203c0e3190db6747bed9
+first_pass_binding:
+  frozen_at: "2026-10-20T14:03:31.850411+00:00"
+  sha256: 2c6267cc7d7ac3caad55689f94271935ccc3dbf1247359b15edd12a1dbe9c747
+  original_findings_preserved: true
+rationale:
+  path: research/reference_integrity/intl-country-intelligence-20261020/DESIGNER_RATIONALE.md
+  supplied_sha256: eeb3656aaac8cec263f220f80bcf4eb7d7b590016a0a7ab71c1534b058b9c7db
+  received_after_first_pass_freeze: true
+  read_at: "2026-10-20T14:12:36+00:00"
+amended_at: "2026-10-20T14:13:13+00:00"
+amendments:
+  - finding: PRC-001
+    action: upheld
+    severity: major
+    capability: country.source-trace
+    note: >-
+      DESIGNER_RATIONALE.md appropriately preserves separate observation clocks,
+      acquisition lineage and unavailable-input boundaries, but supplies no
+      identifiable public source for the five GDP figures promoted into
+      “LATEST REPORTED OBSERVATIONS” and no equity-price source record for the
+      country market claims: the evidence remains the generic “Existing
+      international macro series” label in proposed/intl.html:1307,1493,2047,2233,2419,
+      the absent source_url in lib/intl_country_assessment.py:_metric, and the
+      calculation-window disclosure without an underlying price-source link
+      or observations in templates/intl_country_cockpit.html.j2:180-196;
+      the stated future acquisition obligation does not resolve these
+      traceability gaps in the frozen artifact.
+  - finding: PRC-002
+    action: upheld
+    severity: major
+    capability: workspace.view-selection
+    note: >-
+      DESIGNER_RATIONALE.md explicitly acknowledges the extra disclosure action
+      and reduced prominence of the retained aggregate research tools, a
+      reasonable hierarchy tradeoff for the user's country-understanding
+      priority, but the finding concerns the additional English-mobile access
+      cost visible in after_full/viewport-mobile-en-light.png and
+      after_full/viewport-narrow-en-light.png: “Data & tools” is clipped at
+      390px and outside the visible navigation at 320px under
+      templates/intl_country_cockpit.css:204-205, so reaching the secondary task
+      requires discovering horizontal scrolling or finding the disclosure
+      after substantial content; retained routes and the bottom disclosure
+      provide workarounds, while the incumbent's failed JavaScript continues
+      to limit claims about its actual control operation.
+verdict: PASS_WITH_CONDITIONS
+conditions:
+  - finding: PRC-001
+    required: >-
+      Make the promoted current-state claims traceable from their country
+      evidence disclosure: identify the GDP provider and series with a usable
+      public source destination and observation date, and identify the equity
+      instrument and price-series provider with a usable source destination,
+      observation date and calculation window; where this evidence cannot be
+      supplied, withhold the affected figure or derived state and explain the
+      evidence gap at the claim.
+    verification: >-
+      Inspect the complete-input rendered candidate for all affected GDP
+      claims and all seven equity evidence disclosures, confirming that
+      displayed values and derived states bind to the identified dated
+      inputs without presenting copied stores as newly acquired evidence.
+  - finding: PRC-002
+    required: >-
+      Provide a fully visible, legible entrance to Data & tools on English
+      screens at both 320px and 390px without requiring discovery of
+      horizontal navigation scrolling, while retaining the country-first
+      hierarchy and existing direct view and fragment access.
+    verification: >-
+      Inspect both widths in light and dark themes and exercise the visible
+      entrance on the complete-input candidate, confirming that it opens the
+      retained research tools.
+scope:
+  - >-
+    The first-pass strengths and inspection limitations remain unchanged;
+    the rationale supports the country-first sequence, differentiated
+    evidence types and preservation of the incumbent research body.
+  - >-
+    This amendment reviews the rationale against the frozen artifact only;
+    no code repair, changed artifact or new browser exercise was inspected,
+    and both conditions remain outstanding until evidence from a separately
+    identified revised artifact supports clearing them.
+  - >-
+    Authenticated tiers, external source destinations and the timed-out
+    incumbent full-page PNG remain outside the completed inspection;
+    deployment, acquisition and served-browser readiness are not established
+    by this reference verdict.
