@@ -1,4 +1,4 @@
-"""Specialist pack producer framework + PK06/PK01/PK02/PK11/PK12/PK09 producers over the AAPL 10-K fixture.
+"""Specialist pack producer framework + PK06/PK01/PK02/PK11/PK12/PK09/PK04 producers over the AAPL 10-K fixture.
 
 Every count asserted here was verified against the fixture's facts through
 the raw ledger (never by reading the filing HTML): the fixture tags the split
@@ -33,6 +33,10 @@ NEGATIVE issuer here; its bank path is proven on a synthetic in-test ledger.
 PK09 (controls, auditor, going concern) is text-span driven: the narrative
 locator over the AAPL 10-K primary document plus synthetic 10-Q/material-
 weakness probes.
+
+PK04 (revenue recognition and contract balances) is fixture-verified on the
+AAPL 10-K through the definition linkbase axis groups (A.3), the grouped sum
+identity (A.5) and the opening-instant rollforward bound (A.1).
 """
 from __future__ import annotations
 
@@ -448,8 +452,8 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK09", "PK11", "PK12"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -524,6 +528,8 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/pk09_controls.py",
         "engine/fundamental_forensics/specialist_packs/pk11_bank.py",
         "engine/fundamental_forensics/specialist_packs/pk12_biotech.py",
+        "engine/fundamental_forensics/specialist_packs/pk04_revenue.py",
+        "engine/fundamental_forensics/specialist_packs/definition_linkbase.py",
         "scripts/fif_specialist_packs.py",
     ],
 )
@@ -2034,7 +2040,7 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK04", "PK06", "PK09", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -2731,3 +2737,876 @@ def test_pk09_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 9
     assert "cam_count=1" in envelope["receipts"]
+
+
+# 33. PK04: revenue recognition and contract balances -------------------------
+#
+# Fixture-verified through the raw ledger (FY2025 = 2024-09-29..2025-09-27):
+# the fixture tags total and member revenue under the product/service and
+# geographical axes (the segments-axis facts carry a ConsolidationItemsAxis
+# member and are outside the field's axes), the current contract liability,
+# the rollforward's opening (2024-09-28) and closing (2025-09-27) balances and
+# recognized revenue, and the RPO percentage ladder as typed-dimension facts
+# (2025-09-28 0.66, 2026-09-27 0.23, 2027-09-26 0.09, 2028-10-01 0.02); the
+# noncurrent liability and the RPO total are absent standard facts, gross
+# additions have no standard element, and RPO timing exists only as
+# non-numeric iXBRL the raw ledger excludes by design.
+
+from datetime import date as _date  # noqa: E402
+
+from engine.fundamental_forensics.raw_ledger import (  # noqa: E402
+    FactContext,
+    FactUnit,
+    RawFactLedger,
+    RawFactOccurrence,
+    SourceIdentity,
+    TemporalClocks,
+)
+from engine.fundamental_forensics.specialist_packs import (  # noqa: E402
+    definition_linkbase,
+    pk04_revenue,
+)
+
+PK04_QUERY = {**QUERY, "requested_metrics": ["revenue"]}
+# A.6: sha256 of the canonical JSON bytes of the PK02 envelope recorded at
+# the PK04 lane base; PK04 edits must not move it (PK06/PK01 have their own
+# pins above).
+PK02_ENVELOPE_SHA256 = (
+    "878837747052a8ef1ed46b8b9f562fa0b707279e09340debadb25e9737c3c254"
+)
+PRODUCT_OR_SERVICE_LEDGER_AXIS = "{http://fasb.org/srt/2025}ProductOrServiceAxis"
+GEOGRAPHICAL_LEDGER_AXIS = "{http://fasb.org/srt/2025}StatementGeographicalAxis"
+RPO_TIMING_AXIS_QNAME = (
+    "us-gaap:RevenueRemainingPerformanceObligationExpectedTimingOf"
+    "SatisfactionStartDateAxis"
+)
+# B.4 order: axis declaration order, canonical member order within an axis.
+DISAGGREGATED = [
+    ("{http://www.apple.com/20250927}IPadMember", "28023000000"),
+    ("{http://www.apple.com/20250927}IPhoneMember", "209586000000"),
+    ("{http://www.apple.com/20250927}MacMember", "33708000000"),
+    (
+        "{http://www.apple.com/20250927}WearablesHomeandAccessoriesMember",
+        "35686000000",
+    ),
+    ("us-gaap:ProductMember", "307003000000"),
+    ("us-gaap:ServiceMember", "109158000000"),
+    ("{http://www.apple.com/20250927}OtherCountriesMember", "199994000000"),
+    ("{http://xbrl.sec.gov/country/2025}CN", "64377000000"),
+    ("{http://xbrl.sec.gov/country/2025}US", "151790000000"),
+]
+
+
+def _pk04_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK04_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk04_result() -> dict:
+    return produce_pack("PK04", _pk04_input())
+
+
+def _catalogue_field(pack_id: str, field_id: str) -> dict:
+    return next(
+        item
+        for item in contract.load_pack_schema(pack_id)["fields"]
+        if item["field_id"] == field_id
+    )
+
+
+def test_pk04_result_passes_contract_validator(pk04_result: dict) -> None:
+    assert contract.validate_pack_result(pk04_result) == []
+
+
+def test_pk04_result_passes_jsonschema_envelope(pk04_result: dict) -> None:
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:  # pragma: no cover - CI carries referencing
+        pytest.skip("referencing unavailable; validate_pack_result half only")
+    schema = contract.load_envelope_schema()
+    packet = json.loads(
+        (ROOT / "contracts" / "financial_intelligence_packet.schema.json").read_text(
+            "utf-8"
+        )
+    )
+    registry = Registry()
+    for contents in (schema, packet):
+        registry = registry.with_resource(
+            contents["$id"],
+            Resource.from_contents(contents, default_specification=DRAFT202012),
+        )
+    errors = list(
+        Draft202012Validator(schema, registry=registry).iter_errors(pk04_result)
+    )
+    assert errors == []
+
+
+def test_pk04_rows_follow_catalogue_order_with_twenty_rows(
+    pk04_result: dict,
+) -> None:
+    catalogue = contract.load_pack_schema("PK04")
+    expected = [item["field_id"] for item in catalogue["fields"]]
+    produced = [row["field_id"] for row in pk04_result["fields"]]
+    assert len(produced) == 20  # 12 catalogue fields; the disaggregation repeats
+    compacted = [
+        field_id
+        for index, field_id in enumerate(produced)
+        if index == 0 or produced[index - 1] != field_id
+    ]
+    assert compacted == expected
+    position = produced.index("revenue_disaggregated")
+    assert produced[position + 8] == "revenue_disaggregated"  # adjacent block
+    rows = _rows(pk04_result, "revenue_disaggregated")
+    axes = [row["dimensions"][0]["axis"] for row in rows]
+    assert axes == [PRODUCT_OR_SERVICE_LEDGER_AXIS] * 6 + [
+        GEOGRAPHICAL_LEDGER_AXIS
+    ] * 3  # declared axis order
+    assert [row["check_id"] for row in pk04_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+
+
+def test_pk04_revenue_and_contract_liability_balances(
+    pk04_result: dict, ledger
+) -> None:
+    revenue = _row(pk04_result, "revenue")
+    assert revenue["value"] == "416161000000"
+    assert revenue["concept"] == (
+        "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax"
+    )
+    assert revenue["period"] == {
+        "kind": "duration",
+        "start": "2024-09-29",
+        "end": "2025-09-27",
+    }
+    # Four identical undimensioned occurrences are not a conflict; all listed.
+    assert len(revenue["source_occurrence_ids"]) == 4
+    for occurrence_id in revenue["source_occurrence_ids"]:
+        assert ledger.by_id(occurrence_id) is not None
+    assert _row(pk04_result, "contract_liability_current")["value"] == "9055000000"
+
+
+def test_pk04_rollforward_opening_and_closing_instants(pk04_result: dict) -> None:
+    opening = _row(pk04_result, "contract_liability_rollforward_opening")
+    assert opening["value"] == "12800000000"
+    assert opening["period"] == {"kind": "instant", "end": "2024-09-28"}
+    closing = _row(pk04_result, "contract_liability_rollforward_closing")
+    assert closing["value"] == "13700000000"
+    assert closing["period"] == {"kind": "instant", "end": "2025-09-27"}
+    recognized = _row(pk04_result, "contract_liability_rollforward_recognized")
+    assert recognized["value"] == "8229000000"
+    assert recognized["period"] == {
+        "kind": "duration",
+        "start": "2024-09-29",
+        "end": "2025-09-27",
+    }
+
+
+def test_pk04_noncurrent_is_missing_standard_fact(pk04_result: dict) -> None:
+    row = _row(pk04_result, "contract_liability_noncurrent")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:ContractWithCustomerLiabilityNoncurrent"
+    )
+
+
+def test_pk04_additions_is_declared_unmapped(pk04_result: dict) -> None:
+    row = _row(pk04_result, "contract_liability_rollforward_additions")
+    assert row["quality_state"] == "unsupported"
+    assert row["non_value_state"] == "unsupported"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "missing_dependency"
+    assert row["value"] is None
+    assert (
+        "contract_liability_rollforward_additions: no standard alias; gross"
+        " additions are narrative-only for most issuers" in pk04_result["limitations"]
+    )
+
+
+def test_pk04_rpo_total_is_missing_standard_fact(pk04_result: dict) -> None:
+    row = _row(pk04_result, "rpo_total")
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemainingPerformanceObligation"
+    )
+
+
+def test_pk04_rpo_percentage_selects_earliest_typed_date(
+    pk04_result: dict, ledger
+) -> None:
+    row = _row(pk04_result, "rpo_percentage_next_12m")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "0.66"
+    assert row["unit"] == "ratio"
+    assert row["dimensions"] == [
+        {"axis": RPO_TIMING_AXIS_QNAME, "member": "2025-09-28"}
+    ]
+    assert row["mapping_rule_id"] == (
+        "PK04.rpo_percentage_next_12m.typed_dimensioned_fact/v1"
+    )
+    assert row["period"] == {"kind": "instant", "end": "2025-09-27"}
+    assert ledger.by_id(row["source_occurrence_ids"][0]) is not None
+
+
+def test_pk04_rpo_timing_is_unsupported(pk04_result: dict) -> None:
+    row = _row(pk04_result, "rpo_timing")
+    assert row["quality_state"] == "unsupported"
+    assert row["value"] is None
+    assert (
+        "rpo_timing: duration facts are non-numeric iXBRL and are not represented"
+        " in the raw ledger" in pk04_result["limitations"]
+    )
+
+
+def test_pk04_policy_text_block_is_unsupported(pk04_result: dict) -> None:
+    row = _row(pk04_result, "revenue_policy_text_block")
+    assert row["quality_state"] == "unsupported"
+    assert row["evidence_kind"] == "text_span"
+    assert row["required_evidence_kind"] == "text_span"
+    assert row["value"] is None
+
+
+def test_pk04_disaggregated_rows_carry_group_order_and_values(
+    pk04_result: dict, ledger
+) -> None:
+    rows = _rows(pk04_result, "revenue_disaggregated")
+    assert len(rows) == 9
+    for index, (row, (member, value)) in enumerate(zip(rows, DISAGGREGATED)):
+        axis = (
+            PRODUCT_OR_SERVICE_LEDGER_AXIS if index < 6 else GEOGRAPHICAL_LEDGER_AXIS
+        )
+        assert row["quality_state"] == "valued"
+        assert row["dimensions"] == [{"axis": axis, "member": member}]
+        assert row["value"] == value
+        assert row["unit"] == "USD"
+        assert row["period"] == {
+            "kind": "duration",
+            "start": "2024-09-29",
+            "end": "2025-09-27",
+        }
+        assert row["mapping_rule_id"] == (
+            "PK04.revenue_disaggregated.dimensioned_fact/v1"
+        )
+        assert ledger.by_id(row["source_occurrence_ids"][0]) is not None
+    # No member sits outside every definition group on this fixture.
+    assert not [
+        item
+        for item in pk04_result["limitations"]
+        if "outside every definition group" in item
+    ]
+
+
+def test_pk04_rollforward_check_names_refused_implied_additions(
+    pk04_result: dict,
+) -> None:
+    check = _check(pk04_result, "contract_liability_rollforward")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    implied = next(
+        item
+        for item in pk04_result["limitations"]
+        if "refused to imply contract_liability_rollforward_additions" in item
+    )
+    # closing - opening + recognized = 9,129,000,000; never emitted as a value.
+    assert "9129000000" in implied
+    assert _row(pk04_result, "contract_liability_rollforward_additions")[
+        "value"
+    ] is None
+
+
+def test_pk04_rpo_vs_deferred_scope_awaits_rpo_total(pk04_result: dict) -> None:
+    check = _check(pk04_result, "rpo_vs_deferred_scope")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert check["evidence_field_ids"] == [
+        "rpo_total",
+        "contract_liability_current",
+        "contract_liability_noncurrent",
+    ]
+
+
+def test_pk04_disaggregation_sums_pass_with_group_census(
+    pk04_result: dict,
+) -> None:
+    check = _check(pk04_result, "disaggregation_sums_to_revenue")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1000000"
+    assert check["evidence_field_ids"] == ["revenue_disaggregated", "revenue"]
+    assert (
+        "pk04.disaggregation_sums_to_revenue: groups 3/3"
+        in pk04_result["limitations"]
+    )
+
+
+def test_pk04_coverage_counts(pk04_result: dict) -> None:
+    assert pk04_result["coverage"] == {
+        "valued_fields": 15,
+        "missing_fields": 2,
+        "unsupported_fields": 3,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+# 34. A.5 grouped sum identity, synthetic groups ------------------------------
+
+
+def _breakdown(
+    axis: str,
+    groups: tuple[tuple[str, ...], ...],
+    member_values: dict,
+) -> "pack_base._AxisGroupBreakdown":
+    return pack_base._AxisGroupBreakdown(
+        axis=axis, groups=groups, member_values=member_values
+    )
+
+
+def _grouped_check(breakdowns, total: str, total_decimals: int = -6) -> dict:
+    addend = pack_base._FieldOutcome(
+        row={"field_id": "revenue_disaggregated", "quality_state": "valued"},
+        value=None,
+        decimals=-6,
+        unit="USD",
+        group_breakdown=tuple(breakdowns),
+    )
+    total_outcome = pack_base._FieldOutcome(
+        row={"field_id": "revenue", "quality_state": "valued"},
+        value=Decimal(total),
+        decimals=total_decimals,
+        unit="USD",
+    )
+    resolver = pack_base._OperandResolver(
+        {"revenue_disaggregated": addend, "revenue": total_outcome},
+        _pk04_input(),
+        foreign_cache={},
+    )
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK04")["checks"]
+        if item["check_id"] == "disaggregation_sums_to_revenue"
+    )
+    specs = [
+        spec
+        for spec in pk04_revenue.PRODUCER.checks
+        if spec.check_id == "disaggregation_sums_to_revenue"
+    ]
+    sink: list[str] = []
+    row = pack_base._evaluate_check(
+        catalogue_check, specs, resolver, limitation_sink=sink, pack_id="PK04"
+    )
+    return {"row": row, "sink": sink}
+
+
+def test_pk04_grouped_sum_fails_when_complete_group_short_by_two_million() -> None:
+    outcome = _grouped_check(
+        [
+            _breakdown(
+                "srt:ProductOrServiceAxis",
+                (("us-gaap:ProductMember", "us-gaap:ServiceMember"),),
+                {
+                    "us-gaap:ProductMember": Decimal("99000000"),
+                    "us-gaap:ServiceMember": Decimal("99000000"),
+                },
+            )
+        ],
+        "200000000",
+    )
+    assert outcome["row"]["status"] == "fail"
+    assert outcome["row"]["reason"] is None
+    assert outcome["row"]["tolerance"] == "1000000"
+    assert "pk04.disaggregation_sums_to_revenue: groups 1/1" in outcome["sink"]
+
+
+def test_pk04_grouped_sum_not_evaluable_with_only_incomplete_groups() -> None:
+    outcome = _grouped_check(
+        [
+            _breakdown(
+                "srt:ProductOrServiceAxis",
+                (("us-gaap:ProductMember", "us-gaap:ServiceMember"),),
+                {"us-gaap:ProductMember": Decimal("307003000000")},
+            )
+        ],
+        "416161000000",
+    )
+    assert outcome["row"]["status"] == "not_evaluable"
+    assert outcome["row"]["reason"] == "missing_dependency"
+    assert "pk04.disaggregation_sums_to_revenue: groups 0/1" in outcome["sink"]
+
+
+def test_pk04_grouped_sum_passes_when_every_axis_has_a_complete_group() -> None:
+    outcome = _grouped_check(
+        [
+            _breakdown(
+                "srt:ProductOrServiceAxis",
+                (
+                    (
+                        "aapl:IPadMember",
+                        "aapl:IPhoneMember",
+                        "aapl:MacMember",
+                        "aapl:WearablesHomeandAccessoriesMember",
+                        "us-gaap:ServiceMember",
+                    ),
+                    ("us-gaap:ProductMember", "us-gaap:ServiceMember"),
+                ),
+                {
+                    "aapl:IPadMember": Decimal("28023000000"),
+                    "aapl:IPhoneMember": Decimal("209586000000"),
+                    "aapl:MacMember": Decimal("33708000000"),
+                    "us-gaap:ProductMember": Decimal("307003000000"),
+                    "us-gaap:ServiceMember": Decimal("109158000000"),
+                },
+            ),
+            _breakdown(
+                "srt:StatementGeographicalAxis",
+                (("country:US", "country:CN", "aapl:OtherCountriesMember"),),
+                {
+                    "country:US": Decimal("151790000000"),
+                    "country:CN": Decimal("64377000000"),
+                    "aapl:OtherCountriesMember": Decimal("199994000000"),
+                },
+            ),
+        ],
+        "416161000000",
+    )
+    assert outcome["row"]["status"] == "pass"
+    assert outcome["row"]["reason"] is None
+    assert outcome["row"]["tolerance"] == "1000000"
+    # The five-member group is incomplete (no Wearables value) yet its axis
+    # still owns a complete group; the census counts groups, not axes.
+    assert "pk04.disaggregation_sums_to_revenue: groups 2/3" in outcome["sink"]
+
+
+def test_pk04_no_def_xml_falls_back_to_single_group_evaluation() -> None:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    trimmed = replace(
+        package,
+        manifest={
+            **package.manifest,
+            "members": [
+                item
+                for item in package.manifest["members"]
+                if not str(item.get("name") or "").endswith("_def.xml")
+            ],
+        },
+        members={
+            name: payload
+            for name, payload in package.members.items()
+            if not name.endswith("_def.xml")
+        },
+    )
+    result = produce_pack("PK04", _pk04_input(packages=(trimmed,)))
+    rows = _rows(result, "revenue_disaggregated")
+    assert len(rows) == 9  # every admitted member still emits, unpartitioned
+    check = _check(result, "disaggregation_sums_to_revenue")
+    # Without the definition linkbase the axis is evaluated as ONE group of
+    # all its emitted rows: the product/service axis then mixes the two-way
+    # and five-way partitions (832,322,000,000 in total), so the single-group
+    # evaluation honestly fails rather than pretending to partition.
+    assert check["status"] == "fail"
+    assert check["reason"] is None
+    assert (
+        "pk04.disaggregation_sums_to_revenue: groups 2/2" in result["limitations"]
+    )
+    assert (
+        "revenue_disaggregated: srt:ProductOrServiceAxis has no definition"
+        " group; member rows unpartitioned" in result["limitations"]
+    )
+    assert (
+        "revenue_disaggregated: srt:StatementGeographicalAxis has no"
+        " definition group; member rows unpartitioned" in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 35. definition linkbase (A.3) ------------------------------------------------
+
+
+def _fixture_def_xml_bytes() -> bytes:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    return next(
+        payload
+        for name, payload in sorted(package.members.items())
+        if name.endswith("_def.xml")
+    )
+
+
+def test_parse_axis_member_groups_returns_fixture_groups() -> None:
+    groups = definition_linkbase.parse_axis_member_groups(_fixture_def_xml_bytes())
+    assert groups["srt:ProductOrServiceAxis"] == (
+        (
+            "aapl:IPadMember",
+            "aapl:IPhoneMember",
+            "aapl:MacMember",
+            "aapl:WearablesHomeandAccessoriesMember",
+            "us-gaap:ServiceMember",
+        ),
+        ("us-gaap:ProductMember", "us-gaap:ServiceMember"),
+    )
+    assert groups["srt:StatementGeographicalAxis"] == (
+        ("aapl:OtherCountriesMember", "country:CN", "country:US"),
+    )
+    assert groups["us-gaap:StatementBusinessSegmentsAxis"] == (
+        (
+            "aapl:AmericasSegmentMember",
+            "aapl:EuropeSegmentMember",
+            "aapl:GreaterChinaSegmentMember",
+            "aapl:JapanSegmentMember",
+            "aapl:RestOfAsiaPacificSegmentMember",
+        ),
+    )
+
+
+def test_members_in_any_group_is_the_canonical_union() -> None:
+    groups = definition_linkbase.parse_axis_member_groups(_fixture_def_xml_bytes())
+    assert definition_linkbase.members_in_any_group(
+        groups, "srt:ProductOrServiceAxis"
+    ) == (
+        "aapl:IPadMember",
+        "aapl:IPhoneMember",
+        "aapl:MacMember",
+        "aapl:WearablesHomeandAccessoriesMember",
+        "us-gaap:ProductMember",
+        "us-gaap:ServiceMember",
+    )
+    assert definition_linkbase.members_in_any_group(groups, "srt:NoSuchAxis") == ()
+
+
+_SYNTHETIC_LINKBASE = b"""<?xml version="1.0" encoding="UTF-8"?>
+<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <link:definitionLink xlink:role="http://example.com/role/A" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_TestAxis"/>
+    <link:loc xlink:type="locator" xlink:label="domain" xlink:href="syn-2026.xsd#srt_TestDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#srt_FirstMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#srt_SecondMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2child" xlink:href="syn-2026.xsd#srt_SecondChildMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="domain" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="domain" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="domain" xlink:to="m2" order="2"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="m2" xlink:to="m2child" order="1"/>
+  </link:definitionLink>
+  <link:definitionLink xlink:role="http://example.com/role/B" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="axis" xlink:href="syn-2026.xsd#srt_TestAxis"/>
+    <link:loc xlink:type="locator" xlink:label="domain" xlink:href="syn-2026.xsd#srt_TestDomain"/>
+    <link:loc xlink:type="locator" xlink:label="m1" xlink:href="syn-2026.xsd#srt_FirstMember"/>
+    <link:loc xlink:type="locator" xlink:label="m2" xlink:href="syn-2026.xsd#srt_SecondMember"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/dimension-domain" xlink:from="axis" xlink:to="domain" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="domain" xlink:to="m1" order="1"/>
+    <link:definitionArc xlink:type="arc" xlink:arcrole="http://xbrl.org/int/dim/arcrole/domain-member" xlink:from="domain" xlink:to="m2" order="2"/>
+  </link:definitionLink>
+</link:linkbase>
+"""
+
+
+def test_parse_axis_member_groups_excludes_grandchildren_and_collapses_roles() -> None:
+    groups = definition_linkbase.parse_axis_member_groups(_SYNTHETIC_LINKBASE)
+    # The grandchild srt:SecondChildMember is never a group member, and the
+    # two roles' identical partitions collapse to one distinct group.
+    assert groups == {"srt:TestAxis": (("srt:FirstMember", "srt:SecondMember"),)}
+
+
+def test_parse_axis_member_groups_without_linkbase_is_empty() -> None:
+    assert definition_linkbase.parse_axis_member_groups(None) == {}
+    assert definition_linkbase.parse_axis_member_groups(b"") == {}
+
+
+# 36. opening_instant and typed selection on synthetic ledgers -----------------
+
+
+def _synthetic_occurrence(
+    concept: str,
+    *,
+    instant=None,
+    start=None,
+    end=None,
+    explicit=(),
+    typed=(),
+    value: str = "1",
+    decimals: str = "-6",
+) -> RawFactOccurrence:
+    return RawFactOccurrence(
+        source=SourceIdentity(
+            source="synthetic",
+            entity_id="synthetic-entity",
+            accession="0000000000-00-000000",
+            document_id="synthetic",
+            body_sha256="0" * 64,
+        ),
+        concept_qname=concept,
+        context=FactContext(
+            context_id="ctx",
+            entity_scheme="urn:test",
+            entity_identifier="synthetic-entity",
+            instant=instant,
+            start=start,
+            end=end,
+            explicit_dimensions=explicit,
+            typed_dimensions=typed,
+        ),
+        clocks=TemporalClocks(recorded_at="2026-08-05T12:00:02Z"),
+        unit=FactUnit(unit_id="u", measures=("iso4217:USD",)),
+        parsed_value=Decimal(value),
+        decimals=decimals,
+    )
+
+
+def _opening_outcome(events) -> "pack_base._FieldOutcome":
+    ledger = RawFactLedger(events=tuple(events))
+    por = _date(2025, 9, 27)
+    return pack_base._resolve_fact_mapping(
+        pack_id="PK04",
+        catalogue_field=_catalogue_field(
+            "PK04", "contract_liability_rollforward_opening"
+        ),
+        mapping=pack_base.FactMapping(
+            ("us-gaap:ContractWithCustomerLiability",),
+            period_select="opening_instant",
+        ),
+        ledger=ledger,
+        por=por,
+        extension_prefixes={},
+        opening_bound=pack_base._primary_duration_opening_bound(ledger, por),
+    )
+
+
+def test_opening_instant_selects_day_before_duration_start() -> None:
+    outcome = _opening_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:Revenues",
+                start=_date(2024, 9, 29),
+                end=_date(2025, 9, 27),
+                value="416161000000",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:ContractWithCustomerLiability",
+                instant=_date(2024, 9, 28),
+                value="12800000000",
+                decimals="-8",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:ContractWithCustomerLiability",
+                instant=_date(2024, 8, 30),
+                value="12000000000",
+                decimals="-8",
+            ),
+        ]
+    )
+    assert outcome.row["quality_state"] == "valued"
+    assert outcome.row["value"] == "12800000000"
+    assert outcome.row["period"] == {"kind": "instant", "end": "2024-09-28"}
+
+
+def test_opening_instant_falls_back_to_latest_before_start() -> None:
+    outcome = _opening_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:Revenues",
+                start=_date(2024, 9, 29),
+                end=_date(2025, 9, 27),
+                value="416161000000",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:ContractWithCustomerLiability",
+                instant=_date(2024, 9, 10),
+                value="10000000000",
+                decimals="-8",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:ContractWithCustomerLiability",
+                instant=_date(2024, 9, 20),
+                value="11000000000",
+                decimals="-8",
+            ),
+        ]
+    )
+    assert outcome.row["value"] == "11000000000"
+    assert outcome.row["period"] == {"kind": "instant", "end": "2024-09-20"}
+
+
+def test_opening_instant_without_candidate_is_missing() -> None:
+    outcome = _opening_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:Revenues",
+                start=_date(2024, 9, 29),
+                end=_date(2025, 9, 27),
+                value="416161000000",
+            )
+        ]
+    )
+    assert outcome.row["quality_state"] == "missing"
+    assert outcome.row["reason"] == (
+        "missing_standard_fact:us-gaap:ContractWithCustomerLiability"
+    )
+
+
+def _typed_outcome(events) -> "pack_base._FieldOutcome":
+    return pack_base._resolve_typed_dimensioned_fact_mapping(
+        pack_id="PK04",
+        catalogue_field=_catalogue_field("PK04", "rpo_percentage_next_12m"),
+        mapping=pk04_revenue._FIELD_MAPPINGS["rpo_percentage_next_12m"],
+        ledger=RawFactLedger(events=tuple(events)),
+        por=_date(2025, 9, 27),
+    )
+
+
+def _typed_member(iso_date: str) -> str:
+    return (
+        "<us-gaap:RevenueRemainingPerformanceObligationExpectedTimingOf"
+        f"SatisfactionStartDateAxis.domain>{iso_date}</us-gaap:RevenueRemaining"
+        "PerformanceObligationExpectedTimingOfSatisfactionStartDateAxis.domain>"
+    )
+
+
+def test_typed_dimensioned_selects_earliest_on_or_after_period_of_report() -> None:
+    outcome = _typed_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+                instant=_date(2025, 9, 27),
+                typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2026-09-27")),),
+                value="0.23",
+                decimals="2",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+                instant=_date(2025, 9, 27),
+                typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2025-09-26")),),
+                value="0.90",
+                decimals="2",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+                instant=_date(2025, 9, 27),
+                typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2025-09-28")),),
+                value="0.66",
+                decimals="2",
+            ),
+        ]
+    )
+    assert outcome.row["quality_state"] == "valued"
+    assert outcome.row["value"] == "0.66"
+    assert outcome.row["unit"] == "ratio"
+    assert outcome.row["dimensions"] == [
+        {"axis": RPO_TIMING_AXIS_QNAME, "member": "2025-09-28"}
+    ]
+
+
+def test_typed_dimensioned_skips_value_before_period_of_report() -> None:
+    # The only typed values sit before period_of_report: none is admissible.
+    outcome = _typed_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+                instant=_date(2025, 9, 27),
+                typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2025-09-26")),),
+                value="0.90",
+                decimals="2",
+            )
+        ]
+    )
+    assert outcome.row["quality_state"] == "missing"
+    assert outcome.row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemaining"
+        "PerformanceObligationPercentage"
+    )
+
+
+def test_typed_dimensioned_without_candidate_is_missing() -> None:
+    outcome = _typed_outcome(())
+    assert outcome.row["quality_state"] == "missing"
+    assert outcome.row["reason"] == (
+        "missing_standard_fact:us-gaap:RevenueRemaining"
+        "PerformanceObligationPercentage"
+    )
+    assert outcome.row["value"] is None
+
+
+# 37. PK04 bank probe, determinism, invariance, CLI ----------------------------
+
+
+def test_pk04_bank_probe_is_not_applicable() -> None:
+    bank = produce_pack("PK04", _pk04_input(issuer_sic="6021", sic_source="dei"))
+    assert bank["applicability"]["state"] == "not_applicable"
+    assert bank["applicability"]["reason"] == "bank_interest_not_contract_revenue"
+    assert len(bank["fields"]) == 12
+    for row in bank["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "bank_interest_not_contract_revenue"
+    for check in bank["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "bank_interest_not_contract_revenue"
+    assert bank["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert contract.validate_pack_result(bank) == []
+
+
+def test_pk04_unknown_sic_is_not_evaluable() -> None:
+    result = produce_pack("PK04", _pk04_input(issuer_sic=None, sic_source=None))
+    assert result["applicability"]["state"] == "not_evaluable"
+    assert result["applicability"]["reason"] == "issuer_class_unknown"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+
+
+def test_pk04_production_is_deterministic() -> None:
+    first = produce_pack("PK04", _pk04_input())
+    second = produce_pack("PK04", _pk04_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+def test_pk02_envelope_digest_unchanged_by_pk04_edits() -> None:
+    result = produce_pack("PK02", _pk02_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert sha256(payload.encode("utf-8")).hexdigest() == PK02_ENVELOPE_SHA256
+
+
+def test_pk04_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk04.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK04_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK04",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert len(envelope["fields"]) == 20
+    assert envelope["coverage"]["valued_fields"] == 15
