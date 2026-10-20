@@ -1,10 +1,55 @@
-# Deployment-helper release integrity evidence — 18 October 2026
+# Deployment-helper release integrity — continuation through 20 October 2026
 
-This packet records the bounded helper repair supporting delivery of the accepted Mastermind #1567 future-source-date fix. The source change is [PR #1610](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610), reported head `797c760f3e18eb6993579f56986103de9d9fdcb4`. **The final native owning suite passed 49/49, including the five application cases. Source landing, production deployment and Risk Radar delivery are not established by this packet.**
+**Mastermind source #1610 is merged and separately verified.** Candidate **7b5ccfffef4e90b89496751dd7bc0f55b711ed25** landed as protected master **a7553e0a18339c910eef9687c730b06605dd710e**. The completed original observer receipt is dated **04:06:15 UTC on October 20**; the separate master fetch and five-file blob comparison completed at **04:23:34.958762 UTC**. All five owned paths and startup-source identity matched. The helper remains SHA256 **1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8**. PR-head CI **39359674398**, CodeQL **39359671270**, and the recorded native queue stages remain bound to their original heads. Observer PID **80374** is terminal; no new queue watcher is needed. Source acceptance does not establish runtime installation. [Completed queue](native_oct20/SOURCE_QUEUE_COMPLETED_2026-10-20.json), [separate landing](native_oct20/SOURCE_LANDING_READBACK_2026-10-20.json) and [unchanged dependency bindings](native_oct20/LANDED_DEPENDENCY_BINDINGS_2026-10-20.json) are retained.
 
-**Subsequent required CI failed.** Run [39109519443](native/rr-helper-ci-39109519443-result.json) failed three wider static deployment-contract tests; the native 49-case pass remains narrower evidence. At **08:28:04.970897Z**, [#1610 was confirmed draft](native/rr-helper-ci-failure-draft-disposition-20261018.json), unqueued and without auto-merge. The [single observer completed](native/rr-helper-ci-39109519443-watch-receipt.json), exit 1; no active watcher, rerun or waiver is claimed. Exact companion-test guarantees and current source-writer custody require qualification before a source successor.
+This index is the substantive continuation in existing **Macro #9595**, whose current published ac08 head remains draft. Its [actual CI adjudication](ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) preserves the failed integrated and base reference checks, and the already-landed byte-preserving move of the three unapproved Sector Central documents into a design-draft namespace. No RIG receipt or guard exception is invented. The new enclosing evidence commit still needs its own native integrated CI and normal landing readback.
 
-Only `scripts/deploy_code_to_vps.sh` and its existing owner `tests/test_deploy_provenance.py` change. The archive wrapper, forward module, models, samplers, policy owners and accepted programme evidence retain their existing ownership. Earlier reports and manifests preserve the stage they reviewed; their pending-native language predates the final native result below.
+Earlier status paragraphs below are dated history. Their original 797c/49-case scope and old pending/failure statements do not describe the later five-file successor. Failed experiments, reviewed source pairs and original publication transformations remain recoverable.
+
+## Current evidence and acceptance boundaries
+
+| Evidence | What is accepted; what remains open |
+|---|---|
+| [Companion semantics](CI_CONTRACT_COMPANION_SEMANTIC_REVIEW_2026-10-18.md), [v2 revision](CI_CONTRACT_COMPANION_V2_REVISION_2026-10-18.md) and [independent v2 review](CI_CONTRACT_COMPANION_V2_SEMANTIC_REVIEW_2026-10-18.md) | The wider Datadog/forward/archive contract repair preserves meaningful behavior checks. Actual #1586/#642/#124 hunk intersections were qualified without overriding their active ownership or HOLDs. |
+| [V3 launcher repair](CI_CONTRACT_COMPANION_V3_LAUNCHER_REPAIR_2026-10-18.md), [independent v3 review](HELPER_V3_INTERPRETER_PATH_REVIEW_2026-10-18.md), [v4 witness correction](CI_CONTRACT_COMPANION_V4_WITNESS_REPAIR_2026-10-18.md) and [independent v4 review](HELPER_V4_INTERPRETER_WITNESS_REVIEW_2026-10-18.md) | Portable execution through a spaced native venv and the corrected exact-interpreter witness are accepted within their fixture scope. Existing test ASTs/assertions and exact stage identities remain preserved. |
+| [Complete fixed-source review](FULL_RELEASE_FIXED_SOURCE_REVIEW_2026-10-18.md), [static catalogue v2 review](STATIC_SCOPE_V2_REVIEW_2026-10-18.md) and [actual registered-startup slice](startup_oct20/STARTUP_EFFECT_REVIEW_2026-10-20.md) | The archive's static closure and positive startup effects are characterized. Serve-only and first-run flags do not imply effect-free startup. Pending-target preflight can quarantine state before scheduler resume. Effective settings, missing callees, final merged archive and isolated matching-runtime proof remain open. |
+| [Limited interrupted-read handback](startup_oct20/LIMITED_RELEASE_SCOPE_HANDBACK_2026-10-20.md) | The unreturned read and absent optional extract are recorded. Subsequent root source retrievals and independent cloud review are separate completed evidence, not a relabeling of that request. |
+| [First natural W5 acceptance](../../w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md) and [independent operational review](../../w5_natural_issuance_20261018/oct20_lineage/review/INDEPENDENT_OPERATIONAL_ACCEPTANCE_2026-10-20.md) | One naturally scheduled 30-row SPY batch has complete source/recipe lineage and warning qualification. All outcomes are immature. No independent-event count, predictive advantage, first-user or executable-Friday-close claim. |
+| [R1 proposed-design adjudication](../../all_date_census/PRICE_ONLY_B0_B1_R1_ADJUDICATION_2026-10-20.md) and [independent research-design review](PRICE_ONLY_B0_B1_INDEPENDENT_DESIGN_REVIEW_2026-10-18.md) | Equal-exposure scoring/reporting is deterministic. All 532 proposed B0/B1 fits remain NOT_ADMITTED, zero executed, under actual source-purpose and executable/runtime gaps. Earlier failed studies and FRED HOLD remain. |
+| [October 16 action map](../../action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md) and [independent review](../../action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md) | All 180 displayed cells, 36 dates and damage counts reconcile. Four proxies are still October 14; the later wording-only gate clarification and exact reviewed original are recorded. A dated descriptive agenda is not current execution or a policy-performance claim. |
+| [Current Copilot compatibility](../../live_delivery_20261017/copilot_failure_trace/current_source_20261020/CURRENT_SOURCE_2026-10-20.md) and [independent review](../../live_delivery_20261017/copilot_failure_trace/current_source_20261020/review/INDEPENDENT_COMPATIBILITY_REVIEW_2026-10-20.md) | The original negative-only portfolio classifier and caveat-only finalization mechanism remain in the inspected active #8014 source. Surrounding recovery changes may alter frequency; no fresh provider run or repaired live answer is claimed. |
+
+## Current five-file candidate identity
+
+| File / archived representation | Bytes | SHA256 |
+|---|---:|---|
+| [scripts/deploy_code_to_vps.sh](candidate/scripts/deploy_code_to_vps.sh.txt) | 20,370 | `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8` |
+| [tests/test_deploy_provenance.py](ci_contract_candidate_v4/tests/test_deploy_provenance.py.txt) | 50,039 | `80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10` |
+| [tests/test_datadog_vps_install.py](ci_contract_candidate/tests/test_datadog_vps_install.py.txt) | 5,991 | `a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95` |
+| [tests/test_forward_evaluation.py](ci_contract_candidate/tests/test_forward_evaluation.py.txt) | 31,215 | `637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d` |
+| [tests/test_portfolio_archival.py](ci_contract_candidate/tests/test_portfolio_archival.py.txt) | 16,993 | `0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384` |
+
+The four-test successor was committed and pushed at 7b on October 20 after native ownership, source and instruction checks. The helper bytes did not change. The completed landing receipt separately verifies the five owned files at merged master a7553e0a. The full merged archive must still be bound to the receiver; these five hashes are not a complete archive manifest.
+
+## Companion and launcher progression — retain the failed cases
+
+| Stage | Actual result and implication |
+|---|---|
+| Original 797c hosted CI 39109519443 | Failed three wider static source-contract assertions. These were effects of the helper refactor; they were not dismissed as unrelated baseline failures. |
+| V2 owning helper tests | 59/59 passed. The widened companion run passed 49 and failed 5 because the native environment lacked claude_agent_sdk. |
+| Isolated CI-pinned SDK/dev dependencies | Exact SDK 0.2.168 and declared dev pins were installed in the owned ignored venv. This is not full hosted-environment parity and performed no provider request. |
+| Combined 113 cases after environment binding | 60 passed, 53 failed because executable shebangs could not launch the spaced venv interpreter. All 54 companion cases passed; the launcher failure remained real. |
+| V3 portable wrapper, combined 114 cases | 113 passed, one newly added interpreter-identity regression failed because its external symlink assumption was invalid. |
+| V4 witness correction | The one corrected new regression passed separately, 1/1, with no failure/error/skip. The unchanged 113 prior passes remain evidence; no fresh combined 114/114 run is claimed. |
+| Final 7b PR-head hosted CI | CI 39359674398 succeeded at 03:08:37 UTC on October 20; CodeQL also passed. This closes the actual PR-head source gates, not native integrated queue, landing or runtime acceptance. |
+
+The native raw logs, JUnit results, install report, exact source delta, full static catalogue, commit/push records and completed source-CI receipt are retained under native_oct20. The original 31-file native copy and 58-file static packet have separate copy/readback manifests. Subsequent additions and the wording-only replacements are explicitly enumerated; older maps remain historical records of their stages. Foreign Python/shell source is archived as .txt and is not registered as Macro tests or application code.
+
+## Production and user-delivery gate
+
+The source repair strengthens complete eligible-code restoration and honest refusal. It does not restore every runtime effect of target startup. The registered application startup imports the scheduler before the auth/serve-only check, attempts governance/event publication, and can initialize storage and quarantine pending targets before resuming scheduled work. First-run fuses do not disable that earlier sequence or normal jobs. The seven-file review's missing callee/config boundaries remain explicit.
+
+Source landing is complete. Freeze the exact merged archive, refresh only material receiver facts, reuse the completed dependency reviews, resolve positively reached startup effects and rehearse complete replacement/restoration in an isolated matching runtime. The [October 20 recovery readback](recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json) confirms installed 732cf7be. A 07:19:05 six-second health request timed out; a direct local request at 07:26:31 returned HTTP 200 / status:ok. The earlier timeout cause remains unresolved and no service operation occurred. Current book/cohort/settlement facts remain distinct from the older October 18 snapshots. Effective service settings observed are authoritative, non-serve-only and jobstore=memory. The reserved production decision requires that concrete packet. After an authorized installation, verify source identity and actual Risk Radar behavior through the authenticated consumer, including dates, missing data and advisory boundaries. No deployment, service operation, numerical allocation or execution is performed or granted by this evidence update.
 
 ## Evidence packaging correction — 18 October, after 09:16Z CI failure
 
@@ -14,7 +59,7 @@ The original transfer manifests and source-review paths remain historical logica
 
 The [independent packaging review](ARCHIVE_PACKAGING_REVIEW_2026-10-18.md) accepts the earlier lossless archive representation with its stated limits. The unchanged owning Macro import-check module passed [15/15 native cases](rr-evidence-archive-import-native-receipt-20261018.json). A broader 170-link publication check then found nine archive-rename links and five inherited transfer-path links unresolved in three historical reports. The [bounded link repair](PUBLICATION_LINK_REPAIR_2026-10-18.json) changes only those 14 destinations and retains all three complete [original texts](PUBLICATION_LINK_REPAIR_ORIGINALS_2026-10-18.json). It does not alter historical findings or turn the native import result into whole-CI acceptance.
 
-## Start here
+## Preserved October 18 source-review entry points
 
 | Evidence | Purpose |
 |---|---|
@@ -24,7 +69,7 @@ The [independent packaging review](ARCHIVE_PACKAGING_REVIEW_2026-10-18.md) accep
 | [Independent semantic review](HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md) | Accepted helper control flow; review counterexamples; code-recovery and runtime-data limits. |
 | [Peer-lookup correction](HELPER_NATIVE_RSYNC_PEER_FIX_2026-10-18.md), [diagnostic-assertion correction](HELPER_NATIVE_DIAGNOSTIC_ASSERTION_FIX_2026-10-18.md) and [independent portability review](HELPER_TEST_HARNESS_PORTABILITY_REVIEW_2026-10-18.md) | Two native test-only corrections, retained failed runs and final source identity. |
 
-## Final source identity
+## October 18 original source identity — superseded test files
 
 | File | Bytes | SHA256 |
 |---|---:|---|
@@ -33,7 +78,7 @@ The [independent packaging review](ARCHIVE_PACKAGING_REVIEW_2026-10-18.md) accep
 
 The helper hash is unchanged across both native portability corrections. The peer fix changes only the confined fixture's local rsync peer lookup. The last correction removes one GNU-specific diagnostic assertion; the exact filesystem, service, restart-history and helper-owned failure assertions remain. “All test ASTs unchanged” applies to the earlier peer-fix stage, with this one-assertion exception in the final successor.
 
-## Evidence progression — do not combine different source versions
+## Preserved original evidence progression — do not combine source versions
 
 | Stage | Retained result and attribution |
 |---|---|

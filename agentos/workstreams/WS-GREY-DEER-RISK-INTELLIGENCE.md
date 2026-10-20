@@ -456,54 +456,42 @@ waves:
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Read research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md section 0A
-  and the cumulative GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS handoff.
-  Macro 9515 and 9573 are merged with separate landing verification; never rearm those
-  closed carriers. Continue evidence operation risk-radar-release-qualification-20261018-0304
-  at its admitted 084ac334 base through normal source gates. The old 9573 workspace remains
-  closed read-only under native PRESERVED_UNPUBLISHED; do not force cleanup.
-  Advance the two-file helper repair in Mastermind operation risk-radar-release-integrity-20261018-0310
-  at d65414 through its source carrier https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610,
-  created 2026-10-18T07:56:07.107077Z, exact head 797c760f3e18eb6993579f56986103de9d9fdcb4 on
-  sol/web-risk-radar-release-integrity-20261018-0310. Only the two owned files change. At 08:03:00Z the head
-  was unchanged, CI run 39109519443 was running with three pytest shards in progress, and CodeQL had passed.
-  That observation is historical: the same run concluded FAILURE at unchanged head, with shard 1 failing
-  08:18:20Z, shard 0 at 08:20:23Z and required test at 08:20:34Z; shard 2 passed. Three static contract tests
-  expect old Datadog inline formatting, a forward-transaction substring and the removed DIRS declaration.
-  These unresolved failures follow the helper refactor, not unrelated baseline failures. Inspect their exact
-  companion-test semantics and exact hunk custody before repair; 1586's test_forward_evaluation.py remains
-  draft/HOLD and the 642 Datadog-test intersection is unqualified. At 08:28:04.970897Z the same 1610 head
-  was confirmed OPEN/draft with autoMergeRequest:null, no queue or merge. Source landing remains unobserved.
-  No fix, waiver or rerun claimed.
-  Observer PID 2864 completed 08:22:04.981746Z with exit 1; no active watcher remains. Release stays held;
-  no production deployment is authorized or performed.
-  Final native run 07:52:15-07:54:37Z passed
-  49 tests with zero failures/errors/skips for helper 1ebfd44 and test 1e463a91; independent
-  source/portability reviews and shell syntax/diff checks pass. Preserve the exact 44-case
-  pre-native receipt and both earlier native failures. The 07:46Z census of 396 open PRs found no active helper/test
-  delta; forward-module/test writer 1586 at 52bee91 remains outside this repair.
-  Direct package, registry, health, lock and settlement-caller reviews are complete within
-  scope. The 02:42Z runtime still had 732cf7be; the August 11 cohort was active at 03:06Z,
-  with no observed settlement WAL/JSON receipts at 03:14Z and readable, nonempty NAV guard inputs at 03:22Z.
-  These dated observations are not future stop/recovery or complete book-integrity proof.
-  After normal source acceptance, qualify the exact complete release, permitted startup
-  effects and concrete recovery before the reserved production decision. Autonomous
-  production deployment remains prohibited; Portfolio/Prophet retain numerical policy.
-  Preserve T13's 2138 unscored records, supported pairs 9/2/0 and h21 matched refusal.
-  Six all-date artifacts match; the separate proposed 532-unit exposure-B0/pooled-B0/B1
-  comparison remains NOT_ADMITTED under Yahoo model-purpose UNKNOWN/not a source and
-  absent estimator executable/runtime. Resolve that purpose before executable admission;
-  no fits, source swap, sampler restart or T13/T14/T19 budget expenditure is authorized.
-  Preserve FRED UNKNOWN/HOLD, null independent N, prior failures and revised-history limits.
-  Delivered 9517 desktop scope is accepted; exact forecast qualifiers, all-state warning
-  freshness/expiry, current Terminal proof and useful exposure/recovery delivery remain open.
-  At 07:54Z Macro writers 9447 at b3fa7603 and 9548 at f28a75ec remain open/non-draft.
-  Use the completed Copilot diagnosis only after those current source effects are
-  reconciled; require an installed changed path and useful authenticated answer.
-  Preserve publisher 8132, measured-pullback 8721, 9428 refusal and QLedger/nightly custody.
-  Require natural W5 issuance, never backfill or rerun accepted GD3/frozen stage1/stage1b.
-  Keep Envelope rank/gate/size/execute false. Paper writes require actual catalog qualification.
-  Whole programme remains active and not finally accepted.
+  Continue the existing masterplan section0A and cumulative Meta-CEO handoff at their October 20 frontier.
+  Mastermind 1610 head 7b5ccfffef4e90b89496751dd7bc0f55b711ed25 owns the unchanged helper plus four tests.
+  Mastermind 1610 is merged as a7553e0a18339c910eef9687c730b06605dd710e; the separate 04:23:34.958762Z
+  landing receipt verifies all five blobs and startup identity. Observer 80374 is terminal. October 20
+  runtime reads still identify 732cf7be; a 07:19 timeout was followed by direct HTTP 200 at 07:26, without
+  a restart. Reuse the linked landing/recovery receipts; qualify the exact merged archive, current book
+  state and isolated startup/recovery before the reserved production decision. No deployment is claimed.
+  Keep companion-custody findings and #1586/#642/#124 ownership/HOLDs intact. Preserve every original failed
+  CI/native run. The final native evidence is 113 unchanged passes plus one separately corrected case;
+  do not invent a fresh 114/114 run. Hosted CI subsequently passed at 7b.
+  Publish this substantive evidence continuation through existing draft Macro 9595 at ac08d5bd630d480a97fcbd0d9814946724250011.
+  Its old CI39118765804 failed only three base-supplied RIG paths; the paths are absent in the carrier and
+  current main 247677 preserves identical drafts under design_candidates through #7100. No invented RIG
+  receipt or competing repair. The next substantive commit needs actual integrated CI and landing readback;
+  never push into an armed/closed PR. Macro 9515/9573 and their verified landings remain accepted.
+  Use the accepted October 16 action map for dated exposure-policy review: SPY drawdown 2.03%, semis 14.85%-16.31%,
+  selective defensive absolute gains and wider damage coexist. Four proxies remainOctober 14; no October 20
+  execution quote, literal Composite reconstruction, flows or systemic-contagion qualification is supplied.
+  W5 now has first natural operational issuance accepted: one 30-row SPY batch with exact producer ancestry,
+  preregistration/recipe and complete warning checks. All outcomes are immature; independent N remains null.
+  Sunday issuance is not Friday-close executability. Consume only new natural records/mature outcomes under
+  the original writer/grader; no backfill, manual nightly or early grade.
+  R1 reporting clarification is adopted as proposed design. All 532 proposed B0/B1 fits remain NOT_ADMITTED,
+  zero executed, pending actual Yahoo purpose and estimator/runtime acceptance. Preserve FRED HOLD,
+  T13 h21 refusal, original 2,138 unscored records, prior failed studies and unspent T13/T14/T19 budgets.
+  The current integrated Copilot writer is 8014 d63e59bcd4203732fe3b9097002f9451dcf61955; 9447 aed92aaa
+  and 9548 bc96a20f remain actual writers. The original classifier and caveat-only finalization counterexample
+  remain applicable to inspected source. Qualify useful prose or separately admitted public visuals before
+  metadata, preserve safety/Stop/persistence, and require served source plus one useful authenticated answer.
+  After helper landing, bind the exact merged archive, current installed comparison, actual startup effects
+  and isolated replacement/restoration. October 18 runtime/cohort/book evidence is dated, not current October 20 proof.
+  The complete-release production decision remains reserved; autonomous deployment is prohibited.
+  Preserve publisher 8132/8721 HOLDs, 9428 refusal and QLedger/nightly custody; Paper writes need actual catalog
+  qualification. Forecast qualifiers, current Terminal proof and complete action/recovery delivery remain open.
+  Keep Envelope rank/gate/size/execute false and Portfolio/Prophet numerical authority intact.
+  Update MAS-258 from verified canonical evidence. Whole programme stays active and not finally accepted.
 
 ---
 

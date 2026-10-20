@@ -238,74 +238,84 @@ unverified:
     may be claimed from inspected history.
 unresolved:
 - >-
-  Mastermind 1610 required CI failed in three wider static contract tests after the helper refactor. Inspect the
-  exact companion-test semantics and hunk custody before repair; 1586's test_forward_evaluation.py remains
-  draft/HOLD and the 642 Datadog-test intersection is unqualified. The 08:28:04.970897Z readback confirms 1610
-  OPEN/draft, autoMergeRequest:null, unqueued at the same head; source landing remains unobserved. No active watcher.
+  Mastermind 1610 is merged as a7553e0a18339c910eef9687c730b06605dd710e, with all five owned blobs
+  and startup identity separately verified at 04:23:34.958762Z on October 20. Original observer 80374
+  is terminal. Full merged-archive, current receiver/cohort and isolated startup/recovery qualification
+  remain open before the reserved production decision; see the linked landing and recovery receipts.
 - >-
-  Parent programme incomplete. Source landing and bounded desktop delivery do not establish forecast competence,
-  complete evidence presentation, warning expiry, granular action/recovery intelligence or numerical authority.
+  Macro 9595 remains the existing draft evidence carrier at ac08d5bd630d480a97fcbd0d9814946724250011.
+  Its CI 39118765804 failed only three RIG paths from tested base b912fd97827cca925a7123aa2012e9765077f3f7.
+  Those paths are absent in ac08; current main 247677 retains the same blobs under design_candidates via #7100.
+  No speculative RIG repair is needed. The substantive continuation commit requires its own integrated gates
+  and landing readback. Macro 9515 and 9573 stay merged/verified; do not rearm their closed carriers.
 - >-
-  The current evidence successor still requires its own enclosing-head gates and normal source landing.
-  Macro PRs 9515 and 9573 are merged and separately verified; do not push or rearm either closed carrier.
-  Their earlier red-head receipts remain historical.
+  The October 16 action map is accepted as a dated descriptive diagnostic, not an October 20 executable call.
+  Four proxies remain October 14; the literal Nasdaq Composite/Dow reconstruction, first-known/publication
+  clocks, constituent membership, complete source verification, independent episodes and re-entry policy remain open.
+  Relative outperformance does not establish flows or absolute capital preservation.
 - >-
-  At 07:54Z actual gateway writer 9447 is open/non-draft at b3fa7603 and workspace writer 9548 is open/non-draft
-  at f28a75ec, intersecting the Radar template and JavaScript paths. Preserve those source effects while progressing
-  compatible research/evidence work; earlier draft/dirty observations are historical.
+  W5 first natural issuance is operationally accepted for one 30-row SPY batch after exact ancestry,
+  preregistration, recipe and complete warning checks. All outcomes are immature. One batch is not 30
+  independent warnings; source availability, first user and execution clocks remain unknown. Sunday issuance
+  cannot use Friday-close returns as implementable action performance. No calibration or policy claim is promoted.
 - >-
-  Original SPY/T12 identity is resolved, but confirmatory support is not. The only 21-session matched event has no
-  draft-warmup-eligible positive origin; severe missing/immature controls and horizon dependence are retained.
-  The separately committed metadata diagnostic now refuses21-session matched support and admits no model.
-  FRED model-purpose UNKNOWN/HOLD and evaluation admission remain outstanding; drafts unactivated. The separate
-  all-date price-only proposal also remains NOT_ADMITTED under Yahoo model-purpose UNKNOWN/not a source and
-  absent estimator executable/runtime; six verified artifacts do not grant the missing purpose or predictive competence.
+  Current integrated gateway writer is Macro 8014 d63e59bcd4203732fe3b9097002f9451dcf61955; 9447 is
+  aed92aaa474ebf3802b6f43ac55138dedfe4c8aa and 9548 is bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc.
+  The original classifier and caveat-only finalization counterexample remain applicable to inspected source.
+  Qualify a compatible repair under actual custody; no new live failure, provider diagnosis or repaired delivery is claimed.
 - >-
-  The future-date source repair is merged but absent from the observed runtime. Qualify the full exact-master
-  release, deployment helper chain and rollback/activation before the reserved production decision and live parity.
+  R1 reporting is adopted as proposed design; all 532 fits remain NOT_ADMITTED and unexecuted under Yahoo
+  purpose UNKNOWN/not a source and missing estimator/runtime acceptance. FRED UNKNOWN/HOLD, T13 h21
+  matched-support refusal, prior failed studies and null independent N remain evidence; budgets are unspent.
 - >-
-  W5 genuine issuance is absent at the inspected pins and BACKFILL_ASOF refusals persist. Original QLedger/nightly
-  publication custody controls; legacy pressure-session history is not the prospective forecast ledger.
+  October 20 reads confirm installed 732cf7be. A 07:19 health timeout was followed by direct HTTP 200
+  at 07:26; its cause remains unresolved and no restart occurred. Current book/cohort/settlement proof,
+  complete merged-archive comparison and isolated replacement/restoration remain open. Code rollback
+  does not reverse all startup effects. See recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json.
 - >-
-  Paper catalog is not accepted for write. Country/factor coverage, company/theme historical membership, true
-  historical availability, independent episodes and executable intraday clocks remain incomplete.
+  Parent programme incomplete: warning publisher HOLD/expiry semantics, Paper write-catalog qualification,
+  exact forecast qualifiers, current Terminal proof, useful authenticated Copilot delivery and granular recovery
+  decisions remain open. Numerical Portfolio/Prophet authority and Envelope rank/gate/size/execute false remain.
 - >-
-  The broad read-only native workspace census produced no usable receipt and was stopped. A separate documented
-  native acquire succeeded for the successor. The older merged checkout is preserved read-only; no cleanup or
-  takeover of another writer is inferred. No autonomous wake or complete cross-workspace custody census is claimed.
+  Three October 20 advisory remote-read batches returned no result before interruption. Their pending reads
+  and possible temporary extract are recorded; no provider, production mutation or completed qualification is inferred.
+  Subsequent completed root reads are separate evidence. Historical accepted capabilities and failed experiments persist.
+
 next_actions:
 - >-
-  Diagnose the three required CI failures on Mastermind PR 1610 at exact head 797c760f3e18eb6993579f56986103de9d9fdcb4
-  in risk-radar-release-integrity-20261018-0310. Preserve its confirmed OPEN/draft, unqueued state. Qualify exact
-  companion-test semantics and hunk custody before repair, then satisfy normal source CI, native queue and landing readback.
-  Bind the final 49-test native pass and independent source/portability reviews, preserving the pre-native
-  44-case receipt and both native failure records. Separate source landing from production qualification.
+  Reuse the completed five-file source landing and unchanged dependency bindings for Mastermind 1610.
+  Bind the exact a7553e0a merged archive, current receiver/book state and actual startup effects; perform
+  the isolated matching-runtime rehearsal before the reserved production decision. Observer 80374 is closed.
 - >-
-  Land the path-disjoint continuation evidence from native Macro operation risk-radar-release-qualification-20261018-0304
-  through ordinary source gates, then separately fetch main and compare owned artifacts. The old 9573 checkout
-  remains closed read-only under its release owner's PRESERVED_UNPUBLISHED disposition; no forced cleanup.
+  Publish the substantive evidence update in existing draft Macro 9595 after exact-head and unarmed-state checks.
+  Preserve lossless archived source, failed runs, R1, natural W5, October 16 map and current Copilot proof.
+  Obtain actual integrated CI; source paths removed from current main do not retroactively make ac08 green.
+  Separately fetch main and compare owned artifacts after normal landing. Never push an armed/closed carrier.
 - >-
-  Use the completed Copilot diagnostic and repair contract for a custody-qualified source change. Preserve genuine
-  private evidence requirements, supported general market prose and scoped contradictions. Require installed behavior
-  and one useful authenticated original-question answer. Do not overwrite9447 or9548 paths.
+  Use the accepted October 16 map as the dated policy-review agenda. Refresh actual market/execution inputs
+  before action. Preserve the separate absolute preservation and relative opportunity tests, contained-rotation
+  alternative, independent sector warning qualification and distinct recovery/re-entry decision problem.
 - >-
-  Preserve the committed T13 metadata contract and one result:2138 unscored window records, supportedpairs9/2/0
-  and21-session refusal. For the separate all-date 532-unit proposal, resolve the actual recorded source-purpose
-  basis before estimator admission, then freeze exact executable/runtime and counted output contract before any fit.
-  No silent source substitution, T13 sampler restart or reconstruction of its failed matched lane is required.
-  Preserve revised-history limits, null independent N, failed support, FRED HOLD and unspent trial budgets.
+  Preserve first natural W5 operational acceptance; consume only new legitimate issuance and mature outcomes
+  through the original writer/grader. No backfill, early grading, manual nightly or claim of30 independent events.
+  Resolve decision-available and executable clocks before claiming actionable lead or strategy returns.
 - >-
-  The exact 1567 wrapper/helper, direct dependency and settlement-caller reviews are complete within scope.
-  After the bounded helper's normal source gates, qualify the complete actual current-master bundle, permitted
-  startup effects, stop/lock/release ownership and concrete recovery before the reserved production decision.
-  Keep forward module/test writer 1586 and conditional scheduler/account/settlement findings outside this repair.
-  Preserve prior source acceptance and never call brain/macro_risk.risk_state() as a read because its dwell path writes.
+  Continue the existing integrated Copilot producer after current writer-effect reconciliation. Evaluate useful
+  qualified answer content before coverage metadata; preserve separately admitted public visuals and existing
+  advice/leak/Stop/persistence rules. Fix negative-only private-portfolio intent separately. Require served
+  source and one useful authenticated original-question answer, not merely pure fixtures or a merged PR.
 - >-
-  Continue original-owner publisher/consumer work on per-component clocks, freshness and expiry. Inspect the first
-  legitimate natural W5 issuance only when it exists, and grade only after maturity; no backfill or frozen-study rerun.
+  Resolve actual recorded source-purpose and freeze an accepted executable/runtime before any of the proposed
+  532 B0/B1 units. Keep R1 reporting deterministic, T13 h21 refusal, FRED hold, null independent N and original
+  failed claims. No source substitution, frozen-study rerun or T13/T14/T19 trial spend is authorized by this record.
 - >-
-  Resume the same Chairman commission on connected Mastermind tools and the exact acquired successor worktree.
-  Authentication is verified. Current evidence does not justify closing the parent programme or claiming autonomous wake.
+  After verified helper landing, bind the exact merged archive and current installed comparison. Complete
+  registered-startup effect and isolated-runtime replacement/restoration proof, then make the reserved production
+  decision concrete. Do not call brain/macro_risk.risk_state as a read because its dwell path writes.
+- >-
+  Continue original publisher/consumer/Paper paths under existing holds and actual writers. Update MAS-258
+  from the verified canonical source frontier. Parent mission remains active; no autonomous wake or completion is claimed.
+
 do_not_redo:
 - Preserve the one frozen T12 sample and canonical bytes; no regeneration, forced controls or post-outcome relaxation.
 - Do not repeat the completed pinned consumer source-function comparison or metadata intake merely to recover
@@ -333,7 +343,7 @@ danger_areas:
   main alone and compare owned blobs.
 - No Vercel use, runtime restart, production deployment or external person-directed message was performed by
   this census wave.
-- The healthy observed runtime is the October 9 baseline, not the merged clock fix. The 1507 changed repository
+- The last runtime inspected on October 18 had the October 9 baseline, not the merged clock fix; this is not current October 20 proof. The 1507 changed repository
   files are neither a transport count nor full release qualification.
 prs:
 - 9515
@@ -342,27 +352,31 @@ prs:
 
 # Cumulative Meta-CEO continuation
 
-## Current frontier — October 18 UTC
+## Current frontier — October 20 UTC
 
-**Required CI now failed; release remains held.** At unchanged head `797c760f3e18eb6993579f56986103de9d9fdcb4`, run **39109519443** failed shard 1 at **08:18:20Z**, shard 0 at **08:20:23Z**, and required `test` at **08:20:34Z**; shard 2 passed. Failures are `test_deploy_keeps_datadog_version_aligned_with_release_and_rollback`, `test_deploy_transaction_closes_race_noop_and_failure_paths` and `test_deploy_includes_reasoning_subagent_policies_and_rollback_state`. They concern the old inline Datadog format, a source substring and removed `DIRS` declaration. Attribution is the helper refactor's effect on these wider static contracts; semantic repair remains unresolved. At **08:28:04.970897Z**, #1610 was confirmed **OPEN / draft**, `autoMergeRequest:null`, at the same head with no queue or merge. The native disposition is `/tmp/rr-helper-ci-failure-draft-disposition-20261018.json`. Qualify exact companion-test semantics and hunk custody before any native source edit. #1586 at `52bee91…` remains explicitly draft/HOLD with forward-test custody; #642's Datadog-test intersection remains unqualified. No fix, waiver, rerun or source landing is claimed.
+**Useful descriptive intelligence and first natural W5 issuance are accepted within scope. The five-file release-helper repair is merged and separately verified. Full programme acceptance remains open.** The [October 16 exposure map](../../research/grey_deer/action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md) ranks conditional protection, defensive candidates, hold/watch and recovery work for the existing policy owners. It does not supply October 20 execution prices or a validated allocation rule.
 
-The helper's source carrier is [Mastermind #1610](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1610), created **07:56:07.107077Z**, exact head `797c760f3e18eb6993579f56986103de9d9fdcb4` on `sol/web-risk-radar-release-integrity-20261018-0310`. It changes only the two owned helper/test files. At the earlier **08:03:00Z** observation, that head was unchanged, CI run **39109519443** was running with three pytest shards in progress, and CodeQL had passed. Native queue and landing were unobserved at that time. The later failed CI receipt above governs continuation; no production deployment is authorized or performed.
+The snapshot uses 36 fixed ETF proxies; 32 have October 16 observations, while DIA, ARKK, BIL and SGOV remain on October 14. It records SPY only 2.03% below its 63-session high alongside SMH 14.85%, SOXX 16.31% and IWM 11.36% below theirs. XLP and XLV gained 5.02% and 3.45% over five sessions. RSP and defensive absolute gains retain contained rotation as a competing explanation; damage across other exposures prevents a simple healthy-broadening claim. Credit/funding transmission, flows and systemic contagion remain unconfirmed. QQQ is Nasdaq-100 exposure, not the literal Nasdaq Composite. The primary issuer check verifies one SPY close, not all series or historical availability. [Independent review](../../research/grey_deer/action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md) reconciles all 180 displayed numbers, dates and counts. Its optional systemic-gate wording clarification is separately recorded, with the exact reviewed map preserved.
 
-The single native observer, **PID 2864**, completed `gh run watch 39109519443 --interval 120 --exit-status` at **08:22:04.981746Z**, exit 1. **No watcher remains active.** Its receipt is `/tmp/rr-helper-ci-39109519443-watch-receipt.json`, watch log `/tmp/rr-helper-ci-39109519443-watch.log`, and result `/tmp/rr-helper-ci-39109519443-result.json` on the native host. The raw failed CI log remains native-only: **523,775 bytes**, SHA256 `2e22f2b14cde80f52f7d13ffea7425ec285468e9d50268a5557fe29f0278d9a3`. The earlier 08:03 running observation is historical; no additional watcher, rerun or autonomous wake is claimed.
+**Mastermind source #1610 is merged and separately verified.** Candidate **7b5ccfffef4e90b89496751dd7bc0f55b711ed25** landed as protected master **a7553e0a18339c910eef9687c730b06605dd710e**. The completed original observer receipt is dated **04:06:15 UTC on October 20**; the separate master fetch and five-file blob comparison completed at **04:23:34.958762 UTC**. All five owned paths and startup-source identity matched. The helper remains SHA256 **1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8**. PR-head CI **39359674398**, CodeQL **39359671270**, and the recorded native queue stages remain bound to their original heads. Observer PID **80374** is terminal; no new queue watcher is needed. Source acceptance does not establish runtime installation. [Landing receipt](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/SOURCE_LANDING_READBACK_2026-10-20.json) and [recovered current readback](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json) establish this superseding frontier. Earlier failed CI/native cases, the 113 unchanged passes plus separately corrected case, and #1586/#642/#124 custody/HOLDs remain intact.
 
-**The parent mission remains active.** Macro #9573 merged at 02:37:11Z as `1ed4b870a426ff3cafb439152072c5bf47858551`; its [44-artifact source landing](../../research/grey_deer/live_delivery_20261017/9573_source_landing.json) is separately verified. The current Macro evidence operation is `risk-radar-release-qualification-20261018-0304` at `084ac334…`. Its predecessor is closed read-only under `PRESERVED_UNPUBLISHED`, without forced cleanup. #1567 remained uninstalled at the latest retained 02:42Z runtime observation.
+**Current runtime observation — October 20:** the installed marker and later local /health response identify **732cf7be88e7159b4995a8885fbd381cd1484e3e**. The **07:19:05 UTC** six-second health request timed out; bounded process/resource/listener checks found no measured saturation, and a direct request at **07:26:31 UTC** returned **HTTP 200 / status:ok**, with scheduled runtime reported healthy. The cause of the earlier timeout remains unresolved; this is subsequent liveness, not continuous-health or product-delivery proof. No service operation was performed. Current effective service settings are authoritative, non-serve-only, with an in-memory jobstore. Current book/cohort/settlement state and complete merged-archive rehearsal remain separate qualification work. [Observation receipt](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/recovery_oct20/SESSION_RECOVERY_READBACK_2026-10-20.json).
 
-The [bounded helper review](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/HELPER_CANDIDATE_SEMANTIC_REVIEW_2026-10-18.md) follows completed direct dependency and settlement-caller reviews. The two-file Mastermind operation has now passed the final native owning suite **49/49**, zero failures/errors/skips, at **07:52:15–07:54:37Z**, for helper `1ebfd44…` and test `1e463a91…`. Independent source/portability reviews pass. The pre-native 44-case receipt and two earlier native failures are preserved under their exact identities. Ordinary source CI/landing and the complete-release production decision remain open. At 07:54Z the actual Macro #9447/#9548 writers remain open and non-draft. Conditional defects outside the helper retain their existing owners; no book, policy or deployment approval follows from this checkpoint.
+The [evidence index](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/README.md) preserves the failed original hosted CI, companion SDK failure, spaced-venv launch failure, and failed first wrapper-identity regression. V2 owning tests passed 59/59; the final combined native run passed 113 of 114, then the corrected single new regression passed separately. This is **113 unchanged passes plus one separately corrected case**, not an invented fresh 114/114 run. Full hosted CI subsequently passed on 7b. Prior 44-case and 49-case receipts remain tied to their original source pairs.
 
-The [all-date amendment](../../research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_ADMISSION_AMENDMENT_2026-10-18.md) preserves the six verified artifacts and specifies the proposed 532-unit exposure-B0/pooled-B0/B1 comparison. Yahoo model-purpose `UNKNOWN / not a source` and the absent estimator executable keep estimation `NOT_ADMITTED`, with zero fits. T13's matched h21 refusal and FRED HOLD are unchanged. The existing masterplan §0A and YAML next actions above govern continuation; the dated chronology below is preserved as history, including its superseded immediate-next-action and CI statements.
+**Macro evidence #9595:** continue the existing draft carrier, currently **ac08d5bd630d480a97fcbd0d9814946724250011**, without pushing into an armed or closed PR. Its actual CI **39118765804** remains failed only on three reference-integrity findings in ci-pack-1; the other eleven packs and contract-delta passed. The failed integrated base was **b912fd97827cca925a7123aa2012e9765077f3f7**, not current main. All three offending paths are absent from ac08 itself and were subsequently preserved byte-exact under current main's design-draft namespace by #7100. The [exact CI adjudication](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) therefore calls for no fabricated RIG receipt, guard exception or competing repair. The substantive continuation commit still needs its own actual native integrated checks and separate landing readback. Earlier #9515 and #9573 source landings remain accepted; #9573's 44 artifacts were independently verified, and its old checkout stays closed read-only.
 
-The new evidence staging retains **55 original published files byte-exact**. `SETTLEMENT_DEPENDENCY_STATIC_NOTES_2026-10-18.md` received a presentation-only normalization removing four space bytes to resolve two Markdown hard-break warnings; its complete original text and SHA256 are retained in JSON, making the 56th original exactly recoverable. The earlier 08:10 transfer observation remains true, but the current 56 published files are not all byte-identical to their originals. This is staging evidence, not a new source PR or landing claim.
+**W5's first natural issuance gate is now closed within operational scope.** The [root acceptance](../../research/grey_deer/w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md) binds one naturally scheduled writer invocation, 30 SPY records for October 16 issued on Sunday October 18, approved merge ancestry, exact producer/preregistration blobs, the six-file recipe fingerprint, the full retained job-log scan and all 50 reported check annotations. No relevant Grey Deer error warning is present. Every outcome is immature; this is one batch, not 30 independent warnings. The later nightly failure/cancellation remains failed/cancelled. Friday label-origin returns cannot represent a Sunday-issued executable action; source availability, first user display and execution clocks remain unknown. Let the original natural writer/grader advance; no backfill, manual nightly or early grading.
 
-Prepared after repeated context compaction. This is a truthful source-time checkpoint, not a premature declaration that the session, source gates or parent programme are complete. The current root is completing the source carrier; subsequent exact-head CI, merge and blob readback must be read from PR #9515 and the dated MAS-258 update.
+The [R1 scoring clarification](../../research/grey_deer/all_date_census/PRICE_ONLY_B0_B1_R1_ADJUDICATION_2026-10-20.md) is adopted **as proposed design**, making equal-exposure report weights and calibration arithmetic deterministic across all three baselines. The proposed 532 units remain 504 exposure constants, 14 pooled constants and 14 pooled ridge fits. **Estimation is NOT_ADMITTED; zero fits.** Yahoo model-purpose UNKNOWN/not-a-source, missing accepted estimator/runtime and FRED UNKNOWN/HOLD remain unresolved. The T13 matched h21 refusal, original 2,138 unscored records, null independent N, failed Grey Deer claims and unspent T13/T14/T19 budgets remain evidence.
 
-Actual model: GPT-6 Astra Pro acting as Sol. Organizational workstream owner remains coo-fable. Native delegates are stopped; the Fabric review is terminal and NOT_ACCEPTED. No autonomous executor or wake is claimed.
+The [current Copilot comparison](../../research/grey_deer/live_delivery_20261017/copilot_failure_trace/current_source_20261020/CURRENT_SOURCE_2026-10-20.md) confirms that the original exclusion-only portfolio classifier and caveat-only finalization counterexample still apply to the exact inspected source at active integrated producer **#8014 d63e59bcd4203732fe3b9097002f9451dcf61955**. Earlier #9447 is now at **aed92aaa474ebf3802b6f43ac55138dedfe4c8aa**; #9548 is at **bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc**. Their actual writers remain controlling. The source review is not a fresh failed user turn or a repaired product. Qualify useful answer content before metadata, preserve separately qualified public visuals and existing screening/Stop/persistence boundaries, then require served source and one useful authenticated original-question answer.
 
-Additional current-document independent review: INCOMPLETE / NOT_ACCEPTED. Its studio_direct reads returned no contents before interruption at approximately 586 seconds; no worker writes, processes or watcher. The parent reviewed the current report and complete contract and recorded the wording repairs in all_date_census/PARENT_REVIEW_2026-10-17.md. Prior scientific/source reviews remain bounded to their accepted evidence.
+**Next release phase:** after source landing, freeze the operation's exact merged archive, reconcile it with the reviewed source closure, qualify actual registered startup effects and rehearse replacement/restoration in an isolated matching runtime. The last VPS/cohort/book observations are **October 18** snapshots of installed `732cf7be…`; they are not current October 20 runtime proof. The optional later startup-read request returned no result and its temporary extract was observed absent; no production uncertainty or successful startup proof is inferred. The full release decision remains reserved under the actual programme constraints. No production deployment or service operation is performed by this continuation. Portfolio/Prophet retain numerical allocation and execution.
+
+The sections below preserve earlier source and experimental history. This current frontier supersedes their immediate next-action/status language where later evidence differs; no accepted capability or failed experiment is erased.
+
+The [conditional registered-startup review](../../research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/startup_oct20/STARTUP_EFFECT_REVIEW_2026-10-20.md) now verifies seven fixed-source files at 7b and the actual registered handler. Scheduler import and governance/event attempts precede the serve-only branch; non-serve-only startup can initialize its jobstore and quarantine pending targets before resume. First-run fuses do not govern that preflight or normal scheduled work. This is conditional source characterization, not an observed startup or a new regression. Reuse the completed dependency reviews to resolve the named preflight/auth/initialization callees, then bind effective runtime settings and the final merged archive before the isolated experiment.
 
 ## Subsequent completed reviews and owned source repair
 
