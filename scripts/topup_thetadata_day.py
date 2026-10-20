@@ -257,6 +257,20 @@ def _sweep_stale_tmp(store: Path) -> int:
     return count
 
 
+def _dated_greek_request_options(root: str) -> dict:
+    """Explicit prospective root opt-in; default acquisition remains unchanged.
+
+    This only selects the documented vendor EOD version. It neither upgrades
+    existing rows nor supplies missing terms, identity, rights or PIT clocks.
+    """
+    import os
+    selected = {r.strip().upper() for r in os.environ.get(
+        "THETADATA_DATED_GREEKS_V1_ROOTS", "").split(",") if r.strip()}
+    if selected - {"SPY", "QQQ"}:
+        raise ValueError("Dated Greek version opt-in supports only SPY/QQQ")
+    return {"version": "1"} if root.upper() in selected else {}
+
+
 # ── legacy / @universe bounded 3-tier one-day ensure (§G) ───────────────────
 def _run_bounded(store: Path, roots: list[str], day: _date) -> int:
     """3-tier one-day ensure for `roots` on `day` (legacy contract; §G).
@@ -281,7 +295,7 @@ def _run_bounded(store: Path, roots: list[str], day: _date) -> int:
             pulls = {
                 "eod":    td.bulk_eod(root, 0, day, day),
                 "oi":     td.bulk_open_interest(root, 0, day, day),
-                "greeks": td.bulk_greeks(root, 0, day, day, order=3),
+                "greeks": td.bulk_greeks(root, 0, day, day, order=3, **_dated_greek_request_options(root)),
             }
         except Exception as e:  # noqa: BLE001
             log.warning("topup: %s %s pull failed: %s", root, day, e)
@@ -473,7 +487,7 @@ def _ensure_daily_root(store: Path, root: str, S: _date, D: _date, td) -> RootRe
         cells["oi_D"] = _ensure_one_cell(
             store, "oi", root, D, lambda: _snapshot_oi_frame(td, root))
         cells["greeks_S"] = _ensure_one_cell(
-            store, "greeks", root, S, lambda: td.bulk_greeks(root, 0, S, S, order=3))
+            store, "greeks", root, S, lambda: td.bulk_greeks(root, 0, S, S, order=3, **_dated_greek_request_options(root)))
     except Exception as e:  # noqa: BLE001 — F11 catch-all
         return RootResult(root=root, state="failed", cells=cells,
                           failure_reason=type(e).__name__)
@@ -992,6 +1006,10 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = _build_parser()
     args = ap.parse_args(argv)
+    try:
+        _dated_greek_request_options("")  # fail before any acquisition on bad config
+    except ValueError as exc:
+        ap.error(str(exc))
 
     if args.daily and (args.roots is not None or args.date is not None):
         ap.error("--daily is mutually exclusive with --roots/--date")
