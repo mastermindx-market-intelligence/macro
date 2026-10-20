@@ -1,0 +1,217 @@
+.......................................FFFFF..........                   [100%]
+=================================== FAILURES ===================================
+_________ test_archived_desk_mcp_cannot_submit_or_clear_pending_state __________
+
+tmp_path = PosixPath('/private/tmp/rr-helper-companion-modules-20261018-pytest/test_archived_desk_mcp_cannot_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10d246eb0>
+
+    def test_archived_desk_mcp_cannot_submit_or_clear_pending_state(tmp_path, monkeypatch):
+>       from brain import etf_mcp, flagship_desk_mcp, heavyweight_mcp
+
+tests/test_portfolio_archival.py:187: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """The ETF desk's MCP surface — the FREE-FORM, ETF-only book the Opus Brain manages itself.
+    
+    Sibling of ``brain/autonomous_mcp.py``, but the universe is US-listed ETFs ONLY (index / sector /
+    factor / momentum / duration / cash — ``portfolio.etf_universe``), and the Brain gets a purpose-built
+    rotation board (``get_etf_board``) that pre-digests the macro dashboard's regime / sector-RS / risk
+    signals so it doesn't scan 199 engine modules cold. The Brain researches via the macro READ tools +
+    the board + the web, then calls ONE tool — ``submit_book`` — with its complete target portfolio,
+    each holding carrying a one-paragraph rationale.
+    
+    The tool RECORDS the decided book to the etf portfolio's ``_pending_decision.json``; the
+    deterministic builder (``bot/etf.py``) reads it after the session, RE-ENFORCES the ETF-only
+    allowlist + the risk guardrails, and rebalances the paper account. All trading logic stays in the
+    trusted Python layer, bound to the etf book only.
+    
+    Safety (mirrors the autonomous desk): only the typed ``mcp__bot__*`` / ``mcp__desk__*`` read tools +
+    web — NO raw Read/Grep/Glob, NO flagship ``get_portfolio``. The Brain reads its OWN book via
+    ``get_my_book`` and cannot reach another book's state. ``submit_book`` drops any non-ETF / off-list
+    ticker so a single name can never enter this book.
+    """
+    from __future__ import annotations
+    
+    import json
+    
+    import bot  # noqa: F401  -> vendor/macro onto sys.path
+>   from claude_agent_sdk import tool, create_sdk_mcp_server
+E   ModuleNotFoundError: No module named 'claude_agent_sdk'
+
+brain/etf_mcp.py:25: ModuleNotFoundError
+____________ test_archived_stdio_mcp_surface_fails_closed[flagship] ____________
+
+book = 'flagship'
+
+    @pytest.mark.parametrize("book", ["flagship", "flagship_judgment", "heavyweight", "etf"])
+    def test_archived_stdio_mcp_surface_fails_closed(book):
+>       from brain import codex_mcp_stdio
+
+tests/test_portfolio_archival.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Expose an existing Mastermind in-process MCP surface over stdio.
+    
+    Codex CLI speaks standard MCP over stdio, while the original Claude Agent SDK
+    embedded these servers directly in the bot process.  This adapter rebuilds the
+    same book-scoped surface in a child process; it does not add tools or authority.
+    """
+    from __future__ import annotations
+    
+    import argparse
+    import asyncio
+    import json
+    import os
+    import stat
+    from pathlib import Path
+    
+>   from claude_agent_sdk import create_sdk_mcp_server
+E   ModuleNotFoundError: No module named 'claude_agent_sdk'
+
+brain/codex_mcp_stdio.py:16: ModuleNotFoundError
+_______ test_archived_stdio_mcp_surface_fails_closed[flagship_judgment] ________
+
+book = 'flagship_judgment'
+
+    @pytest.mark.parametrize("book", ["flagship", "flagship_judgment", "heavyweight", "etf"])
+    def test_archived_stdio_mcp_surface_fails_closed(book):
+>       from brain import codex_mcp_stdio
+
+tests/test_portfolio_archival.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Expose an existing Mastermind in-process MCP surface over stdio.
+    
+    Codex CLI speaks standard MCP over stdio, while the original Claude Agent SDK
+    embedded these servers directly in the bot process.  This adapter rebuilds the
+    same book-scoped surface in a child process; it does not add tools or authority.
+    """
+    from __future__ import annotations
+    
+    import argparse
+    import asyncio
+    import json
+    import os
+    import stat
+    from pathlib import Path
+    
+>   from claude_agent_sdk import create_sdk_mcp_server
+E   ModuleNotFoundError: No module named 'claude_agent_sdk'
+
+brain/codex_mcp_stdio.py:16: ModuleNotFoundError
+__________ test_archived_stdio_mcp_surface_fails_closed[heavyweight] ___________
+
+book = 'heavyweight'
+
+    @pytest.mark.parametrize("book", ["flagship", "flagship_judgment", "heavyweight", "etf"])
+    def test_archived_stdio_mcp_surface_fails_closed(book):
+>       from brain import codex_mcp_stdio
+
+tests/test_portfolio_archival.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Expose an existing Mastermind in-process MCP surface over stdio.
+    
+    Codex CLI speaks standard MCP over stdio, while the original Claude Agent SDK
+    embedded these servers directly in the bot process.  This adapter rebuilds the
+    same book-scoped surface in a child process; it does not add tools or authority.
+    """
+    from __future__ import annotations
+    
+    import argparse
+    import asyncio
+    import json
+    import os
+    import stat
+    from pathlib import Path
+    
+>   from claude_agent_sdk import create_sdk_mcp_server
+E   ModuleNotFoundError: No module named 'claude_agent_sdk'
+
+brain/codex_mcp_stdio.py:16: ModuleNotFoundError
+______________ test_archived_stdio_mcp_surface_fails_closed[etf] _______________
+
+book = 'etf'
+
+    @pytest.mark.parametrize("book", ["flagship", "flagship_judgment", "heavyweight", "etf"])
+    def test_archived_stdio_mcp_surface_fails_closed(book):
+>       from brain import codex_mcp_stdio
+
+tests/test_portfolio_archival.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Expose an existing Mastermind in-process MCP surface over stdio.
+    
+    Codex CLI speaks standard MCP over stdio, while the original Claude Agent SDK
+    embedded these servers directly in the bot process.  This adapter rebuilds the
+    same book-scoped surface in a child process; it does not add tools or authority.
+    """
+    from __future__ import annotations
+    
+    import argparse
+    import asyncio
+    import json
+    import os
+    import stat
+    from pathlib import Path
+    
+>   from claude_agent_sdk import create_sdk_mcp_server
+E   ModuleNotFoundError: No module named 'claude_agent_sdk'
+
+brain/codex_mcp_stdio.py:16: ModuleNotFoundError
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_correlates_host_logs_and_apm
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_accepts_bounded_overrides
+PASSED tests/test_datadog_vps_install.py::test_render_only_rejects_unbounded_tag_values
+PASSED tests/test_datadog_vps_install.py::test_installer_never_enables_high_authority_datadog_features
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/run/datadog-apm-inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog-packages/datadog-apm-inject/stable/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_accepts_supported_datadog_preload_paths[/opt/datadog/apm/inject/launcher.preload.so]
+PASSED tests/test_datadog_vps_install.py::test_ssi_detection_rejects_unrelated_preload_library
+PASSED tests/test_datadog_vps_install.py::test_rendered_config_tags_exact_release_sha
+PASSED tests/test_datadog_vps_install.py::test_release_tag_refresher_is_optional_and_atomic
+PASSED tests/test_forward_evaluation.py::test_not_started_and_archived_are_strict_no_write
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[../autonomous]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[autonomous/../../escape]
+PASSED tests/test_forward_evaluation.py::test_book_paths_reject_request_controlled_segments[/tmp/escape]
+PASSED tests/test_forward_evaluation.py::test_start_is_create_once_and_corrupt_existing_marker_freezes
+PASSED tests/test_forward_evaluation.py::test_release_cli_override_targets_canonical_live_data_only
+PASSED tests/test_forward_evaluation.py::test_snapshot_filters_baseline_and_is_byte_idempotent
+PASSED tests/test_forward_evaluation.py::test_active_missing_artifacts_never_become_zero
+PASSED tests/test_forward_evaluation.py::test_pending_transaction_admits_only_post_baseline_rows_after_health
+PASSED tests/test_forward_evaluation.py::test_stopped_service_baseline_blocks_legacy_and_admits_target_same_day_rows
+PASSED tests/test_forward_evaluation.py::test_explicit_logical_id_prevents_mutable_legacy_row_resurrection
+PASSED tests/test_forward_evaluation.py::test_same_asof_correction_preserves_prior_revision_and_receipt
+PASSED tests/test_forward_evaluation.py::test_read_only_api_serves_status_without_evaluating_or_writing
+PASSED tests/test_forward_evaluation.py::test_partial_inputs_taint_every_dependent_metric
+PASSED tests/test_forward_evaluation.py::test_duplicate_nav_dates_are_one_partial_session
+PASSED tests/test_forward_evaluation.py::test_latest_is_monotonic_and_future_asof_is_no_write
+PASSED tests/test_forward_evaluation.py::test_stale_latest_weights_fall_back_to_current_account_marks
+PASSED tests/test_forward_evaluation.py::test_malformed_nested_ledgers_are_missing_not_false_zero
+PASSED tests/test_forward_evaluation.py::test_empty_latest_positions_cannot_claim_zero_concentration_with_exposure
+PASSED tests/test_forward_evaluation.py::test_effective_exits_lifecycle_and_failure_status_are_honest
+PASSED tests/test_forward_evaluation.py::test_daily_mark_book_failure_has_visible_step_event
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_autonomous_job-bot.autonomous-run_autonomous-autonomous]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_china_job-bot.china-run_china-china]
+PASSED tests/test_forward_evaluation.py::test_scheduled_post_mark_evaluation_runs_inside_book_lock[_hk_job-bot.hk-run_hk-hk]
+PASSED tests/test_portfolio_archival.py::test_registry_keeps_history_but_separates_storage_and_product_defaults
+PASSED tests/test_portfolio_archival.py::test_archived_dashboard_reads_are_frozen_local_and_write_nothing
+PASSED tests/test_portfolio_archival.py::test_archived_risk_without_snapshot_does_not_recompute_or_create_file
+PASSED tests/test_portfolio_archival.py::test_nightly_safety_batch_is_active_only
+PASSED tests/test_portfolio_archival.py::test_direct_legacy_runners_fail_closed_before_work
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.heavyweight-Heavyweight is archived]
+PASSED tests/test_portfolio_archival.py::test_archived_module_clis_report_status_and_exit_zero[bot.etf-ETF Brain is archived]
+PASSED tests/test_portfolio_archival.py::test_current_firm_exposure_ignores_archived_books
+PASSED tests/test_portfolio_archival.py::test_default_shadow_allocation_eligibility_is_active_only
+PASSED tests/test_portfolio_archival.py::test_us_operational_fanout_contains_only_successor
+PASSED tests/test_portfolio_archival.py::test_direct_archived_execution_and_settlement_are_read_only
+PASSED tests/test_portfolio_archival.py::test_direct_archived_derisk_cutters_are_read_only
+PASSED tests/test_portfolio_archival.py::test_archived_manual_run_routes_return_410
+PASSED tests/test_portfolio_archival.py::test_scheduler_registers_no_archived_book_jobs
+PASSED tests/test_portfolio_archival.py::test_stale_scheduler_wrappers_and_first_runs_fail_closed
+FAILED tests/test_portfolio_archival.py::test_archived_desk_mcp_cannot_submit_or_clear_pending_state
+FAILED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship]
+FAILED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[flagship_judgment]
+FAILED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[heavyweight]
+FAILED tests/test_portfolio_archival.py::test_archived_stdio_mcp_surface_fails_closed[etf]

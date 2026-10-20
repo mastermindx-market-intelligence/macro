@@ -4713,6 +4713,12 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
+    # template and imports the builder (lib/config, lib/pages, lib/site_assets,
+    # engine/i18n). As an ordinary job its inferred scope would widen the
+    # templates/index.html packing probe past its ceiling. scope: exclusive
+    # pins the measured static closure plus templates and ancestor inits.
+    "china-mechanics-display",
     # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
     # reader import (world_state -> theme_state_generation_reader ->
     # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
@@ -4925,6 +4931,11 @@ CURATED_EXCLUSIVE = {
     # packing probe (5,824 > 5,822); its own exclusive job keeps the static
     # import closure, the engine/pick_lab package imports and ancestor inits.
     "pick-lab-cn-render",
+    # 2026-10-20 W28F-L30: the China narrative radar display suites render the page
+    # template and its six includes with jinja2 alone. As an ordinary job their
+    # inferred scope would ride the shared template packing probes; scope:
+    # exclusive pins the template closure, both suites and the tests inits.
+    "narrative-radar-display",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing

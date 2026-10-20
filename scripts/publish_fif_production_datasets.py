@@ -122,6 +122,11 @@ from collectors.sec_filing_parser import (  # noqa: E402
     parse_sec_filing_document,
 )
 
+# FIF A20: both SEC-paced subcommands build their SecRequestPacer from this
+# single default — 0.5 s = the process-wide share of the <= 2 req/s public
+# EDGAR budget. Explicit --min-interval-seconds still overrides it.
+MIN_INTERVAL_SECONDS_DEFAULT = 0.5
+
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
 CONTRACT_ACQUIRE_SUMMARY_SCHEMA = "fundamental_forensics.fif_contract_acquire_summary/v1"
@@ -2471,7 +2476,9 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--archive-root", type=Path, required=True)
     capture.add_argument("--recorded-at", required=True, help="Explicit UTC capture clock")
     capture.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    capture.add_argument("--min-interval-seconds", type=float, default=0.12)
+    capture.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     capture.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # D12: the run budget's single source is the capture module's constant —
     # the publisher carries no second 256 MiB literal.
@@ -2515,7 +2522,9 @@ def build_parser() -> argparse.ArgumentParser:
     acquire.add_argument("--archive-root", type=Path, required=True)
     acquire.add_argument("--recorded-at", required=True, help="Explicit UTC acquisition clock")
     acquire.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    acquire.add_argument("--min-interval-seconds", type=float, default=0.12)
+    acquire.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     acquire.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # E1-c amendment (B): acquire-contract is its own process with its OWN
     # pre-fetch budget; the single source of the number is the capture
