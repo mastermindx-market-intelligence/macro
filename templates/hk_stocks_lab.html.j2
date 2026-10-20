@@ -2,7 +2,7 @@
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
 {%- macro co_name(x) -%}
-{% if x.name and x.name != x.ticker %} <span class="pick-nm">{{ t(x.name, x.name_zh) -}}
+{% if x.name and x.name != x.ticker %} <span class="pick-rank pick-nm">{{ t(x.name, x.name_zh) -}}
 </span>{% endif %}
 {%- endmacro %}
 {#
@@ -88,7 +88,6 @@
   .pick-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
   .pick-rank{font-size:11px;color:var(--muted);font-weight:600;min-width:22px}
   .pick-tk{font-size:16px;font-weight:800;letter-spacing:-.01em}
-  .pick-nm{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:normal}
   .pick-close{font-size:13px;font-variant-numeric:tabular-nums;color:var(--muted)}
   .pick-sector{font-size:11.5px;color:var(--muted);margin-top:2px}
   .pick-why{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 0}
