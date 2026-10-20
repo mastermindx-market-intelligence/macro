@@ -1,26 +1,26 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XPO-BULL-20261005",
-  "asof": "2026-10-16",
+  "asof": "2026-10-18",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 66.7,
-  "raw_confidence": 68.8,
-  "delta_vs_base": 6.7,
+  "management_confidence": 66.2,
+  "raw_confidence": 65.5,
+  "delta_vs_base": 6.2,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
     "progress": 16.6,
-    "pace": 99.2,
+    "pace": 89.7,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 38.9
   },
   "geometry": {
     "dist_to_stop_r": 1.23,
     "dist_to_t1_r": 1.27,
     "dist_to_t2_r": 2.77,
-    "horizon_pct_used": 17.8,
+    "horizon_pct_used": 22.2,
     "p1": 0.1531,
     "p2": 0.0766,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 8,
-  "tau": 0.1778
+  "days_elapsed": 10,
+  "tau": 0.2222
 }

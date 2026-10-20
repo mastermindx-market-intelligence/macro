@@ -96,6 +96,7 @@ from lib.dataos.identity import (  # noqa: E402
     BATS,
     XASE,
     ARCX,
+    TXSE,
     alias_binding_sha256,
     XNAS,
     XNYS,
@@ -327,6 +328,10 @@ VENDOR_THEME_GRAPH_NATIVE = "theme_graph_native"
 #: otherlisted.txt single-character exchange codes, per the legend the collector that
 #: fetches the file records at ``collectors/symbol_directory.py:184-185``:
 #: "A=NYSE MKT (AMEX), N=NYSE, P=NYSE Arca, Z=BATS, V=Investors Exchange".
+#: ``F`` = Texas Stock Exchange (MIC TXSE) is newer than that legend: the CTS Pillar
+#: participant id ``F`` is assigned to TXSE (txse.com alert TXSE-2026-002 / CTA
+#: "CTS Pillar Output Specification"), and the 2026-10-15 otherlisted.txt snapshot
+#: carries ``F`` on exactly the TXSE-listed names (ET, TXS, OILT, ILS, ...).
 #: Only venues with an evidence-backed MIC in ``lib/dataos/identity.KNOWN_MICS`` are mapped.
 #: Arca / IEX remain deliberately ABSENT rather than approximated: a name listed
 #: there is reported unresolved by name, because widening the closed MIC list is a
@@ -336,6 +341,7 @@ EXCHANGE_MIC = {
     "N": XNYS,
     "A": XASE,
     "Z": BATS,
+    "F": TXSE,
 }
 
 #: `exchange:` values used by the exit ledger (`config/delisted_symbols.yml`), which
@@ -501,6 +507,93 @@ RENAME_EVENTS: tuple[RenameEvent, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    RenameEvent(
+        old="DOMO",
+        new="HUCK",
+        on=date(2026, 9, 24),
+        # Same shape as PSKY->SKYD minus the venue move: Nasdaq->Nasdaq, so no
+        # supersession entry is needed (same as EQR->VMRK). `yahoo` + `membership`
+        # dated exactly as PSKY's are; `store`/`yahoo_fetch` stay at the committed
+        # DOMO rows until a #4622-protocol store-key migration moves them (out of
+        # scope here). Until then the committed build still reports US-XNAS-DOMO
+        # in resolved_not_rederivable and HUCK in listing_continuity: this event
+        # dates and attributes the rename, it does not by itself clear those rows.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 "
+            "(www.sec.gov/Archives/edgar/data/1505952/000110465926109635/"
+            "tm2625825d1_8k.htm): Nasdaq ticker DOMO -> HUCK effective 2026-09-24, "
+            "same registrant/CIK. Corroborated by the 2026-10-15 nasdaqlisted.txt "
+            "snapshot (HUCK listed, DOMO absent)."
+        ),
+    ),
+    RenameEvent(
+        old="YYGH",
+        new="YFOR",
+        on=date(2026, 9, 2),
+        # Nasdaq->Nasdaq symbol change with a name change (YY Group Holding Ltd. is
+        # the formerName under the same CIK). Vendors dated as DOMO->HUCK above.
+        vendors=(VENDOR_YAHOO, VENDOR_MEMBERSHIP),
+        evidence=(
+            "SEC EDGAR CIK 0001985337 Form 6-K accession 0001185185-26-003874 "
+            "(www.sec.gov/Archives/edgar/data/1985337/000118518526003874/"
+            "yfor6k090726.htm): Nasdaq ticker YYGH -> YFOR effective 2026-09-02, "
+            "same registrant/CIK (formerName YY Group Holding Ltd.). Corroborated by "
+            "the 2026-10-15 nasdaqlisted.txt snapshot (YFOR listed, YYGH absent)."
+        ),
+    ),
+)
+
+
+# ── The curated venue-transfer registry ───────────────────────────────────────
+@dataclass(frozen=True)
+class VenueTransfer:
+    """One SAME-SYMBOL primary-listing transfer between venues (no rename).
+
+    A transfer leaves the symbol directory carrying the security only under its NEW
+    venue, so the resolution re-derives ``US-{to_mic}-{symbol}`` while the committed
+    master row keeps its inception venue ``US-{from_mic}-{symbol}`` — structurally
+    the PSKY->SKYD cross-venue case without a :class:`RenameEvent`. Each entry is
+    paired with an EXACT-listing-key :data:`SECURITY_SUPERSESSIONS` entry (checked
+    by :func:`_venue_transfer_covered_keys`); together they ratify the join onto the
+    one canonical row, never a second mint. Authored data, same evidence law.
+    """
+
+    symbol: str
+    from_mic: str
+    to_mic: str
+    on: date
+    evidence: str
+
+
+VENUE_TRANSFERS: tuple[VenueTransfer, ...] = (
+    VenueTransfer(
+        symbol="KHC",
+        from_mic=XNAS,
+        to_mic=XNYS,
+        on=date(2026, 9, 14),
+        evidence=(
+            "SEC EDGAR CIK 0001637459: Form 8-K accession 0001637459-26-000057 "
+            "(listing-transfer notice, Nasdaq -> NYSE), Form 25 accession "
+            "0001637459-26-000062 (voluntary removal from Nasdaq) and Form 8-A12B "
+            "accession 0001637459-26-000061 (NYSE registration); KHC trades on NYSE "
+            "from 2026-09-14 under the unchanged symbol."
+        ),
+    ),
+    VenueTransfer(
+        symbol="ET",
+        from_mic=XNYS,
+        to_mic=TXSE,
+        on=date(2026, 10, 5),
+        evidence=(
+            "SEC EDGAR CIK 0001276187: Form 8-K accession 0001276187-26-000044 "
+            "(listing-transfer notice, NYSE -> Texas Stock Exchange), Form 25 "
+            "accession 0001276187-26-000058 (voluntary removal from NYSE) and Form "
+            "8-A12B accession 0001276187-26-000056 (TXSE registration); ET trades "
+            "on TXSE from 2026-10-05 under the unchanged symbol (txse.com press "
+            "release; otherlisted.txt exchange code F)."
+        ),
+    ),
 )
 
 
@@ -576,7 +669,44 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
             "and finance.yahoo.com/quote/SKYD (Yahoo serves the new symbol)."
         ),
     ),
+    SecuritySupersession(
+        listing_key="US-XNYS-KHC",
+        canonical_id="SEC:US-XNAS-KHC",
+        on=date(2026, 9, 14),
+        # The cross-venue half of the KHC VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[0].evidence,
+    ),
+    SecuritySupersession(
+        listing_key="US-TXSE-ET",
+        canonical_id="SEC:US-XNYS-ET",
+        on=date(2026, 10, 5),
+        # The cross-venue half of the ET VenueTransfer above (same evidence).
+        evidence=VENUE_TRANSFERS[1].evidence,
+    ),
 )
+
+
+def _venue_transfer_covered_keys() -> frozenset[str]:
+    """Symbols a :data:`VENUE_TRANSFERS` entry ratifies for a cross-venue join.
+
+    Fail-closed pairing check: every transfer must have EXACTLY the matching
+    :data:`SECURITY_SUPERSESSIONS` entry (``US-{to}-{sym}`` -> ``SEC:US-{from}-{sym}``)
+    — a transfer without its exact-key supersession, or with a mismatched canonical
+    id, is a curation defect raised here, never a silent join.
+    """
+    by_lk = {e.listing_key: e for e in SECURITY_SUPERSESSIONS}
+    covered: set[str] = set()
+    for t in VENUE_TRANSFERS:
+        lk = f"US-{t.to_mic}-{t.symbol}"
+        want = f"SEC:US-{t.from_mic}-{t.symbol}"
+        entry = by_lk.get(lk)
+        if entry is None or entry.canonical_id != want or t.from_mic == t.to_mic:
+            raise ValueError(
+                f"VENUE_TRANSFERS entry {t!r} lacks its exact SECURITY_SUPERSESSIONS "
+                f"pair {lk} -> {want}"
+            )
+        covered.add(t.symbol)
+    return frozenset(covered)
 
 #: Renames the repo records WITHOUT a citable date.  Fiserv renamed FISV->FI in 2023
 #: and the vendor LAGS it: Yahoo still serves the series under FISV
@@ -2095,8 +2225,7 @@ def mint_master_rows(
     if type(direct_registrant_inputs) not in (tuple, list) or len(direct_registrant_inputs) > 3:
         raise IdentityError("direct registrant intake exceeds the bounded probe set")
     for source in direct_registrant_inputs:
-        if not isinstance(source, dict) or set(source) != {
-                "symbol", "response_body", "capture", "listing_body", "listing_receipt_body"}:
+        if not _direct_registrant_source_shape(source):
             raise IdentityError("invalid direct registrant input shape")
         # Existing writer now is UTC with the offset omitted by _iso_now().
         clock = datetime.fromisoformat(now.replace("Z", "+00:00"))
@@ -2146,7 +2275,7 @@ def mint_master_rows(
     supersession_joins: dict[str, str] = {}
     _rename_covered_keys = {
         sym for event in RENAME_EVENTS for sym in (event.old, event.new)
-    }
+    } | _venue_transfer_covered_keys()  # same-symbol transfers: exact-pair checked
     for entry in SECURITY_SUPERSESSIONS:
         if entry.listing_key in by_listing_key:
             continue  # a committed row already owns this key: the stored join below
@@ -2158,6 +2287,9 @@ def mint_master_rows(
         # exists to feed is derived from the RenameEvent (date + evidence law), so a
         # key no event covers never joins — it keeps falling to the fence below
         # exactly as before this bridge existed (the H1/H7 race replays pin that).
+        # A VENUE_TRANSFERS symbol is covered too: a same-symbol transfer has no
+        # dated alias family to feed (the symbol never changes), and its exact
+        # supersession pairing is enforced by _venue_transfer_covered_keys.
         covered = any(
             res.listing_key is not None
             and res.listing_key.render() == entry.listing_key
@@ -3254,6 +3386,27 @@ def _reference_json(path: Path) -> tuple[dict, str]:
     return value, hashlib.sha256(raw).hexdigest()
 
 
+def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
+    """Fail closed before legacy builder rewrites any native identity history.
+
+    The ordinary security-master builder still emits legacy receipt structure;
+    it cannot append authenticated native publication/observation history.
+    Any existing native key, including a partial or malformed one, is a
+    potential generation boundary and MUST NOT be stripped by a successful
+    rebuild. The only lawful remedy is a separate source-owner writer that
+    retains and validates the complete native context. This is not that writer.
+    """
+    receipt_path = out_dir / RECEIPT_NAME
+    if not receipt_path.exists():
+        return
+    receipt, _ = _reference_json(receipt_path)
+    if "publication" in receipt or "identity_observations" in receipt:
+        raise IdentityError(
+            "native identity publication/history cannot be preserved by legacy "
+            "security-master builder; refusing regeneration before source writes"
+        )
+
+
 def _reference_ns(value: object, name: str) -> int:
     if type(value) is not int or value <= 0:
         raise IdentityError(f"invalid reference {name}")
@@ -3277,9 +3430,116 @@ def _reference_clock_iso(ns: int) -> str:
             + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
 
 
+_DIRECT_REGISTRANT_KEYS = frozenset({
+    "symbol", "response_body", "capture", "listing_body", "listing_receipt_body",
+})
+_FUND_REFERENCE_KEYS = frozenset({"fund_reference_body", "fund_reference_capture"})
+_FUND_REFERENCE_URL = "https://www.sec.gov/files/company_tickers_mf.json"
+
+
+def _direct_registrant_source_shape(source) -> bool:
+    return (isinstance(source, dict) and set(source) in
+            (_DIRECT_REGISTRANT_KEYS, _DIRECT_REGISTRANT_KEYS | _FUND_REFERENCE_KEYS))
+
+
+def _fund_reference_capture(capture: dict, *, on: date, latest: int) -> int:
+    """Validate one retained official HTTP observation, never invent its clock."""
+    keys = {"url", "final_url", "status", "bytes", "sha256",
+            "request_started_at", "read_completed_at"}
+    if (not isinstance(capture, dict) or set(capture) != keys
+            or capture["url"] != _FUND_REFERENCE_URL
+            or capture["final_url"] != _FUND_REFERENCE_URL
+            or type(capture["status"]) is not int or capture["status"] != 200
+            or type(capture["bytes"]) is not int
+            or not 0 < capture["bytes"] <= _REFERENCE_MAX_BYTES
+            or not isinstance(capture["sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", capture["sha256"]) is None):
+        raise IdentityError("invalid SEC fund-reference capture")
+    started = _reference_clock_ns(capture["request_started_at"])
+    completed = _reference_clock_ns(capture["read_completed_at"])
+    if (not 0 < started <= completed <= latest
+            or _reference_clock_iso(started)[:10] != on.isoformat()
+            or _reference_clock_iso(completed)[:10] != on.isoformat()):
+        raise IdentityError("SEC fund-reference observation clocks disagree")
+    return completed
+
+
+def _validate_fund_reference(link: dict, *, symbol: str, cik: str,
+                             on: date, latest: int) -> int:
+    """Check retained selection/provenance consistency, not HTTP authenticity."""
+    keys = {"schema", "symbol", "cik", "series_id", "class_id",
+            "selection_sha256", "capture"}
+    if (symbol not in {"QQQ", "SMH"} or not isinstance(link, dict)
+            or set(link) != keys or link["schema"] != "mastermind.sec_fund_reference.v1"
+            or link["symbol"] != symbol or link["cik"] != cik
+            or not isinstance(link["series_id"], str)
+            or re.fullmatch(r"S[0-9]{9}", link["series_id"]) is None
+            or not isinstance(link["class_id"], str)
+            or re.fullmatch(r"C[0-9]{9}", link["class_id"]) is None):
+        raise IdentityError("invalid retained SEC fund-reference selection")
+    selected = {k: link[k] for k in ("symbol", "cik", "series_id", "class_id")}
+    if link["selection_sha256"] != _reference_digest(selected):
+        raise IdentityError("SEC fund-reference selection changed")
+    return _fund_reference_capture(link["capture"], on=on, latest=latest)
+
+
+def _prepare_fund_reference(body: bytes, capture: dict, *, symbol: str,
+                            cik: str, on: date, decision: int) -> tuple[dict, int]:
+    """Bind an explicitly captured search-association row to SEC and listing evidence.
+
+    SEC does not guarantee this search file's accuracy/scope. This is one
+    corroborating input to the existing independence fence, not a canonical
+    security, issuer group, vendor alias, or historical identity observation.
+    """
+    if type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES:
+        raise IdentityError("SEC fund-reference byte bound")
+    completed = _fund_reference_capture(capture, on=on, latest=decision)
+    if capture["bytes"] != len(body) or capture["sha256"] != hashlib.sha256(body).hexdigest():
+        raise IdentityError("SEC fund-reference capture does not bind exact bytes")
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate SEC fund-reference JSON key")
+            result[key] = value
+        return result
+
+    try:
+        value = json.loads(body.decode("utf-8"), object_pairs_hook=pairs,
+            parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
+            parse_float=lambda v: (_ for _ in ()).throw(ValueError(v)))
+        if (not isinstance(value, dict) or set(value) != {"fields", "data"}
+                or value["fields"] != ["cik", "seriesId", "classId", "symbol"]
+                or not isinstance(value["data"], list) or not 0 < len(value["data"]) <= 100000):
+            raise ValueError("unsupported SEC fund-reference table")
+        matches = []
+        for row in value["data"]:
+            if (not isinstance(row, list) or len(row) != 4
+                    or type(row[0]) is not int or not 0 < row[0] < 10**10
+                    or not isinstance(row[1], str) or re.fullmatch(r"S[0-9]{9}", row[1]) is None
+                    or not isinstance(row[2], str) or re.fullmatch(r"C[0-9]{9}", row[2]) is None
+                    or not isinstance(row[3], str) or len(row[3]) > 32):
+                raise ValueError("invalid SEC fund-reference row")
+            # SEC can retain an unassigned class with an empty ticker. It is
+            # not a match; conflicting or duplicate requested-symbol rows refuse.
+            if row[3] == symbol:
+                matches.append(row)
+        if len(matches) != 1 or f"{matches[0][0]:010d}" != cik:
+            raise ValueError("fund symbol/registrant missing, ambiguous or conflicting")
+    except (ValueError, TypeError, RecursionError, UnicodeError) as exc:
+        raise IdentityError("invalid SEC fund-reference evidence") from exc
+    selected = dict(symbol=symbol, cik=cik, series_id=matches[0][1], class_id=matches[0][2])
+    link = {"schema": "mastermind.sec_fund_reference.v1", **selected,
+            "selection_sha256": _reference_digest(selected), "capture": dict(capture)}
+    _validate_fund_reference(link, symbol=symbol, cik=cik, on=on, latest=decision)
+    return link, completed
+
+
 def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dict,
                              listing_body: bytes, listing_receipt_body: bytes,
-                             decision_at: str) -> dict:
+                             decision_at: str, fund_reference_body: bytes | None = None,
+                             fund_reference_capture: dict | None = None) -> dict:
     """Prepare a *new* dated ETF observation for the existing mint fence.
 
     The SEC supplies registrant identity, not a precise venue or issuer grouping.
@@ -3340,10 +3600,16 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
     title = sec.get("name")
     if (not isinstance(cik, str) or not re.fullmatch(r"[0-9]{10}", cik) or int(cik) == 0
             or not isinstance(title, str) or not title.strip() or len(title) > 512
-            or not isinstance(tickers, list) or not tickers
+            or not isinstance(tickers, list)
             or any(not isinstance(t, str) or not t for t in tickers)
-            or len(tickers) != len(set(tickers)) or symbol not in tickers):
+            or len(tickers) != len(set(tickers))):
         raise IdentityError("SEC response does not identify the requested registrant")
+    supplied_fund = fund_reference_body is not None or fund_reference_capture is not None
+    if symbol not in tickers:
+        if tickers or symbol not in {"QQQ", "SMH"} or not supplied_fund:
+            raise IdentityError("SEC response does not identify the requested registrant")
+    elif supplied_fund:
+        raise IdentityError("fund-reference extension is only for empty QQQ/SMH ticker arrays")
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     digest = hashlib.sha256(response_body).hexdigest()
     if (capture.get("url") != url or capture.get("final_url") != url
@@ -3380,10 +3646,15 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
             or resolutions[0].listing_key.mic != venue):
         raise IdentityError("canonical resolver did not establish the listing")
     resolution = resolutions[0]
+    fund, fund_completed = None, 0
+    if supplied_fund:
+        fund, fund_completed = _prepare_fund_reference(
+            fund_reference_body, fund_reference_capture, symbol=symbol,
+            cik=cik, on=on, decision=decision)
     return {"resolution": resolution, "registrant": {
         "symbol": symbol, "cik": cik, "title": title,
         "listing_key": resolution.listing_key.render(), "observed_on": on.isoformat(),
-        "known_at": _reference_clock_iso(max(completed, listing_completed)),
+        "known_at": _reference_clock_iso(max(completed, listing_completed, fund_completed)),
         "response_sha256": digest,
         "listing_snapshot_sha256": receipt["artifact"]["sha256"],
         "listing_receipt_sha256": hashlib.sha256(listing_receipt_body).hexdigest(),
@@ -3391,6 +3662,7 @@ def prepare_direct_registrant(*, symbol: str, response_body: bytes, capture: dic
             "url", "final_url", "status", "bytes", "sha256",
             "request_started_at", "read_completed_at")},
         "scope": "pending_transition_independence_only",
+        **({"fund_reference": fund} if fund is not None else {}),
     }}
 
 
@@ -3602,18 +3874,23 @@ def read_direct_registrant_inputs(path: Path) -> list[dict]:
         manifest = json.loads(body, object_pairs_hook=pairs,
                               parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
         if (not isinstance(manifest, dict) or set(manifest) != {"schema", "sources"}
-                or manifest["schema"] != "mastermind.direct_registrant_input.v1"
+                or manifest["schema"] not in {"mastermind.direct_registrant_input.v1",
+                                               "mastermind.direct_registrant_input.v2"}
                 or not isinstance(manifest["sources"], list) or not 1 <= len(manifest["sources"]) <= 3):
             raise ValueError("invalid direct registrant manifest")
         inputs = []
         for record in manifest["sources"]:
-            if not isinstance(record, dict) or set(record) != {
-                    "symbol", "capture", "response_body", "listing_body", "listing_receipt_body"}:
+            if (not _direct_registrant_source_shape(record)
+                    or (manifest["schema"] == "mastermind.direct_registrant_input.v1"
+                        and set(record) != _DIRECT_REGISTRANT_KEYS)):
                 raise ValueError("invalid direct registrant source")
             source = dict(record)
-            for key, limit in (("response_body", _REFERENCE_MAX_BYTES),
-                               ("listing_body", 8 * 1024 * 1024),
-                               ("listing_receipt_body", 512 * 1024)):
+            files = [("response_body", _REFERENCE_MAX_BYTES),
+                     ("listing_body", 8 * 1024 * 1024),
+                     ("listing_receipt_body", 512 * 1024)]
+            if "fund_reference_body" in source:
+                files.append(("fund_reference_body", _REFERENCE_MAX_BYTES))
+            for key, limit in files:
                 name = source[key]
                 if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
                     raise ValueError("source must be a sibling filename")
@@ -3691,6 +3968,9 @@ def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict
                              and all(isinstance(cause, dict) and cause.get("symbol") == key
                                      and isinstance(cause.get("reason"), str) and cause["reason"]
                                      for cause in causes))
+                if "fund_reference" in row:
+                    _validate_fund_reference(row["fund_reference"], symbol=key,
+                                             cik=row["cik"], on=on, latest=known)
                 if not valid:
                     raise IdentityError("invalid retained direct registrant fields")
             except (KeyError, TypeError, ValueError, OverflowError) as exc:
@@ -3698,8 +3978,7 @@ def _direct_registrant_state(out_dir: Path, inputs: tuple[dict, ...] | list[dict
             state["observations"][key] = dict(row)
     prepared_resolutions = []
     for source in inputs:
-        if not isinstance(source, dict) or set(source) != {
-                "symbol", "response_body", "capture", "listing_body", "listing_receipt_body"}:
+        if not _direct_registrant_source_shape(source):
             raise IdentityError("invalid direct registrant input shape")
         if not isinstance(source["symbol"], str):
             raise IdentityError("invalid direct registrant symbol")
@@ -4042,6 +4321,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     admission that no CIK evidence exists yet — the correct state on a genuinely bare
     checkout before the first weekly map lands.
     """
+    # Protect native publication/history BEFORE any input reads or writes.
+    # An older builder cannot safely produce a new generation after native
+    # history appears, even when its ordinary data sources have advanced.
+    _assert_no_unpreserved_native_generation(out_dir)
     if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
         raise IdentityError("option-root intake cannot combine with security admission")
     now = _iso_now()
@@ -4788,6 +5071,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
                 raise IdentityError("bounded reference intake would change issuer or migration rows")
 
     if not dry_run:
+        # Recheck immediately before the first write: a native source owner may
+        # have published history while this legacy builder computed its rows.
+        # This is a narrow additional refusal, NOT an atomic writer lock.
+        _assert_no_unpreserved_native_generation(out_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_parquet(master_rows, MASTER_COLUMNS, master_path, MASTER_DTYPES)
         _write_parquet(alias_rows, ALIAS_COLUMNS, aliases_path, ALIAS_DTYPES)
@@ -4902,8 +5189,31 @@ def _identity_rail_unreadable(directory: Path) -> bool:
     return False
 
 
+def _legacy_rollback_cannot_replace_native(out_dir: Path) -> bool:
+    """Refuse a stale rollback if current receipt became native or unreadable.
+
+    A newer native publisher may have committed its receipt while this older
+    nightly builder was still processing. Restoring an older legacy receipt
+    would erase genuine owner history. This is fail-closed observed-state
+    protection, NOT a shared interprocess lock or atomic transaction.
+    """
+    try:
+        _assert_no_unpreserved_native_generation(out_dir)
+    except IdentityError as exc:
+        print(
+            "::error title=security-master-native-history-race::"
+            f"{exc} — refusing stale legacy rollback; preserving current "
+            "reference files for canonical source-owner reconciliation",
+            flush=True,
+        )
+        return True
+    return False
+
+
 def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
-                       before_receipt: bytes | None) -> None:
+                       before_receipt: bytes | None) -> bool:
+    if _legacy_rollback_cannot_replace_native(out_dir):
+        return False
     for name, content in before.items():
         path = out_dir / name
         if content is None:
@@ -4917,6 +5227,7 @@ def _restore_artifacts(out_dir: Path, before: dict[str, bytes | None],
             receipt_path.unlink()
     else:
         receipt_path.write_bytes(before_receipt)
+    return True
 
 
 def run_nightly_refresh(out_dir: Path) -> int:
@@ -5007,7 +5318,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # restore-and-continue shape as the generic handler, but its own named
         # ::warning so the nightly log says WHAT needs curating rather than a bare
         # "read/parse failure".
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly-prune-conflict::{exc} — "
             "curation required (a new RENAME_EVENTS/SECURITY_SUPERSESSIONS entry, "
@@ -5092,7 +5404,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         # writes master -> aliases -> issuer_master -> issuer_migrations -> receipt in
         # sequence, and any of those can raise) — restore ALL artifacts to last-good
         # rather than leaving a torn mix of new-and-old bytes.
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::build failed reading identity "
             f"inputs ({exc}) — keeping last-good artifacts, generated_at not "
@@ -5101,7 +5414,8 @@ def run_nightly_refresh(out_dir: Path) -> int:
         return 0
 
     if receipt.get("notes"):
-        _restore_artifacts(out_dir, before, before_receipt)
+        if not _restore_artifacts(out_dir, before, before_receipt):
+            return 0
         print(
             f"::warning title=security-master-nightly::{'; '.join(receipt['notes'])} — "
             "unmodelled rename or listing-key collision; keeping last-good artifacts, "
@@ -5112,6 +5426,10 @@ def run_nightly_refresh(out_dir: Path) -> int:
     after = {name: _read_bytes_if_exists(out_dir / name) for name in _NIGHTLY_ARTIFACT_NAMES}
     if after == before:
         if before_receipt is not None:
+            # Even a byte-stable legacy build must not reset a newer native
+            # receipt that appeared while its unchanged inputs were checked.
+            if _legacy_rollback_cannot_replace_native(out_dir):
+                return 0
             (out_dir / RECEIPT_NAME).write_bytes(before_receipt)
         _clear_prune_conflict_streak(out_dir)
         print(

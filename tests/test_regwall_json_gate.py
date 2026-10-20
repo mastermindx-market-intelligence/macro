@@ -235,3 +235,24 @@ def test_international_workspace_assets_are_public_without_promoting_data():
         paths = _path_tokens(_extract_block(text, matcher))
         assert assets <= paths, matcher
         assert not any(fnmatchcase(path, pattern) for path in protected for pattern in paths)
+
+
+def test_holding_research_code_assets_public_without_private_response_exemption():
+    """The anonymous shell loads code; exact-row data stays on the paid API."""
+    assets = {"/institutional_holding_research.js", "/institutional_holding_research.css"}
+    policy = _public_policy_tokens()
+    assert assets <= policy
+    text = _read_caddyfile()
+    for name in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        paths = _path_tokens(_extract_block(text, name))
+        assert assets <= paths, name
+    private_paths = {
+        "/api/forensics/v1/institutional/reported-holding",
+        "/institutional_holding_research.json",
+        "/institutional_13f/holdings.parquet",
+    }
+    for path in private_paths:
+        assert not any(fnmatchcase(path, public) for public in policy), path
+        for name in ("@public_static", "@public_versioned"):
+            assert not any(fnmatchcase(path, public) for public in
+                           _path_tokens(_extract_block(text, name))), (name, path)

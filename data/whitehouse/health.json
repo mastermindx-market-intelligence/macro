@@ -1,15 +1,15 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-10-16T21:06:52.979910+00:00",
-  "posts_seen": 13,
-  "seen_total": 296,
+  "as_of": "2026-10-20T06:01:05.116184+00:00",
+  "posts_seen": 8,
+  "seen_total": 302,
   "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-10-16-trump-vance-administration-leads-nationwide-coalition-in-fighting-war-on-fraud",
-      "importance": 15,
+      "id": "wh-2026-10-20-presidential-message-on-national-forest-products-week-5753",
+      "importance": 30,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
     }

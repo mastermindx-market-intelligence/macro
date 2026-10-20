@@ -1,0 +1,58 @@
+{
+  "basis": "RAW / close_raw",
+  "calendar_basis": "exact frozen normalized bytes, including date column; no substitute calendar or filling",
+  "canonical_reader_source_sha256": "d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0",
+  "expected_normalized_sha256": "c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb",
+  "expected_rows": 1321,
+  "expected_window": [
+    "2021-07-06",
+    "2026-10-07"
+  ],
+  "identity_source_sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714",
+  "mode": "one retained internal R2 object; admission only",
+  "normalized": {
+    "duplicate_dates": 0,
+    "first_date": "2021-07-06",
+    "last_date": "2026-10-07",
+    "missing_cells": {
+      "close": 0,
+      "date": 0,
+      "high": 0,
+      "low": 0,
+      "open": 0,
+      "transactions": 0,
+      "volume": 0
+    },
+    "nonfinite_or_nonpositive_closes": 0,
+    "normalization": "actual frozen stage1 pure AST functions; unchanged cutoff and float.hex encoding",
+    "ratio_discontinuities": 0,
+    "rows": 1321,
+    "sha256": "c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb"
+  },
+  "object": {
+    "bytes": 63694,
+    "etag": "49b9e7d381dab709f03c361780b251da",
+    "last_modified": "2026-10-16T14:43:23+00:00",
+    "sha256": "e312775c53783206872fb16b5b83163d6302a7718e13198eb136e0db998d34a4",
+    "version_id": null,
+    "whole_object_rows": 1327
+  },
+  "observed_at_utc": "2026-10-17T13:46:51.259495+00:00",
+  "orchestrator_script_sha256": "4432e1033297eb58f65f37e5199ba0e87e114f8572e56db8e6fff496e54ec862",
+  "publication_admitted": false,
+  "schema": "grey_deer.spy_input_identity.v1",
+  "side_effects": {
+    "feature_outcome_join": false,
+    "fit": false,
+    "namespace_hydration": false,
+    "production_file_write": false,
+    "provider_fetch": false,
+    "sample_generation": false,
+    "trial_write": false
+  },
+  "source_key": "massive_stock_day/SPY.parquet",
+  "source_ref": "646cc093b4982eabc736862926fe7f1fc458b8a1",
+  "status": "INPUT_IDENTITY_ADMITTED",
+  "t12_sample_digest": null,
+  "t13_fit_admitted": false
+}
