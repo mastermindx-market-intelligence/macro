@@ -1,0 +1,23 @@
+{
+  "schema": "mastermind.intl_paper_edge_correction.v1",
+  "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+  "page_id": "p-G-0",
+  "boards": [
+    "DMX-0",
+    "DW7-0",
+    "E4D-0",
+    "EC2-0"
+  ],
+  "operation_key": "intl-country-no-edge-20261020-01",
+  "finish_operation_key": "intl-country-no-edge-20261020-finish",
+  "edit_effect": "APPLIED_RESPONSE_OBSERVED",
+  "finish_effect": "APPLIED_RESPONSE_OBSERVED",
+  "change": "Remove the four selected-country colored bottom edges and strengthen their text to weight 600; retain selected material fill.",
+  "updated_nodes": 8,
+  "visually_inspected_selection_rails": 4,
+  "native_receipts": "paper_edge_correction_native.json.gz",
+  "native_receipts_sha256": "96e98cdc0584ae80436743c003f263dc6535779953b1c94edf0ac2c7094940bd",
+  "uncompressed_sha256": "11f826d608456d9d3488ed861a76f5200d96d0955b2d016c63c42c4efa69f847",
+  "source_css_sha256": "9457e4ae764137013c5d1148a7a289cd4e69560f1bc03cfe47c45442b0b7828e",
+  "scope_limit": "Selection styling readback and bounded visual inspection; independent complete-candidate review remains pending."
+}

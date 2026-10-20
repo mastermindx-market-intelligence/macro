@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-10-17",
-  "n_events_logged": 1659,
+  "n_events_logged": 1666,
   "n_events_graded": 954,
   "classes": [
     {
@@ -21,7 +21,7 @@
     {
       "event_type": "bankruptcy_restructuring",
       "direction": "bearish",
-      "n": 18,
+      "n": 19,
       "n_graded": 13,
       "hit_5d": 0.23076923076923078,
       "hit_21d": 0.6666666666666666,
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 293,
+      "n": 296,
       "n_graded": 232,
       "hit_5d": 0.5258620689655172,
       "hit_21d": 0.48148148148148145,
@@ -203,7 +203,7 @@
     {
       "event_type": "policy_trade_control",
       "direction": "mixed",
-      "n": 99,
+      "n": 102,
       "n_graded": 41,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1960,
+    "n_sampled": 1978,
     "n_graded": 0,
     "classes": []
   }

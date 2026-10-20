@@ -13,7 +13,7 @@
 .imc-edition time{color:var(--text);font-size:var(--fs-sm)}
 .imc-nav{display:flex;gap:28px;align-items:center;border-block:1px solid var(--line);margin-bottom:28px;min-height:54px}
 .imc-nav a{display:flex;align-items:center;min-height:52px;text-decoration:none;color:var(--muted);font-weight:600;font-size:var(--fs-sm);white-space:nowrap}
-.imc-nav a:first-child{color:var(--text);border-bottom:2px solid var(--link)}
+.imc-nav a:first-child{color:var(--text);font-weight:700}
 .imc-nav a:hover{color:var(--text)}
 .imc-nav .imc-tools-link{margin-left:auto;gap:10px}
 .imc .panel{margin:0;box-shadow:var(--card-shadow);border:1px solid var(--line);background:var(--panel)}
@@ -189,7 +189,7 @@ html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface
 .imc-world>a>span{font-size:var(--fs-micro);color:var(--muted)}
 .imc .imc-country-heading{align-items:center;margin-bottom:16px}.imc-country-heading h2{font-size:var(--fs-h2);margin:0}
 .imc-countries{margin-top:26px}.imc-nav{margin-bottom:0}
-.imc-country-rail a[aria-current="true"]{background:var(--panel);box-shadow:inset 0 -2px var(--link)}
+.imc-country-rail a[aria-current="true"]{background:var(--panel);font-weight:600}
 .imc .imc-vital-change{color:var(--text);font-size:var(--fs-micro)}
 .imc-assessment-heading>p{font-size:var(--fs-body);font-weight:400;line-height:1.75;max-width:860px}
 .imc-country[open]>summary{background:linear-gradient(110deg,var(--panel2),var(--panel));min-height:98px}
@@ -225,7 +225,7 @@ html[data-theme="light"] .imc-outlook-panel{background:var(--imc-context-surface
 .imc .imc-country-heading{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .imc details.imc-country{padding:0}.imc details.imc-evidence{padding:0}
 .imc-country-rail{margin-bottom:16px}.imc-country-rail a{min-height:46px}
-.imc-country-rail a[aria-current="location"]{background:var(--panel);box-shadow:inset 0 -2px var(--link)}
+.imc-country-rail a[aria-current="location"]{background:var(--panel);font-weight:600}
 @media(max-width:520px){.imc-world{padding-block:14px;gap:6px}.imc-countries{margin-top:14px}.imc-masthead{padding-bottom:12px}}
 /* Both years are visible before a country is expanded. */
 .imc-country>summary{grid-template-columns:220px minmax(150px,1fr) 168px 136px 18px}
@@ -266,7 +266,7 @@ body.imc-page #mmb-boot,body.imc-page #mmb-launch{
 .imc-inflation-arrow{text-align:center}
 .imc-revision-strip{display:flex;gap:8px 18px;flex-wrap:wrap;font-size:var(--fs-label);padding:0 0 12px;color:var(--muted)}
 .imc-revision-strip:empty{display:none}.imc-revision-strip b{font-weight:600;color:var(--text)}
-.imc-horizon-note{font-size:var(--fs-label);border-left:2px solid var(--link);padding-left:10px;margin:0 0 12px!important;color:var(--muted)}
+.imc-horizon-note{font-size:var(--fs-label);margin:0 0 12px!important;color:var(--muted)}
 .imc-balances{padding-top:22px}.imc-balances .imc-subhead{padding-bottom:5px}
 .imc-balance-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
 .imc-balance-row h4{font-size:var(--fs-sm);font-weight:600}.imc-balance-row p{font-size:var(--fs-label);line-height:1.6;color:var(--muted);margin-top:4px}
