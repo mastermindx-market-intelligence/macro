@@ -28,6 +28,11 @@ RAW_UNITS = {
     "charm": "delta_per_elapsed_calendar_year",
 }
 
+# The incumbent SSE consumer caps the complete event at 8 MiB. Reserve space
+# for the legacy payload; withhold an oversized joint projection as a whole,
+# never rank a silently truncated population.
+MAX_CELL_BYTES = 2 * 1024 * 1024
+
 
 def _number(value):
     if isinstance(value, bool):
@@ -90,6 +95,27 @@ def _sum(values):
         return total if math.isfinite(total) else None
     except OverflowError:
         return None
+
+
+def exposure_input_digest(greeks_df, oi_df, asof, root):
+    """Stable identity of the exact fields this projection consumes, before exclusions.
+
+    The owner records this when admitting the snapshot. Comparing it later does
+    not grant rights or manufacture terms; it prevents applying a receipt to
+    changed source rows. Nonfinite/missing numbers normalize to JSON null.
+    """
+    def records(frame, greek):
+        out = []
+        for r in ([] if frame is None else frame.to_dict("records")):
+            if (greek or "date" in r) and _session_date(r.get("date")) != asof:
+                continue
+            row = {"root": str(r.get("root", root)), "expiration": str(r.get("expiration")),
+                   "strike": _number(r.get("strike")), "right": str(r.get("right", "")).upper()}
+            for field in (("underlying_price", "implied_vol", "gamma", "vanna", "charm") if greek else ("open_interest",)):
+                row[field] = _number(r.get(field))
+            out.append(row)
+        return sorted(out, key=lambda row: json.dumps(row, sort_keys=True))
+    return _digest([root, asof, records(greeks_df, True), records(oi_df, False)])
 
 
 def _summary(rows, metric, expected_known, *, both_sides=False):
@@ -168,9 +194,12 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
                        _time(clocks.get("greeks_available_at")),
                        _time(clocks.get("oi_available_at"))]
     source_reason = None
+    input_digest = exposure_input_digest(greeks_df, oi_df, asof, root)
     if (not context.get("source_snapshot_ref") or not context.get("security_id")
             or clocks.get("source_session") != asof or clocks.get("oi_report_date") != asof):
         source_reason = "source_identity_unknown"
+    elif context.get("input_sha256") != input_digest:
+        source_reason = "source_inputs_do_not_match_receipt"
     elif cutoff is None or any(t is None for t in required_clocks):
         source_reason = "source_availability_unknown"
     elif any(t > cutoff for t in required_clocks):
@@ -249,6 +278,7 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
                     value, why = None, "nonfinite_exposure"
             values[metric], reasons[metric], methods[metric] = value, why, method
         rows.append({"expiration": key[0], "strike": key[1], "right": key[2],
+            "economic_expiry_at": term.get("economic_expiry_at"),
             "series_id": term.get("series_id"), "terms_ref": term.get("terms_ref"),
             "identity": [root, *key, term.get("series_id"), term.get("terms_ref"),
                          context.get("source_snapshot_ref"), clocks.get("correction_ref")],
@@ -259,12 +289,15 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
     for row in rows:
         groups[(row["expiration"], row["strike"])].append(row)
     for (expiry, strike), members in sorted(groups.items()):
+        expiries = {r["economic_expiry_at"] for r in members}
+        economic_expiry = next(iter(expiries)) if len(expiries) == 1 else None
         models = {(context.get("greek_provenance") or {}).get(m, {}).get("model_ref")
                   for m in METRIC_UNITS}
         same_model = len(models) == 1 and None not in models
         joint = [r for r in members if all(v is not None for v in r["values"].values())
                  and (same_model or all(v == 0 for v in r["values"].values()))]
         cells.append({"expiry": expiry, "strike": strike,
+            "economic_expiry_at": economic_expiry if _time(economic_expiry) is not None else None,
             "population_id": _digest([context.get("source_snapshot_ref"), clocks,
                                         [r["identity"] for r in members]]),
             **{m: _summary(members, m, expected_known, both_sides=True) for m in METRIC_UNITS},
@@ -276,9 +309,16 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
                 "model_ref": next(iter(models)) if same_model else None,
                 "complete": bool(members) and len(joint) == len(members)
                     and (expected_known or {r["right"] for r in members} == {"C", "P"})}})
+    cells_status = "complete"
+    cell_count = len(cells)
+    if not context:
+        cells, cells_status = [], "source_unqualified"
+    elif len(json.dumps(cells, separators=(",", ":"), allow_nan=False).encode()) > MAX_CELL_BYTES:
+        cells, cells_status = [], "payload_limit"
     return {
         "schema": "options_hub.exposure_projection/v1", "kind": "modeled_exposure",
         "root": root, "source_snapshot_ref": context.get("source_snapshot_ref"),
+        "input_sha256": input_digest,
         "security_id": context.get("security_id"),
         "position_basis": "assumed_long_call_short_put", "scale": "dollars",
         "rights_decision_ref": context.get("rights_decision_ref"),
@@ -299,5 +339,5 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
             "invalid_rows": {"greeks": invalid_greek, "oi": invalid_oi,
                              "expected": invalid_expected, "terms": invalid_terms}},
         "metrics": {m: _summary(rows, m, expected_known, both_sides=True) for m in METRIC_UNITS},
-        "cells": cells,
+        "cell_count": cell_count, "cells_status": cells_status, "cells": cells,
     }

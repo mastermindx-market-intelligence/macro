@@ -29,6 +29,10 @@ The context is a JSON-compatible existing-owner receipt with these fields:
 
 - `source_snapshot_ref`: immutable source reference for the actual rows, and
   `security_id`: exact underlying binding. A row key alone does not prove it.
+- `input_sha256`: the admitted owner's `exposure_input_digest(greeks, oi, asof,
+  root)` over the exact consumed fields, before exclusions. The producer compares
+  this with the actual loaded rows; a changed OI/Greek input refuses all values.
+  Generating this hash alone does not qualify the inputs or their rights.
 - `clocks`: `source_session`, `oi_report_date`, `option_observed_at`,
   `underlying_observed_at`, `greeks_available_at`, `oi_available_at`,
   `available_at` (source selection cutoff). Instants must include a timezone.
@@ -77,6 +81,9 @@ Every cell exposes `gamma`, `vanna`, `charm` summaries. Each metric has
 `qualified`, `missing` (known member keys lacking qualification), `exclusions`,
 `call`, `put`, `net`, `gross`, `known_net`, `known_gross`,
 `qualified_population_id`, `status`, and its exact output unit.
+`economic_expiry_at` is retained only when all member terms agree on the instant.
+Next-live and current-exchange-week selections require this clock; a date label
+alone cannot establish whether a contract is still economically alive.
 
 `net`/`gross` require all member keys and both sides to be known. An absent side
 is unknown for an observed-only population; supplied expected membership can
@@ -103,6 +110,13 @@ Population scope is `observed_population` or `supplied_expected_population`.
 Even complete supplied membership is **not** full-market coverage:
 `full_universe_expected` stays null and `full_universe_complete` stays false.
 Counts and digests are independent of viewport/legacy marginal windowing.
+`cell_count` reports the entire candidate grid. `cells_status=complete` means
+all candidate cells are serialized (not that their Greeks qualify). With no
+owner context, the grid is withheld as `source_unqualified`, retaining population
+counts and aggregate exclusion reasons. A grid exceeding 2 MiB of compact JSON
+is withheld in full as `payload_limit`, leaving room within the incumbent feed's
+8 MiB event limit. Neither state is an empty book or a truncated ranking; a
+consumer must not substitute legacy rows for an unavailable projection.
 Correction/source identity changes alter the membership digest. A historical
 source keeps its historical session and expiry, regardless of viewing time.
 
@@ -116,6 +130,14 @@ until its incumbent source owner supplies those existing receipts through
 publication, rights admission, final-hour qualification, or product acceptance.
 The projection must not be populated from Matrix net marginals, unsigned Matrix
 Vanna, a generic 100-share assumption, or held research branches.
+
+The existing nightly CLI now accepts an explicit `--exposure-context /path/receipt.json`.
+Its envelope is `{"schema":"options_hub.exposure_contexts/v1","roots":{"SPY":{...}}}`;
+each entry includes `root` and the owner fields above. There is no default receipt
+location, automatic enrollment or new store. Malformed envelopes stop before data
+reads/publication. A receipt from a different root/session/input stays unqualified.
+Use the existing `--roots SPY --date YYYY-MM-DD --no-publish --out <existing-safe-path>`
+dry run first; this flag does not authorize publication, overwrite or source access.
 
 Focused verification: `tests/test_options_exposure_projection.py`, plus existing
 Options Hub/contract-v2/nightly-builder tests. Synthetic owner receipts exercise

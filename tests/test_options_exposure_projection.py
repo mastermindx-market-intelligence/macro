@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from engine.options_exposure_projection import build_exposure_projection, RAW_UNITS
+from engine.options_exposure_projection import build_exposure_projection, exposure_input_digest, RAW_UNITS
 
 ASOF = "2026-10-15"
 EXP = "2026-10-23"
@@ -31,12 +31,16 @@ def book():
         greek_provenance={m: dict(source_ref="owner:immutable-snapshot-1", model_ref="owner:provider-model-1",
             unit=RAW_UNITS[m], method="provider_observed", tenor_policy="economic_expiry_no_floor")
             for m in RAW_UNITS})
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
     return g, oi, ctx
 
 
 def project(g=None, oi=None, ctx=None):
     if g is None:
         g, oi, ctx = book()
+    if ctx:
+        # Synthetic test owner admits each deliberately mutated test book.
+        ctx = {**ctx, "input_sha256": exposure_input_digest(g, oi, ASOF, "SPY")}
     return build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
 
 
@@ -219,6 +223,7 @@ def test_hub_publishes_projection_even_when_legacy_drops_all_oi(monkeypatch):
     monkeypatch.setattr(options_hub, "_flip_and_profile", lambda *args: (None, None))
     g, oi, ctx = book()
     oi["open_interest"] = 0
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
     p = options_hub.compute_gex(g, oi, ASOF, "SPY", exposure_context=ctx)
     assert p["by_strike"] == []
     assert p["exposure_projection"]["cells"][0]["gamma"]["net"] == 0
@@ -282,3 +287,46 @@ def test_malformed_expiry_and_ambiguous_series_binding_cannot_qualify():
     assert gamma["exclusions"] == {"ambiguous_series_binding": 2}
     g.loc[1, "expiration"] = EXP + "garbage"
     assert project(g, oi, ctx)["population"]["invalid_rows"]["greeks"] == 1
+
+
+def test_unqualified_default_is_compact_without_losing_population_or_reason():
+    g, oi, _ = book()
+    p = project(g, oi, {})
+    assert p["cells"] == [] and p["cells_status"] == "source_unqualified"
+    assert p["cell_count"] == 1 and p["population"]["observed_contracts"] == 2
+    assert p["metrics"]["gamma"]["exclusions"] == {"source_identity_unknown": 2}
+    assert len(json.dumps(p).encode()) < 5000
+
+
+def test_oversized_grid_is_withheld_in_full_never_top_n(monkeypatch):
+    from engine import options_exposure_projection as projection
+    monkeypatch.setattr(projection, "MAX_CELL_BYTES", 1)
+    p = project()
+    assert p["cells"] == [] and p["cells_status"] == "payload_limit"
+    assert p["cell_count"] == 1
+    assert p["metrics"]["gamma"]["gross"] == 20000
+
+
+def test_receipt_cannot_be_applied_to_changed_consumed_inputs():
+    g, oi, ctx = book()
+    assert exposure_input_digest(g.iloc[::-1], oi.iloc[::-1], ASOF, "SPY") == ctx["input_sha256"]
+    oi.loc[0, "open_interest"] += 1
+    p = build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
+    assert p["metrics"]["gamma"]["net"] is None
+    assert p["metrics"]["gamma"]["exclusions"] == {"source_inputs_do_not_match_receipt": 2}
+
+
+def test_explicit_builder_receipt_input_never_discovers_or_rebinds(tmp_path):
+    from scripts.build_options_hub_nightly import load_exposure_contexts
+    _, _, ctx = book()
+    ctx["root"] = "SPY"
+    path = tmp_path / "receipt.json"
+    path.write_text(json.dumps({"schema": "options_hub.exposure_contexts/v1", "roots": {"SPY": ctx}}))
+    assert load_exposure_contexts(None) == {}
+    assert load_exposure_contexts(str(path)) == {"SPY": ctx}
+    ctx["root"] = "QQQ"
+    path.write_text(json.dumps({"schema": "options_hub.exposure_contexts/v1", "roots": {"SPY": ctx}}))
+    with pytest.raises(ValueError, match="root mismatch"):
+        load_exposure_contexts(str(path))
+    with pytest.raises(FileNotFoundError):
+        load_exposure_contexts(str(tmp_path / "absent.json"))

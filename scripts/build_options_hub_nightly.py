@@ -1090,6 +1090,25 @@ def resolve_options_hub_read_inputs(data_root: Path, repo_root: Path) -> dict[st
     }
 
 
+def load_exposure_contexts(path: str | None) -> dict[str, dict]:
+    """Read explicitly supplied owner receipts; no discovery, enrollment or default store."""
+    if path is None:
+        return {}
+    with Path(path).open("rb") as source:
+        raw = source.read(32 * 1024 * 1024 + 1)
+    if len(raw) > 32 * 1024 * 1024:
+        raise ValueError("Exposure receipt exceeds 32 MiB")
+    data = json.loads(raw)
+    if not isinstance(data, dict) or data.get("schema") != "options_hub.exposure_contexts/v1" or not isinstance(data.get("roots"), dict):
+        raise ValueError("Invalid exposure receipt envelope")
+    for root, context in data["roots"].items():
+        if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,11}", root) or not isinstance(context, dict) or context.get("root") != root:
+            raise ValueError("Exposure receipt root mismatch")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(context.get("input_sha256", ""))):
+            raise ValueError("Exposure receipt needs exact input digest")
+    return data["roots"]
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -1108,7 +1127,10 @@ def main() -> None:
     ap.add_argument("--no-publish", dest="publish", action="store_false")
     ap.add_argument("--theta-store", default=None, metavar="PATH",
                     help="Override thetadata store root")
+    ap.add_argument("--exposure-context", default=None, metavar="JSON",
+                    help="Explicit admitted owner receipts, bound to exact source inputs (no default)")
     args = ap.parse_args()
+    exposure_contexts = load_exposure_contexts(args.exposure_context)
 
     # A relative, missing, or non-directory input root stops here, before the
     # watchdog, data_dir, mkdir, the store, or R2. Unset and empty do not.
@@ -1248,7 +1270,8 @@ def main() -> None:
         heartbeat(f"root {root} ({_root_idx + 1}/{len(roots)})")
         _root_start = time.monotonic()
         try:
-            vol_payload, gex_payload, vex_payload = build_root(root, asof, theta_store, polygon_gex_dir)
+            context_kwargs = {"exposure_context": exposure_contexts[root]} if root in exposure_contexts else {}
+            vol_payload, gex_payload, vex_payload = build_root(root, asof, theta_store, polygon_gex_dir, **context_kwargs)
 
             # ── R3 OI suite (oi_time / max_pain / oi_change) — computed HERE so
             # the wall-budget check below envelopes its cost (a slow chain skips
