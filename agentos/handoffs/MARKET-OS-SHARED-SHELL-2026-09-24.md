@@ -5,10 +5,9 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: Confirmed original branch push2ae6498 integrates df3 and its proof. A later affirmative GitHub dirty
-  conflict against main7a6 required this same original writer. The ordinary merge is now locally committed asd6db0a99
-  after five resolved conflicts and719 passing focused tests plus31 subtests. Hosted admission remains separate;
-  MOG unarmed.
+state_before: 'Original branch push bd89047e is confirmed. Its hosted CI exposed two concrete failures: a missing
+  canonical About footer receipt and a press replay comparison mismatch. Both now have actual local repairs and
+  passing scoped checks; MOG remains unarmed.'
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -110,6 +109,15 @@ changed:
 - path: Same Shared Shell evidence pack and existing handoff/workstream
   what: Preserve all1137 prior file originals and prose history. Add concrete merge/source/labor/test/lineage receipts
     and preceding2ae commit/push evidence.
+- path: scripts/run_press.py; tests/test_press_run.py
+  what: Supply a missing shared capability block in the press comparison only, using the existing owner in memory;
+    preserve already-marked text and the blog-only write boundary. Add nine regression cases.
+- path: mockups/evidence/shared-shell-css-20261019/about-footer
+  what: Adopt exact canonical eight-state About capture and four distinct PNGs with a three-key owning receipt.
+    Preserve LIGHT_ONLY, static billing 404, anonymous-only and public/auth gaps.
+- path: Existing Shared Shell proof pack, handoff and workstream
+  what: Append actual hosted failure, scratch replay, regression, canonical capture/adoption, review and previous
+    publication receipts while preserving all 1,219 prior indexed entries and prose history.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -367,6 +375,18 @@ verified:
   result: 67 P0B producer inputs,56 loaded bindings,20 accepted outputs and52 About presentation inputs retain exact
     raw/stage identities. Original128cases/16screens/12history and8 About cells/18 ordered Tabs remain scoped retained
     proof. The original53-file About manifest remains historical; no fresh browser/public/Terminal qualification.
+- claim: The press failure is repaired within its owner boundary.
+  command: macro-bd890-press-replay-red.json; macro-bd890-press-ownership-repair.json and raw logs.
+  result: 'Nine actual page differences isolate the common shell block. New regression: 2 failed/7 passed before,
+    then 9 passed; complete press suite: 151 passed. Common owners and CI declaration unchanged.'
+- claim: Actual canonical About evidence satisfies the existing visual guard locally.
+  command: macro-bd890-about-canonical.json; macro-bd890-about-adoption.json.
+  result: Eight actual REST captures, four unique PNGs, 53 inputs unchanged; exact-byte adoption and full staged
+    PR diff guard exit 0. LIGHT_ONLY and local billing 404 retained; no public/auth/Terminal claim.
+- claim: Named new imports already have CI path coverage.
+  command: Existing ticker-news-qbus declaration and bounded adviser review.
+  result: lib/pages.py, lib/shared_shell.py and lib/site_assets.py are explicit paths. No selector, manifest or
+    packing-bound modification.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -381,19 +401,19 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Exact new-head hosted CI, incumbent MOG admission, protected source landing, covering existing render and stable
-  macro-update served proof remain.
-- Beta recovery remains separately sampled18:53 evidence. Original strict service proof remains false; accepted-A
-  normal-start recovery passed. No further installer or service operation is indicated.
-- Authenticated DNSPod/Tencent domain-owner access is required for actual beta DNS repair and consequent canonical
-  TLS/auth/public browser acceptance; it does not block independent Macro delivery.
-- Public acceptance and applicable rollback boundaries remain open. previous_runtime=null cannot establish A-to-B-to-A.
-  Preserve Sector six views/basket behavior, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN.
+- Exact new-head hosted admission, incumbent MOG landing, covering existing render and stable macro-update served-byte
+  proof remain.
+- 'Terminal #859/R93 and separately verified same-A recovery remain complete. The earlier strict stop proof remains
+  false; no repeated installer or service operation is indicated.'
+- Canonical beta DNS/TLS/auth/public browser and applicable acceptance remain open. Authenticated DNSPod domain-owner
+  access is required for actual beta DNS repair, not independent Macro delivery.
+- Preserve Sector six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. previous_runtime=null
+  does not establish A-to-B-to-A rollback.
 next_actions:
-- Commit this qualified same-pack documentation extension and normal-push the original branch; attend exact-head
-  hosted CI and fix actual failures through existing owners.
-- Use incumbent MOG after its concluded predicates/recorded-hold checks, then bind landed source to covering render
-  input, actual pushed output and stable served bytes.
+- Commit and normal-push the two qualified CI repairs with this same-pack proof extension; attend exact-head hosted
+  checks and fix actual failures through existing owners.
+- Use incumbent MOG after its concluded predicates and hold checks, then bind landed source to covering render input,
+  pushed output and stable served bytes.
 - Complete canonical beta DNS/TLS/auth/public browser and applicable remaining acceptance when authenticated domain-owner
   access is available.
 do_not_redo:
@@ -429,6 +449,8 @@ do_not_redo:
 - Terminal859/R93 installer recovery and separately verified accepted-A availability recovery remain COMPLETE. Do
   not repeat bootstrap, cleanup, app qualification or stop/start. Original strict service proof stays false. No
   duplicate PR, renderer, source carrier or watcher.
+- 'Terminal #859/R93 recovery and separate same-A availability recovery remain complete. Do not repeat bootstrap,
+  cleanup, qualification or stop/start. Preserve the failed strict stop proof. No duplicate delivery owners.'
 danger_areas:
 - Production identity and disk capacity changed externally between observations; historical PID or free-space values
   cannot serve as a fresh isolation baseline.
@@ -1517,3 +1539,32 @@ Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The original
 Next: normal-push this documentation extension on the same branch; attend actual-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Existing MOG can retain proof across recognized generated-only movement; an affirmative content conflict still belongs to this original writer.
 
 DNSPod/Tencent authentication remains incomplete. Domain-owner access is required for actual beta DNS repair and ensuing canonical TLS/auth/public-browser acceptance, not independent Macro delivery. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
+
+
+## Attended continuation — 2026-10-20: two hosted CI failures repaired
+
+The previous original-branch publication is confirmed at **bd89047e4e403a93183c6a4763274e09acfdd044**. Its hosted CI run **39486571065** concluded with ten of twelve packs passing. Pack 3 failed the existing visual-evidence guard because the About footer change in `templates/landing.css` had no owning canonical receipt. Pack 9 failed the committed-estate press replay test. The actual hosted checkout was merge **08fcd6ffa61d9503d3e779a326545af7c0b08644**, parents actual base **9f7f61e2f82e967abb38d98a05b15c797811484e** and the branch head; the PR API's base field alone did not describe that tested merge. Complete raw plan and failing job logs are retained.
+
+### Narrow press comparison repair
+
+An actual scratch replay through the existing free-content owner isolated all nine affected blog pages: each difference was the common Shared Shell capability block, present in fresh renderer output and missing from the committed predecessor. The owned projection equated every pair without altering tracked output.
+
+The press-only comparator now supplies the canonical capability block in memory only when both marker strings are absent. It uses the real depth prefix and explicit digests. Text containing either marker remains untouched before the established comparison, so substantive content inside an existing block cannot be erased. Non-HTML comparison remains bytewise. The common injector, global estate comparator, page writer, optimizer, CI manifest, and blog-only write scope remain unchanged.
+
+The new nine-case regression first produced **2 failed, 7 passed** on the old comparison, then **9 passed** with the repair. The complete press suite produced **151 passed**, including committed-estate replay. The focused nine are part of that total, not additional tests. Actual local Python was 3.14.7; retained pytest cleanup warnings did not fail the suite. The repair receipt binds `scripts/run_press.py` SHA-256 **c435e0d33b7672a9f5b792ace3d05c2bc3eaa8a5d6dc134cd6879be1f1c03968** and `tests/test_press_run.py` SHA-256 **5fdf6e0bedb6add7bf31309b79ead1c1504004fd46a18f58d55dd4e5cab7ddee**. Existing `ticker-news-qbus` path declarations explicitly cover `lib/pages.py` and `lib/shared_shell.py`; no selector or packing change was made.
+
+### Canonical About evidence and actual guard
+
+The existing `scripts/capture_page_evidence.py` owner completed eight anonymous About REST captures at 23:26 UTC: desktop/mobile × EN/ZH × requested light/dark. All 53 fixture inputs and the capture owner remained byte-identical before and after capture, and again at adoption. The exact six output files were copied under `mockups/evidence/shared-shell-css-20261019/about-footer/`; a standard three-key receipt owns `templates/landing.css`. The old Shared Shell receipt remains unchanged.
+
+The eight captures have four distinct PNGs: each light/dark pair is byte-identical. **LIGHT_ONLY** remains the observed palette. The recorded local static-fixture billing HTTP 404 and console error are preserved. Authenticated and loading/empty/stale/error states remain gaps. Aggregate geometry summaries are not relabeled as eight independent geometry checks. Principal inspection covered all four distinct PNGs; earlier four-width and 18-Tab diagnostics remain separately scoped.
+
+The actual existing visual guard exited **0** against the complete staged PR diff from integrated base **7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1**. The adoption receipt binds unchanged source inputs, unchanged old receipt, guard hash, full diff hash and staged tree **35dd131db4019ff0330f98eae0a6f2b1d98dbd56**. This is local guard acceptance; new-head hosted admission is still required.
+
+### Preserved history and remaining gates
+
+The same proof pack preserves all 1,219 prior indexed entries except the append-only README extension, with the original file identities retained and checked. It adds actual hosted failures, replay and regression evidence, canonical capture/adoption, bounded adviser findings, the previous exact checkpoint, and preceding commit/push receipts. The current final importer and ensuing commit/push receipts remain externally bound by the original PR checkpoint to avoid self-inclusion.
+
+Terminal #859 and R93 installer recovery remain COMPLETE / DO_NOT_REDO. The earlier strict beta stop proof remains false; its separately verified same-A normal-start recovery remains true. No new installer, service, production or DNS mutation occurred in this repair. The 19:52 DNS read still observed the beta EdgeOne CNAME, and the read-only publication preflight was preparatory, not delivery evidence.
+
+Next: normal-push this repair and proof on the original branch, attend the exact new-head hosted checks and incumbent MOG, then bind protected landing to a covering existing render and stable served bytes. Canonical beta DNS/TLS/auth/public-browser acceptance remains separate and needs authenticated DNSPod domain-owner access when that operation is reached. Preserve Sector's six views and basket behavior, Paper REVISE, and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.

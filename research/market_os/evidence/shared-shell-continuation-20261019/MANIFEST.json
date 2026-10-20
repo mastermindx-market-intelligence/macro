@@ -13,8 +13,8 @@
     {
       "file": "README.md",
       "source": "Attended synthesis; exact observations and limitations are distinguished",
-      "bytes": 79095,
-      "sha256": "0061af26b269346ce0ebf42f4988a880687aeac4b6b48c394415ceede26bd6a6",
+      "bytes": 84280,
+      "sha256": "13f24c046a275ccd122e7eb275554fc8202591b790e2c3c7cc2dec2604e0005e",
       "encoding": "identity"
     },
     {
@@ -3226,6 +3226,22 @@
       "original_sha256": "65a40e15aa180f417e81669c042fa3d5d61753ce671388573d861316583679ad"
     },
     {
+      "file": "macro-2ae-7a6-proof-commit-message.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-commit-message.txt",
+      "bytes": 260,
+      "sha256": "8e0aef764835ddcda163622ff604dbfee192a48a37bd899c3ddae2a931b38ec2",
+      "encoding": "gzip",
+      "original_bytes": 360,
+      "original_sha256": "370d93be8caa916d57e0efa04ec270953597001f2f8d7456afc726b8899bf51c"
+    },
+    {
+      "file": "macro-2ae-7a6-proof-commit-push.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-commit-push.json",
+      "bytes": 1543,
+      "sha256": "c881cf00bbe6a84e0f81583725cc4e333c4cc12f6884276859a832ae53fc5a1f",
+      "encoding": "utf-8"
+    },
+    {
       "file": "macro-2ae-7a6-proof-commit-push.py.gz",
       "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-commit-push.py",
       "bytes": 1763,
@@ -3235,10 +3251,26 @@
       "original_sha256": "ff2eb284a3d00f3bf6d1d82e9559576232b9b8fc7c2ee808ea99b13096649f97"
     },
     {
+      "file": "macro-2ae-7a6-proof-commit.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-commit.log",
+      "bytes": 983,
+      "sha256": "bfef05883d3625fb318628d5c40ae27d3afb3ea88f007b4489e69dba7451fe94",
+      "encoding": "gzip",
+      "original_bytes": 10945,
+      "original_sha256": "eedecf61bd740cbbbe57d990885a73a1f743ef716b0b51e55ddc58a2402ef281"
+    },
+    {
       "file": "macro-2ae-7a6-proof-config.json",
       "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-config.json",
       "bytes": 12567,
       "sha256": "b77ef0f64b7ec2e1e6f97bd109d744d0c0e400a80da827ca4e28ae5629533223",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-2ae-7a6-proof-import.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-import.json",
+      "bytes": 5906,
+      "sha256": "adb9b6c7632767df5d74e98bb82389c24bdc173770b1593f488af101575585e5",
       "encoding": "utf-8"
     },
     {
@@ -3267,6 +3299,15 @@
       "encoding": "gzip",
       "original_bytes": 0,
       "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-2ae-7a6-proof-push.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-2ae-7a6-proof-push.log",
+      "bytes": 146,
+      "sha256": "ca081a6bd0b118175437d759226f15630de76699f16f0e64b48bc42617aee132",
+      "encoding": "gzip",
+      "original_bytes": 146,
+      "original_sha256": "1b4c07032af672deaa4f14f5ae7153dcf614e998ad25f4f64c2c2682e19bbf67"
     },
     {
       "file": "macro-2ae-7a6-proof-template-sync.log.gz",
@@ -5530,6 +5571,617 @@
       "bytes": 1226,
       "sha256": "0ceac93b2088cb6e15f1e8101eafced343c5aba20c639b84b745efa638addd7f",
       "encoding": "identity"
+    },
+    {
+      "file": "macro-bd890-about-adoption.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-adoption.json",
+      "bytes": 3892,
+      "sha256": "9fa46de2a459e6c8cb93b17b019e0aafcfb2d86c5e2951b844333c1646ae289c",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-about-adoption.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-adoption.py",
+      "bytes": 3027,
+      "sha256": "a418e5951e50ba72b12225c63a0e9a71772dbf3d4e08308a206c872f55f2c75c",
+      "encoding": "gzip",
+      "original_bytes": 6798,
+      "original_sha256": "6684b9e108cdd3e8c89dc3c8f0bceeec059f6c01577f7c6cf4c11269a25ae1b9"
+    },
+    {
+      "file": "macro-bd890-about-canonical--manifest.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical/manifest.json",
+      "bytes": 9829,
+      "sha256": "9f4cb1874bb2246792a7017631d711f39ee7cf4b4d8207e40fb636a67c82ec0c",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-about-canonical--ux_smell_report.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical/ux_smell_report.json",
+      "bytes": 3821,
+      "sha256": "bf8bef2c86bf090c4414eb4ed8b94d5ee84da030b18c8c98245caeb669413dc1",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-about-canonical-capture.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical-capture.log",
+      "bytes": 153,
+      "sha256": "d729c00ccadd93ea01f10e956ee9ee12ce1d725420ce22ff1d8946dca141466c",
+      "encoding": "gzip",
+      "original_bytes": 244,
+      "original_sha256": "7396f3033d7da482e771d781c422c0afc688c80ac9c3c6485c8357dec49b430a"
+    },
+    {
+      "file": "macro-bd890-about-canonical.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical.json",
+      "bytes": 3385,
+      "sha256": "e3b0eb5dc8511d8874cdc4513641c90ef841be5f4afdbe44106032ef3e7eb526",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-about-canonical.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-canonical.py",
+      "bytes": 1627,
+      "sha256": "ec305e67fe6fc8618459587287b94609374c163bdb5a16c4a4f3f3b13fa4dbc7",
+      "encoding": "gzip",
+      "original_bytes": 3554,
+      "original_sha256": "8dbb8faf1d942f8a18c766d67daff6c5d5fe240c0b814035a468f49ab75bb2b3"
+    },
+    {
+      "file": "macro-bd890-about-fixture-manifest.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-fixture-manifest.json",
+      "bytes": 11903,
+      "sha256": "ed60b0b1d82bcba54efb0715fdc0175d242c0530a7f0fedbce3217198029bbe7",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-about-fixture-manifest.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-about-fixture-manifest.log",
+      "bytes": 220,
+      "sha256": "611ce814012ee7a6557fc66b75d1af9b7fe987bb6d94b6fdf1c1ce4bc1d3293d",
+      "encoding": "gzip",
+      "original_bytes": 279,
+      "original_sha256": "2060717e15157e4bc9796c49df9a36eb0d9f564abd1594433c9d34805866ea54"
+    },
+    {
+      "file": "macro-bd890-checkpoint-1949.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-checkpoint-1949.md",
+      "bytes": 27778,
+      "sha256": "0a8ef6d3bdab966666614e7d8db4f25c22b0052202bf4906c11b67d5bd4cce96",
+      "encoding": "gzip",
+      "original_bytes": 62282,
+      "original_sha256": "23d8afba0a12c968ce71deccbb4e57d99a93da60ee7171d091d645e78cb00064"
+    },
+    {
+      "file": "macro-bd890-ci-plan-118849237624.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-plan-118849237624.log",
+      "bytes": 59858,
+      "sha256": "9d99c4fc02c9e9ebadab8bf2cc39c9718fce18da075c5c941b08e716b00bc591",
+      "encoding": "gzip",
+      "original_bytes": 366416,
+      "original_sha256": "4c220fb145776150035216f3c676631c16235c4770581a0848385c6368200d46"
+    },
+    {
+      "file": "macro-bd890-ci-plan-provenance.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-plan-provenance.json",
+      "bytes": 1353,
+      "sha256": "a31a1873b8bc0d4701c4550482ab054b7ceabf4df4699ccc66a5d411dac8197e",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-ci-repair-adviser-returns.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-adviser-returns.md",
+      "bytes": 1248,
+      "sha256": "d7e719bbc793498395130b72d450d974dccb0152bb7c0d9326672cbedb3051a8",
+      "encoding": "gzip",
+      "original_bytes": 2235,
+      "original_sha256": "2ea09daa6c89350f911bc55c7d8fa4cc7cd2842835f570c6a846914ea687504c"
+    },
+    {
+      "file": "macro-bd890-ci-repair-dependency-coverage.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-dependency-coverage.json",
+      "bytes": 467,
+      "sha256": "3e867bc923a768f7202f5d1f51d5799bade5f92571a45271d24029ba59e843f5",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-agentos.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-agentos.log",
+      "bytes": 3699,
+      "sha256": "42cc7f2ea8db8d5f81a5a550e65cc8a6fad9c33114b79d8777cfd1fdd65ac0e2",
+      "encoding": "gzip",
+      "original_bytes": 30368,
+      "original_sha256": "65a40e15aa180f417e81669c042fa3d5d61753ce671388573d861316583679ad"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-changed-paths.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-changed-paths.txt",
+      "bytes": 12245,
+      "sha256": "0aa5e2cee45784464187f45c6e753224c399ba5cbe890f56c9f64ab10ab25710",
+      "encoding": "gzip",
+      "original_bytes": 156676,
+      "original_sha256": "ca0030089e316299f0a958ebc210302363e8bc6ffb7a42ce0d20426873148f76"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-config.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-config.json",
+      "bytes": 10312,
+      "sha256": "8d37488360348ec89b88dc451047d91fae49bd7002d9df282bafd32bf93b7a7a",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-import.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-import.py",
+      "bytes": 4348,
+      "sha256": "881377141318751d74e9bb9d63bf621caddcbf235c5e616cf9553b03273d0df2",
+      "encoding": "gzip",
+      "original_bytes": 11209,
+      "original_sha256": "d1413cb1837da315822bf996bf57a899f338ca81c544286accacc66b316c412d"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-owned-whitespace.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-owned-whitespace.log",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-p0b-closure.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-p0b-closure.log",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-template-sync.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-template-sync.log",
+      "bytes": 64,
+      "sha256": "d36a16e4e3c318bae8c94b06dc46cd652c13e2e0a876dfc62e56395d7aa35331",
+      "encoding": "gzip",
+      "original_bytes": 44,
+      "original_sha256": "7be02fbfb822b2aa4932edd1ce4182f7ea3bca92e180bcfa398d26f97aeb02b3"
+    },
+    {
+      "file": "macro-bd890-ci-repair-proof-validation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ci-repair-proof-validation.json",
+      "bytes": 12340,
+      "sha256": "5849668d8d28af1f71511500fd86eb60b6fc857caa6293647194b50145b413a4",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-dns-readiness.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-dns-readiness.json",
+      "bytes": 7706,
+      "sha256": "eccf85c76d9afdd8b875ce6b3b18f3517424b164a198462343bf89327af2f67f",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-dns-readiness.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-dns-readiness.py",
+      "bytes": 798,
+      "sha256": "cc02c089e5d8722ff2291d127c0f1d7583d6aa86165bc82b2f17d9711427e34c",
+      "encoding": "gzip",
+      "original_bytes": 1539,
+      "original_sha256": "4b054b4ec32f23e79d6ecd9a5fa3dbe03a8680de31c363032bbdaeafc6738290"
+    },
+    {
+      "file": "macro-bd890-failed-job-118849890527.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-failed-job-118849890527.log",
+      "bytes": 36379,
+      "sha256": "d22b65e325918819dfc67281a1694a593218903825dcbb1f7c7f5bd9cbd251c5",
+      "encoding": "gzip",
+      "original_bytes": 201772,
+      "original_sha256": "00f36fc4122ffa57fd0ac8eb4f96f261ac5cddade3e836e99a0b63d23ed3f973"
+    },
+    {
+      "file": "macro-bd890-failed-job-118849890815.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-failed-job-118849890815.log",
+      "bytes": 55825,
+      "sha256": "506ee16e6f6238f5483a4597ef15c01c6ef45d2ebf7107042daafcd55c35de0e",
+      "encoding": "gzip",
+      "original_bytes": 325179,
+      "original_sha256": "954c64ca28f0fb231b6fb423acac616c5a8cd66870b3b2e1fc1840df75d485bf"
+    },
+    {
+      "file": "macro-bd890-press-before--scripts--run_press.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-before--scripts--run_press.py",
+      "bytes": 18866,
+      "sha256": "fbcf86d522adf558c0757adeff8370556045b8b32cd24e0a79fac6d76243b88d",
+      "encoding": "gzip",
+      "original_bytes": 67524,
+      "original_sha256": "46e7761acbfb0f8cd8fe10c8ac51f18d196a651a0ccc023b8dcf77a1208171d2"
+    },
+    {
+      "file": "macro-bd890-press-before--tests--test_press_run.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-before--tests--test_press_run.py",
+      "bytes": 21329,
+      "sha256": "3c3cd0ad5ec593e9f3adf6db912fd5d170305cd19b153664a2a6a0625a28683f",
+      "encoding": "gzip",
+      "original_bytes": 94236,
+      "original_sha256": "5827148fc6e899c191a5a8dca562103f3df909498eb749e164dba1c1ae367cc3"
+    },
+    {
+      "file": "macro-bd890-press-ownership-repair.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-ownership-repair.json",
+      "bytes": 3772,
+      "sha256": "7a8ac5983ae2a0e0bb4c85601f1d3614d1d02ba074ab6490fd1834a1d821b09c",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-press-ownership-repair.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-ownership-repair.py",
+      "bytes": 2677,
+      "sha256": "d2d353d40d682e1c2813a3706d1cd252bc8b0e9483e97d2c4ef7604be9fb1752",
+      "encoding": "gzip",
+      "original_bytes": 6100,
+      "original_sha256": "adf469386e1910d3a6490b3eec347bb6a4f5e0818daf69e035a34ad32cf8a42f"
+    },
+    {
+      "file": "macro-bd890-press-regression-green.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-regression-green.log",
+      "bytes": 528,
+      "sha256": "2da0e8ead13d23dc40516d055096fe05bcfdc345780c0f33dc30c5104b747af1",
+      "encoding": "gzip",
+      "original_bytes": 4679,
+      "original_sha256": "39eae43a4fb854611051920dea8f0cb80e46b03abe8cb07de4d6ccc8691d8bfd"
+    },
+    {
+      "file": "macro-bd890-press-regression-insertion.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-regression-insertion.txt",
+      "bytes": 1016,
+      "sha256": "4f87bd0b1bdbf38e696babf2b2c58f1674e2a65d28eaa7be6de7c00641ce7243",
+      "encoding": "gzip",
+      "original_bytes": 2587,
+      "original_sha256": "172b147ad0759b9f7ba28567d4e118ab21edede3173b168106986aaecb98d170"
+    },
+    {
+      "file": "macro-bd890-press-regression-red.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-regression-red.log",
+      "bytes": 923,
+      "sha256": "903a30e6f45b07c97be9a0965ed1b94a760fca8a803312fcfb15805bb026d289",
+      "encoding": "gzip",
+      "original_bytes": 6461,
+      "original_sha256": "f3bea306351a1c606623bc9a55e8cd8a5aed2221eb19770815b2ce854f7481ed"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--compound-growth-for-traders.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--compound-growth-for-traders.html.committed.html",
+      "bytes": 11392,
+      "sha256": "5a3de651b8442a0cd473fbf0a2b813b28ca8acfea49da24be7b5820641552366",
+      "encoding": "gzip",
+      "original_bytes": 37911,
+      "original_sha256": "392af711a64ae70401d63cc9ea3e5e54531f70d87bc7b5b260d9c5496aff866c"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--compound-growth-for-traders.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--compound-growth-for-traders.html.diff",
+      "bytes": 432,
+      "sha256": "9fe9f6acac43452e2786469fdaa8a6ed0e2d1fd0962676edc0e7c070f76a4911",
+      "encoding": "gzip",
+      "original_bytes": 745,
+      "original_sha256": "37740ca1ecbe5c3b18a3bf6dd2d59f3d851a99f04cc723613ac5ff1105f620c3"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--conduent-settlement-has-gross-fund-open-net-cost.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--conduent-settlement-has-gross-fund-open-net-cost.html.committed.html",
+      "bytes": 9606,
+      "sha256": "304b87a77038eef9dcc62c0e2233e429faebc4bc56573caf63993b62e9570ab5",
+      "encoding": "gzip",
+      "original_bytes": 32866,
+      "original_sha256": "d666cf1347955f35c4c7f49f3e7d0f2b999022ed07545d77fd5483e01654e469"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--conduent-settlement-has-gross-fund-open-net-cost.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--conduent-settlement-has-gross-fund-open-net-cost.html.diff",
+      "bytes": 444,
+      "sha256": "e6ac5393bba612f264fb8387292bdb68c166000a5bd4c67d43e0da5fed3acdc3",
+      "encoding": "gzip",
+      "original_bytes": 787,
+      "original_sha256": "df92723fe694093f123f7cc15d4653a4ed51c443f2dbaf1d9d497b908679d37e"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--congress-trades-are-not-realtime-signals.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--congress-trades-are-not-realtime-signals.html.committed.html",
+      "bytes": 11146,
+      "sha256": "979bb9e8b9605a81184c0af32b06da7c21823c55592f631027d6ba5b2b89397e",
+      "encoding": "gzip",
+      "original_bytes": 37198,
+      "original_sha256": "c1cbe9b7031685fffc3673058545c997222e330b38d7539d406da6a26edfd886"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--congress-trades-are-not-realtime-signals.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--congress-trades-are-not-realtime-signals.html.diff",
+      "bytes": 439,
+      "sha256": "25ca3b51bc957d52f1e57fe3d41fd41b92277c9279bef8e262590b8505e2456a",
+      "encoding": "gzip",
+      "original_bytes": 771,
+      "original_sha256": "f5dc2c818ae939c6c6a635a32ae1dbc9a6d5cf9b59d38c0d4bf89a978605711f"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--how-to-keep-a-trading-journal.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--how-to-keep-a-trading-journal.html.committed.html",
+      "bytes": 11146,
+      "sha256": "ae2a21eaf76ba4470bc3be1040c63483faab55fa8d890d916c397c4fc94ff601",
+      "encoding": "gzip",
+      "original_bytes": 36910,
+      "original_sha256": "509109520d0ed7c6a42fdc7dfe58c5bbec0d2bef10fae601dbec7275298f8465"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--how-to-keep-a-trading-journal.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--how-to-keep-a-trading-journal.html.diff",
+      "bytes": 434,
+      "sha256": "063d0c272f1ba923db1f0c1c4363c9a1c8864fb2183d1caf84a970943823276e",
+      "encoding": "gzip",
+      "original_bytes": 749,
+      "original_sha256": "61640e1d04715284c3ba161334fba8735e3cf0312e7c117e9c538cf0b3dabc08"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--index.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--index.html.committed.html",
+      "bytes": 8799,
+      "sha256": "a1e8e56152af2a624106c9b756c913980e50dbd982f11f7494fa6e096898ee76",
+      "encoding": "gzip",
+      "original_bytes": 30515,
+      "original_sha256": "eaa0c1902683e198d56c60f047f80295981d01bac4bde08e94e9f284fbdf85e8"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--index.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--index.html.diff",
+      "bytes": 417,
+      "sha256": "808179265afccc125de2c5dce955019bbe8f62571729ca1d3e9d08dd6df24af3",
+      "encoding": "gzip",
+      "original_bytes": 701,
+      "original_sha256": "80e77a8e06065602ee05ae624a53b01de5e183636a3c88f5b99ab77b0a98f00b"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--the-math-of-losing-streaks.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--the-math-of-losing-streaks.html.committed.html",
+      "bytes": 11117,
+      "sha256": "26d1bc08c0b44ec52bd66f2c6286df702d8072f2c160f33ce1af510f6f6a31df",
+      "encoding": "gzip",
+      "original_bytes": 37155,
+      "original_sha256": "f9aeae2e0e0a4c0b96b431d74098b5149a19806f78505e5881b91005b9300f7d"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--the-math-of-losing-streaks.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--the-math-of-losing-streaks.html.diff",
+      "bytes": 432,
+      "sha256": "f10079ff4416dcb8bf41524ba28103e8bb783df429dbca2bc4e958c25ffc17d1",
+      "encoding": "gzip",
+      "original_bytes": 743,
+      "original_sha256": "4ef265e0ccce779092362d8899e2a629e6eea7b7a6d6f84b694b219cab34bfbe"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--usda-nass-harvest-data-show-uneven-october-pace.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--usda-nass-harvest-data-show-uneven-october-pace.html.committed.html",
+      "bytes": 9759,
+      "sha256": "ef90534167a8c9f0a11e5decd8e28d8000a1d2f48e7d4df9e798069d6a1b1f4f",
+      "encoding": "gzip",
+      "original_bytes": 32903,
+      "original_sha256": "b06da362c91f6415530396956a990281b28d2e7af02a95dc07b02981ce5aed60"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--usda-nass-harvest-data-show-uneven-october-pace.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--usda-nass-harvest-data-show-uneven-october-pace.html.diff",
+      "bytes": 445,
+      "sha256": "50df30d562849c05c167bec078728fe99bda256f729ce12ead1f3ebd2b3d12e7",
+      "encoding": "gzip",
+      "original_bytes": 785,
+      "original_sha256": "395c03e9e425d1cf164452dfdc94034e4cdd815510db78b2f397aad8ae1badc0"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.committed.html",
+      "bytes": 10820,
+      "sha256": "eab066aab2d396d24d95c346f9d6250abf650d84d7da0187bbe8dd35f03d40f4",
+      "encoding": "gzip",
+      "original_bytes": 36482,
+      "original_sha256": "9d94702d95675209ed9e565582951fa413d3af8a907ca0765472d90c83a78f34"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.diff",
+      "bytes": 442,
+      "sha256": "ebf56708a089c899b1b37b389e891f43302d12490f2c1901c18d9de1086195bb",
+      "encoding": "gzip",
+      "original_bytes": 783,
+      "original_sha256": "a72a6dfd1425139aeb148659e9e0fab1d03bcebd27f53df2c1d77300425b0be1"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--win-rate-is-overrated.html.committed.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--win-rate-is-overrated.html.committed.html",
+      "bytes": 11073,
+      "sha256": "29cd2d50be7a0f50b63be08f0b0cf3c4d5ded35369357622b7cde6bf5a5a30cb",
+      "encoding": "gzip",
+      "original_bytes": 37063,
+      "original_sha256": "9945e7161c9c2aa645eb5f473eacf327808543ab838764d859e15a6b9efd9073"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--blog--win-rate-is-overrated.html.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/blog--win-rate-is-overrated.html.diff",
+      "bytes": 426,
+      "sha256": "44ee984fe8407000ded8f1d4c7c00ff5f29563e9bd16358781145be23f333404",
+      "encoding": "gzip",
+      "original_bytes": 733,
+      "original_sha256": "f6fd49b51b94ff9f203c36bb75b6414b99319134786b7cacf61180b764396c25"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--compound-growth-for-traders.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/compound-growth-for-traders.html",
+      "bytes": 11485,
+      "sha256": "6b73ff3abb983ae083bd53d1fdb11e19bdcc079aaa8e5c3eb250a512a435400a",
+      "encoding": "gzip",
+      "original_bytes": 38207,
+      "original_sha256": "2280683b5fa7b4d194c27a10837bf858af0f96577817790aed86e3aa780c9ebb"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--conduent-settlement-has-gross-fund-open-net-cost.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/conduent-settlement-has-gross-fund-open-net-cost.html",
+      "bytes": 9736,
+      "sha256": "51936bd29f594eeee6b4fd9a565fa1bf087f12291e492bd92f2bf85d7eb3419b",
+      "encoding": "gzip",
+      "original_bytes": 33244,
+      "original_sha256": "85befcb6f1b9c4001273baa149129177f5e2d6dad9ea4f8a45aec813496c04e9"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--congress-trades-are-not-realtime-signals.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/congress-trades-are-not-realtime-signals.html",
+      "bytes": 11239,
+      "sha256": "cda696b99b3cffbc86a4ec49317c12434fc84c13587cc22e5fcf8a60b115fe3d",
+      "encoding": "gzip",
+      "original_bytes": 37494,
+      "original_sha256": "96b27b6067db868f38a559b53a8806940180ea5360f728bdf2d3eeb519c2b616"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--how-to-keep-a-trading-journal.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/how-to-keep-a-trading-journal.html",
+      "bytes": 11239,
+      "sha256": "8ee50f6399cdcb59fdba18e471ed4cbf92ce85fdc8c3933e3baf0f04ba716e0d",
+      "encoding": "gzip",
+      "original_bytes": 37206,
+      "original_sha256": "914632868847b7dfdc32eb4a8d88084d53ef2917b375c426d198b6aa33006103"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--index.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/index.html",
+      "bytes": 8891,
+      "sha256": "e0713cb2e41c8d46d320ce7a1adf833682535cb9f6b19e00af1704f2fcd300e0",
+      "encoding": "gzip",
+      "original_bytes": 30811,
+      "original_sha256": "24a3cb8ed5be1c90caf698de562d49fa676bfb3afa53dc483a89709ef4db1df6"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--the-math-of-losing-streaks.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/the-math-of-losing-streaks.html",
+      "bytes": 11207,
+      "sha256": "1354de67570ef9c5732088659ea3a4b9631628a1c684b16684b260998ed1b4eb",
+      "encoding": "gzip",
+      "original_bytes": 37451,
+      "original_sha256": "4c34534751358bfe3c4a489aa44eccb16f55b8fe1d5361e4bcd69a3cba23ab71"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--usda-nass-harvest-data-show-uneven-october-pace.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/usda-nass-harvest-data-show-uneven-october-pace.html",
+      "bytes": 9882,
+      "sha256": "aaaa4b2ec353e324a6b9b330c8052de6fb0f2d7871944662545af499271b1e16",
+      "encoding": "gzip",
+      "original_bytes": 33281,
+      "original_sha256": "8da7aed3705369738d7a84f0f7001b76fc8fedb5aade2013089d733ee1028d49"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--why-a-50-percent-loss-needs-a-100-percent-gain.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
+      "bytes": 10913,
+      "sha256": "cce33b14f6085d12d45e804e14d8b79997e6f5ecea8ea4e74a4e86bca4a6b2a3",
+      "encoding": "gzip",
+      "original_bytes": 36778,
+      "original_sha256": "e0cd8751c316095c091c371e5ff285b7e99c72fac99b70e95cda2fb348c415ac"
+    },
+    {
+      "file": "macro-bd890-press-replay-red--site--blog--win-rate-is-overrated.html.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red/site/blog/win-rate-is-overrated.html",
+      "bytes": 11169,
+      "sha256": "e7bf23a03f696cc901429559261c3560a365693d67ae42c17e8e32d58df464ee",
+      "encoding": "gzip",
+      "original_bytes": 37359,
+      "original_sha256": "2be085eda542795161ea3089b80f1c5f7c784603038c518f223c5f461f1ad7a8"
+    },
+    {
+      "file": "macro-bd890-press-replay-red.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red.json",
+      "bytes": 6939,
+      "sha256": "0102d24348c96060a81953b969b6b5e67b7f3b7beceab2f36e36b1be912abf01",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-press-replay-red.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red.log",
+      "bytes": 2234,
+      "sha256": "1b6ce48af4dbfcfcc055c173c760ba9da184bbe45bfe93cd0f3137154a5aed31",
+      "encoding": "gzip",
+      "original_bytes": 6939,
+      "original_sha256": "0102d24348c96060a81953b969b6b5e67b7f3b7beceab2f36e36b1be912abf01"
+    },
+    {
+      "file": "macro-bd890-press-replay-red.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-replay-red.py",
+      "bytes": 1470,
+      "sha256": "2892760b90467c09ed4ad7973b6a4faa65a4debd3b6aea5542a73e4ad44abf06",
+      "encoding": "gzip",
+      "original_bytes": 3179,
+      "original_sha256": "438153a8fc770d17c9b4dfae5bad06e7d79870936b11b83003eb97829ce13e17"
+    },
+    {
+      "file": "macro-bd890-press-suite-green.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-press-suite-green.log",
+      "bytes": 543,
+      "sha256": "440ce0741ecfc15e79cff0fb54db5e95b433c3564ac02c6c4bc078c4a4076afc",
+      "encoding": "gzip",
+      "original_bytes": 4841,
+      "original_sha256": "f361a1702a1fd25a16f4aebae6a47f0cd00bc2e621749fb1878b7f21d7dcded0"
+    },
+    {
+      "file": "macro-bd890-publication-preflight-remote.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-publication-preflight-remote.py",
+      "bytes": 1458,
+      "sha256": "990b4ec7899d1262ec8718efaf9e4832f94ace8202bb370e213a1dd1479069b6",
+      "encoding": "gzip",
+      "original_bytes": 2984,
+      "original_sha256": "da6cd846afa1471b410a8060e770089fd25cb4a43f6575dd73631aae4b3614f9"
+    },
+    {
+      "file": "macro-bd890-publication-preflight.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-publication-preflight.json",
+      "bytes": 742,
+      "sha256": "bfa91ecc124f44c76346e1224ac070dcb7c41492e1f9517216a95ee913835e77",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-publication-preflight.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-publication-preflight.py",
+      "bytes": 689,
+      "sha256": "dd781727b90c3f8f20795e3242f86a49e7da69370287302325fce4c6bffb9144",
+      "encoding": "gzip",
+      "original_bytes": 1267,
+      "original_sha256": "8236eaf33d86a0452b5c1c8a3416c425915be66d6ed6354d9220245a78a3409f"
+    },
+    {
+      "file": "macro-bd890-publication-preflight.stderr.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-publication-preflight.stderr.log",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-bd890-publication-preflight.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-publication-preflight.stdout.json",
+      "bytes": 4685,
+      "sha256": "f263e08a4411bb02db76914183b608178bdfb53100e85b787cdf20a1e5fbc00f",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-bd890-ui-evidence-full-pr.diff.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ui-evidence-full-pr.diff",
+      "bytes": 1397925,
+      "sha256": "1de0bdf460532fc5e98aff5cd9944bcaf41328a59703fe878c5f45fbc93d1fcf",
+      "encoding": "gzip",
+      "original_bytes": 6837271,
+      "original_sha256": "a0cdf161ce2beac4e7278915e2905969cf5042c5cda37b3a026cff612d0d9cce"
+    },
+    {
+      "file": "macro-bd890-ui-evidence-gate.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-bd890-ui-evidence-gate.log",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "file": "macro-beta-before-e2d-publication-20261020T0536-reader.py",
@@ -10125,25 +10777,24 @@
       "encoding": "utf-8"
     }
   ],
-  "indexed_at": "2026-10-20T19:47:18.269049+00:00",
+  "indexed_at": "2026-10-20T23:37:38.636532+00:00",
   "current_terminal_repair_candidate": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
   "latest_host_observed_at": "2026-10-20T18:53:31.878483+00:00",
   "macro_incoming_main": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
-  "latest_confirmed_macro_publication": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
-  "publication_of_this_package": "Precommit/prepush documentation extension after local ordinary7a6 merge. Original PR7949 checkpoint binds eventual push/landing/publication. Local source and fixture/service proof are separately scoped; no hosted, protected landing, rendered-main, served or public-beta acceptance claimed.",
+  "latest_confirmed_macro_publication": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "publication_of_this_package": "Precommit/prepush extension on the original branch after two actual hosted failures. The original PR checkpoint binds the ensuing commit/push. Local tests and visual gate are not new-head hosted admission, protected landing, rendered publication or public beta acceptance.",
   "browser_connection": "Connected Chrome Tencent/DNSPod last observed signed out; beta certificate privacy failure. No DNS edit or certificate bypass. Explicit Studio Direct local fixture capture completed and owner server closed.",
   "beta_publication_gate": "AcceptedA restored by exactly one normal existing-unit start after failed strict proof. Complete same-A/unit/custody/owner/hold predicates and production snapshots matched; publicDNS/TLS/auth/browser/remaining acceptance pending.",
   "macro_integrated_index_tree_before_proof": "53a45de2ab2a9c26c8f5825fe98157375e7a5f97",
   "protected_terminal_repair_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
   "documentation_validation": {
-    "receipt": "macro-2ae-7a6-proof-validation.json",
+    "receipt": "macro-bd890-ci-repair-proof-validation.json",
     "all_checks_exit0": true,
-    "record_index": "45aa82a2d5cb9f857da5bba63cab06a6ded08047",
+    "record_index": "301ac6eaf9ffcaec1e4bf75724f6c65fa21a1236",
     "agentos_exit": 0,
     "template_sync_exit": 0,
     "p0b_closure_exit": 0,
-    "owned_whitespace_exit": 0,
-    "handoff_and_workstream_unchanged_after_validation": true
+    "owned_whitespace_exit": 0
   },
   "previous_frontier_before_runtime_ci": {
     "indexed_at": "2026-10-20T01:14:59.461992+00:00",
@@ -10938,5 +11589,251 @@
       "all_exit0": true,
       "source_index_frozen": true
     }
-  }
+  },
+  "previous_frontier_before_bd890_ci_repair": {
+    "record_type": "attended_source_and_recovery_evidence",
+    "version": 1,
+    "packaged_at": "2026-10-19T08:38:12.633028+00:00",
+    "programme": "WS:MARKET-OS",
+    "original_root": "market-os-shared-shell-design-20260924-sol-001",
+    "attended_parent": "shared-shell-production-20261018-c1",
+    "macro_source_head": "d6db0a99b99e6b602cc8cd06e1e5948c37b4a5d2",
+    "terminal_application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+    "terminal_repair_candidate_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "visual_acceptance": "Fresh actual composed P0B128cases/16screens and source-bound About8cells pass. Exact producing/loaded/raw-index bindings recorded. Root inspected390EN/ZH. Fixture-only; no public beta/auth/200percent zoom/Terminal859 requalification.",
+    "indexed_at": "2026-10-20T19:47:18.269049+00:00",
+    "current_terminal_repair_candidate": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "latest_host_observed_at": "2026-10-20T18:53:31.878483+00:00",
+    "macro_incoming_main": "7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1",
+    "latest_confirmed_macro_publication": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+    "publication_of_this_package": "Precommit/prepush documentation extension after local ordinary7a6 merge. Original PR7949 checkpoint binds eventual push/landing/publication. Local source and fixture/service proof are separately scoped; no hosted, protected landing, rendered-main, served or public-beta acceptance claimed.",
+    "browser_connection": "Connected Chrome Tencent/DNSPod last observed signed out; beta certificate privacy failure. No DNS edit or certificate bypass. Explicit Studio Direct local fixture capture completed and owner server closed.",
+    "beta_publication_gate": "AcceptedA restored by exactly one normal existing-unit start after failed strict proof. Complete same-A/unit/custody/owner/hold predicates and production snapshots matched; publicDNS/TLS/auth/browser/remaining acceptance pending.",
+    "macro_integrated_index_tree_before_proof": "53a45de2ab2a9c26c8f5825fe98157375e7a5f97",
+    "protected_terminal_repair_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "documentation_validation": {
+      "receipt": "macro-2ae-7a6-proof-validation.json",
+      "all_checks_exit0": true,
+      "record_index": "45aa82a2d5cb9f857da5bba63cab06a6ded08047",
+      "agentos_exit": 0,
+      "template_sync_exit": 0,
+      "p0b_closure_exit": 0,
+      "owned_whitespace_exit": 0,
+      "handoff_and_workstream_unchanged_after_validation": true
+    },
+    "local_contract_gate": {
+      "source_tree": "b0f7a0741674509745401aded2c112434e9b4130",
+      "receipt": "macro-da4d-987-composed-tests.json",
+      "actual_tests_passed": 996,
+      "hosted_admission": false,
+      "scope": "Actual composed focused tests; historical full contract-delta receipt remains in previous_frontier_before_987, not reminted."
+    },
+    "focused_current_composition": {
+      "source_index": "b0f7a0741674509745401aded2c112434e9b4130",
+      "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+      "jobs": 337,
+      "scope_and_packing_passes": 4,
+      "labor_rates_hub_passes": 645,
+      "shell_access_passes": 159,
+      "javascript_passes": 184,
+      "p0b_binding_passes": 4,
+      "total_passed": 996,
+      "receipt": "macro-da4d-987-composed-tests.json",
+      "hosted_admission": false
+    },
+    "latest_main_read_before_publication": {
+      "sha": "f8943924a4536012afa0c1e86703ff3d9b0dafdd",
+      "integrated_incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+      "receipt": "macro-da4d-987-proof-inventory-preflight.json",
+      "read_method": "Fresh ordinary ls-remote only at18:57; integrated source remains6d566. Exact new-head hosted admission and protected landing separately required."
+    },
+    "local_contract_gate_scope": "996 actual composed tests plus closure/134templatepairs/whitespace; exact new-head hosted admission separately required. No guards, selectors or ceilings relaxed.",
+    "historical_8cc_hosted_contract": {
+      "run_id": 39371861641,
+      "job_id": 118461289660,
+      "base": "73ca987b5907034653d33cbdae1577a57e67120e",
+      "introduced": 0,
+      "inherited": 0,
+      "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+      "does_not_qualify_92c51": true
+    },
+    "current_p0b": {
+      "producer": "macro-da4d-987-p0b-actual.json",
+      "binding": "macro-da4d-987-p0b-binding.json",
+      "lineage": "macro-2ae-7a6-retained-browser-lineage.json",
+      "producer_inputs": 67,
+      "loaded_construction_bindings": 56,
+      "accepted_outputs": 20,
+      "actual_cases": 128,
+      "screenshots": 16,
+      "historical_entries": 12,
+      "fresh_run_for_7a6": false,
+      "production": false
+    },
+    "generated_publication_boundary": {
+      "source_paths_before_proof": 1432,
+      "existing_contract": "research/market_os/SHARED_SHELL_GENERATED_PUBLICATION_2026-10-18.md",
+      "existing_owner": "render.yml / engine-render / macro-update",
+      "scope": "covering all render required",
+      "published": false
+    },
+    "proof_import_recovery": {
+      "original_interrupted_push_confirmed": "b312bc4c08cf7633bf8fd259d2d46ec545fa120f",
+      "preceding_push_confirmed": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+      "prior_manifest_files": 1137,
+      "disposition": "Earlier receipt corrections and1137-file publication are confirmed. Current extension binds actual7a6 conflict composition and preserves prior originals."
+    },
+    "current_host_baseline": {
+      "health": "beta-same-a-recovery-after-1-health.stdout.json",
+      "reconciliation": "beta-same-a-failed-reconciliation.json",
+      "recovery": "beta-same-a-recovery.json",
+      "service_pid": 3306695,
+      "start_timestamp_monotonic": "7622818757695",
+      "same_A_recovered": true,
+      "original_strict_proof_pass": false,
+      "production_unchanged_within_action_samples": true,
+      "installer_invoked": false,
+      "public_acceptance": false,
+      "reservation": false
+    },
+    "current_about": {
+      "actual": "macro-da4d-987-about-replay--actual.json.gz",
+      "lineage": "macro-2ae-7a6-retained-browser-lineage.json",
+      "source_head": "6d56650ea21395e7ffb0412bde73881b58dd1a66",
+      "original_manifest_files": 53,
+      "current_unchanged_presentation_files": 52,
+      "changed_unvisited_route": "site/macro.html",
+      "current_macro_unchanged_from_2ae": true,
+      "cells": 8,
+      "ordered_tabs_per_cell": 18,
+      "fresh_run_for_7a6": false,
+      "old53_manifest_fully_current": false,
+      "public": false,
+      "actual_200_percent_zoom": false
+    },
+    "service_recovery": {
+      "original": "beta-same-a-service-proof.json",
+      "original_pass": false,
+      "reconciliation": "beta-same-a-failed-reconciliation.json",
+      "recovery": "beta-same-a-recovery.json",
+      "recovery_pass": true,
+      "stop_count": 1,
+      "start_count": 1,
+      "connection_refused": true,
+      "graceful_shutdown_proved": false,
+      "full_hostname_withdrawal": false,
+      "A_to_B_to_A": false
+    },
+    "evidence_reference_rule": "Manifest file fields use actual stored filenames. Prose may name original E source files; files[].source maps them to stored .gz where used, with exact original byte/hash metadata. The final proof-import receipt is external, excluded by design; the original PR checkpoint binds its final bytes/hash and index.",
+    "reference_map": {
+      "macro-da4d-987-about-replay--actual.json": "macro-da4d-987-about-replay--actual.json.gz"
+    },
+    "external_bulk_read_products": [
+      {
+        "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-main-reachable-objects.txt",
+        "bytes": 39317504,
+        "sha256": "eae9dfe08d047cac0583a1250b9caf763040ee15da734b54d3cf19629056df1f",
+        "disposition": "ABORTED_READ_ONLY_NOT_COMPLETE",
+        "reason": "Reproducible Git object inventory, not an effect receipt. Complete operation/exit/identity receipts are included; bulk listing stays in native evidence scratch."
+      },
+      {
+        "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-608-main-current-tree.txt",
+        "bytes": 13634993,
+        "sha256": "069adb0e2d3c8c3dfc94a3e5acb2ce8f96668cf6d1cfe8c0e75d8df8393c06f1",
+        "disposition": "COMPLETE_CURRENT_TREE_READ",
+        "reason": "Reproducible Git object inventory, not an effect receipt. Complete operation/exit/identity receipts are included; bulk listing stays in native evidence scratch."
+      }
+    ],
+    "current_composed_validation": {
+      "receipt": "macro-2ae-7a6-composed-tests.json",
+      "retained_predecessor_receipt": "macro-608-df3-composed-tests.json",
+      "local_python": "3.14.7",
+      "hosted_admission": false,
+      "source_head": "d6db0a99b99e6b602cc8cd06e1e5948c37b4a5d2",
+      "source_tree": "53a45de2ab2a9c26c8f5825fe98157375e7a5f97",
+      "test_counts": {
+        "packing": 4,
+        "affected-source": 531,
+        "shell-js": 184
+      },
+      "total_passed": 719,
+      "additional_subtests_passed": 31,
+      "all_exit0": true,
+      "source_index_frozen": true,
+      "packing_bounds_unchanged_from_2ae": true
+    }
+  },
+  "current_ci_repair": {
+    "previous_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+    "failed_run": 39486571065,
+    "tested_merge": "08fcd6ffa61d9503d3e779a326545af7c0b08644",
+    "tested_base": "9f7f61e2f82e967abb38d98a05b15c797811484e",
+    "press_receipt": "macro-bd890-press-ownership-repair.json",
+    "press_suite_passed": 151,
+    "focused_regression_passed": 9,
+    "focused_subset_of_suite": true,
+    "local_python": "3.14.7",
+    "hosted_admission": false,
+    "common_owners_and_ci_unchanged": true
+  },
+  "current_about_canonical": {
+    "capture_receipt": "macro-bd890-about-canonical.json",
+    "adoption_receipt": "macro-bd890-about-adoption.json",
+    "receipt_path": "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+    "manifest_path": "mockups/evidence/shared-shell-css-20261019/about-footer/manifest.json",
+    "source_head": "bd89047e4e403a93183c6a4763274e09acfdd044",
+    "actual_rest_states": 8,
+    "unique_pngs": 4,
+    "fixture_files": 53,
+    "palette": "LIGHT_ONLY",
+    "static_billing_http_status": 404,
+    "auth": "anonymous",
+    "public": false,
+    "local_visual_guard_exit": 0,
+    "retained_previous_diagnostic_not_relabeled": true
+  },
+  "macro_source_head_before_repair": "bd89047e4e403a93183c6a4763274e09acfdd044",
+  "macro_qualified_repair_tree_before_proof": "35dd131db4019ff0330f98eae0a6f2b1d98dbd56",
+  "current_canonical_external_files": [
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/3b07c866a506bf15.png",
+      "bytes": 372587,
+      "sha256": "3b07c866a506bf151864e5c1d8cf8fb9e397d4a91326f926afcb1911ea37ad34"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/411991b97356b809.png",
+      "bytes": 396807,
+      "sha256": "411991b97356b809e76f3f1fbfe0a9106f5036eab65da1e1018490b2047987f2"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/6a5762d2b2113a08.png",
+      "bytes": 345486,
+      "sha256": "6a5762d2b2113a0896ca8acad35d642a63cee3425dd0c4fc80b41e33551d4987"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/evidence/e292bb7f7ad72299.png",
+      "bytes": 322586,
+      "sha256": "e292bb7f7ad72299ae3ee893ac586e35d9d6b5ae616766fcad449f21ac11e38f"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/manifest.json",
+      "bytes": 9829,
+      "sha256": "9f4cb1874bb2246792a7017631d711f39ee7cf4b4d8207e40fb636a67c82ec0c"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/ux_smell_report.json",
+      "bytes": 3821,
+      "sha256": "bf8bef2c86bf090c4414eb4ed8b94d5ee84da030b18c8c98245caeb669413dc1"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/EVIDENCE.yml",
+      "bytes": 165,
+      "sha256": "8d39fd69129a1a67b1e85a6e36505d79b2c213c8535b01b6496dc0260d2bedaa"
+    },
+    {
+      "path": "mockups/evidence/shared-shell-css-20261019/about-footer/LIMITS.md",
+      "bytes": 1839,
+      "sha256": "b293b49f6fef50d461d5d8a10702b1000caf8bcf63aa9dacd748510bb045971a"
+    }
+  ]
 }
