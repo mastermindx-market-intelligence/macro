@@ -44,6 +44,18 @@ honest not-supplied envelope (applicability ``not_evaluable`` +
 proves the supplied path: four text-span rows valued, six reserved
 table-cell rows abstaining typed, a prose numeral typed
 ``numeric_value_in_narrative_only`` and never scraped.
+
+PK07 (M&A, goodwill, intangibles and impairments) makes AAPL the NEGATIVE
+issuer: the fixture ledger carries no fact for any of the nine numeric
+concepts (verified by scan), so every numeric row is a typed
+missing_standard_fact absence while applicability stays applicable. The
+positive path — prior-instant rollforward arithmetic, impairment pairs and
+the Note 3 / Note 4 narrative — is proven on a synthetic in-test TESTCO
+inline-XBRL 10-K admitted by the same strict parser path as the golden
+fixture. The frozen PK07 catalogue carries no narrative reason code, so the
+producer's finalize hook runs the B.2 section search itself and types every
+narrative absence ``missing_dependency`` (the PK10 ruling), carrying the
+intended stock code verbatim in limitations.
 """
 from __future__ import annotations
 
@@ -460,14 +472,15 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12"}
     # PK03 lane: the BASE set plus PK03, sorted (never a removal).
     # PK05 lane: the set above plus PK05, still sorted (never a removal).
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12"}
-    with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
-        produce_pack("PK07", _pack_input())
+    # PK07 lane: the set above plus PK07, still sorted (never a removal).
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12"}
+    with pytest.raises(SpecialistPackError, match="no producer registered: PK08"):
+        produce_pack("PK08", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
         produce_pack("PK99", _pack_input())
 
@@ -534,6 +547,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/base.py",
         "engine/fundamental_forensics/specialist_packs/registry.py",
         "engine/fundamental_forensics/specialist_packs/pk06_leases.py",
+        "engine/fundamental_forensics/specialist_packs/pk07_mna.py",
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
         "engine/fundamental_forensics/specialist_packs/narrative.py",
@@ -2053,7 +2067,8 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
+    # PK07 lane: the set above plus PK07 (see section 50 for the pin).
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -4847,7 +4862,7 @@ def test_base_pack_envelopes_unchanged_by_pk03_edits() -> None:
 
 
 def test_registered_pack_ids_is_base_set_plus_pk03() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk03_cli_writes_valid_envelope(tmp_path: Path) -> None:
@@ -5793,6 +5808,7 @@ def test_registered_pack_ids_is_base_set_plus_pk05() -> None:
         "PK04",
         "PK05",
         "PK06",
+        "PK07",
         "PK09",
         "PK10",
         "PK11",
@@ -5851,3 +5867,651 @@ def test_pk05_no_issuer_literals_in_specialist_pack_code() -> None:
         text = path.read_text("utf-8")
         for literal in ("0000320193", "AAPL", "Apple", "aapl:"):
             assert literal not in text, f"{path.name} carries {literal!r}"
+
+
+# 50. PK07: M&A, goodwill, intangibles and impairments -------------------------
+#
+# AAPL is the NEGATIVE issuer (fixture-verified ledger scan: 0 of the 964
+# admitted facts match any B.2 numeric concept; no Business Combinations note;
+# the NOTE_IMP heading's bare "Impairment" arm matches the policies prose, so
+# that section locates while its pattern never hits). The positive path is
+# proven on a synthetic in-test TESTCO inline-XBRL 10-K admitted by the same
+# strict parser path as the golden fixture (§TESTS 5): the frozen §TESTS-3
+# rollforward ledger (opening 1000, acquired 300, disposals 50, impairment
+# 100, fx_other 10) plus the impairment pairs of §TESTS 4 and the Note 3 /
+# Note 4 narrative the text fields search.
+#
+# Catalogue note (DEVIATIONS in the lane RETURN): the frozen PK07 catalogue
+# carries no narrative reason code, so the stock section-scoped
+# TextSpanMapping resolver would emit governing_section_not_supplied /
+# narrative_span_not_located — reasons the PK07 catalogue refuses — and no
+# envelope could be produced. The producer therefore runs the exact B.2 search
+# itself through the finalize hook and types every narrative absence
+# missing_dependency (the PK10 ruling), carrying the intended stock code
+# verbatim in limitations.
+
+PK07_QUERY = {**QUERY, "requested_metrics": ["mna"]}
+# §TESTS 6 pins, captured at this lane's BASE (before PK07 registered) under
+# this section's own input shape: PK07 registration must not move any BASE
+# pack's AAPL envelope.
+PK07_BASE_PACK_ENVELOPE_SHA256 = {
+    "PK01": "21abc3ecd1d7924e3633351ae9bdb9130b40b9fd54ab2cb6caa5eb7e0b28f3ec",
+    "PK02": "cf07499a5df7353f952fbe89264c5a0cf14507cc52ac0d6597ce85859fb29e87",
+    "PK03": "85983a09986ca213371b5d1d131fa60f9b2ca47d79700287c899ce886f84642a",
+    "PK04": "627826904f6bb72097fd22152813d80b2b2ca16a8dca20d093f3249658bee6a3",
+    "PK05": "fb60d73cb6749a5f20e83f206c50ded68f9e0ecb91b2ba153b39eca754cef54c",
+    "PK06": "124ad9d2842d1d7568ee0d25236fadbf9836dd153249839babff1b8841eb5a3c",
+    "PK09": "f4cbf144ed90fff5cb257461bbc2d8ac5c4c019e02f655f68bfbe245554b116c",
+    "PK10": "321819b90019fca58901b4afaf02b81732fb186225ae5e20fa62d91086568c97",
+    "PK11": "5c6e36cea1445a0b168541143a3e7937152c166a99c40d84198cca1273be3ed0",
+    "PK12": "d9fd6105cc06c2974c4a04d744220b003ef53a3d79838a73399bde5aaf8f9285",
+}
+# This producer's own byte-determinism pin, captured at the lane's fork point.
+PK07_AAPL_ENVELOPE_SHA256 = (
+    "875f482694c56e30500ed258384b2ef56c603d9aede372462d93728a236a5cd1"
+)
+# §TESTS 1: the nine numeric rows cite the p10 concept of their alias tuple.
+PK07_AAPL_MISSING = {
+    "goodwill": "missing_standard_fact:us-gaap:Goodwill",
+    "intangible_assets_net": (
+        "missing_standard_fact:us-gaap:IntangibleAssetsNetExcludingGoodwill"
+    ),
+    "indefinite_lived_intangibles": (
+        "missing_standard_fact:us-gaap:IndefiniteLivedIntangibleAssets"
+        "ExcludingGoodwill"
+    ),
+    "goodwill_acquired": (
+        "missing_standard_fact:us-gaap:GoodwillAcquiredDuringPeriod"
+    ),
+    "goodwill_disposals": (
+        "missing_standard_fact:us-gaap:GoodwillWrittenOffRelatedToSaleOf"
+        "BusinessUnit"
+    ),
+    "goodwill_fx_other": (
+        "missing_standard_fact:us-gaap:GoodwillForeignCurrencyTranslationGainLoss"
+    ),
+    "goodwill_impairment_loss": (
+        "missing_standard_fact:us-gaap:GoodwillImpairmentLoss"
+    ),
+    "intangible_impairment_loss": (
+        "missing_standard_fact:us-gaap:ImpairmentOfIntangibleAssets"
+        "ExcludingGoodwill"
+    ),
+    "business_combination_consideration": (
+        "missing_standard_fact:us-gaap:BusinessCombinationConsideration"
+        "Transferred1"
+    ),
+}
+# The catalogue carries no narrative code, so every narrative absence types
+# missing_dependency; the intended stock code rides in limitations (below).
+# impairment_testing_note_span is "missing" (not "not_evaluable") because the
+# frozen NOTE_IMP heading's "Impairment" arm matches the policies prose while
+# the pattern never hits — narrative_span_not_located, not
+# governing_section_not_supplied (B.3 nuance recorded in the lane RETURN).
+PK07_AAPL_NARRATIVE = {
+    "acquisition_date": ("not_evaluable", "governing_section_not_supplied"),
+    "purchase_accounting_note_span": ("not_evaluable", "governing_section_not_supplied"),
+    "impairment_testing_note_span": ("missing", "narrative_span_not_located"),
+}
+
+TESTCO_CIK = "0000000001"
+TESTCO_SIC = "3571"
+TESTCO_DOC = "testco-20251231.htm"
+TESTCO_ENTITY = {
+    "entity_id": TESTCO_CIK,
+    "cik": TESTCO_CIK,
+    "ticker": "TESTCO",
+    "name": "TESTCO CORP",
+    "identity_basis": "golden_filing_package_fixture_v1",
+    "source_entity_id": TESTCO_CIK,
+}
+# The frozen synthetic M&A ledger (§TESTS 3): (qname, context, value, unit).
+# c-ip is the comparative balance-sheet date 2024-12-31 (the opening_instant
+# bound for the FY2025 duration), c-i the closing instant, c-fy the year.
+_TESTCO_ROLLFORWARD = (
+    ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+    ("us-gaap:Goodwill", "c-i", "1160", "usd"),
+    ("us-gaap:GoodwillAcquiredDuringPeriod", "c-fy", "300", "usd"),
+    ("us-gaap:GoodwillWrittenOffRelatedToSaleOfBusinessUnit", "c-fy", "50", "usd"),
+    ("us-gaap:GoodwillImpairmentLoss", "c-fy", "100", "usd"),
+    ("us-gaap:GoodwillForeignCurrencyTranslationGainLoss", "c-fy", "10", "usd"),
+)
+_TESTCO_CONTEXTS = {
+    "c-ip": (
+        "<xbrli:context id=\"c-ip\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2024-12-31</xbrli:instant></xbrli:period></xbrli:context>"
+    ),
+    "c-i": (
+        "<xbrli:context id=\"c-i\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>"
+    ),
+    "c-fy": (
+        "<xbrli:context id=\"c-fy\"><xbrli:entity><xbrli:identifier"
+        " scheme=\"http://www.sec.gov/CIK\">"
+        f"{TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2025-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>"
+    ),
+}
+_TESTCO_UNITS = {
+    "usd": '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure></xbrli:unit>',
+    "eur": '<xbrli:unit id="eur"><xbrli:measure>iso4217:EUR</xbrli:measure></xbrli:unit>',
+}
+
+
+def _testco_document(
+    facts: tuple[tuple[str, str, str, str], ...],
+) -> bytes:
+    """A minimal inline-XBRL 1.1 TESTCO 10-K with the B.2 narrative.
+
+    Note 3 – Business Combinations supplies the acquisition-date pattern
+    ("completed on <Month D, YYYY>") and the purchase-accounting wording;
+    Note 4 – Goodwill and Other Intangible Assets supplies the
+    impairment-testing wording. Contexts and units are emitted for exactly
+    the ids the frozen facts cite.
+    """
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="{unit}" decimals="0">{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, unit) in enumerate(facts, start=1)
+    )
+    contexts = "\n".join(
+        _TESTCO_CONTEXTS[context_id]
+        for context_id in ("c-ip", "c-i", "c-fy")
+        if any(context == context_id for _q, context, _v, _u in facts)
+    )
+    units = "\n".join(
+        _TESTCO_UNITS[unit_id]
+        for unit_id in ("usd", "eur")
+        if any(unit == unit_id for _q, _c, _v, unit in facts)
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTCO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n{units}\n</ix:resources></ix:header></div>\n"
+        "<p>Note 3 – Business Combinations. The acquisition of Testcorp"
+        " Incorporated was completed on March 15, 2025. The purchase price was"
+        " allocated to the assets acquired and liabilities assumed based on"
+        " their fair values.</p>\n"
+        "<p>Note 4 – Goodwill and Other Intangible Assets. The Company"
+        " performs its annual impairment test for goodwill and reviews"
+        " intangible assets whenever events or changes in circumstances"
+        " indicate a possible impairment.</p>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _testco_package(
+    facts: tuple[tuple[str, str, str, str], ...] = _TESTCO_ROLLFORWARD,
+    *,
+    form: str = "10-K",
+) -> GoldenFilingPackage:
+    document = _testco_document(facts)
+    manifest = {
+        "entity_id": TESTCO_CIK,
+        "cik": TESTCO_CIK,
+        "legal_name": "TESTCO CORP",
+        "form": form,
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000001-26-000010",
+        "primary_document": TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(
+        manifest=manifest, members={TESTCO_DOC: document}
+    )
+
+
+def _pk07_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK07_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _pk07_testco_input(
+    facts: tuple[tuple[str, str, str, str], ...] = _TESTCO_ROLLFORWARD,
+    **overrides,
+) -> PackInput:
+    defaults = dict(
+        packages=(_testco_package(facts),),
+        entity=TESTCO_ENTITY,
+        query=PK07_QUERY,
+        issuer_sic=TESTCO_SIC,
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk07_result() -> dict:
+    return produce_pack("PK07", _pk07_input())
+
+
+def _pk07_check(result: dict, check_id: str) -> dict:
+    return _check(result, check_id)
+
+
+# 50.1 §TESTS 1: the AAPL negative envelope ------------------------------------
+
+
+def test_pk07_result_passes_contract_validator(pk07_result: dict) -> None:
+    assert contract.validate_pack_result(pk07_result) == []
+
+
+def test_pk07_aapl_is_applicable_and_every_numeric_row_is_typed_absence(
+    pk07_result: dict,
+) -> None:
+    catalogue = contract.load_pack_schema("PK07")
+    assert [row["field_id"] for row in pk07_result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    assert pk07_result["applicability"] == {
+        "state": "applicable",
+        "reason": "applicability_rule_satisfied",
+        "rule_id": "pack.pk07.applicability/v1",
+        "sic": "3571",
+        "sic_source": "sec_submissions",
+    }
+    for field_id, reason in PK07_AAPL_MISSING.items():
+        row = _row(pk07_result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["non_value_state"] == "missing", field_id
+        assert row["coverage_state"] == "unmapped", field_id
+        assert row["reason"] == reason, field_id
+        assert row["value"] is None and row["text_value"] is None
+        assert row["concept"] == reason.split(":", 1)[1]
+        assert row["evidence_kind"] == "xbrl_fact"
+
+
+def test_pk07_aapl_narrative_rows_are_typed_absence_with_intended_code_in_limitations(
+    pk07_result: dict,
+) -> None:
+    for field_id, (quality, intended) in PK07_AAPL_NARRATIVE.items():
+        row = _row(pk07_result, field_id)
+        # The frozen PK07 catalogue carries no narrative reason code, so the
+        # row cites the catalogue's closest code; the stock code the packet
+        # names rides in the field's limitation line verbatim.
+        assert row["quality_state"] == quality, field_id
+        assert row["non_value_state"] == quality, field_id
+        assert row["reason"] == "missing_dependency", field_id
+        assert row["text_value"] is None and row["source_span"] is None
+        assert row["evidence_kind"] == "text_span"
+        assert any(
+            f"pk07.{field_id}: {intended};" in line
+            for line in pk07_result["limitations"]
+        ), field_id
+
+
+def test_pk07_aapl_checks_abstain_typed(pk07_result: dict) -> None:
+    catalogue = contract.load_pack_schema("PK07")
+    assert [check["check_id"] for check in pk07_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+    for check_id in (
+        "goodwill_rollforward_closed",
+        "impairment_vs_carrying",
+        "acquisition_scope_stated",
+    ):
+        check = _pk07_check(pk07_result, check_id)
+        assert check["status"] == "not_evaluable", check_id
+        assert check["reason"] == "missing_dependency", check_id
+
+
+def test_pk07_aapl_coverage_receipts_and_limitations(pk07_result: dict) -> None:
+    # B.3: 0 of 12 valued — a deal-free year is a negative finding, never
+    # non-applicability.
+    assert pk07_result["coverage"] == {
+        "valued_fields": 0,
+        "missing_fields": 10,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 2,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "empty",
+    }
+    assert "pk07_numeric_fact_count=0" in pk07_result["receipts"]
+    limitations = pk07_result["limitations"]
+    assert limitations[0] == pack_base.DISPLAY_ONLY_LIMITATION
+    assert (
+        "pk07.table_cell_reserved: business_combination_consideration resolves"
+        " from xbrl_fact only in this version" in limitations
+    )
+    assert (
+        "pk07.negative_year: no goodwill, intangible or business-combination"
+        " facts in the primary filing" in limitations
+    )
+    assert (
+        "pk07.acquisition_date: governing_section_not_supplied;"
+        " section searched: Note \\d+ [–-] (?:Business Combinations?|"
+        "Acquisitions?)" in limitations
+    )
+    assert (
+        "pk07.impairment_testing_note_span: narrative_span_not_located;"
+        " section searched: (?:Goodwill and (?:Other )?Intangible Assets|"
+        "Impairment)" in limitations
+    )
+
+
+def test_pk07_aapl_envelope_digest_is_pinned() -> None:
+    result = produce_pack("PK07", _pk07_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert sha256(payload.encode("utf-8")).hexdigest() == PK07_AAPL_ENVELOPE_SHA256
+
+
+def test_pk07_production_is_deterministic() -> None:
+    first = produce_pack("PK07", _pk07_input())
+    second = produce_pack("PK07", _pk07_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+# 50.2 §TESTS 2: the 10-Q probe -------------------------------------------------
+
+
+def test_pk07_quarterly_form_is_outside_pack_forms() -> None:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    quarterly = replace(
+        package, manifest={**package.manifest, "form": "10-Q"}
+    )
+    result = produce_pack("PK07", _pk07_input(packages=(quarterly,)))
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "form_outside_pack_forms"
+    assert len(result["fields"]) == 12
+    assert all(
+        row["quality_state"] == "not_applicable"
+        and row["reason"] == "form_outside_pack_forms"
+        for row in result["fields"]
+    )
+    assert all(
+        check["status"] == "not_applicable"
+        and check["reason"] == "form_outside_pack_forms"
+        for check in result["checks"]
+    )
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert contract.validate_pack_result(result) == []
+
+
+# 50.3 §TESTS 3: the synthetic rollforward (in-test TESTCO ledger) --------------
+
+
+def test_pk07_rollforward_closes_on_the_synthetic_ledger() -> None:
+    result = produce_pack("PK07", _pk07_testco_input())
+    assert contract.validate_pack_result(result) == []
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    # 1000 + 300 - 50 - 100 + 10 = 1160, tolerance 1 (decimals 0).
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert check["tolerance"] == "1"
+    assert check["evidence_field_ids"] == [
+        "goodwill",
+        "goodwill_acquired",
+        "goodwill_disposals",
+        "goodwill_impairment_loss",
+        "goodwill_fx_other",
+    ]
+    assert _row(result, "goodwill")["value"] == "1160"
+
+
+def test_pk07_rollforward_fails_when_closing_does_not_close() -> None:
+    moved = tuple(
+        ("us-gaap:Goodwill", "c-i", "1200", "usd")
+        if fact[0] == "us-gaap:Goodwill" and fact[1] == "c-i"
+        else fact
+        for fact in _TESTCO_ROLLFORWARD
+    )
+    result = produce_pack("PK07", _pk07_testco_input(moved))
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "fail"
+    assert check["reason"] is None
+
+
+def test_pk07_rollforward_missing_component_is_never_zero() -> None:
+    # K3K4: dropping goodwill_fx_other makes the rollforward abstain typed —
+    # the component is ABSENT, not zero (1000+300-50-100 = 1150 would close
+    # nothing here and must never be asserted as an implied fx_other).
+    dropped = tuple(
+        fact for fact in _TESTCO_ROLLFORWARD
+        if fact[0] != "us-gaap:GoodwillForeignCurrencyTranslationGainLoss"
+    )
+    result = produce_pack("PK07", _pk07_testco_input(dropped))
+    check = _pk07_check(result, "goodwill_rollforward_closed")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+
+
+# 50.4 §TESTS 4: the synthetic impairment_vs_carrying pairs ---------------------
+
+
+def test_pk07_impairment_within_opening_goodwill_passes() -> None:
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+        ("us-gaap:GoodwillImpairmentLoss", "c-fy", "100", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_testco_input(facts))
+    assert contract.validate_pack_result(result) == []
+    check = _pk07_check(result, "impairment_vs_carrying")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+
+
+def test_pk07_impairment_exceeding_opening_goodwill_fails() -> None:
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+        ("us-gaap:GoodwillImpairmentLoss", "c-fy", "1500", "usd"),
+    )
+    result = produce_pack("PK07", _pk07_testco_input(facts))
+    check = _pk07_check(result, "impairment_vs_carrying")
+    assert check["status"] == "fail"
+    assert check["reason"] is None
+
+
+def test_pk07_intangible_pair_in_eur_is_unit_mismatch() -> None:
+    # The goodwill pair ties in USD; the intangible pair's impairment is USD
+    # while its prior-instant carrying amount is EUR — differing units are
+    # never compared.
+    facts = (
+        ("us-gaap:Goodwill", "c-ip", "1000", "usd"),
+        ("us-gaap:GoodwillImpairmentLoss", "c-fy", "100", "usd"),
+        ("us-gaap:IntangibleAssetsNetExcludingGoodwill", "c-ip", "900", "eur"),
+        (
+            "us-gaap:ImpairmentOfIntangibleAssetsExcludingGoodwill",
+            "c-fy",
+            "40",
+            "usd",
+        ),
+    )
+    result = produce_pack("PK07", _pk07_testco_input(facts))
+    check = _pk07_check(result, "impairment_vs_carrying")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+
+
+# 50.5 B.2/B.4 positive narrative path on the same synthetic package -----------
+
+
+def test_pk07_synthetic_narrative_rows_value_and_scope_check_passes() -> None:
+    result = produce_pack("PK07", _pk07_testco_input())
+    acquisition_date = _row(result, "acquisition_date")
+    assert acquisition_date["quality_state"] == "valued"
+    assert acquisition_date["text_value"] == "March 15, 2025"
+    assert acquisition_date["evidence_kind"] == "text_span"
+    span = acquisition_date["source_span"]
+    assert span["accession"] == "0000000001-26-000010"
+    assert span["document_id"] == TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    purchase = _row(result, "purchase_accounting_note_span")
+    assert purchase["quality_state"] == "valued"
+    assert "purchase price" in purchase["text_value"]
+    impairment_note = _row(result, "impairment_testing_note_span")
+    assert impairment_note["quality_state"] == "valued"
+    assert "impairment test" in impairment_note["text_value"]
+    check = _pk07_check(result, "acquisition_scope_stated")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    # The positive year carries no negative_year limitation and no narrative
+    # absence line.
+    assert not any(
+        line.startswith("pk07.negative_year:") for line in result["limitations"]
+    )
+    assert not any(
+        line.startswith("pk07.acquisition_date:") for line in result["limitations"]
+    )
+    assert "pk07_numeric_fact_count=6" in result["receipts"]
+    # 5 numeric rollforward rows + the 3 narrative rows valued; the four
+    # intangible/consideration fields carry no TESTCO fact.
+    assert result["coverage"]["valued_fields"] == 8
+    assert result["coverage"]["missing_fields"] == 4
+    assert result["coverage"]["disclosure_coverage_state"] == "present"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk07_synthetic_package_without_narrative_member_types_absence() -> None:
+    # §TESTS 5 shape: a manifest-only package whose facts arrive through the
+    # patched converter has no retained primary document, so every narrative
+    # row types missing_dependency and names the section searched.
+    events = tuple()
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000001-26-000010",
+            parser_numeric_fact_count=0,
+            ledger_occurrence_count=0,
+            represented_count=0,
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch = pytest.MonkeyPatch()
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+    try:
+        manifest_only = _SyntheticPackage(
+            {
+                "form": "10-K",
+                "period_of_report": "2025-12-31",
+                "accession": "0000000001-26-000010",
+                "primary_document": TESTCO_DOC,
+            }
+        )
+        result = produce_pack(
+            "PK07",
+            _pk07_testco_input(packages=(manifest_only,)),
+        )
+    finally:
+        monkeypatch.undo()
+    for field_id in (
+        "acquisition_date",
+        "purchase_accounting_note_span",
+        "impairment_testing_note_span",
+    ):
+        row = _row(result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == "missing_dependency", field_id
+        assert any(
+            f"pk07.{field_id}: narrative document not retained;" in line
+            for line in result["limitations"]
+        ), field_id
+    assert contract.validate_pack_result(result) == []
+
+
+# 50.6 §TESTS 6: BASE invariance, registry, CLI, A33 ----------------------------
+
+
+@pytest.mark.parametrize("pack_id", sorted(PK07_BASE_PACK_ENVELOPE_SHA256))
+def test_base_pack_envelopes_unchanged_by_pk07_edits(pack_id: str) -> None:
+    # §TESTS 6: every pack registered at BASE keeps its AAPL envelope
+    # byte-identical to BASE after PK07 registers.
+    result = produce_pack(pack_id, _pk07_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert (
+        sha256(payload.encode("utf-8")).hexdigest()
+        == PK07_BASE_PACK_ENVELOPE_SHA256[pack_id]
+    )
+
+
+def test_registered_pack_ids_is_base_set_plus_pk07() -> None:
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    )
+
+
+def test_pk07_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk07.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK07_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK07",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert envelope["coverage"]["valued_fields"] == 0
+    assert len(envelope["fields"]) == 12
