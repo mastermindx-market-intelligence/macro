@@ -153,3 +153,43 @@ rights revocation and actual source freshness. Neither a controller-created rece
 green local tests, source publication, merge nor fixture Chrome behavior is production
 acceptance. Preserve original NOT_FOUND/no-retry and Paper effect restrictions; do not
 retry them or reassign the separate NewsImpact/Terminal projects.
+
+## Current-main recovery composition — 20 October 2026
+
+The repaired source was committed as `23ef4907d1b380460ab3431db13a5409851f7f60`
+in the original workspace. Its first typed commit attempt returned NOT_APPLIED:
+the saved Agent OS discovery was outside the sparse checkout. An index-preserving
+`git add --dry-run` identified that exact input error; normal inclusion of
+`agentos/discoveries` made the dry run succeed, and the same typed publisher then
+committed successfully. No permission bypass, alternate source carrier, replacement
+workspace, or replay of uncertain effects occurred.
+
+The candidate now composes with accepted Macro main
+`902c107227006802bde8312ffd78b4685d0f7949`. Four actual conflicts were resolved:
+keep all main API restart dependencies plus the exact News history module; retain
+the News cockpit with main's current event rows; retain main's versioned/deferred
+shared theme script on both News and Plans; preserve both sides' CI explanations
+and fund only measured packing differences. All other News source/test blobs were
+unchanged by this integration.
+
+Fresh integration verification: **555 Python tests passed** (three environment
+warnings), **86 Node tests passed**, and the actual packing-probe test passed.
+The unchanged measurement implementation observed 135 jobs / 5,832 weight / 10 packs
+for index, 134 / 5,707 / 10 for free-content, and 128 / 5,581 / 10 for plan-book.
+Only the first two weight ceilings increased by the measured ten-unit excess;
+job counts, selectors, suites, the plan-book ceiling and ten-pack bound remain.
+
+Real Chrome loaded the exact generated `site/news.html` bytes with controlled
+loopback API fixtures, rather than a separately rendered template. Desktop 1440x900
+and mobile 390x844 had no horizontal overflow or page errors, unique workspace
+roots, working retained-report search including the archive-only example, and
+forward/reverse mobile Tab wrapping. The temporary server was stopped. Public
+edition rows coexist intentionally with live fixture rows; this is not a production
+news or authentication receipt.
+
+See `docs/evidence/news-cockpit-20261020-recovery/integration-main-902c.json` for
+exact source hashes, test evidence, packing measurements and browser observations.
+Original earlier evidence retains its original source scope. The parent mission
+remains incomplete: this composed head still needs hosted checks, independent
+review of repaired semantics, the protected release process, actual installed
+reader/collector identity, signed-in desk/history and rights/freshness proof.

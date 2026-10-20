@@ -204,6 +204,7 @@ KNOWN_CONCEPT_ALLOWLIST.update(
             "LongTermDebtCurrent",
             "LongTermDebtNoncurrent",
             "Liabilities",
+            "LiabilitiesAndStockholdersEquity",
             "StockholdersEquity",
             "RetainedEarningsAccumulatedDeficit",
         ),
@@ -219,6 +220,15 @@ KNOWN_CONCEPT_ALLOWLIST.update(
             "WeightedAverageNumberOfDilutedSharesOutstanding",
         ),
         period_kind="duration",
+        contract_units=("shares",),
+    )
+)
+# Seat ruling 2026-10-19 R-ALIAS / D1: balance-sheet identity total and strict period-end shares.
+KNOWN_CONCEPT_ALLOWLIST.update(
+    _known_concepts(
+        "us-gaap",
+        ("CommonStockSharesOutstanding",),
+        period_kind="instant",
         contract_units=("shares",),
     )
 )
@@ -335,6 +345,14 @@ class FormulaRule:
 
 
 @dataclass(frozen=True)
+class MetricDefinition:
+    """Rule-versioned statement of the scope a metric identifier measures."""
+
+    scope: str
+    rule: ImmutableRule
+
+
+@dataclass(frozen=True)
 class MetricContract:
     """Complete no-fallback contract for one normalized metric."""
 
@@ -353,6 +371,7 @@ class MetricContract:
     formula: FormulaRule | None
     applicability: ApplicabilityPolicy = ApplicabilityPolicy()
     period_basis: PeriodBasis = PeriodBasis()
+    definition: MetricDefinition | None = None
 
     @property
     def rule_id(self) -> str:
@@ -475,7 +494,12 @@ class MetricRegistry:
                 and formula.rule.available_at <= cutoff
             ):
                 formula = None
-            contracts.append(replace(contract, mappings=mappings, formula=formula))
+            definition = contract.definition
+            if definition is not None and definition.rule.available_at > cutoff:
+                definition = None
+            contracts.append(
+                replace(contract, mappings=mappings, formula=formula, definition=definition)
+            )
 
         return GovernanceBundle(
             schema=GOVERNANCE_BUNDLE_SCHEMA,
@@ -1040,6 +1064,11 @@ def _contract_payload(contract: MetricContract) -> dict[str, Any]:
         }
     if contract.period_basis.calendar != DEFAULT_PERIOD_CALENDAR:
         payload["period_basis"] = {"calendar": contract.period_basis.calendar}
+    if contract.definition is not None:
+        payload["definition"] = {
+            "scope": contract.definition.scope,
+            "rule": _rule_payload(contract.definition.rule),
+        }
     return payload
 
 
@@ -1086,6 +1115,15 @@ def _formula_payload(formula: FormulaRule) -> dict[str, Any]:
     return payload
 
 
+def _metric_definition_from_payload(value: Any, *, field: str) -> MetricDefinition:
+    raw = _require_mapping(value, field=field)
+    _exact_keys(raw, field=field, required=frozenset({"scope", "rule"}))
+    return MetricDefinition(
+        scope=_text(raw.get("scope"), field=f"{field}.scope"),
+        rule=_rule(raw.get("rule"), field=f"{field}.rule"),
+    )
+
+
 def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> MetricContract:
     raw = _require_mapping(value, field=field)
     _exact_keys(
@@ -1098,7 +1136,7 @@ def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> Me
                 "declared_formula_dependencies",
             }
         ),
-        optional=frozenset({"applicability", "period_basis"}),
+        optional=frozenset({"applicability", "period_basis", "definition"}),
     )
     _bounded_wire_list(raw["units"], field=f"{field}.units", maximum=len(ALLOWED_UNITS))
     _bounded_wire_list(
@@ -1147,6 +1185,11 @@ def _metric_contract_from_payload(value: Mapping[str, Any], *, field: str) -> Me
             _period_basis(raw["period_basis"], field=f"{field}.period_basis")
             if "period_basis" in raw
             else PeriodBasis()
+        ),
+        definition=(
+            _metric_definition_from_payload(raw["definition"], field=f"{field}.definition")
+            if "definition" in raw
+            else None
         ),
     )
 
@@ -1409,6 +1452,13 @@ def _validate_governance_bundle_contracts(bundle: GovernanceBundle) -> None:
         metric_ids.add(contract.metric_id)
         contracts_by_metric[contract.metric_id] = contract
         claim_rule(contract.rule, field=f"metric {contract.metric_id}")
+        definition = contract.definition
+        if definition is not None:
+            if definition.rule.available_at > bundle.recorded_at:
+                raise ValueError(
+                    f"definition for {contract.metric_id} is hidden at recorded_at"
+                )
+            claim_rule(definition.rule, field=f"definition {contract.metric_id}")
 
     for contract in bundle.contracts:
         if not isinstance(contract.mappings, tuple):
@@ -1847,7 +1897,7 @@ def metric_registry_from_dicts(
                     "formula_dependencies",
                 }
             ),
-            optional=frozenset({"applicability", "period_basis"}),
+            optional=frozenset({"applicability", "period_basis", "definition"}),
         )
         metric_id = _identifier(raw.get("metric_id"), field=f"catalog.metrics[{index}].metric_id")
         if metric_id in base_contracts:
@@ -1856,6 +1906,26 @@ def metric_registry_from_dicts(
         claim_rule(rule)
         if rule.available_at < catalog_available:
             raise ValueError(f"metric {metric_id} cannot predate catalog availability")
+        definition = (
+            _metric_definition_from_payload(
+                raw.get("definition"), field=f"catalog.metrics[{index}].definition"
+            )
+            if "definition" in raw
+            else None
+        )
+        if definition is not None:
+            claim_rule(definition.rule)
+            if (
+                definition.rule.available_at < catalog_available
+                or definition.rule.available_at < rule.available_at
+            ):
+                raise ValueError(
+                    f"definition rule for {metric_id} cannot predate its catalog or metric rule"
+                )
+            if definition.rule.confidence != rule.confidence:
+                raise ValueError(
+                    f"definition rule confidence must match metric contract confidence for {metric_id}"
+                )
         base_contracts[metric_id] = {
             "label": _text(raw.get("label"), field=f"catalog.metrics[{index}].label"),
             "category": _identifier(raw.get("category"), field=f"catalog.metrics[{index}].category"),
@@ -1893,6 +1963,7 @@ def metric_registry_from_dicts(
                 if "period_basis" in raw
                 else PeriodBasis()
             ),
+            "definition": definition,
         }
 
     mapping_by_metric: dict[str, list[MappingRule]] = {metric_id: [] for metric_id in base_contracts}
@@ -2128,6 +2199,7 @@ def metric_registry_from_dicts(
                 formula=formula,
                 applicability=base["applicability"],
                 period_basis=base["period_basis"],
+                definition=base["definition"],
             )
         )
 
@@ -2260,6 +2332,15 @@ def validate_metric_registry(registry: MetricRegistry) -> None:
         if contract.rule.available_at < registry.available_at:
             raise ValueError(f"metric {contract.metric_id} predates catalog lane inception")
         claim_rule(contract.rule)
+        definition = contract.definition
+        if definition is not None:
+            if not isinstance(definition, MetricDefinition):
+                raise TypeError(f"metric {contract.metric_id} definition must be a MetricDefinition")
+            if definition.rule.available_at < max(registry.available_at, contract.rule.available_at):
+                raise ValueError(
+                    f"definition rule for {contract.metric_id} predates its lane or metric contract"
+                )
+            claim_rule(definition.rule)
         if not isinstance(contract.mappings, tuple):
             raise TypeError(f"metric {contract.metric_id} mappings must be a tuple")
         if contract.mappings and contract.formula is not None:

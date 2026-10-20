@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
-  "as_of": "2026-10-18",
-  "generated_at": "2026-10-18T07:06:35Z",
+  "as_of": "2026-10-20",
+  "generated_at": "2026-10-20T08:10:14Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -1751,18 +1751,24 @@
     }
   ],
   "stale_legs": [
+    "baskets: stale (as_of=2026-10-14)",
+    "radar: stale (as_of=2026-10-14)",
+    "narrative_emergence: stale (as_of=2026-10-14)",
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
+    "divergence_log[ai_semiconductors]: stale (as_of=2026-10-14)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-10-09)",
     "divergence_log[glp1_obesity]: stale (as_of=2026-10-04)",
     "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
+    "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-10-15)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[solar]: stale (as_of=2026-10-10)",
     "finnhub_recs: parquet absent — per-member revision dispersion unavailable"
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-10-18T07:06:35Z",
-  "inputs_hash": "sha256:5fe916b94f31be843c24f49c51eac896c61c998aca2de2fafcac1f85243f7848",
+  "produced_at": "2026-10-20T08:10:14Z",
+  "inputs_hash": "sha256:2c3ff1e0520e54292c0ce50d8939448c126cea818352f3a12ff71626090839e7",
   "tier": "display"
 }
