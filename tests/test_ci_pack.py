@@ -4348,6 +4348,9 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # F09 petroleum: native builder imports have opaque whole-root fallbacks.
+    # Keep its complete measured closure; do not widen ordinary packing probes.
+    "market-ontology-f09-petroleum-flow",
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.

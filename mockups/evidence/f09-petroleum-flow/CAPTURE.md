@@ -8,3 +8,5 @@ The source disclosure was opened and closed using the summary's native Enter-key
 
 
 Final integration: the corrected helper and consumer pass 88 affected tests. The normal builder was executed with collection disabled and existing native parquet inputs. It also refreshed unrelated commodity scores and a sparkline, so this release inserts only its actual rendered petroleum section at the committed template include boundary. Every other committed page byte, all eight inline scripts and the five incidental machine outputs are preserved. The final section's text and links match the captured fixture; a separate actual full-page browser opening confirmed the four values, common period and stale state. The screenshot matrix remains labeled controlled presentation proof.
+
+CI metadata correction: the native document reports `lang=zh-CN`. The evidence matrix uses the canonical `zh` axis key, so the five Chinese states now retain `browser_document_lang: zh-CN` and declare `locale/applied_locale: zh`. These are the same inspected captures; no image, source hash, or capture state was replaced.

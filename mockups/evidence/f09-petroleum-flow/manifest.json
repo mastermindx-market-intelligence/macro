@@ -8,7 +8,8 @@
   "honesty": {
     "access": "Controlled anonymous local page preview of exact partial with native-data fixture. Not authenticated production acceptance.",
     "authority": "Historical physical-flow context only; no mass balance, forecast or position authority.",
-    "gaps": "Existing floating Ask Mastermind launcher crosses a small part of some mobile crops. Final helper and full bake qualified separately; these images do not prove the data pipeline."
+    "gaps": "Existing floating Ask Mastermind launcher crosses a small part of some mobile crops. Final helper and full bake qualified separately; these images do not prove the data pipeline.",
+    "locale_mapping": "The observed document language zh-CN is the actual Simplified Chinese state; locale/applied_locale use the repository evidence-axis key zh. Original capture bytes, source bindings and state identity are unchanged."
   },
   "source_sha256": {
     "templates/commodities.html.j2": "866f5f7eb1a5b00aafd4752e69e3f489f9584cae71a1b26a56480aa3ea47599c",
@@ -129,12 +130,12 @@
         },
         {
           "access": "anonymous",
-          "locale": "zh-CN",
+          "locale": "zh",
           "theme": "light",
           "viewport": "mobile",
           "viewport_width": 390,
           "viewport_height": 844,
-          "applied_locale": "zh-CN",
+          "applied_locale": "zh",
           "applied_theme": "light",
           "captured": true,
           "file": "zh-light-390.jpg",
@@ -143,16 +144,17 @@
           "width": 350,
           "height": 582,
           "force_state": null,
-          "mime_type": "image/jpeg"
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
         },
         {
           "access": "anonymous",
-          "locale": "zh-CN",
+          "locale": "zh",
           "theme": "light",
           "viewport": "desktop",
           "viewport_width": 1440,
           "viewport_height": 900,
-          "applied_locale": "zh-CN",
+          "applied_locale": "zh",
           "applied_theme": "light",
           "captured": true,
           "file": "zh-light-1440.jpg",
@@ -161,16 +163,17 @@
           "width": 1140,
           "height": 450,
           "force_state": null,
-          "mime_type": "image/jpeg"
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
         },
         {
           "access": "anonymous",
-          "locale": "zh-CN",
+          "locale": "zh",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_width": 1440,
           "viewport_height": 900,
-          "applied_locale": "zh-CN",
+          "applied_locale": "zh",
           "applied_theme": "dark",
           "captured": true,
           "file": "zh-dark-1440.jpg",
@@ -179,16 +182,17 @@
           "width": 1140,
           "height": 450,
           "force_state": null,
-          "mime_type": "image/jpeg"
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
         },
         {
           "access": "anonymous",
-          "locale": "zh-CN",
+          "locale": "zh",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
           "viewport_height": 844,
-          "applied_locale": "zh-CN",
+          "applied_locale": "zh",
           "applied_theme": "dark",
           "captured": true,
           "file": "zh-dark-390.jpg",
@@ -197,16 +201,17 @@
           "width": 350,
           "height": 582,
           "force_state": null,
-          "mime_type": "image/jpeg"
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
         },
         {
           "access": "anonymous",
-          "locale": "zh-CN",
+          "locale": "zh",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_width": 390,
           "viewport_height": 844,
-          "applied_locale": "zh-CN",
+          "applied_locale": "zh",
           "applied_theme": "dark",
           "captured": true,
           "file": "zh-dark-sources.jpg",
@@ -215,7 +220,8 @@
           "width": 350,
           "height": 802,
           "force_state": "source_keyboard_focus",
-          "mime_type": "image/jpeg"
+          "mime_type": "image/jpeg",
+          "browser_document_lang": "zh-CN"
         },
         {
           "access": "anonymous",
