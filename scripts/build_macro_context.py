@@ -1067,6 +1067,7 @@ def _build_headwind_tailwind(world_state: dict | None, snapshot: dict | None) ->
     rt = ws.get("rates_transmission") or {}
     fx = ws.get("fx_dollar") or {}
     labels = (snapshot or {}).get("labels", {})
+    gate = rt.get("scored_status") if isinstance(rt.get("scored_status"), dict) else {}
 
     fx_tx = (fx.get("transmission") or {})
     dollar_desk = (fx.get("dollar_desk") or {})
@@ -1077,6 +1078,8 @@ def _build_headwind_tailwind(world_state: dict | None, snapshot: dict | None) ->
             "tailwinds": rt.get("tailwinds", []),
             "asof": rt.get("asof"),
             "state": rt.get("state", {}),
+            "scored_status_en": gate.get("en"),
+            "scored_status_zh": gate.get("zh"),
         },
         "fx": {
             "headwind_for": fx_tx.get("headwind_for", []),
