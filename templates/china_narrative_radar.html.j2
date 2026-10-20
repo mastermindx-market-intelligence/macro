@@ -4,6 +4,9 @@
 {% macro pc(v) -%}
 {% if v is none %}<span class="chg na">·</span>{% else %}<span class="chg {{ 'pos' if v>=0 else 'neg' }}">{{ '%+.2f'|format(v) }}%</span>{% endif %}
 {%- endmacro %}
+{% macro p1(v) -%}
+{% if v is none %}<span class="chg na">·</span>{% else %}{{ '%+.1f'|format(v) }}%{% endif %}
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,7 +158,10 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
 <div class="wrap">
 
   <div class="h1">📡 {{ t('China Narrative Basket Radar','中国主题篮子雷达') }}</div>
-  <div class="intro">{{ t('Which THS theme basket is running, is its global driver intact, and which members have clean entries?','哪个同花顺主题篮子正在运行？其全球驱动因素是否完好？哪些成员具有清洁入场点？') }}</div>
+  <div class="intro">{{ t(
+    'Which THS theme basket is running, is its global driver intact, and which members lead '
+    'its 63-day move?',
+    '哪个同花顺主题篮子正在运行？其全球驱动因素是否完好？哪些成员领涨其63日走势？') }}</div>
 
   {# ─── Honesty banner (bilingual) ──────────────────────────────────────── #}
   <div class="honesty-banner">
@@ -194,6 +200,9 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
         {% if b.state.label != '—' %}
           <span class="state-chip">{{ t(b.state.label, b.state.label_zh) }}{% if b.state.score is not none %} · {{ b.state.score|int }}/100{% endif %}</span>
         {% endif %}
+        {# Cycle-position inputs: drawdown from the 1y high, distance from the 200d SMA #}
+        <span class="state-chip">{{ t('1y high','距一年高点') }} {{ p1(b.state.drawdown_pct) }} ·
+          {{ t('vs 200d','偏离200日') }} {{ p1(b.state.dist_200d_pct) }}</span>
         {# Global AI arrow (AI-mapped baskets only) #}
         {% if ai %}
           <span class="ai-arrow" title="Global AI-semis (SMH/SOXX/TSM) 4w-momentum · {{ ai.validated_tag }}">
@@ -255,6 +264,8 @@ html[data-lang="zh"] .member-chip .mr.pos{color:var(--ink-act, var(--red))} html
       {% if st.score is not none %}
       <div class="bc-meta">
         <span class="state-chip">{{ t(st.label, st.label_zh) }} · {{ st.score|int }}/100</span>
+        <span class="state-chip">{{ t('1y high','距一年高点') }} {{ p1(st.drawdown_pct) }}</span>
+        <span class="state-chip">{{ t('vs 200d','偏离200日') }} {{ p1(st.dist_200d_pct) }}</span>
       </div>
       <div class="posbar-wrap">
         <div class="posbar-track">
