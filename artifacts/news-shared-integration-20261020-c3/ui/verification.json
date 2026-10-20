@@ -1,28 +1,32 @@
 {
   "schema": "ticker_news.ui_verification.v1",
-  "observed_at": "2026-10-20T05:56:55.094262+00:00",
+  "observed_at": "2026-10-20T08:38:22.877542+00:00",
   "proof_scope": "headless browser, fictional fixtures, shipped consumer bytes; no production/auth/provider claim",
   "checks": [
     "high signal retains event reporting and all reporting remains available",
     "keyboard expansion retrieves both publisher reports from shared story API",
+    "materially different figures remain visible with comparison status and publisher attribution",
     "earlier reporting and return to live view",
     "390px phone layout has no horizontal overflow",
     "Chinese labels and dynamic accessibility labels",
-    "ticker changes purge prior company content",
+    "ticker changes purge prior company content and comparison status",
     "denied access immediately purges stories",
-    "provider text renders as text without script or image execution"
+    "provider text renders as text without script or image execution",
+    "a bounded comparison is disclosed without presenting a resolved conclusion",
+    "older payloads without comparison evidence show no agreement or verification badge"
   ],
   "page_errors": [],
-  "request_count": 11,
+  "request_count": 15,
   "source_sha256": {
-    "templates/ticker_news.js": "41dae1133ce96b56a5a95439984c345cf259ecfd27479cfc6fdfcfff099b5562",
-    "templates/ticker_news.css": "d8aed4e6fee489f659f12de48e099ca29f093680566df51a578670d1562583b1",
+    "templates/ticker_news.js": "c51d5103fec5249ab58ed3a8eb91cdc1759709efa110255c12b0138a6315ae6b",
+    "templates/ticker_news.css": "b3ff2176393c29afb524d08a925b1df0049e15d08d9897bc211b6ac7649fc462",
     "templates/ticker_news_panel.html.j2": "f9f8401d3ad4a2ff5eef095cc8abce692883e17d1a7d9748e7c355db0b377dea"
   },
   "screenshots": [
     "desktop-dark.png",
     "phone-light.png",
     "desktop-chinese.png",
-    "restricted.png"
+    "restricted.png",
+    "comparison-limited.png"
   ]
 }

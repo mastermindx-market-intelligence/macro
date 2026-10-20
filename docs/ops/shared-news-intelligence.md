@@ -42,10 +42,12 @@ publication clock, not an authoritative update/removal clock: different payloads
 at the same clock remain recorded conflicts rather than arbitrary last-arrival
 corrections. There is no invented removal capability.
 
-Massive documents hourly upstream recency for this endpoint. The runner polls
-once per minute with a 24-hour overlap; this does not make upstream data real-time.
-Its health is presented separately as polled/hourly. The existing streaming lane
-remains the low-latency source.
+The runner polls once per minute by default with a 24-hour overlap. Polling
+cadence does not establish upstream publication delay or real-time availability.
+Its health reports the last completed refresh, errors and polled delivery. The
+panel describes that observed refresh state without claiming an hourly upstream
+schedule. Qualifying upstream recency requires source-clock observations for the
+actual admitted feed.
 
 Publisher admission occurs before report normalization, and again on the owner
 thread before commit. Revocation during a pending request prevents its writes.
@@ -288,8 +290,59 @@ commercial entitlement inventory. No receipt, credential or production
 configuration was changed.
 
 The indexed retrieval repair for the reproduced same-security burst miss and the
-browser delivery repair remain in separate bounded Fabric runs under this root.
-Their requests and local controller observations do not constitute accepted
-worker returns. Final integration must preserve this continuation's projection
-changes, qualify the saturation case and the real browser permission lifecycle,
-then follow the existing review, CI, merge and release owners.
+browser delivery repair have returned bounded patch artifacts under this root.
+Both artifacts were recovered from the declared source carrier and their retained
+bytes matched the worker-return SHA-256 values. The indexed-retrieval task's final
+execution receipt is ineligible (`rc=1`); its plausible patch and test narrative do
+not constitute an accepted worker outcome. No replay or provider retargeting is
+authorized by that receipt. Source inspection and independent qualification remain
+required before any candidate is accepted.
+
+Final integration must preserve this continuation's projection and comparison
+presentation, qualify the saturation case, cold/warm writer opening and the real
+browser permission lifecycle, then follow the existing review, CI, merge and
+release owners. The stream's consumed journal cursor must remain separate from
+the projected group's ordering value. A live consumer must replace a complete
+authorized display projection or reconcile through an authoritative snapshot;
+it must not retain omitted grant-dependent fields from an older row.
+
+
+### Qualification and consumer preparation — 20 October 2026, 08:38 UTC
+
+The expanded local news and deployment qualification passed **1,010 tests**.
+CI's discovered import-closure violations were repaired by adding 27 explicit
+paths to the 12 existing exclusive job scopes and registering the three new
+news suites in the existing ticker-news job. No check was waived or narrowed.
+The local contract-delta check against `13e098071ab2799c41a170d21ad522f751dfb15a`
+reported **zero introduced and zero inherited violations**. Deployment restart
+coverage now includes the shared `news_common` dependency for both API and writer,
+and the optional Massive adapter for the writer.
+
+Macro's English and Chinese display exposes `reports_differ` and
+`comparison_limited` without labeling a report verified or treating arrival order
+as truth. Expanded reports retain their own publisher attribution and differing
+figures. Missing comparison evidence has no agreement badge. The real Chromium
+fixture harness passed **11 interaction checks**, with zero page errors and five
+retained desktop, phone, language and access-state screenshots. The final refresh
+wording change also passed all nine intake tests, JavaScript and deployment-shell
+syntax checks, and paired template/site asset equality. These screenshots exercise
+shipped component bytes with fictional reports; they do not establish the full
+production stock page, actual source availability or end-to-end market latency.
+
+Terminal PR [#1088](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1088)
+at `683ad84501c5188c4fea4f6d16a87f891952ba7c` preserves the comparison enum and
+optional complete-projection fields through its JSON proxy and mounted feed.
+Old API payloads default to `not_compared`; missing projection fields stay absent.
+Malformed present enums, unsafe integer cursors and inconsistent counts fail
+closed. A read-only independent review at that exact head passed: 137 focused
+tests, 140 adjacent news tests, five reviewer probes and full TypeScript checking.
+The parent accepted that semantic review, with binding CI and normal release
+still required. This is contract preparation: visible Terminal comparison labels
+and direct event application remain separate integration work. It does not
+release the held Terminal sidebar PR #1081 or Macro cockpit PR #9612.
+
+The audience-qualified research/blog/marketing evidence adapter is prepared;
+production callers and their explicit audience/source grants remain to be
+qualified. Additional-publisher activation and actual publisher coverage remain
+open. Existing source receipts, the canonical writer and publication authority
+are unchanged by these local proofs.

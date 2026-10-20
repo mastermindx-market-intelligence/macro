@@ -18,7 +18,7 @@ from playwright.async_api import async_playwright
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def row(story, title, *, low=False, count=1):
+def row(story, title, *, low=False, count=1, comparison="not_compared"):
     return {
         "sequence": 10+story, "source": "benzinga", "publisher": "Benzinga",
         "source_item_id": str(story), "story_id": "story-"+str(story),
@@ -27,6 +27,7 @@ def row(story, title, *, low=False, count=1):
         "teaser": "Preview fixture: reporting stays readable with room for context, source attribution and the underlying reports.",
         "published_at": "2026-10-20T10:00:00Z", "updated_at": None,
         "received_at": "2026-10-20T10:00:01Z", "universe_revision": "fixture",
+        "reporting_state": comparison,
         "quality": {"score": 35 if low else 85, "low_value": low,
                     "reason": "routine_options_template" if low else None},
     }
@@ -35,7 +36,7 @@ def row(story, title, *, low=False, count=1):
 def snapshot(ticker="NVDA"):
     return {"schema": "ticker_news.snapshot.v1", "ticker": ticker,
             "security_id": "fixture-"+ticker, "state": "live",
-            "rows": [row(1,"Nvidia announces a new data-center accelerator",count=2),
+            "rows": [row(1,"Nvidia acquisition consideration rises to $9.1 billion",count=2,comparison="reports_differ"),
                      row(2,"Nvidia receives regulatory approval for a new facility"),
                      row(3,"Nvidia whale alerts from today's trading session",low=True)],
             "next_cursor": 10, "has_more": True,
@@ -84,7 +85,9 @@ async def verify(destination: Path):
                 elif "/stories/" in url:
                     story=url.split("/")[-1]
                     members=[deepcopy(state["packet"]["rows"][0]),deepcopy(state["packet"]["rows"][0])]
-                    members[1].update(source="massive:reuters.com",publisher="Reuters",source_item_id="wire-1",title="Second publisher's report on the same event")
+                    members[1].update(source="massive:reuters.com",publisher="Reuters",source_item_id="wire-1",
+                                      title="Reuters reports acquisition consideration of $8.2 billion",
+                                      published_at="2026-10-20T09:55:00Z",received_at="2026-10-20T09:55:01Z")
                     await request.fulfill(json={"schema":"ticker_news.story.v1","story_id":story,"source_count":2,"item_count":2,"members":members})
                 else:
                     state["snapshot_count"]+=1
@@ -110,9 +113,13 @@ async def verify(destination: Path):
         await page.locator('[data-tn-filter="signal"]').click()
         await page.locator(".tn-group summary").focus()
         await page.keyboard.press("Enter")
-        await page.get_by_text("Second publisher's report on the same event",exact=True).wait_for()
+        await page.get_by_text("Reuters reports acquisition consideration of $8.2 billion",exact=True).wait_for()
         assert await page.locator(".tn-member").count()==2
         checks.append("keyboard expansion retrieves both publisher reports from shared story API")
+        assert await page.locator(".tn-comparison").inner_text()=="Reports differ"
+        assert await page.locator(".tn-comparison-note").inner_text()=="Reports in this group use different wording or figures. Compare the sources below."
+        assert (await page.locator(".tn-member").nth(1).locator("small").inner_text()).startswith("Reuters")
+        checks.append("materially different figures remain visible with comparison status and publisher attribution")
         await page.screenshot(path=str(destination/"desktop-dark.png"),full_page=True)
         await page.locator("[data-tn-more]").click()
         await page.get_by_text("Earlier reporting remains accessible",exact=True).wait_for()
@@ -129,11 +136,14 @@ async def verify(destination: Path):
         await page.set_viewport_size({"width":1440,"height":1100})
         await page.screenshot(path=str(destination/"desktop-chinese.png"),full_page=True)
         assert await page.locator(".tn-filters").get_attribute("aria-label")=="新闻覆盖"
+        assert await page.locator(".tn-comparison").inner_text()=="报道存在差异"
+        assert await page.get_by_text("Reports differ",exact=True).count()==0
         checks.append("Chinese labels and dynamic accessibility labels")
         await page.evaluate("location.hash='AAPL'")
         await page.get_by_text("Apple reporting after a ticker change",exact=True).wait_for()
-        assert not await page.get_by_text("Nvidia announces a new data-center accelerator",exact=True).count()
-        checks.append("ticker changes purge prior company content")
+        assert not await page.get_by_text("Nvidia acquisition consideration rises to $9.1 billion",exact=True).count()
+        assert await page.locator(".tn-comparison").count()==0
+        checks.append("ticker changes purge prior company content and comparison status")
         state["status"]=403
         await page.locator("[data-tn-retry]").evaluate("(node)=>{node.hidden=false;node.click()}")
         await page.wait_for_function("document.querySelector('[data-tn-status]').dataset.state==='restricted'")
@@ -147,6 +157,23 @@ async def verify(destination: Path):
         assert await page.locator(".tn-rows img").count()==0
         assert not await page.evaluate("Boolean(window.fixtureXSS)")
         checks.append("provider text renders as text without script or image execution")
+        await page.close()
+        # A separate fresh fixture covers a group beyond the comparison budget.
+        state["packet"]["rows"]=[row(6,"Comparison-limited reporting fixture",count=33,comparison="comparison_limited")]
+        state["packet"]["has_more"]=False
+        state["packet"]["next_cursor"]=None
+        comparison_page=await context.new_page()
+        comparison_page.on("pageerror",lambda error:errors.append(str(error)))
+        await comparison_page.route("**/*",route)
+        await comparison_page.goto("https://news-fixture.test/#NVDA")
+        await comparison_page.locator(".tn-comparison").wait_for()
+        assert await comparison_page.locator(".tn-comparison").inner_text()=="Comparison limited"
+        await comparison_page.screenshot(path=str(destination/"comparison-limited.png"),full_page=True)
+        checks.append("a bounded comparison is disclosed without presenting a resolved conclusion")
+        state["packet"]["rows"][0].pop("reporting_state")
+        await comparison_page.evaluate("window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{event:'SIGNED_IN'}}))")
+        await comparison_page.wait_for_function("document.querySelectorAll('.tn-row').length===1 && document.querySelectorAll('.tn-comparison').length===0")
+        checks.append("older payloads without comparison evidence show no agreement or verification badge")
         assert all(x["authorized"] for x in requests)
         assert not errors, errors
         await context.close();await browser.close()
@@ -155,7 +182,7 @@ async def verify(destination: Path):
             "checks":checks,"page_errors":errors,"request_count":len(requests),
             "source_sha256":{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in
                              ("templates/ticker_news.js","templates/ticker_news.css","templates/ticker_news_panel.html.j2")},
-            "screenshots":["desktop-dark.png","phone-light.png","desktop-chinese.png","restricted.png"]}
+            "screenshots":["desktop-dark.png","phone-light.png","desktop-chinese.png","restricted.png","comparison-limited.png"]}
     (destination/"verification.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report,indent=2))
 

@@ -151,7 +151,6 @@ class SupplementalNewsIntake:
             "accepted_reports": self.accepted_reports,
             "publishers": list(self.publishers),
             "delivery": "polled",
-            "upstream_recency": "hourly",
         }
 
     def close(self):

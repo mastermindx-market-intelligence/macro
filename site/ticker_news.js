@@ -40,6 +40,11 @@
     function message(text){find("message").textContent=text;find("message").hidden=!text;}
     function time(value){var n=Date.parse(value);return Number.isFinite(n)?new Intl.DateTimeFormat(zh()?"zh-CN":"en-GB",{dateStyle:"medium",timeStyle:"short"}).format(n):tx("Time not supplied","未提供时间");}
     function publisher(row){return row.publisher||String(row.source||"").replace(/^massive:/,"").replace(/^benzinga$/,"Benzinga");}
+    function comparison(row){
+      if(row.reporting_state==="reports_differ")return {state:row.reporting_state,label:tx("Reports differ","报道存在差异"),note:tx("Reports in this group use different wording or figures. Compare the sources below.","此组报道的表述或数据存在差异，请对比下方各来源。")};
+      if(row.reporting_state==="comparison_limited")return {state:row.reporting_state,label:tx("Comparison limited","对比尚不完整"),note:tx("This group has not been fully compared. Review the individual reports below.","尚未完成此组报道的全面对比，请查看下方各篇报道。")};
+      return null;
+    }
     function link(value,text){var url=safeURL(value),el=node(url?"a":"span","",text);if(url){el.href=url;el.target="_blank";el.rel="noopener noreferrer";}return el;}
     async function request(path,controller,accept){
       if(!win.MDXAuth||typeof win.MDXAuth.client!=="function"){var noAuth=new Error("auth");noAuth.status=401;throw noAuth;}
@@ -83,11 +88,13 @@
       var amended=row.updated_at&&Date.parse(row.updated_at)>Date.parse(row.published_at);
       meta.appendChild(node("time","",(amended?tx("Updated ","更新 "):"")+time(amended?row.updated_at:row.published_at||row.received_at)));
       if(row.quality&&row.quality.low_value)meta.appendChild(node("span","tn-routine",tx("Routine coverage","例行报道")));
+      var comparisonInfo=comparison(row);
+      if(comparisonInfo){var badge=node("span","tn-comparison",comparisonInfo.label);badge.dataset.state=comparisonInfo.state;badge.title=comparisonInfo.note;meta.appendChild(badge);}
       card.appendChild(meta);var title=node("h3","tn-title");title.appendChild(link(row.url,row.title));card.appendChild(title);
       if(row.teaser)card.appendChild(node("p","tn-teaser",row.teaser));
       if(row.item_count>1){
         var details=node("details","tn-group"),summary=node("summary","",tx(row.item_count+" reports · "+row.source_count+" publisher"+(row.source_count===1?"":"s"),row.item_count+" 篇报道 · "+row.source_count+" 个来源"));
-        details.appendChild(summary);details.appendChild(node("div","tn-members"));details.addEventListener("toggle",function(){if(!details.open){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);}else loadGroup(details,row);});card.appendChild(details);
+        details.appendChild(summary);if(comparisonInfo)details.appendChild(node("p","tn-comparison-note",comparisonInfo.note));details.appendChild(node("div","tn-members"));details.addEventListener("toggle",function(){if(!details.open){var c=groupRequests.get(details);if(c)c.abort();groupRequests.delete(details);}else loadGroup(details,row);});card.appendChild(details);
       }return card;
     }
     function render(){
@@ -116,7 +123,7 @@
       else if(state==="catching_up")status("catching_up","Catching up with reporting","正在同步报道");
       else status("degraded","Coverage delayed · showing available reports","覆盖延迟 · 显示可用报道");
       var extras=Array.isArray(h.additional_sources)?h.additional_sources:[];find("coverage").hidden=!extras.length;
-      find("coverage").textContent=extras.map(function(e){return tx("Additional publishers: "+(e.state==="available"?"available":"delayed")+" · hourly upstream feed","更多来源："+(e.state==="available"?"可用":"延迟")+" · 上游每小时更新");}).join(" · ");
+      find("coverage").textContent=extras.map(function(e){var labels={available:tx("Additional reporting: refresh complete","补充报道：刷新完成"),waiting:tx("Additional reporting: awaiting refresh","补充报道：等待刷新"),restricted:tx("Additional reporting: permission required","补充报道：需要授权"),unavailable:tx("Additional reporting: unavailable","补充报道：暂不可用")};return (labels[e.state]||tx("Additional reporting: refresh delayed","补充报道：刷新延迟"))+(e.last_successful_poll?tx(" · Last completed "," · 最近完成 ")+time(e.last_successful_poll):"");}).join(" · ");
     }
     function accept(p,background){
       var old=new Set(visibleIds);packet=p;
