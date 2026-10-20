@@ -42,7 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
-from lib.help_directory import help_page_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model, refresh_disclosure  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -3799,7 +3799,7 @@ def build_help_page(env: Environment, site: Path, generated: str) -> None:
     ``changelog``, which this function's except-and-log swallowed silently).
     """
     vm = help_page_view_model(config.ROOT)
-    html = env.get_template("help.html.j2").render(generated_utc=generated, **vm)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, refresh=refresh_disclosure(config.ROOT, generated), **vm)
     write_page(site / "help.html", html)
     log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
 
@@ -6227,6 +6227,7 @@ def main() -> int:
                   "theme.css", "navigation-refresh.css", "product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "theme.js", "terminal_overlay.js", "mtf.js", "chart_i18n.js", "timemachine.js",
                   "illus.css", "illus.js",
+                  "mm_brain.js", "mm_brain_visuals.js", "mm_brain_visuals.css",
                   "account.js",
                   "market_memory.css", "market_memory.js", "market_memory_intent.js",
                   "market_memory_retained.css", "market_memory_retained.js",
@@ -6245,6 +6246,7 @@ def main() -> int:
                   "tablesort.js", "charts.js",
                   "aibrief.js", "stockbrief.js", "aidesk_lean.js",
                   "stockview.js",
+                  "ticker_news.js", "ticker_news.css",
                   "lightweight-charts.js",
                   "allocation_scorecard.js", "live.js", "risk_state_live.js",
                   "risk_envelope_live.js",

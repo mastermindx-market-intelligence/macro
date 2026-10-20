@@ -14,6 +14,8 @@ def analyze_vault_report(
     *,
     model_id: str,
     call: Callable | None = None,
+    source_record=None,
+    layout_scope=None,
 ) -> dict[str, Any]:
     report_id = str(item.get("id") or item.get("report_id") or "").strip()
     document = {
@@ -25,7 +27,7 @@ def analyze_vault_report(
         "title": str(item.get("title") or ""),
         "published_at": str(item.get("published_at") or ""),
     }
-    return analyze_document(document, body, model_id=model_id, call=call)
+    return analyze_document(document, body, model_id=model_id, call=call, source_record=source_record, layout_scope=layout_scope)
 
 
 def analyze_and_persist_vault_report(
@@ -36,15 +38,19 @@ def analyze_and_persist_vault_report(
     store: Any,
     expected_current_artifact_sha256: str | None = None,
     call: Callable | None = None,
+    source_record=None,
+    layout_scope=None,
 ) -> dict[str, Any]:
     """Run W1 analysis and persist only an explicitly successful grounded artifact."""
-    result = analyze_vault_report(item, body, model_id=model_id, call=call)
+    result = analyze_vault_report(item, body, model_id=model_id, call=call, source_record=source_record, layout_scope=layout_scope)
     if result.get("state") != "ok" or not isinstance(result.get("rio"), dict):
         return {**result, "persistence": None}
     receipt = persist_analysis(
         store,
         result,
         source_body=body,
+        source_record=source_record,
+        layout_scope=layout_scope,
         expected_current_artifact_sha256=expected_current_artifact_sha256,
     )
     return {**result, "persistence": receipt.to_dict()}

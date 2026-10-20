@@ -686,3 +686,244 @@ def test_alt_data_pipeline_card_label_reads_window_days():
     html90 = _render_alt_data({"pipeline_counts": {"rows": one, "window_days": 90}})
     assert "90d vs prior 90d" in html90
     assert "近90天 vs 前90天" in _pipeline_card(html90)
+
+
+# =========================================================================== W19-C1
+# ALT-W19C-1 (convergence-onset strip) + ALT-W19C-3 (context-only grant reason).
+# Inline fixtures shaped like the committed producer records (engine/altdata_alerts.py:49-53,
+# engine/altdata_emit.py:239-240). No data/, no site/, no network.
+
+
+def _w19c1_alert(i: int, **kw) -> dict:
+    """Synthetic alert record; index 0 is the NEWEST ts — recent() sorts newest
+    first (engine/altdata_alerts.py:102), so the strip must keep this order."""
+    tk = kw.get("asset") or f"T{i}"
+    date = f"2026-10-{18 - i:02d}"
+    ev = {"id": f"altdata:{tk}:convergence:{date}:up", "ts": f"{date}T00:00:00",
+          "source": "altdata", "asset": tk, "type": "convergence", "severity": "medium",
+          "headline": f"2-channel convergence on {tk}", "detail": "lobbying, trump",
+          "headline_zh": f"{tk} 2通道汇聚", "detail_zh": "游说、特朗普交易",
+          "context": {"score": 2, "channels": ["lobbying", "trump"]},
+          "anchor": "#convergence"}
+    ev.update(kw)
+    return ev
+
+
+def _w19c1_cvx_alert() -> dict:
+    """The committed 2026-10-18 CVX onset record (design F1), keys as _ev writes them."""
+    return _w19c1_alert(0, asset="CVX", severity="high",
+                        headline="4-channel convergence on CVX (Trump-linked)",
+                        headline_zh="CVX 4通道汇聚（特朗普关联）", detail="score 4, 4 channels",
+                        detail_zh="评分 4，4个通道",
+                        context={"score": 4, "trump_linked": True,
+                                 "channels": ["lobbying", "material_8k", "special_situation",
+                                              "trump"]})
+
+
+def _w19c1_article3() -> dict:
+    """Committed article3 block (mastermind.json shape) — reason quoted, never parsed."""
+    return {"granted": False, "lift_lb": None, "evidence_asof": "2026-10-16",
+            "reason": "insufficient-n: n=17 < min_n=25"}
+
+
+def _w19c1_mm(**kw) -> dict:
+    mm = {"signals": [], "broken_signals": []}
+    mm.update(kw)
+    return mm
+
+
+def _w19c1_strip(html: str) -> str:
+    """Onset strip: its 'Newly converging' heading up to the next </section>."""
+    i = html.index("Newly converging")
+    return html[i:html.index("</section>", i)]
+
+
+def _w19c1_board(html: str) -> str:
+    """Conviction board: id="convergence" up to its </section>."""
+    i = html.index('id="convergence"')
+    return html[i:html.index("</section>", i)]
+
+
+def test_alt_data_renders_onset_alert_from_committed_shape():
+    # Spec 1: the alerts the builder already passes (scripts/build_alt_data.py:142, :220)
+    strip = _w19c1_strip(_render_alt_data({"alerts": [_w19c1_cvx_alert()]}))
+    assert "CVX" in strip
+    assert "2026-10-18" in strip                          # a.ts[:10] date column
+    assert "4-channel convergence on CVX" in strip        # EN headline
+    assert "CVX 4通道汇聚" in strip                        # zh half is headline_zh
+    assert "watch, not a buy" in strip and "观察，非买入信号" in strip
+
+
+def test_alt_data_hides_onset_strip_when_alerts_empty():
+    html = _render_alt_data({})                            # helper default: alerts=[]
+    assert "Newly converging" not in html
+    assert "新汇聚" not in html
+    ctl = _render_alt_data({"alerts": [_w19c1_cvx_alert()]})   # control: guard, not absence
+    assert "Newly converging" in ctl
+    assert "新汇聚" in ctl
+
+
+def test_alt_data_onset_strip_caps_at_eight_newest_first():
+    ten = [_w19c1_alert(i) for i in range(10)]             # given NEWEST first
+    strip = _w19c1_strip(_render_alt_data({"alerts": ten}))
+    pos = [strip.index(f'class="tkc">T{i}<') for i in range(8)]
+    assert pos == sorted(pos)                              # producer order kept, never re-sorted
+    assert ">T8<" not in strip and ">T9<" not in strip     # the 8-row ceiling
+
+
+def test_alt_data_board_carries_convergence_anchor():
+    # every alert record carries "anchor": "#convergence" (engine/altdata_alerts.py:53) and
+    # the feed deep-links alt_data.html#convergence; the always-rendering board lands it
+    html = _render_alt_data({})
+    assert html.count('id="convergence"') == 1
+    assert "Conviction board" in _w19c1_board(html)
+
+
+def test_alt_data_prints_article3_reason_from_committed_shape():
+    # Spec 3: a context-only board prints the RECORDED reason, verbatim
+    board = _w19c1_board(_render_alt_data(
+        {"mastermind": _w19c1_mm(is_context_only=True, article3=_w19c1_article3())}))
+    assert "Context only — not yet cleared as actionable" in board
+    assert "仅作背景参考" in board
+    assert "insufficient-n: n=17 &lt; min_n=25" in board  # autoescaped, not parsed
+    assert "< min_n" not in board                        # never raw-marked-up
+
+
+def test_alt_data_hides_article3_note_when_not_context_only():
+    ctl = _w19c1_board(_render_alt_data(
+        {"mastermind": _w19c1_mm(is_context_only=True, article3=_w19c1_article3())}))
+    assert "Context only" in ctl                          # control
+    for mm in (_w19c1_mm(is_context_only=False, article3=_w19c1_article3()),
+               _w19c1_mm()):                               # key absent entirely
+        assert "Context only" not in _w19c1_board(_render_alt_data({"mastermind": mm}))
+
+
+def test_alt_data_context_only_without_article3_prints_no_none():
+    board = _w19c1_board(_render_alt_data(
+        {"mastermind": _w19c1_mm(is_context_only=True, article3=None)}))
+    assert "Context only — not yet cleared as actionable" in board
+    assert "None" not in board
+    # clause ends clean: no dangling ": " when no reason was recorded
+    assert "actionable</span>" in board
+    board2 = _w19c1_board(_render_alt_data(
+        {"mastermind": _w19c1_mm(is_context_only=True,
+                                 article3={"granted": False, "lift_lb": None})}))
+    assert "Context only — not yet cleared as actionable</span>" in board2
+    assert "None" not in board2
+
+
+# ---- W19-C2: prints the dates/fields the feeds already carry ---------------
+
+def _w19c2_feed(datasets=None, **signals):
+    """Feed shaped like _render_alt_data's default (seed :422-425) but with this
+    lane's signal rows / datasets merged in."""
+    sig = {"gov_contracts": [], "political": {"buys": []}, "insiders": {"buys": []},
+           "app_ratings": [], "patents": [], "lobbying": [], "inst_13f": {"adds": []},
+           "bills": []}
+    sig.update(signals)
+    return {"as_of": "2026-01-01", "source": "fixture",
+            "datasets": datasets or {}, "signals": sig}
+
+
+def _w19c2_card(html, marker):
+    """One signal-grid card: h3 text through the next </div> (see _pipeline_card)."""
+    start = html.index(marker)
+    return html[start:html.index("</div>", start)]
+
+
+def _w19c2_cov(html):
+    """Coverage-chip strip only (the sid-cov div), never the page CSS."""
+    start = html.index('class="sid-cov"')
+    return html[start:html.index("</div>", start)]
+
+
+def _w19c2_oe_row(tk="OFAL", dpi=0.549, lean="balanced", stale=False):
+    """Producer shape of signals.offexchange (engine/altdata.py:917-953)."""
+    return {"ticker": tk, "date": "2026-10-09", "otc_total": 190618890.0,
+            "dpi": dpi, "lean": lean, "stale": stale}
+
+
+def test_alt_data_fda_card_prints_event_date():
+    # R1: FDA records carry an ISO "date" (engine/altdata.py:813-814); the card
+    # must print it, and a missing date is the em dash — never the literal None.
+    html = _render_alt_data({"feed": _w19c2_feed(fda=[
+        {"ticker": "NVS", "kind": "label_expansion", "drug": "RHAPSIDO",
+         "date": "2026-10-06"},
+        {"ticker": "ABBV", "kind": "approval", "drug": "JUVMO",
+         "date": "2026-09-25"},
+        {"ticker": "ZZZ", "kind": "approval", "drug": None, "date": None}])})
+    card = _w19c2_card(html, "FDA catalysts")
+    assert "2026-10-06" in card and "2026-09-25" in card
+    assert '<td class="mut">—</td></tr>' in card   # None date -> last cell dash
+    assert "None" not in card
+
+
+def test_alt_data_earnings_card_prints_committed_last_surprise():
+    # R2: last_surprise_pct (engine/altdata.py:430-436) prints signed, 1 dp.
+    html = _render_alt_data({"feed": _w19c2_feed(earnings=[
+        {"ticker": "CCK", "next_date": "2026-10-20", "days_to": 1,
+         "eps_forecast": 2.25, "last_surprise_pct": 15.8},
+        {"ticker": "DWN", "next_date": "2026-10-21", "days_to": 2,
+         "eps_forecast": None, "last_surprise_pct": -4.1}])})
+    card = _w19c2_card(html, "Earnings imminent")
+    assert "+15.8%" in card and "-4.1%" in card
+    assert "上次业绩意外" in card
+    assert "watch, not a buy" in card   # seat ruling: existing note unchanged
+
+
+def test_alt_data_earnings_surprise_none_is_dash():
+    html = _render_alt_data({"feed": _w19c2_feed(earnings=[
+        {"ticker": "FITB", "next_date": "2026-10-20", "days_to": 1,
+         "eps_forecast": 1.09, "last_surprise_pct": None}])})
+    card = _w19c2_card(html, "Earnings imminent")
+    assert '<span class="mut">—</span></td></tr>' in card   # last cell is dash
+    assert "None" not in card
+
+
+def test_alt_data_renders_offexchange_row_from_committed_shape():
+    # R3 (Spec 4): new card for s.offexchange; otc_total units unverified -> absent.
+    html = _render_alt_data({"feed": _w19c2_feed(offexchange=[
+        _w19c2_oe_row(), _w19c2_oe_row("WFF", 0.633, "distribution"),
+        _w19c2_oe_row("T", 0.571, "balanced")])})
+    card = _w19c2_card(html, "Off-exchange flow")
+    for want in ("OFAL", "0.549", "均衡", "WFF", "0.633", "派发", "T", "0.571",
+                 "2026-10-09", "FINRA", "卖空比例"):
+        assert want in card, want
+    assert "190618890" not in card and "190,618,890" not in card
+    assert "None" not in card
+
+
+def test_alt_data_offexchange_stale_flag():
+    # R3: first record's stale -> "stale"/数据滞后 in the h3; false -> neither;
+    # an empty list hides the whole card.
+    html = _render_alt_data({"feed": _w19c2_feed(offexchange=[
+        _w19c2_oe_row(stale=True)])})
+    i = html.index("Off-exchange flow")
+    h3 = html[i:html.index("</h3>", i)]
+    assert "数据滞后" in h3 and "stale" in h3
+    html2 = _render_alt_data({"feed": _w19c2_feed(offexchange=[_w19c2_oe_row()])})
+    j = html2.index("Off-exchange flow")
+    h3b = html2[j:html2.index("</h3>", j)]
+    assert "数据滞后" not in h3b and "stale" not in h3b
+    html3 = _render_alt_data({"feed": _w19c2_feed(offexchange=[])})
+    assert "Off-exchange flow" not in html3
+
+
+def test_alt_data_coverage_chip_prints_committed_last_seen():
+    # R4 (Spec 2): feed.datasets[..].last_seen (engine/altdata.py:1250-1265)
+    # rides on the chip; row count stays.
+    html = _render_alt_data({"feed": _w19c2_feed(datasets={"senate": {
+        "rows": 5069, "last_seen": "2026-09-04", "label_en": "Senate trading",
+        "label_zh": "参议院交易", "emoji": "🏛"}})})
+    cov = _w19c2_cov(html)
+    assert "5,069" in cov and "2026-09-04" in cov
+    assert "None" not in cov
+
+
+def test_alt_data_coverage_last_seen_none_is_dash():
+    html = _render_alt_data({"feed": _w19c2_feed(datasets={"senate": {
+        "rows": 5069, "last_seen": None, "label_en": "Senate trading",
+        "label_zh": "参议院交易", "emoji": "🏛"}})})
+    cov = _w19c2_cov(html)
+    assert "—</span>" in cov   # chip ends with the dash
+    assert "None" not in cov
