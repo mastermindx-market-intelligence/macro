@@ -9958,7 +9958,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -10028,7 +10028,7 @@ jobs:
           tests/test_capital_structure_pit.py
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
-          tests/test_capital_structure_page.py
+          tests/test_capital_structure_page.py tests/test_bond_issue_terms.py tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10777,6 +10777,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
@@ -16000,6 +16001,9 @@ jobs:
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -18969,6 +18973,8 @@ jobs:
     paths:
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -25259,6 +25265,11 @@ jobs:
       # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
       - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs
         run: python -m pytest tests/test_spvector_gate_chips.py -q
+      # W23-L13 (S&P Vector, 2026-10-20): the scorecard states its basis -- backtest window, the
+      # bootstrap CI definition, the Sharpe>0 share and the drawdown CI -- and the overlay card
+      # tallies its forward log (days, builds, veto days). Pure helper + fixture renders.
+      - name: W23-L13 spvector scorecard basis + overlay forward-log tally
+        run: python -m pytest tests/test_spvector_scorecard_basis.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
@@ -25301,6 +25312,9 @@ jobs:
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -26646,6 +26660,9 @@ jobs:
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
+      - "lib/dataos/sec_filing_identity.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
