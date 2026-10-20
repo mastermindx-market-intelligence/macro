@@ -42,6 +42,29 @@ def reference():
         field_presence={k: True for k in c}, completed_at=RECEIVED, payload_sha256="a" * 64)
 
 
+def test_second_order_source_evidence_is_bound_without_changing_history_only_digest():
+    g, oi, _ = book()
+    original = exposure_input_digest(g, oi, ASOF, 'SPY')
+    frame = g.copy(); frame['_theta_second_acquisition'] = 'synthetic-second-response'
+    with_second = exposure_input_digest(frame, oi, ASOF, 'SPY')
+    assert with_second != original
+    frame['second_order_underlying_price'] = 101
+    assert exposure_input_digest(frame, oi, ASOF, 'SPY') != with_second
+    frame.drop(columns=['_theta_second_acquisition', 'second_order_underlying_price'], inplace=True)
+    assert exposure_input_digest(frame, oi, ASOF, 'SPY') == original
+
+
+def test_snapshot_capture_cannot_satisfy_the_dated_history_numerical_reader():
+    from lib.options_source_receipts import THETA_SNAPSHOT_ENDPOINTS, native_snapshot_acquisitions
+    g, _, _ = book()
+    frame = g.copy()
+    frame[ACQUISITION_COLUMN] = theta_acquisition(THETA_SNAPSHOT_ENDPOINTS['second'],
+        dict(symbol='SPY', expiration='*', strike='*', format='csv', version='latest'),
+        b'synthetic-snapshot', origin='http://theta-test:25503', received_at=RECEIVED)
+    assert native_snapshot_acquisitions(frame, 'SPY', 'second', now=RECEIVED)
+    assert native_acquisitions(frame, 'SPY', ASOF, 'greeks', now=RECEIVED) is None
+
+
 def test_large_reference_composition_preserves_existing_evidence_and_duplicate_refusal():
     observations=[];terms=[]
     for strike in range(100,3100):
@@ -214,3 +237,81 @@ def test_reference_conflicts_and_late_terms_do_not_rewrite_owner_evidence():
     out = compose_native_exposure_context(g, oi, ASOF, "SPY", context=ctx)
     assert pd.Timestamp(out["contract_terms"][0]["available_at"]) == pd.Timestamp(RECEIVED)
     assert build_exposure_projection(g, oi, ASOF, "SPY", context=out)["metrics"]["gamma"]["exclusions"] == {"series_terms_availability_unqualified": 1}
+
+
+def test_ordinary_qqq_terms_are_explicit_rule_interpretation_not_raw_defaults():
+    from lib.options_source_receipts import ordinary_etf_terms, ordinary_spy_terms
+    obs=reference();c=obs['contract'];c.update(ticker='O:QQQ261023C00100000',underlying_ticker='QQQ')
+    obs['path']='/v3/reference/options/contracts/'+c['ticker']
+    term=massive_reference_terms(obs,'QQQ','SEC:US-XNAS-QQQ')
+    assert 'multiplier' not in term and 'additional_underlyings' not in term
+    before=deepcopy(term)
+    out=ordinary_etf_terms(term,root='QQQ')
+    assert term==before and out['currency']=='USD' and out['multiplier']==100
+    assert out['deliverable']=='100_underlying_shares'
+    assert out['term_interpretation']['policy']=='occ_standard_qqq_etf/v1'
+    assert out['term_interpretation']['additional_underlyings_field_present'] is False
+    assert 'additional_underlyings' not in out and 'correction' not in out
+    assert 'economic_expiry_at' not in out and 'model_ref' not in out
+    assert ordinary_spy_terms(term)==term
+
+
+@pytest.mark.parametrize('change',[
+    {'root':'SPY'}, {'shares_per_contract':10}, {'exercise_style':'european'},
+    {'additional_underlyings':[{'type':'cash','amount':1}]}, {'terms_ref':'https://untrusted.example/contracts'},
+])
+def test_ordinary_qqq_terms_withhold_adjusted_unknown_or_foreign_terms(change):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root='QQQ',shares_per_contract=100,exercise_style='american',
+        terms_ref='https://api.polygon.io/v3/reference/options/contracts#sha256='+'a'*64)
+    term.update(change)
+    assert ordinary_etf_terms(term,root='QQQ')==term
+
+
+def test_qqq_terms_policy_cannot_be_selected_by_an_absent_policy():
+    from lib.options_source_receipts import ordinary_etf_terms
+    obs=reference();c=obs['contract'];c.update(ticker='O:QQQ261023C00100000',underlying_ticker='QQQ')
+    obs['path']='/v3/reference/options/contracts/'+c['ticker']
+    ctx=dict(root='QQQ',security_id='SEC:US-XNAS-QQQ',contract_terms=[],
+             contract_reference_observations=[obs],input_sha256=exposure_input_digest(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ'))
+    out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ',context=ctx)
+    assert 'multiplier' not in out['contract_terms'][0]
+    ctx['term_policy']='occ_standard_qqq_etf/v1'
+    out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ',context=ctx)
+    assert out['contract_terms'][0]['multiplier']==100
+    assert ordinary_etf_terms(out['contract_terms'][0],root='QQQ')['multiplier']==100
+
+
+@pytest.mark.parametrize("root",["SPY","QQQ"])
+@pytest.mark.parametrize("field,value",[("currency","EUR"),("multiplier",50),("deliverable","cash"),("currency",None)])
+def test_ordinary_terms_never_overwrite_contradicting_explicit_economics(root,field,value):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root=root,shares_per_contract=100,exercise_style="american",
+        terms_ref="https://api.massive.com/v3/reference/options/contracts#sha256="+"a"*64)
+    term[field]=value
+    assert ordinary_etf_terms(term,root=root)==term
+
+
+@pytest.mark.parametrize("ref",[
+    "https://api.massive.com/v3/reference/options/contracts-mirror.example/t#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts/other/O:QQQ261023C00100000#sha256="+"a"*64,
+    "https://api.massive.com:443/v3/reference/options/contracts#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts?unverified=true#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts#sha256=invalid",
+    "https://[malformed",
+    "https://api.massive.com/v3/reference/options/contracts/#sha256="+"a"*64,
+])
+def test_ordinary_terms_require_exact_mapped_reference_endpoint(ref):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root="QQQ",shares_per_contract=100,exercise_style="american",terms_ref=ref)
+    assert ordinary_etf_terms(term,root="QQQ")==term
+
+
+def test_history_oi_rejects_a_greek_algorithm_version_in_actual_parameters():
+    params=dict(symbol="SPY",expiration="*",start_date=20261015,end_date=20261015,format="csv",version="2")
+    with pytest.raises(ValueError,match="parameters"):
+        theta_acquisition(THETA_ENDPOINTS["oi"],params,b"synthetic",origin="http://theta-test:25503",received_at=RECEIVED)
+    _,oi,_=book();oi=attach(oi,"oi")
+    rec=json.loads(oi[ACQUISITION_COLUMN].iloc[0]);rec["parameters"]["version"]="2"
+    oi[ACQUISITION_COLUMN]=json.dumps(rec)
+    assert native_acquisitions(oi,"SPY",ASOF,"oi",now=RECEIVED) is None
