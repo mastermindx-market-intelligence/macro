@@ -218,6 +218,8 @@ def resolve_observed_etf_contract_identity(greeks, oi, *, root, source_session, 
     try:
         cutoff=_aware_utc(decision_at,'decision_at');on=date.fromisoformat(source_session)
         security_id,expected_listing,expected_exchange=_observed_target(root)
+        if root=='QQQ' and on<date(2026,10,20):
+            raise ValueError('QQQ observed identity predates native admission')
         if exposure_input_digest(greeks,oi,source_session,root) != input_sha256:
             raise ValueError('Observed input digest mismatch')
         reads=[_identity_read(r,cutoff) for r in (reference,security_master,listing,listing_receipt)]

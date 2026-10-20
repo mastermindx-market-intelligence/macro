@@ -275,3 +275,21 @@ def test_self_consistent_qqq_receipt_cannot_extend_before_native_admission(qqq_l
     with pytest.raises(IdentityResolutionError, match="predates native admission"):
         validate_dated_contract_identity(bound, root="QQQ", source_session="2026-10-19",
                                         input_sha256=args["input_sha256"], cutoff=NOW)
+
+
+def test_qqq_resolver_cannot_mint_a_pre_admission_receipt_even_with_older_synthetic_evidence(tmp_path):
+    old="2026-10-19"
+    listing=listing_snapshot(tmp_path,observation_date=old)
+    g,oi,_,obs,args=qqq_observed_setup(listing,count=24)
+    for frame in (g,oi):
+        frame["date"]=pd.Timestamp(old)
+        rec=json.loads(frame[ACQUISITION_COLUMN].iloc[0])
+        rec["parameters"].update(start_date=20261019,end_date=20261019)
+        frame[ACQUISITION_COLUMN]=json.dumps(rec)
+    scope=obs["initial_params"];scope.update(as_of=old,**{"expiration_date.gte":old})
+    obs["source_session"]=old;obs["pages"][0]["params"]=scope
+    args.update(source_session=old,input_sha256=exposure_input_digest(g,oi,old,"QQQ"),
+        reference=captured(json.dumps(obs).encode()),
+        security_master=qqq_master(effective_at=pd.Timestamp("2026-10-15"),ingested_at=pd.Timestamp("2026-10-15T11:13:21")))
+    with pytest.raises(IdentityResolutionError,match="predates native admission"):
+        resolve_observed_etf_contract_identity(g,oi,root="QQQ",**args)
