@@ -89,6 +89,7 @@ from engine.fundamental_forensics.specialist_packs import (
 from engine.fundamental_forensics.specialist_packs import base as pack_base
 from engine.fundamental_forensics.specialist_packs import narrative as pack_narrative
 from engine.fundamental_forensics.specialist_packs import pk06_leases
+from engine.fundamental_forensics.specialist_packs import pk08_contingencies
 from engine.fundamental_forensics.specialist_packs import pk09_controls
 from engine.fundamental_forensics.specialist_packs import pk10_proxy
 from engine.fundamental_forensics import specialist_pack_contract as contract
@@ -7301,9 +7302,12 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",
 }
-# This producer's own byte-determinism pin, captured at the lane's fork point.
+# This producer's own byte-determinism pin, captured at the lane's fork point;
+# re-pinned by the second repair (review F3 seat ruling): the range row's
+# mapping_rule_digest now pins the live RANGE_DISCLOSED_PATTERN bytes (masked-
+# envelope diff vs the previous pin: empty).
 PK08_AAPL_ENVELOPE_SHA256 = (
-    "f022209f26ac312c963e9b295ee7b9e0e634b08aa64803a11e247076fd5de596"
+    "9200ce0e91e7867e1186e5b96f0ecbdc01d3f56fddfb5d81ff07f13e905260b3"
 )
 # §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
 PK08_AAPL_NIL_IDS = {
@@ -7410,6 +7414,31 @@ _PK08_CONTING_NOT_ESTIMABLE_OVER_MATERIAL = (
     "Contingencies The Company is a party to certain pending legal matters. "
     "For those matters, the Company has no material exposure and the loss or "
     "range of loss cannot be reasonably estimated by the Company."
+)
+# Second repair (review F2): the two sentences the first repair's arm still
+# typed missing/missing_dependency.
+_PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, it is not possible to estimate the amount or range "
+    "of loss."
+)
+_PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, an estimate of the possible loss cannot be made."
+)
+# Second repair (review F2): a dollar range governs a not-estimable phrase —
+# both orders resolve by RANGE_ARM_PRIORITY, never first-match-by-position.
+_PK08_CONTING_DISCLOSED_THEN_NOT_ESTIMABLE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company estimates a range of reasonably possible "
+    "loss of $10 million to $20 million, although the loss cannot be "
+    "reasonably estimated beyond that range."
+)
+_PK08_CONTING_NOT_ESTIMABLE_THEN_DISCLOSED = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "The loss cannot be reasonably estimated in full, although for those "
+    "matters the Company estimates a range of reasonably possible loss of "
+    "$10 million to $20 million."
 )
 _PK08_CONTING_BARE_DOLLAR = (
     "Contingencies The Company is a party to certain pending legal matters. "
@@ -7926,9 +7955,10 @@ def test_pk08_not_estimable_adverb_after_be() -> None:
     span = disclosed["source_span"]
     assert span["document_id"] == PK08_TESTCO_DOC
     assert span["end_offset"] > span["start_offset"]
-    assert any(
-        line.startswith("pk08.range_pattern_revision:")
-        for line in result["limitations"]
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
     )
     assert contract.validate_pack_result(result) == []
 
@@ -7952,9 +7982,10 @@ def test_pk08_not_estimable_no_be_form() -> None:
     span = disclosed["source_span"]
     assert span["document_id"] == PK08_TESTCO_DOC
     assert span["end_offset"] > span["start_offset"]
-    assert any(
-        line.startswith("pk08.range_pattern_revision:")
-        for line in result["limitations"]
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
     )
     assert contract.validate_pack_result(result) == []
 
@@ -7977,9 +8008,10 @@ def test_pk08_not_estimable_governs_over_not_material() -> None:
         "catalogue lacks literal 'not_material'" in line
         for line in result["limitations"]
     )
-    assert any(
-        line.startswith("pk08.range_pattern_revision:")
-        for line in result["limitations"]
+    # F3 (second review): the v1 shadow copy is gone — the live digest is the
+    # provenance, so no revision limitation line exists.
+    assert not any(
+        "range_pattern_revision" in line for line in result["limitations"]
     )
     assert contract.validate_pack_result(result) == []
 
@@ -8006,6 +8038,118 @@ def test_pk08_prose_amount_requires_digits() -> None:
     assert not any(
         "range_in_prose_only" in line for line in result["limitations"]
     )
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.5c second repair (review F2/F3): complete not_estimable forms, disclosed
+# precedence, and honest live-pattern provenance --------------------------------
+
+
+def _pk08_span_text(pack_input: PackInput, span: dict) -> str:
+    """The raw-document bytes one row's ``source_span`` offsets address."""
+    document = pack_input.packages[0].members[span["document_id"]]
+    return document[span["start_offset"] : span["end_offset"]].decode("utf-8")
+
+
+def test_pk08_not_estimable_not_possible_form() -> None:
+    # F2 sentence A: "it is not possible to estimate the amount or range of
+    # loss" values not_estimable — the first repair's arm still typed this
+    # sentence missing/missing_dependency.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_NOT_POSSIBLE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert _pk08_span_text(pack_input, span) == "is not possible to estimate"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_not_estimable_cannot_be_made_form() -> None:
+    # F2 sentence B: "an estimate of the possible loss cannot be made" values
+    # not_estimable — same typed-missing miss as sentence A.
+    pack_input = _pk08_testco_input(
+        contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_CANNOT_BE_MADE
+    )
+    result = produce_pack("PK08", pack_input)
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["non_value_state"] is None
+    assert disclosed["coverage_state"] == "source_trace_complete"
+    assert disclosed["text_value"] == "not_estimable"
+    assert disclosed["value"] is None
+    assert disclosed["evidence_kind"] == "text_span"
+    assert disclosed["reason"] is None
+    span = disclosed["source_span"]
+    assert span["document_id"] == PK08_TESTCO_DOC
+    assert span["end_offset"] > span["start_offset"]
+    assert _pk08_span_text(pack_input, span) == (
+        "estimate of the possible loss cannot be made"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_disclosed_governs_over_not_estimable() -> None:
+    # F2 precedence: a span carrying a dollar range AND "cannot be reasonably
+    # estimated" resolves disclosed_range in both orders — the arms evaluate
+    # by RANGE_ARM_PRIORITY over the whole span, never first-match-by-position.
+    for prose in (
+        _PK08_CONTING_DISCLOSED_THEN_NOT_ESTIMABLE,
+        _PK08_CONTING_NOT_ESTIMABLE_THEN_DISCLOSED,
+    ):
+        pack_input = _pk08_testco_input(contingencies_prose=prose)
+        result = produce_pack("PK08", pack_input)
+        disclosed = _row(result, "loss_contingency_range_disclosed")
+        assert disclosed["quality_state"] == "valued", prose
+        assert disclosed["non_value_state"] is None, prose
+        assert disclosed["text_value"] == "disclosed_range", prose
+        assert disclosed["value"] is None, prose
+        assert disclosed["reason"] is None, prose
+        span = disclosed["source_span"]
+        assert span["end_offset"] > span["start_offset"], prose
+        assert _pk08_span_text(pack_input, span) == (
+            "range of reasonably possible loss"
+        ), prose
+        assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_range_digest_is_the_live_pattern() -> None:
+    # F3 seat ruling: the digest of a text-span mapping is the digest of the
+    # bytes that performed the match. The produced row's mapping_rule_digest
+    # must equal the digest base.py derives for the live
+    # RANGE_DISCLOSED_PATTERN — computed here through the same helper the
+    # producer uses, so a shadow byte-string reintroduced as the digest
+    # source fails this equality.
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(
+            contingencies_prose=_PK08_CONTING_NOT_ESTIMABLE_AFTER_BE
+        ),
+    )
+    disclosed = _row(result, "loss_contingency_range_disclosed")
+    assert disclosed["quality_state"] == "valued"
+    expected = pack_base._text_span_digest(
+        pack_base.TextSpanMapping(
+            section=pk08_contingencies.NOTE_CC,
+            pattern=pk08_contingencies.RANGE_DISCLOSED_PATTERN,
+            kind="enum",
+        )
+    )
+    assert disclosed["mapping_rule_digest"] == expected
+    assert (
+        pk08_contingencies._RANGE_DISCLOSED_MAPPING.pattern
+        == pk08_contingencies.RANGE_DISCLOSED_PATTERN
+    )
+    assert not hasattr(pk08_contingencies, "RANGE_DISCLOSED_PATTERN_V1")
     assert contract.validate_pack_result(result) == []
 
 
