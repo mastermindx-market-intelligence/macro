@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-10-15",
+        "newest_observation": "2026-10-16",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-10-15",
+        "newest_observation": "2026-10-16",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -58,11 +58,11 @@
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
   "cik_map_snapshot": "2026-10-15",
-  "code_version": "227b0d8f902426791f2ed193f945fd8a42688abc",
+  "code_version": "a80096e9e3ffe246d5902435dfb361f35778d965",
   "coverage": {
-    "resolved": 1618,
-    "total": 1634,
-    "unresolved": 16,
+    "resolved": 1624,
+    "total": 1636,
+    "unresolved": 12,
     "unresolved_names": [
       "ANGPY",
       "B",
@@ -75,11 +75,7 @@
       "IMPUY",
       "MAG",
       "PSKY",
-      "QRVO",
-      "RHHBY",
-      "TCBI",
-      "WBD",
-      "WBS"
+      "RHHBY"
     ]
   },
   "dataset_ids": [
@@ -121,7 +117,7 @@
   "direct_registrant_rederivation": {
     "SPY": "CURRENT"
   },
-  "generated_at": "2026-10-15T13:32:43",
+  "generated_at": "2026-10-19T06:10:18",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -137,13 +133,13 @@
     }
   ],
   "inputs": {
-    "config.yml": "a50423d1b2a692161bf7ba64dbb2b9943ba9db71be6d2c108a75a75dae3171f7",
-    "config/delisted_symbols.yml": "6cefebced6f19f7d612078f369e47ae4cd4d23ac35f6ecfbd732f4dd4a6e661a",
+    "config.yml": "f87d90686b3a25196dc6579f03a5a3e2928b3e1393ca63093b9eaecf5b848b11",
+    "config/delisted_symbols.yml": "c83b53d39a934fdcbe82f655f1979d1a4c14f8c45fb35474e2dc666bec539b5e",
     "data/baskets/membership.json": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
     "data/breadth/constituents.parquet": "d19002fbde7d7624245d8280ea6f90f7b737b896a4f563b222c9321c7d292b6f",
-    "data/china_filings/filings.parquet": "86b928a40e236e6c404c52e839a56a0908609aa19834c70b4088c6a28c7d814a",
-    "data/hk_shorts/positions.parquet": "21bfb0e27fdb52f6da24d619ddba278dbf3dce218c9052793f72796b1c7639f3",
-    "data/hk_shorts/turnover.parquet": "33862c8b31cbc55385183db7b2fcb763c415721ba764a1c338c5d4e48654a393",
+    "data/china_filings/filings.parquet": "79895d10effcc22ebdb1495343c04cf2043bad4488c1b42fdb7e699d7579f728",
+    "data/hk_shorts/positions.parquet": "b50d939873e0025bf90aae9a47c54a554611c05b45dd61c80da66de11fc18479",
+    "data/hk_shorts/turnover.parquet": "09fb7a70429cc0a1c904c995a30e290c166e7a760004bec0a93649e36b35b030",
     "data/midcap_breadth/constituents.parquet": "0527370c62ee9a805228873bbaecd8bf8e33d86c18f28877a36b07fe70f2af5f",
     "data/smallcap_breadth/constituents.parquet": "c7461d5d2931ad0b746cd99206f63dd46a13d260c965ffa7c81029cab27ffd2e",
     "data/symbol_directory/cik_map": "3f6bdcabbb0ab5438f6726e0a42252d2d41f393e61312b0337471fcb85345064",
@@ -190,48 +186,21 @@
       "DEFERRED_IDENTITY_EXCEPTION": 1,
       "EVIDENCE_CONFLICT": 2,
       "NO_ISSUER_EVIDENCE": 1170,
-      "RESOLVED": 1931
+      "RESOLVED": 1932
     }
   },
   "listing_continuity": [
-    "ATAI",
     "CSAN",
-    "DBRG",
-    "DOMO",
-    "ET",
     "GWH",
-    "KHC",
-    "QRVO",
-    "WBD",
-    "WBS",
-    "YYGH",
+    "HUCK",
+    "YFOR",
     {
       "code": "GOLD",
       "explained": "identity_exception"
     }
   ],
   "notes": [],
-  "pending_transition_refusals": [
-    {
-      "listing_key": "US-XNYS-KHC",
-      "lost_rows": [
-        "SEC:US-XNAS-ATAI",
-        "SEC:US-XNAS-DOMO",
-        "SEC:US-XNAS-KHC",
-        "SEC:US-XNAS-QRVO",
-        "SEC:US-XNAS-WBD",
-        "SEC:US-XNAS-YYGH",
-        "SEC:US-XNYS-CSAN",
-        "SEC:US-XNYS-DBRG",
-        "SEC:US-XNYS-ET",
-        "SEC:US-XNYS-GWH",
-        "SEC:US-XNYS-WBS"
-      ],
-      "reason": "pending-transition fence: 11 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
-      "snapshot_date": "2026-10-15",
-      "symbol": "KHC"
-    }
-  ],
+  "pending_transition_refusals": [],
   "producer": "scripts/build_security_master.py",
   "prospective_reference": {
     "authority": {
@@ -643,28 +612,48 @@
         "yahoo",
         "membership"
       ]
+    },
+    {
+      "evidence": "SEC EDGAR CIK 0001505952 Form 8-K accession 0001104659-26-109635 (www.sec.gov/Archives/edgar/data/1505952/000110465926109635/tm2625825d1_8k.htm): Nasdaq ticker DOMO -> HUCK effective 2026-09-24, same registrant/CIK. Corroborated by the 2026-10-15 nasdaqlisted.txt snapshot (HUCK listed, DOMO absent).",
+      "new": "HUCK",
+      "old": "DOMO",
+      "on": "2026-09-24",
+      "vendors": [
+        "yahoo",
+        "membership"
+      ]
+    },
+    {
+      "evidence": "SEC EDGAR CIK 0001985337 Form 6-K accession 0001185185-26-003874 (www.sec.gov/Archives/edgar/data/1985337/000118518526003874/yfor6k090726.htm): Nasdaq ticker YYGH -> YFOR effective 2026-09-02, same registrant/CIK (formerName YY Group Holding Ltd.). Corroborated by the 2026-10-15 nasdaqlisted.txt snapshot (YFOR listed, YYGH absent).",
+      "new": "YFOR",
+      "old": "YYGH",
+      "on": "2026-09-02",
+      "vendors": [
+        "yahoo",
+        "membership"
+      ]
     }
   ],
   "resurrection_refusals": [],
   "row_counts": {
-    "issuer_master": 1931,
+    "issuer_master": 1932,
     "issuer_migrations": 3,
-    "security_master": 3105,
+    "security_master": 3106,
     "security_migrations": 1,
-    "vendor_alias_rows_readable": 8926,
-    "vendor_aliases": 8926
+    "vendor_alias_rows_readable": 8930,
+    "vendor_aliases": 8930
   },
   "security": {
     "era": "security_supersession_duplicate_mint_v1",
     "era_migrations_total": 1,
     "migrations_this_run": 0,
     "state_counts": {
-      "ACTIVE": 3104,
+      "ACTIVE": 3105,
       "SUPERSEDED_DUPLICATE_MINT": 1
     }
   },
   "seed_counts": {
-    "delisted_keys": 6,
+    "delisted_keys": 11,
     "directory_symbols": 13287,
     "gmi_seed_keys": 1241,
     "ticker_fixups": 2,
@@ -907,16 +896,8 @@
     "refused_this_run": 24,
     "resolved_not_rederivable": [
       {
-        "code": "ATAI",
-        "security_id": "SEC:US-XNAS-ATAI"
-      },
-      {
         "code": "CSAN",
         "security_id": "SEC:US-XNYS-CSAN"
-      },
-      {
-        "code": "DBRG",
-        "security_id": "SEC:US-XNYS-DBRG"
       },
       {
         "code": "DOMO",
@@ -927,36 +908,16 @@
         "security_id": "SEC:US-XNYS-EQR"
       },
       {
-        "code": "ET",
-        "security_id": "SEC:US-XNYS-ET"
-      },
-      {
         "code": "GWH",
         "security_id": "SEC:US-XNYS-GWH"
-      },
-      {
-        "code": "KHC",
-        "security_id": "SEC:US-XNAS-KHC"
       },
       {
         "code": "PSKY",
         "security_id": "SEC:US-XNAS-PSKY"
       },
       {
-        "code": "QRVO",
-        "security_id": "SEC:US-XNAS-QRVO"
-      },
-      {
         "code": "SATS",
         "security_id": "SEC:US-XNAS-SATS"
-      },
-      {
-        "code": "WBD",
-        "security_id": "SEC:US-XNAS-WBD"
-      },
-      {
-        "code": "WBS",
-        "security_id": "SEC:US-XNYS-WBS"
       },
       {
         "code": "YYGH",
