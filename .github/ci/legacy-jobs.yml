@@ -37,6 +37,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -1874,6 +1876,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -2771,6 +2775,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -5188,6 +5194,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "collectors/sec_document_spine.py"
+      - "collectors/sec_request_pacer.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/rates_command_basis.py"
@@ -5413,6 +5422,12 @@ jobs:
       - "tests/test_valuation_event_bridge.py"
       # B-F07-4 closure widening 2026-09-22 (contract-delta)
       - "tests/test_valuation_event_proposal.py"
+      - "engine/guidance_source_context.py"
+      - "engine/guidance_source_evidence.py"
+      - "collectors/guidance_source_context.py"
+      - "collectors/edgar_guidance.py"
+      - "tests/test_guidance_source_context.py"
+      - "tests/test_guidance_source_evidence.py"
       # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
       # W7A_7054_A_CURE round 1, C2) — same china partial as
       # test_china_special_situations_gate, gate:code HTML structure/copy pin.
@@ -5969,6 +5984,8 @@ jobs:
           tests/test_valuation_assumptions.py
           tests/test_valuation_event_bridge.py
           tests/test_valuation_event_proposal.py
+          tests/test_guidance_source_context.py
+          tests/test_guidance_source_evidence.py
           tests/test_china_archetype_d_s1.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
@@ -6528,6 +6545,8 @@ jobs:
       - "tests/test_options_exposure_projection.py"
       - "tests/test_options_hub.py"
       - "tests/test_options_hub_contract_v2.py"
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -8803,6 +8822,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "templates/institutional_holding_research.js"
       - "templates/institutional_holding_research.css"
       - "site/institutional_holding_research.js"
@@ -15938,6 +15959,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "engine/capital_structure/covenant_html.py"
@@ -18903,6 +18926,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
       - "engine/covenant_headroom.py"
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -19671,6 +19696,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -21666,6 +21693,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -24113,6 +24142,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -25212,6 +25243,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "engine/capital_structure/covenant_html.py"
@@ -26552,6 +26585,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
       - "engine/capital_structure/covenant_html.py"
       - "engine/capital_structure/covenant_terms.py"
@@ -29522,6 +29557,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -30013,6 +30050,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -32989,6 +33028,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/guidance_source_evidence.py"
+      - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
@@ -35669,6 +35710,8 @@ jobs:
         run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: same suites against the shipped site/ copies
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+      - name: radar_panel.js honesty section (settled theses + calls tile)
+        run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
 
   sni-s2-event-response:
     if: ${{ false }}

@@ -49,7 +49,7 @@ danger_areas:
 
 **MISSION_COMPLETE: false. CHECKPOINTED_CONTINUATION. Release A: BUILT_NOT_PROVEN.**
 [Terminal #1083](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1083)
-is Draft at `aeb7325881c77bec95ae49a240c30d3e57c403b6`.
+is Draft at `3c4bc44c51b3893ae428ff3998a021ff115abb9e`.
 [Macro #9815](https://github.com/mastermindx-market-intelligence/macro/pull/9815) is Draft:
 producer implementation `65953fc41df4614421a12c69e194fcbe0ba97452`, plus CI wiring,
 contract clarification, negative tests and this checkpoint in its current revision.
@@ -106,10 +106,20 @@ production latency or heap/leak proof; automatic appearance-clock transition is 
 Macro `contract-delta` run 39358907814/job 118420166823 found the unwired new suite.
 This revision wires it and affected Hub suites into existing `flow-surface`, covers
 all concrete dependencies and prunes only their stale unrun-baseline rows. Local
-manifest, closure and unrun census pass; fresh hosted CI is required. Earlier active
-`ci-authority/main` passed; the red pilot context was explicitly `inactive_base_context`
-(check 118420221524). Terminal's earlier 39360339725 run was pending and is superseded
-by the new push. No current-head all-green or release claim is made.
+manifest, closure and unrun census pass. A real merge conflict with protected main
+`247677efade31ea32d6b6ef5b701de61c47392cd` in this same CI path was resolved by
+preserving both the exposure and guidance-source paths; the merged manifest and
+flow-surface concrete closure passed. Earlier active `ci-authority/main` passed;
+the red pilot context was explicitly `inactive_base_context` (check 118420221524).
+
+Terminal run 39361759055/job 118429585023 found URL-state leakage in the desk test
+fixture and five stale screenshot locks after the shared renderer changes. The
+fixture now resets its route for each case. Actual recaptures passed: 54 GEX and
+42 EOD belt failure/recovery crops, four chart-chrome crops, five options-axis
+captures and the complete 30-case bilingual responsive chart-context suite. All
+six previously failing unit files then passed (69 cases). The new Terminal push
+contains these repairs. Fresh hosted CI remains required for both current heads;
+no all-green, merge, deployment or release claim is made.
 
 Exact returns, checks and synthetic captures:
 `/Volumes/Mastermind/evidence/options-exposure-01a156f1/`.
