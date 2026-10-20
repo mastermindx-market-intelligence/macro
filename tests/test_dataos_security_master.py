@@ -1079,6 +1079,99 @@ def test_allowlist_never_gates_adoption_of_an_already_established_group() -> Non
     assert by_id["SEC:US-XNAS-JOINER"]["issuer_id"] == "ISS:US-XNAS-ANCHOR"
 
 
+def _refused_row(code: str, cik: str, issuer: str | None) -> dict:
+    """An existing row the FIX 5 gate already refused: EVIDENCE_CONFLICT, CIK stamped."""
+    return {
+        "security_id": f"SEC:US-XNAS-{code}", "issuer_id": issuer,
+        "issuer_state": "EVIDENCE_CONFLICT", "issuer_cik": cik,
+        "issuer_evidence_snapshot": "2026-10-05",
+        "listing_key": f"US-XNAS-{code}", "mic": "XNAS", "inception_code": code,
+        "_existed_before": True,
+    }
+
+
+def test_a_refused_null_issuer_group_forms_once_its_cik_is_ratified() -> None:
+    """#9570: CENT/CENTA were refused into EVIDENCE_CONFLICT with issuer_id NULL.  The
+    allowlist ratification is the review the gate asked for, and with no committed
+    value there is nothing for mint-once to protect, so the group forms."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO"), "CENTA": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert {r["issuer_state"] for r in out_rows} == {"RESOLVED"}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] == by_id["SEC:US-XNAS-CENTA"]["issuer_id"]
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_evidence_snapshot"] == "2026-10-15"
+    assert {m["old_issuer_id"] for m in migrations} == {None}
+    # Idempotent: the second pass sees RESOLVED rows and changes nothing.
+    again, again_m = BUILD.apply_issuer_correction(
+        out_rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert again == out_rows and again_m == []
+
+
+def test_the_real_allowlist_ratifies_central_garden() -> None:
+    assert "0000887733" in BUILD._load_issuer_group_allowlist()
+
+
+def test_a_refused_group_stays_conflicted_without_ratification() -> None:
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "X"), "CENTA": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset())
+    assert {r["issuer_state"] for r in out_rows} == {"EVIDENCE_CONFLICT"}
+    assert all(r["issuer_id"] is None for r in out_rows)
+    assert all(r["issuer_evidence_snapshot"] == "2026-10-05" for r in out_rows), "untouched"
+    assert migrations == []
+
+
+def test_a_conflict_carrying_a_committed_issuer_never_reopens_even_when_ratified() -> None:
+    """Mint-once still binds: a conflict row with a committed issuer_id is never
+    revisited by a ratification, because forming the group would rewrite that value."""
+    cik = "0009999997"
+    rows = [_refused_row("LEGA", cik, "ISS:US-XNAS-LEGA"), _refused_row("LEGB", cik, "ISS:US-XNAS-LEGB")]
+    before = [dict(r) for r in rows]
+    cik_map = {"LEGA": (cik, "X"), "LEGB": (cik, "X")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_mixed_refused_group_never_reopens_partially() -> None:
+    """Review finding 2: when one conflicted sibling carries a committed issuer_id, a
+    reopen of only the null members would mint a SECOND issuer_id for one CIK (the
+    committed sibling is not RESOLVED, so adoption never sees it).  All stay put."""
+    cik = "0009999996"
+    rows = [_refused_row("MIXA", cik, "ISS:US-XNAS-MIXA"),
+            _refused_row("MIXB", cik, None), _refused_row("MIXC", cik, None)]
+    before = [dict(r) for r in rows]
+    cik_map = {c: (cik, "X") for c in ("MIXA", "MIXB", "MIXC")}
+    out_rows, migrations = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    assert out_rows == before
+    assert migrations == []
+
+
+def test_a_ratified_reopen_whose_sibling_left_the_map_resolves_alone() -> None:
+    """Review finding 3: a reopened row missing from the weekly map goes to
+    NO_ISSUER_EVIDENCE (CIK cleared); the remaining member resolves as a single-member
+    group, which the allowlist never gates."""
+    cik = "0000887733"
+    rows = [_refused_row("CENT", cik, None), _refused_row("CENTA", cik, None)]
+    cik_map = {"CENT": (cik, "CENTRAL GARDEN & PET CO")}
+    out_rows, _m = BUILD.apply_issuer_correction(
+        rows, cik_map, "2026-10-15", "2026-10-18T00:00:00", allowlist=frozenset({cik}))
+    by_id = {r["security_id"]: r for r in out_rows}
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_state"] == "RESOLVED"
+    assert by_id["SEC:US-XNAS-CENT"]["issuer_id"] is not None
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_state"] == "NO_ISSUER_EVIDENCE"
+    assert by_id["SEC:US-XNAS-CENTA"]["issuer_id"] is None
+    assert not by_id["SEC:US-XNAS-CENTA"]["issuer_cik"]
+
+
 # ── V4-D2B1-R1: VMRK duplicate-mint supersession + pending-transition fence ────
 # research/prophet_v4/d2/D2B1_R1_FROZEN_CONTRACT_2026-08-20.md — the EQR->VMRK rename
 # (SEC EDGAR CIK 0000906107, 8-K accession 0001140361-26-033377, Item 5.03) produced a
