@@ -18436,6 +18436,12 @@ jobs:
       - "engine/oracle/__init__.py"
       - "engine/press/__init__.py"
       - "engine/seasonality/__init__.py"
+      - engine/guidance_source_context.py
+      - engine/guidance_source_evidence.py
+      - engine/liquidity_profile.py
+      - lib/massive_ticker.py
+      - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+      - scripts/stock_liquidity_profile.py
 
 
   quant-q12-parity-forward:
