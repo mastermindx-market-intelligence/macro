@@ -1200,7 +1200,6 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     id_cols = ["root", "expiration", "strike", "right", "date", "bid", "ask",
                "underlying_price", "timestamp", "underlying_timestamp", ACQUISITION_COLUMN]
     keep = id_cols + [c for c in greek_cols if c not in id_cols and c in df.columns]
-    keep += [c for c in ("timestamp", "underlying_timestamp") if c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
