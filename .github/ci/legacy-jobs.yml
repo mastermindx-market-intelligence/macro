@@ -32956,6 +32956,10 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - engine/options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms_native.py
+      - docs/runbooks/OPTIONS_OCC_CONTRACT_TERMS.md
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -32970,7 +32974,9 @@ jobs:
           python -m pytest
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
-          tests/test_options_alpha_exact_option_outcome.py -q -rs
+          tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_occ_contract_terms.py
+          tests/test_options_occ_contract_terms_native.py -q -rs
 
   product-experience-registry:
     if: ${{ false }}
