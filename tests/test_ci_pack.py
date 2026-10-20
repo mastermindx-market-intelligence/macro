@@ -4713,6 +4713,12 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
+    # template and imports the builder (lib/config, lib/pages, lib/site_assets,
+    # engine/i18n). As an ordinary job its inferred scope would widen the
+    # templates/index.html packing probe past its ceiling. scope: exclusive
+    # pins the measured static closure plus templates and ancestor inits.
+    "china-mechanics-display",
     # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
     # reader import (world_state -> theme_state_generation_reader ->
     # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
