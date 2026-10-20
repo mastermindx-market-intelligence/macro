@@ -10038,6 +10038,7 @@ jobs:
           tests/test_ma_agreement_context.py
           tests/test_bond_issue_terms.py
           tests/test_bond_issue_parser.py
+          tests/test_capital_structure_lookup_errors.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
