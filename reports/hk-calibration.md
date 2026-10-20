@@ -4,7 +4,7 @@ Honest, split-half measurement before any UI is built — the same gate used for
 US, China and Bitcoin Vector dashboards. House rule: a signal is shipped with its **measured**
 forward-return record; no measured edge -> it ships as *context, not a signal*.
 
-- Confident-regime sample: **2000-04-21 -> 2026-09-18** (6762 days, confidence>0).
+- Confident-regime sample: **2000-04-21 -> 2026-09-25** (6767 days, confidence>0).
 - Ladder panel: **161 instruments** (curated constituents + indices + ETF proxies).
 - Caveats: the HK macro read piggybacks on China fundamentals (PMI/CPI/PPI/M2), monthly
   back to ~2006-08 (shorter + more regime-unstable than the US); HSI itself is the regional
@@ -17,10 +17,10 @@ forward-return record; no measured edge -> it ships as *context, not a signal*.
 
 | quad_name    |    n |   f21_mean% |   f21_hit% |   f63_mean% |   f63_hit% |
 |:-------------|-----:|------------:|-----------:|------------:|-----------:|
-| Goldilocks   | 1482 |        1.37 |       56.9 |        4.1  |       65   |
-| Growth-scare | 1135 |        0.21 |       55.2 |        2.28 |       56.2 |
+| Goldilocks   | 1482 |        1.35 |       56.7 |        4.1  |       65   |
+| Growth-scare | 1140 |        0.21 |       55.2 |        2.28 |       56.2 |
 | Reflation    | 1643 |        0.23 |       52.8 |       -0.52 |       46.8 |
-| Stagflation  | 1039 |       -0.76 |       45.5 |       -2.02 |       43.6 |
+| Stagflation  | 1039 |       -0.76 |       45.5 |       -1.97 |       43.9 |
 
 **Split-half robustness** (a quad's edge is only trustworthy if it survives both halves)
 
@@ -37,16 +37,16 @@ _Post-split_
 
 | quad_name    |   n |   f21_mean% |   f21_hit% |   f63_mean% |   f63_hit% |
 |:-------------|----:|------------:|-----------:|------------:|-----------:|
-| Goldilocks   | 665 |        0.64 |       54   |        1.43 |       56.6 |
-| Growth-scare | 612 |        0.49 |       57.5 |        1.6  |       50.2 |
+| Goldilocks   | 665 |        0.61 |       53.5 |        1.43 |       56.6 |
+| Growth-scare | 617 |        0.49 |       57.5 |        1.6  |       50.2 |
 | Reflation    | 836 |        0.4  |       51.6 |        0.45 |       51   |
-| Stagflation  | 677 |       -0.15 |       46.7 |        0.47 |       45.2 |
+| Stagflation  | 677 |       -0.15 |       46.7 |        0.52 |       45.6 |
 
 ## 2. Liquidity overlay (dual: PBoC stance + Fed-via-peg + southbound flow) -> forward return
 
 | liquidity   |    n |   f21_mean% |   f21_hit% |   f63_mean% |   f63_hit% |
 |:------------|-----:|------------:|-----------:|------------:|-----------:|
-| contracting |  888 |       -0.76 |       44.9 |       -3.54 |       34.8 |
+| contracting |  893 |       -0.77 |       44.6 |       -3.47 |       35.2 |
 | expanding   | 3053 |        0.76 |       57.2 |        1.62 |       56.6 |
 | neutral     | 2385 |        0.17 |       51.4 |        1.91 |       56.6 |
 | unknown     |  436 |        0.86 |       60.3 |        0.84 |       56   |
@@ -58,24 +58,24 @@ differentiate HSI forward returns?_
 
 | risk_state   |    n |   f21_mean% |   f21_hit% |   f63_mean% |   f63_hit% |
 |:-------------|-----:|------------:|-----------:|------------:|-----------:|
-| Neutral      | 2497 |       -0.09 |       50   |        0.37 |       50.3 |
-| Risk-off     | 1609 |        0.4  |       54.6 |        0.76 |       53.4 |
-| Risk-on      | 2656 |        0.77 |       56.7 |        1.84 |       57.6 |
+| Neutral      | 2501 |       -0.09 |       50   |        0.37 |       50.3 |
+| Risk-off     | 1609 |        0.4  |       54.6 |        0.78 |       53.5 |
+| Risk-on      | 2657 |        0.77 |       56.6 |        1.84 |       57.6 |
 
 ## 4. Cycle ladder (deep HK panel) — endpoint return + forward drawdown
 
 |                          |     n |   hit_pct |   avg_fwd_pct |   dd_med_pct |   dd_p10_pct |   dd_bad_pct |
 |:-------------------------|------:|----------:|--------------:|-------------:|-------------:|-------------:|
-| DECLINE                  | 10252 |      54   |          1.44 |        -4.82 |       -18.22 |         26.8 |
-| BOTTOM WATCH             |  5099 |      48.8 |        127.84 |        -4.06 |       -15.75 |         21.5 |
-| TURN SIGNALED            | 17958 |      50.8 |          1.46 |        -4.34 |       -14.47 |         20.9 |
-| FRESH BUY                |  3941 |      52.8 |          1.53 |        -4.07 |       -13.96 |         19.4 |
-| RALLY ON                 |  3772 |      53.8 |          1.77 |        -3.95 |       -14    |         19.1 |
-| TOP WATCH                | 10392 |      52   |          1.73 |        -4.35 |       -14.81 |         21.5 |
+| DECLINE                  | 10263 |      54   |          1.44 |        -4.82 |       -18.22 |         26.8 |
+| BOTTOM WATCH             |  5114 |      48.8 |        127.46 |        -4.07 |       -15.74 |         21.5 |
+| TURN SIGNALED            | 17988 |      50.8 |          1.45 |        -4.34 |       -14.47 |         20.9 |
+| FRESH BUY                |  3964 |      52.6 |          1.5  |        -4.09 |       -13.97 |         19.4 |
+| RALLY ON                 |  3784 |      53.7 |          1.75 |        -3.95 |       -14.03 |         19.2 |
+| TOP WATCH                | 10405 |      52   |          1.72 |        -4.35 |       -14.82 |         21.6 |
 | ROLLING OVER             |   347 |      51.3 |          1.47 |        -4.6  |       -15.66 |         23.3 |
-| COUNTERTREND BOUNCE      | 16969 |      51.1 |          1.06 |        -4.51 |       -16.04 |         23.7 |
-| BOTTOM WATCH +early-bull |   178 |      50   |          1.01 |        -3.94 |       -13.15 |         19.7 |
-| BOTTOM WATCH no-early    |  4921 |      48.8 |        132.43 |        -4.07 |       -15.81 |         21.6 |
+| COUNTERTREND BOUNCE      | 16968 |      51   |          1.05 |        -4.52 |       -16.04 |         23.7 |
+| BOTTOM WATCH +early-bull |   186 |      48.9 |          1.09 |        -3.82 |       -13.48 |         19.9 |
+| BOTTOM WATCH no-early    |  4928 |      48.8 |        132.23 |        -4.08 |       -15.75 |         21.6 |
 
 ## Reading this
 - Quad rows whose sign/ranking flips between the two halves are **regime-unstable** ->

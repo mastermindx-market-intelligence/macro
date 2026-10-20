@@ -1385,11 +1385,96 @@ const EXP_DUE = (e) => {
   const soon = e.days_until <= 7;
   return `<span style="color:${soon ? "var(--warn)" : "var(--text)"}">${e.days_until}d</span> <span class="sub mono">${esc((e.come_back_on || "").slice(0, 10))}</span>`;
 };
+const RF_DIAGNOSTIC_COPY = {
+  en: {
+    title: "Research diagnostics", disabled: "No current diagnostic", unavailable: "Diagnostic unavailable",
+    measured: "Engineering measurement", refused: "Numerical result refused", details: "Measurement details",
+    identity: "Source receipt", dark: "Dark", light: "Light", missing: "Unavailable",
+    scope: "Synthetic engineering evidence. Research execution remains disabled; this result cannot be promoted.",
+    limit: "Equal-date, 25-session single-entry adverse excursion, including four sessions after exit. This is not a portfolio drawdown or a qualified inference.",
+    empty: "No owner-bound diagnostic is selected for this publication.",
+    failed: "The diagnostic collection could not be qualified. No partial results are shown.",
+    budget: "Search cost and production accounting: not recorded in this display receipt.",
+    scientific: "Scientific acceptance: unqualified. No qualified inference procedure.",
+  },
+  zh: {
+    title: "研究诊断", disabled: "暂无当前诊断", unavailable: "诊断暂不可用",
+    measured: "工程测量", refused: "数值结果已拒绝", details: "测量详情",
+    identity: "来源凭据", dark: "深色", light: "浅色", missing: "暂无",
+    scope: "仅为合成工程证据。研究执行仍处于禁用状态，此结果不能晋级。",
+    limit: "按形成日期等权计算的单次入场25个交易日不利波动，包含退出后的4个交易日；并非组合回撤或合格的统计推断。",
+    empty: "本次发布未选择具有所有者绑定的诊断。",
+    failed: "诊断集合未通过校验，不展示部分结果。",
+    budget: "搜索成本及生产记账：此展示凭据未记录。",
+    scientific: "科学验收未完成，尚无合格的推断程序。",
+  },
+};
+const RF_DIAGNOSTIC_METRICS = [
+  ["scheduled_formation_count", "Scheduled formations", "计划形成次数"],
+  ["source_excluded_formation_count", "Excluded by source", "因来源排除"],
+  ["source_qualified_formation_count", "Source-qualified formations", "来源合格形成次数"],
+  ["provided_formation_count", "Provided formations", "已提供形成次数"],
+  ["opportunity_formation_count", "Formations with opportunities", "存在机会的形成次数"],
+  ["no_opportunity_formation_count", "Formations without opportunities", "无机会形成次数"],
+  ["paired_formation_count", "Paired formations", "配对形成次数"],
+  ["provided_baseline_entry_count", "Baseline entries", "基准入场数"],
+  ["provided_selected_entry_count", "Selected entries", "选中入场数"],
+  ["provided_foregone_entry_count", "Foregone entries", "放弃入场数"],
+  ["paired_mean_baseline_adverse_loss", "Mean baseline adverse loss", "基准平均不利损失"],
+  ["paired_mean_selected_adverse_loss", "Mean selected adverse loss", "选中平均不利损失"],
+  ["paired_mean_improvement", "Mean paired difference", "平均配对差值"],
+  ["refusal_count", "Refusal count", "拒绝次数"],
+];
+function rfDiagnosticSection(data, language = "en", theme = "dark") {
+  const lang = language === "zh" ? "zh" : "en";
+  const mode = theme === "light" ? "light" : "dark";
+  const t = RF_DIAGNOSTIC_COPY[lang];
+  const rows = Array.isArray(data.research_diagnostics) ? data.research_diagnostics : [];
+  const value = (x, key) => {
+    if (typeof x !== "number" || !Number.isFinite(x)) return t.missing;
+    if (key === "paired_mean_improvement") return esc(`${x > 0 ? "+" : ""}${(x * 100).toFixed(2)} ${lang === "zh" ? "个百分点" : "pp"}`);
+    if (key.startsWith("paired_mean_")) return esc(`${(x * 100).toFixed(2)}%`);
+    return esc(Number.isInteger(x) ? x : x.toFixed(4));
+  };
+  const cards = rows.map(r => `<article class="card">
+    <h3>${r.status === "REFUSED" ? t.refused : t.measured}</h3>
+    <div class="rf-identity">${esc(r.diagnostic_id)}</div>
+    <p class="sub">${t.scope}</p><p class="note">${t.scientific}</p>
+    <details><summary>${t.details}</summary><p class="note">${t.limit}</p>
+      ${RF_DIAGNOSTIC_METRICS.map(([key, en, zh]) => `<div class="kv"><span>${lang === "zh" ? zh : en}</span><b>${value((r.aggregates || {})[key], key)}</b></div>`).join("")}
+      <p class="note">${t.budget}</p>
+    </details>
+    <details><summary>${t.identity}</summary>
+      ${["candidate_id", "created_at", "source_sha256", "config_sha256", "protocol_sha256", "input_policy_sha256", "runtime_sha256", "evaluator_sha256", "artifact_sha256"].map(key => `<div class="kv"><span>${esc(key)}</span><b class="rf-identity">${esc(r[key] || t.missing)}</b></div>`).join("")}
+    </details></article>`).join("");
+  const unavailable = data.research_diagnostics_state === "UNAVAILABLE";
+  return `<section class="rf-diagnostics" lang="${lang}" data-lang="${lang}" data-theme="${mode}" aria-label="${t.title}">
+    <div class="rf-diagnostic-toolbar"><h2>${t.title}</h2><div class="rf-mode-controls">
+      <button type="button" data-rf-lang="en" aria-pressed="${lang === "en"}">English</button>
+      <button type="button" data-rf-lang="zh" aria-pressed="${lang === "zh"}">中文</button>
+      <button type="button" data-rf-theme="dark" aria-pressed="${mode === "dark"}">${t.dark}</button>
+      <button type="button" data-rf-theme="light" aria-pressed="${mode === "light"}">${t.light}</button>
+    </div></div>${cards || `<article class="card"><h3>${unavailable ? t.unavailable : t.disabled}</h3><p class="sub">${unavailable ? t.failed : t.empty}</p><p class="note">${t.scope}</p></article>`}
+  </section>`;
+}
+function wireRfDiagnosticModes(view, data) {
+  const section = view.querySelector(".rf-diagnostics");
+  if (!section) return;
+  section.querySelectorAll("button[data-rf-lang], button[data-rf-theme]").forEach(button => {
+    button.addEventListener("click", () => {
+      const language = button.dataset.rfLang || section.dataset.lang;
+      const theme = button.dataset.rfTheme || section.dataset.theme;
+      section.outerHTML = rfDiagnosticSection(data, language, theme);
+      wireRfDiagnosticModes(view, data);
+    });
+  });
+}
 RENDER.experiments = async () => {
   const v = $("#view");
   const d = await api("/api/experiments");
   if (!d.ok) {
-    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || "not available")}</div>`);
+    v.innerHTML = card("Experiments & data collection", `<div class="sub">${esc(d.reason || "not available")}</div>`) + rfDiagnosticSection(d);
+    wireRfDiagnosticModes(v, d);
     return;
   }
   const exps = d.experiments || [];
@@ -1400,6 +1485,7 @@ RENDER.experiments = async () => {
       ${card("Ready to review", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">need a decision</div>`)}
       ${card("Last updated", `<div class="big" style="font-size:18px" class="mono">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
     </div>`;
+  html += rfDiagnosticSection(d);
   if (ready.length) {
     html += `<div class="section">🔔 Ready for review <span class="cnt">${ready.length}</span></div>
       <div class="grid">${ready.map(e => `<div class="card ready"><h3>${esc(e.name)}</h3>
@@ -1411,7 +1497,7 @@ RENDER.experiments = async () => {
         ${e.surfaced ? `<div class="note mono muted">↳ ${esc(e.surfaced)}</div>` : ""}</div>`).join("")}</div>`;
   }
   html += `<div class="section">All experiments <span class="cnt">${exps.length}</span></div>
-    <table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
+    <div class="experiments-table-scroll"><table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
     ${exps.map(e => `<tr${e.ready ? ' class="hl"' : ""}>
       <td><b>${esc(e.name)}</b><div class="sub">${esc(e.what || "")}</div>${e.source ? `<details class="tech-details"><summary>Source</summary><span class="mono">${esc(e.source)}</span></details>` : ""}</td>
       <td class="sub">${esc(e.kind || "")}</td>
@@ -1430,9 +1516,10 @@ RENDER.experiments = async () => {
           </div>
         </details>
       </td></tr>`).join("")}
-    </tbody></table>
+    </tbody></table></div>
     ${d.note ? `<div class="sub" style="margin-top:10px">${esc(d.note)}</div>` : ""}`;
   v.innerHTML = html;
+  wireRfDiagnosticModes(v, d);
   // L4 action capture: wire up Acted/Dismiss/Snooze buttons (NW Rails PR-8)
   v.querySelectorAll(".exp-act-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
@@ -3198,29 +3285,88 @@ RENDER.cost = async () => {
 };
 
 /* ---- CONTENT ------------------------------------------------------------ */
+function adminInventoryPage(pages, query = "", page = 1) {
+  const needle = String(query || "").trim().toLowerCase();
+  const matches = (Array.isArray(pages) ? pages : []).filter(p => p &&
+    typeof p.name === "string" && p.name.toLowerCase().includes(needle));
+  const total = matches.length, size = 50, pagesN = Math.max(1, Math.ceil(total / size));
+  const requested = Number.isFinite(Number(page)) ? Math.floor(Number(page)) : 1;
+  const current = Math.max(1, Math.min(pagesN, requested));
+  const offset = (current - 1) * size;
+  return {rows: matches.slice(offset, offset + size), total, page: current, pages: pagesN,
+    from: total ? offset + 1 : 0, to: Math.min(offset + size, total)};
+}
+
 RENDER.content = async () => {
-  const v = $("#view"); const d = await api("/api/content");
-  v.innerHTML = `
-    <div class="grid">
-      ${card("Pages", `<div class="big">${d.total_pages}</div><div class="sub">published pages</div>`)}
-      ${card("Total size", `<div class="big">${d.total_mb} MB</div><div class="sub">${d.total_kb} KB</div>`)}
-      ${card("Is the site up?", `<div id="upBox"><button class="btn" id="upBtn2">Check live site</button></div>`)}
-      ${card("Links", `<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button></div>`)}
+  const v = $("#view"), renderEpoch = ADMIN_RENDER_EPOCH;
+  const current = () => CURRENT === "content" && renderEpoch === ADMIN_RENDER_EPOCH && v.isConnected;
+  const d = await api("/api/content");
+  if (!current()) return;
+  if (!d || !Array.isArray(d.pages) || d.pages.some(p => !p || typeof p.name !== "string")) {
+    throw new Error("The Site inventory could not be read. Try again.");
+  }
+  const number = n => typeof n === "number" && Number.isFinite(n) && n >= 0 ? String(n) : "—";
+  v.innerHTML = `<div class="grid">
+    ${card("Pages", `<div class="big">${number(d.total_pages)}</div><div class="sub">published pages</div>`)}
+    ${card("Total size", `<div class="big">${number(d.total_mb)} MB</div><div class="sub">${number(d.total_kb)} KB</div>`)}
+    ${card("Is the site up?", '<div id="upBox"><button class="btn" id="upBtn2">Check live site</button><div id="inventoryUptime" role="status"></div></div>')}
+    ${card("Links", '<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button><div id="inventoryLinks" role="status"></div></div>')}
     </div>
-    <div class="section">All pages <span class="cnt">${d.total_pages}</span></div>
-    <table><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody>
-      ${d.pages.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${p.kb}</td><td class="r sub">${fmtAge(p.age_hours)} ago</td></tr>`).join("")}
-    </tbody></table>`;
-  $("#upBtn2").onclick = async () => {
-    $("#upBox").innerHTML = "<span class='muted'>probing…</span>"; const u = await api("/api/uptime");
-    $("#upBox").innerHTML = u.ok ? `<div class="big" style="font-size:18px;color:var(--ok)">200 OK</div><div class="sub">${u.ms} ms · ${(u.bytes / 1024).toFixed(0)} KB</div>`
-      : `<div class="big" style="font-size:18px;color:var(--bad)">${esc(u.status || "down")}</div><div class="sub">${esc(u.error || "")}</div>`;
+    <div class="section">Find a page</div>
+    <div class="cs-review-controls">
+      <label for="inventorySearch">Search page names<input id="inventorySearch" type="search" placeholder="Page name or folder…" autocomplete="off"></label>
+      <button type="button" class="btn" id="inventoryClear">Clear search</button>
+    </div>
+    <div id="inventoryCount" class="sub" role="status" aria-live="polite"></div>
+    <div class="table-wrap"><table aria-label="Site inventory"><thead><tr><th>Page</th><th class="r">Size (KB)</th><th class="r">Updated</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+    <div class="cs-review-pager" aria-label="Inventory pages">
+      <button type="button" class="btn" id="inventoryPrev">Previous</button>
+      <span id="inventoryPage" class="sub"></span>
+      <button type="button" class="btn" id="inventoryNext">Next</button>
+    </div><div id="inventoryLinkResults"></div>`;
+  const search = $("#inventorySearch"), rows = $("#inventoryRows");
+  const prev = $("#inventoryPrev"), next = $("#inventoryNext");
+  let page = 1;
+  const draw = () => {
+    if (!current()) return;
+    const result = adminInventoryPage(d.pages, search.value, page);
+    page = result.page;
+    $("#inventoryCount").textContent = `Showing ${result.from}–${result.to} of ${result.total} matching pages`;
+    $("#inventoryPage").textContent = `Page ${page} of ${result.pages}`;
+    prev.disabled = page <= 1; next.disabled = page >= result.pages;
+    rows.innerHTML = result.rows.length ? result.rows.map(p => `<tr><td class="mono">${esc(p.name)}</td><td class="r">${number(p.kb)}</td><td class="r sub">${typeof p.age_hours === "number" && Number.isFinite(p.age_hours) && p.age_hours >= 0 ? fmtAge(p.age_hours) + " ago" : "—"}</td></tr>`).join("")
+      : `<tr><td colspan="3" class="muted">${d.pages.length ? "No matching pages. Clear or change your search." : "No published pages were returned."}</td></tr>`;
   };
-  $("#lkBtn").onclick = async () => {
-    $("#lkBox").innerHTML = "<span class='muted'>scanning…</span>"; const l = await api("/api/content/links");
-    $("#lkBox").innerHTML = `<div class="big" style="font-size:18px;color:${l.count ? "var(--warn)" : "var(--ok)"}">${l.count} broken</div><div class="sub">scanned ${l.checked_pages} of ${l.total_pages != null ? l.total_pages : l.checked_pages} pages${l.truncated ? " · TRUNCATED" : ""}${l.ci_built_count ? ` · ${l.ci_built_count} built by CI (not broken)` : ""}</div>`;
-    if (l.count) { const sec = h(`<div></div>`); sec.innerHTML = `<div class="section">Broken internal links <span class="cnt">${l.count}</span></div>
-      <table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono" style="color:var(--bad)">${esc(b.link)}</td></tr>`).join("")}</tbody></table>`; $("#view").appendChild(sec); }
+  search.oninput = () => { page = 1; draw(); };
+  $("#inventoryClear").onclick = () => { search.value = ""; page = 1; draw(); search.focus(); };
+  prev.onclick = () => { page -= 1; draw(); };
+  next.onclick = () => { page += 1; draw(); };
+  draw();
+  const uptimeButton = $("#upBtn2"), uptime = $("#inventoryUptime");
+  uptimeButton.onclick = async () => {
+    if (!current() || uptimeButton.disabled) return;
+    uptimeButton.disabled = true; uptime.textContent = "Checking live site…";
+    try {
+      const u = await api("/api/uptime");
+      if (!current()) return;
+      uptime.innerHTML = u && u.ok === true
+        ? `<div class="sub">200 OK · ${number(u.ms)} ms · ${number(typeof u.bytes === "number" ? Math.round(u.bytes / 1024) : null)} KB</div>`
+        : `<div class="sub">${esc((u && (u.error || u.status)) || "Live site unavailable.")}</div>`;
+    } catch (_) { if (current()) uptime.textContent = "Live-site check unavailable. Try again."; }
+    finally { if (current()) uptimeButton.disabled = false; }
+  };
+  const linksButton = $("#lkBtn"), links = $("#inventoryLinks"), linkRows = $("#inventoryLinkResults");
+  linksButton.onclick = async () => {
+    if (!current() || linksButton.disabled) return;
+    linksButton.disabled = true; links.textContent = "Checking internal links…"; linkRows.innerHTML = "";
+    try {
+      const l = await api("/api/content/links");
+      if (!current()) return;
+      if (!l || typeof l.count !== "number" || !Number.isFinite(l.count) || l.count < 0 || !Array.isArray(l.broken)) throw new Error("Invalid link result");
+      links.innerHTML = `<div class="sub">${number(l.count)} broken · scanned ${number(l.checked_pages)} of ${number(l.total_pages == null ? l.checked_pages : l.total_pages)} pages${l.truncated ? " · partial scan" : ""}${l.ci_built_count ? ` · ${number(l.ci_built_count)} built by CI (not broken)` : ""}</div>`;
+      if (l.count) linkRows.innerHTML = `<div class="section">Broken internal links</div><div class="sub">${l.broken.length} results shown of ${number(l.count)}</div><div class="table-wrap"><table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono">${esc(b.link)}</td></tr>`).join("")}</tbody></table></div>`;
+    } catch (_) { if (current()) links.textContent = "Link check unavailable. Try again."; }
+    finally { if (current()) linksButton.disabled = false; }
   };
 };
 

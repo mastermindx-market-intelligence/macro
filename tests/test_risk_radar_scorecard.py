@@ -729,3 +729,266 @@ def test_caution_persistence_event_view_marks_left_censored_window(monkeypatch):
     assert out["persistent_left_censored_n"] == 1
     assert out["persistent_exact_lead_n"] == 0
     assert out["persistent_median_lead_uncensored_sessions"] is None
+
+
+
+def _attach_prospective_issue(row, *, engine_tag="a", calibration_tag="b",
+                              epoch="2026-09-23-prospective-v1"):
+    import hashlib
+    source_files = {
+        "engine/risk_radar.py": engine_tag * 64,
+        "engine/indicators.py": "1" * 64,
+        "lib/nyse_calendar.py": "2" * 64,
+        "lib/store.py": "3" * 64,
+        "lib/config.py": "4" * 64,
+    }
+    bundle = hashlib.sha256(
+        json.dumps(source_files, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    identity = {
+        "model_contract": "risk_radar_forward_model.v1",
+        "risk_schema": "risk_radar.v2",
+        "engine_source_sha256": engine_tag * 64,
+        "source_bundle_sha256": bundle,
+        "source_files_sha256": source_files,
+        "calibration_sha256": calibration_tag * 64,
+    }
+    fingerprint = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    row["forecast_issue"] = {
+        "contract": "risk_radar_forward_issue.v1",
+        "epoch": epoch,
+        "issued_at": row["logged_at"],
+        "ledger_lane": "nightly",
+        "first_writer_wins": True,
+        **identity,
+        "model_fingerprint": fingerprint,
+    }
+    return fingerprint
+
+
+def test_prospective_probability_never_backfills_legacy_rows():
+    rows = _prob_rows()
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "not_started"
+    assert p["ledger_issue_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["same_model_issued_n"] == 0
+    assert p["issue_excluded"] == {"missing_issue_receipt": len(rows)}
+
+
+def test_prospective_probability_tracks_latest_exact_model_only():
+    rows = _prob_rows(10)
+    first_fp = None
+    latest_fp = None
+    for i, row in enumerate(rows):
+        fp = _attach_prospective_issue(
+            row,
+            engine_tag="a" if i < 5 else "c",
+            calibration_tag="b" if i < 5 else "d",
+        )
+        if i == 0:
+            first_fp = fp
+        if i == len(rows) - 1:
+            latest_fp = fp
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["public_publication_timing_verified"] is False
+    assert p["current_model_validated"] is False
+    assert p["model_fingerprints_seen"] == 2
+    assert p["prior_model_issued_n"] == 5
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 5
+    assert p["awaiting_maturity"] == 0
+    assert p["latest_model_fingerprint"] == latest_fp
+    assert latest_fp != first_fp
+    assert p["horizons"]["h21"]["n"] == 5
+    assert p["horizons"]["h21"]["mean_forecast"] == .2
+    assert p["horizons"]["h21"]["brier"] == .04
+
+
+def test_prospective_probability_rejects_tampered_and_tardy_receipts():
+    rows = _prob_rows(7)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["model_fingerprint"] = "0" * 64
+    rows[1]["forecast_issue"]["issued_at"] = "2026-06-10T21:00:00+00:00"
+    rows[1]["logged_at"] = rows[1]["forecast_issue"]["issued_at"]
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 5
+    assert p["issue_excluded"]["model_fingerprint_mismatch"] == 1
+    assert p["issue_excluded"]["issue_not_session_timely"] == 1
+    assert p["horizons"]["h21"]["n"] == 5
+
+
+def test_prospective_ungraded_rows_accrue_without_validation():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+        row["graded"] = None
+    p = _audit(rows)["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 5
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 5
+    assert p["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert p["horizons"][h]["n"] == 0
+        assert p["horizons"][h]["brier"] is None
+
+
+def test_prospective_issue_clock_must_match_first_write_clock():
+    rows = _prob_rows(5)
+    for row in rows:
+        _attach_prospective_issue(row)
+    rows[0]["forecast_issue"]["issued_at"] = "2026-06-01T22:00:00+00:00"
+    p = _audit(rows)["prospective"]
+    assert p["same_model_issued_n"] == 4
+    assert p["issue_excluded"]["issue_clock_mismatch"] == 1
+    assert p["current_model_validated"] is False
+
+
+
+def test_prospective_real_issue_receipt_roundtrips_into_scorecard(tmp_path):
+    from engine import risk_radar_audit as rra
+
+    issued_at = "2026-09-23T21:00:00+00:00"
+    snap = {
+        "asof": "2026-09-23",
+        "state": "caution",
+        "alert": False,
+        "dominant_scare": "credit",
+        "top_score": 72.0,
+        "scares": [],
+        "drawdown_prob": {
+            "measure": sc._PROBABILITY_TARGET,
+            "h5": .03, "h10": .08, "h21": .16,
+            "base_h5": .036, "base_h10": .086, "base_h21": .178,
+            "conjunction_n": 1,
+        },
+    }
+    receipt = rra._forward_issue_receipt(root=tmp_path, issued_at=issued_at)
+    assert receipt and receipt["source_bundle_sha256"]
+    row = rra._entry_from_snapshot(
+        snap, issue_receipt=receipt, logged_at=issued_at
+    )
+    assert row is not None
+    p = sc.probability_audit(
+        [row], today=date(2026, 9, 23)
+    )["prospective"]
+    assert p["status"] == "accruing"
+    assert p["ledger_issue_timing_verified"] is True
+    assert p["same_model_issued_n"] == 1
+    assert p["same_model_graded_n"] == 0
+    assert p["awaiting_maturity"] == 1
+    assert p["latest_source_bundle_sha256"] == receipt["source_bundle_sha256"]
+    assert p["current_model_validated"] is False
+
+
+
+def _readiness_fixture(*, n_issued=300, n_graded=250, candidate=.10, baseline=.60,
+                       event_positions=None):
+    event_positions = set(event_positions or [
+        *range(10, 15), *range(60, 65), *range(110, 115),
+        *range(160, 165), *range(210, 215),
+    ])
+    start = date(2025, 1, 1)
+    cohort = [
+        (start + timedelta(days=2 * i), {}, {})
+        for i in range(n_issued)
+    ]
+    sample = []
+    for i in range(n_graded):
+        y = 1 if i in event_positions else 0
+        sample.append((
+            (start + timedelta(days=2 * i)).isoformat(),
+            candidate, y, baseline,
+        ))
+    samples = {h: list(sample) for h in ("h5", "h10", "h21")}
+    horizons = {
+        h: {
+            "paired_n": len(sample),
+            "missing_baseline_n": 0,
+            "excluded_n": 0,
+        }
+        for h in ("h5", "h10", "h21")
+    }
+    return cohort, samples, horizons
+
+
+def test_prospective_validation_event_clusters_do_not_count_overlapping_days_as_episodes():
+    sample = [
+        ("d0", .1, 1, .2), ("d1", .1, 1, .2),
+        ("d2", .1, 0, .2), ("d3", .1, 0, .2),
+        ("d4", .1, 0, .2), ("d5", .1, 1, .2),
+        ("d6", .1, 0, .2), ("d7", .1, 0, .2),
+        ("d8", .1, 0, .2), ("d9", .1, 0, .2),
+        ("d10", .1, 0, .2), ("d11", .1, 1, .2),
+        ("d12", .1, 1, .2),
+    ]
+    assert sc._event_cluster_count(sample, 5) == 2
+
+
+def test_prospective_validation_is_not_mature_before_frozen_sample_floor():
+    cohort, samples, horizons = _readiness_fixture(n_issued=100, n_graded=80)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["promotion_review_eligible"] is False
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    assert all(not h["mature"] for h in out["horizons"].values())
+
+
+def test_prospective_validation_supportive_sample_only_earns_review_eligibility():
+    cohort, samples, horizons = _readiness_fixture()
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_supportive"
+    assert out["promotion_review_eligible"] is True
+    assert out["full_surface_supportive"] is True
+    assert out["authority_h21_supportive"] is True
+    assert out["current_model_validated"] is False
+    assert out["public_validation_ready"] is False
+    for h in ("h5", "h10", "h21"):
+        row = out["horizons"][h]
+        assert row["mature"] is True
+        assert row["event_clusters"] == 5
+        assert row["brier_supportive"] is True
+        assert row["calibration_supportive"] is True
+        assert row["paired_brier_delta_ci90"][1] < 0
+        assert row["calibration_gap_ci90"][0] <= 0 <= row["calibration_gap_ci90"][1]
+
+
+def test_prospective_validation_mature_bad_probabilities_are_refuted():
+    cohort, samples, horizons = _readiness_fixture(candidate=.60, baseline=.10)
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "mature_refuting"
+    assert out["promotion_review_eligible"] is False
+    assert out["full_surface_supportive"] is False
+    assert out["current_model_validated"] is False
+    for h in ("h5", "h10", "h21"):
+        assert out["horizons"][h]["mature"] is True
+        assert out["horizons"][h]["brier_supportive"] is False
+
+
+def test_prospective_validation_requires_complete_paired_baseline():
+    cohort, samples, horizons = _readiness_fixture()
+    horizons["h21"]["paired_n"] -= 1
+    horizons["h21"]["missing_baseline_n"] = 1
+    out = sc._prospective_validation_readiness(cohort, samples, horizons)
+    assert out["status"] == "not_mature"
+    assert out["horizons"]["h21"]["baseline_complete"] is False
+    assert out["horizons"]["h21"]["mature"] is False
+
+
+def test_prospective_audit_publishes_frozen_readiness_without_validating_legacy_rows():
+    p = _audit(_prob_rows())["prospective"]
+    r = p["validation_readiness"]
+    assert r["definition"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL
+    assert r["protocol_commit"] == sc._PROSPECTIVE_VALIDATION_PROTOCOL_COMMIT
+    assert r["status"] == "not_started"
+    assert r["promotion_review_eligible"] is False
+    assert r["current_model_validated"] is False
+    assert r["public_validation_ready"] is False

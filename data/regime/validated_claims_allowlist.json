@@ -319,12 +319,13 @@
   },
   {
    "match": "validated a-share",
-   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge.",
+   "backing": "research/CHINA_HK_STOCK_SIGNALS.md — the validated A-share effects: within-sector 3M reversal (Sharpe 0.58) and low-vol defensive tilt (Sharpe 0.98). MEASURED, ~35y. The Reversal Sleeve product page names the same within-sector 3M reversal edge. The sleeve's builder (scripts/build_cn_reversal_sleeve.py) stamps that same edge into the note of its published artifact site/factordata/cn_reversal_sleeve.json.",
    "surfaces": [
     "china",
     "china_lookup",
     "subsectors_china",
-    "cn_reversal_sleeve"
+    "cn_reversal_sleeve",
+    "build_cn_reversal_sleeve"
    ]
   },
   {
@@ -1289,6 +1290,13 @@
    ]
   },
   {
+   "match": "WHEN validated confluence",
+   "backing": "signal_gate.is_buyable — the T1–T3 MACD-2D × StochRSI-3D confluence buy-GATE (research/SECTOR_CONFLUENCE.md; #736), the same gate the 'validated entry confluence (T1–T3)' us_stocks and 'validated-confluence buy-gate' sig_badge entries cite. Buy Board 2.0's WHEN gate is that gate verbatim, as HARD admission (scripts/build_stock_board_v2.py BUYABLE_TIERS = signal_gate.BUYABLE_TIERS; _when_gate → signal_gate.is_buyable). Covers the SHADOW note of site/factordata/us_standouts_v2.json only; it claims no edge for the WHAT trajectory half, which is graded in parallel until precision@k beats the live board.",
+   "surfaces": [
+    "build_stock_board_v2"
+   ]
+  },
+  {
    "match": "validated t1-t4 confluence",
    "backing": "code/CSS comments naming the same T1-T4 confluence buy gate (signal_gate; research/SECTOR_CONFLUENCE.md) — the prime-entry badge plumbing in intelligence_hub (jinja macro comment + .egate style-block comment), not free prose; the displayed badge itself is gated by the entry above.",
    "surfaces": [
@@ -1673,6 +1681,48 @@
    "backing": "Quoted third-party utterance, not a first-party claim: an executive's own sentence reproduced verbatim inside an earnings-call <blockquote> on the earnings wave/call-record pages (site/stocks/earnings/*). The word belongs to the quoted speaker with attribution; no engine artifact asserts this technology is validated. Phrase-scoped so it survives page repagination (page-NN.html rolls nightly). Added 2026-08-15 healing a fleet-wide ci-pack red (PR #5683).",
    "surfaces": [
     "stocks"
+   ]
+  },
+  {
+   "match": "identity_validated",
+   "backing": "NOT a displayed claim: IDENTITY_VALIDATED is an identity_state enum VALUE fixed by the Finance Intelligence read-model contract (contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json; emitted by engine/sector_intelligence/finance_projection.py, pinned by tests/test_finance_intelligence_hydration.py), so templates/finance_intelligence.js (+ its byte-identical site/ copy) must key its chip-label map by that exact string. The label a reader sees is the plain 'Identity confirmed' / '身份已确认'. Licenses the machine key only — the displayed label on that line must stay free of the token. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "finance_intelligence"
+   ]
+  },
+  {
+   "match": "pit_membership_validated",
+   "backing": "NOT a displayed claim: PIT_MEMBERSHIP_VALIDATED is a membership_state enum VALUE fixed by the Finance Intelligence read-model contract (contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json; emitted by engine/sector_intelligence/finance_projection.py / finance_overlap.py), so templates/finance_intelligence.js (+ its byte-identical site/ copy) must key its chip-label map by that exact string. The label a reader sees is the plain 'Point-in-time membership checked' / '时点成员数据已校验'. Licenses the machine key only — the displayed label on that line must stay free of the token. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "finance_intelligence"
+   ]
+  },
+  {
+   "match": "the same validated identities drive",
+   "backing": "templates/hk.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page). 'validated identities' names the in-template stage-board owner check directly below it: _hk_buy_owner.valid stays true only when setups.buy is a real sequence whose every row carries a unique, non-empty ticker (P0B zero-FOUC owner contract, commits 398b9d77890 / 3fb76ea810a). A code note about a data-integrity check, not a signal or research claim. Allowlisted rather than reworded because templates/hk.html.j2 is sha-pinned by the P0B browser receipts (mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json). Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "hk"
+   ]
+  },
+  {
+   "match": "through the validated owner",
+   "backing": "templates/hk.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page) on the stock-table serialization seam: 'validated owner' is the same _hk_buy_owner.valid identity check (unique non-empty tickers over a real setups.buy sequence; commit 3fb76ea810a). A code note, not a signal or research claim; allowlisted rather than reworded because the template is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "hk"
+   ]
+  },
+  {
+   "match": "of the validated owner board",
+   "backing": "templates/canada.html.j2 Jinja COMMENT ({# ... #}, stripped at render — never reaches a page). 'validated owner board' is the in-template owner check _ca_owner.board_valid (stable, unique board identities; the comment itself says the page fails to a typed full view when that check fails; commit 398b9d77890). A code note, not a signal or research claim; allowlisted rather than reworded because the template is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "canada"
+   ]
+  },
+  {
+   "match": "already validated server-side",
+   "backing": "templates/mm_brain.js (+ byte-identical site/mm_brain.js) JS block COMMENT above attrSafe() — not rendered text. 'already validated server-side' refers to the context receipt's entity symbols, which the server admits only through engine/intelligence_workspace/context_compiler.py::_valid_symbol (the W1-B admission law; anything else is rejected with reason 'invalid_symbol') before engine/neuralweb/brain_gateway.py emits the ai_context_receipt. An input-sanitation note explaining why attrSafe() still strips client-side, not a signal or research claim. Allowlisted rather than reworded because any mm_brain.js byte change re-bakes MM_BRAIN_VER into site/theme.js, which is sha-pinned by the P0B browser receipts. Added 2026-09-25 with the BC-2 data-gate heal (unrun-subsector-themes step 2 red since 09-24).",
+   "surfaces": [
+    "mm_brain"
    ]
   }
  ]

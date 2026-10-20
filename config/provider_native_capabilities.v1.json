@@ -3,6 +3,15 @@
   "owner_program": "shared-ai-provider-control",
   "capabilities": [
     {
+      "capacity_capability_id": "ncap_1474fe7261ff4652b5a5cd95b6d38fd1",
+      "capability_generation": 1,
+      "provider": "minimax",
+      "billing_mode": "subscription",
+      "credential_kind": "api_key",
+      "execution_surface": "native_cli",
+      "registration_state": "registered"
+    },
+    {
       "capacity_capability_id": "ncap_8ca6b62c3f1fc7725b00cd461cc81f76",
       "capability_generation": 1,
       "provider": "claude",

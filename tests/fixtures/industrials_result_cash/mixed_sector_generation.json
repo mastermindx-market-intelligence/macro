@@ -1,0 +1,34 @@
+{
+  "synthetic": true,
+  "sectors": [
+    "industrials",
+    "technology",
+    "healthcare"
+  ],
+  "generation": {
+    "members": [
+      {
+        "slug": "industrial-flow",
+        "sector": "industrials"
+      },
+      {
+        "slug": "semiconductor-test",
+        "sector": "technology"
+      },
+      {
+        "slug": "clinical-service",
+        "sector": "healthcare"
+      }
+    ]
+  },
+  "preservation_assertions": {
+    "all_prior_members_retained": true
+  },
+  "sources": [
+    {
+      "url": "https://example.invalid/mixed_sector_generation.json",
+      "mode": "synthetic",
+      "rights_state": "unknown"
+    }
+  ]
+}

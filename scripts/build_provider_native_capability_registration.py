@@ -1,43 +1,41 @@
 #!/usr/bin/env python3
-"""Emit current secret-free native provider-capability registration facts."""
+"""Project committed native registration facts; never enroll or admit a realm."""
 from __future__ import annotations
 
 import argparse
-import sys
+import json
 from pathlib import Path
+import sys
 
-_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(_ROOT))
-
-from engine.provider_native_capabilities import (  # noqa: E402
-    ProviderNativeCapabilityError,
-    canonical_json,
-    current_registration_facts,
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from engine.provider_native_capability_source import (  # noqa: E402
+    NativeSourceError, current_registration_source,
 )
 
 
-def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Emit current mastermind.provider_native_capability_registration/v1 facts",
-    )
-    parser.add_argument(
-        "--pretty",
-        action="store_true",
-        help="indent the already-canonical secret-free facts for operator reading",
-    )
-    return parser
-
-
 def main(argv: list[str] | None = None) -> int:
-    args = _parser().parse_args(argv)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--pretty", action="store_true")
+    args = parser.parse_args(argv)
     try:
-        facts = list(current_registration_facts(repo_root=_ROOT))
-        sys.stdout.write(canonical_json(facts, pretty=args.pretty))
-    except ProviderNativeCapabilityError as exc:
-        print(f"provider_native_capability refused: {exc}", file=sys.stderr)
+        source = current_registration_source()
+        # The source envelope preserves the exact current/predecessor binding
+        # for the incumbent qualified source owner. A list alone loses it for
+        # the empty registry. This envelope grants no authentication/admission.
+        result = {
+            "repository_commit": source.repository_commit,
+            "previous_repository_commit": source.previous_repository_commit,
+            "material_source_digest": source.material_source_digest,
+            "registrations": source.registrations,
+        }
+        print(json.dumps(result, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                         indent=2 if args.pretty else None,
+                         separators=None if args.pretty else (",", ":")))
+    except NativeSourceError as exc:
+        print(f"provider_native_source refused: {exc}", file=sys.stderr)
         return 2
-    except Exception:  # noqa: BLE001 - never expose private/source exception text
-        print("provider_native_capability refused: INTERNAL_PROJECTION_ERROR", file=sys.stderr)
+    except Exception:
+        print("provider_native_source refused: SOURCE_UNAVAILABLE", file=sys.stderr)
         return 2
     return 0
 

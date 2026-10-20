@@ -798,7 +798,7 @@ def _fake_api(
     pull_payload=None,
     pull_status=200,
     main_commits=((BEFORE_THE_PROOF, ["data/nightly.json"]),),
-    pr_files=("engine/signal_quality.py",),
+    pr_files=("engine/signal_quality.py",),  # ci-trigger-closure: data — fixture changed-file name, never opened
     compare_files=None,
     compare_status=200,
     compare_base_sha=None,
@@ -1999,10 +1999,10 @@ def test_a_stale_proof_never_spends_the_hold_guards_comments_read(monkeypatch):
         check_pages={
             1: {"total_count": 1, "check_runs": [_run("ci-pack-1", conclusion="success")]}
         },
-        main_commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),),
+        main_commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),),  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = _freshness(
-        commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),)
+        commits=((BEFORE_THE_PROOF, ["engine/signal_quality.py"]),)  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     MOG.sweep_pull("acme/widgets", _pull(), "read", "write", freshness)
     assert not [c for c in calls if c[0] == "GET" and "/comments?" in c[1]]
@@ -2091,7 +2091,7 @@ def test_a_cap_exceeded_comment_history_blocks_with_distinct_wording(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if "/commits?" in url:
             return 200, []
@@ -2340,7 +2340,7 @@ def test_cap_exceeded_dedup_probes_the_newest_page_not_the_partial(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if "/commits?" in url:
             return 200, []
@@ -2469,7 +2469,7 @@ def test_an_ambiguous_merge_response_rereads_the_pr_and_consumes_the_snapshot(
         if "/compare/" in url:
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if method == "GET" and "/git/ref/heads/main" in url:
             return 200, {"object": {"sha": DEFAULT_MAIN_SHA}}
@@ -2777,7 +2777,7 @@ def test_the_concurrent_sweep_guard_fails_closed_on_an_unreadable_pull_request(
             # invariant passes and the test stays about the settled-guard read.
             return 200, {
                 "base_commit": {"sha": DEFAULT_MAIN_SHA},
-                "files": [{"filename": "engine/signal_quality.py"}],
+                "files": [{"filename": "engine/signal_quality.py"}],  # ci-trigger-closure: data — fixture changed-file name, never opened
             }
         if url.endswith("/merge"):
             return 409, {"message": "Pull Request is not mergeable"}
@@ -3591,6 +3591,15 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
+#: #7958 originally changed only records, without owning a tested surface.
+#: Both historical locations are now intentionally gated: mockups/evidence/**
+#: since #8287, and agentos/** with the R2 knowledge contracts. Preserve the
+#: incident's unowned-record shape with notes/ instead of exempting Agent OS.
+#: The end-to-end test checks this exemplar against the actual workflow gates.
+INCIDENT_7958_FILES = [
+    "notes/WS-F04-X1-2026-09-24.md",
+    "notes/WS-F04-X1-2026-09-24-R2.md",
+]
 
 
 def test_the_4583_reconstruction_never_merges_a_proof_main_has_moved_past(
@@ -3694,7 +3703,7 @@ def test_main_moving_outside_the_surface_still_merges_on_the_existing_green(
             (MAIN_MOVED_AT_1026, ["collectors/biocatalyst/trials.py"]),
             ("2026-08-05T09:10:00Z", ["content/press/2026-08-05-note.md"]),
         ],
-        pr_files=["engine/signal_quality.py", "tests/test_validate_signals.py"],
+        pr_files=["engine/signal_quality.py", "tests/test_validate_signals.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
 
@@ -3712,9 +3721,9 @@ def test_an_unfiltered_workflow_does_not_make_every_surface_everything():
     back door. It contributes no entries."""
     gates = [{"workflow": "fences.yml", "patterns": None}, {"workflow": "ci.yml", "patterns": ["engine/**"]}]
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3737,9 +3746,9 @@ def test_a_workflow_start_catchall_does_not_make_every_surface_everything():
         }
     ]
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["collectors/fred.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3764,7 +3773,7 @@ def test_a_new_root_seen_only_by_the_start_catchall_does_not_invalidate_every_pr
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, ["brand_new_root/subject.py"])],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3789,7 +3798,7 @@ def test_a_leaked_start_catchall_in_patterns_still_does_not_stale_the_fleet():
             )
         ],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3807,7 +3816,7 @@ def test_unowned_design_notes_do_not_stale_the_fleet():
             )
         ],
         gates=MOG.load_pr_gates(),
-        pull_files={4242: ["engine/signal_quality.py", "tests/test_validate_signals.py"]},
+        pull_files={4242: ["engine/signal_quality.py", "tests/test_validate_signals.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3821,9 +3830,9 @@ def test_a_pipeline_bake_is_not_an_edit():
     livelocks any pull request that touches `site/` (18-26 re-prove cycles), which is
     the strict option wearing a filter."""
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "data/research_vault/catalog.json"])],
+        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "data/research_vault/catalog.json"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=[{"workflow": "ci.yml", "patterns": ["site/**", "data/**"]}],
-        pull_files={4242: ["site/chart.js"]},
+        pull_files={4242: ["site/chart.js"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3836,9 +3845,9 @@ def test_one_source_file_defeats_the_pipeline_bake_exclusion():
     bake", never "ignore the baked files in this commit". One hand-edited file and
     the commit is judged normally."""
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "engine/signal_quality.py"])],
+        commits=[(MAIN_MOVED_AT_1026, ["site/stocks/index.html", "engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
         gates=[{"workflow": "ci.yml", "patterns": ["site/**", "engine/**"]}],
-        pull_files={4242: ["engine/signal_gate.py"]},
+        pull_files={4242: ["engine/signal_gate.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3853,7 +3862,7 @@ def test_a_commit_changing_the_check_definitions_re_proves_every_pull_request():
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [".github/ci/legacy-jobs.yml"])],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -3875,7 +3884,7 @@ def test_an_exact_proof_base_does_not_reprove_its_own_definition_commit(
             ("2026-08-05T10:26:00Z", [".github/ci/legacy-jobs.yml"]),
         ],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     included = freshness.commits[0]["sha"]
     monkeypatch.setattr(
@@ -3909,7 +3918,7 @@ def test_only_main_commits_newer_than_the_heads_merge_base_are_classified(
             ("2026-08-05T10:26:00Z", ["data/nightly.json"]),
         ],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     included = freshness.commits[1]["sha"]
     monkeypatch.setattr(
@@ -4071,7 +4080,7 @@ def test_a_PR_workflow_definition_re_proves_every_pull_request(workflow):
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [f".github/workflows/{workflow}"])],
         gates=gates,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4085,7 +4094,7 @@ def test_removing_a_proof_workflows_PR_trigger_still_invalidates_old_proof():
         commits=[(MAIN_MOVED_AT_1026, [".github/workflows/fences.yml"])],
         # Simulate fences.yml no longer appearing in post-change load_pr_gates().
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4102,7 +4111,7 @@ def test_a_non_PR_workflow_edit_does_not_globally_invalidate_green_proof(workflo
     freshness = _freshness(
         commits=[(MAIN_MOVED_AT_1026, [f".github/workflows/{workflow}"])],
         gates=[{"workflow": "ci.yml", "patterns": ["engine/**"]}],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
@@ -4120,9 +4129,9 @@ def test_a_non_PR_workflow_edit_does_not_globally_invalidate_green_proof(workflo
             "could not be established",
         ),
         (
-            "a footprint that matches no entry of any gate",
+            "a footprint that names no file at all",
             [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)],
-            {"pull_files": {4242: ["notes/whatever.txt"]}},
+            {"pull_files": {4242: []}},
             "could not be established",
         ),
     ],
@@ -4132,17 +4141,153 @@ def test_a_surface_that_cannot_be_determined_is_re_proven(
 ):
     """FAIL CLOSED, the whole reason this gate is worth having.
 
-    A definition of "tested surface" that silently resolves to the empty set turns
-    this into a no-op that REVIEWS as protection. Every way of not knowing therefore
-    lands on re-prove, including the empty footprint — a pull request whose files
-    match no path entry is not "outside every surface", it is unclassified.
+    Every way of NOT KNOWING the pull request's files lands on re-prove: an
+    unreadable files view, and a zero-file footprint (the clobbered-head shape,
+    which can be shown to be outside nothing). Knowing the files and finding
+    them owned by no gate is a different, affirmative answer — see the #7958
+    tests below — and is deliberately absent from this list.
     """
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])], **kwargs
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])], **kwargs  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     stale, reason = freshness.stale_for(_pull(), runs)
     assert stale, f"{case}: {reason}"
     assert expected_in_reason in reason, f"{case}: {reason}"
+
+
+def test_a_footprint_outside_every_gate_is_fresh_when_main_moves_inside_one():
+    """A main move inside a gate path cannot invalidate a proof that never
+    covered that gate.
+
+    The files were READ and CLASSIFIED — the same matcher that just found main's
+    commit inside `engine/**` found none of the pull request's files inside any
+    gate. That is not "unclassified"; it is classified as outside every tested
+    surface, and the exact-head checks that ran are the whole proof. Folding it
+    into "could not be established" re-proved #7958 three times in one evening
+    (once 25 s after its own green concluded), which under a main that moves
+    every few minutes with 60-110 min packs can never converge.
+    """
+    freshness = _freshness(
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pull_files={4242: ["notes/whatever.txt"]},
+    )
+    stale, reason = freshness.stale_for(
+        _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
+    )
+    assert stale is False, reason
+    assert "own no path-filtered gate entry" in reason, reason
+    assert "1 changed file(s)" in reason, reason
+
+
+def test_surface_of_distinguishes_unreadable_from_empty():
+    """`None` is "could not be read"; the empty set is "read, owned by nothing"."""
+    freshness = _freshness(
+        pull_files={1: None, 2: [], 3: ["notes/whatever.txt"], 4: ["engine/x.py"]}
+    )
+    assert freshness.surface_of(1) is None
+    assert freshness.surface_of(2) is None, "a zero-file footprint stays undeterminable"
+    assert freshness.surface_of(3) == set()
+    assert freshness.surface_of(4) == {"engine/**"}
+
+
+def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green(
+    monkeypatch, capsys
+):
+    """#7958 (2026-09-24), against the REAL workflow gates.
+
+    An unowned records-only exemplar under `notes/` (both historical
+    `agentos/handoffs/` and `mockups/evidence/` are now gated — see
+    INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
+    `scripts/` after the head's proof concluded green. The sweeper refreshed
+    this shape three times
+    (0ee772f1 -> d3f8bd8a -> fad0e00d -> 25e4a451), the third 25 s after run
+    36052314696 at fad0e00d had concluded green, logging "the pull request's own
+    changed files could not be established". They could: they were simply owned
+    by no gate. The merge must go through on the existing green, untouched.
+    """
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {
+                "total_count": 1,
+                "check_runs": [
+                    _run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)
+                ],
+            }
+        },
+        main_commits=[
+            (MAIN_MOVED_AT_1026, ["engine/signal_quality.py"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+            ("2026-09-24T21:40:00Z", ["scripts/build_site.py", "templates/index.html"]),  # ci-trigger-closure: data — fixture changed-file name, never opened
+        ],
+        pr_files=INCIDENT_7958_FILES,
+        update_status=202,
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert freshness.surface_of(4242) == set(), (
+        "the #7958 shape must own no entry of any real path-filtered gate; if a "
+        "workflow now owns notes/, this incident shape has "
+        "changed and the test — not the sweeper — needs a new exemplar"
+    )
+
+    assert (
+        MOG.sweep_pull(
+            "acme/widgets", _pull(), "read", "write", freshness,
+            budget=_authorized_budget(),
+        ) == "merged"
+    )
+    assert not any(call[1].endswith("/update-branch") for call in calls), (
+        "re-proving a pull request whose files own no tested surface is the "
+        "livelock #7958 measured"
+    )
+    assert any(call[0] == "PUT" and call[1].endswith("/merge") for call in calls)
+    out = capsys.readouterr().out
+    assert "own no path-filtered gate entry" in out, out
+
+
+def test_agentos_records_have_a_real_workflow_gate(monkeypatch):
+    """R2 handoffs can no longer use the historical unowned-record shortcut."""
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 0, "check_runs": []}},
+        main_commits=[],
+        pr_files=["agentos/handoffs/WS-F04-X1-2026-09-24.md"],
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert "agentos/**" in freshness.surface_of(4242)
+
+
+def test_incident_7958_shape_with_unreadable_files_still_re_proves(monkeypatch):
+    """The safety property survives: a pull request whose files could NOT be read
+    is never merged on a proof main has moved past — it is handed to update-branch
+    exactly as before, even though its (unknown) files might be the #7958 shape.
+    """
+    calls = _fake_api(
+        monkeypatch,
+        check_pages={
+            1: {
+                "total_count": 1,
+                "check_runs": [
+                    _run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)
+                ],
+            }
+        },
+        main_commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pr_files=INCIDENT_7958_FILES,
+        update_status=202,
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    freshness._pr_files[4242] = None  # the files view came back unreadable
+
+    assert (
+        MOG.sweep_pull(
+            "acme/widgets", _pull(), "read", "write", freshness,
+            budget=_authorized_budget(),
+        ) == "re-proving"
+    )
+    assert not any(
+        call[0] == "PUT" and call[1].endswith("/merge") for call in calls
+    ), "unreadable files must never become permission to merge"
+    assert any(call[1].endswith("/update-branch") for call in calls)
 
 
 def test_exact_proof_base_makes_job_start_timestamps_non_authoritative():
@@ -4166,7 +4311,7 @@ def test_a_proof_older_than_the_visible_timeline_stays_current_if_only_skip_ci_t
     ]
     freshness = _freshness(
         commits=commits,
-        pull_files={4242: ["engine/signal_quality.py"]},
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
         include_proof_base=False,
     )
     stale, reason = freshness.stale_for(
@@ -4199,11 +4344,11 @@ def test_too_many_product_commits_to_classify_is_re_proven():
     commits = [
         (
             f"2026-08-05T{13 + (index // 30):02d}:{index % 60:02d}:00Z",
-            ["engine/signal_quality.py"],
+            ["engine/signal_quality.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
         )
         for index in range(MOG.MAIN_COMMIT_FILE_CAP + 5)
     ]
-    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_gate.py"]})
+    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_gate.py"]})  # ci-trigger-closure: data — fixture changed-file name, never opened
     stale, reason = freshness.stale_for(
         _pull(), [_run("ci-pack-1", conclusion="success", started_at=PROVEN_AT_0742)]
     )
@@ -4225,7 +4370,7 @@ def test_a_generic_409_is_retryable_only_when_main_moved_by_skip_ci():
         "merge conflict between base and head", freshness, skip_sha
     )
     product = _freshness(
-        commits=(("2026-08-14T01:00:00Z", ["engine/signal_quality.py"], "fix: product"),)
+        commits=(("2026-08-14T01:00:00Z", ["engine/signal_quality.py"], "fix: product"),)  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     assert not MOG.is_retryable_base_tick(
         "Pull Request is not mergeable", product, product.snapshot_tip
@@ -4241,7 +4386,7 @@ def test_skip_ci_ticks_do_not_consume_the_commit_classification_cap():
         )
         for index in range(MOG.MAIN_COMMIT_FILE_CAP + 5)
     ]
-    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_quality.py"]})
+    freshness = _freshness(commits=commits, pull_files={4242: ["engine/signal_quality.py"]})  # ci-trigger-closure: data — fixture changed-file name, never opened
     freshness._commit_files.clear()
     calls: list[str] = []
     freshness.files_of = lambda sha: calls.append(sha) or ([], False)  # type: ignore[method-assign]
@@ -4254,8 +4399,8 @@ def test_skip_ci_ticks_do_not_consume_the_commit_classification_cap():
 
 def test_an_unreadable_main_commit_is_re_proven(monkeypatch):
     freshness = _freshness(
-        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],
-        pull_files={4242: ["engine/signal_quality.py"]},
+        commits=[(MAIN_MOVED_AT_1026, ["engine/signal_quality.py"])],  # ci-trigger-closure: data — fixture changed-file name, never opened
+        pull_files={4242: ["engine/signal_quality.py"]},  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness._commit_files.clear()
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (502, None))
@@ -4292,7 +4437,7 @@ def test_a_truncated_pipeline_bake_is_proven_by_complete_root_trees(monkeypatch)
             {"sha": PROOF_BASE_SHA},
         ],
     )
-    freshness._pr_files[4242] = ["site/chart.js"]
+    freshness._pr_files[4242] = ["site/chart.js"]  # ci-trigger-closure: data — fixture changed-file name, never opened
 
     stable_engine = {"path": "engine", "type": "tree", "mode": "040000", "sha": "e" * 40}
     stable_tests = {"path": "tests", "type": "tree", "mode": "040000", "sha": "f" * 40}
@@ -4617,7 +4762,7 @@ def test_the_commit_classification_is_shared_across_pull_requests(monkeypatch):
             }
         },
         main_commits=window,
-        pr_files=["engine/signal_quality.py"],
+        pr_files=["engine/signal_quality.py"],  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
     verdicts = [
@@ -4652,8 +4797,8 @@ def test_github_glob_semantics_not_fnmatch():
     # Every entry, not just the first: engine/signal_quality.py is listed explicitly
     # AND swept by engine/**, and an intersection must not depend on list order.
     assert matching_patterns(
-        "engine/signal_quality.py", ["engine/signal_quality.py", "tests/**", "engine/**"]
-    ) == ["engine/signal_quality.py", "engine/**"]
+        "engine/signal_quality.py", ["engine/signal_quality.py", "tests/**", "engine/**"]  # ci-trigger-closure: data — fixture changed-file name, never opened
+    ) == ["engine/signal_quality.py", "engine/**"]  # ci-trigger-closure: data — fixture changed-file name, never opened
 
 
 def test_the_module_records_that_4583_was_not_a_path_filter_gap():
@@ -5308,6 +5453,272 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     ) == "refresh-deferred"
     assert not [call for call in calls if call[0] == "PUT"]
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
+    """A live unmergeable head is declined before any lease claim, budget, or PUT.
+
+    Regression for the measured 2026-10-12 starvation: at 7 active/cap 8 an
+    earlier conflicting pull claimed the durable refresh lease, update-branch
+    confirmed the conflict, the workload slot refunded — but `claim_attempted`
+    stayed True, so the clean eligible pull behind it was denied for the rest of
+    the sweep at 0/1 used. The fresh authorized read that admission already
+    performs carries GitHub's own computed verdict, so the gateway can decline
+    on affirmative evidence (mergeable=false AND mergeable_state=dirty) before
+    anything is consumed, and the one high-load slot goes to the clean head.
+    """
+    calls: list[tuple[str, str]] = []
+    claimed = [False]
+    owner_number: list[int | None] = [None]
+    generation_description = [MOG.REFRESH_LEASE_DESCRIPTION]
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            fields = (
+                {"mergeable": False, "mergeable_state": "dirty"}
+                if number == 1
+                else {}
+            )
+            labels = ["merge-on-green"]
+            if number == owner_number[0]:
+                labels.append(MOG.REFRESH_LEASE_LABEL)
+            return 200, {**_pull(number, labels=tuple(labels)), **fields}
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": generation_description[0],
+            }
+        if method == "PATCH" and "/labels/" in url:
+            generation_description[0] = payload["description"]
+            owner_number[0] = MOG.parse_refresh_lease_record(
+                payload["description"]
+            )[0]
+            claimed[0] = True
+            return 200, payload
+        if method == "POST" and url.endswith("/labels"):
+            return 200, [{"name": MOG.REFRESH_LEASE_LABEL}]
+        if method == "GET" and "/issues/" in url and "?" not in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            labels = [{"name": "merge-on-green"}]
+            if number == owner_number[0]:
+                labels.append({"name": MOG.REFRESH_LEASE_LABEL})
+            return 200, {"number": number, "labels": labels}
+        if method == "GET" and "/issues?" in url:
+            if owner_number[0] is None:
+                return 200, []
+            return 200, [
+                {
+                    "number": owner_number[0],
+                    "pull_request": {"url": "pr"},
+                    "labels": [
+                        {"name": "merge-on-green"},
+                        {"name": MOG.REFRESH_LEASE_LABEL},
+                    ],
+                }
+            ]
+        if method == "PUT" and url.endswith("/update-branch"):
+            number = int(url.split("/pulls/")[1].split("/")[0])
+            return (422 if number == 1 else 202), {
+                "message": (
+                    "merge conflict between base and head"
+                    if number == 1
+                    else "Updating"
+                )
+            }
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    first = _pull(1)
+    second = _pull(2)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", first, "write", budget, "stale"
+    ) == "declined"
+    assert not [call for call in calls if call[0] == "PUT"], (
+        "a known conflict must never reach the update-branch write"
+    )
+    assert not [call for call in calls if call[0] == "PATCH"], (
+        "the durable lease must stay unclaimed for a known conflict"
+    )
+    assert not [call for call in calls if call[0] == "POST"], (
+        "no issue label write either"
+    )
+    assert budget.refreshes_used == 0 and budget.refresh_attempts_used == 0, (
+        "an affirmative conflict consumes no slot and no attempt"
+    )
+    assert lease.claim_attempted is False and lease.owner_number is None
+    # The clean eligible head behind it still gets the one slot, via the
+    # existing normal claim path.
+    assert MOG.attempt_update_branch(
+        "acme/widgets", second, "write", budget, "stale"
+    ) == "updated"
+    assert lease.owns(second)
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    puts = [call for call in calls if call[0] == "PUT"]
+    assert len(puts) == 1 and puts[0][1].endswith("/pulls/2/update-branch")
+
+
+def test_more_conflicts_than_attempt_slots_leave_the_budget_for_a_clean_head(
+    monkeypatch,
+):
+    """Every affirmatively conflicted head declines without touching the budget.
+
+    A backlog of known conflicts must not drain the 8 bounded update-branch
+    attempts before an eligible clean head is ever admitted.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            if number <= 10:
+                return 200, {
+                    **_pull(number),
+                    "mergeable": False,
+                    "mergeable_state": "dirty",
+                }
+            return 200, _pull(number)
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget()
+    for number in range(1, 11):
+        assert MOG.attempt_update_branch(
+            "acme/widgets", _pull(number), "write", budget, "stale"
+        ) == "declined"
+    assert budget.refresh_attempts_used == 0, (
+        "affirmative conflicts never reach the bounded attempt budget"
+    )
+    assert budget.refreshes_used == 0
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(11), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+        {"mergeable": True, "mergeable_state": "clean"},
+    ),
+    ids=("unknown", "missing", "clean"),
+)
+def test_unaffirmative_mergeability_keeps_the_existing_admission_path(
+    monkeypatch, fresh_fields
+):
+    """Only the affirmative pair classifies; unknown stays write-then-classify.
+
+    GitHub answers mergeable=null while it computes and omits fields on odd
+    shapes, so those pulls keep the ordinary admission path and its caps.
+    """
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "updated"
+    assert budget.refresh_attempts_used == 1 and budget.refreshes_used == 1
+    assert any(call[0] == "PUT" for call in calls)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred", "the real cap still binds a spent slot"
+
+
+@pytest.mark.parametrize(
+    "fresh_fields",
+    (
+        {"mergeable": True, "mergeable_state": "clean"},
+        {"mergeable": None, "mergeable_state": "unknown"},
+        {},
+    ),
+    ids=("fresh-clean", "fresh-unknown", "fresh-missing"),
+)
+def test_a_stale_dirty_listing_never_overrides_a_fresh_read(
+    monkeypatch, fresh_fields
+):
+    """An old listing's dirty state is not evidence; the live read decides."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            number = int(url.rstrip("/").rsplit("/", 1)[1])
+            return 200, {**_pull(number), **fresh_fields}
+        assert method == "PUT" and url.endswith("/update-branch")
+        return 202, {"message": "Updating"}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == "updated"
+    assert any(call[0] == "PUT" for call in calls)
+
+
+@pytest.mark.parametrize(
+    ("fresh_status", "fresh_payload", "expected"),
+    (
+        (
+            200,
+            {
+                **_pull(1),
+                "head": {
+                    "sha": "b" * 40,
+                    "ref": "claude/feature",
+                    "repo": {"full_name": "acme/widgets"},
+                },
+            },
+            "head-moved",
+        ),
+        (200, {**_pull(1), "draft": True}, "draft"),
+        (200, {**_pull(1), "base": {"ref": "release"}}, "wrong-base"),
+        (200, {**_pull(1), "labels": []}, "disarmed"),
+        (500, None, "authorization-unreadable"),
+    ),
+    ids=("head-moved", "draft", "wrong-base", "disarmed", "unreadable"),
+)
+def test_lost_authorization_still_wins_over_a_dirty_listing(
+    monkeypatch, fresh_status, fresh_payload, expected
+):
+    """Authorization changes keep their original disposition, never a conflict."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and "/pulls/" in url:
+            return fresh_status, fresh_payload
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    stale = {**_pull(1), "mergeable": False, "mergeable_state": "dirty"}
+    assert MOG.attempt_update_branch(
+        "acme/widgets", stale, "write", _authorized_budget(max_refreshes=1),
+        "stale",
+    ) == expected
+    assert not [call for call in calls if call[0] == "PUT"]
+    assert not [call for call in calls if call[0] == "PATCH"]
 
 
 def test_lease_owner_outside_pull_page_is_fetched_and_promoted(monkeypatch):
@@ -6090,6 +6501,55 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
         f"{len(armed) - len(reached)} pull request(s) were starved across "
         f"{buckets} rotations"
     )
+
+
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
+    """Evaluation coverage is insufficient when only one refresh slot is free.
+
+    With span=100/cap=100 the old order never moves; span=80/cap=100
+    visits only four first positions. Every ordinary PR must get a turn at
+    the front even when all prior update attempts prove conflicted.
+    """
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(span):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        assert {pull["number"] for pull in ordered} == set(range(1, span + 1))
+        assert len(ordered) == span
+        reached.add(ordered[0]["number"])
+    assert reached == set(range(1, span + 1))
+
+
+@pytest.mark.parametrize("span,cap,buckets", [(80, 100, 12), (100, 100, 15), (100, 25, 16)])
+def test_refresh_attempt_window_reaches_whole_backlog_without_larger_budget(span, cap, buckets):
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(buckets):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        reached.update(pull["number"] for pull in ordered[:MOG.MAX_REFRESHES_PER_SWEEP])
+    assert reached == set(range(1, span + 1))
+    assert MOG.MAX_REFRESHES_PER_SWEEP == 8
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+
+
+def test_rotation_phase_preserves_repair_lease_and_trigger_priority():
+    ordinary = [_pull(number) for number in range(1, 78)]
+    repair = _pull(500, labels=("merge-on-green", "main-red-repair"))
+    lease = _pull(600)
+    hot = _pull(700)
+    hot["head"]["sha"] = "f" * 40
+    for bucket in (0, 4, 8, 79, 500):
+        ordered = MOG.sweep_order(
+            ordinary + [repair, lease, hot], cap=100,
+            refresh_lease_number=600, trigger_head_sha="F" * 40,
+            now=bucket * MOG.ROTATION_BUCKET_SECONDS,
+        )
+        assert [pull["number"] for pull in ordered[:3]] == [500, 600, 700]
 
 
 def test_a_main_red_repair_pull_request_is_never_deferred_by_the_cap():
@@ -8087,14 +8547,14 @@ def test_a_stale_proof_refresh_also_draws_on_the_capped_slots(monkeypatch, capsy
         check_pages=pages,
         update_status=202,
         # main took a source commit AFTER the proof, inside the PR's surface.
-        main_commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),),
+        main_commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),),  # ci-trigger-closure: data — fixture changed-file name, never opened
     )
     verdict = MOG.sweep_pull(
         "acme/widgets",
         _pull(),
         "read",
         "write",
-        _freshness(commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)),
+        _freshness(commits=(("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)),  # ci-trigger-closure: data — fixture changed-file name, never opened
         _proof(),
         MOG.SweepBudget("read", max_refreshes=0),
     )

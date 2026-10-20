@@ -1,0 +1,167 @@
+FFFFFFFFFFFFF                                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_desk_ui_presets_are_native_pressed_buttons ________________
+
+    def test_desk_ui_presets_are_native_pressed_buttons():
+        import re
+        html = _desk_ui_fragment('<div class="presets-row"', '<div class="filters-row">')
+>       assert len(re.findall(r'<button[^>]*class="chip preset"', html)) == 4
+E       assert 0 == 4
+E        +  where 0 = len([])
+E        +    where [] = <function findall at 0x1008e9590>('<button[^>]*class="chip preset"', '\n\n\n\n<div class="presets-row">\n        <span class="chip preset" data-preset="heavy-oe"><span class="l-en">Off-ex...set="fading-oe"><span class="l-en">Fading off-ex</span><span class="l-zh">场外占比下降</span></span>\n      </div>\n\n      ')
+E        +      where <function findall at 0x1008e9590> = <module 're' from '/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/re/__init__.py'>.findall
+
+tests/test_darkpool_desk.py:868: AssertionError
+____________ test_desk_ui_sort_buttons_do_not_wrap_explanatory_tips ____________
+
+    def test_desk_ui_sort_buttons_do_not_wrap_explanatory_tips():
+        import re
+        html = _desk_ui_fragment('<thead>', '<tbody id="dp-tbody">')
+>       assert html.count('class="dp-sort"') == 13
+E       assert 0 == 13
+E        +  where 0 = <built-in method count of str object at 0x8b952e000>('class="dp-sort"')
+E        +    where <built-in method count of str object at 0x8b952e000> = '\n\n\n\n<thead>\n            <tr>\n              <th data-col="ticker" data-type="str"><span class="l-en">Ticker</spa...de"><span class="l-en">Days</span><span class="l-zh">天数</span></th>\n            </tr>\n          </thead>\n          '.count
+
+tests/test_darkpool_desk.py:877: AssertionError
+________ test_desk_ui_active_sort_and_preset_states_are_projected_once _________
+
+    def test_desk_ui_active_sort_and_preset_states_are_projected_once():
+        src = _desk_ui_source()
+>       sync = src[src.index('function syncDeskControls'):src.index('function renderTable')]
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: substring not found
+
+tests/test_darkpool_desk.py:891: ValueError
+__________ test_desk_ui_filter_fields_have_visible_labels[dp-search] ___________
+
+field = 'dp-search'
+
+    @pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+    def test_desk_ui_filter_fields_have_visible_labels(field):
+        html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+>       assert f'<label for="{field}">' in html
+E       assert '<label for="dp-search">' in '\n\n\n\n<div class="filters-row">\n        <input id="dp-search" class="dp-input" type="text" placeholder="Filter tic...btn" id="dp-export"><span class="l-en">Export CSV</span><span class="l-zh">导出CSV</span></button>\n      </div>\n      '
+
+tests/test_darkpool_desk.py:902: AssertionError
+_________ test_desk_ui_filter_fields_have_visible_labels[dp-min-share] _________
+
+field = 'dp-min-share'
+
+    @pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+    def test_desk_ui_filter_fields_have_visible_labels(field):
+        html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+>       assert f'<label for="{field}">' in html
+E       assert '<label for="dp-min-share">' in '\n\n\n\n<div class="filters-row">\n        <input id="dp-search" class="dp-input" type="text" placeholder="Filter tic...btn" id="dp-export"><span class="l-en">Export CSV</span><span class="l-zh">导出CSV</span></button>\n      </div>\n      '
+
+tests/test_darkpool_desk.py:902: AssertionError
+___________ test_desk_ui_filter_fields_have_visible_labels[dp-trend] ___________
+
+field = 'dp-trend'
+
+    @pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+    def test_desk_ui_filter_fields_have_visible_labels(field):
+        html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+>       assert f'<label for="{field}">' in html
+E       assert '<label for="dp-trend">' in '\n\n\n\n<div class="filters-row">\n        <input id="dp-search" class="dp-input" type="text" placeholder="Filter tic...btn" id="dp-export"><span class="l-en">Export CSV</span><span class="l-zh">导出CSV</span></button>\n      </div>\n      '
+
+tests/test_darkpool_desk.py:902: AssertionError
+___________ test_desk_ui_filter_fields_have_visible_labels[dp-norm] ____________
+
+field = 'dp-norm'
+
+    @pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+    def test_desk_ui_filter_fields_have_visible_labels(field):
+        html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+>       assert f'<label for="{field}">' in html
+E       assert '<label for="dp-norm">' in '\n\n\n\n<div class="filters-row">\n        <input id="dp-search" class="dp-input" type="text" placeholder="Filter tic...btn" id="dp-export"><span class="l-en">Export CSV</span><span class="l-zh">导出CSV</span></button>\n      </div>\n      '
+
+tests/test_darkpool_desk.py:902: AssertionError
+_______ test_desk_ui_clear_restores_search_without_stealing_preset_focus _______
+
+    def test_desk_ui_clear_restores_search_without_stealing_preset_focus():
+        src = _desk_ui_source()
+>       assert "if (focusSearch) document.getElementById('dp-search').focus()" in src
+E       assert "if (focusSearch) document.getElementById('dp-search').focus()" in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...lassList.add(\'sort-desc\');\n  renderTable();\n})();\n</script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_darkpool_desk.py:908: AssertionError
+___ test_desk_ui_locale_updates_accessible_names_without_replacing_controls ____
+
+    def test_desk_ui_locale_updates_accessible_names_without_replacing_controls():
+        src = _desk_ui_source()
+        locale = src[src.index('function updatePlaceholders'):src.index("document.addEventListener('langchange', updatePlaceholders)")]
+>       assert "'.dp-shell [data-label-en]'" in locale
+E       assert "'.dp-shell [data-label-en]'" in "function updatePlaceholders() {\n    var lang = document.documentElement.getAttribute('data-lang') || 'en';\n    docu...= 'zh' ? (opt.getAttribute('data-zh') || opt.getAttribute('data-en')) : opt.getAttribute('data-en');\n    });\n  }\n  "
+
+tests/test_darkpool_desk.py:917: AssertionError
+__________ test_desk_ui_empty_results_remain_explained_and_announced ___________
+
+    def test_desk_ui_empty_results_remain_explained_and_announced():
+        src = _desk_ui_source()
+>       assert 'role="status" aria-live="polite" aria-atomic="true"' in src
+E       assert 'role="status" aria-live="polite" aria-atomic="true"' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...lassList.add(\'sort-desc\');\n  renderTable();\n})();\n</script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_darkpool_desk.py:925: AssertionError
+______ test_desk_ui_summary_and_touch_targets_do_not_use_fragmented_copy _______
+
+    def test_desk_ui_summary_and_touch_targets_do_not_use_fragmented_copy():
+>       html = _desk_ui_fragment('<summary class="dp-desk-summary">', '<div class="sb">')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_darkpool_desk.py:933: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+start = '<summary class="dp-desk-summary">', end = '<div class="sb">'
+
+    def _desk_ui_fragment(start, end):
+        from jinja2 import Environment
+        src = _desk_ui_source()
+        preamble = src[:src.index('<!DOCTYPE html>')]
+>       first = src.index(start)
+                ^^^^^^^^^^^^^^^^
+E       ValueError: substring not found
+
+tests/test_darkpool_desk.py:861: ValueError
+_________ test_desk_ui_published_script_and_stylesheet_match_template __________
+
+    def test_desk_ui_published_script_and_stylesheet_match_template():
+        import re, hashlib
+        root = pathlib.Path(__file__).resolve().parents[1]
+        src = _desk_ui_source()
+        html = (root / 'site/darkpool.html').read_text()
+        script = re.compile(r"<script>\s*\(function\(\) \{\s*'use strict';.*?</script>", re.S)
+>       assert script.search(src).group(0) == script.search(html).group(0)
+E       AssertionError: assert '<script>\n(f...);\n</script>' == '<script>\n(f...);\n</script>'
+E         
+E         Skipping 578 identical leading characters in diff, use -v to show
+E         -     });
+E         -     document.querySelectorAll('.dp-shell [data-label-en]').forEach(function(el) {
+E         -       el.setAttribute('aria-label', el.getAttribute(lang === 'zh' ? 'data-label-zh' : 'data-label-en') || el.getAttribute('data-label-en'));
+E               });
+E             }...
+E         
+E         ...Full output truncated (217 lines hidden), use '-vv' to show
+
+tests/test_darkpool_desk.py:950: AssertionError
+___________ test_desk_ui_snapshot_status_wraps_after_language_switch ___________
+
+    def test_desk_ui_snapshot_status_wraps_after_language_switch():
+        src = _desk_ui_source()
+>       assert '.dp-asof { max-width:100%; }' in src
+E       assert '.dp-asof { max-width:100%; }' in '{% macro t(en, zh=\'\') -%}\n<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>\n{%- ...lassList.add(\'sort-desc\');\n  renderTable();\n})();\n</script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_darkpool_desk.py:964: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_darkpool_desk.py::test_desk_ui_presets_are_native_pressed_buttons
+FAILED tests/test_darkpool_desk.py::test_desk_ui_sort_buttons_do_not_wrap_explanatory_tips
+FAILED tests/test_darkpool_desk.py::test_desk_ui_active_sort_and_preset_states_are_projected_once
+FAILED tests/test_darkpool_desk.py::test_desk_ui_filter_fields_have_visible_labels[dp-search]
+FAILED tests/test_darkpool_desk.py::test_desk_ui_filter_fields_have_visible_labels[dp-min-share]
+FAILED tests/test_darkpool_desk.py::test_desk_ui_filter_fields_have_visible_labels[dp-trend]
+FAILED tests/test_darkpool_desk.py::test_desk_ui_filter_fields_have_visible_labels[dp-norm]
+FAILED tests/test_darkpool_desk.py::test_desk_ui_clear_restores_search_without_stealing_preset_focus
+FAILED tests/test_darkpool_desk.py::test_desk_ui_locale_updates_accessible_names_without_replacing_controls
+FAILED tests/test_darkpool_desk.py::test_desk_ui_empty_results_remain_explained_and_announced
+FAILED tests/test_darkpool_desk.py::test_desk_ui_summary_and_touch_targets_do_not_use_fragmented_copy
+FAILED tests/test_darkpool_desk.py::test_desk_ui_published_script_and_stylesheet_match_template
+FAILED tests/test_darkpool_desk.py::test_desk_ui_snapshot_status_wraps_after_language_switch
+13 failed, 41 deselected in 0.94s

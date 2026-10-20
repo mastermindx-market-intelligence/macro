@@ -591,7 +591,7 @@ CURVE_TOOL_SCHEMA: dict = {
         "their percentiles and 63-day moves (2s10s, 3m10y, 5s30s, 2s5s), the "
         "real / breakeven decomposition (nominal 10y, real 10y, 10y and 5y5y "
         "breakevens, TIPS and inflation curves, anchoring), the term-premium "
-        "direction and TP-adjusted slope, curve level + butterflies + PCA "
+        "direction and the legacy TP10 curve heuristic (2s10s plus the 10y term-premium model estimate; not a matched-maturity expectations-only decomposition), curve level + butterflies + PCA "
         "variance shares, rate-of-change momentum, the desk's curve regime "
         "label, the recession suite (near-term forward spread, NY Fed "
         "probability, un-inversion, policy stance vs neutral), forwards with "

@@ -1,0 +1,201 @@
+{
+  "b1_episode_rows": 1060,
+  "b1_generation_id": "peg:7473e0087a7a47de5b0feffe9ff6637457d6f6f0a16513e853819f3e2ec45151",
+  "b1_receipt_mode": "nightly",
+  "candidate_projection_columns": [
+    "stamp_date",
+    "ticker",
+    "board_definition"
+  ],
+  "candidate_stamps_observed": 40,
+  "candidate_total_rows_observed": 139038,
+  "canonical_b1_suppression_interpretation": {
+    "b1_episode_rows": 1060,
+    "b1_generation_id": "peg:7473e0087a7a47de5b0feffe9ff6637457d6f6f0a16513e853819f3e2ec45151",
+    "b1_generation_manifest_sha256": "73d8196507ba937950623c596e6f586a4baa81fd93ea00b3b341bbd6e2fdda20",
+    "b1_head_sha256": "44a23ab0fac898acb136d3660397fce0528d927b0b50f3a7913853061aa950ca",
+    "binding_checks": {
+      "b1_head_bytes_unchanged": true,
+      "b1_head_sha256_after": "44a23ab0fac898acb136d3660397fce0528d927b0b50f3a7913853061aa950ca",
+      "b1_manifest_bytes_unchanged": true,
+      "b1_receipt_bytes_unchanged": true,
+      "generation_manifest_matches_head_manifest_pin": true,
+      "generation_receipt_byte_count_matches_manifest_entry": true,
+      "generation_receipt_digest_matches_manifest_entry": true,
+      "host_source_commit_unchanged": true,
+      "snapshot_receipt_equals_pinned_generation_receipt": true
+    },
+    "candidate_source_counts": {
+      "input": 2933,
+      "mapped": 937,
+      "suppressed": 1996
+    },
+    "effects": {
+      "c1_access_or_import_or_test": false,
+      "candidate_population_filtered_for_admission": false,
+      "grade_or_protected_outcome_read": false,
+      "new_ptse_preflight_run": false,
+      "physical_w3_write": false,
+      "production_acceptance_claimed": false,
+      "source_mutation": false
+    },
+    "host_source_commit": "007e0cccbd06f089605ba122efc658f406043dd3",
+    "identity_census": {
+      "candidate_rows": 2933,
+      "candidate_source_ids_sha256": "5c6e640efe8ce3226db7372b033fba6a8f4a442fc1a1a83fd1be3352c0849966",
+      "candidate_unique_source_ids": 2933,
+      "duplicate_suppression_source_ids": 0,
+      "exact_relation_ambiguous_count": 0,
+      "exact_relation_mapped_count": 937,
+      "exact_relation_missing_count": 1996,
+      "missing_relation_ids_without_suppression": 0,
+      "missing_relation_source_ids_equal_suppression_source_ids": true,
+      "missing_relation_source_ids_sha256": "12ce50b87d28171ddce0fe19f0591a2c76bd3d07b1adb1703147c554d279704d",
+      "same_stamp_candidate_suppression_rows": 1996,
+      "same_stamp_candidate_suppression_unique_source_ids": 1996,
+      "same_stamp_suppression_source_ids_sha256": "12ce50b87d28171ddce0fe19f0591a2c76bd3d07b1adb1703147c554d279704d",
+      "suppression_ids_outside_candidate_population": 0,
+      "suppression_ids_without_missing_relation": 0
+    },
+    "immutable_generation_receipt_bytes": 3029,
+    "immutable_generation_receipt_sha256": "15b54c9d3532b5532b5bab98b2eb7054984f83b8be2a5da88c7918013edfc089",
+    "method": "Bounded read-only identity census: canonical load_candidate_episode_store_snapshot on the pinned generation; incumbent load_candidates three-column Oct5 projection; exact candidate source-event keys counted across distinct B1 episode.source_event_ids; same-stamp candidate suppression IDs compared by set equality. Set digests hash sorted ID lists as compact UTF-8 JSON. No PTSE builder/preflight invoked. PYTHONDONTWRITEBYTECODE=1 and sys.dont_write_bytecode=True.",
+    "receipt_mode": "nightly",
+    "receipt_recorded_at": "2026-10-06T16:00:55Z",
+    "schema": "ptse.b1_suppression_identity_census/v1-research",
+    "source_files": {
+      "engine/us_candidate_episode.py": {
+        "git_blob_sha1": "525a5bb7cea6a5f84fe23999e53a82c12a08b5c1",
+        "sha256": "92b263301b156903c7e58f721a299c61f9a14749e53b86f52b99a2e184fe03b1"
+      },
+      "engine/us_candidate_episode_intake.py": {
+        "git_blob_sha1": "efa6b168cd727e988eddf8386fb0ea04ba8942d7",
+        "sha256": "c08addea7f08a19ceff17ecf6d9aa7bedabc1c6faf3222d893db8a3e816577ed"
+      },
+      "engine/us_context_vector.py": {
+        "git_blob_sha1": "7960c7fa3add41b2a1c4ae851f341524af220fc8",
+        "sha256": "24d5d39cfc41331c090e1f6dfb3ff7efd34f3845c86219f8142a4a7b4914c424"
+      },
+      "engine/us_prophet_w3.py": {
+        "git_blob_sha1": "0aa64ec63c79ded48e7bbed2fece8126cef7b481",
+        "sha256": "3bd3c3eb7e842eeff728753e2116249c95b5a272a91ab5647b9e16314e14854f"
+      }
+    },
+    "source_validation_evidence": {
+      "engine/us_candidate_episode.py": "1273-1285 validate_reconciliation_receipt copies exact receipt; 1399 returns validated row; 1450-1470 reads generation-local latest_receipt.json and assigns validated_receipt to generation.receipt",
+      "engine/us_candidate_episode.py_relation_suppression": "915-924 unanchored observations without an active episode receive MISSING_STRUCTURAL_ANCHOR",
+      "engine/us_candidate_episode_intake.py": "346-365 candidate_observations selects latest valid stamp across candidate parts; no board-definition filter; source-event grain includes stamp,ticker,board_definition",
+      "engine/us_prophet_w3.py": "757-814 existing frozen paired-candidate scope requires us_prophet_v3, buy lane, finite canonical and v2-shadow score/rank fields"
+    },
+    "stamp_date": "2026-10-05",
+    "suppression_board_definition_counts": {
+      "us_prophet_v3": 1996
+    },
+    "suppression_reason_counts": {
+      "IDENTITY_UNRESOLVED": 1893,
+      "MISSING_STRUCTURAL_ANCHOR": 103
+    },
+    "verdict": "EXACT_SOURCE_ID_CORRESPONDENCE_CONFIRMED; CANONICAL_B1_SUPPRESSIONS_PRESERVED_AS_PTSE_RELATION_REFUSALS"
+  },
+  "checks": {
+    "all_authority_literal_false": true,
+    "b1_head_and_source_commit_unchanged": true,
+    "b1_material_revalidated_unchanged": true,
+    "empty_replacement": {
+      "first_preserved": true,
+      "reason": "CANDIDATES_OMITTED",
+      "status": "REVISION_REFUSED"
+    },
+    "reverse_input_identical_replay": "IDENTICAL_REPLAY",
+    "whole_observed_stamp_preserved": true
+  },
+  "context_status_counts": [
+    {
+      "count": 937,
+      "reason": "CONTEXT_MISSING",
+      "status": "UNAVAILABLE"
+    }
+  ],
+  "denominators": {
+    "attempted": 2933,
+    "enrolled": 937,
+    "relation_refused": 1996
+  },
+  "effects": {
+    "c1_access": false,
+    "consumer_release": false,
+    "context_fabrication": false,
+    "grade_or_protected_outcome_read": false,
+    "physical_w3_write": false,
+    "production_issuance": false,
+    "provider_request": false,
+    "source_write": false
+  },
+  "elapsed_seconds": 25.381,
+  "external_receipt_manifest": {
+    "b1_material_receipt": {
+      "artifact_id": "observer-material:peg:7473e0087a7a47de5b0feffe9ff6637457d6f6f0a16513e853819f3e2ec45151",
+      "owner_ref": "ptse-read-only-verification/engine.us_candidate_episode.load_candidate_episode_store_snapshot",
+      "sha256": "043f901fe65862c233f373c7b221d03b32635204b617669193f950315452ae82"
+    },
+    "candidate_generation_id": "peg:7473e0087a7a47de5b0feffe9ff6637457d6f6f0a16513e853819f3e2ec45151",
+    "candidate_population_receipt": {
+      "artifact_id": "observer-projection:007e0cccbd06f089605ba122efc658f406043dd3:2026-10-05:stamp_date,ticker,board_definition",
+      "owner_ref": "ptse-read-only-verification/engine.us_context_vector.load_candidates",
+      "sha256": "c9b6b765fa1ddc9da248aecbb2bab4a9a80ae9a845117451f985811ee4be317a"
+    },
+    "context_receipts": {},
+    "schema": "ptse.w3_external_receipt_manifest/v1-research",
+    "stamp_date": "2026-10-05"
+  },
+  "external_receipt_manifest_sha256": "435f590a2bc41b00c287d474b3cbae59a47451ce0e602657e62e7f2b4bd6ff32",
+  "incumbent_b1_head_sha256": "44a23ab0fac898acb136d3660397fce0528d927b0b50f3a7913853061aa950ca",
+  "incumbent_host_source_commit": "007e0cccbd06f089605ba122efc658f406043dd3",
+  "incumbent_reader_modules": {
+    "engine/us_candidate_episode.py": {
+      "git_blob": "525a5bb7cea6a5f84fe23999e53a82c12a08b5c1",
+      "sha256": "92b263301b156903c7e58f721a299c61f9a14749e53b86f52b99a2e184fe03b1"
+    },
+    "engine/us_context_vector.py": {
+      "git_blob": "7960c7fa3add41b2a1c4ae851f341524af220fc8",
+      "sha256": "24d5d39cfc41331c090e1f6dfb3ff7efd34f3845c86219f8142a4a7b4914c424"
+    }
+  },
+  "loaded_ptse_modules": {
+    "research/options_estate/ptse_candidate_relation.py": {
+      "git_blob": "f32e1f62abb135bbe7f7b9cb3a883db5768b02e6",
+      "sha256": "8c79d3531fd4f25ad0993b5e6c7c87a345be2f118bf45c04456ff5b8cf5a0480"
+    },
+    "research/options_estate/ptse_contract.py": {
+      "git_blob": "13e7585332500069b7d5ea32a1bcd0b5afa7b45b",
+      "sha256": "e6b704f02298987e3ca2deee1e2a98e4c8a99e135c90cae76d7393f522e47b14"
+    },
+    "research/options_estate/ptse_prospective_readiness.py": {
+      "git_blob": "8a1bb1e8039f87f693e029202b5b78cab456e6d5",
+      "sha256": "e09d0bf7b9bad0e85a1326e827f9437d1dcaa582718fd553aa07bd66981d251a"
+    },
+    "research/options_estate/ptse_shadow_enrollment.py": {
+      "git_blob": "b1c7c0396ab1c0e61cc608e0cae71a07daafc64f",
+      "sha256": "7eeb639638ac331d297cd88dd502933f05d026af9ca245de528e69e78cd7354f"
+    },
+    "research/options_estate/ptse_w3_publication.py": {
+      "git_blob": "1e1b1a050f63d3862b2a5aeecd339e08ba1259fe",
+      "sha256": "bd917feed936431fade8852a5b1e143bfc8c45ef1ea5582e5ec8a35bfc243817"
+    }
+  },
+  "packet_bytes": 1796597,
+  "packet_id": "ptse-w3:704dabe666afab10300297d20fd5f9fd6e9c9fc8c2749aba1222b94680d5cbe7",
+  "packet_sha256": "fa5d6b49b4e478155a3a21297706978ba74b57373bf11f918cf30c7802e0ca4f",
+  "preflight_status": "RELATION_REFUSED",
+  "receipt_origin": "Observer-produced digests of actual incumbent-reader material; not owner-issued production admission or first-seen capture",
+  "relation_refusal_counts": {
+    "CANDIDATE_B1_RELATION_UNAVAILABLE": 1996
+  },
+  "retained_context_artifacts": 0,
+  "schema": "ptse.actual_candidate_preflight_verification/v1-research",
+  "selected_stamp": "2026-10-05",
+  "source_commit": "7359e29812c57722fd729ecd7af6863155b7ec9d",
+  "source_loading": "exact GitHub blobs verified and executed in memory; no host source writes",
+  "verdict": "ACTUAL_SOURCE_PREFLIGHT_PASS; NOT_NATURAL_ISSUANCE_OR_PRODUCTION_ACCEPTANCE",
+  "verified_at": "2026-10-07T06:01:59.358694+00:00"
+}

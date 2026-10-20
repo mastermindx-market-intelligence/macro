@@ -1,0 +1,45 @@
+{
+  "schema": "prophet.profitability_research_case/v1",
+  "scope": "HISTORICAL_FIGURES_AND_EXACT_ARITHMETIC_NOT_AS_RUN_SIGNAL",
+  "issuer": "Micron Technology, Inc.",
+  "source_url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000024/a2025q4ex991-pressrelease.htm",
+  "source_publication_date": "2025-09-23",
+  "historical_system_available_at": null,
+  "source_table": "Consolidated Statements of Operations; quarterly columns, not full-year or non-GAAP columns",
+  "currency": "USD",
+  "units": "millions",
+  "accounting_basis": "GAAP",
+  "current_quarter_end": "2025-08-28",
+  "prior_quarter_end": "2024-08-29",
+  "current_revenue": 11315,
+  "prior_revenue": 7750,
+  "current_operating_income": 3654,
+  "prior_operating_income": 1522,
+  "calculated": {
+    "revenue_growth_pct": 46.0,
+    "operating_income_change": 2132,
+    "prior_operating_margin_pct": 19.638709677419357,
+    "current_operating_margin_pct": 32.29341581970835,
+    "margin_change_bps": 1265.4706142288996,
+    "symmetric_revenue_component": 925.6901369863014,
+    "symmetric_margin_component": 1206.3098630136985,
+    "exact_identity_verified_with_rational_arithmetic": true
+  },
+  "limits": [
+    "Arithmetic does not identify volume, pricing, product mix or causal management contribution.",
+    "No stock price, return, execution or historical system ingestion is asserted.",
+    "Operating-margin change is not the gross-profits-to-assets factor used by Novy-Marx.",
+    "No model promotion or factor premium is claimed from this issuer example."
+  ],
+  "research_comparator": {
+    "primary_source": "https://www.nber.org/papers/w15940",
+    "distinction": "Published profitability research motivates studying profitability and valuation separately. It does not validate this margin bridge as a stock-return predictor."
+  },
+  "authority": {
+    "rank": false,
+    "entry": false,
+    "size": false,
+    "execution": false,
+    "trade": false
+  }
+}

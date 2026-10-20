@@ -1,0 +1,792 @@
+{
+  "document_kind": "DESIGN_REQUIREMENT_TRACEABILITY",
+  "count": 36,
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "Complete early field including suppressions and displaced rows",
+      "master_plan_sections": [
+        "2",
+        "7"
+      ],
+      "build_units": [
+        "B02",
+        "B03",
+        "B07"
+      ],
+      "research_packets": [
+        "Q02",
+        "Q03"
+      ],
+      "decision_dependencies": [
+        "D02"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R02",
+      "title": "Canonical identity, episode generation, correction and re-arm",
+      "master_plan_sections": [
+        "4",
+        "5",
+        "7"
+      ],
+      "build_units": [
+        "B02",
+        "B04",
+        "B06"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q03"
+      ],
+      "decision_dependencies": [
+        "D02"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R03",
+      "title": "Actual source/observed/decision/publication clocks",
+      "master_plan_sections": [
+        "5"
+      ],
+      "build_units": [
+        "B01",
+        "B05",
+        "B06",
+        "B23"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q15"
+      ],
+      "decision_dependencies": [
+        "D01",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R04",
+      "title": "Coverage, rights and usable historical vintages",
+      "master_plan_sections": [
+        "6"
+      ],
+      "build_units": [
+        "B04",
+        "B08",
+        "B09",
+        "B16"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q06",
+        "Q07",
+        "Q14"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R05",
+      "title": "Clear qualitative intelligence and counterevidence",
+      "master_plan_sections": [
+        "6",
+        "9"
+      ],
+      "build_units": [
+        "B04",
+        "B08",
+        "B17"
+      ],
+      "research_packets": [
+        "Q06",
+        "Q08",
+        "Q14",
+        "Q20"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R06",
+      "title": "Early Leadership, real independent peer support",
+      "master_plan_sections": [
+        "8.1"
+      ],
+      "build_units": [
+        "B09",
+        "B10",
+        "B11",
+        "B12"
+      ],
+      "research_packets": [
+        "Q03",
+        "Q04",
+        "Q05"
+      ],
+      "decision_dependencies": [
+        "D02",
+        "D04"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R07",
+      "title": "Earnings issuer economics and matched expectation revisions",
+      "master_plan_sections": [
+        "8.2"
+      ],
+      "build_units": [
+        "B08",
+        "B14",
+        "B15"
+      ],
+      "research_packets": [
+        "Q06"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D04"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R08",
+      "title": "Cycle economic turn, survival and original-share capture",
+      "master_plan_sections": [
+        "8.3"
+      ],
+      "build_units": [
+        "B16",
+        "B17",
+        "B18",
+        "B19"
+      ],
+      "research_packets": [
+        "Q07",
+        "Q08",
+        "Q17"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D04"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R09",
+      "title": "Additional sleeves and instruments retained explicitly",
+      "master_plan_sections": [
+        "8.4",
+        "25"
+      ],
+      "build_units": [
+        "B27",
+        "B28"
+      ],
+      "research_packets": [
+        "Q23"
+      ],
+      "decision_dependencies": [
+        "D12"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R10",
+      "title": "Origin and current-landmark predictions remain distinct",
+      "master_plan_sections": [
+        "9",
+        "10"
+      ],
+      "build_units": [
+        "B06",
+        "B11",
+        "B13",
+        "B15",
+        "B19"
+      ],
+      "research_packets": [
+        "Q09",
+        "Q16",
+        "Q17"
+      ],
+      "decision_dependencies": [
+        "D06",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R11",
+      "title": "Multi-head forecasts, strong transparent and ambitious challengers",
+      "master_plan_sections": [
+        "10"
+      ],
+      "build_units": [
+        "B10",
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "research_packets": [
+        "Q09",
+        "Q10",
+        "Q20"
+      ],
+      "decision_dependencies": [
+        "D06",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R12",
+      "title": "Context conditioning and graph research without double-counting",
+      "master_plan_sections": [
+        "9",
+        "10"
+      ],
+      "build_units": [
+        "B04",
+        "B09",
+        "B11"
+      ],
+      "research_packets": [
+        "Q05",
+        "Q12",
+        "Q13",
+        "Q14"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D06"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R13",
+      "title": "Calibration, missingness and selective prediction",
+      "master_plan_sections": [
+        "10",
+        "12"
+      ],
+      "build_units": [
+        "B11",
+        "B15",
+        "B18",
+        "B22"
+      ],
+      "research_packets": [
+        "Q11",
+        "Q12"
+      ],
+      "decision_dependencies": [
+        "D06"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R14",
+      "title": "B4 deterministic current entry with no model waiver",
+      "master_plan_sections": [
+        "11"
+      ],
+      "build_units": [
+        "B05",
+        "B07",
+        "B12",
+        "B15",
+        "B19"
+      ],
+      "research_packets": [
+        "Q04",
+        "Q15",
+        "Q18"
+      ],
+      "decision_dependencies": [
+        "D01",
+        "D04",
+        "D08"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R15",
+      "title": "Realistic fills, quote basis, sessions, latency and costs",
+      "master_plan_sections": [
+        "11",
+        "12"
+      ],
+      "build_units": [
+        "B05",
+        "B06",
+        "B12"
+      ],
+      "research_packets": [
+        "Q15",
+        "Q18"
+      ],
+      "decision_dependencies": [
+        "D01",
+        "D08"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R16",
+      "title": "Explicit tactical, earnings and core/add holding laws",
+      "master_plan_sections": [
+        "11"
+      ],
+      "build_units": [
+        "B13",
+        "B15",
+        "B19"
+      ],
+      "research_packets": [
+        "Q16",
+        "Q17"
+      ],
+      "decision_dependencies": [
+        "D04",
+        "D05"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R17",
+      "title": "Same-origin full-opportunity comparisons and original controls",
+      "master_plan_sections": [
+        "12"
+      ],
+      "build_units": [
+        "B06",
+        "B10",
+        "B12",
+        "B15",
+        "B18"
+      ],
+      "research_packets": [
+        "Q02",
+        "Q04",
+        "Q15"
+      ],
+      "decision_dependencies": [
+        "D06",
+        "D08"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R18",
+      "title": "Failure-inclusive labels and honest path metrics",
+      "master_plan_sections": [
+        "12"
+      ],
+      "build_units": [
+        "B06",
+        "B18",
+        "B22"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q02",
+        "Q08",
+        "Q09"
+      ],
+      "decision_dependencies": [
+        "D03",
+        "D06"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R19",
+      "title": "Dependence, temporal leakage, multiplicity and power",
+      "master_plan_sections": [
+        "12"
+      ],
+      "build_units": [
+        "B06",
+        "B10",
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q20"
+      ],
+      "decision_dependencies": [
+        "D06",
+        "D07"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R20",
+      "title": "Action Desk and Early Radar user tasks",
+      "master_plan_sections": [
+        "14"
+      ],
+      "build_units": [
+        "B03",
+        "B07",
+        "B20"
+      ],
+      "research_packets": [
+        "Q19",
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D09"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R21",
+      "title": "All Candidates and Theme/Propagation tasks",
+      "master_plan_sections": [
+        "14"
+      ],
+      "build_units": [
+        "B03",
+        "B04",
+        "B09",
+        "B20"
+      ],
+      "research_packets": [
+        "Q03",
+        "Q05",
+        "Q13",
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D09"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R22",
+      "title": "Track Record and Health/Receipts tasks",
+      "master_plan_sections": [
+        "14"
+      ],
+      "build_units": [
+        "B22",
+        "B23",
+        "B20"
+      ],
+      "research_packets": [
+        "Q02",
+        "Q22",
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R23",
+      "title": "Two art directions, EN/ZH, mobile/desktop and accessibility",
+      "master_plan_sections": [
+        "15"
+      ],
+      "build_units": [
+        "B07",
+        "B14",
+        "B17",
+        "B20",
+        "B25"
+      ],
+      "research_packets": [
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D09"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R24",
+      "title": "Watch, thesis, plan and positions have truthful persistence",
+      "master_plan_sections": [
+        "16"
+      ],
+      "build_units": [
+        "B07",
+        "B13",
+        "B19",
+        "B21",
+        "B24"
+      ],
+      "research_packets": [
+        "Q19"
+      ],
+      "decision_dependencies": [
+        "D05"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R25",
+      "title": "Meaningful alerts with current revalidation and correction",
+      "master_plan_sections": [
+        "16"
+      ],
+      "build_units": [
+        "B21",
+        "B23"
+      ],
+      "research_packets": [
+        "Q19",
+        "Q22"
+      ],
+      "decision_dependencies": [
+        "D01",
+        "D05",
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R26",
+      "title": "Portfolio context, correlated exposure and no duplicate holdings",
+      "master_plan_sections": [
+        "16"
+      ],
+      "build_units": [
+        "B24"
+      ],
+      "research_packets": [
+        "Q21"
+      ],
+      "decision_dependencies": [
+        "D05",
+        "D08"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R27",
+      "title": "Field performance, reliability, cost and latency budgets",
+      "master_plan_sections": [
+        "17"
+      ],
+      "build_units": [
+        "B23",
+        "B26"
+      ],
+      "research_packets": [
+        "Q15",
+        "Q22",
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R28",
+      "title": "Post-launch drift, learning and safe versioned rollback",
+      "master_plan_sections": [
+        "18",
+        "23"
+      ],
+      "build_units": [
+        "B22",
+        "B23",
+        "B26"
+      ],
+      "research_packets": [
+        "Q22"
+      ],
+      "decision_dependencies": [
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R29",
+      "title": "Onboarding, useful comprehension and truthful commercial claims",
+      "master_plan_sections": [
+        "19"
+      ],
+      "build_units": [
+        "B20",
+        "B25",
+        "B28"
+      ],
+      "research_packets": [
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D09",
+        "D12"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R30",
+      "title": "Concrete 24-packet scientific program and rejected hypotheses",
+      "master_plan_sections": [
+        "3",
+        "13"
+      ],
+      "build_units": [
+        "B00",
+        "B06",
+        "B27"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q23"
+      ],
+      "decision_dependencies": [
+        "D06",
+        "D12"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R31",
+      "title": "Bounded build slices and exact existing carriers",
+      "master_plan_sections": [
+        "20"
+      ],
+      "build_units": [
+        "B00",
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05"
+      ],
+      "research_packets": [],
+      "decision_dependencies": [
+        "D10"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R32",
+      "title": "Astra principal research, justified Fable and least-scarce fabric",
+      "master_plan_sections": [
+        "21"
+      ],
+      "build_units": [
+        "B00",
+        "B25"
+      ],
+      "research_packets": [],
+      "decision_dependencies": [
+        "D10"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R33",
+      "title": "Independent exact-head review and real entitled browser proof",
+      "master_plan_sections": [
+        "22"
+      ],
+      "build_units": [
+        "B25",
+        "B26"
+      ],
+      "research_packets": [
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D09",
+        "D10",
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R34",
+      "title": "Legacy episodes, grades, strategies and positions preserved",
+      "master_plan_sections": [
+        "23"
+      ],
+      "build_units": [
+        "B06",
+        "B13",
+        "B19",
+        "B22",
+        "B26"
+      ],
+      "research_packets": [
+        "Q01",
+        "Q02"
+      ],
+      "decision_dependencies": [
+        "D04",
+        "D05",
+        "D11"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R35",
+      "title": "Declared economic/statistical gates before outcome selection",
+      "master_plan_sections": [
+        "12",
+        "24"
+      ],
+      "build_units": [
+        "B06",
+        "B10",
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "research_packets": [
+        "Q09",
+        "Q10",
+        "Q11",
+        "Q18"
+      ],
+      "decision_dependencies": [
+        "D06"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    },
+    {
+      "id": "R36",
+      "title": "Complete US first, market-native later adaptation",
+      "master_plan_sections": [
+        "2",
+        "25",
+        "26"
+      ],
+      "build_units": [
+        "B27",
+        "B28"
+      ],
+      "research_packets": [
+        "Q23",
+        "Q24"
+      ],
+      "decision_dependencies": [
+        "D12"
+      ],
+      "status": "PROPOSED_REQUIREMENT"
+    }
+  ]
+}

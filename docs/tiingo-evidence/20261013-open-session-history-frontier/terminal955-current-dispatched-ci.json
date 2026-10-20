@@ -1,0 +1,104 @@
+{
+  "accepted_at_utc": "2026-10-12T23:51:03.520536+00:00",
+  "approval_retry": false,
+  "expanded_jobs_successful": 12,
+  "jobs": [
+    {
+      "completedAt": "2026-10-12T23:01:57Z",
+      "conclusion": "success",
+      "name": "Investigation PostgreSQL invariants",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:02:40Z",
+      "conclusion": "success",
+      "name": "Ingest + signal-layer tests",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:32:15Z",
+      "conclusion": "success",
+      "name": "Terminal e2e mobile-1 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:08:36Z",
+      "conclusion": "success",
+      "name": "Terminal e2e serial (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:01:56Z",
+      "conclusion": "success",
+      "name": "Quote Hub tests",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:25:51Z",
+      "conclusion": "success",
+      "name": "Terminal e2e mobile-2 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:47:51Z",
+      "conclusion": "success",
+      "name": "Terminal e2e desktop-1 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:30:00Z",
+      "conclusion": "success",
+      "name": "Terminal e2e tablet-2 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:05:23Z",
+      "conclusion": "success",
+      "name": "Terminal unit + typecheck (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:42:10Z",
+      "conclusion": "success",
+      "name": "Terminal e2e desktop-2 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:25:24Z",
+      "conclusion": "success",
+      "name": "Terminal e2e tablet-1 (shard)",
+      "startedAt": "2026-10-12T23:01:40Z",
+      "status": "completed"
+    },
+    {
+      "completedAt": "2026-10-12T23:47:56Z",
+      "conclusion": "success",
+      "name": "Terminal typecheck + tests",
+      "startedAt": "2026-10-12T23:47:53Z",
+      "status": "completed"
+    }
+  ],
+  "new_dispatch": false,
+  "original_run_terminal_return_consumed": true,
+  "original_tool_exit_code": 0,
+  "original_tool_session_id": 89818,
+  "overall_conclusion": "success",
+  "overall_status": "completed",
+  "pr": 955,
+  "production_claimed": false,
+  "protected_merge_claimed": false,
+  "retained_original_run_read_sha256": "25c5a5765c9b0a71f047c3f64c8fc364b59bfeb6ef12ca9241e41a9390c71903",
+  "run_id": 38319936924,
+  "schema": "tiingo_existing_carrier_terminal_ci_acceptance.v1",
+  "tested_head": "8811e38c64eb14fadc40a00ccfbfb31c37f863e8"
+}
