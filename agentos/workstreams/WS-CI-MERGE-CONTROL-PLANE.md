@@ -280,8 +280,20 @@ waves:
       before fetching, preventing a later consumer from re-shallowing complete
       history. Real shallow-Git regression fails before, nine recovery tests pass
       after;199 authority tests plus repaired mock pass, manifest validates.
-      No new cache, proof relaxation or shards; normal hosted proof remains due.
-      No causal target or cost-neutrality claim.
+      PR9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0 at21:52:31Z;
+      run39324251115 passed258 jobs/554proof units and all active checks.
+      All eight source/test/report blobs verified. One real ruling-graph reuse
+      notice, five necessary deepening paths; no cache, proof relaxation or shards.
+      Trial42.12min/362.57 summed wall min; FIF commands2120.20sec critical.
+      Reuse was noncritical; no causal target or cost-neutrality claim.
+      Collect a separate post21:52:31Z cohort under blob
+      f92be10fc37455fd427829f0f964c5ef581b3a80 and exact merge ancestry.
+      At23:56Z29runs:12verified successes,13pending,4cancelled. ScopedN11
+      p50/p951981/2863sec, wall196.25/278.23min. No original/weighted full
+      proof matches; one original selected-set match has two changed definitions.
+      Natural39330880213 confirms reuse in noncritical pack8. Two other runs
+      have potential reuse on critical packs; inspect before attributing savings.
+      Publish accumulated report; retain implementation, no causal claim.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
