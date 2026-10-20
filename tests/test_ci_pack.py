@@ -4936,6 +4936,11 @@ CURATED_EXCLUSIVE = {
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-20 W28E-L32: the China reversal sleeve display suite renders the page
+    # template and its three includes with jinja2 alone. As an ordinary job its
+    # inferred scope would ride the shared template packing probes; scope:
+    # exclusive pins the template closure, the suite and the tests inits.
+    "cn-reversal-sleeve-display",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing

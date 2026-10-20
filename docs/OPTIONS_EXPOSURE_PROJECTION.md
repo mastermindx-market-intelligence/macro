@@ -505,3 +505,51 @@ dividend schedule, provider Greek units beyond the admitted dated Gamma class, o
 historical first availability. All existing instantaneous/joint/repricing/PIT guards
 remain in force. Synthetic QQQ producer output is a contract test, not actual QQQ
 market capture or publication.
+
+### Prospective native snapshot provenance
+
+The existing snapshot wrapper retains the same `thetadata.acquisition/v1`
+receipt column for first-order Greeks, second-order Greeks and OI snapshots.
+This is actual endpoint/parameters/raw-body hash/collector received time; no source
+session, provider publication instant, historical availability or rights is inferred.
+The history-only numerical receipt reader continues to refuse snapshot endpoints.
+`native_snapshot_acquisitions` validates every row's receipt, requested root/scope,
+endpoint and known-by cutoff, decoding identical repeated evidence once.
+
+The native snapshot normalizer now retains original `timestamp` and
+`underlying_timestamp` text alongside the existing parsed `snapshot_ts`. Missing
+underlying clocks remain absent. The existing exact contract-plus-snapshot-time
+join preserves first-order evidence and separately names second-order evidence:
+`second_order_timestamp`, `second_order_underlying_timestamp`,
+`_theta_second_acquisition`, `second_order_underlying_price`,
+`second_order_implied_vol`, `second_order_iv_error`, `second_order_bid`, and
+`second_order_ask`. Missing or mismatched second-order observations cannot acquire
+another row's provenance; first-order values are not overwritten.
+
+`snapshot_greeks(..., version=None)` preserves existing request defaults and records
+an omitted requested version as unknown. Explicit `version="1"` or `"latest"` is
+forwarded only when the caller supplies it. The source receipt's
+`calculation_provenance` labels its basis as requested parameters plus endpoint
+documentation, retains a null serving build, and discloses the corresponding
+0DTE0.15-day or latest minimum-one-hour floor. It never relabels either as
+`economic_expiry_no_floor`. Official source pages:
+[first order](https://www.thetadata.net/docs/operations/option_snapshot_greeks_first_order.html),
+[second order](https://www.thetadata.net/docs/operations/option_snapshot_greeks_second_order.html).
+The current code does not activate the optional version or make any source request.
+
+Provenance failure is lane-local: valid legacy CSV rows survive with the acquisition
+receipt omitted, including removal of any untrusted same-named response column.
+Unsupported Vanna/Charm units, serving model identity and economic/model horizon
+remain unavailable. Q02's American reference remains `RESEARCH_ONLY`; physical
+delivery, reference-close marking, last trade, exercise election and model horizon
+must not be conflated. This adapter does not qualify instantaneous exposure or
+change any projection capabilities, poller schedule, store or publication right.
+
+Admission hardening preserves any explicit conflicting currency, multiplier or
+deliverable rather than overwriting it with an ordinary-ETF interpretation. Rule
+interpretation accepts only mapped exact HTTPS reference origin/path/hash; source
+origin and coordinate provenance still come from the checked reference chain, not
+from a URL string alone. QQQ's Oct20 lower bound is enforced both when resolving and
+when validating a receipt. OI is not Greek algorithm-versioned: an explicit unsupported
+version parameter withholds its acquisition evidence; no version1 is invented for OI.
+These guards preserve observed denominators and do not change v2 tuple fields.
