@@ -1011,9 +1011,29 @@
   function trailRx(strip) {
     if (!strip || !strip.length) return "";
     var dots = strip.slice(-14).map(function (it) {
-      return '<i style="background:' + toneCol(plain(it.s).tone) + '"></i>';
+      var p = plain(it.s);
+      var lead = it.d ? it.d + " · " : "";
+      return '<i style="background:' + toneCol(p.tone) + '"' +
+        ' data-tip-en="' + esc(lead + p.short_en) +
+        '" data-tip-zh="' + esc(lead + p.short_zh) + '"></i>';
     }).join("");
     return '<span class="rx-trail">' + dots + "</span>";
+  }
+
+  // Reads are not daily: count what the strip actually holds and print its
+  // real span, taken only from the strip's own d strings — never the clock
+  // and never radar.as_of.
+  function trailLabel(strip) {
+    var s = (strip || []).slice(-14);
+    var n = s.length;
+    if (!n) return "";
+    var a = s[0].d, b = s[n - 1].d;
+    if (n >= 2 && a && b && a !== b) {
+      return bi("Last " + n + " reads · " + a + " to " + b,
+        "最近 " + n + " 次解读 · " + a + " 至 " + b);
+    }
+    return bi("Last " + n + " read" + (n === 1 ? "" : "s"),
+      "最近 " + n + " 次解读");
   }
 
   // ── The one disclosure per card (tier 2 lives here) ───────────────────────
@@ -1039,7 +1059,8 @@
     return '<details class="rx-more"><summary>' + bi("What's behind this", "背后是什么") + "</summary>" +
       '<div class="rx-more-body">' +
         (rows ? '<ul class="rx-slist">' + rows + "</ul>" : "") +
-        (trail ? '<div class="rx-more-row"><span class="rx-more-k">' + bi("Last 14 days", "过去14天") + "</span>" + trail + "</div>" : "") +
+        (trail ? '<div class="rx-more-row"><span class="rx-more-k">' +
+          trailLabel(f.state_strip) + "</span>" + trail + "</div>" : "") +
         (members.length ? '<div class="rx-more-row"><span class="rx-more-k">' + bi("Members", "成分股") + "</span>" +
           '<span class="rx-tks">' + tickerList(members) + "</span></div>" : "") +
         (heads ? '<div class="rx-more-row rx-more-news"><span class="rx-more-k">' + bi("In the news", "相关新闻") + "</span>" +
@@ -1275,6 +1296,12 @@
     return '<div class="rx-nrow">' +
       tickerLink(t.ticker) +
       '<span class="rx-badge rx-badge-sm" style="--bc:' + col + '">' + bi(p.short_en, p.short_zh) + "</span>" +
+      (t.source === "basket_attributed"
+        ? '<span class="rx-badge rx-badge-sm rx-mut"' +
+          ' data-tip-en="This name has no read of its own;' +
+          ' it shows its theme\'s read." data-tip-zh="该股没有自身读数，显示的是所属主题的读数。">' +
+          bi("Theme's read", "主题读数") + "</span>"
+        : "") +
       themeCell +
       '<span class="rx-nrs" style="color:' + rsCol + '" data-tip-en="Price vs the market over 60 days" ' +
         'data-tip-zh="60天内价格相对大盘">' + (rs != null ? (rs > 0 ? "+" : "") + rs.toFixed(0) + "%" : "—") + "</span>" +
@@ -1303,6 +1330,14 @@
     var epBase = ep21.base_rate || {};
     var diag = h21.diagonal || {};
     var baseRate = (ic.base_rate || {}).p_up;
+
+    // The horizon the seeded theses are written for, resolved from the
+    // artifact: seed_horizon_cal_d first, else the longest graded horizon.
+    var hzs = ic.horizons || [];
+    var cal = ic.seed_horizon_cal_d || (hzs.length ? hzs[hzs.length - 1] : null);
+    var hp = (cal != null && String(cal) !== "21") ? (bh[String(cal)] || {}) : {};
+    var hpEp = hp.episodes || {};
+    var hpC = hpEp.claims || {};
 
     var headEn, headZh, paraEn, paraZh, tone;
     if (status === "leading") {
@@ -1350,6 +1385,31 @@
       splitLine = '<p class="rx-h-split">' + bi(
         "Split honestly: the radar's actual calls — the divergence reads — were right " + ca + "% of the time" + (cb != null ? " against a " + cb + "% bar" : "") + ". Panels marked “already priced” are context, not calls" + (da != null ? " — and that cohort kept only " + da + "% direction, which is why it now ranks near the bottom of the board, not the top" : "") + ".",
         "如实拆分：雷达真正的判断 —— 背离读数 —— 方向正确率 " + ca + "%" + (cb != null ? "（基准 " + cb + "%）" : "") + "。标注“已反映在价格中”的面板是背景参考而非判断" + (da != null ? " —— 该组仅 " + da + "% 方向正确，因此现已排在榜单底部而非顶部" : "") + "。") + "</p>";
+    }
+
+    // The promise horizon, read beside the 21-day split so the reader sees
+    // the window the theses were seeded for. Descriptive only: the verdict
+    // is graded elsewhere, at the horizon with a valid HAC.
+    var horizonLine = "";
+    if (hpC.n >= 30 && hpC.dir_accuracy != null && hpC.base_dart != null) {
+      var pa = Math.round(hpC.dir_accuracy * 100);
+      var pb = Math.round(hpC.base_dart * 100);
+      var cmpEn = pa < pb ? "below it" : (pa > pb ? "above it" : "level with it");
+      var cmpZh = pa < pb ? "低于基准" : (pa > pb ? "高于基准" : "与基准持平");
+      var epTail = hpEp.n_matured != null
+        ? " from " + (hpEp.n_matured || 0).toLocaleString() + " matured episodes" : "";
+      var epTailZh = hpEp.n_matured != null
+        ? "，来自 " + (hpEp.n_matured || 0).toLocaleString() + " 个已到期片段" : "";
+      horizonLine = '<p class="rx-h-split">' + bi(
+        "Measured at the horizon the radar's theses are written for (" + cal +
+          " calendar days), the divergence calls were right " + pa +
+          "% of the time against a " + pb + "% bar — " + cmpEn +
+          " — across " + hpC.n.toLocaleString() + " graded calls" + epTail +
+          ". A descriptive read at that horizon, not the headline grade.",
+        "按雷达论点所针对的期限（" + cal + " 个日历日）衡量，背离判断方向正确率 " + pa +
+          "%（基准 " + pb + "%）—— " + cmpZh + " —— 共 " + hpC.n.toLocaleString() +
+          " 条已评分判断" + epTailZh +
+          "。这是该期限下的描述性读数，并非标题处的评级。") + "</p>";
     }
 
     function tile(v, en, zh) {
@@ -1459,6 +1519,7 @@
       '<p class="rx-h-para">' + bi(paraEn, paraZh) + "</p>" +
       baseLine +
       splitLine +
+      horizonLine +
       settledLine +
       '<div class="rx-tiles">' +
         tile(nSnap.toLocaleString(), "Daily readings recorded", "已记录每日读数") +
@@ -1995,10 +2056,23 @@
 
       // Board (tabs: themes + stocks)
       var quietN = radar.flags.filter(function (f) { return f.state === "QUIET"; }).length;
+      // Honest split: an attributed row echoes its theme's read; only
+      // n - n_attributed names carry a read of their own. Counts come from
+      // the artifact (r[3]); a thin artifact appends nothing (today's label).
+      var _ownReadN = "";
+      if (tickers && typeof tickers.n === "number" && isFinite(tickers.n) &&
+          typeof tickers.n_attributed === "number" && isFinite(tickers.n_attributed) &&
+          tickers.n_attributed >= 0 && tickers.n_attributed <= tickers.n) {
+        var _ownN = tickers.n - tickers.n_attributed;
+        _ownReadN = '<span class="rx-mut">' +
+          bi(" · " + _ownN.toLocaleString() + " with a read of their own",
+            " · 其中 " + _ownN.toLocaleString() + " 只个股有自身读数") + "</span>";
+      }
       h += '<div class="rx-board rx-mixed">';
       h += '<div class="rx-tabs">' +
         '<button class="rx-tab rx-on" data-pane="themes">' + bi("All themes", "全部主题") + " (" + radar.flags.length + ")</button>" +
-        '<button class="rx-tab" data-pane="stocks">' + bi("Stocks", "个股") + " (" + _allTickers.length + ")</button>" +
+        '<button class="rx-tab" data-pane="stocks">' + bi("Stocks", "个股") +
+        " (" + _allTickers.length + ")" + _ownReadN + "</button>" +
         "</div>";
       // themes pane
       h += '<div class="rx-pane rx-on" id="rx-pane-themes">';
@@ -2013,7 +2087,11 @@
         '<th data-col="name">' + bi("Theme", "主题") + '<span class="rx-so">↕</span></th>' +
         '<th data-col="accel" data-tip-en="How busy the real work is now against a year ago. 1.0× is unchanged, above is speeding up, below is slowing." data-tip-zh="真实活动相对一年前的忙碌程度。1.0× 为持平，高于为加速，低于为放缓。">' + bi("Work vs a year ago", "活动 vs 去年") + '<span class="rx-so">↕</span></th>' +
         '<th data-col="rel60" data-tip-en="How the theme has done against the market over the last 60 days." data-tip-zh="该主题过去60天相对大盘的表现。">' + bi("Price vs market", "价格 vs 大盘") + '<span class="rx-so">↕</span></th>' +
-        '<th data-tip-en="The read on each of the last 14 days." data-tip-zh="过去14天每天的解读。">' + bi("Last 14 days", "过去14天") + "</th>" +
+        '<th data-tip-en="' + esc("Each dot is one recorded read, oldest on the left. " +
+          "Reads are not taken every day — hover a dot for its date.") +
+          '" data-tip-zh="' + esc("每个点代表一次记录的解读，最左为最早。" +
+          "并非每天都有解读 —— 悬停查看日期。") + '">' +
+        bi("Recent reads", "近期解读") + "</th>" +
         '<th data-col="state">' + bi("Read", "解读") + '<span class="rx-so">↕</span></th>' +
         '<th>' + bi("What to do", "该怎么做") + "</th>" +
         '</tr></thead><tbody id="rx-tbody"></tbody></table></div>';
