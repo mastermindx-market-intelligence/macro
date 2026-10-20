@@ -3362,3 +3362,4 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-18T06:55:06+00:00","key_id":"codex_account","cycle_id":"","stage":"narrative_brain","est_tokens":24305,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-18T06:55:33+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_brain","est_tokens":25086,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-10-18T06:55:46+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_radar_review","est_tokens":20374,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-20T04:19:59+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":23126,"outcome":"ok"}
