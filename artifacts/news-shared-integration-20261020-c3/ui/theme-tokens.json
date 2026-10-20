@@ -1,0 +1,66 @@
+{
+  "schema": "ticker_news.theme_token_verification.v1",
+  "observed_at": "2026-10-20T14:58:48.022080+00:00",
+  "source_sha256": {
+    "templates/theme.css": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+    "templates/ticker_news.css": "0183d5f23e0c92507f420b904188114d07e7347842df6adba494957a5d6b5d59"
+  },
+  "proof_scope": "Headless Chromium, actual shared theme and component CSS with static fictional markup; external assets blocked; no product/auth/live-data claim",
+  "states": [
+    {
+      "theme": "dark",
+      "language": "en",
+      "panel": "rgb(24, 27, 33)",
+      "text": "rgb(215, 220, 227)",
+      "radius": "12px",
+      "dot": "rgb(61, 165, 100)",
+      "dotWidth": "6px",
+      "dotHeight": "6px",
+      "warning": "color(srgb 0.878431 0.627451 0.188235)",
+      "buttonRadius": "8px"
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "panel": "rgb(24, 27, 33)",
+      "text": "rgb(215, 220, 227)",
+      "radius": "12px",
+      "dot": "rgb(61, 165, 100)",
+      "dotWidth": "6px",
+      "dotHeight": "6px",
+      "warning": "color(srgb 0.878431 0.627451 0.188235)",
+      "buttonRadius": "8px"
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "panel": "rgb(255, 255, 255)",
+      "text": "rgb(28, 36, 48)",
+      "radius": "12px",
+      "dot": "rgb(47, 138, 82)",
+      "dotWidth": "6px",
+      "dotHeight": "6px",
+      "warning": "color(srgb 0.491529 0.347843 0.134745)",
+      "buttonRadius": "8px"
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "panel": "rgb(255, 255, 255)",
+      "text": "rgb(28, 36, 48)",
+      "radius": "12px",
+      "dot": "rgb(47, 138, 82)",
+      "dotWidth": "6px",
+      "dotHeight": "6px",
+      "warning": "color(srgb 0.491529 0.347843 0.134745)",
+      "buttonRadius": "8px"
+    }
+  ],
+  "checks": [
+    "visible 6px live dot in both themes and languages",
+    "health color invariant under language toggle",
+    "sanctioned 12px card and 8px control radius defaults",
+    "resolved warning text color",
+    "source stable during run"
+  ]
+}

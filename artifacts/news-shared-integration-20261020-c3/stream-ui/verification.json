@@ -1,6 +1,6 @@
 {
   "schema": "ticker_news_stream.ui_verification.v1",
-  "observed_at": "2026-10-20T13:36:31.088463+00:00",
+  "observed_at": "2026-10-20T14:55:23.991236+00:00",
   "proof_scope": "headless browser against a localhost fictional SSE fixture and the shipped consumer bytes; latency and request counts are fixture measurements, not production claims",
   "paired_source_site_identical": true,
   "checks": [
@@ -57,13 +57,13 @@
   "scenario_failures": [],
   "page_errors": [],
   "fixture_latency_ms": {
-    "correction": 25.1,
-    "remove": 3.8,
-    "upsert": 20.5
+    "correction": 21.8,
+    "remove": 1.7,
+    "upsert": 24.5
   },
   "source_sha256": {
     "templates/ticker_news.js": "fe8322cda6e282e08633bee34185200a26905a01fd068aec8b80b6001359fa56",
     "site/ticker_news.js": "fe8322cda6e282e08633bee34185200a26905a01fd068aec8b80b6001359fa56",
-    "templates/ticker_news.css": "b3ff2176393c29afb524d08a925b1df0049e15d08d9897bc211b6ac7649fc462"
+    "templates/ticker_news.css": "0183d5f23e0c92507f420b904188114d07e7347842df6adba494957a5d6b5d59"
   }
 }

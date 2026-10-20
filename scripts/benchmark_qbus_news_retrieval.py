@@ -18,6 +18,11 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# File-path execution first pins this checkout; --tree explicitly takes precedence
+# before the deferred benchmark imports so baseline comparisons stay source-bound.
+_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_ROOT))
+
 T0 = datetime(2026, 10, 5, 15, tzinfo=timezone.utc)
 TABLES = ("news_clusters", "news_cluster_members", "news_cluster_fingerprints",
           "news_cluster_postings", "news_shingle_df")
@@ -97,6 +102,18 @@ def main():
     sys.path.insert(0, str(tree))
     from engine import qbus_news_store as m
     from engine.qbus_news_contract import normalize_news
+
+    # An incomplete --tree must not silently fall back to this checkout (or a
+    # preloaded module) while its artifact describes a different source tree.
+    for module_name in ("engine.qbus_news_store", "engine.qbus_news_contract",
+                        "engine.qbus_news_cluster", "engine.qbus_news_retrieval"):
+        module = sys.modules.get(module_name)
+        if module is None:  # Older baselines do not have the retrieval module.
+            continue
+        expected = tree.joinpath(*module_name.split(".")).with_suffix(".py").resolve()
+        actual = getattr(module, "__file__", None)
+        if actual is None or Path(actual).resolve() != expected:
+            raise RuntimeError("selected source tree mismatch: " + module_name)
 
     def routed(item_id, title, second=0, security_ids=("sec-NVDA",)):
         updated = T0 + timedelta(seconds=second)

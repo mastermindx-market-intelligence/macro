@@ -500,7 +500,7 @@ dashboard/sidebar carriers and existing sector holds with their owners.
 
 The complete registered news job passed **770 tests across 45 suites**. The refreshed
 real Chromium stream harness completed successfully with the same shipped JS/CSS
-digests. The paired current-source retrieval artifacts are `retrieval/review-baseline.json`
+digests. The paired historical-baseline versus current-candidate retrieval artifacts are `retrieval/review-baseline.json`
 and `retrieval/review-candidate.json`: at 2,048 noise reports, duplicate full-commit
 median was **8.79 ms versus 1.34 ms**; distinct-report ingestion was **3.26 s versus
 14.63 s**, and the largest candidate 256-item commit was **2.19 s**. The current
@@ -517,3 +517,144 @@ Their actual issuance clocks and SHA-256 values are retained. The thirty-day exp
 is an operational revalidation deadline, not a contractual term. They have not
 been installed in production. No credential is stored in these artifacts, and
 existing publication owners retain publication decisions.
+
+
+### Published integration and CI repair — 20 October 2026
+
+The interrupted managed push was reconciled, never replayed. It completed at
+14:08 UTC with `APPLIED`, action reference
+`24830c5448fbdd791a16e9ece6565b646978a03e4180735bd196bf41aadc6649`.
+GitHub PR #9846 and the original branch now identify
+`c73fa2c3d08e777221fe1ee73f3b87dd479f1fb8`, whose parents are repair
+`9eb6198c06d4e15bb516b60b150dfccadd4caa5d` and integrated main
+`d59b99b9afbe99ef528ce80db0ff66f0d9846abc`. Both conflicting manifest
+path lists were preserved. No news feature bytes changed in that merge, and all
+25 latency artifact source digests still match.
+
+At that exact integrated head, the 45 registered news suites passed **770 tests**,
+and the deployment suite passed **289 tests**. The differential CI contract against
+`d59b99b9` passed with **zero introduced and zero inherited violations**.
+Logs are retained under `/tmp/news-integration-recovery-20261020/` as
+`c73fa2-news-45.log`, `c73fa2-news-deploy.log`, and `c73fa2-contract.log`.
+
+Hosted fences run `39436558379` passed. Binding CI run `39436558201` found one
+concrete import-entry defect in `scripts/benchmark_qbus_news_retrieval.py`:
+the existing `test_unpinned_entry_scripts_only_shrink` guard rejected its missing
+repository-root pin. The repair pins the checkout before repository imports,
+then preserves explicit `--tree` precedence. A bounded independent review found
+that an incomplete comparison tree could otherwise fall back to this checkout;
+the harness now verifies actual imported store/contract/cluster/retrieval module
+origins before measurement and refuses a mismatch. An empty-tree subprocess
+failed before creating an artifact. The unchanged **11-test import guard** and
+both valid 128-report candidate/baseline smoke runs pass. The independent source
+review accepted this bounded harness repair; it did not claim to run those tests
+or re-review the product implementation. No CI guard, baseline or ceiling was
+weakened. The larger performance artifacts retain their original fixture/source
+scope, rather than relabeling these smoke timings as new performance evidence.
+
+Fresh Fabric backend and delivery reviews were commissioned for `c73fa2c` as
+`news-shared-integration-20261020-c3-backend-review-c73fa2-r1` and
+`news-shared-integration-20261020-c3-delivery-review-c73fa2-r1`, controllers
+49013 and 50618. Their last observation was controller polling with worker state
+unverified; neither is approval. The old b644 review reports were accepted only
+as useful diagnostic returns with the finding dispositions recorded. Their hashes
+are `410250828c102a28b6a0016dfc50672a488d47b4ba68f73b8b0f2e15faa8cddc`
+and `1cd69b88001797f4cfb9d880a73698ad41b769ecc8cdb781f6fb5a29a294a8c5`.
+The original indexed builder remains ineligible, with no retry or retargeting.
+
+The 14:39 UTC production readback found Macro source
+`3b49d6a5c8a6330652a926a8e5061e0dbb3d0387`, the existing API and sole news
+writer active, 6,507 active Benzinga states and 6,504 canonical groups. Health was
+live with no catch-up failure or unresolved gap. These observations describe the
+incumbent release, not this candidate. The normal release owner is the existing
+`/usr/local/bin/macro-update` invoked by the three-minute root cron and serialized
+through `/var/lock/macro-update.lock`; there is no macro-update systemd service.
+The writer uses `QBUS_NEWS_PROVIDER` and the existing Alpaca credential pair.
+The qualified additional-provider credential exists in `/etc/macro-live.env`;
+only its presence was reported. Additional-source flags, path lists and receipts
+remain uninstalled. Existing live generated files and other owners' local files
+were observed and preserved.
+
+Current gate and next three actions:
+1. Publish the entry-point and component-token CI repairs on the same branch,
+   bind hosted checks to its exact head, and reconcile the pending product reviews
+   plus bounded repair reviews without treating controller polling as approval.
+2. After review and CI clearance, merge normally and follow the incumbent Macro
+   update/render owner; verify deployed source, API/writer restart, authenticated
+   snapshot/detail/SSE and generated dossier behavior.
+3. Install the three prepared metadata-only publisher receipts, perform the
+   network-dark activation check, activate the existing optional adapter, and
+   prove actual admitted publisher counts and clocks; integrate qualified private
+   research/editorial callers on a separate follow-up carrier.
+
+No additional human permission is needed for the current source repairs. Release
+and live publisher activation remain gated by the exact-source reviews and CI.
+Sibling Macro #9612, Terminal #1081 and the existing sector holds keep their owners.
+
+
+### Component token qualification — 20 October 2026, 14:59 UTC
+
+The concluded `c73fa2c` CI run also identified a design-guard failure in the new
+news component stylesheet. Both template/site copies now use the existing theme
+color variables and sanctioned radius-token fallback values. Warning text uses
+the theme's contrast-adjusted warning ink. The live-health dot uses the freshness
+color rather than the language-dependent market-direction palette. No shared theme,
+JavaScript, API, grouping or writer source was changed for this repair.
+
+The unchanged forward-only design guard passes with **zero blocking findings**.
+The refreshed browser evidence passes **11 rendered interaction checks** and
+**49 real SSE checks**, with zero scenario failures or page errors. Current paired
+CSS digest is `0183d5f23e0c92507f420b904188114d07e7347842df6adba494957a5d6b5d59`;
+JS remains `fe8322cda6e282e08633bee34185200a26905a01fd068aec8b80b6001359fa56`.
+
+An additional Chromium proof loads the actual shared theme and this component
+stylesheet with static fictional markup. All four dark/light and English/Chinese
+states resolve a visible six-pixel live dot, the twelve-pixel card and eight-pixel
+control radius defaults, and warning ink. Health color remains identical across
+language changes. `ui/theme-tokens.json` binds both CSS hashes and the actual
+computed values. External assets were blocked; this is bounded theme/component
+proof, not authenticated production or live-source proof. The larger browser
+fixtures retain their clearly labeled fictional-data scope.
+
+
+### Review return and canonical visual evidence — 20 October 2026, 15:57 UTC
+
+Both independent Fabric reviews completed for published `c73fa2c` and found no
+blocking source defect. Each independently reproduced all 770 registered news
+tests. The backend review additionally reproduced the 125/81 focused counts and
+89 adversarial assertions; the delivery review exercised cancellation, bounded
+admission, per-frame revocation and quiet expiry. Exact unmodified reports are
+retained under `reviews/backend-c73fa2.txt` and `reviews/delivery-c73fa2.txt`, with
+SHA-256 `88dfa3e92d91b0a6fa842f53ba2baf3ede0fae790b9f0b51fd700a27472b8674`
+and `c04643968b1252dce0c1f9a7df9dabe6b5dc3b19fc7348719f0671cdb162e7e4`.
+These source verdicts describe c73fa2 product bytes; later CSS and benchmark-harness
+repairs require their own bounded review. No review is production proof.
+
+Hosted run 39436558201 concluded with only the two known failures: import-entry
+hygiene and component design governance. Both repairs now pass their unchanged
+local guards. The visual-evidence guard also passes after restoring tracked
+mockups through the sparse-worktree owner and producing a canonical receipt.
+The unchanged real-browser capturer generated 32 successful states: all eight
+required rest cells plus actual link hover, button hover and button focus in each.
+The committed fixture is anonymous and fictional, frozen from the actual consumer
+DOM in both languages, and uses actual shared theme/component CSS. Its source
+hashes, 32 PNGs, manifest, scope and reproducible fixture builder are under
+`mockups/evidence/news-shared-integration-20261020-c3/`. This component matrix does
+not establish authenticated production, provider delivery or a full stock page.
+Parent inspected desktop dark and Chinese mobile light screenshots. Existing
+11 UI / 49 SSE checks and the four-state actual-theme token probe remain valid.
+
+All 25 Python hashes in the latency artifact still match candidate product source.
+The retrieval wording now explicitly distinguishes historical baseline from current
+candidate; the pair does not isolate the v3 publication guard from retrieval cost.
+Older indexed/recovery artifacts retain their original earlier-source scope.
+
+The private consumer trace verified the existing Press writer boundary, but its
+ordinary staging directory feeds `run_emit`. A separate follow-up carrier will
+reuse that writer with fresh blog-draft rights, canonical security binding, private
+staging and an explicit durable emit refusal. No ordinary Press staging or public
+briefing has been enriched, and no provider activation or production write occurred.
+
+Next: publish this qualified CI repair; bind hosted CI and bounded repair review
+to the resulting head; then normal merge/update/render and three-publisher live
+activation. Sibling dashboard/sidebar branches and sector holds remain untouched.
