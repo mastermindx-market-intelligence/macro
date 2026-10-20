@@ -51,6 +51,23 @@ def test_bound_actual_scope_has_separate_effective_and_known_clocks_no_alias(lis
  assert len(validate_dated_contract_identity(bound,root='SPY',source_session=DAY,input_sha256=args['input_sha256'],cutoff=NOW))==2
  with pytest.raises(IdentityResolutionError):validate_dated_contract_identity(bound,root='SPY',source_session=DAY,input_sha256=args['input_sha256'],cutoff='2026-10-19T21:00:00Z')
 
+@pytest.mark.parametrize('mode',['completed_after_session','receipt_read_before_completion'])
+def test_listing_completion_must_be_known_and_precede_source_session(listing,mode):
+ g,oi,ctx,obs,args=setup(listing)
+ receipt=json.loads(args['listing_receipt'].body)
+ if mode=='completed_after_session':
+  # Valid incumbent receipt semantics permit a long collection interval;
+  # this dated adapter cannot use post-session completion as session evidence.
+  receipt['clocks']['collector_completed_at']='2026-10-20T01:00:00.000000Z'
+  receipt['receipt_id']=R._receipt_id(receipt)
+  raw=R._canonical_json_bytes(receipt)+b'\n'
+  R.validate_symbol_directory_completion_receipt_bytes(receipt,raw,args['listing'].body,expected_kind='listing_snapshot')
+  args['listing_receipt']=captured(raw)
+ else:
+  args['listing_receipt']=captured(args['listing_receipt'].body,at='2026-10-15T01:00:01Z')
+ with pytest.raises(IdentityResolutionError,match='Listing observation'):
+  resolve_dated_spy_contract_identity(g,oi,**args)
+
 @pytest.mark.parametrize('mode',['root','asof','asof_absent','series','adjusted','extra_deliverable','canonical_missing','canonical_listing','canonical_retired','canonical_late','before_known','native_date','scope_widen','reference_digest','listing_digest'])
 def test_adversarial_identity_inputs_fail_closed(listing,mode):
  g,oi,ctx,obs,args=setup(listing)

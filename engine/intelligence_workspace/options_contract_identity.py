@@ -97,7 +97,8 @@ def resolve_dated_spy_contract_identity(greeks, oi, *, source_session, input_sha
             if len(keys)!=len(set(keys)):raise ValueError('Duplicate selected coordinate')
             selected.update(keys)
         expiries={k[0] for k in selected}
-        if len(expiries)!=1 or not 0<len(selected)<=22 or params.get('expiration_date') not in expiries:
+        if (len(expiries)!=1 or not 0<len(selected)<=22 or params.get('expiration_date') not in expiries
+                or any(date.fromisoformat(expiry)<on for expiry in expiries)):
             raise ValueError('Selected expiry/population is outside bound')
         terms={}
         for c in obs['contracts']:
@@ -115,7 +116,8 @@ def resolve_dated_spy_contract_identity(greeks, oi, *, source_session, input_sha
             _strict_json(listing_receipt.body),listing_receipt.body,listing.body,expected_kind='listing_snapshot')
         listing_on=date.fromisoformat(receipt['observation_date'])
         listing_completed=_aware_utc(receipt['clocks']['collector_completed_at'],'listing completed_at')
-        if listing_on>on or listing_completed>reads[2] or not receipt['authority']['listing_identity_observation_eligible']:
+        if (listing_on>on or listing_completed.date()>on or listing_completed>min(reads[2],reads[3])
+                or not receipt['authority']['listing_identity_observation_eligible']):
             raise ValueError('Listing observation does not support dated target')
         frame=pd.read_parquet(io.BytesIO(listing.body));rows=frame.loc[frame.symbol=='SPY']
         if len(rows)!=1:raise ValueError('Listing SPY missing or ambiguous')
