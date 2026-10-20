@@ -5678,6 +5678,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
@@ -17181,6 +17182,7 @@ jobs:
       - research/US_BOARD_MEASUREMENT.md
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
@@ -18500,6 +18502,11 @@ jobs:
     # builder. It pins the graded-ignition scoreboard block, its absence when nothing is
     # graded, and that its id never shadows the desk partial's script target. Exclusive so
     # the pages' suite does not widen any shared job's inferred scope.
+    # W30-L43 adds the theme price-coverage block and the observation line:
+    # tests/test_baskets_regional_themeobs_block.py and
+    # tests/test_baskets_regional_observation_line.py import only the stdlib, jinja2
+    # and scripts/_baskets_themeobs.py, and read the HK / Canada builders as text
+    # (never run them).
     scope: exclusive
     paths:
       - "templates/baskets_hk.html.j2"
@@ -18511,9 +18518,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "scripts/__init__.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
+      - "scripts/build_baskets_canada.py"
+      - "scripts/build_baskets_hk.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_baskets_regional_scorecard_block.py"
+      - "tests/test_baskets_regional_observation_line.py"
+      - "tests/test_baskets_regional_themeobs_block.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18524,7 +18536,10 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: HK / Canada basket desks — ignition scoreboard block
-        run: python -m pytest tests/test_baskets_regional_scorecard_block.py -q -p no:cacheprovider
+        run: >-
+          python -m pytest tests/test_baskets_regional_scorecard_block.py
+          tests/test_baskets_regional_themeobs_block.py
+          tests/test_baskets_regional_observation_line.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -23639,6 +23654,7 @@ jobs:
       - scripts/__init__.py
       - scripts/_active_render.py
       - scripts/_baskets_scorecard.py
+      - scripts/_baskets_themeobs.py
       - scripts/_china_income_card.py
       - scripts/_commodity_card_fields.py
       - scripts/_ths_build_notes.py
@@ -28068,6 +28084,7 @@ jobs:
       - "scripts/__init__.py"
       - "scripts/_active_render.py"
       - "scripts/_baskets_scorecard.py"
+      - "scripts/_baskets_themeobs.py"
       - "scripts/_china_income_card.py"
       - "scripts/_commodity_card_fields.py"
       - "scripts/_ths_build_notes.py"
