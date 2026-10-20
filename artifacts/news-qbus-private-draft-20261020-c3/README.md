@@ -24,3 +24,12 @@ At 17:08 UTC, GitHub confirmed PR #9846 merged at 17:06:32 UTC as `1298ed4281362
 
 No workflow dispatch, cancellation, provider call, live write, GitHub mutation, or external message was made by this read-only task. The only new writes are these local receipts and isolated local test output.
 
+
+
+## Parent release readback — 20 October 2026, 17:56 UTC
+
+The sections above preserve the release worker's earlier read-only observations. The parent subsequently applied the reviewed activation once; `publisher-activation-live.json` separately records the operation and the actual 17:26 canonical-store counts (Zacks 201, Motley Fool 123, GlobeNewswire 96). Do not replay the operation. The exact source pins, actual service-environment qualification and receipt parser repair were accepted before effects.
+
+`full-news-press.json` records the 47-suite run on integrated private source e6f78cfc: 981 passed, one existing skip. `contract-delta-before-repair.json` retains the failed differential audit that found four missing literal dependency paths and the measured extra news job in the build-free-content packing probe. The repaired manifest declares those actual paths; the test records only the observed +1 job/+98 planning units, with the ten-pack limit and other probes unchanged. A final exact-source audit and independent CI review must qualify the repair before merge.
+
+`live-cluster-window-audit.json` records a read-only 17:47 store census: 457 new v3 groups, all singletons so far. It is policy-adoption evidence, not a successful natural fuzzy-join sample. The terminal's stream interruption banner remains under investigation; a reload alone does not prove sustained delivery. The generated stock-page panel awaits a covering normal render.
