@@ -908,3 +908,21 @@ def gdelt_fetch(query: str, max_records: int = 60, window_days: int = 2,
     except Exception as e:  # noqa: BLE001 — degrade, never raise
         log.warning("gdelt fetch failed (%s)", e)
         return [], "fetch_error"
+
+
+def ticker_template_reason(title: str, domain: str = "") -> str | None:
+    """Rank routine ticker templates below event reporting; never an intake drop.
+
+    This narrower UI signal is separate from is_low_value(), because options
+    activity and peer profiles remain available in full ticker coverage.
+    """
+    if domain.lower().removeprefix("www.") != "benzinga.com":
+        return None
+    text = (title or "").strip()
+    if re.search(r"\bwhale alerts? from (?:today['’]s? |the )?trading session\b", text, re.I):
+        return "routine_options_template"
+    if re.match(r"^(?:analyzing|evaluating|comparing) .{1,100} (?:in comparison to|against) (?:its )?(?:peers|competitors)\b", text, re.I):
+        return "routine_peer_profile"
+    if re.match(r"^in-depth examination of .{1,100}: evaluating performance against (?:its )?industry peers\b", text, re.I):
+        return "routine_peer_profile"
+    return None
