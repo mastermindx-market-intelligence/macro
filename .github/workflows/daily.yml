@@ -1308,6 +1308,9 @@ jobs:
         # -- round-3 review Major 3.
         continue-on-error: true
         env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_CAPITAL_STRUCTURE_ENDPOINT: ${{ secrets.R2_CAPITAL_STRUCTURE_ENDPOINT }}
           R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID: ${{ secrets.R2_CAPITAL_STRUCTURE_ACCESS_KEY_ID }}

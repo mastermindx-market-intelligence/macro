@@ -238,7 +238,7 @@ waves:
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
   - id: W-THROUGHPUT-20261019
-    title: Measured CI pack throughput and bounded duplicate-traversal trial
+    title: Measured CI throughput and bounded planner/weight trials
     status: in_progress
     note: >
       Chairman's October 19 commission is assigned to Codex session
@@ -250,8 +250,50 @@ waves:
       Existing PR 8126 is already delivered and PR 8094 remains separate.
       Research and limitations: research/ci_pack_throughput_20261019/README.md.
       Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
-      Local candidate verification, hosted proof and natural-traffic improvement
-      remain distinct obligations; no fleet improvement is claimed yet.
+      PR 9722 merged as 7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full
+      hosted proof. First broad trial took 78.1 minutes, including 825 seconds
+      of post-pack queueing; packing-contract group 740.414 seconds versus a
+      historical 847.738-second median is descriptive, not a causal gain.
+      Natural cohort has 37 verified first-attempt completions, two selected-set
+      matches but zero execution-proof matches and nine pending; no causal gain.
+      A twelve-pack replay of all 255 measured job costs supports a bounded
+      FIF/earnings weight calibration: modeled maximum command time
+      2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
+      Trial PR9763 incorporated landed Defense heal PR9758. The next run
+      passed Defense but found a missing schema identifier from PR9765 on
+      both candidate and base. A one-field schema registry repair reproduces
+      three failures before and passes181 affected tests after. PR9763 merged as
+      38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae after all257 jobs and active checks
+      passed in run39298424658. Source landing verified; observer50933 consumed.
+      Weighted full trial48.82min/371.70 summed job minutes, versus78.08/337.38
+      earlier with different work; no causal gain or cost neutrality established.
+      Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
+      not additional expansion. Collect a separate post18:49:48Z natural cohort;
+      Report PR9780 merged576e21dc2e46bea739465c84a33ffbdf2135cd78, source verified.
+      Weighted20:48 cohort32runs/19verified completions/9pending/4cancelled;
+      scoped-success N13 p50/p95 2106/3941sec, summed wall215.68/399.37min.
+      No exact baseline proof matches; nine completions select neither calibrated
+      job. One exploratory adjacent-window exact pair is unexposed and has
+      different failure/success outcomes, so cannot estimate the weights' benefit.
+      Successful tail has3205sec execution wrapper with two exact-ancestry
+      depth8->32 waits691/726sec. Next bounded trial rechecks existing ancestry
+      before fetching, preventing a later consumer from re-shallowing complete
+      history. Real shallow-Git regression fails before, nine recovery tests pass
+      after;199 authority tests plus repaired mock pass, manifest validates.
+      PR9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0 at21:52:31Z;
+      run39324251115 passed258 jobs/554proof units and all active checks.
+      All eight source/test/report blobs verified. One real ruling-graph reuse
+      notice, five necessary deepening paths; no cache, proof relaxation or shards.
+      Trial42.12min/362.57 summed wall min; FIF commands2120.20sec critical.
+      Reuse was noncritical; no causal target or cost-neutrality claim.
+      Collect a separate post21:52:31Z cohort under blob
+      f92be10fc37455fd427829f0f964c5ef581b3a80 and exact merge ancestry.
+      At23:56Z29runs:12verified successes,13pending,4cancelled. ScopedN11
+      p50/p951981/2863sec, wall196.25/278.23min. No original/weighted full
+      proof matches; one original selected-set match has two changed definitions.
+      Natural39330880213 confirms reuse in noncritical pack8. Two other runs
+      have potential reuse on critical packs; inspect before attributing savings.
+      Publish accumulated report; retain implementation, no causal claim.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

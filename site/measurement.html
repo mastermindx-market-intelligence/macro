@@ -3962,8 +3962,6 @@
       <h2><span class="l-en">Evidence-Gap Panel</span><span class="l-zh">证据缺口面板</span></h2>
       <span class="mh-sh-sub"><span class="l-en">Grading closure · trial budgets · experiment registry · reliability accrual · IMCE prospective capture</span><span class="l-zh">评分闭环 · 试验预算 · 实验注册表 · 可靠性积累 · IMCE 前瞻捕获</span></span>
     </div>
-
-    
     
     
     
@@ -3990,7 +3988,6 @@
         </thead>
         <tbody>
           
-          
           <tr>
             <td class="eg-mono">ag_fertilizer</td>
             <td class="eg-mono">2026-08-08</td>
@@ -3999,7 +3996,6 @@
               
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
-              
               
               
             </td>
@@ -4014,14 +4010,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
-              
-              
-              
               <br><span class="l-en">overlay still tracked · heat
-                0.467 → 0.467</span>
-              <span class="l-zh">叠加 仍在跟踪 · 热度
-                0.467 → 0.467</span>
-              
+      0.467 → 0.467</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.467 → 0.467</span>
             </td>
           </tr>
           
@@ -4034,14 +4026,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
-              
-              
-              
               <br><span class="l-en">overlay broken · heat
-                0.287 → 0.287</span>
-              <span class="l-zh">叠加 已失效 · 热度
-                0.287 → 0.287</span>
-              
+      0.287 → 0.287</span>
+    <span class="l-zh">叠加 已失效 · 热度
+      0.287 → 0.287</span>
             </td>
           </tr>
           
@@ -4053,7 +4041,6 @@
               
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
-              
               
               
             </td>
@@ -4068,14 +4055,10 @@
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
               
-              
-              
-              
               <br><span class="l-en">overlay still tracked · heat
-                0.392 → 0.392</span>
-              <span class="l-zh">叠加 仍在跟踪 · 热度
-                0.392 → 0.392</span>
-              
+      0.392 → 0.392</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.392 → 0.392</span>
             </td>
           </tr>
           
@@ -4087,7 +4070,6 @@
               
               stage_regressed_to_watch — cascade stage no longer in PRECIPICE/BROADENING family
                 
-              
               
               
             </td>
@@ -4103,7 +4085,6 @@
                 
               
               
-              
             </td>
           </tr>
           
@@ -4117,7 +4098,6 @@
                 
               
               
-              
             </td>
           </tr>
           
@@ -4126,11 +4106,15 @@
       </div>
       <div class="eg-footnote">
         <span class="l-en">Source: <code>data/foresight/thesis_monitor.json</code>.
-        Deterministic kill criteria; an llm_inputs row lists the inputs an AI-judged
-        thesis was broken on, not which one fired. Display only, not a sizing input.</span>
+        Deterministic kill criteria. An AI-judged thesis names each condition the
+        monitor recorded: physical_lost (physical confirmation lost), below_quorum
+        (too few surfaces), heat_drop (heat fell past the break line); a row
+        without that record shows llm_inputs, the inputs it was judged on.
+        Display only, not a sizing input.</span>
         <span class="l-zh">来源：<code>data/foresight/thesis_monitor.json</code>。
-        确定性失效条件；llm_inputs 行列出 AI 评判论点所依据的输入，不指明具体触发哪一项。
-        仅供展示，不用于仓位决策。</span>
+        确定性失效条件。AI 评判的论点列出监测器记录的每项触发条件：physical_lost（实体确认丢失）、
+        below_quorum（信号面不足）、heat_drop（热度跌破失效线）；未带该记录的行显示 llm_inputs，
+        即其评判所依据的输入。仅供展示，不用于仓位决策。</span>
       </div>
     </div>
     
@@ -4148,6 +4132,7 @@
             <th><span class="l-en">Theme</span><span class="l-zh">主题</span></th>
             <th><span class="l-en">Opened</span><span class="l-zh">开启于</span></th>
             <th><span class="l-en">Stage at open</span><span class="l-zh">开启时阶段</span></th>
+            <th><span class="l-en">AI overlay</span><span class="l-zh">AI 叠加</span></th>
           </tr>
         </thead>
         <tbody>
@@ -4156,18 +4141,27 @@
             <td class="eg-mono">grid_electrification</td>
             <td class="eg-mono">2026-07-04</td>
             <td class="eg-mono">BROADENING (text)</td>
+            <td>—</td>
           </tr>
           
           <tr>
             <td class="eg-mono">nuclear_power</td>
             <td class="eg-mono">2026-07-04</td>
             <td class="eg-mono">BROADENING (text)</td>
+            <td><span class="l-en">overlay broken · heat
+      0.213 → 0.169</span>
+    <span class="l-zh">叠加 已失效 · 热度
+      0.213 → 0.169</span></td>
           </tr>
           
           <tr>
             <td class="eg-mono">space_satellite</td>
             <td class="eg-mono">2026-10-06</td>
             <td class="eg-mono">BROADENING (text)</td>
+            <td><span class="l-en">overlay still tracked · heat
+      0.627 → 0.627</span>
+    <span class="l-zh">叠加 仍在跟踪 · 热度
+      0.627 → 0.627</span></td>
           </tr>
           
         </tbody>
@@ -8029,7 +8023,7 @@
       </dl>
       <dl class="mh-prov-cell">
         <dt><span class="l-en">Generated at (UTC)</span><span class="l-zh">生成时间（UTC）</span></dt>
-        <dd>2026-10-19T13:44:14.444298Z</dd>
+        <dd>2026-10-19T21:07:42.202027Z</dd>
       </dl>
       
       <dl class="mh-prov-cell">
@@ -8060,7 +8054,7 @@
 
 </div>
 
-<script src="measurementdata/measurement_data.js?v=3c220989" defer></script>
+<script src="measurementdata/measurement_data.js?v=a74c8e07" defer></script>
 <script>
 (function(){
   "use strict";
