@@ -297,3 +297,14 @@ def test_read_chart_state_exposes_qualified_pane_contexts(monkeypatch):
     assert out["session"]["pane_contexts"]["panes"][0]["presentation_ref"] == "session.presentation"
     assert out["session"]["pane_contexts"]["panes"][1]["price_window"]["status"] == "observed"
     assert out["session"]["pane_contexts"]["panes"][1]["presentation"]["chart_type"] == "line"
+
+def test_inactive_pane_keeps_its_own_overnight_mode_without_restamping_the_active_pane():
+    state = pane_state()
+    presentation = state["session"]["pane_contexts"]["panes"][1]["presentation"]
+    # Producer eligibility is carried verbatim, including a stored but inactive preference.
+    overnight = {"requested": True, "eligible": False, "effective": False}
+    presentation["session"]["overnight_hours"] = overnight
+    out = gw._qualified_chart_pane_contexts(state)
+    assert out["panes"][1]["presentation"]["session"]["overnight_hours"] == overnight
+    assert out["panes"][0]["presentation_ref"] == "session.presentation"
+    assert "overnight_hours" not in state["session"]["presentation"]["session"]

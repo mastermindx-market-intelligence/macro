@@ -41,6 +41,10 @@ GLOBAL_SOURCES = frozenset(name for name, s in SOURCES.items() if not s.symbol)
 BAR_CHUNKS = {"eod-bars": 366, "boats-bars": 7, "equity-intraday-bars": 7,
               "iex-bars": 7, "crypto-bars": 7, "forex-bars": 7}
 MAX_SYMBOLS = 12000
+# Absolute load ceiling for any single bounded cohort. Ordinary collectors keep
+# the MAX_SYMBOLS default; the BOATS display publisher passes its own public
+# coverage ceiling explicitly. No caller may invent a larger bound.
+MAX_LOAD_SYMBOLS = 20000
 MAX_TASKS = 120000
 
 
@@ -69,7 +73,13 @@ def date_ranges(start: date, end: date, span_days: int) -> Iterator[tuple[date, 
         cursor = upper + timedelta(days=1)
 
 
-def load_symbols(spec: str, symbol_file: str | None) -> list[str]:
+def load_symbols(spec: str, symbol_file: str | None,
+                 *, limit: int = MAX_SYMBOLS) -> list[str]:
+    # Optional explicit cohort bound. The default preserves the ordinary
+    # collector budget; only the BOATS publisher raises it, to its own public
+    # coverage ceiling. Validation precedes any file read or provider effect.
+    if type(limit) is not int or not 1 <= limit <= MAX_LOAD_SYMBOLS:
+        raise ValueError("symbol limit must be a positive integer within the bounded ceiling")
     raw = spec.split(",") if spec else []
     if symbol_file:
         # Bounded line-oriented text. No external API names or "today's top N" implied.
@@ -90,8 +100,8 @@ def load_symbols(spec: str, symbol_file: str | None) -> list[str]:
         if key not in seen:
             found.append(val)
             seen.add(key)
-    if len(found) > MAX_SYMBOLS:
-        raise ValueError("max 12000 symbols per run")
+    if len(found) > limit:
+        raise ValueError(f"max {limit} symbols per run")
     return found
 
 
@@ -302,7 +312,15 @@ def boats_stream(*, max_seconds: int, max_messages: int,
         nonlocal buffer_bytes, last_flush
         if not buffer:
             return
-        saved = archive.store_boats_batch(buffer)
+        try:
+            saved = archive.store_boats_batch(buffer)
+        except TiingoArchiveError:
+            raise
+        except OSError as err:
+            # Archive I/O failure is not a websocket transport break: a reconnect
+            # would silently drop buffered source frames. Stop the bounded stream
+            # instead; the buffer stays unarchived, so no display batch qualifies.
+            raise TiingoArchiveError("BOATS archive storage failed; stream stopped") from err
         counts["segments"] += int(saved["new_raw"])
         counts["bytes"] += saved["raw_bytes"]
         frames = tuple(buffer)

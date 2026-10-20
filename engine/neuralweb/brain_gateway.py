@@ -687,6 +687,12 @@ is signed in — their own theses, notes and monitors. Do not use general knowle
 use training memory. Do not name file paths, field names, tool names, or internal slugs.
 Never invent a reading the corpus does not contain.
 
+Attribute each substantive observation in the answer body to the exact plain English or Chinese artifact name
+supplied in the corpus, and preserve that artifact's original as-of date.
+A name only in a source list or heading is not body attribution.
+If a date is unknown, say so; never substitute today's date. Do not invent an
+attribution when the corpus does not support the observation.
+
 If that corpus does not cover the question, answer exactly:
 "We don't publish anything that answers this yet."
 「我们目前还没有发布能回答这个问题的内容。」
@@ -1996,7 +2002,7 @@ def _f11_grounded(mode: str, envelope: dict | None) -> bool:
 # Chart-command bus allowlists (W6b) — module constants and the SOLE source of truth. They
 # mirror the Terminal chart's real capabilities (DetectCmd kinds, indicator keys, TF set from
 # the Terminal TS), so they track the Terminal build, not operator config.
-_CHART_TF_ALLOWLIST = frozenset({"1m", "5m", "15m", "30m", "1h", "4h", "D", "3D", "W", "1M"})
+_CHART_TF_ALLOWLIST = frozenset({"1m", "5m", "15m", "30m", "1h", "4h", "12h", "D", "3D", "W", "1M"})
 _CHART_INDICATOR_ALLOWLIST = frozenset({
     "ema", "rsi", "stochrsi", "macd", "bb", "vwap", "vol",
     "supertrend", "ichimoku", "adx", "cvd", "squeeze",
@@ -2032,7 +2038,7 @@ def _chart_command_tool_schemas() -> list[dict]:
                 "CLIENT-EXECUTED: change the chart timeframe. "
                 "Call when the user asks to switch to a different timeframe. "
                 "Server emits a 'command' SSE event; no filesystem/network action is performed. "
-                "Allowed values: 1m, 5m, 15m, 30m, 1h, 4h, D, 3D, W, 1M. "
+                "Allowed values: 1m, 5m, 15m, 30m, 1h, 4h, 12h, D, 3D, W, 1M. "
                 "Only offered when page=terminal."
             ),
             "input_schema": {
@@ -6176,6 +6182,7 @@ def _qualified_chart_price_window(state: object) -> dict:
             "freshness": "chart_loaded_data_not_independently_live_attested",
             "last_bar_closed": "unknown",
             "units": "source_field_semantics_no_conversion",
+            "volume_semantics": "per_bar_venue_and_coverage_unverified_zero_may_be_unmeasured",
             "visibility": "visible_tail_when_viewport_available_else_loaded_tail",
             "empty_result": "not_a_no_setup_judgment",
             "predictive_validation": False,
@@ -6287,6 +6294,24 @@ def _qualified_chart_presentation(state: object) -> dict:
     ):
         return _presentation_unavailable("presentation_extended_hours_invalid")
 
+    # Additive v1 field: legacy clients do not attest whether overnight mode is on.
+    # Eligibility belongs to the renderer's actual symbol/timeframe admission.
+    overnight_clean = None
+    if "overnight_hours" in session_view:
+        overnight = session_view["overnight_hours"]
+        if not isinstance(overnight, dict):
+            return _presentation_unavailable("presentation_overnight_hours_invalid")
+        requested, eligible, effective = (
+            overnight.get("requested"), overnight.get("eligible"), overnight.get("effective")
+        )
+        if (
+            not all(isinstance(value, bool) for value in (requested, eligible, effective))
+            or effective != (requested and eligible)
+            or (effective and not ext_effective)
+        ):
+            return _presentation_unavailable("presentation_overnight_hours_invalid")
+        overnight_clean = {"requested": requested, "eligible": eligible, "effective": effective}
+
     display = raw.get("display")
     display_keys = (
         "price_line", "last_value", "grid_h", "grid_v", "ohlc", "volume",
@@ -6362,6 +6387,7 @@ def _qualified_chart_presentation(state: object) -> dict:
                 "eligible": ext_eligible,
                 "effective": ext_effective,
             },
+            **({"overnight_hours": overnight_clean} if overnight_clean is not None else {}),
         },
         "display": {
             **{key: display[key] for key in display_keys},
@@ -6375,6 +6401,8 @@ def _qualified_chart_presentation(state: object) -> dict:
             "control_authority": "none",
             "theme_or_color_semantics": "comparison_color_only",
             "render_application": "committed_settings_not_pixel_attestation",
+            "session_coverage": "not_attested_by_presentation",
+            "volume_semantics": "per_bar_venue_and_coverage_unverified_zero_may_be_unmeasured",
         },
     }
 
@@ -9378,8 +9406,8 @@ def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
         providers = llm_auth.build_providers(pro_cfg, opus_model=opus_model)
 
         # An explicitly configured same-family fallback remains supported for
-        # deployments that opt into one. The shipped Pro lane deliberately omits
-        # it: GPT-5.6 Sol High → Opus 5 High is the complete waterfall.
+        # deployments that opt into one. The shipped Pro lane omits this
+        # same-family fallback; its independent capacity fallback is below.
         fallback_model = lane_cfg.get("fallback_model")
         if fallback_model and fallback_model != opus_model and not any(
             p.get("model") == fallback_model for p in providers
@@ -9394,8 +9422,8 @@ def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
             fallback_providers = llm_auth.build_providers(fallback_cfg, opus_model=fallback_model)
             providers = providers + fallback_providers
 
-        # Optional legacy degraded rungs remain config-driven, but none are shipped
-        # for Pro: the operator selected Opus 5 High as the only Sol fallback.
+        # Degraded capacity remains config-driven. The provisioned production
+        # API can serve Pro/Research when the preferred subscriptions cannot.
         providers = providers + _pro_degraded_providers(lane_cfg, providers, usage_lane, root)
 
         # Cooled-key skip-ahead: a fully capped pool otherwise pays one 429 per opus key

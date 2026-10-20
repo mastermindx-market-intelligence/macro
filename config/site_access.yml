@@ -423,6 +423,10 @@ public:
     # public byte through them.
     - /fundamental_forensics.css
     - /fundamental_forensics.js
+    # Holding-reader presentation and exact-selection client only; no embedded
+    # holding quantities/results. The POST response retains full-user auth.
+    - /institutional_holding_research.css
+    - /institutional_holding_research.js
     # Stock analyzer (stock.html) presentation + client scripts, promoted for
     # the same reason fundamental_forensics.css/js above were: the 2026-08-04
     # *.html change opened the page shell, but these were never promoted with

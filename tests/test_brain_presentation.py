@@ -109,6 +109,7 @@ def test_presentation_is_structurally_qualified_and_strips_arbitrary_ui_prose():
         "mode": "log", "inverted": True, "side": "right", "auto": True,
     }
     assert out["session"]["extended_hours"]["effective"] is True
+    assert "overnight_hours" not in out["session"]
     assert out["comparisons"] == [{
         "symbol": "QQQ", "mode": "percent", "color": "#e8a33d",
         "style": "solid", "width": 2, "visible": True,
@@ -183,3 +184,37 @@ def test_read_chart_state_replaces_client_presentation_with_qualified_projection
     assert out["session"]["presentation"]["status"] == "observed"
     assert out["session"]["presentation"]["chart_type"] == "candles"
     assert out["session"]["presentation"]["basis"]["control_authority"] == "none"
+
+@pytest.mark.parametrize("overnight", [
+    {"requested": True, "eligible": True, "effective": True},
+    {"requested": True, "eligible": False, "effective": False},
+    {"requested": False, "eligible": True, "effective": False},
+])
+def test_overnight_mode_survives_the_chart_read_without_claiming_bar_coverage(monkeypatch, overnight):
+    value = state()
+    value["session"]["presentation"]["session"]["overnight_hours"] = {
+        **overnight, "provider_claim": "discard this client prose",
+    }
+    record = {"session": value["session"], "context_revision": value["context_revision"], "acks": []}
+    monkeypatch.setattr(gw, "get_chart_state_record", lambda *_args, **_kwargs: record)
+    out = gw._tool_read_chart_state(
+        "presentation-user", "terminal",
+        origin_id=value["origin_id"], context_revision=value["context_revision"],
+    )
+    presentation = out["session"]["presentation"]
+    assert presentation["status"] == "observed"
+    assert presentation["session"]["overnight_hours"] == overnight
+    assert presentation["basis"]["session_coverage"] == "not_attested_by_presentation"
+    assert presentation["basis"]["volume_semantics"] == "per_bar_venue_and_coverage_unverified_zero_may_be_unmeasured"
+
+
+@pytest.mark.parametrize("overnight", [
+    None, False, {},
+    {"requested": "true", "eligible": True, "effective": True},
+    {"requested": True, "eligible": False, "effective": True},
+    {"requested": False, "eligible": True, "effective": True},
+])
+def test_malformed_overnight_mode_cannot_become_chart_evidence(overnight):
+    value = state()
+    value["session"]["presentation"]["session"]["overnight_hours"] = overnight
+    assert qualify(value)["reason"] == "presentation_overnight_hours_invalid"
