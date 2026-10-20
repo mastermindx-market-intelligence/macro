@@ -4932,22 +4932,42 @@ CURATED_EXCLUSIVE = {
     # packing probe (5,824 > 5,822); its own exclusive job keeps the static
     # import closure, the engine/pick_lab package imports and ancestor inits.
     "pick-lab-cn-render",
+    # 2026-10-20 W28G-L31: the THS basket browser notes suite renders the factorwatch
+    # template and its five includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "ths-factorwatch-build-notes",
     # 2026-10-20 W28F-L30: the China narrative radar display suites render the page
     # template and its six includes with jinja2 alone. As an ordinary job their
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, both suites and the tests inits.
     "narrative-radar-display",
+    # 2026-10-20 W28D-L33: the commodity strategies grid suite renders the page
+    # template and its six includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "commodity-strategies-grid-fields",
     # 2026-10-20 W28E-L32: the China reversal sleeve display suite renders the page
     # template and its three includes with jinja2 alone. As an ordinary job its
     # inferred scope would ride the shared template packing probes; scope:
     # exclusive pins the template closure, the suite and the tests inits.
     "cn-reversal-sleeve-display",
+    # 2026-10-20 W28B-L34: the HK / Canada scoreboard suite renders both desk
+    # templates and their five includes with jinja2 and the new pure helper alone. As
+    # an ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "regional-baskets-scorecard",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-20 W28D-L35: the China strategies income-tile suite renders the page
+    # template and its six includes with jinja2 and the new pure helper alone. As an
+    # ordinary job its inferred scope would ride the shared template packing probes;
+    # scope: exclusive pins the template closure, the helper, the suite and the inits.
+    "china-strategies-income-tile",
     # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
     # fixtures, which opaque inference smeared onto build_free_content
     # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
@@ -5122,7 +5142,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_829),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_704),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_802),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5131,6 +5151,38 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-20 Shared Shell composition with protected df3cba80: the actual
+    canonical planner on the composed tree measured index 135 jobs / 5,829,
+    free-content 135 / 5,802 and plan-book 128 / 5,578, all at ten packs.
+    Applying the incoming manifest's weights to those same selected job IDs
+    gives 5,822 / 5,795 / 5,571. The only weight differences are the retained
+    data-base-shim 7 -> 12 and unrun-nav-chrome 30 -> 32. Free-content also
+    selects the incoming ticker-news-qbus job at its unchanged weight of 98.
+    This same-ID attribution is not a fresh incoming-tree selection replay.
+    Compose that measured +7 with the incoming news allowance below: change
+    only free-content's 5,795 -> 5,802. Keep its 135-job ceiling, the other
+    probe ceilings, ten packs, selectors, declarations and suites unchanged.
+
+    2026-10-20 private company-news drafts bind the existing Press run/writer
+    suites to ticker-news-qbus's code gate. The prior press-lane is data-gated,
+    so it cannot prove an ordinary source PR. The unchanged canonical closure
+    follows Press validators into scripts.build_free_content; dropping that
+    dependency or either suite would remove real coverage. The news job keeps
+    scope: exclusive with literal paths and adds no fallback or wildcard root.
+    Full contract-delta on e6f78cfc against main 2d34f640 measured:
+
+        templates/index.html          135 jobs, 5,822 -> 5,822 weight
+        scripts/build_free_content.py 134 -> 135 jobs, 5,697 -> 5,795 weight
+        engine/prophet/plan_book.py    128 jobs, 5,571 -> 5,571 weight
+
+    The sole new selected job is ticker-news-qbus, exactly 98 estimator units.
+    All three probes stay at ten packs. Record only that measured code-coverage
+    addition: build's job ceiling 134 -> 135 and weight 5,697 -> 5,795, without
+    padding. Other probe ceilings, the ten-pack limit, selector code, ancestor
+    ratchet and every prior suite remain unchanged. Planning weights are not
+    measured execution times. Retained red/green contract receipts accompany
+    this candidate; current-head CI must execute this assertion.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight

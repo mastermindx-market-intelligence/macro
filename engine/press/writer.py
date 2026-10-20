@@ -32,7 +32,7 @@ import logging
 import re
 import textwrap
 from datetime import date
-from typing import Any
+from typing import Any, Callable
 
 log = logging.getLogger(__name__)
 
@@ -651,6 +651,15 @@ def _clean_slug(slug: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+class _PrivateAdmissionCancelled(BaseException):
+    """Source admission cancelled before a request, not a provider failure.
+
+    BaseException intentionally bypasses the provider waterfall's Exception
+    handler, which would otherwise record health failures or cool credentials.
+    Only this exact private sentinel is caught at the writer boundary.
+    """
+
+
 def _model_id(model_key: str) -> str:
     """config.yml llm_models.<key> — the marketing_copy lookup idiom, verbatim."""
     try:
@@ -665,7 +674,8 @@ def _model_id(model_key: str) -> str:
 def write(slot: dict, cfg: dict, *, state: RunState | None = None,
           attempt: int = 0, prior_failures: list[str] | None = None,
           single_provider_attempt: bool = False,
-          admitted_token_cap: bool = False) -> dict:
+          admitted_token_cap: bool = False,
+          private_admission_check: Callable[[], None] | None = None) -> dict:
     """Write one draft.  Returns {"ok", "draft"|None, "reason", "provider", ...}.
 
     Never raises.  Every failure path records against the RunState so the
@@ -675,6 +685,8 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
     Anthropic SDK retries at construction time and passes only the first
     currently usable provider to ``make_call``. Codex CLI internal requests
     are outside this bound. The caller must also disable regeneration.
+    Private drafts may supply a fresh admission check; it runs after provider
+    construction and again immediately before the external client request.
     """
     state = state or RunState(
         token_budget=int(((cfg.get("llm") or {}).get("run_token_budget")) or 240_000),
@@ -687,6 +699,10 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
         return _fail(state, "llm_disabled", charge=False)
     if state.circuit_open:
         return _fail(state, "circuit_open", charge=False, record=False)
+    if private_admission_check is not None and (
+        not single_provider_attempt or not admitted_token_cap or attempt != 0
+    ):
+        return _fail(state, "invalid_private_admission_call_shape", charge=False, record=False)
 
     system_prompt, user_prompt = build_prompt(
         slot, cfg, attempt=attempt, prior_failures=prior_failures)
@@ -802,7 +818,15 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
 
     response_box: dict[str, Any] = {}
 
+    def _admit_private_call() -> None:
+        if private_admission_check is not None:
+            try:
+                private_admission_check()
+            except Exception as exc:  # noqa: BLE001 - admission always fails closed.
+                raise _PrivateAdmissionCancelled(str(exc)) from None
+
     def _do_call(client, model):
+        _admit_private_call()
         resp = client.messages.create(
             model=model, max_tokens=max_tokens, system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
@@ -815,8 +839,17 @@ def write(slot: dict, cfg: dict, *, state: RunState | None = None,
         return (text or None), None, resp
 
     try:
+        _admit_private_call()
         raw_text, reason, provider = llm_auth.make_call(
             providers, _do_call, context=f"press_{slot.get('desk')}")
+    except _PrivateAdmissionCancelled as exc:
+        return _fail(
+            state, f"private_admission_refused: {exc}", charge=False, record=False,
+            token_cap=token_cap,
+            provider_usage={
+                "reported": False, "accounting": "no_provider_call", "charged_tokens": 0,
+            },
+        )
     except Exception as exc:  # noqa: BLE001
         extra: dict[str, Any] = {}
         if token_cap is not None:

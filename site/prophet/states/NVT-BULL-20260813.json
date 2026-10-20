@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NVT-BULL-20260813",
-  "asof": "2026-10-18",
+  "asof": "2026-10-20",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 34.9,
-  "raw_confidence": 34.2,
-  "delta_vs_base": -25.1,
+  "management_confidence": 31.8,
+  "raw_confidence": 28.1,
+  "delta_vs_base": -28.2,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 60.9,
+    "validity": 39.1,
     "progress": 0.0,
-    "pace": 2.0,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.9
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.693,
+    "dist_to_stop_r": 0.499,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 146.7,
-    "p1": -0.2047,
-    "p2": -0.1023,
+    "horizon_pct_used": 151.1,
+    "p1": -0.3341,
+    "p2": -0.1671,
     "p3": null,
-    "move_r": -0.307,
+    "move_r": -0.501,
     "mfe_r": 0.128,
-    "mae_r": -0.415
+    "mae_r": -0.501
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 7.2100067138671875,
-  "_mae": -23.360000610351562,
+  "_mae": -28.205001831054688,
   "_max_p1": 0.0854063813535559,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 66,
-  "tau": 1.4667
+  "days_elapsed": 68,
+  "tau": 1.5111
 }

@@ -55,7 +55,10 @@ from engine.qbus_news_store import (
     StoreUnavailable,
 )
 from engine.qbus_news_universe import QualifiedSecurity, qualify_universe
+from engine.qbus_news_receipts import additional_rights_paths, combine_news_rights, load_rights_set
+from engine.qbus_news_quality import publisher_identity, story_quality
 from lib import config
+from app.ticker_news_stream import BlockingReadPool, SharedChangeReader
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +99,8 @@ class _PrivateValidationRoute(APIRoute):
 
 
 router = APIRouter(route_class=_PrivateValidationRoute)
+_STREAM_CHANGE_READER = SharedChangeReader()
+_STREAM_BLOCKING_READER = BlockingReadPool()
 
 
 # W11-07 additive snapshot provenance.  The snapshot route installs a fresh
@@ -105,6 +110,7 @@ router = APIRouter(route_class=_PrivateValidationRoute)
 @dataclass
 class _SnapshotProvenance:
     rights: QualifiedNewsRights | None = None
+    receipts: tuple[QualifiedNewsRights, ...] = ()
     security: QualifiedSecurity | None = None
 
 
@@ -317,28 +323,27 @@ def _health_receipt_path() -> Path | None:
     return Path(raw) if raw else None
 
 
-def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
-    """Map only an owner-backed, current site-full receipt into display rights.
+def _additional_rights_paths() -> tuple[Path, ...]:
+    return additional_rights_paths()
 
-    Authentication and vendor API possession are deliberately insufficient.  The
-    current store persists provider history, so the receipt contract also requires
-    explicit ingestion + historical-retention capability before display can arm.
-    """
-    del user  # site-full audience was already authenticated by the route dependency
+
+def _current_rights_receipts() -> tuple[QualifiedNewsRights, ...]:
     path = _rights_receipt_path()
-    if path is None:
-        return None
-    qualified = load_rights_receipt(
-        path,
-        now=datetime.now(timezone.utc),
-        audience="site_full",
-    )
-    if qualified is None:
+    paths = ((path,) if path is not None else ()) + _additional_rights_paths()
+    return load_rights_set(paths, now=datetime.now(timezone.utc), audience="site_full")
+
+
+def _rights_for_user(user: Mapping[str, Any]) -> NewsReadRights | None:
+    """Compose current owner-issued policies without sharing fields across sources."""
+    del user  # authenticated site-full audience was enforced by the route dependency
+    receipts = _current_rights_receipts()
+    if not receipts:
         return None
     holder = _SNAPSHOT_PROVENANCE.get()
     if holder is not None:
-        holder.rights = qualified
-    return qualified.rights
+        holder.rights = receipts[0] if len(receipts) == 1 else None
+        holder.receipts = receipts
+    return receipts[0].rights if len(receipts) == 1 else combine_news_rights(receipts)
 
 
 def _source_health() -> dict[str, Any]:
@@ -366,6 +371,11 @@ def _source_health() -> dict[str, Any]:
 
 def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
     raw = str(health.get("state") or "").strip().lower()
+    extras = health.get("additional_sources") or []
+    if raw == "unavailable" and any(item.get("state") == "available" for item in extras):
+        return "degraded" if row_count else "quiet"
+    if raw == "live" and any(item.get("state") != "available" for item in extras):
+        return "degraded"
     if raw == "live" and row_count == 0:
         return "quiet"
     if raw in {"live", "catching_up", "degraded", "restricted", "unavailable"}:
@@ -583,8 +593,15 @@ def _security_or_404(ticker: str, *, now: datetime) -> tuple[str, str]:
     return normalized, security_id
 
 
-def _derivative_permitted_after_rights() -> bool:
+def _derivative_permitted_after_rights() -> bool | frozenset[str]:
     """Derivative flag for this request. Caller already holds qualified rights."""
+    if _additional_rights_paths():
+        receipts = _current_rights_receipts()
+        rights = combine_news_rights(receipts)
+        return frozenset(
+            receipt.source for receipt in receipts
+            if receipt.derivative_processing and receipt.source in rights.allowed_sources
+        )
     path = _rights_receipt_path()
     if path is None:
         return False
@@ -605,7 +622,28 @@ def _attach_annotation(
     teaser: str | None,
     permitted: bool,
 ) -> dict[str, Any]:
-    payload["annotation"] = annotate_row(title, teaser) if permitted else None
+    allowed = payload.get("source") in permitted if isinstance(permitted, frozenset) else permitted
+    payload["annotation"] = annotate_row(title, teaser) if allowed else None
+    compared_sources = frozenset(payload.pop("reporting_sources", ()))
+    comparison_allowed = (
+        bool(compared_sources) and compared_sources.issubset(permitted)
+        if isinstance(permitted, frozenset) else permitted is True
+    )
+    if not comparison_allowed:
+        payload["reporting_state"] = "not_compared"
+    source = str(payload.get("source") or "")
+    url = str(payload.get("url") or "")
+    payload["publisher"] = publisher_identity(source, url)
+    payload["provider"] = "massive" if source.startswith("massive:") else None
+    if title:
+        score, reason = story_quality(title=title, url=url, source=source)
+        # A material difference must remain discoverable in the signal view.
+        low_value = reason is not None and payload.get("reporting_state") not in {
+            "reports_differ", "comparison_limited",
+        }
+        payload["quality"] = {"score": score, "low_value": low_value, "reason": reason}
+    else:
+        payload["quality"] = None
     return payload
 
 
@@ -621,16 +659,17 @@ def _story_row(row, *, permitted: bool) -> dict[str, Any]:
 
 def _rights_basis(provenance: _SnapshotProvenance | None) -> dict[str, Any] | None:
     """The shareable receipt identity; owner_ref/product_id/audience stay out."""
-    receipt = None if provenance is None else provenance.rights
-    if receipt is None:
+    if provenance is None:
         return None
-    return {
+    receipts = provenance.receipts or ((provenance.rights,) if provenance.rights else ())
+    basis = [{
         "receipt_id": receipt.receipt_id,
         "source": receipt.source,
         "provider": receipt.provider,
         "effective_at": receipt.effective_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "expires_at": receipt.expires_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-    }
+    } for receipt in receipts]
+    return basis[0] if len(basis) == 1 else ({"receipts": basis} if basis else None)
 
 
 def _snapshot_payload(
@@ -650,6 +689,7 @@ def _snapshot_payload(
         "security_id": security_id,
         "state": state,
         "rows": [_story_row(row, permitted=permitted) for row in snapshot.rows],
+        "change_sequence": snapshot.change_sequence,
         "next_cursor": snapshot.next_cursor,
         "has_more": snapshot.has_more,
         "source_health": dict(health),
@@ -719,6 +759,10 @@ def ticker_news_story(
             teaser=member.teaser,
             permitted=permitted,
         )
+    payload["reporting_state"] = (
+        payload["members"][0].get("reporting_state", "not_compared")
+        if payload["members"] else "not_compared"
+    )
     payload["annotations"] = _annotations_payload(permitted)
     return JSONResponse(
         payload,
@@ -741,7 +785,7 @@ def ticker_news_changes(
     )
     try:
         with _open_store() as store:
-            page = store.changes_for_security(
+            page = store.projected_changes_for_security(
                 security_id,
                 after_sequence=after_sequence,
                 limit=limit,
@@ -816,26 +860,36 @@ def _sse_encode(event: str, payload: Mapping[str, Any]) -> str:
     return f"event: {event}\ndata: {body}\n\n"
 
 
+def _stream_scope(user: Mapping[str, Any]) -> tuple[NewsReadRights | None, bool | frozenset[str]]:
+    """Read display and derivative scope together in one worker context."""
+    rights = _rights_for_user(user)
+    permitted = _derivative_permitted_after_rights() if rights and rights.allowed_sources else False
+    return rights, permitted
+
+
 async def _sse_events(
     *,
     ticker: str,
     user: Mapping[str, Any],
     after_sequence: int,
-    poll_seconds: float = 1.0,
+    poll_seconds: float = 0.1,
     max_cycles: int | None = None,
 ) -> AsyncIterator[str]:
-    normalized, security_id = _security_or_404(
-        ticker,
-        now=datetime.now(timezone.utc),
+    normalized, security_id = await _STREAM_BLOCKING_READER.read(
+        lambda: _security_or_404(ticker, now=datetime.now(timezone.utc)),
     )
     sequence = int(after_sequence)
     cycles = 0
     permitted = False
-    derivative_checked = False
+    next_heartbeat = 0.0
+    previous_scope = None
+    previous_rights = None
     while max_cycles is None or cycles < max_cycles:
         cycles += 1
-        rights = _rights_for_user(user)
-        if rights is None or not rights.allowed_sources:
+        scope = await _STREAM_BLOCKING_READER.read(lambda: _stream_scope(user))
+        rights = scope[0]
+        if (rights is None or not rights.allowed_sources
+                or (previous_rights is not None and rights != previous_rights)):
             yield _sse_encode(
                 "restricted",
                 {
@@ -845,14 +899,25 @@ async def _sse_events(
                 },
             )
             return
-        try:
+        previous_rights = rights
+        if previous_scope is not None and scope != previous_scope:
+            yield _sse_encode(
+                "restricted",
+                {"schema": "ticker_news.restricted.v1", "ticker": normalized,
+                 "detail": "ticker news permissions changed; refresh required"},
+            )
+            return
+        previous_scope = scope
+        permitted = scope[1]
+        def read_page():
             with _open_store() as store:
-                page = store.changes_for_security(
-                    security_id,
-                    after_sequence=sequence,
-                    limit=200,
-                    rights=rights,
+                return store.projected_changes_for_security(
+                    security_id, after_sequence=sequence, limit=200, rights=rights,
                 )
+        try:
+            page = await _STREAM_CHANGE_READER.read(
+                (str(_news_db_path().resolve()), security_id, sequence, rights), read_page,
+            )
         except HTTPException:
             yield _sse_encode(
                 "unavailable",
@@ -863,11 +928,14 @@ async def _sse_events(
                 },
             )
             return
-        if not derivative_checked:
-            permitted = _derivative_permitted_after_rights()
-            derivative_checked = True
-
         for row in page.rows:
+            if await _STREAM_BLOCKING_READER.read(lambda: _stream_scope(user)) != scope:
+                yield _sse_encode(
+                    "restricted",
+                    {"schema": "ticker_news.restricted.v1", "ticker": normalized,
+                     "detail": "ticker news permissions changed; refresh required"},
+                )
+                return
             sequence = max(sequence, row.sequence)
             payload = _attach_annotation(
                 jsonable_encoder(asdict(row)),
@@ -876,9 +944,11 @@ async def _sse_events(
                 permitted=permitted,
             )
             yield _sse_encode(row.kind, payload)
-        if not page.rows:
+        if not page.rows and time.monotonic() >= next_heartbeat:
             yield ": heartbeat\n\n"
-        if poll_seconds > 0:
+            next_heartbeat = time.monotonic() + 15.0
+        sequence = max(sequence, page.next_sequence)
+        if poll_seconds > 0 and not page.has_more:
             await asyncio.sleep(poll_seconds)
 
 

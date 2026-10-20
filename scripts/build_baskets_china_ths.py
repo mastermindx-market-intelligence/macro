@@ -40,6 +40,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts import _ths_build_notes as BN  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_baskets_china_ths")
@@ -251,6 +252,7 @@ def main() -> int:
         baskets_json=json.dumps(slim_data, separators=(",", ":"), ensure_ascii=False),
         chart_json=json.dumps(slim_chart, separators=(",", ":")),
         lite=True, basket_base="",
+        build_notes=BN.build_notes(slim_data),
         bench_en="CSI 300", bench_zh="沪深300",
         generated_utc=built)
     write_page(site / "baskets_china_ths.html", html)
