@@ -11,7 +11,58 @@ Terminal can retain bounded one-minute source observations in its existing per-s
 
 [Phase 1](PHASE1_ADMISSION_2026-10-07.json) remains **NOT_ADMITTED** with 29 refusals; H1, H2 and H3 remain **NOT_TESTED**. The admission artifact SHA-256 remains `a4e00a5c191917dc8c64fb74ca3348827ab9bd47d9ad8a03a1130a50fde36e9f`. Retention code, synthetic conformance, hosted CI and deployment are separate evidence classes.
 
-The unchanged [original joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) and [v2 declaration and basis-refusal receipt](SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json) remain historical evidence for their exact source revisions. The distinct [v3 role and unadjusted-capture receipt](SOURCE_UNADJUSTED_CAPTURE_CONFORMANCE_2026-10-07.json) binds the current candidate implementation by exact file SHA-256 values. All three use injected transport and synthetic clocks; none is a real market observation. The original producer was delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840); this source packet does not assert v3 delivery or activation.
+The unchanged [original joint conformance receipt](SOURCE_RETENTION_CONFORMANCE_2026-10-07.json) and [v2 declaration and basis-refusal receipt](SOURCE_BASIS_DECLARATION_CONFORMANCE_2026-10-07.json) remain historical evidence for their exact source revisions. The distinct [v3 role and unadjusted-capture receipt](SOURCE_UNADJUSTED_CAPTURE_CONFORMANCE_2026-10-07.json) binds its recorded pre-R27 implementation by exact file SHA-256 values; it is historical evidence and does not bind the later decoder-output extension below. All three use injected transport and synthetic clocks; none is a real market observation. The original producer was delivered through [Terminal PR #840](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/840); this source packet does not assert v3 delivery or activation.
+
+## R27 decoder output v2 — 2026-10-20
+
+R27 adds an explicit **decode-output version**, independent of Terminal capture
+v1/v2/v3. The default `DECODE_SCHEMA` remains output v1, with its existing
+serialization and row seals unchanged. Callers opt in with
+`output_schema=DECODE_SCHEMA_V2`; unknown or malformed modes refuse.
+
+After a capture is enrolled, visible at the actual decision cutoff and validated
+against the explicit expected symbol, every emitted v2 row carries:
+
+```python
+source_observation = {
+    # Existing capture, page, row and owner-read provenance stays intact.
+    "decode_schema": "mastermind.entry_radar.terminal_minute_observations.v2",
+    "source_vendor": payload["source"],
+    "source_symbol": payload["symbol"],
+}
+```
+
+The provider and symbol come from the validated retained payload. Caller stream
+metadata, a security-ID suffix, an option root or an attestation boolean cannot
+supply or replace them. The fields are inside the existing full-row receipt
+digest, and the envelope carries the selected output schema. Keeping the version
+on each row preserves its meaning when callers extract only `minutes`.
+
+No usable source query is created for an incomplete, failed, empty, suppressed,
+unenrolled or not-yet-visible observation. Future capture semantics remain
+uninterpreted until the existing enrolled-prefix visibility boundary permits them.
+
+Choosing v2 changes serialization and its row digest. It does **not** create a new
+capture, market revision, reader receipt or availability clock. Use one output
+representation per observation in a candidate. Combining v1/v2 representations
+of the same observation remains a conflicting revision in the existing selector.
+Historic reconstruction requires the retained raw snapshot and genuine original
+owner-read receipts; running the new decoder now is not evidence that v2 output
+was issued historically. A current reread supplies current availability only.
+
+The fields support a future native identity query. They do not authenticate
+custody, prove a security binding or admit a market source. A caller can recompute
+a JSON checksum; consumers must invoke the owner decoder from custodied reader
+inputs instead of recognizing an arbitrary decorated JSON row as owner proof.
+`basis_id=None`, `TERMINAL_BASIS_UNPROVEN`, all other owner requirements, and false
+admission/trading authority remain intact.
+
+The new synthetic suite is
+`tests/test_entry_radar_terminal_native_query.py`. It binds complete pre-R27 v1
+outputs for legacy capture v1/v2 and both v3 roles to the exact prior decoder,
+then proves the explicit output-version delta, original read-clock boundary,
+query provenance, unchanged revision identities, and preserved selector refusals.
+It does not replace or refresh the historical joint conformance receipts.
 
 ## Owner and storage boundaries
 

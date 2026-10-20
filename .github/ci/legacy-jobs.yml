@@ -29947,6 +29947,7 @@ jobs:
       - "tests/test_entry_radar_rs_pullback_calendar.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
       - "tests/test_entry_radar_terminal_minute_observations.py"
+      - "tests/test_entry_radar_terminal_native_query.py"
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
       - "engine/entry_radar/replay/leader_pivot_descriptor.py"
       - "tests/test_entry_radar_first_green_descriptor.py"
@@ -29962,7 +29963,7 @@ jobs:
       - name: install calendar test dependencies
         run: pip install pytest pyyaml
       - name: observed calendar, retained minute evidence and actual CLI replay
-        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py -q
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
