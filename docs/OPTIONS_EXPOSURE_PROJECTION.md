@@ -307,3 +307,35 @@ follow. Its maximum budget is three GET attempts, including failed attempts;
 refusals, transport uncertainty and cap failures close the budget. Normal
 legacy calls retain their existing behavior. Additive receipt construction
 failure preserves valid legacy rows and withholds only their new provenance.
+
+### Scoped dated canonical identity
+
+The existing composition interface optionally accepts in-process
+`dated_identity_inputs`: captured `IdentityArtifactRead` values for the parsed
+Massive reference observation, native security master, native listing snapshot
+and its original completion receipt, plus an explicit `decision_at`. It invokes
+`engine.intelligence_workspace.options_contract_identity.resolve_dated_spy_contract_identity`.
+No path reopening, remote request, alias publication or identifier mint occurs.
+The selected Greek/OI keys must match one bounded SPY expiry and exact reference
+contracts with the requested historical `as_of`. Adjusted/unknown series refuse.
+The canonical target validator is shared with the existing Options-root reader.
+
+The resulting `contract_identity` is retained in the JSON context/projection:
+`schema: options.dated_contract_identity/v1`, `scope: selected_contracts`, exact
+root/session/contract keys, input digest, canonical target/listing, evidence
+artifact digests, one-day effective interval and actual `known_at`.
+`root_alias_created` and `historical_first_availability_established` are false.
+A current canonical target plus its validated historical listing support is
+combined with the actual historical reference observation; the listing is not
+relabeled a fresh observation. The parsed-reference artifact digest binds its
+exact retained representation. The separately retained HTTP-response digest is
+not a claim that this artifact is the original raw HTTP body or authenticated by
+an unkeyed hash.
+
+The existing builder can replay a composed JSON context. Producer consumption
+rechecks its seal, input digest, root/session, cutoff and selected keys. Added
+actual inputs invalidate the binding; expected-but-unbound keys remain missing.
+The receipt cannot authorize `modeled_exposure`, next-live, joint/repricing or
+any market-wide/root-wide identity claim. It leaves the original October15
+root-alias seal and all native registry files unchanged. New underlying symbols,
+wider populations and historical PIT eligibility require their own source proof.

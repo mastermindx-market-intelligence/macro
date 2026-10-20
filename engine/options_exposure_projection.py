@@ -271,6 +271,17 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         raise ValueError("Exposure context root mismatch")
     if out.get("input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root):
         return out  # The incumbent qualifier rejects the unchanged mismatched receipt.
+    identity_inputs = out.pop("dated_identity_inputs", None)
+    if identity_inputs is not None:
+        if out.get("kind") != DATED_KIND:
+            raise ValueError("Selected dated identity cannot authorize instantaneous exposure")
+        from engine.intelligence_workspace.options_contract_identity import resolve_dated_spy_contract_identity
+        bound = resolve_dated_spy_contract_identity(greeks_df, oi_df, source_session=asof,
+            input_sha256=out["input_sha256"], **identity_inputs).receipt
+        if out.get("security_id") not in (None, bound["security_id"]):
+            raise ValueError("Conflicting owner canonical identity")
+        out["security_id"] = bound["security_id"]
+        out["contract_identity"] = bound
     terms = list(out.get("contract_terms") or [])
     references = []
     for observation in out.pop("contract_reference_observations", []):
@@ -318,6 +329,7 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         # Never move an explicit selection cutoff forward to admit later evidence.
         evidence_times = [_time(clocks[k]) for k in ("greeks_available_at", "oi_available_at")]
         evidence_times += [_time(term.get("available_at")) for term in terms]
+        evidence_times += [_time((out.get("contract_identity") or {}).get("known_at"))]
         clocks.setdefault("available_at", max(t for t in evidence_times if t is not None).isoformat())
         out.setdefault("source_snapshot_ref", "capture:sha256:" + _digest([out["input_sha256"], acquisitions]))
     return out
@@ -438,6 +450,18 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
             source_reason = "dated_valuation_unqualified"
         elif asof > pd.Timestamp.now(tz="America/New_York").date().isoformat():
             source_reason = "source_session_in_future"
+    identity_scope = None
+    if context.get("contract_identity") is not None:
+        try:
+            from engine.intelligence_workspace.options_contract_identity import validate_dated_contract_identity
+            if not dated:
+                raise ValueError("Dated scoped identity cannot qualify instantaneous exposure")
+            identity_scope = validate_dated_contract_identity(context["contract_identity"], root=root,
+                source_session=asof, input_sha256=input_digest, cutoff=clocks.get("available_at"))
+            if context.get("security_id") != context["contract_identity"]["security_id"]:
+                raise ValueError("Canonical identity mismatch")
+        except (ValueError, TypeError, KeyError):
+            source_reason = "contract_identity_unqualified"
     if invalid_greek or invalid_oi or invalid_expected:
         source_reason = "invalid_contract_identity"
 
@@ -450,6 +474,8 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
             reason = "duplicate_contract_key"
         if len(series_keys.get(term.get("series_id"), set())) > 1:
             reason = "ambiguous_series_binding"
+        if identity_scope is not None and (key[0], format(Decimal(str(key[1])).normalize(), "f"), key[2]) not in identity_scope:
+            reason = "contract_identity_scope_unknown"
         # Explicit source terms only. The shared arithmetic is currently defined
         # for 100 underlying shares, so adjusted/non-share deliverables refuse.
         if reason is None and (not term.get("series_id") or not term.get("terms_ref")
@@ -555,6 +581,7 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
         "root": root, "source_snapshot_ref": context.get("source_snapshot_ref"),
         "input_sha256": input_digest,
         "security_id": context.get("security_id"),
+        **({"contract_identity": context["contract_identity"]} if context.get("contract_identity") is not None else {}),
         "position_basis": "assumed_long_call_short_put", "scale": "dollars",
         "rights_decision_ref": context.get("rights_decision_ref"),
         "greek_provenance": context.get("greek_provenance"),
