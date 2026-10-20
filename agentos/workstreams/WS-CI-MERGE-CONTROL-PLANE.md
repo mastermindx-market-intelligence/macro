@@ -280,8 +280,35 @@ waves:
       before fetching, preventing a later consumer from re-shallowing complete
       history. Real shallow-Git regression fails before, nine recovery tests pass
       after;199 authority tests plus repaired mock pass, manifest validates.
-      No new cache, proof relaxation or shards; normal hosted proof remains due.
-      No causal target or cost-neutrality claim.
+      PR9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0 at21:52:31Z;
+      run39324251115 passed258 jobs/554proof units and all active checks.
+      All eight source/test/report blobs verified. One real ruling-graph reuse
+      notice, five necessary deepening paths; no cache, proof relaxation or shards.
+      Trial42.12min/362.57 summed wall min; FIF commands2120.20sec critical.
+      Reuse was noncritical; no causal target or cost-neutrality claim.
+      Collect a separate post21:52:31Z cohort under blob
+      f92be10fc37455fd427829f0f964c5ef581b3a80 and exact merge ancestry.
+      At23:56Z29runs:12verified successes,13pending,4cancelled. ScopedN11
+      p50/p951981/2863sec, wall196.25/278.23min. No original/weighted full
+      proof matches; one original selected-set match has two changed definitions.
+      Natural39330880213 confirms reuse in noncritical pack8. Two other runs
+      have potential reuse on critical packs; inspect before attributing savings.
+      Report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a;6blobs verified.
+      Fixed00:55 snapshot45runs/31eligible completions(29success,2failure),
+      7pending/7cancelled. ScopedN27 p50/p951966/2863sec, wall186.47/278.23min;
+      zero original/weighted proof matches. Both targeted critical-pack logs show
+      reuse, without counterfactual saved seconds. FIF alone critical9times and
+      control-plane alone8times; no outer-shard expansion justified.
+      PR9479/9797 failures are candidate-specific with passing isolated bases;
+      preserve their carriers. Hold the cohort fixed. Six slowest scoped successes
+      are FIF-alone critical. Exact-source72tests pass403.73sec; focused profile
+      identifies repeated ASCII and direct-text scans in the SEC parser.
+      Fourth trial replaces the byte loop with isascii and uses the existing
+      event index before the unchanged owner filter; no semantic/proof/shard change.
+      Parser214tests pass, new scan regression fails before, two complete filing
+      outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
+      Same72tests pass335.45sec vs403.73before; normal hosted release remains.
+      No causal fleet30percent or cost-neutrality claim.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
