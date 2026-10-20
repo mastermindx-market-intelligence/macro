@@ -16,7 +16,7 @@ literals here.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_EVEN
 from hashlib import sha256
 from typing import Any, Callable, Mapping, Sequence
@@ -180,9 +180,19 @@ class DimensionedFactMapping:
     """
 
     concept: str
-    primary_axis: str
+    # A.4: ``primary_axis`` defaults to ``""`` so a multi-axis mapping may
+    # declare ``primary_axes`` alone; every BASE producer passes the single
+    # axis positionally and is unaffected.
+    primary_axis: str = ""
     other_axes_allowed: tuple[str, ...] = ()
     exclude_member_substrings: tuple[str, ...] = ()
+    # A.4 additions: the tuple form of ``primary_axis`` (multi-axis grouped
+    # emission in declared order), the definition-linkbase member filter and
+    # the optional-other-member admission. All three default to PK01
+    # behaviour, and none enters the mapping digest unless used.
+    primary_axes: tuple[str, ...] = ()
+    member_filter: str = ""
+    optional_other_members: Mapping[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -218,6 +228,10 @@ FieldMapping = (
     | TableMapping
     | TextSpanMapping
 )
+# A.2 (PK04) adds TypedDimensionedFactMapping as a sixth mapping kind; it is
+# declared at the end of this module and intentionally not spliced into the
+# historical FieldMapping alias above, which is documentation for the kinds
+# the BASE producers declare. Dispatch is isinstance-based either way.
 
 
 @dataclass(frozen=True)
@@ -234,6 +248,10 @@ class Rollforward:
     additions: tuple[str, ...] = ()
     reductions: tuple[str, ...] = ()
     closing: str = ""
+    # A.6: format template (``{field_id}``, ``{implied}``) for the limitation
+    # that names the single missing operand's implied value the producer
+    # refused to derive (R-K3). ``None`` (every earlier pack) emits nothing.
+    implied_limitation_template: str | None = None
 
 
 @dataclass(frozen=True)
@@ -405,6 +423,7 @@ def _period_matches(
     *,
     filed_at: date | None = None,
     period_select: str = "primary",
+    opening_bound: date | None = None,
 ) -> bool:
     context = occurrence.context
     if period_kind == "instant":
@@ -415,6 +434,14 @@ def _period_matches(
             if context.instant < por:
                 return False
             return filed_at is None or context.instant <= filed_at
+        if period_select == "opening_instant":
+            # A.1 (PK04): the day before the primary fiscal duration's start,
+            # falling back to the latest instant strictly before that start.
+            return (
+                context.instant is not None
+                and opening_bound is not None
+                and context.instant <= opening_bound
+            )
         return context.instant is not None and context.instant == por
     if context.end is None or context.start is None or context.end != por:
         return False
@@ -509,6 +536,9 @@ class _FieldOutcome:
     consolidated_value: Decimal | None = None
     member_values: tuple[Decimal | None, ...] = ()
     axis_breakdown: bool = False
+    # A.4/A.5 (PK04): per-axis definition-linkbase member groups and each
+    # member's row value, consumed only by the grouped sum identity.
+    group_breakdown: tuple["_AxisGroupBreakdown", ...] = ()
 
 
 def _base_row(catalogue_field: Mapping[str, Any], por: date) -> dict[str, Any]:
@@ -574,6 +604,7 @@ def _resolve_fact_mapping(
     por: date,
     extension_prefixes: Mapping[str, str],
     filed_at: date | None = None,
+    opening_bound: date | None = None,
 ) -> _FieldOutcome:
     period_kind = catalogue_field["period_kind"]
     field_id = catalogue_field["field_id"]
@@ -603,6 +634,7 @@ def _resolve_fact_mapping(
                 por,
                 filed_at=filed_at,
                 period_select=mapping.period_select,
+                opening_bound=opening_bound,
             )
         ]
         for occurrence in candidates:
@@ -620,6 +652,26 @@ def _resolve_fact_mapping(
             break  # first concept in order that resolves wins
 
     if admitted:
+        if (
+            period_kind == "instant"
+            and mapping.period_select == "opening_instant"
+            and opening_bound is not None
+        ):
+            # A.1 (PK04): prefer the instant exactly one day before the
+            # fiscal duration's start; with none there, the latest instant
+            # strictly before that start. Comparative prior-year instants
+            # outside the selected date never enter the conflict check.
+            selected = [
+                item
+                for item in admitted
+                if item.context.instant == opening_bound
+            ]
+            if not selected:
+                latest = max(item.context.instant for item in admitted)
+                selected = [
+                    item for item in admitted if item.context.instant == latest
+                ]
+            admitted = selected
         distinct = {str(item.parsed_value) for item in admitted}
         if len(distinct) > 1:
             # A.6 conflicting facts: same concept/period, different values.
@@ -674,7 +726,7 @@ def _resolve_fact_mapping(
                 "start": representative.context.start.isoformat(),
                 "end": representative.context.end.isoformat(),
             }
-        elif mapping.period_select == "cover_instant":
+        elif mapping.period_select in ("cover_instant", "opening_instant"):
             # A.1: the row reports the instant actually used, not period_of_report.
             row["period"] = {
                 "kind": "instant",
@@ -755,15 +807,31 @@ def _resolve_fact_mapping(
 
 
 def _dimensioned_mapping_digest(mapping: DimensionedFactMapping) -> str:
-    payload = canonical_json(
-        [
-            mapping.concept,
-            mapping.primary_axis,
-            list(mapping.other_axes_allowed),
-            list(mapping.exclude_member_substrings),
-        ]
-    )
-    return sha256(payload.encode("utf-8")).hexdigest()
+    payload: list[Any] = [
+        mapping.concept,
+        mapping.primary_axis,
+        list(mapping.other_axes_allowed),
+        list(mapping.exclude_member_substrings),
+    ]
+    if (
+        mapping.primary_axes
+        or mapping.member_filter
+        or mapping.optional_other_members is not None
+    ):
+        # A.4 hooks enter the digest only when a mapping actually uses them,
+        # so every BASE producer's digest (and envelope) is unchanged.
+        payload.append(
+            {
+                "primary_axes": list(mapping.primary_axes),
+                "member_filter": mapping.member_filter,
+                "optional_other_members": (
+                    None
+                    if mapping.optional_other_members is None
+                    else dict(sorted(mapping.optional_other_members.items()))
+                ),
+            }
+        )
+    return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
 def _dimensioned_row(
@@ -806,6 +874,15 @@ def _dimensioned_row(
         {"axis": axis, "member": str(member)}
         for axis, member in sorted(representative.context.explicit_dimensions)
     ]
+    if catalogue_field["period_kind"] != "instant":
+        # A duration-kind dimensioned field (PK04 revenue disaggregation is
+        # the first) reports its facts' own duration, like the undimensioned
+        # resolver already does; instant fields keep the base instant.
+        row["period"] = {
+            "kind": "duration",
+            "start": representative.context.start.isoformat(),
+            "end": representative.context.end.isoformat(),
+        }
     catalogue_unit = catalogue_field.get("unit")
     row["unit"] = (
         catalogue_unit
@@ -996,6 +1073,7 @@ def _resolve_axes_fact_mapping(
     ledger: RawFactLedger,
     por: date,
     filed_at: date | None,
+    opening_bound: date | None = None,
 ) -> _FieldOutcome:
     """A.2: consolidated row first, then one row per optional-axis member.
 
@@ -1026,6 +1104,7 @@ def _resolve_axes_fact_mapping(
                 por,
                 filed_at=filed_at,
                 period_select=mapping.period_select,
+                opening_bound=opening_bound,
             ):
                 continue
             context = occurrence.context
@@ -1350,6 +1429,7 @@ def _evaluate_check(
     resolver: _OperandResolver,
     check_rules: Mapping[str, CheckRule] | None = None,
     limitation_sink: list[str] | None = None,
+    pack_id: str = "",
 ) -> dict[str, Any]:
     check_id = catalogue_check["check_id"]
     kind = catalogue_check["kind"]
@@ -1439,6 +1519,22 @@ def _evaluate_check(
                 )
                 reasons.append(None)
                 continue
+            if len(spec.addends) == 1 and resolver.own(spec.addends[0]):
+                grouped = resolver.outcome(spec.addends[0])
+                if grouped is not None and grouped.group_breakdown:
+                    # A.5 (PK04): the addend field is a multi-axis grouped
+                    # emission; evaluate the identity per (axis, group).
+                    status, reason = _evaluate_axis_group_sum_identity(
+                        spec,
+                        grouped,
+                        resolver,
+                        operand_decimals,
+                        limitation_sink=limitation_sink,
+                        pack_id=pack_id,
+                    )
+                    statuses.append(status)
+                    reasons.append(reason)
+                    continue
             identity(names, len(spec.addends))
         elif isinstance(spec, Rollforward):
             if not spec.opening or not spec.closing:
@@ -1456,6 +1552,10 @@ def _evaluate_check(
             if any(value is None for value, _, _ in resolved):
                 statuses.append("not_evaluable")
                 reasons.append("missing_dependency")
+                if spec.implied_limitation_template is not None:
+                    _append_implied_rollforward_limitation(
+                        spec, names, resolved, limitation_sink
+                    )
                 continue
             if _units_clash([unit for _, _, unit in resolved]):
                 statuses.append("not_evaluable")
@@ -1740,6 +1840,25 @@ def produce_pack_result(
     branch_limitations: list[str] = []
     # A.5/B.3 conditional limitations emitted when a rule check trips a gate.
     rule_limitations: list[str] = []
+    # A.4 conditional limitations emitted while resolving grouped mappings.
+    mapping_limitations: list[str] = []
+    # A.1/A.4 lazily computed inputs: the opening-instant bound and the
+    # definition-linkbase axis groups of the primary package.
+    lazily: dict[str, Any] = {}
+
+    def _opening_bound() -> date | None:
+        if "opening_bound" not in lazily:
+            lazily["opening_bound"] = _primary_duration_opening_bound(ledger, por)
+        return lazily["opening_bound"]
+
+    def _axis_groups() -> Mapping[str, tuple[tuple[str, ...], ...]]:
+        if "axis_groups" not in lazily:
+            from . import definition_linkbase  # deferred: keeps imports flat
+
+            lazily["axis_groups"] = definition_linkbase.parse_axis_member_groups(
+                _package_definition_linkbase_bytes(primary)
+            )
+        return lazily["axis_groups"]
 
     if state != "applicable":
         for catalogue_field in catalogue["fields"]:
@@ -1783,7 +1902,28 @@ def produce_pack_result(
                     else "table_cell",
                 )
             elif isinstance(mapping, DimensionedFactMapping):
-                outcomes[field_id] = _resolve_dimensioned_fact_mapping(
+                if mapping.primary_axes or mapping.member_filter:
+                    # A.4: grouped multi-axis emission over the definition
+                    # linkbase's member groups.
+                    outcomes[field_id] = _resolve_grouped_dimensioned_fact_mapping(
+                        pack_id=pack_id,
+                        catalogue_field=catalogue_field,
+                        mapping=mapping,
+                        ledger=ledger,
+                        por=por,
+                        axis_groups=_axis_groups(),
+                        limitation_sink=mapping_limitations,
+                    )
+                else:
+                    outcomes[field_id] = _resolve_dimensioned_fact_mapping(
+                        pack_id=pack_id,
+                        catalogue_field=catalogue_field,
+                        mapping=mapping,
+                        ledger=ledger,
+                        por=por,
+                    )
+            elif isinstance(mapping, TypedDimensionedFactMapping):
+                outcomes[field_id] = _resolve_typed_dimensioned_fact_mapping(
                     pack_id=pack_id,
                     catalogue_field=catalogue_field,
                     mapping=mapping,
@@ -1799,6 +1939,11 @@ def produce_pack_result(
                         ledger=ledger,
                         por=por,
                         filed_at=filed_at,
+                        opening_bound=(
+                            _opening_bound()
+                            if mapping.period_select == "opening_instant"
+                            else None
+                        ),
                     )
                 else:
                     outcomes[field_id] = _resolve_fact_mapping(
@@ -1809,6 +1954,11 @@ def produce_pack_result(
                         por=por,
                         extension_prefixes=producer.extension_prefixes,
                         filed_at=filed_at,
+                        opening_bound=(
+                            _opening_bound()
+                            if mapping.period_select == "opening_instant"
+                            else None
+                        ),
                     )
             elif isinstance(mapping, FactOrFormulaMapping):
                 fact_only_outcomes[field_id] = _resolve_fact_mapping(
@@ -1819,6 +1969,11 @@ def produce_pack_result(
                     por=por,
                     extension_prefixes=producer.extension_prefixes,
                     filed_at=filed_at,
+                    opening_bound=(
+                        _opening_bound()
+                        if mapping.fact.period_select == "opening_instant"
+                        else None
+                    ),
                 )
             else:
                 outcomes[field_id] = None  # formulas resolve after facts
@@ -1908,6 +2063,7 @@ def produce_pack_result(
                     resolver,
                     check_rules=producer.check_rules,
                     limitation_sink=rule_limitations,
+                    pack_id=pack_id,
                 )
             )
 
@@ -1968,6 +2124,7 @@ def produce_pack_result(
                 DISPLAY_ONLY_LIMITATION,
                 *producer.limitations,
                 *branch_limitations,
+                *mapping_limitations,
                 *rule_limitations,
             )
         )
@@ -2006,6 +2163,572 @@ def produce_pack_result(
     return obj
 
 
+# --------------------------------------------------------------------------
+# A.1/A.2/A.4/A.5 additions (PK04 lane; strictly additive, merged after the
+# historical module body so parallel pack lanes stay mechanically mergeable)
+# --------------------------------------------------------------------------
+
+
+def _primary_duration_opening_bound(ledger: RawFactLedger, por: date) -> date | None:
+    """A.1: the day before the primary fiscal duration's start, or ``None``.
+
+    The primary fiscal duration is the longest duration context ending at
+    ``period_of_report`` inside the annual window — the same basis the
+    duration-field selection uses, so the opening instant and the fiscal-year
+    facts share one period identity.
+    """
+    starts: list[date] = []
+    for occurrence in ledger.events:
+        context = occurrence.context
+        if context.start is None or context.end is None or context.end != por:
+            continue
+        days = (context.end - context.start).days + 1
+        if 0 < days <= MAX_DURATION_DAYS:
+            starts.append(context.start)
+    if not starts:
+        return None
+    return min(starts) - timedelta(days=1)
+
+
+def _dimension_qname_matches(ledger_qname: str, declared_qname: str) -> bool:
+    """Bind one dimension qname across the ledger and the definition linkbase.
+
+    The definition linkbase spells qnames with taxonomy prefixes resolved
+    from ``loc`` hrefs; the raw ledger canonicalizes only the namespaces in
+    its closed policy to prefixes and keeps every other namespace in Clark
+    form. Exact equality covers the policy-canonicalized spellings; for a
+    Clark-form ledger qname the local name is the binding available without
+    the schema's namespace declarations (the grouped sum identity, A.5,
+    guards a cross-namespace local-name collision as a failed group).
+    """
+    if ledger_qname == declared_qname:
+        return True
+    if ledger_qname.startswith("{") and "}" in ledger_qname:
+        ledger_local = ledger_qname.rsplit("}", 1)[1]
+        declared_local = (
+            declared_qname.rsplit(":", 1)[-1]
+            if ":" in declared_qname
+            else declared_qname
+        )
+        return ledger_local == declared_local
+    return False
+
+
+def _typed_member_iso_date(member: str) -> date | None:
+    """Extract the ISO date a typed-dimension member carries, if any.
+
+    The converter serializes a typed member as its source token, e.g.
+    ``<us-gaap:...Axis.domain>2025-09-28</us-gaap:...Axis.domain>``; the
+    typed value is the element text. Members that carry no parseable date
+    are not date-typed and cannot be ordered by ``select``.
+    """
+    opening = member.find(">")
+    closing = member.rfind("<")
+    if opening == -1 or closing <= opening:
+        return None
+    try:
+        return date.fromisoformat(member[opening + 1 : closing].strip()[:10])
+    except ValueError:
+        return None
+
+
+@dataclass(frozen=True)
+class TypedDimensionedFactMapping:
+    """A.2: one row from a fact carrying exactly one typed dimension.
+
+    ``select="earliest_on_or_after_period_of_report"`` picks the fact whose
+    typed value (an ISO date) is the earliest date at or after the primary
+    package's ``period_of_report``; the emitted row reports the typed axis
+    and the typed value string as its single dimension.
+    """
+
+    concept: str
+    typed_axis: str
+    select: str = "earliest_on_or_after_period_of_report"
+
+
+def _typed_dimensioned_mapping_digest(mapping: TypedDimensionedFactMapping) -> str:
+    payload = canonical_json([mapping.concept, mapping.typed_axis, mapping.select])
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _resolve_typed_dimensioned_fact_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: TypedDimensionedFactMapping,
+    ledger: RawFactLedger,
+    por: date,
+) -> _FieldOutcome:
+    """A.2: resolve one typed-dimensioned fact selection (one row at most)."""
+    if mapping.select != "earliest_on_or_after_period_of_report":
+        raise SpecialistPackError(f"unknown typed select: {mapping.select!r}")
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    rule_id = f"{pack_id}.{field_id}.typed_dimensioned_fact/v1"
+    digest = _typed_dimensioned_mapping_digest(mapping)
+
+    candidates: list[tuple[date, Any]] = []
+    for occurrence in ledger.events:
+        if occurrence.concept_qname != mapping.concept or occurrence.is_nil:
+            continue
+        if not _period_matches(occurrence, period_kind, por):
+            continue
+        context = occurrence.context
+        if context.explicit_dimensions or len(context.typed_dimensions) != 1:
+            continue
+        axis, member = context.typed_dimensions[0]
+        if not _dimension_qname_matches(str(axis), mapping.typed_axis):
+            continue
+        typed_date = _typed_member_iso_date(str(member))
+        if typed_date is None or typed_date < por:
+            continue  # only typed values on or after period_of_report compete
+        candidates.append((typed_date, occurrence))
+
+    if not candidates:
+        absence = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            f"missing_standard_fact:{mapping.concept}",
+            concept=mapping.concept,
+        )
+        absence.row["mapping_rule_id"] = rule_id
+        absence.row["mapping_rule_digest"] = digest
+        return absence
+
+    earliest = min(typed_date for typed_date, _occurrence in candidates)
+    selected = [
+        occurrence
+        for typed_date, occurrence in candidates
+        if typed_date == earliest
+    ]
+    distinct = {str(item.parsed_value) for item in selected}
+    if len(distinct) > 1:
+        units = {_unit_measure(item.unit) for item in selected}
+        conflict = _absence_row(
+            catalogue_field,
+            por,
+            "not_evaluable",
+            "unit_mismatch" if len(units) > 1 else "missing_dependency",
+            concept=mapping.concept,
+            occurrence_ids=[item.occurrence_id for item in selected],
+        )
+        conflict.row["mapping_rule_id"] = rule_id
+        conflict.row["mapping_rule_digest"] = digest
+        return conflict
+
+    representative = min(selected, key=lambda item: item.occurrence_id)
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["concept"] = mapping.concept
+    row["taxonomy"] = (
+        "extension"
+        if mapping.concept.startswith("{")
+        else mapping.concept.split(":", 1)[0]
+    )
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in selected}
+    )
+    row["dimensions"] = [
+        {"axis": mapping.typed_axis, "member": earliest.isoformat()}
+    ]
+    row["mapping_rule_id"] = rule_id
+    row["mapping_rule_digest"] = digest
+    catalogue_unit = catalogue_field.get("unit")
+    row["unit"] = (
+        catalogue_unit
+        if catalogue_unit is not None
+        else _unit_measure(representative.unit)
+    )
+    if catalogue_field["type"] in contract.NUMERIC_TYPES:
+        row["value"] = decimal_text(Decimal(str(representative.parsed_value)))
+    else:
+        token = representative.raw_token
+        row["text_value"] = (
+            token if token is not None else str(representative.parsed_value)
+        )
+    if period_kind == "instant":
+        row["period"] = {
+            "kind": "instant",
+            "end": representative.context.instant.isoformat(),
+        }
+    else:
+        row["period"] = {
+            "kind": "duration",
+            "start": representative.context.start.isoformat(),
+            "end": representative.context.end.isoformat(),
+        }
+    decimals: int | None = None
+    if (
+        representative.decimals is not None
+        and representative.decimals != "INF"
+    ):
+        decimals = int(representative.decimals)
+    return _FieldOutcome(
+        row=row,
+        value=Decimal(str(representative.parsed_value)),
+        decimals=decimals,
+        unit=row["unit"],
+    )
+
+
+def _package_definition_linkbase_bytes(primary: Any) -> bytes | None:
+    """The primary package's stored ``_def.xml`` member bytes, or ``None``.
+
+    Located through the package's member listing only (A33): the name is
+    matched by its ``_def.xml`` suffix, never by issuer identity.
+    """
+    names = sorted(
+        str(item.get("name") or "")
+        for item in primary.manifest.get("members") or []
+        if isinstance(item, dict)
+        and item.get("state") == "stored"
+        and str(item.get("name") or "").endswith("_def.xml")
+    )
+    if not names:
+        return None
+    return primary.members.get(names[0])
+
+
+@dataclass(frozen=True)
+class _AxisGroupBreakdown:
+    """A.5 evidence: one axis's member groups and each member's row value.
+
+    ``groups`` are the definition-linkbase groups for the axis (or, in the
+    fallback, one synthetic group of every emitted member); ``member_values``
+    keys are the group member qnames (fallback: the emitted member strings)
+    with ``None`` for a member whose row did not resolve to a value.
+    """
+
+    axis: str
+    groups: tuple[tuple[str, ...], ...]
+    member_values: Mapping[str, Decimal | None]
+
+
+def _resolve_grouped_dimensioned_fact_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: DimensionedFactMapping,
+    ledger: RawFactLedger,
+    por: date,
+    axis_groups: Mapping[str, tuple[tuple[str, ...], ...]],
+    limitation_sink: list[str] | None,
+) -> _FieldOutcome:
+    """A.4: emit member rows per axis, partitioned by definition groups.
+
+    Axes are emitted in declared order; within an axis one row per member the
+    definition linkbase lists for it, in canonical order. Members carried by
+    facts but absent from every group are not emitted (counted in a
+    limitation); an axis with no group falls back to every admitted member in
+    canonical order with its own limitation. The outcome exposes the
+    per-(axis, group) breakdown for the A.5 grouped sum identity; its
+    ``value`` stays ``None`` because a multi-axis member sum is not a
+    meaningful operand.
+    """
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    axes = tuple(mapping.primary_axes) or (mapping.primary_axis,)
+    optional_members = dict(mapping.optional_other_members or {})
+    excluded_lower = tuple(
+        substring.lower() for substring in mapping.exclude_member_substrings
+    )
+    rule_id = f"{pack_id}.{field_id}.dimensioned_fact/v1"
+    digest = _dimensioned_mapping_digest(mapping)
+
+    period_candidates = [
+        occurrence
+        for occurrence in ledger.events
+        if occurrence.concept_qname == mapping.concept
+        and not occurrence.is_nil
+        and _period_matches(occurrence, period_kind, por)
+    ]
+
+    emitted: list[dict[str, Any]] = []
+    decimals_seen: list[int] = []
+    breakdowns: list[_AxisGroupBreakdown] = []
+    admitted_ids: set[str] = set()
+
+    for axis in axes:
+        by_member: dict[str, list[Any]] = {}
+        for occurrence in period_candidates:
+            context = occurrence.context
+            if context.typed_dimensions:
+                continue  # typed axes are never admitted on this mapping kind
+            explicit = dict(context.explicit_dimensions)
+            ledger_axis = next(
+                (
+                    candidate
+                    for candidate in explicit
+                    if _dimension_qname_matches(candidate, axis)
+                ),
+                None,
+            )
+            if ledger_axis is None:
+                continue
+            admissible = True
+            for other_axis, other_member in explicit.items():
+                if other_axis == ledger_axis:
+                    continue
+                admitted_member = next(
+                    (
+                        member
+                        for declared, member in optional_members.items()
+                        if _dimension_qname_matches(other_axis, declared)
+                    ),
+                    None,
+                )
+                if admitted_member is None or str(other_member) != admitted_member:
+                    admissible = False
+                    break
+            if not admissible:
+                continue
+            member = str(explicit[ledger_axis])
+            if any(
+                substring in _local_name(member).lower()
+                for substring in excluded_lower
+            ):
+                continue
+            by_member.setdefault(member, []).append(occurrence)
+            admitted_ids.add(occurrence.occurrence_id)
+
+        groups = axis_groups.get(axis, ()) if axis_groups else ()
+        member_values: dict[str, Decimal | None] = {}
+        if groups:
+            union = sorted({m for group in groups for m in group})
+            outside = 0
+            ledger_by_member_key: dict[str, list[str]] = {}
+            for ledger_member in sorted(by_member):
+                target = next(
+                    (
+                        group_member
+                        for group_member in union
+                        if _dimension_qname_matches(ledger_member, group_member)
+                    ),
+                    None,
+                )
+                if target is None:
+                    outside += 1
+                else:
+                    # Two ledger members may bind one group member through the
+                    # local-name fallback; both rows emit, and the LAST value
+                    # is the one the group sum sees (a collision then surfaces
+                    # as a failed group, never as silent double counting).
+                    ledger_by_member_key.setdefault(target, []).append(
+                        ledger_member
+                    )
+            if outside and limitation_sink is not None:
+                limitation_sink.append(
+                    f"{field_id}: {outside} {axis} member(s) outside every"
+                    " definition group not emitted"
+                )
+            for group_member in union:
+                for ledger_member in sorted(
+                    ledger_by_member_key.get(group_member, ())
+                ):
+                    outcome = _dimensioned_row(
+                        catalogue_field=catalogue_field,
+                        por=por,
+                        mapping=mapping,
+                        occurrences=by_member[ledger_member],
+                    )
+                    outcome.row["mapping_rule_id"] = rule_id
+                    outcome.row["mapping_rule_digest"] = digest
+                    emitted.append(outcome.row)
+                    member_values[group_member] = outcome.value
+                    if outcome.decimals is not None:
+                        decimals_seen.append(outcome.decimals)
+            groups_used = groups
+        else:
+            if limitation_sink is not None:
+                limitation_sink.append(
+                    f"{field_id}: {axis} has no definition group; member rows"
+                    " unpartitioned"
+                )
+            for ledger_member in sorted(by_member):
+                outcome = _dimensioned_row(
+                    catalogue_field=catalogue_field,
+                    por=por,
+                    mapping=mapping,
+                    occurrences=by_member[ledger_member],
+                )
+                outcome.row["mapping_rule_id"] = rule_id
+                outcome.row["mapping_rule_digest"] = digest
+                emitted.append(outcome.row)
+                member_values[ledger_member] = outcome.value
+                if outcome.decimals is not None:
+                    decimals_seen.append(outcome.decimals)
+            groups_used = (tuple(sorted(by_member)),) if by_member else ()
+        breakdowns.append(
+            _AxisGroupBreakdown(
+                axis=axis, groups=groups_used, member_values=dict(member_values)
+            )
+        )
+
+    if not emitted:
+        foreign_axis_seen = False
+        for occurrence in period_candidates:
+            if occurrence.occurrence_id in admitted_ids:
+                continue
+            context = occurrence.context
+            if context.explicit_dimensions or context.typed_dimensions:
+                foreign_axis_seen = True
+                break
+        absence = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            (
+                "disallowed_dimension"
+                if foreign_axis_seen
+                else f"missing_standard_fact:{mapping.concept}"
+            ),
+            concept=mapping.concept,
+        )
+        absence.row["mapping_rule_id"] = rule_id
+        absence.row["mapping_rule_digest"] = digest
+        return absence
+
+    return _FieldOutcome(
+        row=emitted[0],
+        value=None,
+        decimals=min(decimals_seen) if decimals_seen else None,
+        unit=emitted[0]["unit"],
+        extra_rows=tuple(emitted[1:]),
+        group_breakdown=tuple(breakdowns),
+    )
+
+
+def _evaluate_axis_group_sum_identity(
+    spec: SumIdentity,
+    addend: _FieldOutcome,
+    resolver: _OperandResolver,
+    operand_decimals: list[int | None],
+    *,
+    limitation_sink: list[str] | None,
+    pack_id: str,
+) -> tuple[str, str | None]:
+    """A.5: one grouped sum identity, evaluated per (axis, group).
+
+    A group is complete when every one of its members has a valued row. The
+    identity passes only when every declared axis has at least one complete
+    group and every complete group sums to the total within tolerance; any
+    complete group beyond tolerance fails it. The group census rides in the
+    limitations sink as ``<pack>.<check>: groups <complete>/<total>``.
+    """
+    total_value, total_decimals, total_unit = resolver.resolve(spec.total)
+    operand_decimals.append(addend.decimals)
+    if total_decimals is not None:
+        operand_decimals.append(total_decimals)
+
+    complete_sums: list[Decimal] = []
+    total_groups = 0
+    complete_groups = 0
+    every_axis_complete = True
+    for breakdown in addend.group_breakdown:
+        axis_complete = False
+        for group in breakdown.groups:
+            total_groups += 1
+            values = [breakdown.member_values.get(member) for member in group]
+            if group and all(value is not None for value in values):
+                complete_groups += 1
+                axis_complete = True
+                complete_sums.append(sum(values, Decimal("0")))
+        if not axis_complete:
+            every_axis_complete = False
+
+    if limitation_sink is not None and total_groups:
+        limitation_sink.append(
+            f"{pack_id.lower()}.{spec.check_id}:"
+            f" groups {complete_groups}/{total_groups}"
+        )
+
+    if total_value is None:
+        return "not_evaluable", "missing_dependency"
+    if every_axis_complete and total_unit is not None and addend.unit not in (
+        None,
+        total_unit,
+    ):
+        return "not_evaluable", "unit_mismatch"
+    if not every_axis_complete:
+        return "not_evaluable", "missing_dependency"
+    tolerance = _identity_tolerance(
+        [
+            item
+            for item in (addend.decimals, total_decimals)
+            if item is not None
+        ]
+    )
+    for group_sum in complete_sums:
+        if abs(group_sum - total_value) > tolerance:
+            return "fail", None
+    return "pass", None
+
+
+def _solve_rollforward_missing(
+    spec: Rollforward,
+    missing: str,
+    resolved: Sequence[tuple[Decimal | None, int | None, str | None]],
+) -> Decimal | None:
+    """Solve the rollforward identity for its single unvalued operand."""
+    names = [spec.opening, *spec.additions, *spec.reductions, spec.closing]
+    values = {name: value for name, (value, _, _unit) in zip(names, resolved)}
+    if any(
+        values.get(name) is None for name in dict.fromkeys(names) if name != missing
+    ):
+        return None
+    opening = values[spec.opening]
+    closing = values[spec.closing]
+    additions = sum(
+        (values[name] for name in spec.additions if name != missing), Decimal("0")
+    )
+    reductions = sum(
+        (values[name] for name in spec.reductions if name != missing), Decimal("0")
+    )
+    if missing == spec.opening:
+        return closing - additions + reductions
+    if missing == spec.closing:
+        return opening + additions - reductions
+    if missing in spec.additions:
+        return closing - opening + reductions
+    if missing in spec.reductions:
+        return opening + additions - closing
+    return None  # pragma: no cover - missing is one of the four slots
+
+
+def _append_implied_rollforward_limitation(
+    spec: Rollforward,
+    names: Sequence[str],
+    resolved: Sequence[tuple[Decimal | None, int | None, str | None]],
+    limitation_sink: list[str] | None,
+) -> None:
+    """A.6: name the implied value the producer refused to derive (R-K3)."""
+    if limitation_sink is None:
+        return
+    missing = [
+        name for name, (value, _, _unit) in zip(names, resolved) if value is None
+    ]
+    if len(missing) != 1:
+        return
+    valued_units = {
+        unit for value, _, unit in resolved if value is not None and unit
+    }
+    if len(valued_units) > 1:
+        return  # never imply a figure across clashing units
+    implied = _solve_rollforward_missing(spec, missing[0], resolved)
+    if implied is None:
+        return
+    limitation_sink.append(
+        str(spec.implied_limitation_template).format(
+            field_id=missing[0], implied=decimal_text(implied)
+        )
+    )
+
+
 __all__ = [
     "CheckRule",
     "CheckRuleFn",
@@ -2031,6 +2754,7 @@ __all__ = [
     "SumIdentity",
     "TableMapping",
     "TextSpanMapping",
+    "TypedDimensionedFactMapping",
     "evaluate_applicability",
     "formula_difference",
     "formula_ratio",
