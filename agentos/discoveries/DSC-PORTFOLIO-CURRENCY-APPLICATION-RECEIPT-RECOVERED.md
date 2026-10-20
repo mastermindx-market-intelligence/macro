@@ -6,11 +6,17 @@ claim: >
   to say unapplied; the original receipt and matching live catalog were recovered
   on 2026-10-20 without reapplying the migration.
 falsifier: >
-  A mismatch between the recovered original receipt bytes and its producer-bound
-  SHA-256 would disprove receipt identity. A mismatch between the original
-  source SQL hash and the carrying candidate would disprove source binding.
-  A conflicting current catalog would disprove continued schema compatibility,
-  not by itself the historical application event.
+  From a mastermind-terminal checkout, run `git show
+  51d8820530cbe4f47614199bb7e0eb3daa748410:terminal/docs/verification/portfolio-workspace/0036-production-receipt.json
+  | sha256sum` and require
+  511faa4788ca35b8946070bdc8420057fcd0bd62be96fa289c058609e3fe3ff1.
+  Run `git show
+  51d8820530cbe4f47614199bb7e0eb3daa748410:supabase/migrations/0036_portfolio_entry_currency.sql
+  | sha256sum` and require
+  9c09540e7b4e451e55a39d8229b3a73eb93c997578f3dadfdc3f24b47a7f7f4c.
+  A hash mismatch disproves receipt identity or source binding respectively;
+  a conflicting current read-only catalog disproves continued compatibility,
+  not by itself the historical application event in Terminal #1044.
 so_what: >
   Do not apply 0036 or the superseded old #866 currency candidate again. Recover
   the original receipt before reasoning from a stale handoff. Reconcile only
