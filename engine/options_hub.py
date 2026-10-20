@@ -412,6 +412,8 @@ def compute_gex(
     oi_prev_df: pd.DataFrame,
     asof: str,
     root: str,
+    *,
+    exposure_context: dict | None = None,
 ) -> dict:
     """Build the options_hub/gex/{root} payload.
 
@@ -429,27 +431,39 @@ def compute_gex(
                     expiration, strike, right, open_interest.
         asof:       'YYYY-MM-DD' reference date.
         root:       Option root symbol.
+        exposure_context: Optional existing-owner exact terms/source receipt;
+                    see docs/OPTIONS_EXPOSURE_PROJECTION.md. Missing receipts
+                    remain explicit unavailable qualification.
 
     Returns a dict matching the options_hub.gex/v1 schema.
     """
     from engine.greeks import bs_greeks as _bs_greeks  # local import for hermetic tests
+    from engine.options_exposure_projection import build_exposure_projection
+
+    # Capture membership before the historical OI/IV filters. No inference from
+    # legacy marginals; the projection retains its own explicit qualification.
+    projection = build_exposure_projection(greeks_df, oi_prev_df, asof, root,
+                                          context=exposure_context)
+
+    def empty_with_projection():
+        return {**_empty_gex(root, asof), "exposure_projection": projection}
 
     _MIN_IV = 0.005
 
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     g = greeks_df.copy()
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── spot ────────────────────────────────────────────────────────────────
     spot_vals = g["underlying_price"].dropna()
     spot = float(spot_vals.median()) if not spot_vals.empty else float("nan")
     if not np.isfinite(spot) or spot <= 0:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── merge OI[t-1] ────────────────────────────────────────────────────────
     if oi_prev_df is not None and not oi_prev_df.empty:
@@ -467,7 +481,7 @@ def compute_gex(
     # Only use contracts with positive OI[t-1]
     g = g[g["oi_prev"] > 0].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── prepare fields ────────────────────────────────────────────────────────
     g["is_call"] = g["right"].str.upper() == "C"
@@ -494,7 +508,7 @@ def compute_gex(
     _iv = g["iv"].to_numpy(float)
     g = g[~np.isfinite(_iv) | (_iv >= MIN_QUOTED_IV)].copy()
     if g.empty:
-        return _empty_gex(root, asof)
+        return empty_with_projection()
 
     # ── gamma (use feed value when present, else BS fallback) ─────────────────
     # This mirrors engine/gex_model._dollar_gamma logic.
@@ -662,6 +676,7 @@ def compute_gex(
 
     return {
         "schema": "options_hub.gex/v1",
+        "exposure_projection": projection,
         "asof": asof,
         "root": root,
         "spot_ref": _f(spot),

@@ -514,6 +514,8 @@ def build_root(
     asof: str,
     theta_store: str | Path | None,
     polygon_gex_dir: Path | None = None,
+    *,
+    exposure_context: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     """Build vol + gex + vex payloads for one root.
 
@@ -550,7 +552,8 @@ def build_root(
     # the OI parquet for `asof` (which OPRA already reports as end-of-t-1 data).
     oi_t1 = _load_oi_for_date(root, asof, theta_store)
 
-    gex_payload = compute_gex(greeks_asof, oi_t1, asof, root)
+    gex_payload = compute_gex(greeks_asof, oi_t1, asof, root,
+                             exposure_context=exposure_context)
 
     # ── CONTRACT v2: attach gex history from polygon_gex summary parquet ──────
     if polygon_gex_dir is not None:
