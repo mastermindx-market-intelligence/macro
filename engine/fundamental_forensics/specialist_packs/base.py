@@ -19,7 +19,11 @@ from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal, ROUND_HALF_EVEN
 from hashlib import sha256
-from typing import Any, Callable, Mapping, Sequence
+import re
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
+
+if TYPE_CHECKING:  # pragma: no cover - narrative imports base at runtime
+    from .narrative import NarrativeText, SectionSpec, Span
 
 from .. import detectors
 from .. import specialist_pack_contract as contract
@@ -192,7 +196,20 @@ class TableMapping:
 
 @dataclass(frozen=True)
 class TextSpanMapping:
-    """Reserved for a later lane: span evidence is never produced here."""
+    """A.3: one field read as a regex span over the primary document narrative.
+
+    An instance with an empty ``pattern`` is the reserved form (A.4): it still
+    produces the ``unsupported`` typed absence and no span evidence. A real
+    mapping resolves through :mod:`narrative` — see the end of this module.
+    ``section`` is a ``narrative.SectionSpec``; ``None`` reads the whole text.
+    """
+
+    section: "SectionSpec | None" = None
+    pattern: str = ""
+    kind: str = "text"  # "text" | "enum" | "boolean"
+    enum_map: Mapping[str, str] = field(default_factory=dict)
+    absent_value: str | bool | None = None
+    max_chars: int = 1024
 
 
 FieldMapping = (
@@ -279,6 +296,9 @@ class PackProducer:
     # An unaliased extension fact is only nameable when its namespace is here;
     # the map carries issuer knowledge as data, never code literals.
     extension_prefixes: Mapping[str, str] = field(default_factory=dict)
+    # Optional narrative extensions (defined at the end of this module).
+    # ``None`` keeps producer behaviour byte-identical to a no-hook build.
+    hooks: "NarrativeHooks | None" = None
 
 
 # --------------------------------------------------------------------------
@@ -1202,6 +1222,9 @@ def produce_pack_result(
     state, reason = evaluate_applicability(
         producer, pack_input, primary_form, ledger
     )
+    runtime = NarrativeRuntime(
+        pack_input=pack_input, primary=primary, primary_form=primary_form, por=por
+    )
 
     fields_rows: list[dict[str, Any]] = []
     checks_rows: list[dict[str, Any]] = []
@@ -1228,6 +1251,10 @@ def produce_pack_result(
                 )
             allowed = catalogue_field.get("allowed_evidence_kinds") or []
             exclusion = spec.field_class_exclusions.get(field_id)
+            form_reason = _field_form_reason(producer, field_id, primary_form)
+            blocked_dependency = _field_condition_blocked(
+                producer, field_id, outcomes
+            )
             if exclusion is not None and (
                 issuer_class == "unknown" or issuer_class in exclusion[0]
             ):
@@ -1241,6 +1268,26 @@ def produce_pack_result(
                     outcomes[field_id] = _absence_row(
                         catalogue_field, por, "not_applicable", exclusion[1]
                     )
+            elif form_reason is not None:
+                # Narrative hook: a field that resolves only on some forms.
+                outcomes[field_id] = _absence_row(
+                    catalogue_field, por, "not_applicable", form_reason
+                )
+            elif blocked_dependency is not None:
+                # Narrative hook: a field gated on another field's value.
+                gated = _absence_row(
+                    catalogue_field, por, "not_evaluable", "missing_dependency"
+                )
+                gated.row["dependency_field_ids"] = [blocked_dependency]
+                outcomes[field_id] = gated
+            elif isinstance(mapping, TextSpanMapping) and mapping.pattern:
+                outcomes[field_id] = _resolve_text_span_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping,
+                    producer=producer,
+                    runtime=runtime,
+                )
             elif isinstance(mapping, (TableMapping, TextSpanMapping)) or allowed in (
                 ["table_cell"],
                 ["text_span"],
@@ -1346,7 +1393,11 @@ def produce_pack_result(
                 raise SpecialistPackError(
                     f"{pack_id} producer declares no check: {check_id}"
                 )
-            checks_rows.append(_evaluate_check(catalogue_check, specs, resolver))
+            checks_rows.append(
+                _evaluate_check_with_hooks(
+                    catalogue_check, specs, resolver, producer, runtime, outcomes
+                )
+            )
 
     coverage_counts = {
         "valued_fields": 0,
@@ -1398,10 +1449,28 @@ def produce_pack_result(
     receipts.append(f"issuer_class={issuer_class}")
     if minted_basis is not None:
         receipts.append(f"packet_id_basis={minted_basis}")
+    narrative_limitations: list[str] = []
+    if state == "applicable" and producer.hooks is not None:
+        hook_rows = {
+            field_id: outcome.row
+            for field_id, outcome in outcomes.items()
+            if outcome is not None
+        }
+        if producer.hooks.extra_receipts is not None:
+            receipts.extend(producer.hooks.extra_receipts(runtime, hook_rows))
+        if producer.hooks.extra_limitations is not None:
+            narrative_limitations.extend(
+                producer.hooks.extra_limitations(runtime, hook_rows)
+            )
 
     limitations = list(
         dict.fromkeys(
-            (DISPLAY_ONLY_LIMITATION, *producer.limitations, *branch_limitations)
+            (
+                DISPLAY_ONLY_LIMITATION,
+                *producer.limitations,
+                *branch_limitations,
+                *narrative_limitations,
+            )
         )
     )[:32]
 
@@ -1438,6 +1507,282 @@ def produce_pack_result(
     return obj
 
 
+# --------------------------------------------------------------------------
+# Narrative extensions (A.3; added at the end of the module so parallel pack
+# lanes merge mechanically). Everything below is inert for a producer that
+# declares no hooks: earlier packs' envelopes stay byte-identical.
+# --------------------------------------------------------------------------
+
+
+class NarrativeRuntime:
+    """One production's shared narrative context, built lazily and cached.
+
+    ``narrative_text()`` parses the primary document exactly once per
+    production and only when a narrative hook actually asks for it.
+    """
+
+    def __init__(
+        self,
+        *,
+        pack_input: PackInput,
+        primary: Any,
+        primary_form: str | None,
+        por: date,
+    ) -> None:
+        self.pack_input = pack_input
+        self.primary = primary
+        self.primary_form = primary_form
+        self.por = por
+        manifest: Mapping[str, Any] = primary.manifest
+        self.accession = str(manifest.get("accession") or "")
+        self._narrative_text: Any = None
+
+    def narrative_text(self) -> Any:
+        from . import narrative  # deferred: narrative imports this module
+
+        if self._narrative_text is None:
+            self._narrative_text = narrative.primary_document_text(self.primary)
+        return self._narrative_text
+
+
+@dataclass(frozen=True)
+class NarrativeHooks:
+    """Producer-declared narrative extensions (first user: PK09).
+
+    ``section_overrides``: field_id -> (forms, ``SectionSpec``); the override
+    spec replaces the mapping's section when the primary form is in ``forms``.
+    ``field_form_exclusions``: field_id -> (excluded forms, reason code).
+    ``conditional_fields``: field_id -> (dependency field_id, guard over the
+    dependency's ``text_value``); the guard failing yields a non-valued
+    ``missing_dependency`` row naming the dependency.
+    ``text_value_overrides``: field_id -> callable(narrative_text, section
+    span, match) -> (text_value, char span) for fields whose text_value is not
+    the containing sentence.
+    ``check_evaluator``: callable(catalogue_check, rows, runtime) -> check row
+    or ``None`` to fall back to the stock numeric evaluation.
+    ``extra_receipts`` / ``extra_limitations``: callable(runtime, rows) ->
+    extra envelope lines, appended after the framework's own.
+    """
+
+    section_overrides: Mapping[str, Any] = field(default_factory=dict)
+    field_form_exclusions: Mapping[str, tuple[frozenset[str], str]] = field(
+        default_factory=dict
+    )
+    conditional_fields: Mapping[str, Any] = field(default_factory=dict)
+    text_value_overrides: Mapping[str, Any] = field(default_factory=dict)
+    check_evaluator: Callable[..., Any] | None = None
+    extra_receipts: Callable[..., Any] | None = None
+    extra_limitations: Callable[..., Any] | None = None
+
+
+def _field_form_reason(
+    producer: PackProducer, field_id: str, primary_form: str | None
+) -> str | None:
+    if producer.hooks is None:
+        return None
+    entry = producer.hooks.field_form_exclusions.get(field_id)
+    if entry is None:
+        return None
+    forms, reason = entry
+    return reason if primary_form in forms else None
+
+
+def _field_condition_blocked(
+    producer: PackProducer,
+    field_id: str,
+    outcomes: Mapping[str, "_FieldOutcome | None"],
+) -> str | None:
+    if producer.hooks is None:
+        return None
+    entry = producer.hooks.conditional_fields.get(field_id)
+    if entry is None:
+        return None
+    dependency, guard = entry
+    outcome = outcomes.get(dependency)
+    if outcome is None:
+        return dependency
+    text_value = outcome.row.get("text_value")
+    if text_value is not None and guard(str(text_value)):
+        return None
+    return dependency
+
+
+def _text_span_digest(mapping: TextSpanMapping) -> str:
+    section = mapping.section
+    payload = canonical_json(
+        [
+            mapping.pattern,
+            None
+            if section is None
+            else [section.heading, list(section.end_headings), section.skip_toc],
+        ]
+    )
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _catalogue_enum_literals(
+    catalogue_field: Mapping[str, Any],
+) -> frozenset[str] | None:
+    """A.4: literals the catalogue field's own name declares, when it does.
+
+    Catalogue enum lists live inside the field ``name`` (e.g. ``(disclosed |
+    not_disclosed)``); a name without such a list binds no literals and the
+    A.4 check is skipped for that field.
+    """
+    declared: set[str] | None = None
+    for match in re.finditer(
+        r"\(([^()]*\|[^()]*)\)", str(catalogue_field.get("name") or "")
+    ):
+        if declared is None:
+            declared = set()
+        declared.update(item.strip() for item in match.group(1).split("|"))
+    return frozenset(declared) if declared else None
+
+
+def _absent_text(value: str | bool) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value)
+
+
+def _raw_span(nt: Any, start: int, end: int, accession: str) -> dict[str, Any]:
+    """A raw-document ``source_span`` object for the char range [start, end)."""
+    last = end - 1
+    return {
+        "accession": accession,
+        "document_id": nt.document_id,
+        "start_offset": nt.offsets[start],
+        "end_offset": nt.offsets[last] + len(nt.text[last].encode("utf-8")),
+    }
+
+
+def _resolve_text_span_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: TextSpanMapping,
+    producer: PackProducer,
+    runtime: NarrativeRuntime,
+) -> _FieldOutcome:
+    """A.3: resolve one ``TextSpanMapping`` against the narrative text."""
+    from . import narrative
+
+    nt = runtime.narrative_text()
+    field_id = catalogue_field["field_id"]
+    por = runtime.por
+    section_spec = mapping.section
+    if producer.hooks is not None:
+        entry = producer.hooks.section_overrides.get(field_id)
+        if entry is not None and runtime.primary_form in entry[0]:
+            section_spec = entry[1]
+
+    def absence(quality_state: str, reason: str) -> _FieldOutcome:
+        outcome = _absence_row(catalogue_field, por, quality_state, reason)
+        outcome.row["evidence_kind"] = "text_span"
+        outcome.row["required_evidence_kind"] = "text_span"
+        outcome.row["mapping_rule_id"] = f"{pack_id}.{field_id}.text_span/v1"
+        outcome.row["mapping_rule_digest"] = _text_span_digest(mapping)
+        return outcome
+
+    if section_spec is None:
+        section_span = (0, len(nt.text))
+    else:
+        section_span = narrative.locate_section(nt, section_spec)
+        if section_span is None:
+            return absence("not_evaluable", "governing_section_not_supplied")
+    lo, hi = section_span
+    match = re.compile(mapping.pattern).search(nt.text, lo, hi)
+    declared = _catalogue_enum_literals(catalogue_field)
+    if match is None:
+        if (
+            mapping.kind == "enum"
+            and isinstance(mapping.absent_value, str)
+            and declared is not None
+            and mapping.absent_value not in declared
+        ):
+            # A.4: the absent literal itself is not in the catalogue.
+            return absence("missing", "narrative_span_not_located")
+        if mapping.absent_value is None:
+            return absence("missing", "narrative_span_not_located")
+        # A valued absence asserted over the whole section (or whole text).
+        row = _base_row(catalogue_field, por)
+        row["evidence_kind"] = "text_span"
+        row["required_evidence_kind"] = "text_span"
+        row["quality_state"] = "valued"
+        row["non_value_state"] = None
+        row["coverage_state"] = "source_trace_complete"
+        row["reason"] = None
+        row["text_value"] = _absent_text(mapping.absent_value)
+        row["source_span"] = _raw_span(nt, lo, hi, runtime.accession)
+        row["mapping_rule_id"] = f"{pack_id}.{field_id}.text_span/v1"
+        row["mapping_rule_digest"] = _text_span_digest(mapping)
+        return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
+
+    span = (match.start(), match.end())
+    text_value: str | None = None
+    override = None
+    if producer.hooks is not None:
+        override = producer.hooks.text_value_overrides.get(field_id)
+    if override is not None:
+        text_value, span = override(nt, section_span, match)
+    elif mapping.kind == "enum":
+        literal = next(
+            (
+                mapping.enum_map[group]
+                for group, matched in match.groupdict().items()
+                if matched is not None and group in mapping.enum_map
+            ),
+            None,
+        )
+        if literal is None or (
+            declared is not None and literal not in declared
+        ):
+            # A.4: never invent a literal the catalogue does not declare.
+            return absence("missing", "narrative_span_not_located")
+        text_value = literal
+    elif mapping.kind == "boolean":
+        text_value = "true"
+    else:
+        span = narrative.sentence_span(
+            nt.text, match.start(), match.end(), section_span
+        )
+        text_value = nt.text[span[0] : span[1]].strip()
+        if len(text_value) > mapping.max_chars:
+            text_value = text_value[: mapping.max_chars]
+    row = _base_row(catalogue_field, por)
+    row["evidence_kind"] = "text_span"
+    row["required_evidence_kind"] = "text_span"
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["text_value"] = text_value
+    row["source_span"] = _raw_span(nt, span[0], span[1], runtime.accession)
+    row["mapping_rule_id"] = f"{pack_id}.{field_id}.text_span/v1"
+    row["mapping_rule_digest"] = _text_span_digest(mapping)
+    return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
+
+
+def _evaluate_check_with_hooks(
+    catalogue_check: Mapping[str, Any],
+    specs: Sequence[CheckSpec],
+    resolver: _OperandResolver,
+    producer: PackProducer,
+    runtime: NarrativeRuntime,
+    outcomes: Mapping[str, "_FieldOutcome | None"],
+) -> dict[str, Any]:
+    if producer.hooks is not None and producer.hooks.check_evaluator is not None:
+        rows = {
+            field_id: outcome.row
+            for field_id, outcome in outcomes.items()
+            if outcome is not None
+        }
+        row = producer.hooks.check_evaluator(catalogue_check, rows, runtime)
+        if row is not None:
+            return row
+    return _evaluate_check(catalogue_check, specs, resolver)
+
+
 __all__ = [
     "CheckSpec",
     "CrossStatement",
@@ -1448,6 +1793,8 @@ __all__ = [
     "FieldMapping",
     "FormulaMapping",
     "MAX_DURATION_DAYS",
+    "NarrativeHooks",
+    "NarrativeRuntime",
     "PackInput",
     "PackProducer",
     "PackSpec",
