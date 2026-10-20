@@ -828,3 +828,51 @@ def test_bea_stage_readback_rejects_forged_row_count_with_matching_digests(tmp_p
     kwargs["expected_index_sha256"] = pin
     with pytest.raises(bea.BEAGVCStageRefused, match="row count"):
         bea.verify_unadmitted_bea_gvc_stage(**kwargs)
+
+
+def test_bea_stage_intermediate_parents_remain_private_with_umask_022(tmp_path):
+    """Linux mkdir(parents=True) must not create 0755 intermediate parents."""
+    import os
+    import stat
+    from lib.dataos import bea_gvc_staging as bea
+    root = tmp_path.resolve()
+    old = os.umask(0o022)
+    try:
+        receipt = bea._stage_verified_bytes(
+            root, generation=_BEA_STAGE_GEN,
+            files={"original_responses/Use/synthetic.json": b'{"fake":true}'},
+            receipt=_bea_staging_receipt())
+    finally:
+        os.umask(old)
+    final = root / receipt.relative_directory
+    for dirname in (final, final / "original_responses",
+                    final / "original_responses/Use"):
+        assert stat.S_IMODE(dirname.stat().st_mode) == 0o700
+    assert bea._stage_stat.S_IMODE(
+        (final / "original_responses/Use/synthetic.json").stat().st_mode
+    ) == 0o600
+
+
+def test_bea_stage_readback_fifo_metadata_fails_without_blocking(tmp_path, monkeypatch):
+    """A FIFO at the first metadata read must refuse, never hang CI."""
+    import os
+    from lib.dataos import bea_gvc_staging as bea
+    staged = _synthetic_bea_full_stage(tmp_path)
+    fifo = staged["directory"] / "stage_receipt.json"
+    fifo.unlink()
+    os.mkfifo(fifo, 0o600)
+    original_open = os.open
+    observed_leaf_open = []
+
+    def guarded_open(path, flags, *args, **kwargs):
+        if path == "stage_receipt.json":
+            # This assertion ensures the test itself cannot hang if a future
+            # change accidentally drops O_NONBLOCK from the metadata open.
+            assert flags & os.O_NONBLOCK, "metadata FIFO open must be nonblocking"
+            observed_leaf_open.append(True)
+        return original_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(bea.os, "open", guarded_open)
+    with pytest.raises(bea.BEAGVCStageRefused, match="unsafe shape"):
+        bea.verify_unadmitted_bea_gvc_stage(**staged["kwargs"])
+    assert observed_leaf_open

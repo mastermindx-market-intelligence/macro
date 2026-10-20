@@ -94,7 +94,24 @@ def _write_exact(base: Path, name: str, value: bytes) -> None:
     if type(value) is not bytes:
         raise BEAGVCStageRefused("immutable stage bytes required")
     target = base.joinpath(*rel.parts)
-    target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    # Path.mkdir(parents=True) applies the explicit mode only to the final
+    # directory. Linux defaults intermediate parents to 0777 & ~umask,
+    # which would expose the candidate and fail the reader's 0700 contract.
+    # Make each intermediate directory private before writing any bytes.
+    parent = base
+    for part in rel.parts[:-1]:
+        parent = parent / part
+        try:
+            parent.mkdir(mode=0o700)
+        except FileExistsError:
+            pass
+        try:
+            info = parent.lstat()
+        except OSError as exc:
+            raise BEAGVCStageRefused("staged parent directory unavailable") from exc
+        if (not _stage_stat.S_ISDIR(info.st_mode)
+                or _stage_stat.S_IMODE(info.st_mode) != 0o700):
+            raise BEAGVCStageRefused("unsafe staged parent directory")
     # Exact 0600 at creation: a permissive umask must never make candidate
     # originals or receipts world-readable even for a moment.
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
@@ -336,7 +353,10 @@ def _stage_file_bytes(stage_fd: int, name: str, limit: int) -> bytes:
     """Open a leaf relative to a pinned stage inode, refusing all symlinks."""
     rel = _relative(name)
     dfd = os.dup(stage_fd)
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    # A FIFO at a metadata filename must never block verification before
+    # the complete inventory is read. O_NONBLOCK is inert for regular files;
+    # FIFO/special nodes are subsequently rejected by fstat.
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | os.O_NONBLOCK
     dir_flags = flags | getattr(os, "O_DIRECTORY", 0)
     try:
         for part in rel.parts[:-1]:
