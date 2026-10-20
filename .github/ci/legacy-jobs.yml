@@ -12564,6 +12564,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/runtime_attestation.py"
+      - "app/deploy/macro-api.service"
+      - "tests/test_runtime_attestation.py"
       - "engine/liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -13764,7 +13767,7 @@ jobs:
       - name: ontology explorer — composer contract, owner episode, receipts
         run: python -m pytest tests/test_ontology_explorer_contract.py -q
       - name: ontology explorer — identity, private transport, public shell
-        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py tests/test_ontology_radar_research_transport.py tests/test_company_supplier_research_api.py -q
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py tests/test_ontology_research_transport.py tests/test_ontology_radar_research_transport.py tests/test_company_supplier_research_api.py tests/test_runtime_attestation.py -q
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
