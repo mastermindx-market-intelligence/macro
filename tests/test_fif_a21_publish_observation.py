@@ -7,9 +7,13 @@ A21: one immutable record per issuer at
 ``<prefix>/issuers/<issuer_id>/observation.json``, the versioned prior read
 before planning, states decided from facts the publisher already has, CAS
 persistence after the real-write loop, report projections, and same-clock
-idempotence. Checked-no-change, newly published, commit failure and source
-outage become distinguishable per issuer after every publish; the pointer
-clock alone can no longer be mistaken for evidence of a check.
+idempotence. Ruling R-A21-T8B: an unchanged check persists nothing — the
+record writes only on a material transition, and a later-clock rerun with
+nothing new leaves the whole store byte-identical while the report row
+carries the fresh clocks. Checked-no-change, newly published, commit
+failure and source outage become distinguishable per issuer after every
+publish; the pointer clock alone can no longer be mistaken for evidence of
+a check.
 """
 from __future__ import annotations
 
@@ -162,6 +166,7 @@ def test_t1_first_publish_writes_one_new_filing_observation_per_issuer(
             "last_checked_at": "2026-10-13T02:35:00Z",
             "last_successful_check_at": "2026-10-13T02:35:00Z",
             "freshness": "current",
+            "persisted": True,
         }
 
 
@@ -175,44 +180,57 @@ def test_t2_second_run_same_inputs_later_clock_is_checked_no_change(
 ) -> None:
     lane, contract, store, report_path = _lane(tmp_path)
     identity = lane["identity"]
-    assert _publish_cli(lane, contract, store, report_path) == 0
-    first = json.loads(
-        _observation_path(store, identity["entity_id"]).read_text(encoding="utf-8")
-    )
-    assert first["state"] == "new_filing"
+    mem = _memory_store_seam(monkeypatch, store, InMemoryStrictConditionalStore())
+    entity_id = identity["entity_id"]
+    observation_key = producer.observation_key(entity_id)
 
+    # Run 1, first publish: first creation — exactly ONE conditional write
+    # per issuer at the absent prior's version; the row reports it.
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    first_report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert first_report["published"][0]["observation"]["persisted"] is True
+    first = _memory_record(mem, entity_id)
+    assert first["state"] == "new_filing"
+    after_first = mem.get_bytes(observation_key)
+    assert [
+        entry for entry in mem.conditional_writes if entry[0] == observation_key
+    ] == [(observation_key, None)]
+
+    # Run 2 at a LATER clock, same inputs: the observed state moves to
+    # checked_no_change, but per R-A21-T8B that relabel plus the two clock
+    # fields is not a material transition — ZERO conditional writes, the
+    # stored record stays byte-identical, and the report row carries the
+    # fresh run-2 clocks with persisted: false.
     assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
     report = json.loads(report_path.read_text(encoding="utf-8"))
     row = report["published"][0]
     assert row["outcome"] == "unchanged"
-    second = json.loads(
-        _observation_path(store, identity["entity_id"]).read_text(encoding="utf-8")
-    )
-    assert second["state"] == "checked_no_change"
-    assert second["publication"] == first["publication"]  # carried, unchanged
-    assert second["last_successful_check_at"] == "2026-10-14T02:35:00Z"
-    assert second["last_successful_check_at"] > first["last_successful_check_at"]
-    assert row["observation"]["state"] == "checked_no_change"
-    assert row["observation"]["freshness"] == "current"
-    # The state itself moves (new_filing -> checked_no_change) plus the two
-    # clocks; nothing else may differ.
-    assert {key for key in first if first[key] != second[key]} == {
-        "state",
-        "last_checked_at",
-        "last_successful_check_at",
+    assert row["observation"] == {
+        "state": "checked_no_change",
+        "last_checked_at": "2026-10-14T02:35:00Z",
+        "last_successful_check_at": "2026-10-14T02:35:00Z",
+        "freshness": "current",
+        "persisted": False,
     }
+    assert [
+        entry for entry in mem.conditional_writes if entry[0] == observation_key
+    ] == [(observation_key, None)]
+    assert mem.get_bytes(observation_key) == after_first
 
-    # A third run, later clock, same state: ONLY the two clock fields move.
+    # Run 3 at a YET later clock: nothing in the record but the clocks —
+    # still ZERO conditional writes, store bytes identical, and the row
+    # shows the run-3 clocks with persisted: false.
     assert _publish_cli(lane, contract, store, report_path, clock=THIRD_NIGHT_RUN) == 0
-    third = json.loads(
-        _observation_path(store, identity["entity_id"]).read_text(encoding="utf-8")
-    )
-    assert third["state"] == "checked_no_change"
-    assert third["publication"] == second["publication"]
-    assert {key for key in second if second[key] != third[key]} == {
-        "last_checked_at",
-        "last_successful_check_at",
-    }
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    row = report["published"][0]
+    assert row["observation"]["state"] == "checked_no_change"
+    assert row["observation"]["last_checked_at"] == "2026-10-15T02:35:00Z"
+    assert row["observation"]["last_successful_check_at"] == "2026-10-15T02:35:00Z"
+    assert row["observation"]["persisted"] is False
+    assert [
+        entry for entry in mem.conditional_writes if entry[0] == observation_key
+    ] == [(observation_key, None)]
+    assert mem.get_bytes(observation_key) == after_first
 
 
 # ---------------------------------------------------------------------------
@@ -496,6 +514,7 @@ def test_t7a_source_outage_exclusion_observes_source_outage(
         "last_checked_at": "2026-10-13T02:35:00Z",
         "last_successful_check_at": None,
         "freshness": "never_checked",
+        "persisted": True,
     }
 
 
@@ -583,3 +602,41 @@ def test_t8_same_clock_rerun_is_byte_identical_zero_extra_writes(
     assert len(mem.conditional_writes) == writes_before
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["published"][0]["observation"]["state"] == "checked_no_change"
+
+
+# ---------------------------------------------------------------------------
+# T9: unchanged check at a later clock — zero writes, the t8b shape
+# ---------------------------------------------------------------------------
+
+
+def _store_tree(store: Path) -> dict[str, bytes]:
+    """The t8b helper's byte-level store read, reimplemented locally."""
+    return {
+        path.relative_to(store).as_posix(): path.read_bytes()
+        for path in sorted(store.rglob("*"))
+        if path.is_file()
+    }
+
+
+def test_t9_unchanged_check_at_later_clock_is_zero_write_like_t8b(
+    tmp_path, offline_collector
+) -> None:
+    lane, contract, store, report_path = _lane(tmp_path)
+    identity = lane["identity"]
+    assert _publish_cli(lane, contract, store, report_path) == 0
+    assert _observation_path(store, identity["entity_id"]).is_file()
+    before = _store_tree(store)
+
+    # Rerun with nothing new at a later clock: the WHOLE store — generation,
+    # pointer and observation record alike — stays byte-identical (t8b's
+    # exactly-once zero-write invariant, R-A21-T8B), while the report row
+    # still shows the fresh check clocks with persisted: false.
+    assert _publish_cli(lane, contract, store, report_path, clock=NEXT_NIGHT_RUN) == 0
+    assert _store_tree(store) == before
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    row = report["published"][0]
+    assert row["outcome"] == "unchanged"
+    assert row["observation"]["state"] == "checked_no_change"
+    assert row["observation"]["last_checked_at"] == "2026-10-14T02:35:00Z"
+    assert row["observation"]["persisted"] is False
+    assert "observation_write" not in row

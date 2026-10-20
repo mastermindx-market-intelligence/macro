@@ -65,7 +65,12 @@ generation commit already succeeded (or nothing was committed) and the
 observation is a projection, never a reason to re-publish: the run's exit
 code is unchanged. A row carries either ``observation`` (the persisted
 record's projection) or ``observation_write`` (why no record landed), never
-both.
+both. Seat ruling R-A21-T8B: an unchanged check persists nothing — a record
+is written only on a material transition (first creation, a state change,
+or a changed published generation id), never for a check whose record would
+differ from the stored prior only in its clock fields (the creating
+``new_filing`` → first ``checked_no_change`` relabel on an otherwise equal
+record included); the fresh check clocks travel in that run's report row.
 
 Hard-fail shape: every failure exits non-zero and prints one line-start
 ``::error`` on STDERR (``print(..., file=sys.stderr, flush=True)``, never
@@ -1963,14 +1968,55 @@ def _observation_landed(store: Any, key: str, payload: bytes) -> bool:
     return echoed == payload
 
 
+#: R-A21-T8B: the fields a fresh check advances with no material fact
+#: changing behind them.
+_OBSERVATION_CLOCK_FIELDS = frozenset({"last_checked_at", "last_successful_check_at"})
+
+#: R-A21-T8B: the creating check (``new_filing``) and the first no-change
+#: check after it (``checked_no_change``) name the same fact — a successful
+#: check of the same published generation — so that relabel alone is not a
+#: material transition either.
+_OBSERVATION_UNCHANGED_RELABEL = frozenset({"new_filing", "checked_no_change"})
+
+
+def _observation_change_is_material(
+    prior: Mapping[str, Any], record: Mapping[str, Any]
+) -> bool:
+    """R-A21-T8B: does this candidate record owe the store a write?
+
+    Only a material transition persists: some field other than the check
+    clocks changes (state, publication, identity). A candidate that differs
+    from the stored prior only in the clock fields — or only in the
+    ``new_filing`` → ``checked_no_change`` relabel on an otherwise equal
+    record — persists nothing; the fresh clocks travel in that run's report
+    row instead. First creation is decided by the caller (no prior to
+    compare against) and always writes.
+    """
+    diff = {
+        key
+        for key in set(prior) | set(record)
+        if prior.get(key) != record.get(key)
+    }
+    if diff <= _OBSERVATION_CLOCK_FIELDS:
+        return False
+    if (
+        diff - _OBSERVATION_CLOCK_FIELDS == {"state"}
+        and {prior.get("state"), record.get("state")}
+        == _OBSERVATION_UNCHANGED_RELABEL
+    ):
+        return False
+    return True
+
+
 def _persist_observation(
     store: Any,
     issuer_id: str,
     record: Mapping[str, Any],
     *,
+    prior_record: Mapping[str, Any] | None,
     prior_bytes: bytes | None,
     prior_version: str | None,
-) -> str | None:
+) -> tuple[str | None, bool]:
     """S4: CAS-write one observation record, never an unconditional put.
 
     The pattern of ``production_datasets._publish_pointer``: conditional
@@ -1978,11 +2024,21 @@ def _persist_observation(
     bounded read-back of the SAME key reconciles a ``False`` or exceptional
     outcome — equal bytes prove the write landed, anything else is the row's
     ``not_landed`` marker. A record already landed byte-exactly is skipped
-    entirely (S6: a same-clock rerun writes nothing).
+    entirely (S6: a same-clock rerun writes nothing), and per R-A21-T8B so
+    is an unchanged check: a candidate that would differ from the stored
+    prior only in its clock fields (the creating ``new_filing`` → first
+    ``checked_no_change`` relabel included) makes NO store call at all.
+    Returns ``(marker, wrote)`` — ``marker`` is None or the row's
+    ``observation_write`` code, ``wrote`` is whether this run landed a
+    write (the projection's ``persisted``).
     """
     payload = canonical_json(dict(record)).encode("utf-8")
     if prior_bytes == payload:
-        return None
+        return None, False
+    if prior_record is not None and not _observation_change_is_material(
+        prior_record, record
+    ):
+        return None, False
     key = observation_key(issuer_id)
     try:
         written = store.put_bytes_strict_conditional(
@@ -1992,21 +2048,30 @@ def _persist_observation(
             content_type="application/json",
         )
     except Exception:  # noqa: BLE001 - the CAS may have committed
-        return None if _observation_landed(store, key, payload) else "not_landed"
+        if not _observation_landed(store, key, payload):
+            return "not_landed", False
+        return None, True
     if written is not True:
-        return None if _observation_landed(store, key, payload) else "not_landed"
-    return None
+        if not _observation_landed(store, key, payload):
+            return "not_landed", False
+    return None, True
 
 
 def _observation_projection(
-    record: Mapping[str, Any], *, recorded_at: datetime
+    record: Mapping[str, Any], *, recorded_at: datetime, persisted: bool
 ) -> dict[str, Any]:
-    """S5: the report-row projection of one persisted observation record."""
+    """S5: the report-row projection of one observation record.
+
+    R-A21-T8B: ``persisted`` says whether THIS run wrote the record; the
+    clocks shown are always the fresh check's, so a skipped unchanged check
+    still reports when the issuer was last checked.
+    """
     return {
         "state": str(record["state"]),
         "last_checked_at": record["last_checked_at"],
         "last_successful_check_at": record["last_successful_check_at"],
         "freshness": freshness(record, as_of=utc_text(recorded_at)),
+        "persisted": bool(persisted),
     }
 
 
@@ -2025,9 +2090,12 @@ def _emit_observations(
 
     Runs after the real-write loop and before the report write. Mutates rows
     in place: a row whose record landed gains ``observation``; a refused or
-    not-landed record gains ``observation_write`` instead (never both). The
-    run's exit code never changes here — the generation commits have already
-    happened (or nothing was committed) and the observation is a projection.
+    not-landed record gains ``observation_write`` instead (never both). Per
+    R-A21-T8B an unchanged check persists nothing yet still gains its
+    ``observation`` projection with the fresh clocks and ``persisted:
+    false``. The run's exit code never changes here — the generation
+    commits have already happened (or nothing was committed) and the
+    observation is a projection.
     """
 
     def _emit(
@@ -2046,15 +2114,21 @@ def _emit_observations(
             checked_at=recorded_at,
             publication=publication,
         )
+        wrote = False
         if record is not None:
-            marker = _persist_observation(
-                store, entity_id, record, prior_bytes=raw, prior_version=version
+            marker, wrote = _persist_observation(
+                store,
+                entity_id,
+                record,
+                prior_record=prior,
+                prior_bytes=raw,
+                prior_version=version,
             )
         if marker is not None:
             row["observation_write"] = marker
         elif record is not None:
             row["observation"] = _observation_projection(
-                record, recorded_at=recorded_at
+                record, recorded_at=recorded_at, persisted=wrote
             )
 
     for row in published_rows:
