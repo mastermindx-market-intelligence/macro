@@ -12,9 +12,12 @@ from __future__ import annotations
 
 import builtins
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
+
+import pytest
 
 from engine.fundamental_forensics.specialist_packs import registered_pack_ids
 
@@ -118,6 +121,46 @@ def test_a34_ledger_reads_no_held_out_contents(monkeypatch) -> None:
             raise AssertionError(f"A34 generator opened held-out contents: {file!r}")
         return real_open(file, *args, **kwargs)
 
+    def _guard_path(path_self: Path) -> None:
+        resolved = str(path_self.resolve())
+        if resolved == sealed_root or resolved.startswith(sealed_root + os.sep):
+            raise AssertionError(f"A34 generator read held-out contents: {path_self!r}")
+
+    real_read_text = Path.read_text
+    real_read_bytes = Path.read_bytes
+    real_path_open = Path.open
+
+    def guarded_read_text(path_self: Path, *args, **kwargs):
+        _guard_path(path_self)
+        return real_read_text(path_self, *args, **kwargs)
+
+    def guarded_read_bytes(path_self: Path, *args, **kwargs):
+        _guard_path(path_self)
+        return real_read_bytes(path_self, *args, **kwargs)
+
+    def guarded_path_open(path_self: Path, *args, **kwargs):
+        _guard_path(path_self)
+        return real_path_open(path_self, *args, **kwargs)
+
+    # Every read route the generator could take (review F2): ``builtins.open``
+    # and ``io.open`` are distinct bindings once one is patched, and the
+    # ``Path`` readers route through ``io.open``.
     monkeypatch.setattr(builtins, "open", guarded_open)
+    monkeypatch.setattr(io, "open", guarded_open)
+    monkeypatch.setattr(Path, "read_text", guarded_read_text)
+    monkeypatch.setattr(Path, "read_bytes", guarded_read_bytes)
+    monkeypatch.setattr(Path, "open", guarded_path_open)
     doc = _generator().build_ledger()
     assert len(doc["packs"]) == PACK_COUNT
+
+    # The guard itself must fire on each route, or it proves nothing.
+    probe = HELD_OUT_ROOT / "README.md"
+    for route in (
+        lambda: open(probe, encoding="utf-8"),
+        lambda: io.open(probe, encoding="utf-8"),
+        lambda: probe.read_text(encoding="utf-8"),
+        lambda: probe.read_bytes(),
+        lambda: probe.open(encoding="utf-8"),
+    ):
+        with pytest.raises(AssertionError):
+            route()

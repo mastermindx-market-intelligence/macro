@@ -207,8 +207,13 @@ def main(argv: list[str] | None = None) -> int:
     check_path = Path(args.check)
     committed = _read_json(check_path)
     fresh = build_ledger()
-    committed_without_time = {key: value for key, value in committed.items() if key != "generated_at"}
-    fresh_without_time = {key: value for key, value in fresh.items() if key != "generated_at"}
+    # ``generated_at`` is a wall clock and ``base_commit`` is the HEAD the
+    # ledger was built at, which a committed ledger can never equal (the
+    # commit that carries it is created after it is written); neither is a
+    # proof, so neither takes part in the staleness comparison (review F1).
+    volatile = ("generated_at", "base_commit")
+    committed_without_time = {key: value for key, value in committed.items() if key not in volatile}
+    fresh_without_time = {key: value for key, value in fresh.items() if key not in volatile}
     if committed_without_time != fresh_without_time:
         diffs = _first_diffs(committed_without_time, fresh_without_time)
         print(f"FIF A34 ledger STALE at {check_path}; differing sections: {', '.join(diffs)}")
