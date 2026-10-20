@@ -2149,7 +2149,92 @@ jobs:
           # present in every job's base) — accepted at the 07-14 split review.
           git add data/ site/basketdata/
           if git diff --cached --quiet; then echo "no tail data changes to commit"; exit 0; fi
+
+          # GH001 tail isolation: the separate collect job's market carve does
+          # not guard this job. The append-only QLedger still belongs to its
+          # independent publisher; never ship a new >100 MiB claims blob in
+          # the tail checkpoint or let a rebase/autostash erase unissued bytes.
+          tail_qledger_carved=false
+          tail_qledger_snapshot=""
+          tail_qledger_over=""
+          tail_limit=104857600
+          tail_margin=1048576
+          tail_floor=$((tail_limit - tail_margin))
+          while IFS=          # best-effort push: same 5-retry rebase loop as the collect job's
+          # "commit market data" (see the pre-sync collision-sweep rationale there —
+          # render.yml / #2252). -X theirs prefers THIS job's freshly-accrued
+          # data on any conflict; exhausting the retry budget is non-fatal (the
+          # stores are state-resumable and re-accrue next night).
+          PUSH_ALARM=420
+          push_retry_init "tail data"
+          while push_attempt; do
+            perl -e 'alarm 120; exec @ARGV or die' -- git fetch origin main || true
+            comm -12 <(git ls-files --others --exclude-standard | LC_ALL=C sort) \
+                     <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
+              | while IFS= read -r f; do rm -f -- "$f" || true; done
+            if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
+              if push_do; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+            fi
+            push_abort_rebase
+            push_backoff
+          done
+          push_lost
+          echo "::warning::could not push collect-tail data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
+\t' read -r tail_entry tail_path; do
+            [ -n "$tail_path" ] || continue
+            set -- $tail_entry
+            [ "$3" = 0 ] || continue
+            tail_bytes=$(git cat-file -s "$2" 2>/dev/null) || tail_bytes="unknown"
+            if ! [[ "$tail_bytes" =~ ^[0-9]+$ ]] || [ "$tail_bytes" -gt "$tail_floor" ]; then
+              tail_qledger_carved=true
+              tail_qledger_over="$tail_qledger_over $tail_path=$tail_bytes"
+            fi
+          done < <(git ls-files -s -- data/qledger site/qledger)
+
+          if [ "$tail_qledger_carved" = true ]; then
+            # Local custody only. A failed snapshot must withhold BOTH planes;
+            # nothing may enter the destructive push_autostash_ok reset path.
+            tail_tree=$(git write-tree) || tail_tree=""
+            if [ -n "$tail_tree" ]; then
+              tail_qledger_snapshot=$(printf 'collect-tail qledger custody %s\n' "$GITHUB_RUN_ID" | git commit-tree "$tail_tree" -p HEAD) || tail_qledger_snapshot=""
+            fi
+            if [ -z "$tail_qledger_snapshot" ]; then
+              echo "::error title=tail publication withheld (qledger snapshot failed)::NEITHER tail data NOR QLedger was published; original worktree bytes are still local to this runner."
+              exit 0
+            fi
+            git reset -q -- data/qledger site/qledger
+            echo "::warning title=tail QLedger publication withheld::oversize or unmeasurable staged QLedger blob(s):$tail_qledger_over; data/qledger + site/qledger belong to the separate QLedger publisher. Snapshot $tail_qledger_snapshot is runner-local, not durable."
+            if git diff --cached --quiet; then
+              echo "::warning title=tail publication withheld::only deferred QLedger data changed; no tail commit or network push attempted."
+              exit 0
+            fi
+          fi
           git commit -m "data: collect-tail accrual $(date -u +%F)"
+
+          if [ "$tail_qledger_carved" = true ]; then
+            # Park BEFORE fetch/rebase/autostash. The existing shared helper
+            # can drop a conflicted autostash and hard-reset this checkout.
+            # Restore byte-identical deferred QLedger from the local commit
+            # snapshot on every normal shell exit, including push success.
+            tail_restore_qledger() {
+              tail_exit=$?
+              trap - EXIT
+              if ! git restore --source="$tail_qledger_snapshot" --worktree -- data/qledger site/qledger ||
+                 ! git diff --quiet "$tail_qledger_snapshot" -- data/qledger site/qledger; then
+                echo "::error title=tail QLedger custody LOST::could not verify restoration of deferred QLedger from local snapshot $tail_qledger_snapshot. Do not claim QLedger publication."
+                exit 75
+              fi
+              echo "::warning title=tail QLedger not published::deferred bytes restored to this runner only; clean checkout will discard them unless the independent QLedger publisher admits them."
+              exit "$tail_exit"
+            }
+            trap tail_restore_qledger EXIT
+            if ! git restore --source=HEAD --worktree -- data/qledger site/qledger ||
+               ! git diff --quiet HEAD -- data/qledger site/qledger ||
+               ! git diff --cached --quiet -- data/qledger site/qledger; then
+              echo "::error title=tail market push withheld (qledger park failed)::NEITHER the tail commit NOR deferred QLedger will be pushed by this run. The EXIT custody trap must restore QLedger from the local snapshot."
+              exit 0
+            fi
+          fi
           # best-effort push: same 5-retry rebase loop as the collect job's
           # "commit market data" (see the pre-sync collision-sweep rationale there —
           # render.yml / #2252). -X theirs prefers THIS job's freshly-accrued
