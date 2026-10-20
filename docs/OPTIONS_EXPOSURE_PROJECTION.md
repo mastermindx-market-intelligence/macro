@@ -405,7 +405,12 @@ The optional dated identity v2 receipt (`options.dated_contract_identity/v2`,
 `scope: observed_contracts`) binds the entire Greek/OI coordinate union, with
 multiple expiries, through the existing native identity owner. The selected v1
 receipt and exposure v2 tuple arrays are unchanged. The v2 adapter currently
-supports SPY's captured canonical target; QQQ retains its native intake fence.
+supports SPY's captured canonical target and the admitted QQQ native target
+`SEC:US-XNAS-QQQ` / `US-XNAS-QQQ`. QQQ's completed listing uses normalized
+`exchange: NASDAQ`; its canonical effective date is October20,2026. That current
+intake cannot bind October16/19 option populations. Both roots require actual
+captured canonical/listing evidence, exact matching reference series and native
+acquisition/retained-input receipts. The SPY-only selected v1 path is unchanged.
 `observed_contract_keys` is the unique full pre-exclusion union (at most100000
 members/50000 expiry-strike cells). `contract_keys` is its uniquely exact-reference
 bound subset, possibly empty. Omitted or ambiguous reference series remain in the
@@ -458,3 +463,45 @@ The installed daily wrapper/service need not change scheduling or writer locks.
 Existing stored rows are not reacquired/upgraded by this option, and a previous
 unknown HTTP effect is not retried. Terms, canonical identity, actual receipt clocks
 and remaining qualification controls still apply independently.
+
+### Scoped archive-only projection repair
+
+The existing `scripts.repair_gex_history` owner accepts explicit `--roots`,
+`--date` and `--exposure-context` for an existing dated archive. Without `--apply`
+it is a dry run. The receipt must bind the exact full native-store Greek/OI rows;
+selected `source_inputs` are rejected. Expiration representation is retained as
+read by the native builder so the original semantic input digest remains valid.
+Wrong root/session/digest refuses before a replacement write.
+
+```sh
+python -m scripts.repair_gex_history --roots SPY --date 2026-10-16 \
+  --theta-store <incumbent-store> --exposure-context <owner-bundle>
+```
+
+The repaired archive retains `history`, updates the fields owned by `compute_gex`
+including the optional `exposure_projection`, and applies the existing whole-event
+8MiB transport budget. It never writes `gex/{ROOT}.json`, vol or current boards.
+A genuinely empty or over-budget legacy envelope retains its last-good archive.
+Maintenance without an explicit owner context also preserves existing dated/modeled
+projections, rather than erasing their qualification with an unavailable substitute.
+The explicit-context path rejects changed input digests instead of silently
+publishing a numerically unavailable substitute.
+
+Only after ordinary writer custody and actual distribution rights are established,
+`--apply --publish` uploads the changed exact dated keys. The existing
+`publish_gex_history_index` then lists the actual plane and updates `dates.json`
+with `heal_budget=0`; unsuccessful uploads do not create invented index members or
+trigger unrelated heals. This option is not a rights grant or service activation.
+The retained October16 SPY dry run and isolated evidence-copy application preserve
+13104 observed /12212 qualified /892 missing,6552 cells in a3994690-byte JSON
+artifact. No production archive or current book was changed for that verification.
+
+The QQQ observed-v2 extension uses the same field and tuple layout as SPY, with
+explicit root-specific policy `occ_standard_qqq_etf/v1`. It interprets only exact
+100-share American QQQ reference contracts with no additional deliverables reported,
+retaining raw omission and Massive/OCC citations. Currency/multiplier/deliverable
+interpretation does not establish an economic expiry instant, serving model build,
+dividend schedule, provider Greek units beyond the admitted dated Gamma class, or
+historical first availability. All existing instantaneous/joint/repricing/PIT guards
+remain in force. Synthetic QQQ producer output is a contract test, not actual QQQ
+market capture or publication.
