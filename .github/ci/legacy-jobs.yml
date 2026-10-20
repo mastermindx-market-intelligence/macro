@@ -34725,6 +34725,86 @@ jobs:
       - "engine/government_revenue/research_state.py"
       - "engine/government_revenue/sbir_progression.py"
       - "research/GOVERNMENT_REVENUE_CANDIDATE_GRADER_PREREG.md"
+      - "tests/test_press_run.py"
+      - "tests/test_press_writer.py"
+      - "config/marketing_competitor_cadence.yml"
+      - "config/press.yml"
+      - "engine/chronicle/context_pack.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/attention_source.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/breaking_summary.py"
+      - "engine/marketing/cadence_resolver.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/chart_director.py"
+      - "engine/marketing/chart_facts.py"
+      - "engine/marketing/chart_followups.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/congress_feed.py"
+      - "engine/marketing/content_studio.py"
+      - "engine/marketing/copy_auditor.py"
+      - "engine/marketing/copy_critic.py"
+      - "engine/marketing/copywriter.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/exemplar_store.py"
+      - "engine/marketing/expression_dial.py"
+      - "engine/marketing/garbage_gate.py"
+      - "engine/marketing/hot_tape_llm.py"
+      - "engine/marketing/house_picks.py"
+      - "engine/marketing/insider_feed.py"
+      - "engine/marketing/learned_rules.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/links.py"
+      - "engine/marketing/market_clock.py"
+      - "engine/marketing/market_facts.py"
+      - "engine/marketing/media_publish.py"
+      - "engine/marketing/movers_source.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/outbox.py"
+      - "engine/marketing/persona_memory.py"
+      - "engine/marketing/personas.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/radar_internal.py"
+      - "engine/marketing/receipt_source.py"
+      - "engine/marketing/relay_hygiene.py"
+      - "engine/marketing/sentinel.py"
+      - "engine/marketing/signal_features.py"
+      - "engine/marketing/social_publisher.py"
+      - "engine/marketing/state.py"
+      - "engine/marketing/story_spine.py"
+      - "engine/marketing/ticker_allocator.py"
+      - "engine/marketing/value_gate.py"
+      - "engine/marketing/wire_format.py"
+      - "engine/marketing/wire_voice.py"
+      - "engine/marketing/x_intel.py"
+      - "engine/press/__init__.py"
+      - "engine/press/desk_planner.py"
+      - "engine/press/external_candidate.py"
+      - "engine/press/properties.py"
+      - "engine/press/qbus_news.py"
+      - "engine/press/research_triage.py"
+      - "engine/press/validators.py"
+      - "engine/press/writer.py"
+      - "engine/whitehouse_feed.py"
+      - "lib/seo.py"
+      - "lib/site_assets.py"
+      - "scripts/build_free_content.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/externalize_css.py"
+      - "scripts/inject_data_base.py"
+      - "scripts/optimize_assets.py"
+      - "scripts/run_press.py"
+      - "tests/__init__.py"
+      - "tests/press_fixtures.py"
+      - "site/basketdata/breadth_split.json"
+      - "site/factordata/attention.json"
+      - "site/factordata/tech_confluence.json"
+      - "site/marketdata/sp500_heatmap.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34735,7 +34815,7 @@ jobs:
       - name: install ticker-news test deps
         run: >-
           pip install pytest pandas pyarrow pyyaml requests fastapi httpx
-          websockets jsonschema==4.26.0 referencing
+          websockets jsonschema==4.26.0 referencing jinja2 beautifulsoup4
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
@@ -34783,7 +34863,8 @@ jobs:
           tests/test_ticker_news_secret_delivery.py
           tests/test_ticker_news_snapshot_provenance.py
           tests/test_ticker_news_systemd.py
-          tests/test_verify_ticker_news.py -q -rs
+          tests/test_verify_ticker_news.py
+          tests/test_press_run.py tests/test_press_writer.py -q -rs
 
   no-client-supplied-identity:
     if: ${{ false }}
