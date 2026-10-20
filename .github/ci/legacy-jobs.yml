@@ -25187,6 +25187,10 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
         run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+      # W23-L11 (S&P Vector, 2026-10-20): the chip that read "Dislocation" computes the re-deploy
+      # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
+      - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs
+        run: python -m pytest tests/test_spvector_gate_chips.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
