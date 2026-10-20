@@ -293,7 +293,32 @@ waves:
       proof matches; one original selected-set match has two changed definitions.
       Natural39330880213 confirms reuse in noncritical pack8. Two other runs
       have potential reuse on critical packs; inspect before attributing savings.
-      Publish accumulated report; retain implementation, no causal claim.
+      Report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a;6blobs verified.
+      Fixed00:55 snapshot45runs/31eligible completions(29success,2failure),
+      7pending/7cancelled. ScopedN27 p50/p951966/2863sec, wall186.47/278.23min;
+      zero original/weighted proof matches. Both targeted critical-pack logs show
+      reuse, without counterfactual saved seconds. FIF alone critical9times and
+      control-plane alone8times; no outer-shard expansion justified.
+      PR9479/9797 failures are candidate-specific with passing isolated bases;
+      preserve their carriers. Hold the cohort fixed. Six slowest scoped successes
+      are FIF-alone critical. Exact-source72tests pass403.73sec; focused profile
+      identifies repeated ASCII and direct-text scans in the SEC parser.
+      Fourth trial replaces the byte loop with isascii and uses the existing
+      event index before the unchanged owner filter; no semantic/proof/shard change.
+      Parser214tests pass, new scan regression fails before, two complete filing
+      outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
+      Same72tests pass335.45sec vs403.73before. PR9813 merged9c7df3786fc3856fbb692da301584b4b443ab66d
+      at2026-10-20T04:57:13Z; seven blobs verified. Final39364786931 passes
+      96jobs/299proof units/zero infrastructure findings and all active checks.
+      Three green trial FIF commands1581.75/2093.14/1573.07sec show variation.
+      Next: separate natural parser cohort with exact parser plus planner blobs
+      and merge ancestry; earlier00:55 cohort remains fixed.
+      Fixed parser05:54 cohort16runs has5qualified completions(3success2failure),
+      11pending/0cancelled/0reruns. Success p50/p951860/2218sec,wall228.50/252.18min;
+      failure first-step-completion950.5/1002sec. Zero original-baseline proof matches.
+      Exact secondary pairs differ in outcome; one artifact-upload failure and one
+      AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
+      No causal fleet30percent or cost-neutrality claim.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.

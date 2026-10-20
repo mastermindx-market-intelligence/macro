@@ -94,6 +94,20 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .sec-sub{font-size:13px;color:var(--muted);margin:0 2px 14px}
 .card{background:var(--card);border:1px solid var(--grid);border-radius:18px;padding:22px}
 .grid{display:grid;gap:16px}.cols-2{grid-template-columns:1fr 1fr}
+.deal-terms{margin-bottom:16px;scroll-margin-top:100px}
+.deal-terms h3{margin:0 0 8px;color:var(--ink);font-size:20px}
+.deal-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.deal-facts dt,.deal-clock{font-size:12px;color:var(--muted);line-height:1.6}
+.deal-facts dd{margin:4px 0 0;font-size:20px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.deal-terms p{line-height:1.65}.deal-terms details{border-top:1px solid var(--grid);padding-top:12px}
+.deal-terms summary{cursor:pointer;color:var(--acc);font-weight:600}.deal-terms a{overflow-wrap:anywhere;color:var(--acc)}
+.deal-path{width:100%;height:auto;display:block;border-bottom:1px solid var(--grid)}
+.deal-price-line{fill:none;stroke:var(--acc);stroke-width:2;vector-effect:non-scaling-stroke}
+.deal-offer-line{stroke:var(--muted);stroke-width:1;stroke-dasharray:5 5}
+.deal-path-labels{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:12px;line-height:1.6}
+html[data-theme="light"] .deal-terms{box-shadow:var(--card-shadow)}
+html[data-theme="dark"] .deal-terms{background:linear-gradient(180deg,var(--panel2),var(--card) 65%)}
+@media(max-width:500px){.deal-facts{grid-template-columns:1fr 1fr;gap:14px}.deal-facts dd{font-size:18px}.deal-path{height:170px}.deal-path-labels{flex-direction:column;gap:4px}}
 @media(max-width:900px){.cols-2{grid-template-columns:1fr}}
 
 /* ---------- AVOID panel — the honest deliverable ---------- */
