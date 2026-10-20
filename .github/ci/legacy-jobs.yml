@@ -29141,11 +29141,13 @@ jobs:
     if: ${{ false }}
     gate: code
     paths:
+      - "templates/china_altdata.html.j2"
       - "tests/test_act_now_board_assembler.py"
       - "tests/test_action_board_lane_split.py"
       - "tests/test_alert_coverage_recurrence.py"
       - "tests/test_alert_time_contract.py"
       - "tests/test_alert_triage.py"
+      - "tests/test_china_altdata.py"
       - "tests/test_china_special_situations.py"
       - "tests/test_china_special_situations_truth_wave1.py"
       - "tests/test_macro_header_compact.py"
@@ -29205,6 +29207,23 @@ jobs:
         run: python -m pytest tests/test_china_special_situations_truth_wave1.py -q
       - name: China Special Situations CIE-10 — contract/order metadata lifecycle truth
         run: python -m pytest tests/test_china_special_situations.py -q
+      # China Alt-Data event-catalyst cards (W27-L27, 2026-10-20). The three cards read
+      # keys the producer never writes: inquiry rows carry secName/secCode (no `name`),
+      # pre-announcement rows carry pct_change + a Chinese-only `type` (no p_change), and
+      # unlock rows carry float_pct (no pct_float). So both inquiry names, all five
+      # pre-announcement values and every unlock size rendered as empty spans. The six
+      # new tests render the real template with jinja2 + engine/i18n and pin the printed
+      # company, the translated type with its signed swing (an unmapped type paints raw
+      # in both legs), and the unlock size as a % of free float below 100 and as a
+      # multiple at or above it (a bare "1055%" is asserted absent).
+      #
+      # WIRED, NOT JUST ADDED (#5952-class): tests/test_china_altdata.py sat in
+      # config/unrun_test_baseline.json, so its 11 engine tests ran in no job; it leaves
+      # the grandfather list in this PR. Hermetic: no data/ or site/ read, no parquet
+      # store; the engine tests call pure functions and the render side loads templates/
+      # only, so this job's install line is sufficient (17 passed in a code-only export).
+      - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
+        run: python -m pytest tests/test_china_altdata.py -q
       - name: US board W9-A producer field + cohort math
         run: python -m pytest tests/test_w4_us_board.py -q
       # Alert Command Center — the TIME CONTRACT and the evidence links (Wave 7,

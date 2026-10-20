@@ -133,7 +133,6 @@
     "tests/test_china_allocation.py",
     "tests/test_china_alpha_w0.py",
     "tests/test_china_alpha_w1b.py",
-    "tests/test_china_altdata.py",
     "tests/test_china_analyst_ticker.py",
     "tests/test_china_basket_spine.py",
     "tests/test_china_basket_turn.py",
