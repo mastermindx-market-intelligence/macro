@@ -157,7 +157,7 @@ path is retained; no publisher, permission or source gate was altered.
 
 | Check | Observed result |
 | --- | --- |
-| Owner, identity, Research Priority, WMN composition, API and publication suites | **94 passed** |
+| Owner, identity, Research Priority, WMN composition, API and publication suites | **101 passed after R9a review fix** |
 | Page, D0b UI and hydration suites, including the real WMN envelope validator | **74 passed** |
 | Curated exclusive dependency closure and declaration checks | **2 passed** |
 | Python compilation and diff hygiene | Passed |
@@ -221,11 +221,40 @@ Starlette/httpx interface. They do not represent test failures.
 ## Review and remaining gates
 
 The independent C3 architectural review accepted the version/current-use split.
-The first implementation review returned **INCOMPLETE** because its attempted
-workspace read supplied no source. That return is not source acceptance and did
-not independently verify root's tests. A fresh bounded review of the actual
-six-file source diff is underway at this checkpoint. Source publication for
-review does not release merge, production or native-owner qualification holds.
+The first implementation attempt returned INCOMPLETE because its workspace read
+supplied no source. A subsequent bounded read obtained the full six-file diff,
+reconstructed all six files against ec5, and independently matched every supplied
+whole-file hash. That review found a nested alias-observation date inconsistency.
+
+The R9a follow-up binds every admitted security's `symbol_observed_on` to the
+already checked canonical `identity_cut_date`, solely within the v2 branch. Five
+new malformed/mismatched date cases reproduced the original defect before the
+production edit; matching v2 and historical v1 cases already passed. After the
+repair, all **101 core tests passed** in 11.90 seconds, including the authentic
+old-generation materialization cases. An intermediate run's six failures were
+caused by site materialization removing five unchanged clinicaltrials fixtures;
+restoring their exact ec5 Git bytes resolved them without test or source waivers.
+
+The reviewer independently reconstructed the final WMN file from the inspected
+source and the exact small replacement, matched SHA-256
+`8c9a98050ced7aa673cd904e56ffba55ee106bda122fcfef98ffc0cf0a0b580c`,
+and issued **bounded source acceptance for the six-file R9 core**, with the other
+five production files unchanged. The tests remain root's execution evidence.
+The changed production file also passed the unchanged source-copy scanner;
+the 38 inherited full-inventory findings remain recorded separately.
+
+Initial R9 was published as
+`76f5a28d5d8e8200fbb9c36882f158541809ec3e`, tree
+`b7b4d6b6f414ab94499bdb2babd2ae7f46422c6e`, sole parent ec5.
+The first push response was uncertain. Typed publication status and independent
+GitHub branch readback both proved the exact commit applied before the original
+#6712 branch was fast-forwarded without force. This follow-up retains that same
+carrier and hold.
+
+Source acceptance does not release merge, production or native-owner
+qualification holds. The 74 UI checks and two CI dependency checks belong to the
+initial R9 execution; their asset, import and CI registration sources are
+unchanged by the small follow-up. No fresh combined 175-test run is claimed.
 
 Fresh hosted CI on the published #6712 continuation remains required, including
 any inherited whole-branch gates. Source acceptance does not release the existing

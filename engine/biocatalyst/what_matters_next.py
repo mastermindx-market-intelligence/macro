@@ -763,7 +763,10 @@ def validate_wmn_inputs(
             _cutoff_literal, cutoff_time = _utc(cutoff, field="input_cut.cutoff")
             if identity_cut_date > cutoff_time.date():
                 raise ContractError("identity_cut_date exceeds generation cutoff")
-            _admitted_issuer(identity, company_id=event["company_id"])
+            admitted = _admitted_issuer(identity, company_id=event["company_id"])
+            for security in admitted["securities"]:
+                if security["symbol_observed_on"] != identity["identity_cut_date"]:
+                    raise ContractError("symbol_observed_on does not match identity_cut_date")
 
     coverage = _wmn_coverage(item.get("coverage"))
     family_counts: dict[str, int] = {}

@@ -756,3 +756,56 @@ def test_optional_estimates_do_not_hide_real_coverage_or_source_gaps(
         for kind in ("probability", "materiality", "historical_response", "incorporation"):
             assert row[kind]["state"] == "NOT_ESTIMABLE"
             assert row[kind]["value"] is None
+
+
+@pytest.mark.parametrize(
+    "symbol_observed_on",
+    ["2026-09-07", "2026-09-05", "2026-02-30", "2026-W36-7", None],
+)
+def test_wmn_v2_symbol_observation_must_match_the_identity_cut(symbol_observed_on):
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+
+    event = _event()
+    identity = _resolved_identity(event)
+    identity["issuers"][0]["securities"][0]["symbol_observed_on"] = symbol_observed_on
+    inputs = _wmn_inputs(event, identity)
+    for validate in (validate_wmn_inputs, validate_current_wmn_inputs):
+        with pytest.raises(ContractError, match="symbol_observed_on"):
+            validate(inputs)
+    with pytest.raises(ContractError, match="symbol_observed_on"):
+        compose_rows_from_wmn_inputs(
+            inputs, evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+        )
+
+
+def test_wmn_v2_matching_symbol_observation_retains_current_rows():
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+
+    event = _event()
+    identity = _resolved_identity(event)
+    assert identity["issuers"][0]["securities"][0]["symbol_observed_on"] == identity["identity_cut_date"]
+    inputs = _wmn_inputs(event, identity)
+    assert validate_wmn_inputs(inputs) == inputs
+    assert validate_current_wmn_inputs(inputs) == inputs
+    rows = compose_rows_from_wmn_inputs(
+        inputs, evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
+    )
+    assert len(rows) == 1
+    assert rows[0]["issuer"]["state"] == "resolved"
+
+
+def test_wmn_v1_symbol_observation_keeps_historical_normalization():
+    from engine.biocatalyst.what_matters_next import validate_current_wmn_inputs
+
+    event = _event()
+    identity = _resolved_identity(event)
+    identity["issuers"][0]["securities"][0]["symbol_observed_on"] = "2026-09-07"
+    legacy = _wmn_inputs(event, identity)
+    legacy.update(contract_id="biocatalyst_wmn_inputs.v1", schema_version="1.0.0")
+    legacy["input_cut"]["members"] = [
+        member for member in legacy["input_cut"]["members"]
+        if member["contract_id"] != "dataos_vendor_aliases.current"
+    ]
+    assert validate_wmn_inputs(legacy) == legacy
+    with pytest.raises(ContractError, match="alias-bound v2"):
+        validate_current_wmn_inputs(legacy)
