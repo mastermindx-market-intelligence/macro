@@ -37,6 +37,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -1887,6 +1891,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -2796,6 +2804,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -6596,6 +6608,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
@@ -8914,6 +8929,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -19586,6 +19605,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
@@ -20364,6 +20386,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
@@ -22366,6 +22391,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
@@ -24046,6 +24075,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
@@ -24835,6 +24867,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30320,6 +30355,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30817,6 +30855,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
@@ -33806,6 +33848,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/medtech.py"
+      - "engine/medtech/__init__.py"
+      - "engine/medtech/events.py"
+      - "engine/medtech/publication.py"
       - app/ticker_news_stream.py
       - engine/massive_news.py
       - engine/qbus_news_intake.py
