@@ -31,7 +31,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 
 from collectors._stock_ohlc import _drop_invalid_ohlc, _drop_non_trading_placeholders
-from lib import store
+from lib import hk_calendar, store
 
 log = logging.getLogger(__name__)
 
@@ -53,6 +53,9 @@ def tencent_code(ticker: str) -> str | None:
     if ticker.endswith(".SZ"):
         code = ticker[:-3]
         return f"sz{code}" if code.isdigit() else None
+    if ticker.endswith(".HK"):
+        code = ticker[:-3]
+        return f"hk{code.zfill(5)}" if code.isdigit() and 1 <= len(code) <= 5 else None
     return None
 
 
@@ -72,9 +75,11 @@ def frame_from_payload(ticker: str, payload: dict) -> pd.DataFrame | None:
             continue
         try:
             # Tencent row order: date, open, close, high, low, volume-in-lots (手).
-            # Canonical Macro/Yahoo volume is shares; one A-share board lot = 100 shares.
+            # A-share vendor volume is lots (x100); HK vendor volume is
+            # already shares. Never multiply an HK print into invented turnover.
+            scale = 1.0 if ticker.endswith(".HK") else 100.0
             rows.append(
-                (trade_dt, float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5]) * 100.0)
+                (trade_dt, float(x[1]), float(x[2]), float(x[3]), float(x[4]), float(x[5]) * scale)
             )
         except (TypeError, ValueError):
             continue
@@ -88,13 +93,19 @@ def frame_from_payload(ticker: str, payload: dict) -> pd.DataFrame | None:
     return df.astype("float64") if not df.empty else None
 
 
-def completed_session_cutoff(now: dt.datetime | None = None) -> pd.Timestamp:
+def completed_session_cutoff(
+    now: dt.datetime | None = None, *, market: str = "CN"
+) -> pd.Timestamp:
     """Latest calendar date a Tencent daily row is allowed to represent.
 
     Before 16:05 Asia/Shanghai, today's daily bar is considered provisional and is
     excluded.  On weekends/holidays this is harmless: the provider has no row for the
     non-trading date, so the latest real session naturally remains earlier.
     """
+    if market == "HK":
+        # HKEX closing auction ends after 16:00; its daily bar is accepted only
+        # at the existing calendar's conservative 17:30 HKT settlement boundary.
+        return pd.Timestamp(hk_calendar.expected_last_session(now))
     local = now or dt.datetime.now(_SHANGHAI)
     if local.tzinfo is None:
         local = local.replace(tzinfo=_SHANGHAI)
@@ -106,9 +117,11 @@ def completed_session_cutoff(now: dt.datetime | None = None) -> pd.Timestamp:
     return pd.Timestamp(day)
 
 
-def keep_completed_sessions(df: pd.DataFrame, now: dt.datetime | None = None) -> pd.DataFrame:
-    """Drop a current/provisional Shanghai daily row from a Tencent frame."""
-    cutoff = completed_session_cutoff(now)
+def keep_completed_sessions(
+    df: pd.DataFrame, now: dt.datetime | None = None, *, market: str = "CN"
+) -> pd.DataFrame:
+    """Drop vendor daily rows newer than the actual completed exchange session."""
+    cutoff = completed_session_cutoff(now, market=market)
     idx = pd.to_datetime(df.index).tz_localize(None).normalize()
     return df.loc[idx <= cutoff]
 
@@ -132,7 +145,9 @@ def fetch_tencent(ticker: str, count: int = _DEFAULT_COUNT, retries: int = 2,
                     continue
                 frame = frame_from_payload(ticker, payload)
                 if frame is not None and not frame.empty:
-                    frame = keep_completed_sessions(frame)
+                    frame = keep_completed_sessions(
+                        frame, market="HK" if ticker.endswith(".HK") else "CN"
+                    )
                     if not frame.empty:
                         return frame
             except Exception as exc:  # noqa: BLE001 - the second host/retry is the fallback

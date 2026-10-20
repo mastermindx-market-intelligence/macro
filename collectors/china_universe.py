@@ -41,6 +41,8 @@ BOUND until the panel is re-accrued append-only.
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FutureTimeout
+from datetime import datetime, time as clock_time, timedelta
 import time
 from io import BytesIO
 
@@ -97,6 +99,205 @@ def _overwrite_overlap(fresh: pd.DataFrame, prev: pd.DataFrame) -> pd.DataFrame:
             # forward untouched (append-only, no retroactive deletion).
             out[col] = pcol
     return out.sort_index()
+
+
+
+def repair_settled_search_closes(
+    closes: pd.DataFrame,
+    tickers: list[str],
+    *,
+    now: datetime | None = None,
+    fetcher=None,
+    local_reader=None,
+    min_coverage: float = 0.95,
+    max_workers: int = 16,
+    max_wait_s: float = 600.0,
+) -> pd.DataFrame:
+    """Require TWO consecutive completed China sessions for truthful 1D returns.
+
+    A fully populated current-day matrix can still render ZERO daily returns
+    when Yahoo skipped yesterday's completed session. Repair the prior session
+    first through the same incumbent per-name adjusted source; then repair
+    today's session. Refuse either lane below 95%—no timestamp laundering.
+    """
+    from lib import cn_calendar
+
+    clock = now or datetime.now(cn_calendar.CST)
+    latest = cn_calendar.expected_last_session(clock)
+    prior = cn_calendar.last_session_on_or_before(latest - timedelta(days=1))
+    prior_clock = datetime.combine(prior, clock_time(18, 0), tzinfo=cn_calendar.CST)
+    repaired = _repair_one_settled_search_session(
+        closes, tickers, now=prior_clock,
+        fetcher=fetcher, local_reader=local_reader,
+        min_coverage=min_coverage, max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+    return _repair_one_settled_search_session(
+        repaired, tickers, now=clock,
+        fetcher=fetcher, local_reader=local_reader,
+        min_coverage=min_coverage, max_workers=max_workers, max_wait_s=max_wait_s,
+    )
+
+
+def _repair_one_settled_search_session(
+    closes: pd.DataFrame,
+    tickers: list[str],
+    *,
+    now: datetime | None = None,
+    fetcher=None,
+    local_reader=None,
+    min_coverage: float = 0.95,
+    max_workers: int = 16,
+    max_wait_s: float = 600.0,
+) -> pd.DataFrame:
+    """Recover a coherent China close in the original China search store.
+
+    Prefer the ALREADY-PERSISTED, adjusted China per-stock OHLC canon
+    (china_stocks/<ticker>.parquet) before any additional vendor request.
+    Its existing collector owns acquisition, source-clock and adjustment basis.
+    Verify exact settled-day marks against the last three valid adjusted
+    overlaps in the search matrix; a stock on another basis stays unfilled.
+    Only if local coverage is under 95% consult the incumbent Tencent qfq
+    history repair transport for eligible missing names. No intraday price is
+    converted to a daily close, no synthetic session is created, and no other
+    store/collector/job owns these outputs.
+    """
+    from lib import cn_calendar, store
+    from collectors import china_stock_tencent as tencent
+
+    now = now or datetime.now(tencent._SHANGHAI)
+    expected = pd.Timestamp(cn_calendar.expected_last_session(now))
+    df = closes.copy().sort_index()
+    df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
+    df = df.loc[:, ~df.columns.duplicated(keep="last")]
+    df = df.dropna(axis=0, how="all")
+    if df.empty:
+        raise RuntimeError("china_search close panel has no observed price history")
+
+    # The union may contain dropped historical names; grade the CURRENT exact
+    # member universe, never the width of the historical append-only panel.
+    current = list(dict.fromkeys(str(t) for t in tickers))
+    if not current:
+        raise RuntimeError("china_search current membership is empty")
+    present = [t for t in current if t in df.columns]
+    if expected in df.index:
+        row = pd.to_numeric(df.loc[expected, present], errors="coerce")
+        valid = {t for t, value in row.items() if pd.notna(value) and float(value) > 0}
+    else:
+        valid = set()
+    count = len(current)
+    if len(valid) / count >= min_coverage:
+        return df
+
+    # The per-name canonical adjusted-price source already holds daily
+    # completed bars for many stocks even when the search-wide Yahoo
+    # downloader omitted the session (measured 2026-10-12: 1,711/1,720
+    # per-name marks qualified with overlap, vs zero in the search matrix).
+    # Reuse one existing store, not another data owner or scheduler.
+    candidates = [t for t in current if t not in valid and t in df.columns]
+    observed: dict[str, float] = {}
+    bad_basis: set[str] = set()
+    unavailable_local = 0
+
+    def qualified_adjusted_price(ticker: str, candle: pd.DataFrame | None) -> tuple[float | None, str]:
+        if candle is None or candle.empty or "close" not in candle.columns:
+            return None, "unavailable"
+        try:
+            recent = candle[["close"]].copy()
+            recent.index = pd.to_datetime(recent.index).tz_localize(None).normalize()
+            if recent.index.has_duplicates or expected not in recent.index:
+                return None, "unavailable"
+            value = pd.to_numeric(pd.Series([recent.at[expected, "close"]]), errors="coerce").iloc[0]
+            if pd.isna(value) or float(value) <= 0:
+                return None, "unavailable"
+            historical = pd.to_numeric(df[ticker], errors="coerce").dropna()
+            historical = historical.loc[(historical.index < expected) & (historical > 0)]
+            overlap = historical.index.intersection(recent.index).sort_values()[-3:]
+            # At least two independent settled observations constrain basis:
+            # one coincidental price match after an ex-dividend is insufficient.
+            if len(overlap) < 2:
+                return None, "basis"
+            ref = historical.loc[overlap].to_frame("close")
+            candidate = recent.loc[overlap, ["close"]]
+            if not tencent._compatible_overlap(ref, candidate, 0.005):
+                return None, "basis"
+            return float(value), "ok"
+        except (KeyError, ValueError, TypeError, IndexError):
+            return None, "unavailable"
+
+    read_pername = local_reader or (lambda ticker: store.read("china_stocks", ticker))
+    for ticker in candidates:
+        try:
+            source = read_pername(ticker)
+        except (OSError, ValueError, TypeError):
+            source = None
+        mark, why = qualified_adjusted_price(ticker, source)
+        if mark is not None:
+            observed[ticker] = mark
+        elif why == "basis":
+            bad_basis.add(ticker)
+        else:
+            unavailable_local += 1
+
+    local_recovered = len(observed)
+    remote_recovered = 0
+    skipped_basis = len(bad_basis)
+    skipped_source = unavailable_local
+    if (len(valid) + len(observed)) / count < min_coverage:
+        # Use the pre-existing bounded Tencent QFQ reader only for names
+        # absent from BOTH Yahoo and the verified local adjusted store. Names
+        # found to be on another basis are refused (never silently spliced).
+        supplier = fetcher or tencent.fetch_tencent
+        remote_candidates = [t for t in candidates if t not in observed and t not in bad_basis]
+        pool = ThreadPoolExecutor(max_workers=max(1, min(max_workers, 16)))
+        futures = {pool.submit(supplier, ticker, 12, 1): ticker for ticker in remote_candidates}
+        try:
+            try:
+                for future in as_completed(futures, timeout=max_wait_s):
+                    ticker = futures[future]
+                    try:
+                        source = future.result()
+                    except Exception:
+                        skipped_source += 1
+                        continue
+                    mark, why = qualified_adjusted_price(ticker, source)
+                    if mark is not None:
+                        observed[ticker] = mark
+                        remote_recovered += 1
+                    elif why == "basis":
+                        skipped_basis += 1
+                    else:
+                        skipped_source += 1
+            except FutureTimeout:
+                skipped_source += sum(not future.done() for future in futures)
+        finally:
+            # The source fetcher itself has a bounded per-request timeout.
+            # Cancel waiting work immediately; never create a durable worker.
+            pool.shutdown(wait=False, cancel_futures=True)
+
+    total_valid = len(valid) + len(observed)
+    coverage = total_valid / count
+    log.info(
+        "china_search settled qualified repair: session=%s Yahoo=%d "
+        "existing_adjusted=%d Tencent=%d current=%d/%d (%.1f%%), "
+        "basis_rejected=%d unavailable=%d",
+        expected.date(), len(valid), local_recovered, remote_recovered,
+        total_valid, count, 100 * coverage, skipped_basis, skipped_source,
+    )
+    if coverage < min_coverage:
+        raise RuntimeError(
+            f"china_search current close coverage {total_valid}/{count} "
+            f"({coverage:.1%}) below {min_coverage:.0%} for "
+            f"{expected.date()}; retaining last-good source"
+        )
+    # The entire mutation is done only AFTER coverage succeeds. Keep all
+    # historical adjusted observations, overwrite only missing completed-session
+    # endpoints, and never create a fabricated day for suspended stocks.
+    if observed:
+        if expected not in df.index:
+            df.loc[expected, :] = float("nan")
+        for ticker, value in observed.items():
+            df.at[expected, ticker] = value
+    return df.sort_index().dropna(axis=0, how="all")
 
 
 def _to_ticker(sina_symbol: str) -> str | None:
@@ -763,6 +964,8 @@ class ChinaUniverseAdapter(Adapter):
         else:
             closes = self._download_closes(tickers, period)
         closes = closes.dropna(axis=1, how="all")
+        if not full_history:
+            closes = repair_settled_search_closes(closes, tickers)
 
         # APPEND-ONLY history (do NOT retroactively trim to the current top-N — that
         # physically deleted dropped names' history every run, erasing exactly the

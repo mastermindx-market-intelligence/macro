@@ -66,6 +66,28 @@ def _latest_date(rel: str) -> str | None:
         return None
     if df is None or df.empty:
         return None
+    if rel == CHINA_SEARCH_STORE:
+        # Binding China close source: a vendor may introduce an all-NaN
+        # Monday index row even while every security remains at Friday's close.
+        # Neither a timestamp nor the existence of columns proves today's
+        # settled daily prices. Use current curated membership and the same
+        # 95% observation representation threshold as the heatmap publisher.
+        try:
+            members = pd.read_parquet(
+                config.data_dir() / "china_search" / "members.parquet"
+            )
+            current = list(dict.fromkeys(map(str, members.index)))
+            required = 0.95 * len(current)
+            represented = [t for t in current if t in df.columns]
+            if not current or len(represented) < required:
+                return None
+            numeric = df.loc[:, represented].apply(pd.to_numeric, errors="coerce")
+            good = (numeric > 0).sum(axis=1) >= required
+            df = df.loc[good]
+        except (OSError, ValueError, KeyError, TypeError):
+            return None
+        if df.empty:
+            return None
     for col in ("date", "trade_date", "asof", "as_of", "dt"):
         if col in df.columns:
             stamp = pd.to_datetime(df[col].astype(str), errors="coerce").max()

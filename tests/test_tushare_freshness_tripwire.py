@@ -148,6 +148,10 @@ def test_latest_date_reads_wide_tz_aware_close_index(monkeypatch, tmp_path):
         index=pd.DatetimeIndex(["2026-09-10 00:00", "2026-09-11 00:00"],
                                tz="Asia/Shanghai"),
     ).to_parquet(store)
+    pd.DataFrame(
+        {"sector": ["Financial Services"]},
+        index=pd.Index(["600000.SS"], name="ticker")
+    ).to_parquet(tmp_path / "china_search" / "members.parquet")
     monkeypatch.setattr(m.config, "data_dir", lambda: tmp_path)
 
     assert m._latest_date("china_search/closes.parquet") == "2026-09-11"
@@ -234,3 +238,36 @@ def test_asia_workflow_propagates_collect_failure_before_commit_and_build():
     assert "|| true" not in collect_block
     assert "if: always()" not in downstream
     assert collect_start < commit_start < build_start
+
+
+
+def test_china_core_phantom_2026_10_12_row_is_not_fresh(monkeypatch, tmp_path, capsys):
+    """A calendar date with zero numeric marks cannot certify the latest close."""
+    import pandas as pd
+    import scripts.check_tushare_freshness as m
+
+    root = tmp_path / "china_search"
+    root.mkdir()
+    current = [f"{600000 + i:06d}.SS" for i in range(100)]
+    pd.DataFrame(index=pd.Index(current, name="ticker")).to_parquet(
+        root / "members.parquet"
+    )
+    rows = pd.to_datetime(["2026-10-09", "2026-10-12"])
+    prices = {ticker: [10.0, float("nan")] for ticker in current}
+    pd.DataFrame(prices, index=rows).to_parquet(root / "closes.parquet")
+    monkeypatch.setattr(m.config, "data_dir", lambda: tmp_path)
+    assert m._latest_date(m.CHINA_SEARCH_STORE) == "2026-10-09"
+    assert m.check_china_search_core(datetime(2026, 10, 12, 12,
+                                              tzinfo=timezone.utc)) == 3
+    output = capsys.readouterr().out
+    assert "store=2026-10-09" in output and "expected mainland session 2026-10-12" in output
+
+    # A mostly empty same-day row cannot pass on column existence either.
+    prices = {ticker: [10.0, 11.0 if i < 94 else float("nan")]
+              for i, ticker in enumerate(current)}
+    pd.DataFrame(prices, index=rows).to_parquet(root / "closes.parquet")
+    assert m._latest_date(m.CHINA_SEARCH_STORE) == "2026-10-09"
+    prices = {ticker: [10.0, 11.0 if i < 95 else float("nan")]
+              for i, ticker in enumerate(current)}
+    pd.DataFrame(prices, index=rows).to_parquet(root / "closes.parquet")
+    assert m._latest_date(m.CHINA_SEARCH_STORE) == "2026-10-12"

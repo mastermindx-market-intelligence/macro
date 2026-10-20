@@ -10425,9 +10425,16 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow requests pyyaml
-      - name: whole-board breadth collector + heatmap payload contract
-        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py tests/test_sp500_heatmap_intraday_clock.py -q
+        run: pip install pytest pandas numpy pyarrow requests pyyaml jinja2
+      - name: whole-board breadth collector + heatmap publication contracts
+        run: >
+          python -m pytest
+          tests/test_china_board_breadth.py
+          tests/test_market_heatmap.py
+          tests/test_china_heatmap_freshness.py
+          tests/test_china_heatmap_settled_close.py
+          tests/test_sp500_heatmap_intraday_clock.py
+          -q
 
   china-search-universe:
     if: ${{ false }}
@@ -10808,6 +10815,7 @@ jobs:
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
+      - "scripts/check_china_heatmap_freshness.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
       - "lib/intl_chart_publication.py"
@@ -16066,6 +16074,7 @@ jobs:
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -19062,6 +19071,7 @@ jobs:
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
@@ -25412,6 +25422,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -26758,6 +26769,7 @@ jobs:
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
+      - "scripts/check_china_heatmap_freshness.py"
       - "engine/intl_performance_charts.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/path_risk_signals.py"
@@ -34742,6 +34754,7 @@ jobs:
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
+      - "scripts/check_china_heatmap_freshness.py"
       # Native DailyBrief registration/producer import closure (PR #9037).
       - "engine/stock_identity/__init__.py"
       - "engine/stock_identity/authority.py"
