@@ -6329,6 +6329,145 @@ def test_rf9_conflicting_duplicates_name_the_conflict(monkeypatch) -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def _rf9_expected(field_id: str, pairs) -> str:
+    ordered = sorted(pairs, key=lambda item: item[0].occurrence_id)
+    return f"{field_id}: conflicting duplicate facts " + ", ".join(
+        f"{occurrence.occurrence_id}={value}" for occurrence, value in ordered
+    )
+
+
+def _produce_with_ledger(
+    monkeypatch, pack_id: str, occurrences: list[_RawFactOccurrence]
+) -> dict:
+    ledger = _RawFactLedger(tuple(occurrences))
+    report = _ixbrl.ConversionReport(
+        filings=(), ledger_sha256="0" * 64, source_namespace_families=()
+    )
+    monkeypatch.setattr(
+        _ixbrl,
+        "parse_and_convert_golden_packages",
+        lambda packages: (ledger, {}, report),
+    )
+    return produce_pack(pack_id, _pack_input())
+
+
+def test_rf9_axes_consolidated_conflict_names_the_conflict(monkeypatch) -> None:
+    # Fold repair F1: the optional-axes resolver's whole-field conflict branch
+    # discloses the duplicate facts exactly as the plain FactMapping path does.
+    concept = (
+        "us-gaap:AntidilutiveSecuritiesExcludedFromComputationOf"
+        "EarningsPerShareAmount"
+    )
+    first = _probe_occurrence(
+        key="axes-dup-a",
+        concept=concept,
+        value=Decimal("100"),
+        measures=("xbrli:shares",),
+        start=_date(2024, 9, 29),
+        end=POR,
+    )
+    second = _probe_occurrence(
+        key="axes-dup-b",
+        concept=concept,
+        value=Decimal("200"),
+        measures=("xbrli:shares",),
+        start=_date(2024, 9, 29),
+        end=POR,
+    )
+    result = _produce_with_ledger(monkeypatch, "PK02", [first, second])
+    row = _row(result, "antidilutive_securities_excluded")
+    assert row["quality_state"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert row["source_occurrence_ids"] == sorted(
+        {first.occurrence_id, second.occurrence_id}
+    )
+    assert (
+        _rf9_expected(
+            "antidilutive_securities_excluded", ((first, "100"), (second, "200"))
+        )
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_rf9_typed_dimensioned_conflict_names_the_conflict() -> None:
+    # Fold repair F1: two facts on the same typed member with different values.
+    events = [
+        _synthetic_occurrence(
+            "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+            instant=_date(2025, 9, 27),
+            typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2025-09-28")),),
+            value="0.66",
+            decimals="2",
+        ),
+        _synthetic_occurrence(
+            "us-gaap:RevenueRemainingPerformanceObligationPercentage",
+            instant=_date(2025, 9, 27),
+            typed=((RPO_TIMING_AXIS_QNAME, _typed_member("2025-09-28")),),
+            value="0.70",
+            decimals="2",
+        ),
+    ]
+    sink: list[str] = []
+    outcome = pack_base._resolve_typed_dimensioned_fact_mapping(
+        pack_id="PK04",
+        catalogue_field=_catalogue_field("PK04", "rpo_percentage_next_12m"),
+        mapping=pk04_revenue._FIELD_MAPPINGS["rpo_percentage_next_12m"],
+        ledger=RawFactLedger(events=tuple(events)),
+        por=_date(2025, 9, 27),
+        limitations=sink,
+    )
+    assert outcome.row["quality_state"] == "not_evaluable"
+    assert outcome.row["reason"] == "missing_dependency"
+    assert sink == [
+        _rf9_expected(
+            "rpo_percentage_next_12m", ((events[0], "0.66"), (events[1], "0.7"))
+        )
+    ]
+
+
+def test_rf9_calculation_children_conflict_names_the_conflict() -> None:
+    # Fold repair F1: duplicate child facts over the same longest duration.
+    child = (
+        "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+        "FederalStatutoryIncomeTaxRate"
+    )
+    events = [
+        _synthetic_occurrence(
+            child,
+            start=_date(2024, 9, 29),
+            end=_date(2025, 9, 27),
+            value="100000000",
+        ),
+        _synthetic_occurrence(
+            child,
+            start=_date(2024, 9, 29),
+            end=_date(2025, 9, 27),
+            value="200000000",
+        ),
+    ]
+    sink: list[str] = []
+    outcome = pack_base._resolve_calculation_children_mapping(
+        pack_id="PK05",
+        catalogue_field=_catalogue_field("PK05", "etr_reconciliation_line"),
+        mapping=pk05_tax._FIELD_MAPPINGS["etr_reconciliation_line"],
+        ledger=RawFactLedger(events=tuple(events)),
+        por=_date(2025, 9, 27),
+        primary=_CalPackage(_SYNTHETIC_CAL),
+        limitation_sink=sink,
+    )
+    rows = [outcome.row, *outcome.extra_rows]
+    conflict = next(row for row in rows if row["concept"] == child)
+    assert conflict["quality_state"] == "not_evaluable"
+    assert conflict["reason"] == "missing_dependency"
+    assert sink == [
+        _rf9_expected(
+            "etr_reconciliation_line",
+            ((events[0], "100000000"), (events[1], "200000000")),
+        )
+    ]
+
+
 def test_rf10_form_rank_beats_newer_interim_and_overflow_raises() -> None:
     ten_k = load_golden_aapl_package(ROOT, accession=ACCESSION)
     ten_q = load_golden_aapl_package(ROOT, accession="0000320193-26-000020")

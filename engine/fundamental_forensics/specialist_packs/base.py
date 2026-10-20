@@ -793,6 +793,28 @@ def _absence_row(
     return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
 
 
+def _rf9_conflict_limitation(
+    limitations: list[str] | None,
+    field_id: str,
+    occurrences: Sequence[Any],
+) -> None:
+    """R-F9: same unit, different values — name the conflict in limitations.
+
+    Shared by every whole-field conflict branch (plain, axes-consolidated,
+    typed-dimensioned and calculation-children resolvers) so the disclosure
+    line is byte-identical whichever resolver observed the duplicate facts.
+    """
+    if limitations is None:
+        return
+    limitations.append(
+        f"{field_id}: conflicting duplicate facts "
+        + ", ".join(
+            f"{item.occurrence_id}={item.parsed_value}"
+            for item in sorted(occurrences, key=lambda item: item.occurrence_id)
+        )
+    )
+
+
 def _resolve_fact_mapping(
     *,
     pack_id: str,
@@ -1450,6 +1472,7 @@ def _resolve_axes_fact_mapping(
     por: date,
     filed_at: date | None,
     opening_bound: date | None = None,
+    limitations: list[str] | None = None,
 ) -> _FieldOutcome:
     """A.2: consolidated row first, then one row per optional-axis member.
 
@@ -1523,6 +1546,8 @@ def _resolve_axes_fact_mapping(
         if len(distinct) > 1:
             # The FactMapping conflict rule aborts the whole field.
             units = {_unit_measure(item.unit) for item in undimensioned}
+            if len(units) == 1:
+                _rf9_conflict_limitation(limitations, field_id, undimensioned)
             outcome = _absence_row(
                 catalogue_field,
                 por,
@@ -2650,6 +2675,7 @@ def produce_pack_result(
                             if mapping.period_select == "opening_instant"
                             else None
                         ),
+                        limitations=framework_limitations,
                     )
                 else:
                     outcomes[field_id] = _resolve_fact_mapping(
@@ -3367,6 +3393,8 @@ def _resolve_typed_dimensioned_fact_mapping(
     distinct = {str(item.parsed_value) for item in selected}
     if len(distinct) > 1:
         units = {_unit_measure(item.unit) for item in selected}
+        if len(units) == 1:
+            _rf9_conflict_limitation(limitations, field_id, selected)
         conflict = _absence_row(
             catalogue_field,
             por,
@@ -4508,6 +4536,8 @@ def _resolve_calculation_children_mapping(
             reconciled = _precision_consistent_selection(candidates)
             if reconciled is None:
                 units = {_unit_measure(item.unit) for item in candidates}
+                if len(units) == 1:
+                    _rf9_conflict_limitation(limitation_sink, field_id, candidates)
                 conflict = _absence_row(
                     catalogue_field,
                     por,
