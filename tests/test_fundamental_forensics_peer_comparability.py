@@ -692,6 +692,10 @@ def _peer(issuer_id: str, observations: dict, same_end: dict | None = None):
     return bff._AdmittedPeer(
         member={"ticker": issuer_id, "cik10": "0000000001"},
         issuer_id=issuer_id,
+        # admitted-shape invariant (A14): the owner binding agrees with the
+        # contract row; the alignment helper under test never reads them.
+        binding_cik="0000000001",
+        binding_ticker=issuer_id,
         sic="7370",
         issuer_class="industrial",
         observations=observations,
