@@ -2025,7 +2025,7 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK06", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
