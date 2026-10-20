@@ -65,17 +65,21 @@ R_NO_LAWFUL_CONTROL_MAPPING = "no_lawful_control_mapping"
 R_REPORTED_RESULT_NOT_AN_ASSUMPTION = "reported_result_not_an_assumption"
 R_EVENT_NOT_YET_OBSERVABLE = "event_not_yet_observable"
 R_MODEL_VERSION_MISMATCH = "model_version_mismatch"
+R_ISSUER_MISMATCH = "issuer_mismatch"
+R_GUIDANCE_METRIC_UNQUALIFIED = "guidance_metric_unqualified"
 
 _REASON_ORDER = (
     R_READER_UNAVAILABLE,
     R_NO_EVENT,
     R_EVENT_NOT_YET_OBSERVABLE,
     R_MODEL_VERSION_MISMATCH,
+    R_ISSUER_MISMATCH,
     R_ALREADY_IN_REPORTED_BASE,
     R_SUPERSEDED_BY_BASE,
     R_REPORTED_RESULT_NOT_AN_ASSUMPTION,
     R_PAYLOAD_NOT_LICENSED,
     R_NO_SOURCE_REF,
+    R_GUIDANCE_METRIC_UNQUALIFIED,
     R_EVENT_CLASS_UNMAPPED,
     R_NO_LAWFUL_CONTROL_MAPPING,
 )
@@ -476,6 +480,23 @@ def propose_from_chronicle_event(
 
 _GUIDANCE_DIRECTION = {"raise": "up", "cut": "down"}
 
+# A general outlook / EPS / EBITDA increase does not identify sales growth.
+# Accept only a phrase that directly names the model's revenue/sales input.
+# This is still a directional phrase match, never a management-supplied delta.
+_SALES_GUIDANCE_RE = _re.compile(
+    r"^(?P<verb>raising|increasing|lowering|reducing) (?:our )?"
+    r"(?:full[- ]year )?(?:revenue|sales) (?:guidance|outlook)$",
+    _re.IGNORECASE,
+)
+
+
+def _sales_guidance_direction(phrase: str) -> str | None:
+    match = _SALES_GUIDANCE_RE.fullmatch(" ".join(phrase.split()))
+    if match is None:
+        return None
+    return "up" if match.group("verb").lower() in {"raising", "increasing"} else "down"
+
+
 
 def propose_from_guidance_hit(
     hit: object, controls_blob: object, as_of: object = None
@@ -500,6 +521,11 @@ def propose_from_guidance_hit(
         reasons.add(R_EVENT_CLASS_UNMAPPED)
 
     phrase = str(hit.get("phrase") or "").strip()
+    if str(hit.get("ticker") or "").strip().upper() != str(ticker or "").upper():
+        reasons.add(R_ISSUER_MISMATCH)
+    metric_qualified = _sales_guidance_direction(phrase) == direction and direction is not None
+    if not metric_qualified:
+        reasons.add(R_GUIDANCE_METRIC_UNQUALIFIED)
     horizon = "full year" if "full-year" in phrase or "full year" in phrase else "the period management guided"
 
     return _build(
@@ -517,11 +543,16 @@ def propose_from_guidance_hit(
         rationale_en=(
             f"Management told the SEC “{phrase}”. That is a change to the "
             "company's own outlook, so the growth input is the one it argues about."
-            if phrase else
-            "Management filed a change to its own outlook, so the growth input is "
-            "the one it argues about."
+            if metric_qualified else
+            "This filing changes an outlook, but the source phrase does not "
+            "identify a change in sales guidance. EPS, EBITDA and a general "
+            "outlook cannot be substituted for sales growth, so no input moves."
         ),
-        rationale_zh="管理层已向 SEC 提交了自身业绩展望的变动，因此涉及的是增长假设。",
+        rationale_zh=(
+            "文件明确提到销售指引的变动，因此只讨论销售增长假设。"
+            if metric_qualified else
+            "文件提到业绩展望变动，但原文短语没有明确销售指引的变动。每股收益、EBITDA 或一般展望不能替代销售增长，因此不调整任何输入。"
+        ),
         uncertainty=(
             "The filing states a direction, not a size. The figure shown is this "
             "model's own published scenario in that direction — not a number the "

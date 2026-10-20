@@ -130,3 +130,23 @@ The figure shown for a proposal is the model's own adjacent published scenario, 
 the event's direction. A reader could mistake it for a number management gave, so the
 disclaimer naming whose number it is renders alongside every proposed figure and is
 test-pinned, not left to copy drift.
+
+
+## 9. Guidance metric qualification (2026-10-20 correction)
+
+A generic guidance raise/cut is not evidence about sales growth. The native Corteva
+2026-07-30 hit (`0001755672-26-000022:a2q_2026xearningsxnewsxr.htm`) illustrates the
+failure: its SEC document raises non-GAAP Operating EBITDA and EPS guidance. It
+must not move `sales_growth_pct`. The same applies to EPS-only and EBITDA-only hits.
+
+`propose_from_guidance_hit` now requires the issuer to match the selected controls
+and the source phrase to explicitly name a revenue/sales guidance or outlook change,
+with a direction matching the producer classification. Generic, mixed, negated or
+conflicting phrases abstain (`guidance_metric_unqualified`); wrong-issuer input
+abstains (`issuer_mismatch`). No inference is made from a nearby financial metric.
+Existing preset magnitudes, math, rights and point-in-time gates remain unchanged.
+
+This correction does not enable a new issuer or claim a positive native journey.
+The existing coarse SEC search producer still has a documented negation/context
+limitation; an extracted query phrase is not full-document semantic qualification.
+A positive native cohort admission needs source-context qualification before release.
