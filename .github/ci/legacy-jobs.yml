@@ -28607,8 +28607,10 @@ jobs:
       # reporters named) and the zh assess-badge words. All three use inline fixtures and need only
       # pandas/jinja2 from the install line above. Its own step so an SPR regression is named rather
       # than masked by the panel step. Paths widened for the suites, builder, engine and template.
+      # W24-L19 (2026-10-20): the JODI twelve-month pair and the per-row World Bank year suites
+      # join the same step (inline fixtures, pandas/jinja2 only).
       - name: W23-L9 SPR page — JODI world-total vintage + zh assess badges
-        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py -q
+        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py tests/test_spr_jodi_trend.py tests/test_spr_gold_vintage.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -28663,6 +28665,8 @@ jobs:
       - "tests/test_strategic_reserves.py"
       - "tests/test_spr_jodi_vintage.py"
       - "tests/test_spr_assess_badge_zh.py"
+      - "tests/test_spr_jodi_trend.py"
+      - "tests/test_spr_gold_vintage.py"
       - "engine/strategic_reserves.py"
       - "scripts/build_spr.py"
       - "templates/spr.html.j2"
