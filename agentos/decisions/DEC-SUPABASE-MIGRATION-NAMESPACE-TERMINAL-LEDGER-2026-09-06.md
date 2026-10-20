@@ -54,9 +54,9 @@ answer: >
   remain unchanged for all other files.
 
   Scoped amendment (2026-10-20, MedTech R14):
-  Terminal #1084 may apply 0037_medtech_watches.sql at qualification baseline
-  54caaf9a6fd586144c733ca7b68189ffbb0d5d94, application-file SHA-256
-  b5d642dc7da65eceddedd24062d621c7efc481cd62a05e891eaaf6a12ff4a628,
+  Terminal #1084 may apply 0037_medtech_watches.sql at readback qualification baseline
+  9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3, application-file SHA-256
+  c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406,
   without first merging or applying unrelated lower-numbered carriers. This
   exception covers only numeric ordering and the apply/merge sequence for this
   exact MedTech candidate. It takes effect only after independent review and
@@ -140,9 +140,9 @@ working-tree proposal.
 ### Bound SQL and evolving application carrier
 
 This disposition covers only `supabase/migrations/0037_medtech_watches.sql`,
-SHA-256 `b5d642dc7da65eceddedd24062d621c7efc481cd62a05e891eaaf6a12ff4a628`, carried
-by Terminal PR #1084. Its corrected qualification baseline is
-`54caaf9a6fd586144c733ca7b68189ffbb0d5d94`. The carrier may advance through
+SHA-256 `c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406`, carried
+by Terminal PR #1084. Its corrected readback qualification baseline is
+`9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3`. The carrier may advance through
 descendants of that baseline, including current-master reconciliation and
 reviewed application changes, provided the application SQL remains byte-identical
 to the bound hash. Before application, verify that exact identity and accept the
@@ -157,6 +157,29 @@ binding; semantic SQL changes require fresh qualification and independent
 disposition. After application, retain the actual applied hash even if later
 ledger/header metadata changes. This exception becomes effective only after
 independent review and normal acceptance into canonical Macro main.
+
+### Readback repair and executable preservation
+
+The previous full-file hash
+`b5d642dc7da65eceddedd24062d621c7efc481cd62a05e891eaaf6a12ff4a628`
+returned table names and object counts, but omitted ten typed expected entries
+from the incumbent applier's named-object readback. The repaired file retains
+the existing privilege/RLS query and adds actual catalog names, kinds, schemas,
+owning tables and function signatures. This changes executed verification
+behavior, so the binding above points to the new file and its actual commit.
+
+The executable DO span is byte-identical: 7,106 bytes, SHA-256
+`a6845559c01e3e22f141992d1be9f80b6892dbdf582539fb35d456d821273985`.
+The generic applier is unchanged. On an isolated local cluster, its first apply
+and replay both produce complete receipts; the old count-only readback fails
+with ten missing typed entries. A trigger-only removal also proves that the
+applier's bare-name check alone cannot establish typed closure when a same-named
+function survives, including when attached only to an unrelated relation.
+Before declaring production application verified, inspect all twelve typed
+catalog objects and the retained RLS/privilege rows, in addition to the applier's
+status. Local psql transport does not prove production HTTP transport or
+production application. The prior dependency/ownership disposition is preserved;
+the readback and revised exact binding require independent review.
 
 ### Why this candidate can be separated
 
@@ -175,11 +198,14 @@ production application proof.
 
 ### Preserved owners and evidence
 
-- Terminal #1084 is the sole 0037 carrier. Its corrected qualified SQL is
-  [bound at 54caaf9](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54caaf9a6fd586144c733ca7b68189ffbb0d5d94/supabase/migrations/0037_medtech_watches.sql)
-  and its file hash was recomputed in the recovered workspace before this
-  amendment. Existing [SQL qualification](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54caaf9a6fd586144c733ca7b68189ffbb0d5d94/docs/evidence/medtech-r14-identifier-parity-20261020.json)
-  supplies the isolated database evidence.
+- Terminal #1084 is the sole 0037 carrier. Its current full SQL file is
+  [bound at 9d080bd](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3/supabase/migrations/0037_medtech_watches.sql).
+  The [readback qualification](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3/docs/evidence/medtech-r14-applier-readback-qualification-20261020.json)
+  supplies 38 disposable PostgreSQL checks through the incumbent per-file
+  applier, including actual typed catalog closure and discriminating controls.
+  The prior [identifier qualification](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/54caaf9a6fd586144c733ca7b68189ffbb0d5d94/docs/evidence/medtech-r14-identifier-parity-20261020.json)
+  remains historical executable-DDL evidence; it does not bind the repaired
+  full-file hash or establish the former readback's completeness.
 - #804 retains 0029/0030 and its release hold; 0030 is not adopted or applied.
 - #858 retains 0031 and its [October 19 application evidence](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/858#issuecomment-6260582227).
   Applied-but-unmerged is distinct from unapplied. Do not replay it.

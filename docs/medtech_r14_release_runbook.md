@@ -2,10 +2,10 @@
 
 This is the release sequence for Macro PR #9816 and Terminal PR #1084. It records reviewed operations, not permission to bypass an unresolved gate. Original session names: **Upgrade MedTech Design References**, **Recover MedTech Session**.
 
-Reviewed source identities:
-- Macro: `5d1265f063be09e1193c0698a249eaaf5cd000a4`.
-- Terminal: `e143ce5d38fa2c35be5ca4ec55644be9cc635e1a`.
-- Unapplied 0037 SQL: SHA-256 `b5d642dc7da65eceddedd24062d621c7efc481cd62a05e891eaaf6a12ff4a628`.
+Reviewed source baselines (actual release-head checks remain required):
+- Macro backend semantics: `5f2233c41d7f9560eb26afa5597859c11b6c0ac7`.
+- Terminal with repaired migration readback: `9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3`.
+- Unapplied 0037 SQL: SHA-256 `c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406`.
 
 Record the actual canonical squash commits after acceptance. A reviewed branch head need not remain an ancestor after squash; compare the accepted scoped files to the reviewed hashes as well as recording canonical identity. Any later source change requires appropriate qualification. Do not call a published branch deployed.
 
@@ -14,8 +14,8 @@ Record the actual canonical squash commits after acceptance. A reviewed branch h
 Before merging #9816, re-read its exact head, reviews, holds, mergeability, and all binding required checks. The dedicated MedTech job and source review do not replace ordinary CI.
 
 Read back the accepted canonical commit and the two scoped migration decisions:
-- `agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md` (reviewed SHA-256 `4bb6ab8c10821420abcd2bbf968fae6d4c02423ca6d17dd57fac7aac9cde3ef2`).
-- `agentos/decisions/DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md` (reviewed SHA-256 `2d2fb3f32e8a5a1f0c4534318b28342194dcacf7a52731f9d22fd8d3ef19df75`).
+- `agentos/decisions/DEC-SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06.md` (reviewed SHA-256 `1ecb60bc20e0602c672953b2cd129137f6208e8043d618ee3f4fb5fd0db088bb`).
+- `agentos/decisions/DEC-TERMINAL-MIGRATION-PR-LANDS-SOLO-WITH-LEDGER-FOLLOWUP.md` (reviewed SHA-256 `2bab76eeb953f2e16735a106690c3e4c9f2b82f6da82537bd4f4fa24202429f2`).
 
 The scoped 0037 ordering disposition becomes effective only through ordinary canonical acceptance. It permits the bound migration on the qualified descendant; it does not waive Terminal's concluded required CI before production DDL.
 
@@ -86,7 +86,7 @@ This gate may proceed in parallel with Macro deployment, but DDL requires the ac
 3. Preserve 0036's existing application evidence from #1044. It was applied on 2026-10-19; never replay it.
 4. Confirm a clean source checkout and the exact bound SQL hash. Run the repository's namespace checker and its PR-mode tests.
 5. Perform a fresh read-only production catalog preflight for the bound 0037 objects and dependencies. The earlier read found no MedTech tables/functions/constraints; recheck immediately before application.
-6. Run the reviewed per-file applier's dry run. It must recognize one atomic DO statement and the expected object/readback closure.
+6. Run the reviewed per-file applier's dry run. It must recognize one atomic DO statement, twelve expected typed objects and both readback queries without excluded SQL. Dry-run parsing does not establish actual catalog closure; the local 38-check applier qualification and production post-readback are separate evidence.
 
 The complete October 20 namespace census covered 158 open PRs and 4,463 changed-file entries. It is evidence of that census time, not a permanent namespace lease. The carrier also reconciles inherited 0036 ownership truth; do not assert that its entire ledger diff against master contains only 0037.
 
@@ -105,7 +105,7 @@ python3 scripts/supabase_apply.py supabase/migrations/0037_medtech_watches.sql -
 
 The tool sends one named file statement at a time. This particular file encloses its DDL in one DO statement; do not generalize that atomicity to multi-statement migrations. The token travels through curl's stdin configuration, never its arguments.
 
-Inspect the exact pre-apply and post-apply catalog receipt. Post the receipt on #1084 and read it back **before** updating the 0037 applied flags and README application row. Retain the original applied SQL SHA and source head. Keep its PR state open until actual merge. Do not apply the entire migration directory or use a different runner.
+Inspect the exact pre-apply and post-apply catalog receipt. Require the twelve expected objects with their correct kinds, public schema, owning tables and function signatures, plus forced RLS, expected policy/guard counts and the intended privilege matrix. The incumbent matcher compares bare names: its `applied` status alone cannot distinguish a trigger from its same-named function. The new local qualification includes that negative control and preserves the original 7,106-byte executable DO span (SHA-256 `a6845559c01e3e22f141992d1be9f80b6892dbdf582539fb35d456d821273985`). Post the receipt on #1084 and read it back **before** updating the 0037 applied flags and README application row. Retain the original applied SQL SHA and source head. Keep its PR state open until actual merge. Do not apply the entire migration directory or use a different runner.
 
 A 401 requires human rotation of the existing primary Management PAT; no alternate credential or carrier replay. For any unknown or failed effect, read the existing receipt and catalog to reconcile that same attempt before considering another write. A missing receipt after interruption or a receipt-write failure does not establish that no DDL occurred; reconcile that same attempt using its available output and current catalog.
 

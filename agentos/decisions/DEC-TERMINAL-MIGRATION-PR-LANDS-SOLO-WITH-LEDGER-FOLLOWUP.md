@@ -93,8 +93,8 @@ Taken by the program CEO session (Fable, Chairman-assigned 2026-10-11, Terminal 
 The accepted MedTech amendment in
 DEC:SUPABASE-MIGRATION-NAMESPACE-TERMINAL-LEDGER-2026-09-06 binds Terminal
 #1084 and `0037_medtech_watches.sql` from
-`54caaf9a6fd586144c733ca7b68189ffbb0d5d94`, application-file SHA-256
-`b5d642dc7da65eceddedd24062d621c7efc481cd62a05e891eaaf6a12ff4a628`.
+`9d080bdca3bcce8ec10c1fce4e1ca30386d6d3c3`, application-file SHA-256
+`c2e4831534fe2af7f835b19210020544b56b01866109a06b965ea656d87b8406`.
 Until independent review and normal acceptance of the amendment into Macro
 main, this section is a proposal, not an effective ordering exception.
 
@@ -112,7 +112,9 @@ reservation reconciliation, reviewed-applier dry run, compatible current catalog
 preflight, a clean reconciled carrier and existing application admission:
 
 1. Apply only the bound 0037 file with the existing reviewed per-file applier.
-   Retain the exact pre/post catalog receipt. A failed or ambiguous response
+   Retain the exact pre/post catalog receipt and verify all twelve typed catalog
+   objects plus the RLS/privilege rows, as specified in the namespace amendment.
+   A failed or ambiguous response
    stops this effect for same-carrier reconciliation.
 2. Publish and read back that receipt before updating #1084's truthful
    application flags and README application row. Keep `pr_state: open`.
