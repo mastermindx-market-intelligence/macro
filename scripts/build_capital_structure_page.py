@@ -395,10 +395,13 @@ def render(root: Path) -> Path:
         payload = _policy_projection(today=day)
     finally:
         _pc.compute_policy_calendar = _orig_cal
+    from engine.ma_agreement_context import featured_agreement
+    premium = _featured_premium(root)
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
-        premium=_featured_premium(root),
+        premium=premium,
+        agreement=featured_agreement(root, premium or {}),
         covenant_headroom=_covenant_headroom(root),
         policy_watch=watch,
         policy_projection=payload,

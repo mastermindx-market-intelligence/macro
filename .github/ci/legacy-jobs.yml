@@ -9936,7 +9936,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -10007,6 +10007,7 @@ jobs:
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
+          tests/test_ma_agreement_context.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -16705,6 +16706,7 @@ jobs:
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
+      - engine/ma_agreement_context.py
       - engine/spine.py
       - engine/spotlight.py
       - engine/spvector_overlay.py
@@ -19342,6 +19344,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_dossier.py"
@@ -25828,6 +25831,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/stock_desk.py"
@@ -27206,6 +27210,7 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      - "engine/ma_agreement_context.py"
       - "engine/spine.py"
       - "engine/spotlight.py"
       - "engine/spvector_overlay.py"

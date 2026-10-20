@@ -419,3 +419,9 @@ body.cs-page.cs-modal-open { overflow: hidden; }
   .cs-evidence-drawer { transition: none; }
   .cs-loading-dot { animation: none; }
 }
+
+/* Agreement facts share the desk's dark raised panel and light research card. */
+.cs-ma-agreement .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; font-size: 13px; }
+.cs-ma-agreement details { margin-top: var(--sp-3,12px); padding-top: var(--sp-2,8px); border-top: 1px solid var(--cs-line); }
+.cs-ma-agreement summary { min-height: 36px; cursor: pointer; }
+.cs-ma-agreement p { line-height: 1.6; overflow-wrap: anywhere; }
