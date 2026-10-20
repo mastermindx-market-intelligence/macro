@@ -10682,6 +10682,7 @@ jobs:
     scope: exclusive
     paths:
       - "engine/__init__.py"
+      - "engine/china_participation.py"
       - "engine/i18n.py"
       - "lib/__init__.py"
       - "lib/config.py"
