@@ -37428,6 +37428,7 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
       - "tests/test_commodity_supply_context.py"
+      - "tests/test_commodity_workspace_contracts.js"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -37435,7 +37436,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
       - name: commodity research projection and physical-balance contracts
         run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py -q -p no:cacheprovider
+      - name: workspace state, import and company-return contracts
+        run: node tests/test_commodity_workspace_contracts.js

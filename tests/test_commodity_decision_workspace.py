@@ -114,10 +114,52 @@ class WorkspaceBoundaries(unittest.TestCase):
               "method": {"estimator": "pearson_return_correlation", "sampling": "aligned_daily_returns",
                          "pair_orientation": "usd_strength_vs_asset", "window_fast": 20, "window_slow": 60, "revision": "fixture-v1"}}}
         self.assertEqual(build_workspace(snapshot(), fx=fx)["fx"]["rows"], [])
+        self.assertIsNone(build_workspace(snapshot(), fx=fx)["fx"]["direction"])
         fx["transmission"]["as_of"] = "2026-10-16"
         self.assertEqual(len(build_workspace(snapshot(), fx=fx)["fx"]["rows"]), 1)
         fx["transmission"]["method"].pop("sampling")
         self.assertEqual(build_workspace(snapshot(), fx=fx)["fx"]["rows"], [])
+        self.assertEqual(build_workspace(snapshot(), fx=fx)["fx"]["direction"], "strengthening")
+
+    def test_fx_direction_respects_its_optional_observation_clock(self):
+        from jinja2 import Environment, FileSystemLoader, StrictUndefined
+        root = Path(__file__).resolve().parents[1]
+        env = Environment(loader=FileSystemLoader(root / "templates"), autoescape=True, undefined=StrictUndefined)
+        template = env.from_string('{% macro t(en,zh) %}{{ en }}{% endmacro %}{% include "_commodity_decision_workspace.html.j2" %}')
+        absent = object()
+        for nested, parent, expected, state in [
+            (absent, "2026-10-16", "strengthening", "available"),
+            ("2026-10-16", "2026-10-16", "strengthening", "available"),
+            ("2026-10-15", "2026-10-16", "strengthening", "earlier_context"),
+            ("2026-10-18", "2026-10-16", None, "date_unqualified"),
+            ("2026-10-16", "2026-10-15", None, "date_unqualified"),
+            ("2026-10-16", "2026-10-17", "strengthening", "newer_than_snapshot"),
+            ("invalid", "2026-10-16", None, "date_unqualified"),
+            (None, "2026-10-16", None, "date_unqualified"),
+            ("", "2026-10-16", None, "date_unqualified"),
+            ("2026-10-16", None, None, "date_unqualified"),
+        ]:
+            with self.subTest(nested=nested, parent=parent):
+                tx = {"usd_dir": "strengthening"}
+                if nested is not absent:
+                    tx["as_of"] = nested
+                w = build_workspace(snapshot(), fx={"asof": parent, "transmission": tx})
+                self.assertEqual(w["fx"]["direction"], expected)
+                self.assertEqual(w["fx"]["direction_state"], state)
+                self.assertEqual(w["fx"]["rows"], [])
+                if nested is absent:
+                    self.assertIsNone(w["fx"]["direction_as_of"])
+                    self.assertEqual(w["fx"]["direction_clock"], "publisher_date_only")
+                html = template.render(commodity_workspace=w)
+                dollar = html.split("<h3>The dollar</h3>", 1)[1].split('<a href="forex.html">', 1)[0]
+                if state == "available":
+                    self.assertIn("<strong>Strengthening</strong>", dollar)
+                else:
+                    self.assertNotIn("<strong>Strengthening</strong>", dollar)
+                    self.assertIn("not qualified as same-date evidence", dollar)
+                if nested == "2026-10-15":
+                    self.assertIn("Dollar observation", dollar)
+                    self.assertIn("2026-10-15", dollar)
 
     def test_no_mutation_or_malformed_receipt_crash(self):
         s = snapshot(); c = chain(); c["nodes"][0]["receipts"] = None

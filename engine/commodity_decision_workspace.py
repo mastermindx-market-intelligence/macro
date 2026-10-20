@@ -16,7 +16,7 @@ from typing import Any
 
 SCHEMA = "mmx.commodities.workspace.v1"
 CONDITION_SCHEMA = "mmx.commodities.research_condition.v1"
-PROJECTION_REVISION = 5
+PROJECTION_REVISION = 6
 HYPOTHESIS_REVISION = "commodity-mechanisms-20261018-r3"
 
 LABELS = {
@@ -601,6 +601,17 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
     fx_tx = _dict(fx.get("transmission"))
     metric_date = iso_date(fx_tx.get("as_of"))
     method = _dict(fx_tx.get("method"))
+    direction = fx_tx.get("usd_dir") if fx_tx.get("usd_dir") in ("strengthening", "weakening", "flat") else None
+    direction_state = sources["fx"]["state"]
+    # The current owner omits a per-direction clock. Preserve that parent-dated
+    # description, but never replace an explicitly supplied invalid/future clock.
+    direction_clock = "transmission_observation" if "as_of" in fx_tx else "publisher_date_only"
+    if "as_of" in fx_tx:
+        if (metric_date is None or not sources["fx"]["as_of"] or not cutoff
+                or metric_date > sources["fx"]["as_of"] or metric_date > cutoff):
+            direction, direction_state = None, "date_unqualified"
+        elif direction_state == "available" and metric_date < cutoff:
+            direction_state = "earlier_context"
     # Do not infer estimator windows, pair orientation or coverage from field names.
     fx_statistics_qualified = (sources["fx"]["state"] == "available" and metric_date is not None
         and metric_date <= sources["fx"]["as_of"] and metric_date <= cutoff
@@ -629,7 +640,8 @@ def build_workspace(snapshot: Any, *, transmission: Any = None, fx: Any = None,
             "breadth": {"n": n_members if breadth_valid else None, "up": n_up if breadth_valid else None,
                         "state": "available" if breadth_valid else "inconsistent_or_missing"},
             "index_change_1m_pct": number(index.get("chg_1m_pct")), "sources": sources,
-            "rates": rates, "fx": {"direction": fx_tx.get("usd_dir") if fx_tx.get("usd_dir") in ("strengthening", "weakening", "flat") else None, "rows": fx_rows,
+            "rates": rates, "fx": {"direction": direction, "direction_state": direction_state,
+                                  "direction_as_of": metric_date, "direction_clock": direction_clock, "rows": fx_rows,
                                   "statistics_state": "available" if fx_rows else "date_or_method_unqualified"},
             "chains": chains, "ratios": ratios, "physical": physical, "gold_physical": gold_physical, "hypotheses": {k: [{**h, "label": bil(*h["label"]),
                 "mechanism": bil(*h["mechanism"]), "confirm": bil(*h["confirm"]),

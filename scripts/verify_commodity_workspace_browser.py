@@ -9,10 +9,11 @@ import argparse
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import mimetypes
 from pathlib import Path
 import tempfile
 from threading import Thread
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -158,6 +159,38 @@ def verify(receipt: Path) -> None:
             checks.append("real download preserves exact condition, hypothesis and inactive monitoring")
             result["research_as_of"] = draft["as_of"]
             result["workspace_fingerprint"] = draft["snapshot_fingerprint"]
+            # A separate browser context has no page-local draft map or prior storage.
+            fresh_context = browser.new_context(viewport={"width": 1440, "height": 900}, accept_downloads=True)
+            fresh_context.add_init_script("localStorage.setItem('theme','dark');localStorage.setItem('lang','en');")
+            fresh = fresh_context.new_page()
+            fresh.on("pageerror", lambda error: errors.append(str(error)))
+            fresh.goto(f"http://127.0.0.1:{server.server_address[1]}/commodities.html", wait_until="load")
+            fresh.locator("#cw-tab-research").click()
+            fresh_form = fresh.locator("#cw-research-form")
+            assert fresh_form.locator('[name="threshold"]').input_value() == ""
+            assert fresh_form.locator('[name="window_sessions"]').input_value() == ""
+            fresh.locator("#cw-import-file").set_input_files(downloaded)
+            fresh.wait_for_function("document.querySelector('#cw-export-status').textContent.includes('Draft reopened')")
+            for field in ("operator", "threshold", "expires_on", "window_sessions"):
+                assert fresh_form.locator(f'[name="{field}"]').input_value() == str(draft[field])
+            assert "Demand expansion" in fresh.locator("#cw-research-hypothesis").inner_text()
+            with fresh.expect_download() as reopened_info:
+                fresh_form.locator('button[type="submit"]').click()
+            reopened = Path(folder) / "condition-fresh-document.json"
+            reopened_info.value.save_as(reopened)
+            assert json.loads(reopened.read_text()) == draft
+            result["fresh_document_import"] = {"separate_browser_context": True, "exact_export_round_trip": True,
+                                               "threshold": 0, "window_sessions": 20, "monitoring_active": False}
+            checks.append("exported research restores in a fresh document with exact condition and complete evidence")
+            expired = dict(draft, expires_on="2026-10-17")
+            expired_file = Path(folder) / "condition-expired.json"
+            expired_file.write_text(json.dumps(expired))
+            fresh.locator("#cw-import-file").set_input_files(expired_file)
+            fresh.wait_for_function("document.querySelector('#cw-export-status').textContent.includes('expiry date has passed')")
+            assert "no monitoring is active" in fresh.locator("#cw-export-status").inner_text()
+            assert fresh_form.locator('[name="expires_on"]').input_value() == "2026-10-17"
+            checks.append("an expired historical draft reopens with an explicit inactive expiry disclosure")
+            fresh_context.close()
             page.locator("#cw-tab-relationships").click()
             page.locator("[data-cw-relationship-asset]").select_option("gold")
             assert "Gold" in page.locator("#cw-investigation-title").inner_text()
@@ -219,6 +252,54 @@ def verify(receipt: Path) -> None:
             assert not errors, errors
             checks.append("no uncaught browser errors")
             context.close()
+
+            # A separate intercepted origin tests the existing cross-product URL contract.
+            # It serves local bytes and a destination stub; it is not a Terminal login or deployment proof.
+            fixture_context = browser.new_context(viewport={"width": 1440, "height": 900})
+            fixture_context.add_init_script("localStorage.setItem('theme','dark');localStorage.setItem('lang','en');")
+            site_root = (ROOT / "site").resolve()
+            def serve_fixture(route):
+                target = urlsplit(route.request.url)
+                if target.scheme == "https" and target.netloc == "www.mastermind-x.com":
+                    asset = (site_root / unquote(target.path).lstrip("/")).resolve()
+                    if asset.is_relative_to(site_root) and asset.is_file():
+                        route.fulfill(path=str(asset), content_type=mimetypes.guess_type(str(asset))[0] or "application/octet-stream")
+                        return
+                elif target.scheme == "https" and target.netloc == "app.mastermind-x.com" and target.path == "/analysis":
+                    route.fulfill(status=200, content_type="text/html", body="<title>Company destination fixture</title>")
+                    return
+                route.abort()
+            fixture_context.route("**/*", serve_fixture)
+            fixture = fixture_context.new_page()
+            fixture.on("pageerror", lambda error: errors.append(str(error)))
+            initial = "https://www.mastermind-x.com/commodities.html#cw/relationships/oil?window=60&compare=oil%2Cgold&hypothesis=supply"
+            fixture.goto(initial, wait_until="load")
+            fixture.locator("#cw-panel-relationships").wait_for(state="visible")
+            company = fixture.locator('[data-cw-chain-asset="oil"] [data-cw-company-href]').first
+            original = parse_qs(urlsplit(company.get_attribute("data-cw-company-href")).query)
+            href = company.get_attribute("href")
+            params = parse_qs(urlsplit(href).query)
+            assert set(params) == set(original) | {"from", "ret"}, params
+            assert all(params[key] == value for key, value in original.items())
+            assert params["from"] == ["macro"] and params["ret"] == [initial]
+            company.locator("xpath=ancestor::details[1]").locator(":scope > summary").click()
+            with fixture.expect_popup() as opened:
+                company.click()
+            destination = opened.value
+            destination.wait_for_load_state("load")
+            assert destination.url == href
+            checks.append("first-party company link opens with unchanged identity fields and exact Macro return")
+            destination.goto(params["ret"][0], wait_until="load")
+            destination.locator("#cw-panel-relationships").wait_for(state="visible")
+            assert "Supply disruption" in destination.locator("#cw-investigation-title").inner_text()
+            assert destination.locator('[data-cw-hypothesis="oil"] input[value="supply"]').is_checked()
+            assert destination.locator("[data-cw-window]").input_value() == "60"
+            assert destination.locator("[data-cw-compare]:checked").count() == 2
+            checks.append("decoded company return restores commodity, tab, window, comparisons and hypothesis")
+            result["company_return_transport"] = {"scope": "intercepted first-party-origin fixture; authenticated Terminal unverified",
+                                                  "requested_href": href, "return_url": params["ret"][0], "restored": True}
+            assert not errors, errors
+            fixture_context.close()
             browser.close()
         result["passed"] = True
     except Exception as exc:

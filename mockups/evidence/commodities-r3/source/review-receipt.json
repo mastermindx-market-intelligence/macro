@@ -2,9 +2,9 @@
   "schema": "mmx.commodities.review_receipt.v1",
   "accepted_base": "53c380daf74247672d62cca270743555d52fd409",
   "research_as_of": "2026-10-16",
-  "workspace_fingerprint": "622ea8ef4536469d71f95e580287d20b2757a7e71b9cfe574a39dbdf7a3d36f5",
+  "workspace_fingerprint": "7f3e314860a53872b954dacd11a45e913026d679df448773fc8adeb353b3c186",
   "accepted_page_sha256": "f96f6b8042250481831c22a254649a1de44612555e1786d7b8659123a3a5dbe9",
-  "review_page_sha256": "48993a26bfbee68433cf3d7756adfbf982abde92060d3414a7c85b19fdbadb68",
+  "review_page_sha256": "ad92f116804650b3cdb518c53f2decce5e8d5622d941da1c413e5f123e7b0b42",
   "assets": 17,
   "chains": 3,
   "source_files": {

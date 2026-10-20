@@ -6,9 +6,10 @@
   const CONDITION = "mmx.commodities.research_condition.v1";
   const isNumber = value => typeof value === "number" && Number.isFinite(value);
   const clone = value => JSON.parse(JSON.stringify(value));
-  function stable(value) {
-    if (Array.isArray(value)) return value.map(stable);
-    if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(k => [k,stable(value[k])]));
+  function stable(value, depth = 0) {
+    if (depth > 64) throw new RangeError("Research draft nesting exceeds its limit");
+    if (Array.isArray(value)) return value.map(item => stable(item, depth + 1));
+    if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(k => [k,stable(value[k], depth + 1)]));
     return value;
   }
   function validDate(value) {
@@ -44,6 +45,24 @@
     p.set("window", state.window); p.set("compare", state.compare.join(",")); p.set("hypothesis", state.hypothesis);
     return "#cw/" + state.tab + "/" + state.asset + "?" + p.toString();
   }
+  function companyReturnHref(href, state, pageHref) {
+    try {
+      const target = new URL(href), page = new URL(pageHref);
+      if (target.origin !== "https://app.mastermind-x.com" || target.pathname !== "/analysis"
+          || target.username || target.password || target.hash
+          || target.searchParams.get("page") !== "intelligence") return href;
+      const origins = ["https://www.mastermind-x.com", "https://mastermind-x.com", "https://beta.mastermind-x.com"];
+      if (!origins.includes(page.origin) || page.pathname !== "/commodities.html"
+          || page.username || page.password) return href;
+      // Carry only the owned investigation state; no page query or supplied return target.
+      // render() precedes pushState(), so derive the new hash from state itself.
+      page.search = "";
+      page.hash = stateHash(state);
+      target.searchParams.set("from", "macro");
+      target.searchParams.set("ret", page.href);
+      return target.href;
+    } catch (_) { return href; }
+  }
   function conditionSemantics(data, asset, window, hypothesis) {
     const selected = data.assets.find(a => a.id === asset) || null;
     const explanation = (data.hypotheses[asset] || []).find(h => h.id === hypothesis) || null;
@@ -60,23 +79,27 @@
         chains:clone(data.chains.filter(c => (ids[asset] || []).includes(c.id))),rates:clone(data.rates),fx:clone(data.fx),ratios:clone(data.ratios || []),
         source_receipts:clone(data.sources),live:false}};
   }
-  function validateDraft(draft, data, imported) {
+  function checkDraft(draft, data, imported) {
     const d = draft && typeof draft === "object" && !Array.isArray(draft) ? draft : {};
     const errors = [];
     if (d.schema !== CONDITION) errors.push("schema");
-    if (!data.assets.some(a => a.id === d.asset)) errors.push("asset");
+    const assetKnown = data.assets.some(a => a.id === d.asset);
+    if (!assetKnown) errors.push("asset");
     if (d.metric !== "return_pct" || d.unit !== "%") errors.push("metric_unit");
     if (!Number.isInteger(d.window_sessions) || ![5, 20, 60, 252].includes(d.window_sessions)) errors.push("window_sessions");
     if (!["gt", "gte", "lt", "lte"].includes(d.operator)) errors.push("operator");
     if (!isNumber(d.threshold)) errors.push("threshold");
     if (!validDate(d.expires_on) || !validDate(data.as_of) || d.expires_on < data.as_of) errors.push("expires_on");
     if (d.snapshot_fingerprint !== data.fingerprint) errors.push("snapshot_fingerprint");
-    if (!new Set((data.hypotheses[d.asset] || []).map(h => h.id).concat("unresolved")).has(d.hypothesis)) errors.push("hypothesis");
+    const choices = assetKnown && Array.isArray(data.hypotheses[d.asset]) ? data.hypotheses[d.asset] : [];
+    if (!new Set(choices.map(h => h.id).concat("unresolved")).has(d.hypothesis)) errors.push("hypothesis");
     if (errors.length) return {value: null, errors: errors};
     const semantics = conditionSemantics(data,d.asset,d.window_sessions,d.hypothesis);
-    Object.entries(semantics).forEach(([key,expected]) => {
-      if ((imported && !Object.prototype.hasOwnProperty.call(d,key)) || (Object.prototype.hasOwnProperty.call(d,key) && JSON.stringify(stable(d[key])) !== JSON.stringify(stable(expected)))) errors.push(key);
-    });
+    try {
+      Object.entries(semantics).forEach(([key,expected]) => {
+        if ((imported && !Object.prototype.hasOwnProperty.call(d,key)) || (Object.prototype.hasOwnProperty.call(d,key) && JSON.stringify(stable(d[key])) !== JSON.stringify(stable(expected)))) errors.push(key);
+      });
+    } catch (_) { errors.push("semantic_structure"); }
     if (errors.length) return {value:null,errors:errors};
     return {errors: [], value: {
       schema: CONDITION, asset: d.asset, metric: d.metric, unit: "%", window_sessions: d.window_sessions,
@@ -84,7 +107,7 @@
       snapshot_fingerprint: data.fingerprint, ...semantics
     }};
   }
-  const api = {normalizeState, readState, stateHash, validateDraft, validDate, conditionSemantics};
+  const api = {normalizeState, readState, stateHash, companyReturnHref, checkDraft, validDate, conditionSemantics};
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   if (typeof document === "undefined") return;
   const root = document.getElementById("commodity-workspace");
@@ -226,6 +249,9 @@
       if (hypothesisLabel) hypothesisLabel.textContent = chosen ? chosen.label[lang()] : text("Cause unresolved", "原因未明");
     }
     all("option[data-cw-en]").forEach(el => { el.textContent = el.dataset[lang() === "zh" ? "cwZh" : "cwEn"]; });
+    all("a[data-cw-company-href]").forEach(link => {
+      link.href = companyReturnHref(link.dataset.cwCompanyHref, state, window.location.href);
+    });
   }
   function update(patch, push) {
     captureForm();
@@ -319,7 +345,7 @@
         threshold:form.elements.threshold.value.trim() === "" ? null : Number(form.elements.threshold.value),
         expires_on:form.elements.expires_on.value, hypothesis:state.hypothesis, snapshot_fingerprint:data.fingerprint
       };
-      const checked = validateDraft(raw, data);
+      const checked = checkDraft(raw, data);
       if (checked.errors.length) { status.textContent = text("Check the metric, threshold, expiry and snapshot before exporting.", "导出前请核对指标、阈值、有效期及快照。"); return; }
       const blob = new Blob([JSON.stringify(checked.value,null,2) + "\n"], {type:"application/json"});
       const url = URL.createObjectURL(blob);
@@ -330,13 +356,22 @@
       captureForm();
       status.textContent=text("Research condition exported. No monitoring or alert has been activated.", "研究条件已导出，未启用监测或提醒。");
     });
+    let importGeneration = 0;
     root.querySelector("#cw-import-file").addEventListener("change", async event => {
+      const generation = ++importGeneration;
       const file = event.target.files[0];
       if (!file) return;
       if (file.size > 131072) { status.textContent=text("The draft is too large. Use an exported research-condition file.", "草稿文件过大，请选择导出的研究条件文件。"); event.target.value=""; return; }
-      let draft;
-      try { draft=JSON.parse(await file.text()); } catch (_) { status.textContent=text("This file is not a valid JSON research draft.", "该文件不是有效的JSON研究草稿。"); event.target.value=""; return; }
-      const checked=validateDraft(draft,data,true);
+      let checked;
+      try {
+        const contents = await file.text();
+        if (generation !== importGeneration) return;
+        checked = checkDraft(JSON.parse(contents),data,true);
+      } catch (_) {
+        if (generation !== importGeneration) return;
+        status.textContent=text("This research draft could not be read or checked. The current context is unchanged.", "无法读取或校验此研究草稿，当前背景未改变。");
+        event.target.value=""; return;
+      }
       if (checked.errors.length) {
         status.textContent=checked.errors.includes("snapshot_fingerprint") ? text("This draft belongs to a different research snapshot. It has not been rebound to current evidence.", "此草稿属于不同的研究快照，未将其重新绑定至当前证据。") : text("The draft failed validation; the current research context is unchanged.", "草稿未通过校验，当前研究背景未改变。");
         event.target.value=""; return;

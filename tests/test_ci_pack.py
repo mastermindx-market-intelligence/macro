@@ -4348,6 +4348,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.

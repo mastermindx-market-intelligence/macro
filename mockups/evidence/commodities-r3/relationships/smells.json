@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-10-20T13:14:17Z",
+  "generated_at": "2026-10-20T14:38:53Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 25,
-        "payload_bytes_total": 167783,
+        "payload_bytes_total": 516911,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 21,
@@ -59,7 +59,7 @@
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 637
+        "visible_word_count": 638
       },
       "page_id": "commodities.html#cw_relationships_oil?hypothesis=supply",
       "route": "/commodities.html#cw/relationships/oil?hypothesis=supply"
@@ -100,7 +100,7 @@
           "viewport": "desktop"
         },
         "panel_count": 21,
-        "payload_bytes_total": 423349,
+        "payload_bytes_total": 430268,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 21,
@@ -109,7 +109,7 @@
         "source_present": true,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 464
+        "visible_word_count": 465
       },
       "page_id": "commodities.html#cw_relationships_gold?hypothesis=rates",
       "route": "/commodities.html#cw/relationships/gold?hypothesis=rates"
@@ -120,7 +120,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-intelligence-r3-20261018a",
-    "resolved_sha_or_none": "0003a455e471b8e559d8789615ec08103843c9c3",
+    "resolved_sha_or_none": "8d7212be4264ddccf78d5d5fa3f087c12218791b",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-intelligence-r3-20261018a (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind 2/agent-workspaces/macro/web/commodities-intelligence-r3-20261018a/site"
   },
