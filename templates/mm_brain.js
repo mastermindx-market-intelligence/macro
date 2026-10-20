@@ -38,7 +38,7 @@
   /* Optional native presentation assets come from THIS widget's origin, including
      when Terminal embeds it. No model URL, CDN or executable markup is accepted. */
   var visualAssetBase = new URL('./', (DOC.currentScript && DOC.currentScript.src) || DOC.baseURI).href;
-  var visualScriptVersion = '1d23a300';
+  var visualScriptVersion = '2e3ce3a5';
   var visualStyleVersion = '1eb2aabf';
   var visualAssetPromise = null;
   function loadVisualAssets() {
