@@ -407,3 +407,49 @@ Draft PR #9835 remains held for protected-base integration, review and hosted
 checks on that source, publication of the closed Terminal consumer, and
 installed-owner/live proof. The original admission clocks, evidence and scope
 remain authoritative, and predictive probabilities remain withheld.
+
+
+### 2026-10-20 recovery: integration with main ef9bcbb6
+
+The original SPY branch integrated exact main
+`ef9bcbb6aec7defb5044a1110e442c91f0e4408f`, which contains the stock-owner merge.
+The materializer add/add was resolved only after comparing the incoming
+`b2815a4700583ef697e9190ac08a90eedd96cf9c` stock-owner blob with the reviewed SPY
+extension. The resolved materializer is unchanged from the reviewed SPY source
+(SHA-256 `7cc89bcf499e69fff9eaa88783b4f2a4593d373997ad7e3219e48f2fd5bb050b`).
+The shared helper and its precision fix are unchanged.
+
+The CI conflict preserved the incoming `jsonschema` dependency and all five
+new SEC identity suites as their original separate invocation. It also preserved
+the six explicit Returns/identity suites in the consolidated invocation. Every
+named main test remains registered, all C04 paths from both parents survive,
+and the two new SPY suites remain registered. The resolved manifest SHA-256 is
+`1d12bd060f9807a1176ef567ffa35c23357567113755b029c2c34d5525db23d8`.
+The registry merged to the exact incoming main blob
+`2c17ab49dc1c972bb2fa8e9b80b6ae5b77db8159`; the stock golden and emitter tests
+retain blobs `f82b11c1ef5fa49bc4d16a2e81a3515f20d7c3d1` and
+`de463ff90a0cd033805f10fa562b203ef84995e5`.
+
+Actual integrated-source execution in the original workspace:
+
+- Incoming SEC identity group: **140 tests and 14 subtests passed**, 10.24 seconds.
+- Consolidated C04 group: **255 passed, one existing strict expected failure**,
+  8.13 seconds. The additional six passes are incoming main coverage.
+- Shared SPY catalog, direct registrant and prospective-reference group:
+  **406 passed**, 44.47 seconds.
+- The two import-closure/packing tests: **2 passed**, 201.92 seconds.
+- Candidate diff/whitespace check against incoming main: exit 0. A first check
+  against the old branch parent also encountered existing incoming-main
+  whitespace in unrelated generated/site files; those bytes were preserved.
+
+The four named broader security-master assertions were rerun on this integrated
+source and still failed (21.65 seconds). The findings are a retained historical
+SPY refusal being interpreted as a permanent current-identity prohibition, a
+`private:company-intelligence/...` storage address being treated as a checkout
+path, and the same unresolved count of 17 exceeding two existing ceilings of 16.
+No gate was waived, no ceiling raised, and no reference artifact was rewritten
+to force a pass. Corrective owner evidence and review remain required.
+
+This integration preserves real merge ancestry. Hosted CI and independent
+review must evaluate the resulting published source before the draft release
+hold can be reconsidered; these local results are not production proof.

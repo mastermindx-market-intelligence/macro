@@ -1,0 +1,127 @@
+# GLT T09: preregistered rolling-origin component-forecast study (measurement-only).
+#
+# Frozen BEFORE any fit by the Fable seat's O3 rulings (GLT W3 ORCH-I packet, SEAT
+# DECISIONS 1-7). No lane, run or reviewer may add, drop or re-tune a target, horizon,
+# candidate, baseline, window, margin or calendar indicator. Windows are copied verbatim
+# from the T14 preregistration card (Mastermind research/liquidity_transmission/
+# glt_preregistration_card.v1.json @ master 2d7021dd, card_hash below). T09 spends NO
+# reveal look: no origin is >= reserved_start and no outcome matures after dev_end.
+#
+# vintage_cohort 1: every series is the latest-vintage canonical store history. No
+# ALFRED / first-release vintage capture exists, so a later-revised value can stand in
+# for the first-published one; the revision risk is undocumented and stated, not modelled.
+schema: glt_t09_component_forecast_config_v1
+task_id: GLT-T09
+authority: measurement_only
+validated: false
+estimate_type_for_issued: statistical_forecast
+vintage_cohort: 1
+revision_risk: "undocumented; cohort 1"
+
+preregistration_card_ref:
+  repo: mastermind
+  path: research/liquidity_transmission/glt_preregistration_card.v1.json
+  master_sha: 2d7021dd8ea5da27eaf11fc8b7249d53aac9f041
+  card_hash: da060bf47e8eafc7e94d0cadbb4135c9207a069aad9eef3539ea9d62911d6aee
+  horizons_note: "The card's 5/20/60-session horizons are asset-response horizons; component horizons are T08's declared 4/8/13 weeks."
+
+family:
+  name: glt_t09_component_forecast_v1
+  primary_target: reserves_wresbal_bn
+  targets: [reserves_wresbal_bn, tga_bn, rrp_bn]
+  horizons_weeks: [4, 8, 13]
+  # Protocol section 6 baseline ladder, in ladder order (ties resolve to the earlier name).
+  baselines: [persistence, announced_only, seasonal_calendar, training_only_ar]
+  training_only_ar_max_p: 4
+  # Residual models on the announced_only residual (y - announced change).
+  candidates:
+    - {id: residual_ar_p1, kind: residual_ar, p: 1}
+    - {id: residual_ar_p2, kind: residual_ar, p: 2}
+    - {id: ridge_residual_a0.1, kind: ridge_residual, alpha: 0.1}
+    - {id: ridge_residual_a1.0, kind: ridge_residual, alpha: 1.0}
+    - {id: ridge_residual_a10.0, kind: ridge_residual, alpha: 10.0}
+  # n_targets(3) x n_horizons(3) x n_candidates(5)
+  n_trials_total: 45
+
+windows:
+  calendar: us_equity_sessions
+  train_start: "2008-01-04"
+  train_end: "2017-12-29"
+  dev_start: "2018-01-02"
+  dev_end: "2021-12-31"
+  reserved_start: "2022-01-03"
+  reserved_end: "2026-06-30"
+  purge_sessions: 60
+  purge_rule: "ceil(purge_sessions/5)"
+  purge_weeks: 12
+
+origins:
+  weekday: friday
+  decision_time: "00:00"
+  decision_tz: America/New_York
+  step_weeks: 1
+  min_train_weeks: 104
+  min_train_examples: 104
+  lag_buffer_days: 35
+  max_anchor_age_days:
+    reserves_wresbal_bn: 9
+    tga_bn: 7
+    rrp_bn: 7
+
+clocks:
+  reserves_wresbal_bn:
+    rule: h41_thursday_1630
+    description: "H.4.1 Thursday 16:30 ET for the Wednesday week (rolled forward to the next federal business day)"
+  tga_bn:
+    rule: dts_next_business_day_1600
+    description: "DTS following federal business day (S29), 16:00 ET"
+  rrp_bn:
+    rule: same_day_1315
+    description: "same day 13:15 ET"
+
+sources:
+  reserves_wresbal_bn:
+    path: data/fred/WRESBAL.parquet
+    column: reserve_balances
+    native_units: usd_millions
+    loader: raw_parquet_div_1000
+  tga_bn:
+    path: data/treasury/tga.parquet
+    column: tga_mn
+    native_units: usd_millions
+    loader: engine.canon.load_net_liquidity_components
+  rrp_bn:
+    path: data/fred/RRPONTSYD.parquet
+    column: on_rrp
+    native_units: usd_billions
+    loader: engine.canon.load_net_liquidity_components
+
+information_set_rule: "an observation enters the information set at origin o only if published_at_utc <= cutoff_utc(o, decision_tz); a source row without a publication clock is refused (MissingPublicationClock); every lag order, calendar mean, standardisation and interval quantile is fitted on rows whose outcome matured at or before o minus purge_weeks"
+
+margins:
+  primary_error: mae
+  secondary_error: rmse
+  min_relative_gain: 0.05
+  ci_level: 0.90
+  block_weeks: 13
+  n_resamples: 2000
+  seed: 20261013
+  min_scored_origins: 52
+  coverage_tolerance_points: 5
+
+intervals:
+  nominal_levels: [80, 90]
+  method: empirical conformal
+  calibration_scope: training-only inner rolling residuals
+  interval_semantics: "empirical conformal; calibration_scope: training-only inner rolling residuals"
+  min_calibration_residuals: 52
+
+# Fixed list. Each is a count of calendar dates d with origin < d <= origin + 7*h days.
+calendar_indicators:
+  - tax_jan15
+  - tax_apr15
+  - tax_jun15
+  - tax_sep15
+  - tax_dec15
+  - quarter_end
+  - month_end_non_quarter
