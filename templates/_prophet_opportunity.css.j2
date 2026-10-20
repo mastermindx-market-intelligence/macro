@@ -9,9 +9,9 @@
    · Everything is scoped under .po-*; this file declares no :root tokens, no
      element/global rules, no @import — it cannot leak onto any other surface.
    · Two deliberate treatments, one anatomy: the dark card is separated panel
-     material with a fine boundary and a restrained semantic top rail; light is
-     the white card with the same boundary plus the existing --card-shadow.
-   · Color is confined to semantic accents: the stance rail/chip (--pv-*), the
+     material with an even neutral boundary; light is the white card with the
+     same boundary plus the existing --card-shadow. No colored container edge.
+   · Color is confined to semantic accents: the stance chip/stage mark (--pv-*), the
      direction inks (--ink-up/--ink-down, which theme.css flips for zh), warn/
      info chips and the link color. Structure carries everything else.
    · Chart ink follows the chart's OWN .po-dir-* class, never the card's stance
@@ -32,8 +32,6 @@
 .po-card,.po-card *{box-sizing:border-box}
 .po-card{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);color:var(--text);font-size:14px;line-height:1.5}
 html[data-theme="light"] .po-card{box-shadow:var(--card-shadow)}
-/* Restrained semantic rail: a 3px accent bar only — no glow, no full border. */
-.po-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-ctl,8px) var(--r-ctl,8px) 0 0;background:var(--po-accent,var(--muted));opacity:.85}
 
 /* One accent per stance; unknown is the neutral "no read" accent. */
 .po-buy{--po-accent:var(--pv-buy);--po-ink:var(--ink-pv-buy,var(--pv-buy))}

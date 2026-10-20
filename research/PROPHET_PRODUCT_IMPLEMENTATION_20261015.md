@@ -50,7 +50,7 @@ Keep the existing global product navigation. Prophet-local primary navigation re
 
 Calm, precise investment research. The visual interest comes from chart structure, information hierarchy, deliberate material depth and aligned content—not decorative gradients or an excess of badges.
 
-Dark: existing charcoal canvas and separated panel depths; restrained semantic top rail; lucid text and muted secondary lines; no luminous green border around an entire Featured card.
+Dark: existing charcoal canvas and separated panel depths; even neutral boundaries; lucid text and muted secondary lines. Keep semantic color in explicit status labels and chart/quote marks, with no colored container-edge rail in either theme.
 Light: cool canvas, white card material, fine neutral boundaries and subtle shadow; stronger typographic hierarchy; semantic color confined to status, chart/quote semantics and entry terms.
 Use existing theme.css tokens only. These are two deliberate treatments sharing anatomy and behavior, not two unrelated palettes. Preserve the site's EN/ZH color convention and translation semantics.
 
