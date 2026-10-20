@@ -35074,6 +35074,32 @@ jobs:
       - name: price-pressure response export + MKT-1 regressions (K3E MKT-1 hosted execution; Sol 5987749403)
         run: python -m pytest tests/test_price_pressure.py -q -rs
 
+  market-ontology-f09-petroleum-flow:
+    if: ${{ false }}  # Executed by the required PR pack runner.
+    gate: code
+    # Native petroleum context is independent of the nightly engine sweep.
+    # Fixtures exercise the common-week contract and actual builder/partial;
+    # no collector, production data or network request is run by this job.
+    paths:
+      - "engine/commodity_supply_context.py"
+      - "scripts/build_commodities.py"
+      - "templates/commodities.html.j2"
+      - "templates/_petroleum_flow_context.html.j2"
+      - "tests/test_commodity_supply_context.py"
+      - "tests/test_commodity_petroleum_flow.py"
+      - "tests/test_commodity_petroleum_panel.py"
+      - "tests/test_commodity_petroleum_reader.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install petroleum context test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests rjsmin
+      - name: native petroleum common-week contract and consumer
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_petroleum_flow.py tests/test_commodity_petroleum_panel.py tests/test_commodity_petroleum_reader.py -q
+
   market-ontology-f09-usgs-mcs:
     if: ${{ false }}
     gate: code
