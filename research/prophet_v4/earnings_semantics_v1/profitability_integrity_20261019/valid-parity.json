@@ -1,0 +1,8 @@
+{
+  "seed": 20261019,
+  "synthetic_scenarios": 200,
+  "producer_whole_output_equalities": 200,
+  "native_dossier_and_brief_accepted": 200,
+  "source_authenticated_by_this_test": false,
+  "financial_outcomes_read": false
+}

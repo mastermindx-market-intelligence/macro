@@ -1,0 +1,96 @@
+{
+  "agentos": {
+    "errors": 0,
+    "inherited_warnings": 167
+  },
+  "base": "a88592f801123a6d06268c712b318cf1fe6e7e35",
+  "ci_focused": {
+    "deselected": 276,
+    "passed": 122,
+    "seconds": 2.63,
+    "warnings": 2
+  },
+  "ci_import_closure": {
+    "passed": 1,
+    "seconds": 169.17
+  },
+  "ci_manifest_sha256": "0c32aa396936cf523ee08c03d84564425f98326a2c64a87353f0ba89421c29d6",
+  "ci_registration": {
+    "added_paths": 2,
+    "added_steps": 1,
+    "existing_data_owner_unchanged": true,
+    "gate": "code",
+    "other_jobs_changed": 0,
+    "owner": "prophet-lab"
+  },
+  "current_main_comparison": "3091c8895028db57c06809593079896f85e3efc1",
+  "current_main_earnings_source_drift": false,
+  "existing_ci_owners": [
+    {
+      "gate": "data",
+      "job": "unrun-picks-boards",
+      "step": "pick lab runners + US/CN board surfaces \u2014 shipped picks, outcome ledgers, priority board"
+    }
+  ],
+  "financial_outcomes_read": false,
+  "green": {
+    "passed": 758,
+    "seconds": 32.87,
+    "skipped": 9,
+    "suites": [
+      "tests/test_us_prophet_fusion.py",
+      "tests/test_intelligence_vector_units.py",
+      "tests/test_prophet_lab_api.py",
+      "tests/test_deploy_update_self_heal.py"
+    ],
+    "warnings": 16
+  },
+  "hosted_accepted": false,
+  "independent_review_accepted": false,
+  "logs": {
+    "ci-closure.log": {
+      "bytes": 110,
+      "sha256": "6b0677154dc3d7f7fc351d8a6381faf652d57ccbc394e709be9d343c2c7df7b4"
+    },
+    "ci-focused.log": {
+      "bytes": 208,
+      "sha256": "14d82d4e17675d5493eaa5e013053be5880958db4948ff0bb050fb2bead06f52"
+    },
+    "native-green.log": {
+      "bytes": 1656,
+      "sha256": "ad9418e7187e0749124cec88c627b3ad065917e82066d721a6f1d9c7a74a8a76"
+    },
+    "native-red.log.json": {
+      "bytes": 120093,
+      "lossless_raw_bytes": 102334,
+      "lossless_raw_sha256": "99aa80586b149251de721db070f133ed89f9c25ffcae91048851bca9ac262217",
+      "reconstruct": "UTF-8 encode the concatenated lines array",
+      "sha256": "7d1cc0386fe04cd95db09a24a12720f455e0cf1c217929490695f8e6842b2c78"
+    },
+    "valid-parity.json": {
+      "bytes": 222,
+      "sha256": "5ead0faf2ca0cc9c4b30e7ec39e08c12e379eb3e996af8d00337c8d172c02d4d"
+    }
+  },
+  "operation_id": "prophet-profitability-evidence-integrity-20261019-01a14838",
+  "original_source_authentication_granted": false,
+  "production_accepted": false,
+  "red": {
+    "deselected": 302,
+    "failed": 79,
+    "passed": 17,
+    "seconds": 5.49,
+    "warnings": 2
+  },
+  "scope": "SOURCE_ONLY_DRAFT_HOLD",
+  "source_sha256": "5e53b8aff362f10167951cc97d1b267bbd4c25af31619d2bbd43ea0f3fee50db",
+  "tests_sha256": "b2a39a339d432edd717d174fa7342c8b42690f965fd0894c345d3d8f28f05bea",
+  "valid_output_parity": {
+    "financial_outcomes_read": false,
+    "native_dossier_and_brief_accepted": 200,
+    "producer_whole_output_equalities": 200,
+    "seed": 20261019,
+    "source_authenticated_by_this_test": false,
+    "synthetic_scenarios": 200
+  }
+}

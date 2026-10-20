@@ -2340,3 +2340,111 @@ class TestEarningsWholeSourceRepair:
         dossier = self.dossier(reported_changes=[change])
         assert dossier["reported_changes"][0]["change_pct"] == pytest.approx(20.0)
         assert sue_engine.earnings_evidence_brief(dossier)["schema"] == "prophet.earnings_evidence_brief/v1"
+
+
+# Serialized profitability evidence must remain coherent through both consumers.
+from copy import deepcopy as _profitability_deepcopy
+import json as _profitability_json
+_PROFITABILITY_INGRESS_NATIVE = TestProfitabilityBridge()
+
+def _profitability_test_dossier(bridge):
+    return sue_engine.factual_dossier(event_id=bridge["current_event_id"], issuer_id=bridge["issuer_id"],
+        decision_at=_PROFITABILITY_INGRESS_NATIVE.cut, profit_bridges=[bridge], source_contract_refs=["synthetic:qualified"])
+
+
+_PROFITABILITY_PAYLOAD_MUTATIONS = [
+    ("current_margin", .99), ("prior_margin", .99), ("margin_change_bps", 500),
+    ("revenue_change_fraction", .99), ("profit_change", 99),
+    ("revenue_component", 99), ("margin_component", 99),
+    ("current_revenue", 0), ("prior_revenue", 0), ("current_profit", True),
+    ("prior_profit", None), ("margin_change_bps", float("inf")),
+    ("profit_metric", "EBITDA"), ("decomposition", "CAUSAL_EFFECT"),
+    ("source_refs", []), ("source_refs", ["one"]), ("source_refs", [""]*4),
+    ("source_available_at", []), ("source_available_at", ["2026-07-30T20:30:00Z"]),
+    ("source_available_at", ["2099-01-01T00:00:00Z"]*4),
+    ("source_available_at", ["2026-07-30T20:30:00"]*4),
+    ("currency", ""), ("unit", ""), ("accounting_basis", ""),
+    ("prior_event_id", ""), ("current_fiscal_period", ""),
+    ("prior_fiscal_period", ""), ("unexpected_positive_signal", True),
+]
+
+
+@pytest.mark.parametrize("field,value", _PROFITABILITY_PAYLOAD_MUTATIONS)
+@pytest.mark.parametrize("boundary", ["assembly", "explanation"])
+def test_profitability_payload_mutation_is_rejected(field, value, boundary):
+    bridge = _PROFITABILITY_INGRESS_NATIVE.compute()
+    original = _profitability_deepcopy(bridge)
+    parent = _profitability_test_dossier(bridge)
+    target = bridge if boundary == "assembly" else parent["profitability_bridges"][0]
+    target[field] = value
+    with pytest.raises(sue_engine.EvidenceError):
+        _profitability_test_dossier(target) if boundary == "assembly" else sue_engine.earnings_evidence_brief(parent)
+    if boundary == "explanation":
+        assert bridge == original
+
+
+@pytest.mark.parametrize("field", ["margin_component", "source_refs", "source_available_at", "rank_authority", "entry_authority"])
+@pytest.mark.parametrize("boundary", ["assembly", "explanation"])
+def test_profitability_payload_missing_fields_are_rejected(field, boundary):
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute(); parent=_profitability_test_dossier(bridge)
+    target=bridge if boundary=="assembly" else parent["profitability_bridges"][0]
+    target.pop(field)
+    with pytest.raises(sue_engine.EvidenceError):
+        _profitability_test_dossier(target) if boundary=="assembly" else sue_engine.earnings_evidence_brief(parent)
+
+
+@pytest.mark.parametrize("metric", ["gross_profit", "operating_income", "net_income"])
+def test_unchanged_margin_is_neutral_context_not_support(metric):
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute(_PROFITABILITY_INGRESS_NATIVE.inputs(cr=1200,pr=1000,cp=120,pp=100,metric=metric))
+    result=sue_engine.earnings_evidence_brief(_profitability_test_dossier(bridge))
+    assert not any(x["code"]=="MARGIN_UNCHANGED" for x in result["supporting_facts"])
+    assert any(x["code"]=="MARGIN_UNCHANGED" for x in result["context_facts"])
+
+
+@pytest.mark.parametrize("metric", ["gross_profit", "operating_income", "net_income"])
+@pytest.mark.parametrize("cp,pp", [(108,100),(-50,-100),(50,-100),(120,100)])
+def test_native_json_bridge_survives_both_boundaries_without_mutation(metric,cp,pp):
+    bridge=_profitability_json.loads(_profitability_json.dumps(_PROFITABILITY_INGRESS_NATIVE.compute(_PROFITABILITY_INGRESS_NATIVE.inputs(cp=cp,pp=pp,metric=metric))))
+    before=_profitability_deepcopy(bridge);parent=_profitability_test_dossier(bridge);result=sue_engine.earnings_evidence_brief(parent)
+    assert bridge==before and parent["profitability_bridges"][0]==before
+    assert all(v is False for v in result["authority"].values())
+    assert "NOT_CAUSAL" in bridge["decomposition"]
+
+
+@pytest.mark.parametrize("boundary", ["assembly", "explanation"])
+@pytest.mark.parametrize("value", [[], {}, True, None])
+def test_profitability_rejects_unhashable_metric_with_typed_error(boundary, value):
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute();parent=_profitability_test_dossier(bridge)
+    target=bridge if boundary=="assembly" else parent["profitability_bridges"][0]
+    target["profit_metric"]=value
+    with pytest.raises(sue_engine.EvidenceError):
+        _profitability_test_dossier(target) if boundary=="assembly" else sue_engine.earnings_evidence_brief(parent)
+
+
+@pytest.mark.parametrize("delta", [1e-13,-1e-13])
+@pytest.mark.parametrize("boundary", ["assembly", "explanation"])
+def test_profitability_tolerance_must_not_create_a_false_margin_direction(delta,boundary):
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute(_PROFITABILITY_INGRESS_NATIVE.inputs(cp=120));parent=_profitability_test_dossier(bridge)
+    target=bridge if boundary=="assembly" else parent["profitability_bridges"][0]
+    target["margin_change_bps"]=delta
+    with pytest.raises(sue_engine.EvidenceError):
+        _profitability_test_dossier(target) if boundary=="assembly" else sue_engine.earnings_evidence_brief(parent)
+
+
+def test_profitability_equivalent_offset_clocks_and_repeated_sources_are_legal():
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute()
+    bridge["decision_at"]="2026-07-30T16:35:00-04:00"
+    parent=_profitability_test_dossier(bridge)
+    result=sue_engine.earnings_evidence_brief(parent)
+    assert len(bridge["source_refs"])==4
+    assert len(set(bridge["source_refs"]))==1
+    assert result["counterevidence"][0]["code"]=="MARGIN_COMPRESSION"
+
+
+@pytest.mark.parametrize("boundary", ["assembly", "explanation"])
+def test_profitability_sources_must_precede_child_cut_not_only_parent_cut(boundary):
+    bridge=_PROFITABILITY_INGRESS_NATIVE.compute();parent=_profitability_test_dossier(bridge)
+    target=bridge if boundary=="assembly" else parent["profitability_bridges"][0]
+    target["decision_at"]="2026-07-30T00:00:00Z"
+    with pytest.raises(sue_engine.EvidenceError):
+        _profitability_test_dossier(target) if boundary=="assembly" else sue_engine.earnings_evidence_brief(parent)

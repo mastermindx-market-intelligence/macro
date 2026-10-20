@@ -1,0 +1,18 @@
+sss........s..........................sss............................... [  9%]
+...........ss........................................................... [ 18%]
+........................................................................ [ 28%]
+........................................................................ [ 37%]
+........................................................................ [ 46%]
+........................................................................ [ 56%]
+........................................................................ [ 65%]
+........................................................................ [ 75%]
+........................................................................ [ 84%]
+........................................................................ [ 93%]
+...............................................                          [100%]
+=========================== short test summary info ============================
+SKIPPED [3] tests/test_us_prophet_fusion.py: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_us_prophet_fusion.py:248: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [3] tests/test_us_prophet_fusion.py: sparse worktree — site not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_us_prophet_fusion.py:821: committed board artifact not present
+SKIPPED [1] tests/test_us_prophet_fusion.py:829: committed board artifact not present
+758 passed, 9 skipped, 16 warnings in 32.87s
