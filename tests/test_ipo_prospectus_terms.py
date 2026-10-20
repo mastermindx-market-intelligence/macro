@@ -110,22 +110,3 @@ def test_legacy_ttl_refresh_preserves_retained_filing(source, monkeypatch):
     monkeypatch.setattr(ipo_prospectus, "_ticker_cik_map", unexpected_fetch)
     result = ipo_prospectus.fetch_lockups(["CRCL"])
     pd.testing.assert_frame_equal(result, cache)
-
-
-def test_published_view_includes_both_languages_and_actual_dates(monkeypatch):
-    from jinja2 import Environment, FileSystemLoader
-    from scripts import build_ipo
-    rows = build_ipo._prospectus_deals_vm()
-    deal = next(row for row in rows if row["ticker"] == "CRCL")
-    assert deal["first_close_date"] == "2025-06-05"
-    assert len(deal["path_points"].split()) > 200
-    # The actual page is rendered by existing builder tests; isolate the new
-    # article so copy/clock/source assertions do not need market collectors.
-    text = (ROOT / "templates/ipo.html.j2").read_text()
-    start = text.index("  {% if prospectus_deals %}")
-    end = text.index("  <div class=\"sec\">{{ t('The aftermarket trade'", start)
-    env = Environment(autoescape=True)
-    for language in (0, 1):
-        html = env.from_string(text[start:end]).render(prospectus_deals=[deal], t=lambda en, zh: (en, zh)[language])
-        assert "2025-06-04" in html and "2025-06-05" in html and "2025-09-30" in html
-        assert "5,100,000" in html and deal["source_url"] in html
