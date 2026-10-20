@@ -2,24 +2,24 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-17",
-  "generated_at": "2026-10-18T08:44:24+00:00",
+  "as_of": "2026-10-20",
+  "generated_at": "2026-10-20T12:29:39+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 81495.85,
-    "change_24h_pct": -0.55,
+    "price": 82005.99,
+    "change_24h_pct": -0.01,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 24,
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and the risk gauge; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与风险读数；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 23,
     "exposure_pct": 41,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-17",
+    "as_of": "2026-10-20",
     "integrity_ok": true,
     "final_exposure_pct": 41,
     "errors": [],
@@ -57,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Exhausting",
-          "state_zh": "衰竭",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-17"
+        "as_of": "2026-10-20"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -209,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Capitulation (bottoming)",
+          "state_zh": "投降（筑底）",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
@@ -257,9 +257,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Limited downside",
-          "state_zh": "下行受限",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "CONFIRMED"
         }
       ]
