@@ -1,0 +1,1083 @@
+{
+  "status": "local verified candidate; hosted proof pending",
+  "baseline_parser_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+  "scope": "Retain split qualified-name parts on each node; refresh on qname mutation. No global cache, parser-limit change, output-schema change, execution-proof change or shard change.",
+  "residual_profile": {
+    "source_blob": "79df25f36a17c79a726e28d11f0018dda92d5bbd",
+    "note": "One new residual cProfile pass on two accepted exact inputs; local Mac Python3.12 instrumentation, not timing or fleet acceptance. Source untouched.",
+    "documents": [
+      {
+        "document": "aapl-20250927.htm",
+        "input_sha256": "548ae59778cf08ee0f2ee088e7ece20d947076c3c01f74d2d65db4c2777e436a",
+        "output_sha256": "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+        "accepted_output_equal": true
+      },
+      {
+        "document": "aapl-20260627.htm",
+        "input_sha256": "4ad5bea67cedfa7542d623900355cc8d143ef95c1acc135a597f2eedabdb9177",
+        "output_sha256": "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba",
+        "accepted_output_equal": true
+      }
+    ],
+    "total_profile_s": 2.1085287870000005,
+    "functions": [
+      {
+        "line": 1859,
+        "name": "parse_sec_filing_document",
+        "calls": 2,
+        "self_s": 0.021971817,
+        "cum_s": 2.114331542
+      },
+      {
+        "line": 475,
+        "name": "build",
+        "calls": 2,
+        "self_s": 1.3582000000000001e-05,
+        "cum_s": 0.915699916
+      },
+      {
+        "line": 376,
+        "name": "start",
+        "calls": 25128,
+        "self_s": 0.16617425400000002,
+        "cum_s": 0.663007629
+      },
+      {
+        "line": 201,
+        "name": "namespace",
+        "calls": 576408,
+        "self_s": 0.10142587700000001,
+        "cum_s": 0.45869349200000004
+      },
+      {
+        "line": 151,
+        "name": "_split_qname",
+        "calls": 687371,
+        "self_s": 0.22889884900000002,
+        "cum_s": 0.418903004
+      },
+      {
+        "line": 2212,
+        "name": "validate_sec_filing_parse_result",
+        "calls": 2,
+        "self_s": 0.030583871000000002,
+        "cum_s": 0.396646084
+      },
+      {
+        "line": 210,
+        "name": "_tag_end",
+        "calls": 42830,
+        "self_s": 0.23850342800000002,
+        "cum_s": 0.342558105
+      },
+      {
+        "line": 1742,
+        "name": "_validate_document_structure",
+        "calls": 2,
+        "self_s": 0.015828877,
+        "cum_s": 0.332865334
+      },
+      {
+        "line": 1295,
+        "name": "_fact_record",
+        "calls": 1991,
+        "self_s": 0.016971147000000002,
+        "cum_s": 0.23069176900000002
+      },
+      {
+        "line": 457,
+        "name": "text",
+        "calls": 12262,
+        "self_s": 0.026608631,
+        "cum_s": 0.141099899
+      },
+      {
+        "line": 2187,
+        "name": "_json_guard",
+        "calls": 113414,
+        "self_s": 0.082111576,
+        "cum_s": 0.12467600100000001
+      },
+      {
+        "line": 468,
+        "name": "<genexpr>",
+        "calls": 12262,
+        "self_s": 0.016071536,
+        "cum_s": 0.102544307
+      },
+      {
+        "line": 2088,
+        "name": "_clark_qname",
+        "calls": 4327,
+        "self_s": 0.006375377000000001,
+        "cum_s": 0.088894284
+      },
+      {
+        "line": 205,
+        "name": "local",
+        "calls": 89244,
+        "self_s": 0.017391941,
+        "cum_s": 0.07257793600000001
+      },
+      {
+        "line": 590,
+        "name": "_escaped_nonnumeric_markup",
+        "calls": 140,
+        "self_s": 0.000239504,
+        "cum_s": 0.068074629
+      },
+      {
+        "line": 615,
+        "name": "append_relevant",
+        "calls": 19580,
+        "self_s": 0.032180288,
+        "cum_s": 0.066217172
+      },
+      {
+        "line": 281,
+        "name": "_resolve_prefixed_qname",
+        "calls": 4325,
+        "self_s": 0.001660491,
+        "cum_s": 0.060570833000000004
+      },
+      {
+        "line": 448,
+        "name": "end",
+        "calls": 25128,
+        "self_s": 0.018506392,
+        "cum_s": 0.059489122000000005
+      },
+      {
+        "line": 274,
+        "name": "_resolve_required_qname",
+        "calls": 4325,
+        "self_s": 0.0016991480000000002,
+        "cum_s": 0.058033152000000005
+      },
+      {
+        "line": 226,
+        "name": "_lexical_element_name",
+        "calls": 25128,
+        "self_s": 0.01553726,
+        "cum_s": 0.056757486
+      },
+      {
+        "line": 255,
+        "name": "_resolve_qname",
+        "calls": 4325,
+        "self_s": 0.006214048000000001,
+        "cum_s": 0.05566685800000001
+      },
+      {
+        "line": 1065,
+        "name": "_has_ancestor",
+        "calls": 6112,
+        "self_s": 0.006538995000000001,
+        "cum_s": 0.049798099000000005
+      },
+      {
+        "line": 1659,
+        "name": "_validate_relationship_and_footnote_structure",
+        "calls": 2,
+        "self_s": 0.004941839,
+        "cum_s": 0.045872750000000004
+      },
+      {
+        "line": 288,
+        "name": "_normalized_identifier",
+        "calls": 14912,
+        "self_s": 0.009714721,
+        "cum_s": 0.042900504000000006
+      },
+      {
+        "line": 944,
+        "name": "_context_record",
+        "calls": 343,
+        "self_s": 0.004717333000000001,
+        "cum_s": 0.038916859000000005
+      },
+      {
+        "line": 1897,
+        "name": "<genexpr>",
+        "calls": 25130,
+        "self_s": 0.013298977,
+        "cum_s": 0.037935054
+      },
+      {
+        "line": 256,
+        "name": "<genexpr>",
+        "calls": 156782,
+        "self_s": 0.021217932000000002,
+        "cum_s": 0.03292891
+      },
+      {
+        "line": 1568,
+        "name": "_inline_ancestor",
+        "calls": 4068,
+        "self_s": 0.000686897,
+        "cum_s": 0.031807954
+      },
+      {
+        "line": 1074,
+        "name": "_continuation_records",
+        "calls": 2,
+        "self_s": 0.0030881000000000003,
+        "cum_s": 0.031790208
+      },
+      {
+        "line": 774,
+        "name": "_apply_numeric",
+        "calls": 3454,
+        "self_s": 0.00976308,
+        "cum_s": 0.031713517000000004
+      },
+      {
+        "line": 2099,
+        "name": "<genexpr>",
+        "calls": 129570,
+        "self_s": 0.01808873,
+        "cum_s": 0.028308357000000003
+      },
+      {
+        "line": 1266,
+        "name": "_fact_accuracy",
+        "calls": 1991,
+        "self_s": 0.002953456,
+        "cum_s": 0.024512933
+      },
+      {
+        "line": 1585,
+        "name": "_validate_inline_ids",
+        "calls": 2,
+        "self_s": 0.004561718,
+        "cum_s": 0.023735042
+      },
+      {
+        "line": 2131,
+        "name": "_logical_fact_span_list",
+        "calls": 3982,
+        "self_s": 0.009143444,
+        "cum_s": 0.023530972
+      },
+      {
+        "line": 1228,
+        "name": "_fact_nodes",
+        "calls": 2,
+        "self_s": 0.002780616,
+        "cum_s": 0.023427833000000002
+      },
+      {
+        "line": 1845,
+        "name": "<genexpr>",
+        "calls": 53,
+        "self_s": 0.002449291,
+        "cum_s": 0.023011997000000003
+      },
+      {
+        "line": 2075,
+        "name": "_nullable_string",
+        "calls": 41106,
+        "self_s": 0.013190492000000002,
+        "cum_s": 0.022842891
+      },
+      {
+        "line": 1624,
+        "name": "_validate_inline_numeric_nesting",
+        "calls": 2,
+        "self_s": 0.002910306,
+        "cum_s": 0.022554125
+      },
+      {
+        "line": 2106,
+        "name": "_validated_span",
+        "calls": 19577,
+        "self_s": 0.011060213000000001,
+        "cum_s": 0.022368079000000003
+      },
+      {
+        "line": 1809,
+        "name": "<genexpr>",
+        "calls": 4,
+        "self_s": 0.002333674,
+        "cum_s": 0.022307916
+      },
+      {
+        "line": 517,
+        "name": "_events_for",
+        "calls": 5881,
+        "self_s": 0.011092042,
+        "cum_s": 0.021198817000000002
+      },
+      {
+        "line": 880,
+        "name": "_dimension_records",
+        "calls": 686,
+        "self_s": 0.001936065,
+        "cum_s": 0.019368768
+      },
+      {
+        "line": 289,
+        "name": "<genexpr>",
+        "calls": 84766,
+        "self_s": 0.012246999000000001,
+        "cum_s": 0.018337045
+      },
+      {
+        "line": 2098,
+        "name": "<genexpr>",
+        "calls": 289748,
+        "self_s": 0.01741745,
+        "cum_s": 0.01741745
+      },
+      {
+        "line": 158,
+        "name": "_attr",
+        "calls": 54266,
+        "self_s": 0.009843501000000001,
+        "cum_s": 0.016049414
+      },
+      {
+        "line": 144,
+        "name": "_qname",
+        "calls": 64576,
+        "self_s": 0.011406684,
+        "cum_s": 0.015953538
+      },
+      {
+        "line": 732,
+        "name": "_numeric_lexical",
+        "calls": 3268,
+        "self_s": 0.004695032,
+        "cum_s": 0.014219649000000001
+      },
+      {
+        "line": 2062,
+        "name": "_text",
+        "calls": 11973,
+        "self_s": 0.007305995,
+        "cum_s": 0.012312023
+      },
+      {
+        "line": 338,
+        "name": "_index",
+        "calls": 62524,
+        "self_s": 0.011192886,
+        "cum_s": 0.011192886
+      },
+      {
+        "line": 532,
+        "name": "_event_spans",
+        "calls": 4547,
+        "self_s": 0.009380481000000001,
+        "cum_s": 0.011135158000000001
+      },
+      {
+        "line": 2050,
+        "name": "_exact_dict",
+        "calls": 23134,
+        "self_s": 0.009029668000000001,
+        "cum_s": 0.009029668000000001
+      },
+      {
+        "line": 2120,
+        "name": "_span_list",
+        "calls": 1251,
+        "self_s": 0.0019014670000000002,
+        "cum_s": 0.007999596000000001
+      },
+      {
+        "line": 341,
+        "name": "_close_pending",
+        "calls": 62526,
+        "self_s": 0.006575534,
+        "cum_s": 0.007658116
+      },
+      {
+        "line": 2158,
+        "name": "_require_disjoint_spans",
+        "calls": 2042,
+        "self_s": 0.001171271,
+        "cum_s": 0.005437424000000001
+      },
+      {
+        "line": 699,
+        "name": "_validate_accuracy_lexicals",
+        "calls": 3982,
+        "self_s": 0.0020519730000000003,
+        "cum_s": 0.005364014
+      },
+      {
+        "line": 686,
+        "name": "_checked_integer",
+        "calls": 5119,
+        "self_s": 0.0030211250000000004,
+        "cum_s": 0.004771509
+      },
+      {
+        "line": 658,
+        "name": "_text_value",
+        "calls": 1334,
+        "self_s": 0.00075725,
+        "cum_s": 0.004207606
+      },
+      {
+        "line": 721,
+        "name": "_decimal_text",
+        "calls": 3436,
+        "self_s": 0.0018405980000000001,
+        "cum_s": 0.0037908850000000003
+      },
+      {
+        "line": 2171,
+        "name": "_source_ordered",
+        "calls": 8,
+        "self_s": 0.000930796,
+        "cum_s": 0.003584873
+      },
+      {
+        "line": 832,
+        "name": "_direct_text",
+        "calls": 1398,
+        "self_s": 0.001260215,
+        "cum_s": 0.003181179
+      },
+      {
+        "line": 1851,
+        "name": "_ancestor_nodes",
+        "calls": 1733,
+        "self_s": 0.0016183620000000001,
+        "cum_s": 0.0028687680000000003
+      },
+      {
+        "line": 1388,
+        "name": "<genexpr>",
+        "calls": 5160,
+        "self_s": 0.0015290990000000001,
+        "cum_s": 0.0028404140000000003
+      },
+      {
+        "line": 2056,
+        "name": "_exact_list",
+        "calls": 7605,
+        "self_s": 0.0017564850000000001,
+        "cum_s": 0.002358321
+      },
+      {
+        "line": 712,
+        "name": "_optional_integer",
+        "calls": 1991,
+        "self_s": 0.000685753,
+        "cum_s": 0.0023123220000000003
+      },
+      {
+        "line": 163,
+        "name": "_span",
+        "calls": 19577,
+        "self_s": 0.0022573190000000003,
+        "cum_s": 0.0022573190000000003
+      },
+      {
+        "line": 1112,
+        "name": "_continuation_chains",
+        "calls": 2,
+        "self_s": 0.000777646,
+        "cum_s": 0.0018135
+      },
+      {
+        "line": 2159,
+        "name": "<genexpr>",
+        "calls": 17607,
+        "self_s": 0.001738888,
+        "cum_s": 0.001738888
+      },
+      {
+        "line": 974,
+        "name": "<genexpr>",
+        "calls": 7889,
+        "self_s": 0.001116592,
+        "cum_s": 0.0017319710000000001
+      },
+      {
+        "line": 848,
+        "name": "_date_or_datetime",
+        "calls": 1042,
+        "self_s": 0.000637892,
+        "cum_s": 0.001700516
+      },
+      {
+        "line": 2301,
+        "name": "<genexpr>",
+        "calls": 7889,
+        "self_s": 0.001063512,
+        "cum_s": 0.001640301
+      },
+      {
+        "line": 666,
+        "name": "_node_text_bytes",
+        "calls": 2131,
+        "self_s": 0.000877438,
+        "cum_s": 0.0016247140000000002
+      },
+      {
+        "line": 526,
+        "name": "<genexpr>",
+        "calls": 22709,
+        "self_s": 0.001480746,
+        "cum_s": 0.001480746
+      },
+      {
+        "line": 485,
+        "name": "<genexpr>",
+        "calls": 12264,
+        "self_s": 0.0014469200000000002,
+        "cum_s": 0.0014469200000000002
+      },
+      {
+        "line": 672,
+        "name": "_trim_text",
+        "calls": 1855,
+        "self_s": 0.000608887,
+        "cum_s": 0.001081904
+      },
+      {
+        "line": 2182,
+        "name": "_require_contained",
+        "calls": 9119,
+        "self_s": 0.001018861,
+        "cum_s": 0.001018861
+      },
+      {
+        "line": 2570,
+        "name": "<genexpr>",
+        "calls": 7338,
+        "self_s": 0.000962094,
+        "cum_s": 0.000962094
+      },
+      {
+        "line": 1246,
+        "name": "_assert_allowed_attrs",
+        "calls": 1991,
+        "self_s": 0.000880297,
+        "cum_s": 0.000880297
+      },
+      {
+        "line": 1027,
+        "name": "_unit_record",
+        "calls": 13,
+        "self_s": 8.679400000000001e-05,
+        "cum_s": 0.0008609160000000001
+      },
+      {
+        "line": 956,
+        "name": "<genexpr>",
+        "calls": 1029,
+        "self_s": 0.00020612600000000003,
+        "cum_s": 0.0008453310000000001
+      },
+      {
+        "line": 1820,
+        "name": "<genexpr>",
+        "calls": 358,
+        "self_s": 0.00010489200000000001,
+        "cum_s": 0.000694334
+      },
+      {
+        "line": 840,
+        "name": "<genexpr>",
+        "calls": 1398,
+        "self_s": 0.000630352,
+        "cum_s": 0.000630352
+      },
+      {
+        "line": 183,
+        "name": "finalize",
+        "calls": 2,
+        "self_s": 0.00056275,
+        "cum_s": 0.00056275
+      },
+      {
+        "line": 2642,
+        "name": "<lambda>",
+        "calls": 89,
+        "self_s": 0.000515996,
+        "cum_s": 0.000553421
+      },
+      {
+        "line": 1034,
+        "name": "measures",
+        "calls": 15,
+        "self_s": 3.8957e-05,
+        "cum_s": 0.000516458
+      },
+      {
+        "line": 994,
+        "name": "<genexpr>",
+        "calls": 534,
+        "self_s": 9.4806e-05,
+        "cum_s": 0.000429295
+      },
+      {
+        "line": 2490,
+        "name": "<genexpr>",
+        "calls": 2042,
+        "self_s": 0.000196844,
+        "cum_s": 0.00037734300000000004
+      },
+      {
+        "line": 1102,
+        "name": "<genexpr>",
+        "calls": 5160,
+        "self_s": 0.000346882,
+        "cum_s": 0.000346882
+      },
+      {
+        "line": 676,
+        "name": "_parse_bool",
+        "calls": 3982,
+        "self_s": 0.000340034,
+        "cum_s": 0.000340034
+      },
+      {
+        "line": 1372,
+        "name": "<genexpr>",
+        "calls": 3824,
+        "self_s": 0.00033232300000000004,
+        "cum_s": 0.00033232300000000004
+      },
+      {
+        "line": 1601,
+        "name": "_validate_inline_nonfraction_wrapper",
+        "calls": 1731,
+        "self_s": 0.00020463500000000002,
+        "cum_s": 0.000306591
+      },
+      {
+        "line": 663,
+        "name": "<genexpr>",
+        "calls": 2668,
+        "self_s": 0.00022313200000000002,
+        "cum_s": 0.00022313200000000002
+      },
+      {
+        "line": 1617,
+        "name": "_inline_nonfraction_lexical_leaf",
+        "calls": 1731,
+        "self_s": 0.000190606,
+        "cum_s": 0.000190606
+      },
+      {
+        "line": 1496,
+        "name": "_validate_parser_metadata",
+        "calls": 2,
+        "self_s": 2.8334e-05,
+        "cum_s": 0.00018720800000000001
+      },
+      {
+        "line": 2552,
+        "name": "<genexpr>",
+        "calls": 2042,
+        "self_s": 0.000180907,
+        "cum_s": 0.000180907
+      },
+      {
+        "line": 2494,
+        "name": "<genexpr>",
+        "calls": 2042,
+        "self_s": 0.00017037400000000002,
+        "cum_s": 0.00017037400000000002
+      },
+      {
+        "line": 2530,
+        "name": "<genexpr>",
+        "calls": 1300,
+        "self_s": 0.00014447,
+        "cum_s": 0.00014447
+      },
+      {
+        "line": 1530,
+        "name": "_limits_snapshot",
+        "calls": 4,
+        "self_s": 9.3923e-05,
+        "cum_s": 0.000143916
+      },
+      {
+        "line": 1252,
+        "name": "_apply_nonnumeric",
+        "calls": 520,
+        "self_s": 0.000106595,
+        "cum_s": 0.00013145800000000001
+      },
+      {
+        "line": 843,
+        "name": "_require_no_elements",
+        "calls": 1334,
+        "self_s": 0.000125777,
+        "cum_s": 0.000125777
+      },
+      {
+        "line": 1282,
+        "name": "<genexpr>",
+        "calls": 1300,
+        "self_s": 0.00012159300000000001,
+        "cum_s": 0.00012159300000000001
+      },
+      {
+        "line": 863,
+        "name": "_valid_xbrl_duration_bounds",
+        "calls": 356,
+        "self_s": 9.844400000000001e-05,
+        "cum_s": 9.844400000000001e-05
+      },
+      {
+        "line": 1815,
+        "name": "<genexpr>",
+        "calls": 37,
+        "self_s": 1.4376000000000001e-05,
+        "cum_s": 7.029e-05
+      },
+      {
+        "line": 1010,
+        "name": "<lambda>",
+        "calls": 463,
+        "self_s": 6.746000000000001e-05,
+        "cum_s": 6.746000000000001e-05
+      },
+      {
+        "line": 351,
+        "name": "namespace_start",
+        "calls": 32,
+        "self_s": 4.4449e-05,
+        "cum_s": 6.7001e-05
+      },
+      {
+        "line": 236,
+        "name": "_safe_document_name",
+        "calls": 4,
+        "self_s": 2.9081e-05,
+        "cum_s": 5.6749e-05
+      },
+      {
+        "line": 1194,
+        "name": "<genexpr>",
+        "calls": 156,
+        "self_s": 2.845e-05,
+        "cum_s": 5.6696e-05
+      },
+      {
+        "line": 1982,
+        "name": "<lambda>",
+        "calls": 89,
+        "self_s": 2.9834000000000003e-05,
+        "cum_s": 5.2876e-05
+      },
+      {
+        "line": 1047,
+        "name": "<genexpr>",
+        "calls": 26,
+        "self_s": 1.3207e-05,
+        "cum_s": 4.5458000000000004e-05
+      },
+      {
+        "line": 297,
+        "name": "__init__",
+        "calls": 2,
+        "self_s": 2.5917000000000003e-05,
+        "cum_s": 4.1958e-05
+      },
+      {
+        "line": 508,
+        "name": "_is_descendant",
+        "calls": 136,
+        "self_s": 2.8246e-05,
+        "cum_s": 2.8246e-05
+      },
+      {
+        "line": 2002,
+        "name": "<genexpr>",
+        "calls": 345,
+        "self_s": 2.0459000000000002e-05,
+        "cum_s": 2.0459000000000002e-05
+      },
+      {
+        "line": 2669,
+        "name": "<genexpr>",
+        "calls": 41,
+        "self_s": 1.9708000000000002e-05,
+        "cum_s": 1.9708000000000002e-05
+      },
+      {
+        "line": 2005,
+        "name": "<genexpr>",
+        "calls": 345,
+        "self_s": 1.8213e-05,
+        "cum_s": 1.8213e-05
+      },
+      {
+        "line": 1480,
+        "name": "_parser_metadata",
+        "calls": 2,
+        "self_s": 1.4791000000000001e-05,
+        "cum_s": 1.7708e-05
+      },
+      {
+        "line": 319,
+        "name": "<lambda>",
+        "calls": 6,
+        "self_s": 3.877e-06,
+        "cum_s": 1.5168000000000001e-05
+      },
+      {
+        "line": 348,
+        "name": "boundary",
+        "calls": 6,
+        "self_s": 6.6650000000000006e-06,
+        "cum_s": 1.1291e-05
+      },
+      {
+        "line": 1773,
+        "name": "<genexpr>",
+        "calls": 8,
+        "self_s": 2.209e-06,
+        "cum_s": 8.292000000000001e-06
+      },
+      {
+        "line": 1994,
+        "name": "<genexpr>",
+        "calls": 41,
+        "self_s": 7.331000000000001e-06,
+        "cum_s": 7.331000000000001e-06
+      },
+      {
+        "line": 2635,
+        "name": "<genexpr>",
+        "calls": 53,
+        "self_s": 6.044e-06,
+        "cum_s": 6.044e-06
+      },
+      {
+        "line": 761,
+        "name": "<genexpr>",
+        "calls": 32,
+        "self_s": 5.7120000000000005e-06,
+        "cum_s": 5.7120000000000005e-06
+      },
+      {
+        "line": 1051,
+        "name": "<genexpr>",
+        "calls": 6,
+        "self_s": 1.25e-06,
+        "cum_s": 4.833e-06
+      },
+      {
+        "line": 1173,
+        "name": "<genexpr>",
+        "calls": 53,
+        "self_s": 4.751e-06,
+        "cum_s": 4.751e-06
+      },
+      {
+        "line": 1392,
+        "name": "<genexpr>",
+        "calls": 51,
+        "self_s": 4.002e-06,
+        "cum_s": 4.002e-06
+      },
+      {
+        "line": 2542,
+        "name": "<genexpr>",
+        "calls": 24,
+        "self_s": 3.208e-06,
+        "cum_s": 3.208e-06
+      },
+      {
+        "line": 1286,
+        "name": "<genexpr>",
+        "calls": 24,
+        "self_s": 2.8780000000000002e-06,
+        "cum_s": 2.8780000000000002e-06
+      },
+      {
+        "line": 310,
+        "name": "<lambda>",
+        "calls": 32,
+        "self_s": 2.6260000000000004e-06,
+        "cum_s": 2.6260000000000004e-06
+      },
+      {
+        "line": 249,
+        "name": "<genexpr>",
+        "calls": 8,
+        "self_s": 1.4990000000000002e-06,
+        "cum_s": 1.4990000000000002e-06
+      },
+      {
+        "line": 2677,
+        "name": "<genexpr>",
+        "calls": 2,
+        "self_s": 6.67e-07,
+        "cum_s": 6.67e-07
+      },
+      {
+        "line": 2678,
+        "name": "<genexpr>",
+        "calls": 2,
+        "self_s": 1.67e-07,
+        "cum_s": 1.67e-07
+      }
+    ]
+  },
+  "benchmark": {
+    "note": "Five alternating local Mac Python3.12 parse-only samples of two exact inputs. Equality against retained complete-output hashes. No fleet claim.",
+    "summary": {
+      "before": {
+        "cpu_s": 0.7491789999999998,
+        "wall_s": 0.805987875093706
+      },
+      "after": {
+        "cpu_s": 0.6552869999999995,
+        "wall_s": 0.7260549999773502
+      }
+    },
+    "samples": [
+      {
+        "iteration": 0,
+        "version": "before",
+        "cpu_s": 1.071717,
+        "wall_s": 1.8340630419552326,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 0,
+        "version": "after",
+        "cpu_s": 0.612401,
+        "wall_s": 0.6387410840252414,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 1,
+        "version": "after",
+        "cpu_s": 0.6704139999999998,
+        "wall_s": 0.7455730000510812,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 1,
+        "version": "before",
+        "cpu_s": 1.0044119999999999,
+        "wall_s": 1.2811173329828307,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 2,
+        "version": "before",
+        "cpu_s": 0.6967699999999999,
+        "wall_s": 0.7339688339270651,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 2,
+        "version": "after",
+        "cpu_s": 0.687881,
+        "wall_s": 0.7891048329183832,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 3,
+        "version": "after",
+        "cpu_s": 0.6170229999999997,
+        "wall_s": 0.6415498340502381,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 3,
+        "version": "before",
+        "cpu_s": 0.6621080000000008,
+        "wall_s": 0.6735858750762418,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 4,
+        "version": "before",
+        "cpu_s": 0.7491789999999998,
+        "wall_s": 0.805987875093706,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      },
+      {
+        "iteration": 4,
+        "version": "after",
+        "cpu_s": 0.6552869999999995,
+        "wall_s": 0.7260549999773502,
+        "outputs": [
+          "30b4b698eae43127172fd0aacf1215fecb374c638682c51be448227382c4bfa4",
+          "3139aea2d2673b7d01fa4ede3de6e394f291e7f6f982d38d2ea822fc3bb4f7ba"
+        ]
+      }
+    ]
+  },
+  "memory": {
+    "note": "One tracemalloc observation per exact document/version; Python allocations, not RSS or hosted cost",
+    "candidate_ast_matches_source": true,
+    "rows": [
+      {
+        "version": "before",
+        "document": "aapl-20250927.htm",
+        "peak_traced_bytes": 51511226,
+        "retained_traced_bytes": 26123198
+      },
+      {
+        "version": "before",
+        "document": "aapl-20260627.htm",
+        "peak_traced_bytes": 35419024,
+        "retained_traced_bytes": 18380164
+      },
+      {
+        "version": "after",
+        "document": "aapl-20250927.htm",
+        "peak_traced_bytes": 53187862,
+        "retained_traced_bytes": 26219362
+      },
+      {
+        "version": "after",
+        "document": "aapl-20260627.htm",
+        "peak_traced_bytes": 37361912,
+        "retained_traced_bytes": 20349100
+      }
+    ]
+  },
+  "regression": "Repeated node property reads split 1200 times before vs six source-name states after; mutation/Unicode/plain/malformed-name behavior preserved.",
+  "parser_tests": "215 passed in 7.96s",
+  "limitations": [
+    "Local two-document diagnostic, not representative fleet or hosted cost proof.",
+    "One tracemalloc observation per document/version, not RSS; peak allocations increased 3.25/5.49 percent.",
+    "No causal 30 percent gain or cost neutrality claim."
+  ],
+  "rollback": "Revert only node name-parts reuse and its performance regression if hosted correctness or resource evidence contradicts the trial; retain previous parser and CI changes.",
+  "integration_test": "Offline fake-SEC TEMP LocalStore publisher lineage round-trip equals direct mint: 1 passed in 10.85s"
+}
