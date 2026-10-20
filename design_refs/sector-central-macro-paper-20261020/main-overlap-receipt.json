@@ -1,0 +1,43 @@
+{
+  "base_sha": "3667000ca153496d8ff69e8864b159ac1e7b9de0",
+  "observed_main_sha": "4290a79a222da944dbee0b438474029d67d0c4b2",
+  "observed_utc": "2026-10-20T11:10:10.237447+00:00",
+  "commits_ahead": 66,
+  "changed_path_count": 16003,
+  "candidate_source_paths": [
+    ".github/ci/legacy-jobs.yml",
+    "research/SECTOR_CENTRAL_MACRO_PAPER_PIVOT_2026_10_20.md",
+    "scripts/build_site.py",
+    "site/si_workspace.js",
+    "site/stocktable.js",
+    "templates/_sector_central_brief.html.j2",
+    "templates/_sector_central_brief.js.j2",
+    "templates/_sector_central_coverage.js.j2",
+    "templates/_sector_central_paper.css.j2",
+    "templates/_sector_prophet_context.css.j2",
+    "templates/_sector_prophet_context.html.j2",
+    "templates/_sector_prophet_context.js.j2",
+    "templates/_us_act_now_board.html.j2",
+    "templates/_us_board_cards.html.j2",
+    "templates/dashboard.html.j2",
+    "templates/sector_central.html.j2",
+    "templates/si_workspace.js",
+    "templates/stocktable.js",
+    "tests/test_ci_pack.py",
+    "tests/test_p_mp1_shell_nonus_byte_parity.py",
+    "tests/test_rlt_sector_stance_enrich.py",
+    "tests/test_sector_central_measured_panel.py",
+    "tests/test_sector_central_paper.py",
+    "tests/test_si_workspace_shell.py",
+    "tests/test_us_stocks_w8g_table.py"
+  ],
+  "candidate_source_overlap": [
+    ".github/ci/legacy-jobs.yml",
+    "scripts/build_site.py",
+    "tests/test_ci_pack.py"
+  ],
+  "working_tree_rebased_or_merged": false,
+  "existing_sector_caution_owner_unchanged_on_observed_main": true,
+  "base_caution_owner_sha256": "5ac24cf42eaf471eef21fa61787bca5007a6e39d97590d7a595fd5fb0f846e05",
+  "observed_main_caution_owner_sha256": "5ac24cf42eaf471eef21fa61787bca5007a6e39d97590d7a595fd5fb0f846e05"
+}

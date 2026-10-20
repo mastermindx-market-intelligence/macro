@@ -5089,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_664),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_670),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5098,6 +5098,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-20 Sector Central Macro/Paper migration registers three source-only
+    suites in public-render-fastlane: Paper evidence/context, native workspace
+    routing, and synchronous payload order. The existing owner has Node and the
+    required minimal Python dependencies. HEAD/candidate manifests on the SAME
+    source tree select identical sorted job IDs for all three probes; only this
+    job's estimator changes, 24 -> 30 (+6 from the three explicit test paths).
+    Measured probes: index 135 jobs / 5,789 -> 5,795; free-content 134 jobs /
+    5,664 -> 5,670; plan-book 128 jobs / 5,538 -> 5,544. Every probe stays at
+    ten packs. Fund only free-content's exact six-unit excess, to 5,670.
+    All suites, selectors, job ceilings, the other weights and ten-pack ceiling
+    remain intact. The existing countercase owner's added shared-JS dependency
+    changes no weight. Receipt: design_refs/sector-central-macro-paper-20261020/
+    ci-registration-attribution.json. These are estimator units, not timings.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight

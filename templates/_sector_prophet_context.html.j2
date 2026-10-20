@@ -1,0 +1,15 @@
+{# Identity-only Sector -> Prophet context, outside stock cards and their owners. #}
+<style>{% include "_sector_prophet_context.css.j2" %}</style>
+<section class="si-prophet-context span12" id="sector-prophet-context" aria-labelledby="si-prophet-subject" hidden>
+  <div class="si-prophet-context-copy">
+    <p class="si-prophet-context-label">{{ t('From Sector Central', '来自板块情报') }}</p>
+    <h2 id="si-prophet-subject"></h2>
+    <p class="si-prophet-context-note" id="si-prophet-note" aria-live="polite"></p>
+  </div>
+  <div class="si-prophet-context-actions">
+    <button type="button" id="si-prophet-screener" aria-controls="us-stocktable-wrap" disabled>{{ t('View sector in Screener →', '在筛选器中查看该板块 →') }}</button>
+    <a id="si-prophet-return" href="sector_central.html#map">{{ t('Return to sector evidence →', '返回板块证据 →') }}</a>
+    <a id="si-prophet-clear" href="us_stocks.html">{{ t('Clear context', '清除板块背景') }}</a>
+  </div>
+</section>
+<script>{% include "_sector_prophet_context.js.j2" %}</script>

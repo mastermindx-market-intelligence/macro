@@ -1,0 +1,258 @@
+{
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "page_id": "p-Y-0",
+  "node_count": 3840,
+  "artboard_count": 26,
+  "artboards": [
+    {
+      "id": "24OB-0",
+      "name": "00 · R2 CURRENT AUTHORITY · Start Here",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0
+    },
+    {
+      "id": "27SZ-0",
+      "name": "01 · R2 BUILD CONTRACT · Backend + Release",
+      "childCount": 4,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 0
+    },
+    {
+      "id": "24RC-0",
+      "name": "10 · R2 ROUTE · Desktop · Sector Brief",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 1600
+    },
+    {
+      "id": "2596-0",
+      "name": "20 · R2 ROUTE · Desktop · Explore Rotation",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 1600
+    },
+    {
+      "id": "6K0C-0",
+      "name": "11 · R2 Native · Brief · Measured leadership",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 6080,
+      "worldY": 0
+    },
+    {
+      "id": "6JVY-0",
+      "name": "21 · R2 Native · Rotation · 63D / 21D wealth",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 4560,
+      "worldY": 0
+    },
+    {
+      "id": "261A-0",
+      "name": "30 · R2 ROUTE · Desktop · Industry Dossier",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 3040,
+      "worldY": 1600
+    },
+    {
+      "id": "6L4C-0",
+      "name": "31 · R2 Next · Dossier · Source-qualified",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 7600,
+      "worldY": 0
+    },
+    {
+      "id": "6L8V-0",
+      "name": "32 · R2 Next · Mobile Dossier · 390",
+      "childCount": 2,
+      "width": 390,
+      "height": null,
+      "worldX": 9120,
+      "worldY": 0
+    },
+    {
+      "id": "273O-0",
+      "name": "40 · R2 ROUTE · Desktop · Connected Research",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 4560,
+      "worldY": 1600
+    },
+    {
+      "id": "28SK-0",
+      "name": "41 · R2 SUBVIEW · Desktop · Compare + Themes",
+      "childCount": 2,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 4300
+    },
+    {
+      "id": "28BJ-0",
+      "name": "11 · R2 ROUTE · Mobile · Sector Brief",
+      "childCount": 3,
+      "width": 390,
+      "height": null,
+      "worldX": 0,
+      "worldY": 4300
+    },
+    {
+      "id": "28OT-0",
+      "name": "12 · R2 STATE · Mobile · Breadth Evidence",
+      "childCount": 3,
+      "width": 390,
+      "height": null,
+      "worldX": 470,
+      "worldY": 4300
+    },
+    {
+      "id": "2SS6-0",
+      "name": "02 · R2 TOC · Routes + States + Build Order",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": 3040,
+      "worldY": 0
+    },
+    {
+      "id": "1W6W-1",
+      "name": "21 · R2 Explore · Breadth · Desktop",
+      "childCount": 4,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 6800
+    },
+    {
+      "id": "1XAO-1",
+      "name": "22 · R2 Explore · Subtheme Evidence · Desktop",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 6800
+    },
+    {
+      "id": "1XLT-1",
+      "name": "42 · R2 Research · Compare Evidence · Desktop",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": 3040,
+      "worldY": 6800
+    },
+    {
+      "id": "1Y9Q-1",
+      "name": "43 · R2 Sources · Version Conflict · Desktop",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 9300
+    },
+    {
+      "id": "1YSZ-1",
+      "name": "44 · R2 Sources · Methods · Desktop",
+      "childCount": 5,
+      "width": 1440,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 9300
+    },
+    {
+      "id": "1WW5-1",
+      "name": "23 · R2 Explore · Breadth · Mobile",
+      "childCount": 3,
+      "width": 390,
+      "height": null,
+      "worldX": 0,
+      "worldY": 11700
+    },
+    {
+      "id": "20L6-1",
+      "name": "24 · R2 Explore · Memory Evidence · Mobile",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 470,
+      "worldY": 11700
+    },
+    {
+      "id": "20MT-1",
+      "name": "45 · R2 Research · Compare Evidence · Mobile",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 940,
+      "worldY": 11700
+    },
+    {
+      "id": "20P9-1",
+      "name": "46 · R2 Sources · Version Conflict · Mobile",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 1410,
+      "worldY": 11700
+    },
+    {
+      "id": "20R6-1",
+      "name": "47 · R2 Sources · Methods · Mobile",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 1880,
+      "worldY": 11700
+    },
+    {
+      "id": "6LQ6-0",
+      "name": "48 · R2 Native · Research question · Desktop",
+      "childCount": 1,
+      "width": 1440,
+      "height": null,
+      "worldX": 9590,
+      "worldY": 0
+    },
+    {
+      "id": "6LSO-0",
+      "name": "49 · R2 Native · Research question · Mobile",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 11110,
+      "worldY": 0
+    }
+  ],
+  "write_schema": {
+    "server_name": "paper-desktop",
+    "server_version": "0.5.14",
+    "catalog_sha256": "1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db",
+    "accepted_for_write": false,
+    "expected_server": [
+      "paper-desktop",
+      null
+    ],
+    "server_name_compatible": true,
+    "server_version_compatible": true,
+    "server_version_policy": "OBSERVED_NOT_PINNED",
+    "catalog_compatible": false,
+    "expected_catalog_sha256": "ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9"
+  },
+  "write_binding_ready": true
+}

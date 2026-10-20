@@ -1,0 +1,17 @@
+{
+  "scope": "Shipped US source/view owner and native selection/filter/render functions with checked-out public preview rows in a DOM harness; not browser acceptance",
+  "us_page_input_sha256": "4f798e19a16aa18491d94935fd45128dd96b418a43f0308ad9fdd7bbb2d96837",
+  "stocktable_source_sha256": "4c6cb85454d10ef6466e231b1725d04df58048d3e35f3722c290c44b91ac01ff",
+  "sector_id": "XLB",
+  "canonical_sector": "Materials",
+  "loaded_rows": 3,
+  "matched_loaded_rows": 0,
+  "registered_sector_choices": 11,
+  "context_requires_explicit_click": true,
+  "source_mode": "candidates",
+  "view": "table",
+  "empty_loaded_result_message": "No matching stocks in the loaded table. Clear filters to widen the view.",
+  "input_unchanged": true,
+  "fetched_additional_rows": false,
+  "browser_acceptance": false
+}

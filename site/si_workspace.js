@@ -15,9 +15,9 @@
    lazy-mounted below), so it is a promise the data can keep. It has no si-read slot — its
    hero is its read. */
 var VIEWS=['overview','map','moving','money','explore','confluence'];
-var TITLES={overview:['Overview','总览'],map:['The Map','全景图谱'],
-  moving:["What's Moving",'正在轮动'],money:['Money & Breadth','资金与广度'],
-  explore:['Explore','深入探索'],confluence:['Confluence','子行业汇聚']};
+var TITLES={overview:['Brief','简报'],map:['Market map','市场图谱'],
+  moving:['Rotation','轮动'],money:['Breadth & money','广度与资金'],
+  explore:['Themes & compare','主题与比较'],confluence:['Entry evidence','入场证据']};
 /* View glyphs = the estate's hand-drawn masked-icon family (product-nav-icons /
    dashboard-icons — the same set the nav mega-menus draw), tinted via currentColor.
    Never raw emoji beside the wordmark. */
@@ -45,9 +45,9 @@ var GLYPH={
    (defined just below) merges two non-theme keys at runtime — one routing
    the accumulation anchor to moving, and one routing a new si-heat-section
    key to explore with a scroll target of theme-heat-section — giving a live
-   key-count of 23 on the merged table. Any future key added to S2 MUST NOT
+   key-count of 24 on the merged table. Any future key added to S2 MUST NOT
    use a theme prefix (the LINE 324 short-circuit would eat it as dead data);
-   pins asserting the 21-key count or the live 23-key count are both
+   pins asserting the 21-key count or the live 24-key count are both
    intentional, not in conflict. */
 var LEGACY_ANCHORS={
   'actnow-section':['overview','actnow-section'],
@@ -82,7 +82,8 @@ var LEGACY_ANCHORS={
    below preserves the hash-router intent. */
 var LEGACY_ANCHORS_S2={
   'accumulation-section':['moving','accumulation-section'],
-  'si-heat-section':['explore','theme-heat-section']
+  'si-heat-section':['explore','theme-heat-section'],
+  'si-measured':['map','si-measured']
 };
 for(var _k in LEGACY_ANCHORS_S2){LEGACY_ANCHORS[_k]=LEGACY_ANCHORS_S2[_k];}
 
@@ -302,6 +303,20 @@ function activate(view,target){
     btns[i].classList.toggle('on',on);
     if(on) btns[i].setAttribute('aria-current','page'); else btns[i].removeAttribute('aria-current');
   }
+  /* Paper's workflow belongs to Macro. Research and watches land on existing
+     Macro instruments; they do not introduce Terminal routes or storage. */
+  var group=view==='overview'?'brief':
+    (target==='tm-mount'||target==='forming-narratives')?'research':
+    target==='accumulation-section'?'watches':'explore';
+  var workflow=document.querySelectorAll('[data-si-workflow]');
+  for(i=0;i<workflow.length;i++){
+    var selected=workflow[i].getAttribute('data-si-workflow')===group;
+    workflow[i].classList.toggle('on',selected);
+    if(selected) workflow[i].setAttribute('aria-current','page');
+    else workflow[i].removeAttribute('aria-current');
+  }
+  var subnav=document.querySelector('.si-side');
+  if(subnav) subnav.hidden=view==='overview';
   try{ document.title=BASE_TITLE+' · '+TITLES[view][isZh()?1:0]; }catch(e){}
   current=view;
   /* First activation mounts the heavy organs. The view must be laid out first so the
