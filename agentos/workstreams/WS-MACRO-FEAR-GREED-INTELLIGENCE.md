@@ -27,12 +27,11 @@ waves:
     title: "One existing-owner producer-to-Risk-Radar vertical, proof and publication"
     status: in_progress
 next_action: >
-  Qualify the original PR 9548 post-reference-de-admission integration against
-  actual current main, finish affected source/CI and browser proof, publish the
-  one existing branch normally and rearm protected merge-on-green. After its
-  successful native merge, verify render/VPS HTML and authenticated Risk Radar
-  customer operation; qualify data freshness after the distinct reviewed
-  QLedger market-publication PR 9556 naturally lands.
+  Consume the original PR 9548's new-head hosted CI and current integration
+  after normal same-carrier publication, then use the existing protected
+  merge controller. Verify the covering render/VPS HTML and genuine
+  authenticated Risk Radar operation. Preserve separate QLedger
+  restoration/migration holds, truthful delayed/stale clocks, and Copilot 9447.
 landmines:
   - "The legacy machine-consumed dial and existing regime/risk/trade authority stay unchanged."
   - "VIX acceleration is not VVIX. Absolute VIX threshold and liquidity-shock classifier kills remain binding."
@@ -49,6 +48,80 @@ artifacts:
   - reports/fear_greed_intelligence/replay.json
   - reports/fear_greed_intelligence/pinned-data-snapshot.json
 ---
+
+## October 20 2026 - original-carrier integration qualification
+
+The Chairman's continuing rotation/Sector/Prophet/Risk Radar mission resumes this
+same operation and source branch. This continuation keeps its explicit protected
+Mastermind pin `ebe2de8f0d94310241362874ec9262ba572a63d2`; the historical
+procedure pins below are preserved as historical receipts, not silently adopted.
+
+Published head `bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc` actually completed
+full hosted CI `39242078329` successfully on October 19 at 12:19:46Z,
+including all twelve packs and the final gate, plus authority and fences.
+The prior `525a80fc` pack-2 and `2e017f06` RIG failures retain their
+exact historical scopes. Controller comment `6267108827` subsequently
+identified a real source conflict and changed accepted-main check definitions.
+
+On October 20 the active continuation recorded visible maintenance in original
+PR comment `6259828158`, disarmed merge-on-green and retained merge-blocked.
+Fresh native custody confirmed the original registered workspace, clean
+`bc96a20f` HEAD and original branch, no pending Git effect marker, and
+remote-head identity. Direct bounded repair is retained for
+LOWER_TOTAL_OVERHEAD; the separate native consultant supplies independent
+integration judgment, not a new source worker.
+
+An ordinary no-commit merge of accepted main
+`23715f41f5a262dd4d4b7b36f192ad4fd5ba60d9` produced exactly four conflicts
+in `.github/ci/legacy-jobs.yml`. The resolution preserves BOTH additive
+path lists for nw-lobe-unfreeze, biocatalyst-serving, washout-turn-organ and
+unrun-picks-boards. A semantic comparison proves all 330 accepted-main jobs,
+all top-level settings and every main dependency path remain. Only these
+four existing jobs add the two FGI producer dependencies; the existing
+dashboard-render-contract retains its six FGI paths and one added pytest
+filename. No job, check, ceiling, publisher, source or trading permission
+was removed or weakened.
+
+The source integration tree before this progress-only record is
+`9f090f014a14473c406637f45fa73cb2f68b3592`; manifest SHA-256
+`2c3823dbf3788f9395e52a20a766a3b34476656a56776ffd0d0b6879783b14cf`.
+The auto-merged build_site view retains the exact FGI schema and expected
+NYSE session cache checks, computing through the existing owner without
+publishing. Eighteen enumerated feature, template, paired asset, test,
+research and render-workflow blobs are byte-identical to `bc96a20f`.
+
+Actual targeted integration proof:
+- Curated import closure, actual dashboard payload rendering, and cache
+  schema/clock behavior: **6 passed in 138.64 seconds**.
+- Ordinary-PR CI packing contract: **1 passed in 136.85 seconds**.
+- Both runs have two existing Chromium temporary-directory cleanup
+  warnings, with no failed assertion.
+- Logs: `/tmp/rotation9548-integration-jxpeusl4/targeted-tests.log` and
+  `/tmp/rotation9548-integration-jxpeusl4/packing.log`.
+
+The original owner's October 19 11:06 return in comment `6243259979`
+records actual new-head `bc96a20f` browser proof: **145/145 assertions**
+across eight desktop/mobile, EN/ZH and dark/light cells. That return closes
+the earlier pending-browser note below. The relevant subject/browser
+blobs are unchanged here; this continuation does not relabel that run as
+new or as deployed authenticated proof.
+
+QLedger #9556 has separately merged as
+`861de75dc831054888fa963423510cd13309bb69`, but the independently
+reproduced restoration-lookup defect in comment `6285214966` remains with
+its original owner. No production claim loss is asserted. #9450/#8756
+holds and native lossless migration remain unchanged. Honest delayed/stale
+FGI display does not require claiming this separate publication problem
+solved. Sector de-admission remains withdrawal, not October design approval.
+Independent Copilot #9447 and the original consent boundaries are preserved.
+
+Next is normal commit/push of this qualified original-carrier composition,
+remote readback, explicit release of this maintenance hold and rearming the
+existing controller last. Applicable new-head checks, current integration,
+normal protected merge, covering render/VPS publication, actual served
+HTML, and genuine signed-in Risk Radar interaction remain separate gates.
+No workflow dispatch/replay, automatic research promotion, new worker or
+second ledger was performed. **MISSION_COMPLETE: false.**
 
 ## Authority and custody
 

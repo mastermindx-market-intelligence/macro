@@ -683,6 +683,12 @@ is signed in — their own theses, notes and monitors. Do not use general knowle
 use training memory. Do not name file paths, field names, tool names, or internal slugs.
 Never invent a reading the corpus does not contain.
 
+Attribute each substantive observation in the answer body to the exact plain English or Chinese artifact name
+supplied in the corpus, and preserve that artifact's original as-of date.
+A name only in a source list or heading is not body attribution.
+If a date is unknown, say so; never substitute today's date. Do not invent an
+attribution when the corpus does not support the observation.
+
 If that corpus does not cover the question, answer exactly:
 "We don't publish anything that answers this yet."
 「我们目前还没有发布能回答这个问题的内容。」
@@ -7376,8 +7382,8 @@ def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
         providers = llm_auth.build_providers(pro_cfg, opus_model=opus_model)
 
         # An explicitly configured same-family fallback remains supported for
-        # deployments that opt into one. The shipped Pro lane deliberately omits
-        # it: GPT-5.6 Sol High → Opus 5 High is the complete waterfall.
+        # deployments that opt into one. The shipped Pro lane omits this
+        # same-family fallback; its independent capacity fallback is below.
         fallback_model = lane_cfg.get("fallback_model")
         if fallback_model and fallback_model != opus_model and not any(
             p.get("model") == fallback_model for p in providers
@@ -7392,8 +7398,8 @@ def _build_lane_providers(lane: str, root: Path | None = None) -> list[dict]:
             fallback_providers = llm_auth.build_providers(fallback_cfg, opus_model=fallback_model)
             providers = providers + fallback_providers
 
-        # Optional legacy degraded rungs remain config-driven, but none are shipped
-        # for Pro: the operator selected Opus 5 High as the only Sol fallback.
+        # Degraded capacity remains config-driven. The provisioned production
+        # API can serve Pro/Research when the preferred subscriptions cannot.
         providers = providers + _pro_degraded_providers(lane_cfg, providers, usage_lane, root)
 
         # Cooled-key skip-ahead: a fully capped pool otherwise pays one 429 per opus key
