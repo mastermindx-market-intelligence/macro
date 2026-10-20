@@ -30,18 +30,40 @@ waves:
     title: Continuity — this workstream, dated handoffs, seat memory, P4 frontier refresh
     status: in_progress
     next_action: >
-      Land the 2026-10-19 S3-prime-installed handoff (bcf4a2f7 installed 00:25Z, disarm
-      autonomy-595595aa4389, step 4 descriptor 7da3c957…) from branch
-      claude/ssd-exec-ecosystem-agentos-c6-873aabd3 together with the
-      WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 frontier refresh in the same PR; the c5 record landed in
-      macro PR 9606 and the option (a) record in macro PR 9594. Keep the seat memory checkpoint
-      current; the next record is the acceptance/arm outcome after the Chairman's canary decision.
+      Land the 2026-10-19 bcf4a2f7 acceptance-failed handoff (canary 01:16:01Z SPENT, acceptance
+      rc 1 at 01:18:08Z on the in-Control Control Room loopback listener, auditor FINAL
+      ARM_NOT_ADMISSIBLE, fix commissioned to the Opus sub-orchestrator) from branch
+      claude/ssd-exec-ecosystem-agentos-c7-873aabd3 together with the
+      WS:EXECUTIVE-AUTONOMY-V1-CLOSURE P4 refresh in the same PR; the c6 record landed in macro
+      PR 9614. Keep the seat memory checkpoint current; the next record is the fix PR merge and the
+      host chain on the new master sha.
   - id: R1
     title: Requalify codex-01 provider readiness with the existing credential (Mastermind PR 1591), then supersede the prepared 91c1cac5 acceptance with the current-master successor S2 = 08d78873 (root JOB-003; terminal JOB-006 carried)
     status: in_progress
     depends_on: [A0]
     next_action: >
-      2026-10-19 00:3xZ (seat 873aabd3): S3-PRIME INSTALLED. PR 1623 (child local_f20294a5, head
+      2026-10-19 04:4xZ (seat 873aabd3, Opus 5.5 from 04:3xZ): ACCEPTANCE OF bcf4a2f7 FAILED AND
+      THE FIX IS COMMISSIONED. Gate B passed 01:12:23Z (receipt 17330b78…, root 0600). The
+      Chairman's ONE canary passed 01:16:01Z on the renew-device-revalidation route (unchanged
+      codex-01 credential, expiry 02:12:00Z) and is SPENT. acceptance.sh (descriptor 7da3c957…)
+      exited 1 at 01:18:08Z with "host service status failed with exit 1" after Control booted to
+      READY under control.json 74366b97…, so the S2 boot defect is fixed in practice. Root cause
+      (read-only, source-pinned) — with workspace_acquisition in control.json, Control hosts the
+      Chairman Control Room as a ThreadingHTTPServer on 127.0.0.1:8787 in-process
+      (executive_os_phase1c.py ~2283-2332, executive_service.py ~3797,
+      workspace_control_room_lifecycle.py ~41-55), and status.sh check_listeners plus
+      acceptance._assert_no_public_listener fail on ANY TCP LISTEN under the service accounts. The
+      Oct 11 pass ran without workspace_acquisition, so the installed composition has never
+      passed. Auditor a59b7a4984ee30c91 FINAL — ARM_NOT_ADMISSIBLE; a loopback allowlist is
+      dishonest (GET / is unauthenticated and serves the token, so uids 470 and 457 could drive
+      mutating POSTs); admissible fixes are (b) an AF_UNIX socket with owner and mode checks and a
+      peer-uid allowlist or (c) an out-of-process Chairman-uid reader over control.sock; the
+      acceptance _run failure-artifact defect rides the same release. The fix release is
+      commissioned to Opus sub-orchestrator ab51377778db486f1 (fabric labour, DRAFT PR, consumer
+      census first). Host — bcf4a2f7 installed-unaccepted, UNARMED, STOPPED, quiescent. Next —
+      review routing, merge, host chain on the new master sha, ONE Chairman canary asked once,
+      acceptance, auditor refresh, arm, Phase F.
+      HISTORY (2026-10-19 00:3xZ, seat 873aabd3): S3-PRIME INSTALLED. PR 1623 (child local_f20294a5, head
       dec1daaa, maintenance module +41/-15, historical=True only at the prior-carry call, candidate
       paths strict, closed two-generation set, test-only REVIEWED_FILES pin recomputed = MATCH) was
       reviewed ONCE by the PR 1609 reviewer (verdict MERGE, 315 tests, one minor non-blocking
@@ -197,6 +219,9 @@ landmines:
   - A root run of the framework Python without -B writes stdlib __pycache__ pycs under /Library/Frameworks/Python.framework/Versions/3.12 and install.sh then refuses pre-mutation (runtime seal invalid; codesign reports file added) — verify the seal with codesign --verify --deep --strict before every install and remove exactly the flagged pycs with the seat's remove_stray_pycache.py.
   - In ordinary exact_protected_master mode install.sh must NOT receive --protected-master-sha (a frozen-mode-only argument, refused), and only the clone's exact origin/master is installable or acceptable — a reviewed squash that master has moved past (ba48cd87) is uninstallable unless the moved master's executive_os, app and config subtrees are proven identical.
   - install.sh leaves CONFIG_DRIFT after every install (no receipt rebind); the remedy is the installed release's own autonomy-control.sh disarm, which writes a new transaction (autonomy-595595aa4389 for bcf4a2f7) — never hand-edit autonomy-state-v1.json or control.json.
+  - Under any control.json that carries workspace_acquisition, Control binds the hosted Control Room on 127.0.0.1 (workspace_control_room.port 8787) inside the Control process, and the host proof (status.sh check_listeners, acceptance._assert_no_public_listener) fails on that row; acceptance of bcf4a2f7 under control.json 74366b97… cannot pass. Never add a loopback or port allowlist to either proof (rejected by the auditor as dishonest because the unauthenticated GET / serves the Control Room token to any local uid), never strip workspace_acquisition or workspace_control_room from control.json, and never run acceptance under a config that lacks the installed keys to make it pass; the fix moves the Control Room off TCP in a reviewed release.
+  - acceptance._run discards the failing step's stdout and stderr, so a failed acceptance names only the step; read the release's own failure-control-status.json and the service logs, and keep the bounded failure-artifact fix in the reviewed release.
+  - The agent-relay launchd job is a KeepAlive crash loop (exit 2, old release 326c8469, uid 457) owned by the relay owner; never signal, boot out or restart it from this seat.
 do_not_redo:
   - The 2026-10-17 Phase A census (ledger §1 and §5) — reuse until an installed SHA, installed config or runtime DB fact changes.
   - The install of 91c1cac5 and the acceptance receipt for 25c4b792.
@@ -208,24 +233,27 @@ do_not_redo:
   - The bcf4a2f7 host chain — clone Mastermind-bcf4a2f7, assets eec03841…, install-inputs 74366b97…, the ONE step-4 supersede (descriptor 7da3c957…), the seal repair (67 pycs), install.sh run 2 (2026-10-19 00:25Z), status and disarm autonomy-595595aa4389 — never repeat any step; the bundle and the installed release are the inputs to acceptance.
   - The install-sha decision (bcf4a2f7 over ba48cd87) and its subtree-identity proof (ops/executive_os 28d73c2f…, app 75492340…, config d5bc9c07…) — reuse until master moves again before acceptance.
   - The 2026-10-18 option (a) host chain — finite host publication, finite-control-stage (marker 06:22:37Z), disarm transaction autonomy-ea0086af6ee4, Gate B receipt 42e1ac39…, the 06:57:19Z canary, the single S2 acceptance run and its root-cause diagnosis, the 07:10:53Z service stop, the arming review's FINAL HOLD verdict for S2.
+  - The bcf4a2f7 acceptance chain of 2026-10-19 — Gate B receipt 17330b78…, the 01:16:01Z canary (SPENT), the single acceptance run (rc 1 at 01:18:08Z), its read-only root-cause diagnosis and the auditor's FINAL ARM_NOT_ADMISSIBLE with its (b)/(c) design ruling — never rerun acceptance under release bcf4a2f7 with control.json 74366b97…, never reuse the spent readiness receipt for arm.
+  - The Control Room off-TCP fix commission (Opus sub-orchestrator ab51377778db486f1, 2026-10-19 04:3xZ) — continue by message only, never re-spawn or duplicate while it runs or awaits consumption.
+  - Mastermind PR 1626 (comment/docs follow-up to PR 1623, head 00aad308, one read-only review 2026-10-19, verdict MERGE FINAL, 347 tests) — never re-review or add commits; merge it once.
 next_action: >
-  Lane R: S3-prime = bcf4a2f72538682f2fbe4902f6417e59cd038678 is INSTALLED (2026-10-19 00:25Z),
-  disarmed and re-bound (autonomy-595595aa4389, UNARMED), NOT accepted, NOT armed; the host control
-  plane is DARK by design (services stopped since 2026-10-18 07:10:53Z, uid 451 distnoted only);
-  the maintenance supersede bundle for bcf4a2f7 is prepared ONCE (descriptor
-  7da3c9577cd5d9cc62898cc1b6806630835486f258d4f893d12db48cfabc2c12). The Chairman's one further canary is SPENT.
-  Next, in order — (1) the seat asks the Chairman ONCE to authorize ONE new readiness canary for
-  S3-prime acceptance and arm, or to hold bcf4a2f7 installed-unaccepted; (2) on his word — Gate B
-  preflight through the installed release's git_handoff_preflight.py (new receipt for bcf4a2f7),
-  the canary through the renew-device-revalidation route on the unchanged codex-01 credential,
-  acceptance.sh within 28 minutes with --maintenance-descriptor-sha256 7da3c957…, arming review
-  refresh by the same read-only auditor (continue a59b7a4984ee30c91 by message), arm in the
-  gap-5-safe order (status, arm-quiesce-control-uid, arm with the Gate B receipt and the same
-  credential deadline, status), Phase F H1–H8 with successful and interrupted journeys; (3) a
-  failing canary is a provider fact for the Chairman, never a second canary. Meanwhile, with no
-  host mutation — land this record, send the minor PR 1623 comment/docs follow-up to child
-  local_f20294a5 by message, Lane A inputs (publication owner still unnamed), auditor gaps 3 and 5
-  as reviewed source follow-ups.
+  Lane R: bcf4a2f72538682f2fbe4902f6417e59cd038678 (S3-prime) stays INSTALLED-UNACCEPTED, UNARMED
+  and STOPPED; acceptance failed 2026-10-19 01:18:08Z because the installed composition hosts the
+  Chairman Control Room on 127.0.0.1:8787 inside Control while the host proof forbids any TCP
+  listener (see R1). The Chairman's canary is SPENT and the auditor's FINAL is
+  ARM_NOT_ADMISSIBLE. Next, in order — (1) consume the Opus sub-orchestrator's DRAFT Mastermind
+  PR (Control Room on a peer-checked AF_UNIX socket or out of process, the auditor's negative
+  tests, the acceptance failure artifact, the boot smoke check, the arm sample correction, a
+  workspace_acquisition fixture), route one independent read-only review, repair by message,
+  mark ready and merge through the queue; merge PR 1626 once (review verdict MERGE FINAL); (2) run
+  the host chain once on the new master sha (clone, assets, install-inputs with predecessor
+  bcf4a2f7, maintenance supersede once, seal check, install.sh, release disarm, Gate B); (3) ask
+  the Chairman ONCE for ONE readiness canary; (4) on his word — the canary, acceptance.sh within
+  28 minutes, the same auditor's refreshed FINAL by message, arm in the gap-5-safe order with
+  --foreground-only and device-auth, Phase F H1–H8 with successful and interrupted journeys.
+  Never a loopback allowlist, never a canary on seat authority, never a rerun of acceptance
+  under bcf4a2f7 and control.json 74366b97…. Lane A inputs (publication owner still unnamed)
+  stay open.
 ---
 
 ## Context
