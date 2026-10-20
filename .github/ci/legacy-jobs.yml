@@ -1018,6 +1018,7 @@ jobs:
       - "collectors/edgar_share_quality.py"
       - "collectors/edgar_stock_quality.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "config.yml"
       - "config/market_memory_canary.v1.json"
       - "engine/__init__.py"
@@ -6586,6 +6587,8 @@ jobs:
       - "engine/intelligence_workspace/options_contract_identity.py"
       - "tests/test_options_contract_identity.py"
       - "lib/options_source_receipts.py"
+      - "lib/options_reference_pages.py"
+      - "tests/test_options_reference_pages.py"
       - "tests/test_options_source_receipts.py"
       - "tests/test_options_dated_projection.py"
       - "scripts/massive_entitlement_probe.py"
@@ -7259,7 +7262,7 @@ jobs:
       - name: intraday greek + conditional scenario surface tests (IV solve, Greek parity, source clocks, price×time contours)
         run: python -m pytest tests/test_intraday_greeks.py tests/test_options_scenario_surface.py -q
       - name: qualified joint exposure and legacy Hub publication compatibility
-        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
+        run: python -m pytest tests/test_options_exposure_projection.py tests/test_options_source_receipts.py tests/test_options_dated_projection.py tests/test_options_contract_identity.py tests/test_options_reference_pages.py tests/test_options_hub.py tests/test_options_hub_contract_v2.py tests/test_build_options_hub_nightly.py -q
       - name: structure payoff / scenario / greeks-drift engine (shared BS core reuse, bounded vs UNBOUNDED, typed nulls, zero entry authority)
         run: python -m pytest tests/test_options_payoff.py -q
       # OEU M-XP(b)+(c): the two payloads the Terminal / Options workspace fetch. Both are
@@ -30525,6 +30528,7 @@ jobs:
       - "collectors/sec_filing_parser.py"
       - "collectors/sec_request_pacer.py"
       - "collectors/thetadata.py"
+      - "lib/options_source_receipts.py"
       - "collectors/us_names_zh.py"
       - "collectors/usaspending_awards.py"
       - "collectors/usaspending_idv_graph.py"

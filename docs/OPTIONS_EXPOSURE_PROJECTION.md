@@ -397,3 +397,64 @@ current-session OI. Its next normal session run advances that source frontier.
 An explicit catch-up remains a separately bounded effect through the incumbent
 writer lock and atomic merge; neither this helper nor a projection context
 waives those controls or permits a selected capture to replace a full book.
+
+
+### Full declared observed population and paged exact reference
+
+The optional dated identity v2 receipt (`options.dated_contract_identity/v2`,
+`scope: observed_contracts`) binds the entire Greek/OI coordinate union, with
+multiple expiries, through the existing native identity owner. The selected v1
+receipt and exposure v2 tuple arrays are unchanged. The v2 adapter currently
+supports SPY's captured canonical target; QQQ retains its native intake fence.
+`observed_contract_keys` is the unique full pre-exclusion union (at most100000
+members/50000 expiry-strike cells). `contract_keys` is its uniquely exact-reference
+bound subset, possibly empty. Omitted or ambiguous reference series remain in the
+observed denominator. Adjusted/unknown terms still withhold the dependent metric,
+including when OI is zero. No general root alias or PIT grant is created.
+
+The receipt retains exact source session/effective day, actual maximum known-by
+clock, semantic input digest, canonical master/listing artifact digests, and
+`reference_observation_sha256` of the captured parsed population manifest.
+`reference_pages` contains each actual sanitized `params`, raw `response_sha256`,
+`completed_at`, `response_bytes` and `contracts` count. These are separate raw-page
+hashes; the parsed manifest is not relabeled one raw response. Page0 fixes exact
+root/as_of/minimum-expiry selection, later pages retain opaque cursors with only
+matching optional scope echoes. Queries and cursors are unique. A complete crawl
+has at least one page, even for an empty result, and its bound members cannot
+exceed actual reference row counts. Incomplete/capped manifests cannot bind a book.
+
+The existing RestProber's explicit `reference_population` profile allows at most
+20GET/pages,20000 reference rows,8MiB total and1MiB/1000rows per page, with15-second
+minimum pacing and no retry or redirect. Same-origin HTTPS links are pinned to
+the exact contracts-list route, rejecting userinfo, explicit ports, scope changes,
+duplicate query keys and malformed cursors. Reflected API keys are discarded.
+Only an absent/null next link establishes completion; any malformed value closes
+the request budget. The original selected-expiry caps and default probes remain
+unchanged. No crawler runs without an explicit bounded caller.
+
+`source_evidence_basis: native_acquisition` uses actual whole-root acquisition
+receipts and no artifact pair. `retained_native_store_read` requires exact Greek/OI
+Parquet hashes and actual read clocks, checked before decoding against100000 rows,
+64columns and128MiB decoded metadata per input. Retained reads establish possession
+now, never original endpoint/model version/provider publication or historical
+availability. They cannot qualify old numerical rows without separate real evidence.
+Both routes preserve the full observed denominator. Per-cell metric/joint qualified
+counts cannot exceed its bound reference members; `qualified + missing` sums to the
+observed union. `expected` remains null for unknown full-market coverage, while
+`received` reports actual metric receipts. Incomplete totals keep gross/net null and
+retain explicitly partial known amounts. Full books use normal stored frames, not
+the selected source-input descriptor, and remain subject to the existing whole-event
+8MiB guard without truncation or partial latest-book replacement.
+
+### Prospective native daily version selection
+
+`bulk_greeks(..., expiration=0, version="1")` now forwards the explicit version to
+every native wildcard day window. Omitting it preserves the provider/default
+request. After protected installation through the existing dirty-source integration
+owner, setting `THETADATA_DATED_GREEKS_V1_ROOTS=SPY,QQQ` in the incumbent daily process
+environment selects version1 only for those roots, in both daily and explicit-root
+top-up paths. The default is empty; unsupported roots refuse before acquisition.
+The installed daily wrapper/service need not change scheduling or writer locks.
+Existing stored rows are not reacquired/upgraded by this option, and a previous
+unknown HTTP effect is not retried. Terms, canonical identity, actual receipt clocks
+and remaining qualification controls still apply independently.

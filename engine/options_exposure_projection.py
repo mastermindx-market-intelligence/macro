@@ -272,6 +272,9 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
     if out.get("input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root):
         return out  # The incumbent qualifier rejects the unchanged mismatched receipt.
     identity_inputs = out.pop("dated_identity_inputs", None)
+    observed_identity_inputs = out.pop("dated_population_identity_inputs", None)
+    if identity_inputs is not None and observed_identity_inputs is not None:
+        raise ValueError("Conflicting selected and observed identity inputs")
     if identity_inputs is not None:
         if out.get("kind") != DATED_KIND:
             raise ValueError("Selected dated identity cannot authorize instantaneous exposure")
@@ -282,11 +285,44 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
             raise ValueError("Conflicting owner canonical identity")
         out["security_id"] = bound["security_id"]
         out["contract_identity"] = bound
+    if observed_identity_inputs is not None:
+        if out.get("kind") != DATED_KIND or root != "SPY":
+            raise ValueError("Observed dated identity cannot authorize this exposure")
+        from engine.intelligence_workspace.options_contract_identity import resolve_observed_spy_contract_identity
+        bound = resolve_observed_spy_contract_identity(greeks_df, oi_df, source_session=asof,
+            input_sha256=out["input_sha256"], **observed_identity_inputs).receipt
+        if out.get("security_id") not in (None, bound["security_id"]):
+            raise ValueError("Conflicting owner canonical identity")
+        out["security_id"], out["contract_identity"] = bound["security_id"], bound
     terms = list(out.get("contract_terms") or [])
     term_indices = defaultdict(list)
     for index, term in enumerate(terms):
         term_indices[_key(term, root)].append(index)
     references = []
+    for population in out.pop("contract_reference_populations", []):
+        from lib.options_source_receipts import reference_population_terms
+        population_terms, _ = reference_population_terms(population, root, out.get("security_id"))
+        # Feed the same merge path without reinterpreting cursor queries as
+        # per-expiry requests. These terms were mapped from the actual page.
+        for term in population_terms:
+            if out.get("term_policy") == "occ_standard_spy_etf/v1":
+                term = ordinary_spy_terms(term)
+            key = _key(term, root)
+            matches = term_indices.get(key, [])
+            if len(matches)>1:
+                raise ValueError("Ambiguous owner terms")
+            if matches:
+                old=terms[matches[0]]
+                for field in ("series_id","exercise_style","shares_per_contract","additional_underlyings","correction"):
+                    if field in old and field in term and old[field]!=term[field]:
+                        raise ValueError("Conflicting reference terms")
+                merged={**term,**old}
+                previous,current=_time(old.get("available_at")),_time(term["available_at"])
+                merged["available_at"]=max(previous,current).isoformat() if previous is not None else current.isoformat()
+                merged["reference_observation_ref"]=term["terms_ref"]
+                terms[matches[0]]=merged
+            else:
+                term_indices[key].append(len(terms));terms.append(term)
     for observation in out.pop("contract_reference_observations", []):
         if "contracts" in observation:
             references.extend((observation, c) for c in observation["contracts"])
@@ -463,6 +499,10 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
                 raise ValueError("Dated scoped identity cannot qualify instantaneous exposure")
             identity_scope = validate_dated_contract_identity(context["contract_identity"], root=root,
                 source_session=asof, input_sha256=input_digest, cutoff=clocks.get("available_at"))
+            if context["contract_identity"].get("schema") == "options.dated_contract_identity/v2":
+                observed = {(k[0],format(Decimal(str(k[1])).normalize(),"f"),k[2]) for k in set(greek)|set(oi)}
+                if observed != {tuple(k) for k in context["contract_identity"]["observed_contract_keys"]}:
+                    raise ValueError("Observed identity denominator mismatch")
             if context.get("security_id") != context["contract_identity"]["security_id"]:
                 raise ValueError("Canonical identity mismatch")
         except (ValueError, TypeError, KeyError):

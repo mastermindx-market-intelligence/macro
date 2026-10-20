@@ -112,7 +112,7 @@ def native_acquisitions(frame, root, session, kind, *, now=None):
     return sorted(records, key=lambda r: json.dumps(r, sort_keys=True))
 
 
-def massive_reference_terms(observation, root, security_id=None, *, contract=None):
+def massive_reference_terms(observation, root, security_id=None, *, contract=None, selection_params=None):
     """Map one exact retained reference response. Omissions remain omissions.
 
     Shares delivered do NOT establish a quotation multiplier or an all-share
@@ -121,7 +121,7 @@ def massive_reference_terms(observation, root, security_id=None, *, contract=Non
     if not isinstance(observation, dict):
         raise ValueError("Invalid reference observation")
     cap = observation.get("capability") or {}
-    if (observation.get("schema") != "options_reference_capability_observation/v1"
+    if (observation.get("schema") not in ("options_reference_capability_observation/v1", "options_reference_page_observation/v1")
             or observation.get("state") != "response_observed"
             or cap.get("http_status") != 200 or cap.get("verdict") != "entitled"
             or observation.get("origin") not in ("https://api.polygon.io", "https://api.massive.com")
@@ -134,10 +134,14 @@ def massive_reference_terms(observation, root, security_id=None, *, contract=Non
     if not isinstance(c, dict):
         raise ValueError("Invalid reference contract")
     listed = contract is not None
+    scope = observation.get("params", {}) if selection_params is None else selection_params
+    if selection_params is not None and observation.get("schema") != "options_reference_page_observation/v1":
+        raise ValueError("Selection scope is only supplied by the paged observation adapter")
     if listed and (observation.get("path") != "/v3/reference/options/contracts"
             or not isinstance(observation.get("contracts"), list) or c not in observation["contracts"]
-            or observation.get("params", {}).get("underlying_ticker") != root
-            or observation.get("params", {}).get("expiration_date") != c.get("expiration_date")):
+            or scope.get("underlying_ticker") != root
+            or not (scope.get("expiration_date") == c.get("expiration_date") or
+                    (selection_params is not None and scope.get("expiration_date.gte") <= c.get("expiration_date", "")))):
         raise ValueError("Reference list scope mismatch")
     if not isinstance(c, dict) or c.get("underlying_ticker") != root:
         raise ValueError("Reference underlying mismatch")
@@ -177,6 +181,76 @@ def massive_reference_terms(observation, root, security_id=None, *, contract=Non
     return term
 
 
+def reference_population_terms(observation, root, security_id=None):
+    """Validate a complete bounded cursor chain, preserving actual page parameters.
+
+    A page cursor carries the original filter selection. Selection scope is
+    separate from each actual request query; neither is rewritten as the other.
+    Digests prove consistency, not HTTP authentication or historical possession.
+    """
+    if (not isinstance(observation, dict) or observation.get("schema") != "options_reference_population_observation/v1"
+            or observation.get("state") != "COMPLETE" or observation.get("root") != root
+            or root not in {"SPY", "QQQ"} or observation.get("historical_first_availability_established") is not False
+            or observation.get("origin") not in {"https://api.polygon.io", "https://api.massive.com"}
+            or observation.get("path") != "/v3/reference/options/contracts"):
+        raise ValueError("Reference population observation is not complete")
+    session = observation.get("source_session")
+    date.fromisoformat(session)
+    scope = observation.get("initial_params")
+    expected = dict(underlying_ticker=root, as_of=session, **{"expiration_date.gte": session},
+                    expired="false", order="asc", sort="ticker", limit=1000)
+    if scope != expected:
+        raise ValueError("Reference population selection scope mismatch")
+    pages = observation.get("pages")
+    if not isinstance(pages, list) or not 0 < len(pages) <= 20:
+        raise ValueError("Reference page count outside bound")
+    query, seen, cursors, total_bytes, count, terms, refs = scope, set(), set(), 0, 0, [], []
+    for index, page in enumerate(pages):
+        if not isinstance(page, dict) or page.get("params") != query:
+            raise ValueError("Reference page chain mismatch")
+        marker = json.dumps(query, sort_keys=True, separators=(",", ":"))
+        if marker in seen:
+            raise ValueError("Reference cursor cycle")
+        seen.add(marker)
+        if index:
+            if query['cursor'] in cursors:raise ValueError("Reference cursor cycle")
+            cursors.add(query['cursor'])
+        cap = page.get("capability") or {}
+        evidence = cap.get("evidence") or {}
+        size = evidence.get("response_bytes")
+        if (type(size) is not int or not 0 < size <= 1024*1024
+                or page.get("schema") != "options_reference_page_observation/v1"
+                or page.get("origin") != observation["origin"] or page.get("path") != observation["path"]
+                or page.get("state") != "response_observed"
+                or page.get("payload_sha256") != evidence.get("response_sha256")
+                or page.get("completed_at") != evidence.get("completed_at")
+                or not isinstance(page.get("contracts"), list) or len(page["contracts"]) > 1000):
+            raise ValueError("Reference page evidence invalid")
+        instant(page["completed_at"])
+        if instant(page["completed_at"]) > datetime.now(timezone.utc):
+            raise ValueError("Future reference page")
+        total_bytes += size;count += len(page["contracts"])
+        if total_bytes > 8*1024*1024 or count > 20000:
+            raise ValueError("Reference population exceeds response bounds")
+        # Validate even an empty final page's capability/digest.
+        if (cap.get("http_status") != 200 or cap.get("verdict") != "entitled"
+                or not re.fullmatch(r"[a-f0-9]{64}", str(page.get("payload_sha256", "")))):
+            raise ValueError("Reference page not admitted")
+        for contract in page["contracts"]:
+            terms.append(massive_reference_terms(page, root, security_id, contract=contract, selection_params=scope))
+        refs.append(dict(params=deepcopy(page["params"]), response_sha256=page["payload_sha256"],
+                         completed_at=page["completed_at"], response_bytes=size, contracts=len(page["contracts"])))
+        query = page.get("next_params")
+        if index == len(pages)-1:
+            if query is not None:
+                raise ValueError("Truncated reference page chain")
+        elif (not isinstance(query, dict) or not isinstance(query.get("cursor"), str)
+                or not 0 < len(query["cursor"]) <= 8192 or set(query)-set(scope)-{"cursor"}
+                or any(str(v) != str(scope[k]) for k,v in query.items() if k != "cursor")):
+            raise ValueError("Reference next-page selection widened")
+    return terms, refs
+
+
 MASSIVE_REFERENCE_METHODOLOGY = "https://massive.com/docs/rest/options/contracts/contract-overview"
 OCC_ETF_SPEC = "https://www.theocc.com/clearance-and-settlement/clearing/etf-options"
 
@@ -211,9 +285,11 @@ class BoundedRequestBudget:
     This is a request bound, not a scheduler, entitlement grant or retry route.
     Failure/uncertainty closes the budget; consumed attempts cannot be reset.
     """
-    def __init__(self, max_gets=3):
-        if type(max_gets) is not int or not 1 <= max_gets <= 3:
+    def __init__(self, max_gets=3, *, profile="selected_expiry"):
+        cap = {"selected_expiry": 3, "reference_population": 40}.get(profile)
+        if cap is None or type(max_gets) is not int or not 1 <= max_gets <= cap:
             raise ValueError("Bounded acquisition permits1–3GETs")
+        self.profile = profile
         self.max_gets = max_gets
         self.attempts = 0
         self.stopped = False

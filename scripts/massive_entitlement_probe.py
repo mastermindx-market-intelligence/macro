@@ -285,10 +285,20 @@ class RestProber:
 
     def __init__(self, key: str | None, base_url: str = DEFAULT_BASE_URL,
                  timeout: float = 15.0, session: Any = None, *, request_budget=None,
-                 max_bytes: int = 262144, max_rows: int = 100) -> None:
+                 max_bytes: int = 262144, max_rows: int = 100, profile: str = "selected_expiry",
+                 page_clock=None, page_sleep=None) -> None:
+        import time
+        caps = {"selected_expiry": (262144, 100), "reference_population": (1024*1024, 1000)}
+        if profile not in caps or (profile == "reference_population" and
+                (request_budget is None or getattr(request_budget, "profile", None) != "reference_population"
+                 or base_url.rstrip('/') not in {"https://api.polygon.io", "https://api.massive.com"})):
+            raise ValueError("Explicit bounded reference profile required")
+        self.profile = profile
+        self._page_clock, self._page_sleep = page_clock or time.monotonic, page_sleep or time.sleep
+        self._last_page_started = None
         self.request_budget = request_budget
         self.max_bytes, self.max_rows = max_bytes, max_rows
-        if request_budget is not None and (type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= 262144 and 0 < max_rows <= 100)):
+        if request_budget is not None and (type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= caps[profile][0] and 0 < max_rows <= caps[profile][1])):
             raise ValueError("Bounded reference read needs byte/row caps")
         self.key = key
         self.base_url = (base_url or DEFAULT_BASE_URL).rstrip("/")
@@ -346,7 +356,8 @@ class RestProber:
                     raw = b"".join(parts)
                     payload = json.loads(raw)
                     results = payload.get("results") if isinstance(payload, dict) else None
-                    if (not isinstance(results, list) or len(results) > self.max_rows or payload.get("next_url")):
+                    if (not isinstance(results, list) or len(results) > self.max_rows
+                            or (self.profile == "selected_expiry" and payload.get("next_url"))):
                         raise ValueError("bounded reference row/page limit exceeded")
                     import hashlib
                     from datetime import datetime, timezone
@@ -393,6 +404,85 @@ class RestProber:
                 rec["evidence"]["evidence_error"] = _err(exc, self._secrets())
         self.results[name] = rec
         return payload
+
+    def reference_population(self, root: str, source_session: str, *, max_pages: int = 20,
+                             max_contracts: int = 20000, max_total_bytes: int = 8*1024*1024,
+                             on_update=None) -> dict:
+        """Explicit bounded same-origin reference crawl; no default/battery activation.
+
+        Every page is an independently captured response; only the final absent
+        next link marks COMPLETE. The caller may durably retain sanitized updates.
+        A refusal, cap, cursor cycle or uncertain effect closes this SAME budget.
+        """
+        from copy import deepcopy
+        from lib.options_reference_pages import validate_reference_next_url
+        if (self.profile != "reference_population" or root not in {"SPY", "QQQ"}
+                or type(max_pages) is not int or not 1 <= max_pages <= 20
+                or type(max_contracts) is not int or not 1 <= max_contracts <= 20000
+                or type(max_total_bytes) is not int or not 0 < max_total_bytes <= 8*1024*1024
+                or date.fromisoformat(source_session).isoformat() != source_session):
+            raise ValueError("Invalid observed reference population operation")
+        path = "/v3/reference/options/contracts"
+        scope = dict(underlying_ticker=root, as_of=source_session, **{"expiration_date.gte": source_session},
+                     expired="false", order="asc", sort="ticker", limit=1000)
+        out = dict(schema="options_reference_population_observation/v1", state="STARTED", root=root,
+                   source_session=source_session, origin=self.base_url, path=path, initial_params=scope,
+                   pages=[], historical_first_availability_established=False)
+        def update():
+            if on_update is not None:
+                on_update(deepcopy(out))
+        params, seen_queries, seen_cursors = dict(scope), set(), set()
+        count = total_bytes = 0
+        update()
+        try:
+            for index in range(max_pages):
+                marker = json.dumps(params, sort_keys=True)
+                if marker in seen_queries or (index and params["cursor"] in seen_cursors):
+                    raise ValueError("Reference cursor cycle")
+                seen_queries.add(marker)
+                if index:
+                    seen_cursors.add(params["cursor"])
+                # Conservative four-GET/minute ceiling while account allowance
+                # is unreported. No rate-limit refusal is retried or waited out.
+                if self._last_page_started is not None:
+                    delay = 15 - (self._page_clock() - self._last_page_started)
+                    if delay > 0:
+                        self._page_sleep(delay)
+                self._last_page_started = self._page_clock()
+                payload, cap = self._request(path, params)
+                if cap.get("verdict") != "entitled" or not isinstance(payload, dict):
+                    out["last_failure"] = cap
+                    raise ValueError("Reference page refused or unavailable")
+                evidence = cap["evidence"]
+                page = dict(schema="options_reference_page_observation/v1", state="response_observed",
+                    origin=self.base_url, path=path, params=deepcopy(params), capability=cap,
+                    payload_sha256=evidence["response_sha256"], completed_at=evidence["completed_at"],
+                    contracts=payload["results"], next_params=None)
+                out["pages"].append(page)
+                count += len(page["contracts"]);total_bytes += evidence["response_bytes"]
+                if count > max_contracts or total_bytes > max_total_bytes:
+                    raise ValueError("Reference population response bound exceeded")
+                nxt = payload.get("next_url")
+                if nxt is None:
+                    out["state"] = "COMPLETE";update();return out
+                # Retain bounded diagnostics even when the link cannot be
+                # admitted. Never log the URL, cursor or a reflected apiKey.
+                from urllib.parse import urlsplit, parse_qsl
+                if isinstance(nxt, str) and len(nxt) <= 65536:
+                    query_pairs = parse_qsl(urlsplit(nxt).query, keep_blank_values=True)
+                    page["next_link_diagnostic"] = dict(url_chars=len(nxt),
+                        cursor_chars=[len(v) for k,v in query_pairs if k == "cursor"],
+                        query_keys=[k for k,v in query_pairs if k in set(scope)|{"cursor","limit"}])
+                _, params = validate_reference_next_url(nxt, origin=self.base_url, scope=scope)
+                page["next_params"] = params
+                if index+1 == max_pages:
+                    raise ValueError("Reference page cap reached before completion")
+                update()
+        except Exception as exc:
+            self.request_budget.stop()
+            out.update(state="STOPPED", reason=_err(exc, self._secrets()))
+            update()
+        return out
 
 
 def run_rest_battery(prober: RestProber, probe_day: str | None = None) -> dict[str, dict]:

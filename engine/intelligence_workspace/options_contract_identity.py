@@ -16,7 +16,7 @@ import re
 import pandas as pd
 
 from lib.dataos.identity import _aware_utc
-from lib.options_source_receipts import native_acquisitions, massive_reference_terms, ordinary_spy_terms
+from lib.options_source_receipts import native_acquisitions, massive_reference_terms, ordinary_spy_terms, reference_population_terms
 from lib.symbol_directory_receipts import validate_symbol_directory_completion_receipt_bytes
 from .entity import IdentityArtifactRead, IdentityResolutionError, _identity_read, _captured_option_security_target
 
@@ -149,6 +149,14 @@ def validate_dated_contract_identity(receipt, *, root, source_session, input_sha
     A deterministic seal is consistency, not capture authentication. The admitted
     owner constructs this receipt through resolve_dated_spy_contract_identity.
     """
+    if isinstance(receipt, dict) and receipt.get('schema') == 'options.dated_contract_identity/v2':
+        try:
+            return _validate_observed_identity(receipt, root=root, source_session=source_session,
+                                               input_sha256=input_sha256, cutoff=cutoff)
+        except IdentityResolutionError:
+            raise
+        except (ValueError, TypeError, KeyError, AttributeError, ArithmeticError) as exc:
+            raise IdentityResolutionError('Observed identity malformed: ' + str(exc)) from exc
     required = frozenset("schema scope root source_session effective_from effective_to known_at security_id listing_key input_sha256 contract_keys reference_observation_sha256 source_response_sha256 security_master_sha256 listing_sha256 listing_receipt_sha256 source_evidence_representation historical_first_availability_established root_alias_created binding_sha256".split())
     if not isinstance(receipt,dict) or set(receipt)!=required:
         raise IdentityResolutionError('Scoped identity receipt missing/unknown fields')
@@ -180,3 +188,173 @@ def validate_dated_contract_identity(receipt, *, root, source_session, input_sha
     except (ValueError,TypeError,ArithmeticError) as exc:
         raise IdentityResolutionError('Invalid selected identity coordinate') from exc
     return frozenset(normalized)
+
+
+def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_sha256,
+        reference: IdentityArtifactRead, security_master: IdentityArtifactRead,
+        listing: IdentityArtifactRead, listing_receipt: IdentityArtifactRead, decision_at,
+        retained_inputs=None):
+    """Bind an entire declared observed SPY population without minting an alias.
+
+    Retained store reads establish possession now, never an original HTTP request,
+    model/version, provider publication time or historical availability. Numerical
+    qualification remains the exposure producer's separate responsibility.
+    """
+    from engine.options_exposure_projection import exposure_input_digest
+    try:
+        cutoff=_aware_utc(decision_at,'decision_at');on=date.fromisoformat(source_session)
+        if exposure_input_digest(greeks,oi,source_session,'SPY') != input_sha256:
+            raise ValueError('Observed input digest mismatch')
+        reads=[_identity_read(r,cutoff) for r in (reference,security_master,listing,listing_receipt)]
+        if on>cutoff.date():raise ValueError('Future source session')
+        obs=_strict_json(reference.body)
+        if obs.get('source_session') != source_session:raise ValueError('Reference source session mismatch')
+        terms,pages=reference_population_terms(obs,'SPY')
+        source_clocks=[_aware_utc(p['completed_at'],'page completed_at') for p in pages]
+        if any(t>reads[0] for t in source_clocks):raise ValueError('Reference read before page capture')
+        artifacts=[]
+        if retained_inputs is not None:
+            if not isinstance(retained_inputs,dict) or set(retained_inputs)!={'greeks','oi'}:
+                raise ValueError('Retained pair incomplete')
+            frames=[]
+            for kind in ('greeks','oi'):
+                read=retained_inputs[kind];at=_identity_read(read,cutoff)
+                import pyarrow.parquet as pq
+                parquet=pq.ParquetFile(io.BytesIO(read.body))
+                if (parquet.metadata.num_rows>100000 or len(parquet.schema_arrow.names)>64
+                        or sum(parquet.metadata.row_group(i).total_byte_size for i in range(parquet.metadata.num_row_groups))>128*1024*1024):
+                    raise ValueError('Retained input exceeds decoded bound')
+                source=parquet.read().to_pandas()
+                frames.append(source)
+                artifacts.append(dict(kind=kind,sha256=read.sha256,read_at=at.isoformat()))
+                source_clocks.append(at)
+            if exposure_input_digest(*frames,source_session,'SPY') != input_sha256:
+                raise ValueError('Retained artifacts do not bind observed rows')
+            basis='retained_native_store_read'
+        else:
+            basis='native_acquisition'
+        observed=set()
+        for frame,kind in ((greeks,'greeks'),(oi,'oi')):
+            if len(frame)>100000:raise ValueError('Observed input exceeds bound')
+            if retained_inputs is None:
+                captures=native_acquisitions(frame,'SPY',source_session,kind)
+                if not captures:raise ValueError('Native observed acquisition missing')
+                for capture in captures:
+                    p=capture['parameters']
+                    if (p.get('expiration')!='*' or p.get('right','both')!='both'
+                            or p.get('strike','*')!='*' or p.get('strike_range') is not None
+                            or str(p['start_date']).replace('-','')!=source_session.replace('-','')
+                            or str(p['end_date']).replace('-','')!=source_session.replace('-','')):
+                        raise ValueError('Native acquisition is not the declared whole observed root')
+                    source_clocks.append(_aware_utc(capture['received_at'],'capture received_at'))
+            keys=[]
+            for row in frame.to_dict('records'):
+                d=row.get('date');d=d.date().isoformat() if isinstance(d,datetime) else str(d)
+                if row.get('root')!='SPY' or d!=source_session:raise ValueError('Observed root/session mismatch')
+                key=_key(row)
+                if date.fromisoformat(key[0])<on:raise ValueError('Expired observed contract')
+                keys.append(key)
+            if len(keys)!=len(set(keys)):raise ValueError('Duplicate observed coordinate')
+            observed.update(keys)
+        if not 0<len(observed)<=100000 or len({k[:2] for k in observed})>50000:
+            raise ValueError('Observed population outside bound')
+        by_key={}
+        for term in terms:by_key.setdefault(_key(term),[]).append(term)
+        # Reference omissions/ambiguity withhold their coordinates only. They do
+        # not remove those contracts from the declared observed denominator.
+        bound={k for k in observed if len(by_key.get(k,[]))==1}
+        listing_key,master_at=_captured_option_security_target('SEC:US-ARCX-SPY',on,
+            decision_at=cutoff,security_master=security_master)
+        receipt=validate_symbol_directory_completion_receipt_bytes(_strict_json(listing_receipt.body),
+            listing_receipt.body,listing.body,expected_kind='listing_snapshot')
+        completed=_aware_utc(receipt['clocks']['collector_completed_at'],'listing completed_at')
+        if (date.fromisoformat(receipt['observation_date'])>on or completed.date()>on
+                or completed>min(reads[2],reads[3]) or not receipt['authority']['listing_identity_observation_eligible']):
+            raise ValueError('Listing observation does not support dated target')
+        listing_rows=pd.read_parquet(io.BytesIO(listing.body));rows=listing_rows.loc[listing_rows.symbol=='SPY']
+        if len(rows)!=1:raise ValueError('Listing SPY missing or ambiguous')
+        row=rows.iloc[0]
+        if (listing_key!='US-ARCX-SPY' or row['exchange']!='P' or not bool(row['etf'])
+                or bool(row['test_issue']) or bool(row['is_preferred'])):
+            raise ValueError('Listing/canonical target mismatch')
+        known=max(*reads,*source_clocks,master_at,completed)
+        if known>cutoff:raise ValueError('Identity evidence after decision')
+        out=dict(schema='options.dated_contract_identity/v2',scope='observed_contracts',root='SPY',
+            source_session=source_session,effective_from=source_session,effective_to=(on+timedelta(days=1)).isoformat(),
+            known_at=known.isoformat(),security_id='SEC:US-ARCX-SPY',listing_key=listing_key,input_sha256=input_sha256,
+            contract_keys=[list(k) for k in sorted(bound)],observed_contract_keys=[list(k) for k in sorted(observed)],
+            reference_observation_sha256=reference.sha256,reference_pages=pages,security_master_sha256=security_master.sha256,
+            listing_sha256=listing.sha256,listing_receipt_sha256=listing_receipt.sha256,
+            source_evidence_representation='captured_reference_population_observation',source_evidence_basis=basis,
+            source_input_artifacts=artifacts,historical_first_availability_established=False,root_alias_created=False)
+        out['binding_sha256']=_sha(out)
+        return DatedContractIdentity(out)
+    except IdentityResolutionError:raise
+    except (ValueError,TypeError,KeyError,AttributeError,ArithmeticError) as exc:
+        raise IdentityResolutionError('Observed contract identity refused: '+str(exc)) from exc
+
+
+def _validate_observed_identity(receipt, *, root, source_session, input_sha256, cutoff):
+    required=frozenset('schema scope root source_session effective_from effective_to known_at security_id listing_key input_sha256 contract_keys observed_contract_keys reference_observation_sha256 reference_pages security_master_sha256 listing_sha256 listing_receipt_sha256 source_evidence_representation source_evidence_basis source_input_artifacts historical_first_availability_established root_alias_created binding_sha256'.split())
+    if set(receipt)!=required:raise IdentityResolutionError('Observed identity fields invalid')
+    on=date.fromisoformat(source_session);known=_aware_utc(receipt['known_at'],'known_at')
+    if (root!='SPY' or receipt['root']!=root or receipt['source_session']!=source_session
+            or receipt['scope']!='observed_contracts' or receipt['security_id']!='SEC:US-ARCX-SPY'
+            or receipt['listing_key']!='US-ARCX-SPY' or receipt['effective_from']!=source_session
+            or receipt['effective_to']!=(on+timedelta(days=1)).isoformat() or receipt['input_sha256']!=input_sha256
+            or receipt['source_evidence_representation']!='captured_reference_population_observation'
+            or receipt['historical_first_availability_established'] is not False or receipt['root_alias_created'] is not False
+            or known.date()<on or known>_aware_utc(cutoff,'cutoff')
+            or any(not re.fullmatch('[a-f0-9]{64}',str(receipt[k])) for k in ('input_sha256','reference_observation_sha256','security_master_sha256','listing_sha256','listing_receipt_sha256'))
+            or receipt['binding_sha256']!=_sha({k:v for k,v in receipt.items() if k!='binding_sha256'})):
+        raise IdentityResolutionError('Observed identity binding invalid')
+    def keys(name,empty=False):
+        values=receipt[name]
+        if not isinstance(values,list) or not (0 if empty else 1)<=len(values)<=100000:
+            raise IdentityResolutionError('Observed identity population outside bound')
+        normalized=[]
+        for key in values:
+            if not isinstance(key,list) or len(key)!=3:raise IdentityResolutionError('Observed coordinate invalid')
+            n=_key(dict(expiration=key[0],strike=key[1],right=key[2]))
+            if tuple(key)!=n or date.fromisoformat(n[0])<on:raise IdentityResolutionError('Observed coordinate noncanonical')
+            normalized.append(n)
+        if len(set(normalized))!=len(normalized):raise IdentityResolutionError('Observed coordinate duplicated')
+        return frozenset(normalized)
+    observed=keys('observed_contract_keys');bound=keys('contract_keys',True)
+    if not bound<=observed or len({k[:2] for k in observed})>50000:
+        raise IdentityResolutionError('Bound population widens observed scope or cell limit')
+    pages=receipt['reference_pages'];artifacts=receipt['source_input_artifacts']
+    if not isinstance(pages,list) or not 0<len(pages)<=20:raise IdentityResolutionError('Observed page bounds invalid')
+    scope=dict(underlying_ticker=root,as_of=source_session,**{'expiration_date.gte':source_session},
+               expired='false',order='asc',sort='ticker',limit=1000)
+    for index,page in enumerate(pages):
+        if (not isinstance(page,dict) or set(page)!={'params','response_sha256','completed_at','response_bytes','contracts'}
+                or not re.fullmatch('[a-f0-9]{64}',str(page['response_sha256']))
+                or _aware_utc(page['completed_at'],'page completed_at')>known
+                or type(page['response_bytes']) is not int or not 0<page['response_bytes']<=1024*1024
+                or type(page['contracts']) is not int or not 0<=page['contracts']<=1000):
+            raise IdentityResolutionError('Observed page evidence invalid')
+        query=page['params']
+        if (not isinstance(query,dict) or (index==0 and query!=scope)
+                or (index>0 and (not isinstance(query.get('cursor'),str) or not 0<len(query['cursor'])<=8192
+                    or set(query)-set(scope)-{'cursor'}
+                    or any(str(v)!=str(scope[k]) for k,v in query.items() if k!='cursor')))):
+            raise IdentityResolutionError('Observed page query invalid')
+    if (sum(p['response_bytes'] for p in pages)>8*1024*1024 or sum(p['contracts'] for p in pages)>20000
+            or len(bound)>sum(p['contracts'] for p in pages)
+            or len({json.dumps(p['params'],sort_keys=True) for p in pages})!=len(pages)
+            or len({p['params']['cursor'] for p in pages[1:]})!=len(pages)-1):
+        raise IdentityResolutionError('Observed reference population exceeds bounds or cycles')
+    basis=receipt['source_evidence_basis']
+    if basis=='native_acquisition':
+        if artifacts!=[]:raise IdentityResolutionError('Unexpected retained evidence')
+    elif basis=='retained_native_store_read':
+        if (not isinstance(artifacts,list) or len(artifacts)!=2
+                or any(not isinstance(a,dict) for a in artifacts)
+                or {a.get('kind') for a in artifacts}!={'greeks','oi'}):
+            raise IdentityResolutionError('Retained pair missing')
+        for artifact in artifacts:
+            if (set(artifact)!={'kind','sha256','read_at'} or not re.fullmatch('[a-f0-9]{64}',str(artifact['sha256']))
+                    or _aware_utc(artifact['read_at'],'read_at')>known):raise IdentityResolutionError('Retained evidence invalid')
+    else:raise IdentityResolutionError('Observed source basis unknown')
+    return bound

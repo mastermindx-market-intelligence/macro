@@ -1102,6 +1102,8 @@ def bulk_greeks(root: str, exp: int | str | date, start_date: date | str | int,
             "symbol": root.upper(),
             "expiration": "*",
         }
+        if version is not None:
+            base_params["version"] = version
         df = _concurrent_windows(
             "/v3/option/history/greeks/eod", base_params, start_date, end_date,
             root=root, window_days=1)

@@ -5,7 +5,7 @@ import hashlib,io,json
 import pandas as pd
 import pytest
 from engine.intelligence_workspace.entity import IdentityArtifactRead,IdentityResolutionError
-from engine.intelligence_workspace.options_contract_identity import resolve_dated_spy_contract_identity,validate_dated_contract_identity
+from engine.intelligence_workspace.options_contract_identity import resolve_dated_spy_contract_identity,validate_dated_contract_identity,resolve_observed_spy_contract_identity,_sha
 from engine.options_exposure_projection import compose_native_exposure_context,build_exposure_projection,exposure_input_digest
 from lib.options_source_receipts import ACQUISITION_COLUMN,theta_acquisition,THETA_ENDPOINTS
 from lib import symbol_directory_receipts as R
@@ -41,6 +41,97 @@ def setup(listing):
  obs=dict(schema='options_reference_capability_observation/v1',state='response_observed',origin='https://api.polygon.io',path='/v3/reference/options/contracts',params=dict(as_of=DAY,underlying_ticker='SPY',expiration_date='2026-10-23'),capability=dict(http_status=200,verdict='entitled'),contracts=contracts,payload_sha256='a'*64,completed_at='2026-10-20T08:05:00Z',historical_first_availability_established=False)
  args=dict(source_session=DAY,input_sha256=exposure_input_digest(g,oi,DAY,'SPY'),reference=captured(json.dumps(obs).encode()),security_master=master(),listing=listing[0],listing_receipt=listing[1],decision_at=NOW)
  return g,oi,ctx,obs,args
+
+
+def observed_setup(listing,count=120):
+ g,oi,ctx,_,args=setup(listing)
+ g=pd.concat([g.iloc[[i%2]] for i in range(count)],ignore_index=True)
+ oi=pd.concat([oi.iloc[[i%2]] for i in range(count)],ignore_index=True)
+ exps=['2026-10-23','2026-10-30','2026-11-06']
+ for frame,kind in ((g,'greeks'),(oi,'oi')):
+  frame['strike']=[100+i//2 for i in range(count)]
+  frame['expiration']=[exps[(i//2)%3] for i in range(count)]
+  params=dict(symbol='SPY',expiration='*',start_date=20261019,end_date=20261019,right='both',format='csv')
+  if kind=='greeks':params['version']='1'
+  frame[ACQUISITION_COLUMN]=theta_acquisition(THETA_ENDPOINTS[kind],params,b'synthetic-full-book',origin='http://theta-test:25503',received_at='2026-10-20T08:00:00Z')
+ contracts=[]
+ for row in g.to_dict('records'):
+  stamp=pd.Timestamp(row['expiration']).strftime('%y%m%d');right=row['right'];strike=row['strike']
+  contracts.append(dict(ticker=f'O:SPY{stamp}{right}{int(strike*1000):08d}',underlying_ticker='SPY',contract_type='call' if right=='C' else 'put',expiration_date=row['expiration'],strike_price=strike,exercise_style='american',shares_per_contract=100))
+ scope=dict(underlying_ticker='SPY',as_of=DAY,**{'expiration_date.gte':DAY},expired='false',order='asc',sort='ticker',limit=1000)
+ page=dict(schema='options_reference_page_observation/v1',state='response_observed',origin='https://api.polygon.io',path='/v3/reference/options/contracts',params=scope,capability=dict(http_status=200,verdict='entitled',evidence=dict(response_sha256='a'*64,response_bytes=123456,completed_at='2026-10-20T08:05:00Z')),payload_sha256='a'*64,completed_at='2026-10-20T08:05:00Z',contracts=contracts,next_params=None)
+ obs=dict(schema='options_reference_population_observation/v1',state='COMPLETE',root='SPY',source_session=DAY,origin=page['origin'],path=page['path'],initial_params=scope,pages=[page],historical_first_availability_established=False)
+ args.update(reference=captured(json.dumps(obs).encode()),input_sha256=exposure_input_digest(g,oi,DAY,'SPY'))
+ return g,oi,ctx,obs,args
+
+
+def test_observed_population_binds_many_expiries_without_shrinking_missing_terms(listing):
+ g,oi,ctx,obs,args=observed_setup(listing)
+ # One missing exact reference member has zero OI. It is still unbound/missing.
+ obs['pages'][0]['contracts'].pop();oi.loc[len(oi)-1,'open_interest']=0
+ args.update(reference=captured(json.dumps(obs).encode()),input_sha256=exposure_input_digest(g,oi,DAY,'SPY'))
+ bound=resolve_observed_spy_contract_identity(g,oi,**args).receipt
+ assert len(bound['observed_contract_keys'])==120 and len(bound['contract_keys'])==119
+ assert len(validate_dated_contract_identity(bound,root='SPY',source_session=DAY,input_sha256=args['input_sha256'],cutoff=NOW))==119
+ ctx.update(security_id=None,clocks=dict(option_observed_at=None,underlying_observed_at=None),contract_terms=[],term_policy='occ_standard_spy_etf/v1',contract_reference_populations=[obs],input_sha256=args['input_sha256'],dated_population_identity_inputs={k:v for k,v in args.items() if k not in ('source_session','input_sha256')})
+ ctx['valuation']['source_session']=DAY
+ out=compose_native_exposure_context(g,oi,DAY,'SPY',context=ctx)
+ out['greek_provenance']['gamma']['source_ref']=out['source_snapshot_ref']
+ p=build_exposure_projection(g,oi,DAY,'SPY',context=out)
+ assert p['metrics']['gamma']['expected'] is None and p['metrics']['gamma']['received']==120
+ assert p['metrics']['gamma']['qualified']==119 and p['metrics']['gamma']['missing']==1
+ assert p['metrics']['gamma']['gross'] is None and p['metrics']['gamma']['known_gross']>0
+ assert p['metrics']['gamma']['exclusions']=={'contract_identity_scope_unknown':1}
+ from engine.options_exposure_projection import CELL_FIELDS,METRIC_FIELDS
+ assert sum(c[CELL_FIELDS.index('metrics')][0][METRIC_FIELDS.index('qualified')]+c[CELL_FIELDS.index('metrics')][0][METRIC_FIELDS.index('missing')] for c in p['cells'])==120
+ per_coordinate={}
+ for expiry,strike,right in bound['contract_keys']:
+  per_coordinate[(expiry,float(strike))]=per_coordinate.get((expiry,float(strike)),0)+1
+ for cell in p['cells']:
+  expiry=p['expiry_terms'][cell[0]][0];limit=per_coordinate.get((expiry,cell[1]),0)
+  assert all(m[METRIC_FIELDS.index('qualified')]<=limit for m in cell[3])
+  assert cell[4][2]<=limit
+ assert p['metrics']['vanna']['qualified']==0 and p['metrics']['charm']['qualified']==0
+
+
+@pytest.mark.parametrize('mode',['partial','unfinished','root','date','capture_after_read','scope','missing_target','duplicate_observed'])
+def test_observed_identity_negative_inputs(listing,mode):
+ g,oi,ctx,obs,args=observed_setup(listing,24)
+ if mode=='partial':obs['state']='STOPPED'
+ if mode=='unfinished':obs['pages'][0]['next_params']={'cursor':'more'}
+ if mode=='root':obs['root']='QQQ'
+ if mode=='date':obs['source_session']='2026-10-18'
+ if mode=='capture_after_read':args['reference']=captured(json.dumps(obs).encode(),at='2026-10-20T07:00:00Z')
+ if mode=='scope':obs['initial_params']['as_of']='2026-10-18'
+ if mode=='missing_target':args['security_master']=master(security_id='SEC:US-XNAS-QQQ',listing_key='US-XNAS-QQQ',mic='XNAS',inception_code='QQQ')
+ if mode=='duplicate_observed':g=pd.concat([g,g.iloc[[0]]],ignore_index=True)
+ if mode!='capture_after_read':args['reference']=captured(json.dumps(obs).encode())
+ args['input_sha256']=exposure_input_digest(g,oi,DAY,'SPY')
+ with pytest.raises(IdentityResolutionError):resolve_observed_spy_contract_identity(g,oi,**args)
+
+
+def test_observed_receipt_rejects_cursor_repeat_even_when_scope_echo_changes(listing):
+ g,oi,ctx,obs,args=observed_setup(listing,24)
+ receipt=resolve_observed_spy_contract_identity(g,oi,**args).receipt
+ p=deepcopy(receipt['reference_pages'][0]);p['params']={'cursor':'same'}
+ q=deepcopy(p);q['params']={'cursor':'same','limit':'1000'}
+ receipt['reference_pages'] += [p,q]
+ receipt['binding_sha256']=_sha({k:v for k,v in receipt.items() if k!='binding_sha256'})
+ with pytest.raises(IdentityResolutionError):validate_dated_contract_identity(receipt,root='SPY',source_session=DAY,input_sha256=args['input_sha256'],cutoff=NOW)
+
+
+def test_retained_full_pair_proves_identity_read_not_original_greek_acquisition(listing):
+ g,oi,ctx,obs,args=observed_setup(listing,24)
+ g=g.drop(columns=ACQUISITION_COLUMN);oi=oi.drop(columns=ACQUISITION_COLUMN)
+ args.update(input_sha256=exposure_input_digest(g,oi,DAY,'SPY'),retained_inputs=dict(greeks=captured(parquet(g)),oi=captured(parquet(oi))))
+ receipt=resolve_observed_spy_contract_identity(g,oi,**args).receipt
+ assert receipt['source_evidence_basis']=='retained_native_store_read' and len(receipt['source_input_artifacts'])==2
+ assert not receipt['historical_first_availability_established']
+ ctx.update(root='SPY',security_id=receipt['security_id'],contract_identity=receipt,input_sha256=args['input_sha256'])
+ ctx['clocks'].update(source_session=DAY,oi_report_date=DAY,available_at=NOW,greeks_available_at=READ,oi_available_at=READ)
+ ctx['valuation']['source_session']=DAY
+ p=build_exposure_projection(g,oi,DAY,'SPY',context=ctx)
+ assert p['metrics']['gamma']['qualified']==0 and p['metrics']['gamma']['missing']==24
 
 def test_bound_actual_scope_has_separate_effective_and_known_clocks_no_alias(listing):
  g,oi,ctx,obs,args=setup(listing);bound=resolve_dated_spy_contract_identity(g,oi,**args).receipt
@@ -191,3 +282,35 @@ def test_stale_capture_does_not_replace_current_legacy_or_carry_old_identity(lis
  assert {k:v for k,v in out.items() if k!='exposure_projection_input'}==baseline
  assert out['exposure_projection']['cells_status']=='source_unqualified'
  assert out['exposure_projection_input']['state']=='withheld_source_session_mismatch'
+
+
+@pytest.mark.parametrize('mode',['rows','columns','decoded_bytes'])
+def test_retained_metadata_is_rejected_before_decoding(listing,monkeypatch,mode):
+ import pyarrow.parquet as pq
+ from types import SimpleNamespace
+ g,oi,ctx,obs,args=observed_setup(listing,24)
+ g=g.drop(columns=ACQUISITION_COLUMN);oi=oi.drop(columns=ACQUISITION_COLUMN)
+ args.update(input_sha256=exposure_input_digest(g,oi,DAY,'SPY'),retained_inputs=dict(greeks=captured(parquet(g)),oi=captured(parquet(oi))))
+ class GuardedParquet:
+  schema_arrow=SimpleNamespace(names=['x']*(65 if mode=='columns' else 1))
+  metadata=SimpleNamespace(num_rows=100001 if mode=='rows' else 24,num_row_groups=1,
+    row_group=lambda i:SimpleNamespace(total_byte_size=128*1024*1024+1 if mode=='decoded_bytes' else 128))
+  def read(self):raise AssertionError('Decoded before metadata admission')
+ monkeypatch.setattr(pq,'ParquetFile',lambda *a,**kw:GuardedParquet())
+ with pytest.raises(IdentityResolutionError,match='decoded bound'):
+  resolve_observed_spy_contract_identity(g,oi,**args)
+
+
+@pytest.mark.parametrize('mode',['nested_artifact','bad_decimal','nested_decimal','empty_pages','bound_exceeds_page_count'])
+def test_malformed_v2_receipt_refuses_as_lane_local_identity_error(listing,mode):
+ g,oi,ctx,obs,args=observed_setup(listing,24)
+ receipt=resolve_observed_spy_contract_identity(g,oi,**args).receipt
+ if mode=='nested_artifact':
+  receipt['source_evidence_basis']='retained_native_store_read';receipt['source_input_artifacts']=[None,None]
+ if mode=='bad_decimal':receipt['observed_contract_keys'][0][1]='not-a-number'
+ if mode=='nested_decimal':receipt['observed_contract_keys'][0][1]=['nested']
+ if mode=='empty_pages':receipt['reference_pages']=[]
+ if mode=='bound_exceeds_page_count':receipt['reference_pages'][0]['contracts']=23
+ receipt['binding_sha256']=_sha({k:v for k,v in receipt.items() if k!='binding_sha256'})
+ with pytest.raises(IdentityResolutionError):
+  validate_dated_contract_identity(receipt,root='SPY',source_session=DAY,input_sha256=args['input_sha256'],cutoff=NOW)
