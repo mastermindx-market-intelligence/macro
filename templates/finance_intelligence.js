@@ -1632,7 +1632,14 @@
     if (en) en.textContent = pair[0];
     if (zh) zh.textContent = pair[1];
     show(notice, true);
-    $$('.fi-section, .fi-toc').forEach(function (s) { s.style.display = 'none'; });
+    var keep = kind === 'not_connected' ? { 'rerating-map': 1, 'company-exposure': 1 } : {};
+    var keepSel = '.fi-section-head, .fi-falsifiers, .fi-hint-roster';
+    $$('.fi-section, .fi-toc').forEach(function (s) {
+      if (!keep[s.id]) { s.style.display = 'none'; return; }
+      Array.prototype.forEach.call(s.children || [], function (c) {
+        if (!c.matches(keepSel)) c.style.display = 'none';
+      });
+    });
   }
 
   // ──────────────────────────────────────────────────────────────────────────

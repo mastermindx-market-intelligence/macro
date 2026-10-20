@@ -1089,6 +1089,31 @@ I2_ALL_ADDITIONS = tuple(name for name in I2_NEW_TABLES if not name.startswith("
     "ResetEvent", "ResetSchedule", "SettlementBranches", "STRUCTURE_TYPES_BY_KIND",
     "structure_from_record",
 )
+# S0 (SPEC_S0 §8, state contract 2.4.0) landed after I2 and is likewise purely
+# additive over this frozen 2.1.0 surface: it adds the ``scenario_result`` record
+# and the seven declarative sub-records a composer emits beside the three
+# component records, plus their vocabularies. It widens exactly two tables —
+# ``RECORD_SCHEMAS`` (one new record schema) and ``INTERFACE_OWNERSHIP`` (the
+# composer's own row, which §8 requires) — and rewrites no existing $def.
+S0_DELTA_TABLES = ("INTERFACE_OWNERSHIP", "RECORD_SCHEMAS")
+S0_NEW_DEFS = (
+    "action_check", "action_check_status", "action_owner", "authorized_headroom_disclosure",
+    "authorized_headroom_status", "cash_reconciliation", "coverage_period", "coverage_status",
+    "exact_number_text", "issuance_row", "joint_check", "joint_check_status",
+    "nullable_exact_number_text", "nullable_signed_decimal", "nullable_signed_usd_quantity",
+    "price_basis", "reconciliation_status", "result_id", "scenario_result",
+    "scenario_share_quantity", "signed_decimal", "signed_usd_quantity",
+)
+S0_NEW_TABLES = (
+    "ACTION_CHECK_STATUSES", "ACTION_OWNERS", "AUTHORIZED_HEADROOM_STATUSES", "COVERAGE_STATUSES",
+    "ISSUANCE_ROW_BASES", "JOINT_CHECK_STATUSES", "PRICE_BASIS_COMPONENTS", "PRICE_BASIS_KINDS",
+    "RECONCILIATION_STATUSES",
+)
+S0_ALL_ADDITIONS = S0_NEW_TABLES + (
+    "ActionCheck", "AuthorizedHeadroomDisclosure", "COVERAGE_SCENARIO_ONLY_NOTE",
+    "CashReconciliation", "CoveragePeriod", "IssuanceRow", "JointCheck", "PriceBasis",
+    "ScenarioResult", "SignedQuantity",
+)
 
 
 def load_baseline() -> dict:
@@ -1131,7 +1156,7 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
         unchanged += 1
     assert unchanged == len(baseline["schema_defs"]) - len(DELTA_DEFS) - len(I2_DELTA_DEFS)
     assert set(defs) == (set(baseline["schema_defs"]) | set(baseline["added_schema_defs"])
-                         | set(I2_NEW_DEFS))
+                         | set(I2_NEW_DEFS) | set(S0_NEW_DEFS))
     assert sorted(baseline["added_schema_defs"]) == sorted(NEW_DEFS)
     # I2 only widened the three $defs it declares: the structure attachment, the
     # term-name enum and the settlement enum each grow, nothing is dropped.
@@ -1169,12 +1194,15 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
     live = live_tables()
     for name, digest in baseline["module_tables"].items():
         assert name in live, name
-        if name in DELTA_TABLES or name in I2_DELTA_TABLES:
+        if name in DELTA_TABLES or name in I2_DELTA_TABLES or name in S0_DELTA_TABLES:
             continue
         assert live[name] == digest, f"vocabulary {name} changed"
     assert set(live) - set(baseline["module_tables"]) == (
-        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_NEW_TABLES))
+        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_NEW_TABLES)
+        | set(S0_NEW_TABLES))
     for name in I2_DELTA_TABLES:
+        assert live[name] != baseline["module_tables"][name], name
+    for name in S0_DELTA_TABLES:
         assert live[name] != baseline["module_tables"][name], name
 
     for family, schemas in baseline["base_compatible_input_schemas"].items():
@@ -1188,7 +1216,8 @@ def test_c0_2_0_0_and_2_1_0_digests_are_byte_identical_after_2_2_0():
     }
     assert set(baseline["base_all"]) <= set(c.__all__)
     assert set(c.__all__) - set(baseline["base_all"]) == (
-        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_ALL_ADDITIONS))
+        set(baseline["declared_module_deltas"]["added_module_tables"]) | set(I2_ALL_ADDITIONS)
+        | set(S0_ALL_ADDITIONS))
     for name, values in baseline["declared_module_deltas"]["added_module_tables"].items():
         assert list(getattr(c, name)) == values, name
 

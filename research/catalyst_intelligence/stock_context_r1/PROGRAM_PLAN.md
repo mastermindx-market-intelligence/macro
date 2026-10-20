@@ -241,3 +241,72 @@ These sources motivate design and research requirements. None is treated as proo
 5. SEC Investor Bulletin, *Stop, Stop-Limit, and Trailing Stop Orders*: https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-15
 6. Cho–Singh–Lo, biopharma news study, PLOS ONE, 2024: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0296927
 7. Bailey et al., *The Probability of Backtest Overfitting*, author manuscript: https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf
+
+
+## 17. Recovery continuation: 2026-10-20
+
+The "Redesign BioCatalyst User First" continuation retains this program's original goal:
+a useful company decision desk with source-grounded changes, same-subtheme context,
+technicals and entry research, followed by native serving and separately qualified models.
+The ten completed Paper boards and existing source carriers remain the design and code
+continuation. They are not replaced by a new project or duplicate implementation.
+
+### Recovered source and work advanced
+
+- Decision Desk: [#9611](https://github.com/mastermindx-market-intelligence/macro/pull/9611),
+  head `84bd28b6ae2badd444075e83e42b1390362cb068`; retain its existing UI/API proof and
+  Draft/HOLD. Company source context remains in
+  [#9662](https://github.com/mastermindx-market-intelligence/macro/pull/9662),
+  head `430234957531693b6b13f026a161e28542086a82`, with its stacked-base and native admission gates.
+- This company-assessment carrier [#9616](https://github.com/mastermindx-market-intelligence/macro/pull/9616)
+  retains reviewed source `a073abedc58d945b10eb27380d49b879754c5bcc`. That head completed
+  hosted CI run [39342612192](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39342612192).
+  Current-base investigation found one additive CI enrollment conflict against main
+  `270537f66abaf4e584ddbeafb8ea12c84af06270`. The incumbent branch now integrates that
+  pinned base while retaining both `catalyst-stock-context` and `local-projections`,
+  both complete manifest declarations, current main's remaining test file, and unchanged
+  packing limits. The consumer code, its tests and the inspected NewsImpact/entry/schema
+  dependency closure are unchanged. The exact integration receipt accompanies this update
+  in [integration-20261020.json](integration-20261020.json).
+- Entry-basis source remains [#9731](https://github.com/mastermindx-market-intelligence/macro/pull/9731),
+  head `d4d43810c18f8e48b8cf49fa447392f7901f6b97`; its existing source review and tests are
+  retained without promoting descriptive diagnostics into qualified entry research.
+- News corrections remain on [#9732](https://github.com/mastermindx-market-intelligence/macro/pull/9732).
+  Recovery published the previously unpushed R6 commit `d62eade5b581b8613ea0cb2272c63495f7117358`.
+  R7 is now published at `bc6bc8cc4694ddad80bad312bc0fa3ec228718dc`: historical Section 11
+  registration integrity is separate from current-code eligibility. The frozen registration
+  is unchanged, producer-facts v2 remains correctly identified, and the ordinary research
+  check still refuses that unregistered implementation. The 198 focused tests and independent
+  source concurrence are recorded in the
+  [R7 scope and evidence](https://github.com/mastermindx-market-intelligence/macro/blob/bc6bc8cc4694ddad80bad312bc0fa3ec228718dc/research/catalyst_intelligence/news_magnitude_r6/registration-compatibility-r7.md).
+
+### Exact next product requirements
+
+Source publication, source review, current-head CI and current-base integration remain
+separate gates. The integration in this update is against the named base; it is not a claim
+that a later moving main has already been tested. Every existing Draft/HOLD remains unless
+the holding authority explicitly releases the applicable scope after its gates conclude.
+
+The next useful product case still needs a real owner-qualified company/security identity,
+purpose- and rights-qualified peer/market inputs, and independently available current and
+prior NewsImpact evidence. The inspected native B4 reader still supplies no admitted
+availability record, and the available source tree does not itself establish a native
+forward fact ledger. Missing owner data remains unavailable rather than being synthesized.
+
+The supplied-snapshot v1/v2 contract also needs a separate native time-envelope decision:
+its current inequalities collapse a qualified native cut to equal decision/as-of/known-at
+times. Actual acquisition or materialization must not be backdated to satisfy those checks.
+Native integration must preserve information cutoff, owner knowability and materialization
+as distinct facts while keeping existing supplied-snapshot compatibility.
+
+For serving, reconcile and preserve #6712's original source custody and unpublished tests,
+close WMN provenance/identity gaps, bind the entitlement-aware host, and prove logout,
+account changes and correction clearing in the actual consumer. A server publication
+watermark must refuse an older composition finishing after a correction has already been
+admitted; the client generation counter is insufficient. #9552 retains the existing sector
+context and opportunity publication contract.
+
+No native acquisition, authenticated deployment, automatic worker/watch route, scientific
+qualification, or full-program completion is established by this recovery continuation.
+Useful admitted descriptive cases can proceed before predictive models qualify, under the
+separate acceptance definitions above.
