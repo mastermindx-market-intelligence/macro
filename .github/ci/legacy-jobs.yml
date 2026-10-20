@@ -8471,6 +8471,11 @@ jobs:
     # separate, larger cleanup outside this PR's scope.
     paths:
       - "app/prophet_lab.py"
+      # Same-box Treasury input reuses this module's internal and site-full guards.
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
+      - "tests/test_treasury_daily_history.py"
+      - "tests/test_treasury_history_api.py"
       - "engine/prophet_lab/**"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
@@ -8545,6 +8550,7 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py tests/test_intelligence_vector_units.py
           tests/test_prophet_lab_api.py
+          tests/test_treasury_daily_history.py tests/test_treasury_history_api.py
           tests/test_company_intelligence_workspace_chain.py
           tests/test_company_intelligence_event_evolution.py
           tests/test_prophet_lab_timeparse.py
