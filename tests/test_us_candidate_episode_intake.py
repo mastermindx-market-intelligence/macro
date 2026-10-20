@@ -440,17 +440,22 @@ def test_v2_real_early_close_session_remains_accepted(tmp_path):
     assert len(batch.observations) == 1
 
 
-def test_v2_receipts_ignore_build_runtime_but_keep_exact_file_provenance(tmp_path):
+@pytest.mark.parametrize("public_context_changes", [False, True], ids=["runtime_only", "public_disclosure"])
+def test_v2_receipts_ignore_build_runtime_but_keep_exact_file_provenance(tmp_path, public_context_changes):
     _identity_spine(tmp_path)
-    artifact = {**_turn_artifact(), "runtime_seconds": 10.0}
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0, "disclosure": "Original public presentation."}
     path, initial = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
     before = path.read_bytes()
     accepted = _reconcile_fixture([], initial.observations)
     artifact["runtime_seconds"] = 11.0
+    if public_context_changes:
+        artifact["disclosure"] = "Updated public presentation."
     path, retry = _v2_roundtrip(tmp_path, artifact, [_turn_row()])
-    assert before != path.read_bytes()
+    # Runtime is not persisted. A public disclosure edit is persisted, but is
+    # not part of the unchanged candidate row's semantic receipt.
+    assert (before != path.read_bytes()) is public_context_changes
     assert initial.observations == retry.observations
-    assert initial.source_receipts != retry.source_receipts
+    assert (initial.source_receipts != retry.source_receipts) is public_context_changes
     repeated = _reconcile_fixture(accepted.events, retry.observations)
     assert repeated.events == accepted.events
     assert len(repeated.episodes) == 1
@@ -529,11 +534,12 @@ def test_v2_tampered_document_is_not_trusted_just_because_row_receipts_are_stabl
     assert batch.suppressions[0]["reason"] == "MALFORMED_RECEIPT"
 
 
-def test_v2_full_generation_preserves_event_history_on_a_harmless_rebuild(tmp_path, monkeypatch):
+@pytest.mark.parametrize("public_context_changes", [False, True], ids=["runtime_only", "public_disclosure"])
+def test_v2_full_generation_preserves_event_history_on_a_harmless_rebuild(tmp_path, monkeypatch, public_context_changes):
     from scripts import reconcile_us_candidate_episodes as writer
     data = tmp_path / "data"
     _identity_spine(data)
-    artifact = {**_turn_artifact(), "runtime_seconds": 10.0}
+    artifact = {**_turn_artifact(), "runtime_seconds": 10.0, "disclosure": "Original public presentation."}
     _v2_roundtrip(data, artifact, [_turn_row()])
     # Only this temporary fixture is admitted; no live lane or environment is changed.
     monkeypatch.setattr(writer, "nightly_advance_enabled", lambda: True)
@@ -544,16 +550,24 @@ def test_v2_full_generation_preserves_event_history_on_a_harmless_rebuild(tmp_pa
     generation = head_path.parent / "generations" / head1["generation_id"]
     frozen = {str(p.relative_to(generation)): p.read_bytes() for p in generation.rglob("*") if p.is_file()}
     artifact["runtime_seconds"] = 11.0
+    if public_context_changes:
+        artifact["disclosure"] = "Updated public presentation."
     _v2_roundtrip(data, artifact, [_turn_row()])
     second = writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
                               recorded_at="2026-11-27T18:02:00Z", correction_path=None)
     assert first["counts"]["appended_events"] == 1
-    assert second["counts"]["appended_events"] == 0
+    if public_context_changes:
+        assert second["counts"]["appended_events"] == 0
+    else:
+        # An identical input reuses the prior receipt, whose append count
+        # describes its original generation rather than this no-op invocation.
+        assert second == first
+        assert json.loads(head_path.read_text()) == head1
     assert first["ledger_sha256"] == second["ledger_sha256"]
     assert first["projection_hashes"] == second["projection_hashes"]
-    assert first["source_hashes"] != second["source_hashes"]
+    assert (first["source_hashes"] != second["source_hashes"]) is public_context_changes
     assert {str(p.relative_to(generation)): p.read_bytes() for p in generation.rglob("*") if p.is_file()} == frozen
-    assert json.loads(head_path.read_text())["generation_id"] != head1["generation_id"]
+    assert (json.loads(head_path.read_text())["generation_id"] != head1["generation_id"]) is public_context_changes
 
 
 def test_v2_full_generation_rejects_definition_drift_without_changing_head(tmp_path, monkeypatch):
@@ -584,15 +598,18 @@ def test_v2_cannot_be_downgraded_in_place_by_a_legacy_same_session_writer(tmp_pa
     assert path.read_bytes() == before
 
 
-def test_v2_rejected_row_receipt_is_stable_when_only_build_runtime_changes(tmp_path):
+@pytest.mark.parametrize("public_context_changes", [False, True], ids=["runtime_only", "public_disclosure"])
+def test_v2_rejected_row_receipt_is_stable_across_harmless_rebuilds(tmp_path, public_context_changes):
     _identity_spine(tmp_path)
-    artifact = {**_turn_artifact(), "runtime_seconds": 1.0}
+    artifact = {**_turn_artifact(), "runtime_seconds": 1.0, "disclosure": "Original public presentation."}
     _, first = _v2_roundtrip(tmp_path, artifact, [_turn_row(triggers={})])
     artifact["runtime_seconds"] = 2.0
+    if public_context_changes:
+        artifact["disclosure"] = "Updated public presentation."
     _, second = _v2_roundtrip(tmp_path, artifact, [_turn_row(triggers={})])
     assert not first.observations and not second.observations
     assert first.suppressions == second.suppressions
-    assert first.source_receipts != second.source_receipts
+    assert (first.source_receipts != second.source_receipts) is public_context_changes
 
 
 def test_v2_real_builder_cli_requires_an_explicit_schema_choice(tmp_path, monkeypatch):

@@ -1,0 +1,27 @@
+# Market Structure range-control continuation
+
+## Mission and authority
+Continue the Chairman's Web Chat macro-dashboard UI/UX sweep: repair user-visible bugs in grouped existing PRs, preserve useful intelligence and existing layouts, and use only the existing VPS publication owner. Current directive: continue working on the next turn. Protected source: `mastermindx-market-intelligence/Mastermind@5f62e9f6119cc3e3bc542a793ba96731e063e3a1`, Skillpack 1.0.1 / bootstrap major 1. ACTIVE_EXECUTION, WEB_CEO_DELEGATION and RECONCILE_STATE apply; VPS direction is DEC:UIUX-VPS-ONLY-DELIVERY-20260920.
+
+## Carrier and execution ownership
+Same PR #7437, branch `sol/uiux-market-structure-sweep-20260919`, starting head `da216f856dc4eacf42e71c6edc1b1fc27e1700ad`. Direct execution: LOWER_TOTAL_OVERHEAD for one tightly coupled, page-owned controller; no worker, alternate publisher, or new queue. The existing controls and their three preference keys remain the state owner. No reset, rebase, auto-failover, or force push is required merely because unrelated main commits move.
+
+## Before / after
+Before: 20px-high mobile targets; visual-only selection; no chart group/name/date description; malformed or obsolete stored values could leave every button unselected. `63days` was silently accepted as `63`.
+After: native pressed-state buttons with chart/group context, 44px-wide / 40px-high mobile targets (32px high desktop), visible keyboard focus, localized accessible chart names, and the actual observation count/date bounds beneath each plot. An unavailable or invalid saved choice uses the group's real default without writing over preferences on read. An inaccessible preference store does not prevent chart interaction. No date is inferred from the nominal month/year button; invalid/absent dates explicitly remain unavailable.
+
+## Preserved capability and non-goals
+All three embedded histories, all numeric drawing functions, every one of the eleven plot geometries, the selected panel independence, existing preference keys, authentication, server endpoints, models, thresholds, and trade authority remain unchanged. No new preference registry or theme owner was added. Date text uses native textContent. Dark retains the existing instrument treatment; light retains the existing research-panel treatment. Only component sizing/focus changed, using the same semantic tokens. Date bounds wrap as a unit rather than breaking inside an ISO date.
+
+## Verification
+Four regressions were added to the already CI-owned `tests/test_build_market_structure_page.py`. The existing copy test now locates the heading by its copy rather than requiring the absence of an accessibility id; its word-budget and methodology prohibitions remain intact. Unit/fixture contracts: 89 passed. Native browser proof: eight desktop/mobile × English/Chinese × dark/light cases, every available range clicked/tapped, Enter/Space counted exactly once, saved panel choices reloaded, and existing language-event handling checked without redrawing plot paths. All eleven geometries match the preceding implementation in every matrix cell. One additional case denies storage only for the controller's own keys. No browser page errors or page overflow. The language-event seam is explicitly not a test of the unrelated settings-menu gesture.
+
+`verify_ranges.py` is a rerunnable bounded verifier. The local mode uses only committed page data; the optional public mode intercepts no requests and does not reuse fixed historical geometry as a current-data assertion. Canonical capture uses `scripts/capture_page_evidence.py` and produced 24/24 rest/focus cells: desktop, mobile, and the tool's tablet default, both languages/themes. Its manifest and images are under `mockups/evidence/uiux-market-structure-controls-20260920/`. Design ratchet: zero added blocking findings. Visual-evidence gate: exit 0.
+
+## Limits, release gate, continuation
+BUILT_NOT_PROVEN: this continuation is not yet merged or served. The exact publication head and hosted run are recorded on #7437 after the normal push. The snapshot's previous shared CI failures remain real until their existing owners' accepted repairs are in the integration. #7523 is the incumbent shared theme/research-screener proof repair; its draft/acceptance boundary is not transferred here. #7497 remains on its own immutable Basket source and started checks; do not edit or restart it merely to wait. #7361 remains the Intelligence Hub carrier.
+
+Next action: consume the exact new #7437 hosted results, use current-base merge-ref proof under the governing compatibility law, and only after all required repository gates and incumbent shared repairs are accepted, merge with an expected-head check. Deploy through the existing locked VPS updater and run the public verifier against the served artifact. No Vercel deployment or retry is authorized by this work. A pending check is not a pass; publication is not production acceptance.
+
+## Do not redo
+Do not rebuild the already-published UI copy fixes or replace the existing chart renderer/keys. Do not re-mint the unchanged history or change price/flow calculations to satisfy a UI test. Do not manually restamp another owner's evidence or promote #7523's draft. Do not use a second branch/PR or create CI churn for these four component fixes. Screenshots prove the declared source bytes only; source-invariants.json pins them independently of the nearest repository HEAD recorded by the capture tool.

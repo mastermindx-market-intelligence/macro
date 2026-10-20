@@ -428,15 +428,12 @@
     <p class="fx-tag">{{ t('Where supply is tightening before Wall Street’s estimates catch up — ranked earliest first.', '在华尔街盈利预期跟上之前，找出供给正在收紧之处——按最早期优先排序。') }} {{ fxq('The desk catches a theme at its earliest — supply tightness leads, demand and guidance pre-signal, analyst estimates confirm — then defers the buy to a market dislocation (buy the flush, not the pop). Worked case: the mid-2024 memory / HBM call, right and ~9 months early.', '本台在主题最早期捕捉——供给紧张领先，需求与指引预示，分析师预期确认——再将买点交由市场错位（买回调，不买冲高）。范例：2024年年中的存储/HBM判断，正确且早约9个月。') }}</p>
 
     <div class="fx-verdict">
-      {%- if n_edge and hot_names -%}
-        <span class="l-en"><b>{{ n_edge }} theme{{ 's' if n_edge != 1 }}</b> sit early in the cycle right now — {{ hot_names[:2]|join(' and ') }} {{ 'are' if hot_names[:2]|length != 1 else 'is' }} lighting up before the tape.</span>
-        <span class="l-zh">当前有 <b>{{ n_edge }} 个主题</b>处于周期早段——{{ hot_names[:2]|join('、') }} 正在行情之前点亮。</span>
-      {%- elif n_edge -%}
+      {%- if n_edge -%}
         <span class="l-en"><b>{{ n_edge }} theme{{ 's' if n_edge != 1 }}</b> sit early in the cycle right now — supply is tightening before estimates have moved.</span>
         <span class="l-zh">当前有 <b>{{ n_edge }} 个主题</b>处于周期早段——供给收紧、预期未动。</span>
       {%- elif hot_names -%}
         <span class="l-en">Nothing is confirmed-early today, but <b>{{ hot_names[:2]|join(' and ') }}</b> {{ 'are' if hot_names[:2]|length != 1 else 'is' }} starting to heat up. Watch — don’t chase.</span>
-        <span class="l-zh">今日暂无确认的早期主题，但 <b>{{ hot_names[:2]|join('、') }}</b> 开始升温。观望，勿追。</span>
+        <span class="l-zh">今日暂无确认的早期主题，但有 <b>{{ hot_names|length }} 个主题</b>开始升温。观望，勿追。</span>
       {%- else -%}
         <span class="l-en">Nothing is early right now — the themes we track are either late or still quiet. <b>Watch, don’t chase.</b></span>
         <span class="l-zh">当前没有早期主题——我们跟踪的主题要么偏晚、要么仍平静。<b>观望，勿追。</b></span>
@@ -578,8 +575,15 @@
         {% if r.size_band %}<span class="fx-chip size-{{ r.size_band|lower }}" title="{{ r.size_note }}">⚖ {{ r.size_band|capitalize }}</span>{% endif %}
         {% if r.glut_band in ('GLUT_FORMING', 'GLUT') %}<span class="fx-chip exit">⚠ {{ t('exit-risk', '退出风险') }}{% if r.glut_score is not none %} ({{ '%+.2f'|format(r.glut_score) }}){% endif %}</span>{% endif %}
         {% if r.altdata_summary %}<span class="fx-chip conf{{ ' lit' if r.n_altdata_leading else '' }}" title="{{ (r.altdata_members or [])|join(', ') }}">🛰 {{ r.altdata_summary }}</span>{% endif %}
-        {% if r.theme_feed_summary %}{% set tfs = r.theme_feed_summary %}<span class="fx-chip feed-{{ tfs.tone or 'mute' }}" title="{{ tfs.rationale or '' }}">💊 {{ tfs.label }}</span>{% endif %}
+        {% if r.theme_feed_summary %}{% set tfs = r.theme_feed_summary %}<span class="fx-chip feed-{{ tfs.tone or 'mute' }}" title="{{ tfs.rationale or '' }}">⚕ {{ t(tfs.label, tfs.label_zh) }}</span>{% endif %}
+        {% if r.molecule_gap %}<span class="fx-chip mute">{{ t(r.molecule_gap.en, r.molecule_gap.zh) }}</span>{% endif %}
+        {% if r.observation_split %}{% set osp = r.observation_split %}
+        <span class="fx-chip mute">{{ t(osp.regulator.en, osp.regulator.zh) }}</span>
+        <span class="fx-chip mute">{{ t(osp.manufacturer.en, osp.manufacturer.zh) }}</span>
+        <span class="fx-chip mute">{{ t(osp.capacity.en, osp.capacity.zh) }}</span>
+        {% endif %}
       </div>
+      {% if r.fda_details %}<p class="fx-note" data-fda-details="{{ r.fda_details|length }}">{{ t('FDA records', 'FDA 记录') }}: {% for line in r.fda_details %}<span class="fx-fda-line">{{ line|e }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
       {% if r.score_detail and r.score_detail.caps %}<div class="fx-cap">⚑ {{ t('score held back', '评分受限') }}: {{ r.score_detail.caps|join(' · ') }}</div>{% endif %}
     </article>
     {% endfor %}
@@ -620,10 +624,26 @@
     {% endif %}
     {% if power and power.band and power.band != 'AWAITING_DATA' %}
     {%- set ptight = power.band in ('TIGHT','SOLD_OUT','TIGHTENING') -%}
+    {%- set _qg = power.queue_total_gw | default(none, true) -%}
+    {%- set _qpg = power.queue_prior_gw | default(none, true) -%}
+    {%- set _qpy = power.queue_prior_year | default(none, true) -%}
+    {%- set _qay = power.queue_buildout_asof_year | default(none, true) -%}
+    {%- set _qgw = '' if _qg is none else '{:,.0f}'.format(_qg) -%}
+    {%- set _qpgw = '' if (_qg is none or _qpg is none or _qpy is none)
+        else '{:,.0f}'.format(_qpg) -%}
     <div class="fx-bd {{ 'tight' if ptight else 'loose' }}">
       <div class="k">{{ t('Electricity scarcity', '电力短缺') }}</div>
       <div class="v">{{ power.band.replace('_',' ')|capitalize }}{% if power.tightness is not none %} · {{ '%+.2f'|format(power.tightness) }}{% endif %}</div>
-      <div class="d">{{ t('Data-center / grid / nuclear / solar — demand growth, utility utilisation and electricity price', '数据中心/电网/核电/光伏——需求增长、公用事业利用率与电价') }}{% if power.regime %} · <b>{{ t('scarcity regime on', '短缺机制触发') }}</b>{% endif %}</div>
+      <div class="d">{{ t('Data-center / grid / nuclear / solar — demand growth, utility utilisation and electricity price', '数据中心/电网/核电/光伏——需求增长、公用事业利用率与电价') }}{% if power.regime %} · <b>{{ t('scarcity regime on', '短缺机制触发') }}</b>{% endif %}
+      {%- if _qgw %} · <span class="l-en">{{ _qgw }} GW queued for grid connection
+        {%- if _qay is not none %} (LBNL, end-{{ _qay }}){% endif %}
+        {%- if _qpgw %} vs {{ _qpgw }} GW at end-{{ _qpy }}{% endif %}</span>
+        <span class="l-zh">排队等待并网 {{ _qgw }} GW
+        {%- if _qay is not none %}（LBNL，{{ _qay }} 年末）{% endif %}
+        {%- if _qpgw %}，{{ _qpy }} 年末为 {{ _qpgw }} GW{% endif %}</span>
+      {%- endif %}
+      {%- if power.queue_buildout_stale %} ·
+      {{ t('older edition — refresh pending', '旧版数据——待更新') }}{% endif %}</div>
     </div>
     {% endif %}
   </div>

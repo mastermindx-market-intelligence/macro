@@ -147,6 +147,42 @@ _DATA_DIRS = {
                   # host that holds the ThetaData store, and a lost host means a lost
                   # rebuild input. Not in DEFAULT_DIRS: the ops lane publishes it
                   # explicitly (--dirs index_gex_history), never the nightly render.
+                  # When that dir is selected, INDEX_GEX_HISTORY_STORE replaces only
+                  # the local directory. Unset stays config.ROOT/data/index_gex_history.
+    "options_skew",  # MO-PAID-013 W2-2 (A-F03-W2-2): ThetaData skew-accrual lane
+                  # producer ledger (data/options_skew/snapshots.parquet,
+                  # TRACKED on origin/main — bootstrap = 238,595 bytes /
+                  # 12,375 rows / 34 dates / 417 underlyings, sourced from
+                  # the pre-W2-1b engine run; the comment's earlier
+                  # "gitignored" model was wrong). ONE writer: the M1
+                  # store-host launchd job `com.macro.skewaccrual`
+                  # (ops/launchd/com.macro.skewaccrual.plist +
+                  # ops/launchd/run_skew_accrual.sh) which appends
+                  # today's per-underlying IV skew via
+                  # `python -m scripts.build_options_skew --accrue`
+                  # (W2-1b-owned source-stamped canonical-wins upsert).
+                  # Consumer = W2-3 render cutover:
+                  # `python -m scripts.fetch_r2 --dirs options_skew`
+                  # restores the ledger into render hosts'
+                  # data/options_skew/, where `--emit` writes
+                  # site/options_skew/latest.json. Not in DEFAULT_DIRS:
+                  # the dedicated skewaccrual ops lane publishes it
+                  # explicitly (--dirs options_skew), never the nightly
+                  # render.
+    "options_payoff_lab",  # MO-A3 W2-5a (A-F03-W2-5a, 2026-09-23): options
+                  # payoff lab producer (data/options_payoff_lab/latest.json
+                  # overwritten each session, plus history/<asof>.json kept).
+                  # ONE writer: the M1 store-host launchd job
+                  # `com.macro.payofflab` (ops/launchd/com.macro.payofflab.plist
+                  # + ops/launchd/run_options_payoff_lab.sh) via
+                  # `python -m scripts.build_options_payoff_lab --accrue`.
+                  # Render hosts restore with
+                  # `python -m scripts.fetch_r2 --dirs options_payoff_lab`
+                  # into data/options_payoff_lab/, where `--emit` writes
+                  # site/options_payoff_lab/latest.json. Not append-only:
+                  # latest.json is replaced each session. Not in DEFAULT_DIRS:
+                  # the store-host runner publishes it explicitly
+                  # (--dirs options_payoff_lab), never the nightly render.
 }
 # A data-dir tree with fewer files than this is a PARTIAL CHECKOUT (the parquets are
 # gitignored — a CI runner checkout holds just the committed _manifest.json +
@@ -156,10 +192,12 @@ _DATA_DIRS = {
 _DATA_DIR_MIN_FILES = 100
 # Per-dir floor overrides for SMALL data-dir stores. The 100-file default is calibrated
 # for the per-ticker parquet stores; a whole-store dir with a fixed, tiny file count
-# would be refused forever. index_gex_history is exactly 4 root parquets + the manifest,
-# so the floor is 5 — "all four roots AND the manifest". 4 would have passed a
-# three-roots-plus-manifest tree, which is precisely the partial rebuild this guard is
-# for; the count is a whole-store floor, not a parquet count.
+# would be refused forever. index_gex_history's floor counts uploadable parquets
+# only: _uploadable drops the collector _manifest.json before _data_dir_syncable.
+# The honest store is four root parquets — SPY, QQQ, IWM, DIA — so the floor is 4.
+# Five described four roots plus that manifest, which is already excluded, and would
+# refuse the real store. Three uploadable parquets is the partial rebuild this guard
+# refuses. Stale extra parquets are not the floor and are not deleted here.
 # price_pressure is 3: latest.json + base_rates.json + events.parquet — "both tracked
 # sidecars AND the parquet". A CI/engine checkout of that dir holds ONLY the tracked
 # JSON (the parquet is gitignored and restored from R2), which is exactly 2, so 3 is
@@ -168,7 +206,17 @@ _DATA_DIR_MIN_FILES = 100
 # night the §10.1 pass files one, which would make a bare checkout 3 files — so the
 # bytes floor below (not the count) is the fence that survives that: a sidecars-only
 # tree is ~73 KB against an ~11 MB store.
-_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
+_DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 4, "price_pressure": 3,
+                           # MO-PAID-013 W2-2: snapshots.parquet + the tracked
+                           # validation_gate.json sidecar. 2 is the bare store;
+                           # the bytes floor below is the real discrimination
+                           # between a real ledger and a sparse-CI sidecars-only
+                           # tree.
+                           "options_skew": 2,
+                           # MO-A3 W2-5a: latest.json + one history/<asof>.json.
+                           # 2 is the first honest session. A lone latest.json
+                           # is a partial tree and stays under this floor.
+                           "options_payoff_lab": 2}
 # History-append stores whose R2 objects hold DEEP history (data/attention/*.parquet:
 # backfilled 2015-07→ SLF-048 2026-07-06; gitignored since same day). The nightly
 # collect job materialises the store via scripts/fetch_r2 BEFORE the wiki_pageviews
@@ -188,9 +236,10 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
 # offsite copy of ~10 years of reconstruction. A truncated rebuild (a mid-write
 # _backfill_state.json, one unreadable year) yields a valid-but-short parquet, so it gets
 # both of attention's fences as well: per FILE, refuse an upload smaller than the R2
-# object; per DIR, refuse a tree under the bytes floor. The four parquets measure ~210 KB
-# each (~846 KB with the manifest), so 600 KB is the floor a genuine store clears and a
-# one-or-two-root rebuild does not. The builder's own shrink guard is the first fence;
+# object; per DIR, refuse a tree under the bytes floor. That byte total is the same
+# uploadable set: four root parquets at ~210 KB each, manifest excluded. 600 KB is
+# the floor a genuine four-parquet store clears and a one-or-two-root rebuild does
+# not. The builder's own shrink guard is the first fence;
 # these are the ones that survive a builder bypass.
 #
 # price_pressure takes the DIR fence only, NOT the per-file one (it is not in
@@ -204,7 +253,34 @@ _DATA_DIR_MIN_FILES_OVERRIDE = {"index_gex_history": 5, "price_pressure": 3}
 # it compares CONTENT dates rather than sizes.
 _APPEND_ONLY_DIRS = {"attention", "index_gex_history"}
 _DATA_DIR_MIN_BYTES = {"attention": 15_000_000, "index_gex_history": 600_000,
-                       "price_pressure": 4_000_000}
+                       "price_pressure": 4_000_000,
+                       # MO-PAID-013 W2-2: measured against the bootstrap
+                       # ledger committed on origin/main at 238,595 bytes /
+                       # 12,375 rows / 34 dates / 417 underlyings. A bare
+                       # sparse-CI checkout of data/options_skew carries
+                       # just the tracked validation_gate.json sidecar
+                       # (~700 bytes). A real ledger post-accrue is hundreds
+                       # of KB once the bootstrap + one session's ~380
+                       # roots land. 10 KB sits safely above the bare
+                       # sidecars size AND well below one session of real
+                       # accruals — refuses a sparse-CI sidecars-only tree
+                       # without blocking the first legitimate nightly run.
+                       # The bootstrap is 238,595 bytes; 10 KB is a 23×
+                       # margin that any first-run store clears. Not in
+                       # _APPEND_ONLY_DIRS: snapshots.parquet is rewritten
+                       # whole on every accrue (dedup + concat), so a
+                       # per-file shrink refusal would block honest
+                       # nights; snapshot()'s idempotent key-set is the
+                       # append-only contract.
+                       "options_skew": 10_000,
+                       # MO-A3 W2-5a (2026-09-23): measured latest.json is
+                       # 407,756 bytes for the 2026-09-21 session (4 roots,
+                       # 16 structures). 10 KB refuses an empty stub and
+                       # clears that file with about a 40x margin.
+                       # Not in _APPEND_ONLY_DIRS:
+                       # latest.json is overwritten every session, so a
+                       # per-file shrink refusal would block an honest night.
+                       "options_payoff_lab": 10_000}
 _CT = {".json": "application/json", ".js": "application/javascript",
        ".html": "text/html; charset=utf-8", ".csv": "text/csv"}
 
@@ -476,8 +552,31 @@ def _manifest_ok(new_count: int, remote: dict | None, floor: float = 0.5) -> tup
     return True, f"{new_count} files (was {old})"
 
 
+def _index_gex_history_store_override(dirs) -> Path | None:
+    """Local directory for index_gex_history, or None to keep the default.
+
+    Honored only when that directory is selected. Unset keeps
+    config.ROOT/data/index_gex_history. A present empty, blank, relative,
+    missing, or non-directory value fails before ``_client`` and before any
+    network effect. Other directories do not consult this variable.
+    """
+    if "index_gex_history" not in dirs:
+        return None
+    if "INDEX_GEX_HISTORY_STORE" not in os.environ:
+        return None
+    raw = os.environ["INDEX_GEX_HISTORY_STORE"]
+    path = Path(raw)
+    if raw.strip() == "" or not path.is_absolute() or not path.is_dir():
+        raise SystemExit(
+            "INDEX_GEX_HISTORY_STORE must be an absolute existing directory, "
+            f"not {raw!r}"
+        )
+    return path
+
+
 def publish(dirs, dry_run: bool = False, workers: int = 32,
             manifest: bool = True, force_manifest: bool = False) -> int:
+    index_store = _index_gex_history_store_override(dirs)
     s3 = _client(workers)
     if s3 is None:
         log.info("no R2 creds (R2_ENDPOINT/ACCESS_KEY_ID/SECRET_ACCESS_KEY) — skip")
@@ -506,6 +605,8 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
             _store_overrides["thetadata_eod"] = _theta
     if ts := os.environ.get("ATTENTION_STORE"):
         _store_overrides["attention"] = Path(ts)
+    if index_store is not None:
+        _store_overrides["index_gex_history"] = index_store
     for d in dirs:
         # Per-ticker parquet stores live under data/<dir>, not site/<dir>.
         if d in _DATA_DIRS:

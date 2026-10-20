@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -597,10 +598,15 @@ def rank_score(h: dict, now: datetime | None = None,
         _imp_raw = 0.0
     imp = max(0.0, min(1.0, _imp_raw / 100.0))
 
+    # qbus.novelty_z measures attention VOLUME, not new factual information.
+    # Only a positive finite burst earns this display contribution. Taking abs
+    # rewards unusually quiet subjects; min(1, NaN) also grants maximum credit.
+    # Preserve the raw field for diagnostics and keep the existing weight/scale.
     nz = h.get("novelty_z")
     try:
-        nov = min(1.0, abs(float(nz)) / 3.0) if nz is not None else 0.0
-    except (TypeError, ValueError):
+        nz_value = float(nz) if nz is not None and not isinstance(nz, bool) else 0.0
+        nov = min(1.0, max(0.0, nz_value) / 3.0) if math.isfinite(nz_value) else 0.0
+    except (TypeError, ValueError, OverflowError):
         nov = 0.0
 
     echo = h.get("echo") or {}

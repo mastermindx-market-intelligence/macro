@@ -1,0 +1,327 @@
+{
+  "proof_class": "local_actual_output_gated_page_browser",
+  "production": false,
+  "authenticated_delivery_proven": false,
+  "existing_profiles_used": false,
+  "protected_payload_response": 401,
+  "live_overlay_response": 404,
+  "source_html_sha256": "224a0efa223f193d6aabc75f4dd946475245aa1a28c333198166799763b77691",
+  "template_sha256": "c00a6e377d9c47abf88a6f048956f3d77da3bbb29b7f632ed9dc82edbe83a030",
+  "verifier_sha256": "5374bc6aa87ff8b9d9d17eac244ce22e6f6fab8837c2311325d995d38f4e7ee7",
+  "browser_version": "153.0.8010.48",
+  "cases": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "source_heading": "42 screened · as of 2026-09-16",
+      "candidate_message": "39 more names in this screen",
+      "tooltip": "Switch between the candidate screen and the plan book",
+      "plan_message": "412 more plan rows in the plan book",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 314,
+        "scroll": 314
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-dark-en-390.png",
+          "sha256": "3ef8ea1d30414155e6d71af5f2a690c834ffaa3c2f797aa8524ee7f7b2adda04"
+        },
+        {
+          "path": "plan-wall-dark-en-390.png",
+          "sha256": "8b274ff7557f5e67eb8d3411732987c67bd516677fe109b7922e8119035c7074"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "source_heading": "42 screened · as of 2026-09-16",
+      "candidate_message": "39 more names in this screen",
+      "tooltip": "Switch between the candidate screen and the plan book",
+      "plan_message": "412 more plan rows in the plan book",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 1320,
+        "scroll": 1320
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-dark-en-1440.png",
+          "sha256": "1f59509b31c884406acc81ee796a17f60dfd0c45de325b96718de9dcdeb035c6"
+        },
+        {
+          "path": "plan-wall-dark-en-1440.png",
+          "sha256": "3bc7e99816c697f23b20f70c9ed73bc2b9e920546db78fe5115a5e4edab6629c"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 390,
+      "source_heading": "筛出 42 只 · 截至 2026-09-16",
+      "candidate_message": "本次筛选还有 39 只股票",
+      "tooltip": "在候选筛选与计划簿之间切换",
+      "plan_message": "计划簿中另有 412 条计划",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 314,
+        "scroll": 314
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-dark-zh-390.png",
+          "sha256": "9af95ae00d57c0641ff3b61bcd8a55334560180e985a7575f9fe17775f9e226c"
+        },
+        {
+          "path": "plan-wall-dark-zh-390.png",
+          "sha256": "65e157037619bf6235ab680e4e8a7486e0d4541c5cd10961d666275b3cde4ab9"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 1440,
+      "source_heading": "筛出 42 只 · 截至 2026-09-16",
+      "candidate_message": "本次筛选还有 39 只股票",
+      "tooltip": "在候选筛选与计划簿之间切换",
+      "plan_message": "计划簿中另有 412 条计划",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 1320,
+        "scroll": 1320
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-dark-zh-1440.png",
+          "sha256": "156e748aff89159aa8b8a7926e9c1fbcce08195a8d573c11ece408c9d0667c6b"
+        },
+        {
+          "path": "plan-wall-dark-zh-1440.png",
+          "sha256": "88d3963fe19c2402051f7d5a1e6222d4822a9ffc82fcff7526ebea34cb268dee"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "source_heading": "42 screened · as of 2026-09-16",
+      "candidate_message": "39 more names in this screen",
+      "tooltip": "Switch between the candidate screen and the plan book",
+      "plan_message": "412 more plan rows in the plan book",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 314,
+        "scroll": 314
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-light-en-390.png",
+          "sha256": "e82bf8892e7bb4c77ffab8887096f12ede605bea4fcc18c1781493e2500b494d"
+        },
+        {
+          "path": "plan-wall-light-en-390.png",
+          "sha256": "88c5d53489324994014dfcea18defecb541634223329c1002a2d36756ba868fa"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "source_heading": "42 screened · as of 2026-09-16",
+      "candidate_message": "39 more names in this screen",
+      "tooltip": "Switch between the candidate screen and the plan book",
+      "plan_message": "412 more plan rows in the plan book",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 1320,
+        "scroll": 1320
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-light-en-1440.png",
+          "sha256": "8ce4e2d1d1a2d7f31896a60c31303e83cc0f8b69cd91a0eb2160b44c26b33ae1"
+        },
+        {
+          "path": "plan-wall-light-en-1440.png",
+          "sha256": "451e87942b34ce0c5a0d8a6845e3a430ef81ad5caea206727aea7c4e50cea11a"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 390,
+      "source_heading": "筛出 42 只 · 截至 2026-09-16",
+      "candidate_message": "本次筛选还有 39 只股票",
+      "tooltip": "在候选筛选与计划簿之间切换",
+      "plan_message": "计划簿中另有 412 条计划",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 314,
+        "scroll": 314
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-light-zh-390.png",
+          "sha256": "b7c55a56f0c6103fc6717c0e0163f11f4d12050de875c3513894d91431c891e2"
+        },
+        {
+          "path": "plan-wall-light-zh-390.png",
+          "sha256": "648bb9037d1136e4f8852846c75cbcda7da28d46e8502f7941df0740814dff5b"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 1440,
+      "source_heading": "筛出 42 只 · 截至 2026-09-16",
+      "candidate_message": "本次筛选还有 39 只股票",
+      "tooltip": "在候选筛选与计划簿之间切换",
+      "plan_message": "计划簿中另有 412 条计划",
+      "preview_candidate_cards": 3,
+      "preview_plan_cards": 3,
+      "source_switch_clicks": 1,
+      "access_tier_changes": 0,
+      "layout": {
+        "width": 1320,
+        "scroll": 1320
+      },
+      "missing_optional": [
+        "/live/basket_pulse.json",
+        "/stockdata/mtf_upturn.json",
+        "/basketdata/baskets.json",
+        "/live/prophet_live.json",
+        "/live/quotes.json",
+        "/live/overlay.json",
+        "/live/risk_state.json",
+        "/live/release_publications.json"
+      ],
+      "page_errors": [],
+      "screenshots": [
+        {
+          "path": "candidate-wall-light-zh-1440.png",
+          "sha256": "bf574d054d579fb116b223311742222b4d4baf8ef3058a328819ede1f2227e01"
+        },
+        {
+          "path": "plan-wall-light-zh-1440.png",
+          "sha256": "3eaf3b5e4e4efee0f04aea0181dcf4a8dcf239062a902d2773e5b0d54259a569"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

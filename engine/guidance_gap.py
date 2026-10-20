@@ -57,6 +57,25 @@ def _hits() -> pd.DataFrame | None:
     return df
 
 
+def hits_for_ticker(ticker: object) -> list[dict]:
+    """Directional 8-K guidance hits for one issuer, newest first.
+
+    Public read for consumers that need the raw rows (F07 event ->
+    AssumptionChange proposal) rather than the theme roll-up. Same validated
+    frame as the tilt uses, so there is no second store and no second reader.
+    """
+    if not isinstance(ticker, str) or not ticker.strip():
+        return []
+    df = _hits()
+    if df is None:
+        return []
+    wanted = ticker.strip().upper()
+    rows = df[df["ticker"].astype(str).str.upper() == wanted]
+    if rows.empty:
+        return []
+    return rows.sort_values("file_date").to_dict("records")
+
+
 def _band(n_raisers: int, n_cutters: int) -> str:
     """Directional tilt band. >=MIN_FILERS distinct filers required to leave NEUTRAL."""
     if n_raisers + n_cutters < MIN_FILERS:

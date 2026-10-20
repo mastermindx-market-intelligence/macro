@@ -1,0 +1,20 @@
+--- a/templates/vector.html.j2
++++ b/templates/vector.html.j2
+@@ -334,7 +334,7 @@
+ <main class="vector-wrap">
+   {# Overview is a read-only projection of the same canonical decision. Keep the
+      detailed decision fragment independently renderable below, without hero data. #}
+-  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final else none %}
++  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) else none %}
+ 
+   <div class="vector-sectionbar">
+     <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
+@@ -467,7 +467,7 @@
+ 
+   {# This decision fragment needs only the canonical decision and risk context;
+      it must not depend on the Overview's market, chart or quote variables. #}
+-  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
++  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final and (decision_page_as_of is not defined or decision.as_of == decision_page_as_of) %}
+   {% set action_code = decision.final.action_code if decision_ok else none %}
+   {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
+   {% set target_pct = decision.final.exposure_pct if decision_ok else none %}

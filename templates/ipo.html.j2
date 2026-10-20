@@ -182,6 +182,15 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .cw-rail.is-null{background:var(--card);box-shadow:inset 0 0 0 1px var(--grid);opacity:.55}
 .cw-scale{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
   letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+/* Capture-time force-state hook for the not_evaluable rail variant. The capture
+   script sets [data-credit="null"] on <body>; the rules below swap only the rail
+   and scale. They do not change .tc-state or any data-derived text. The hidden
+   fallback nodes are capture-only until a product caller sets data-credit;
+   no production caller currently sets it. */
+.cw-rail-fb,.cw-scale-fb{display:none}
+[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}
+[data-credit="null"] .cw-rail-fb{display:block}
+[data-credit="null"] .cw-scale-fb{display:flex}
 
 .cw-inputs{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
 .cw-in{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12.5px;
@@ -420,6 +429,9 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
         <span class="stance {{ 'warn' if pipeline.froth_flags and 'spac' in pipeline.froth_flags else 'acc' }}">{{ t(pipeline.stance_en or 'Normal issuance', pipeline.stance_zh or '发行正常') }}</span>
         <span class="asof" style="font-size:11px">{{ pipeline.priced_90d }} {{ t('priced · 90d','定价 · 90天') }}</span>
       </div>
+      {% if pipeline.median_op_size_disp %}<div class="mini">
+      {{ t('Median operating-company deal size · 90d','90天经营公司交易规模中位数') }}:
+      {{ pipeline.median_op_size_disp }}</div>{% endif %}
     </div>
   </div>
 
@@ -438,15 +450,21 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       {# SIGNATURE — where today's spread sits inside its own past year. Decorative:
          the same reading is printed as bilingual text in .cw-inputs below. #}
       {% if seg.rail %}
-      <div class="cw-rail" aria-hidden="true">
+      <div class="cw-rail cw-rail-data" aria-hidden="true">
         <span class="cw-band" style="width:{{ seg.rail.easy_pct }}%"></span>
         <span class="cw-mark" style="left:{{ seg.rail.pos_pct }}%"></span>
       </div>
-      <div class="cw-scale"><span>{{ t('tight end of the past year','近一年最窄') }}</span><span>{{ t('wide end','最宽') }}</span></div>
+      <div class="cw-scale cw-scale-data"><span>{{ t('tight end of the past year','近一年最窄') }}</span><span>{{ t('wide end','最宽') }}</span></div>
       {% else %}
       <div class="cw-rail is-null" aria-hidden="true"></div>
-      <div class="cw-scale"><span>{{ t('range not evaluable','区间无法评估') }}</span><span></span></div>
+      <div class="cw-scale"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
       {% endif %}
+      {# Capture-only fallback rail and scale, emitted for both data states and
+         hidden until scripts/capture_page_evidence.py sets [data-credit="null"]
+         on <body>. They remain capture-only until a product caller sets the
+         attribute. The hook changes only rail/scale visibility, never .tc-state. #}
+      <div class="cw-rail is-null cw-rail-fb" aria-hidden="true"></div>
+      <div class="cw-scale cw-scale-fb"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
 
       <ul class="cw-inputs">
         {% for inp in seg.inputs %}
@@ -481,6 +499,13 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
     <div class="cliff-lead">
       {% if lockup_timeline.next %}{% set nd = lockup_timeline.next.days_to %}<div class="cliff-next">{{ t('Next un-lock','下一解禁') }}: <b>{{ lockup_timeline.next.ticker }}</b> · {{ lockup_timeline.next.date }}{% if lockup_timeline.next.size_disp %} · {{ lockup_timeline.next.size_disp }}{% endif %} <span class="cliff-meta">({% if nd == 0 %}{{ t('today','今天') }}{% elif nd is not none and nd > 0 %}{{ t('in ' ~ nd ~ 'd','' ~ nd ~ '天后') }}{% elif nd is not none %}{{ t((-nd) ~ 'd ago','' ~ (-nd) ~ '天前') }}{% endif %})</span></div>{% endif %}
       <div class="cliff-meta">{{ lockup_timeline.approaching }} {{ t('approaching ≤45d','临近 ≤45天') }} · {{ lockup_timeline.just_expired }} {{ t('just un-locked','刚解禁') }}</div>
+      {% if lockup_summary and lockup_summary.n is number and lockup_summary.n > 0 %}
+      <div class="cliff-meta">{{ t(lockup_timeline.confirmed ~ ' of ' ~ lockup_summary.n
+      ~ ' tracked un-lock dates are confirmed from the prospectus;'
+      ~ ' the rest assume the 180-day standard.','在跟踪的' ~ lockup_summary.n
+      ~ '个解禁日期中，' ~ lockup_timeline.confirmed
+      ~ '个经招股书确认；其余按180天标准推定。')
+      }}</div>{% endif %}
     </div>
     <div class="timeline">
       <div class="tl-axis"></div>
@@ -499,6 +524,16 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <span class="k" style="margin-left:auto">{{ t('dot size = deal size','点大小＝交易规模') }}</span>
     </div>
     <div class="note warn">{{ t('Don’t add into the cliff. This is a supply-date calendar, not a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是供给日历，而非预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip(lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
+    {% if lockup_p0 %}<div class="mini">{{ t(
+      'Our event study of ' ~ lockup_p0.n_names ~ ' recent un-locks (to ' ~ lockup_p0.as_of
+      ~ '): the average return vs the S&P 500 ' ~ lockup_p0.window_en
+      ~ ' was ' ~ lockup_p0.mean_disp ~ '; ' ~ lockup_p0.pct_negative
+      ~ '% of names fell behind it. Verdict: ' ~ lockup_p0.verdict_en ~ '.','我们对截至'
+      ~ lockup_p0.as_of ~ '的' ~ lockup_p0.n_names ~ '次近期解禁的事件研究：'
+      ~ lockup_p0.window_zh ~ '相对标普500的平均回报为' ~ lockup_p0.mean_disp
+      ~ '；' ~ lockup_p0.pct_negative ~ '%的标的跑输。结论：'
+      ~ lockup_p0.verdict_zh ~ '。'
+    ) }}</div>{% endif %}
   </div>
   {% endif %}
 
@@ -534,7 +569,9 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
     {% endfor %}
   </div>
   {% else %}
-  <div class="empty">{{ t('No new deals on the near-term calendar right now — the pipeline is quiet.','近期日历上暂无新交易 —— 发行管道清淡。') }}</div>
+  <div class="empty">{{ t('No deals are expected to price in the near term.','近期暂无预计定价的交易。')
+  }}{% if pipeline.filed_n is number %} {{ t(pipeline.filed_n ~ ' more filed but have no price'
+  ~ ' date yet.','另有' ~ pipeline.filed_n ~ '家已披露未定价。') }}{% endif %}</div>
   {% endif %}
 
   <!-- ============ STUDY SHELVES — progressive disclosure ============ -->
@@ -590,7 +627,7 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
         {% elif rev_total %}
         <div class="mini" style="opacity:.85">{{ t('“Demand vs range” (final offer price vs the marketed prospectus range) is the strongest day-1 pop predictor in the literature, but a marketed range accrues only for deals captured before they price — covers','“需求对比区间”（最终发行价对比招股书营销区间）是文献中首日涨幅最强的预测因子，但营销区间仅对定价前已捕获的交易累积 —— 目前覆盖') }} {{ rev_coverage }}/{{ rev_total }} {{ t('recent deals so far, so the column is held back until coverage builds. Display-only, never scored.','近期交易，故在覆盖累积前暂不显示该列。仅供展示，从不计分。') }}</div>
         {% endif %}
-        <div class="mini">{{ t('SPACs are flagged, never dropped: they price at $10, rarely pop, and distort IPO base rates. Per-name price return vs the offer is shown only where we already hold the series — most fresh IPOs are outside our coverage, so we don’t fabricate it.','SPAC 被标记而非剔除：它们以 $10 定价、极少爆涨，会扭曲新股基准比率。相对发行价的个股回报仅在我们已持有序列时显示 —— 多数新上市公司不在覆盖范围内，故不会虚构。') }}</div>
+        <div class="mini">{{ t('SPACs are flagged, never dropped: they price at $10, rarely pop, and distort IPO base rates.','SPAC 被标记而非剔除：它们以 $10 定价、极少爆涨，会扭曲新股基准比率。') }}</div>
       </div>
     </details>
     {% endif %}

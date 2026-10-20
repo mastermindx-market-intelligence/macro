@@ -105,6 +105,44 @@ The Wave B candidate is 44 GiB / 16 CPUs / 8 GiB swap: 44 rather than 48 GiB lea
 resident services. Apply only after all Actions jobs drain, then prove mounts,
 Tailscale, storage, render, and runner recovery.
 
+## Windows reboot recovery law
+
+The PC/WSL runner lifecycle has two layers and they must not be collapsed. Windows is
+responsible only for starting the existing WSL distribution after a host boot; inside
+that guest, the already-installed systemd services remain the sole lifecycle authority
+for `pc-ci-1..3` and render. GitHub Actions remains the sole job scheduler. Windows boot
+recovery must never register a runner, add `ci-linux`, create `pc-ci-4`, or implement a
+second listener supervisor.
+
+WSL distributions are installed per Windows user, so the startup task must run under the
+exact Windows identity that owns the production distribution. The checked-in installer
+uses Task Scheduler `AtStartup` plus an `AtLogOn` fallback under one S4U principal so no
+password is stored; `IgnoreNew` prevents the two triggers from creating duplicate
+keepalives. Before installing, an elevated operator must pass the exact distribution name
+and the installer refuses if that distribution is not visible to the current identity.
+
+Do **not** use a one-shot `wsl.exe ... /bin/true` wake as recovery. Microsoft documents
+that systemd services do not keep a WSL instance alive, and the 2026-09-15 Windows Update
+incident reproduced that exact false-green: a manual no-op wake brought `pc-ci-1..3`
+plus `pc-render-1` online long enough to accept work, then all four went offline again
+when the WSL instance stopped. The recovery task therefore remains running and owns only
+VM residency through one inert foreground shell loop. If WSL exits unexpectedly, the
+wrapper retries boundedly. Linux systemd still owns runner listener restart; Windows does
+not register, relabel, start, stop, or dispatch a GitHub runner. The Task Scheduler
+execution limit is disabled because terminating the keepalive would itself recreate the
+outage.
+
+Source:
+
+- `ops/runner-host/pc/windows/Start-MastermindWslBootRecovery.ps1`
+- `ops/runner-host/pc/windows/Install-MastermindWslBootRecovery.ps1`
+
+Host acceptance is stronger than source acceptance: after installation, perform one
+controlled Windows reboot and prove, without interactive login, that the named WSL distro
+becomes running, the exact pre-reboot `pc-ci-1..3` service identities return, GitHub reports
+those three runners online, and render identity/labels are unchanged. If any effect is
+ambiguous, stop and reconcile before retrying. `pc-ci-4` remains separately gated by C3R-B.
+
 ## M1 service and disk law
 
 Each owner LaunchAgent has `RunAtLoad=true`, `KeepAlive.SuccessfulExit=false`, and a

@@ -1,0 +1,108 @@
+{
+  "schema": "gmi.independent_source_corrective_review/v1",
+  "reviewer": "/root/pure_reader_builder",
+  "verdict": "PASS_PREPARED_SOURCE_REVIEW",
+  "scope": "New C01 observation module/test; full v1 review reused for unchanged bytes; own earlier pure-reader repair excluded",
+  "artifacts": [
+    {
+      "path": "lanes/relationship_observations_v1/relationship_observations.py",
+      "byte_length": 42432,
+      "sha256": "4239285b177d2947173404f96f1672394b6f246e70ea4a82885e25ca8990196b"
+    },
+    {
+      "path": "lanes/relationship_observations_v1/test_company_relationship_observations.py",
+      "byte_length": 43659,
+      "sha256": "80acae7aadcecec3214fe86d77c99da841d2544629d35380ec11b5d9cc94d67e"
+    },
+    {
+      "path": "lanes/relationship_observations_v2/relationship_observations.py",
+      "byte_length": 42756,
+      "sha256": "85c07b309ff7b7220ec12f2b3f25c924a2ef4c9ab495ce9030f61038cbb9e8c7"
+    },
+    {
+      "path": "lanes/relationship_observations_v2/test_company_relationship_observations.py",
+      "byte_length": 49406,
+      "sha256": "a73700e639c8e97a4ff84951b48358abe63b1f5048560d03b0e40f2310ac44da"
+    },
+    {
+      "path": "lanes/relationship_observations_review_v1/REVIEW.md",
+      "byte_length": 18677,
+      "sha256": "6d2e452fadff42bbf3b25928bbed8795fb5bc3a6e32c1f58f494f1df360ed51c"
+    },
+    {
+      "path": "lanes/relationship_observations_review_v1/FINDINGS.json",
+      "byte_length": 5201,
+      "sha256": "64e05e70521f4654fcfc6e25562868cb3c777f3518531e1dff2546b8e3acbe8a"
+    },
+    {
+      "path": "lanes/pro003_control/DEC-GMI-ECONOMIC-RELATIONSHIP-OBSERVATION-MATERIALIZATION.md",
+      "byte_length": 12462,
+      "sha256": "f362b947460477b808d9aa50f7b6557cc9b738af9280da0ef014da6901fcd091"
+    }
+  ],
+  "report": {
+    "path": "lanes/relationship_observations_review_v2/CORRECTIVE_REVIEW.md",
+    "byte_length": 10785,
+    "sha256": "735f1c8a26b9c5e0bd3be9af94fc0c7dcfa78c1b6e2f6045f85eb6b52a4b3f3a"
+  },
+  "resolved_findings": [
+    {
+      "id": "OBS-V1-001",
+      "status": "RESOLVED_IN_SOURCE",
+      "evidence": "Complete unchanged fresh/sealed comparison now precedes non-INSPECTABLE return; actual unsupported-label regression requires mismatch and complete actual refusal"
+    },
+    {
+      "id": "OBS-V1-002",
+      "status": "RESOLVED_IN_SOURCE",
+      "evidence": "Actual collectors/tests roots and named transports denied; 18 real import-resolution controls, later-finder trap, separate intentional and unexpected receipts; full output equality and audit guards retained"
+    },
+    {
+      "id": "OBS-V1-003",
+      "status": "RESOLVED_IN_SOURCE",
+      "evidence": "Final modifying exception is retained; absent/nonmatching/unreadable final readback yields effect unknown; exact matching bytes reconcile; actual LocalStore-backed delayed/contradictory readback tests added"
+    }
+  ],
+  "remaining_definite_findings": [],
+  "delta": {
+    "module_functions_changed": [
+      "_create_only",
+      "read_relationship_observation"
+    ],
+    "module_functions_or_classes_added": [],
+    "module_functions_or_classes_removed": [],
+    "test_functions_added": [
+      "test_final_put_timeout_with_no_matching_readback_remains_effect_unknown"
+    ],
+    "test_functions_changed": [
+      "test_forged_saved_positive_cannot_override_actual_refusal_or_replay_mismatch",
+      "test_second_process_reads_repeat_exactly_under_import_network_and_mutation_guards"
+    ],
+    "old_test_function_count": 23,
+    "new_test_function_count": 24,
+    "embedded_child_control_count": 18,
+    "public_api_or_storage_schema_change": false
+  },
+  "actual_review_checks": {
+    "frozen_sha256": "PASS",
+    "complete_unified_diff_read": "PASS",
+    "affected_context_read": "PASS",
+    "module_test_ast_parse": "PASS",
+    "embedded_child_ast_parse": "PASS",
+    "application_import": "NOT_RUN",
+    "pytest": "NOT_RUN",
+    "native_store": "NOT_RUN",
+    "source_capture": "NOT_RUN",
+    "git": "NOT_RUN",
+    "hosted_ci": "NOT_RUN"
+  },
+  "native_gate": "Root must apply and validate exact frozen bytes on native canonical workspace; actual retained C01 positive/repeat/fresh-history witness and CI remain separate",
+  "authority": {
+    "source_custody_authenticated": false,
+    "review_authorship_authenticated": false,
+    "review_independence_authenticated": false,
+    "publisher_permissions_established": false,
+    "canonical_identity_established": false,
+    "product_acceptance": false,
+    "predictive_eligibility": false
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_candidate_formation_policy/v1",
+  "title": "Options Alpha research-candidate formation policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "policy_version",
+    "status",
+    "registered_on",
+    "governing_sources",
+    "effective_fences",
+    "activation_preconditions",
+    "source_contracts",
+    "formation",
+    "candidate_identity",
+    "candidate_states",
+    "clock_policy",
+    "context_policy",
+    "update_policy",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "options.alpha_candidate_formation_policy/v1"},
+    "policy_id": {"const": "oa_member_persistent_measured_campaign/v1"},
+    "policy_version": {"const": 1},
+    "status": {"const": "preregistered_inactive_until_activation"},
+    "registered_on": {"type": "string", "format": "date"},
+    "governing_sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["macro_commit", "oa_architecture", "oa_decision", "campaign_contract"],
+      "properties": {
+        "macro_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+        "oa_architecture": {"type": "string", "minLength": 1},
+        "oa_decision": {"type": "string", "minLength": 1},
+        "campaign_contract": {"type": "string", "minLength": 1}
+      }
+    },
+    "effective_fences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_freeze_rule",
+        "activation_rule",
+        "pre_policy_action",
+        "pre_activation_action",
+        "late_arrival_policy"
+      ],
+      "properties": {
+        "policy_freeze_rule": {"const": "next_nyse_session_open_after_prereg_main_merge/v1"},
+        "activation_rule": {"const": "next_nyse_session_open_after_composer_activation_receipt/v1"},
+        "pre_policy_action": {"const": "permanent_abstain"},
+        "pre_activation_action": {"const": "permanent_abstain"},
+        "late_arrival_policy": {"const": "formed_before_activation_never_cured_by_late_observation"}
+      }
+    },
+    "activation_preconditions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "oa1t_measured_source_consumer_proven",
+          "ad1t2_consumer_availability_production_accepted",
+          "campaign_integrity_publication_runtime_accepted",
+          "source_collision_review_clear"
+        ]
+      },
+      "allOf": [
+        {"contains": {"const": "oa1t_measured_source_consumer_proven"}},
+        {"contains": {"const": "ad1t2_consumer_availability_production_accepted"}},
+        {"contains": {"const": "campaign_integrity_publication_runtime_accepted"}},
+        {"contains": {"const": "source_collision_review_clear"}}
+      ]
+    },
+    "source_contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaign", "microstructure", "event_stage"],
+      "properties": {
+        "campaign": {"const": "options.signal_campaign/v2"},
+        "microstructure": {"const": "options.trade_nbbo_microstructure/v1"},
+        "event_stage": {"const": "live_flow.event_stage/v1"}
+      }
+    },
+    "formation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "campaign_phase",
+        "minimum_member_count",
+        "require_final_member_measured_microstructure",
+        "minimum_source_print_count",
+        "minimum_nbbo_valid_print_count",
+        "minimum_nbbo_premium_coverage_exclusive",
+        "no_new_premium_threshold",
+        "no_execution_location_share_threshold",
+        "attention_score_is_predicate",
+        "eod_context_is_predicate",
+        "package_context_is_predicate",
+        "outcomes_read_during_formation",
+        "direction_inferred_during_formation",
+        "first_qualifying_revision_frozen"
+      ],
+      "properties": {
+        "campaign_phase": {"const": "prospective_after_rule_freeze"},
+        "minimum_member_count": {"const": 2},
+        "require_final_member_measured_microstructure": {"const": true},
+        "minimum_source_print_count": {"const": 1},
+        "minimum_nbbo_valid_print_count": {"const": 1},
+        "minimum_nbbo_premium_coverage_exclusive": {"const": 0.0},
+        "no_new_premium_threshold": {"const": true},
+        "no_execution_location_share_threshold": {"const": true},
+        "attention_score_is_predicate": {"const": false},
+        "eod_context_is_predicate": {"const": false},
+        "package_context_is_predicate": {"const": false},
+        "outcomes_read_during_formation": {"const": false},
+        "direction_inferred_during_formation": {"const": false},
+        "first_qualifying_revision_frozen": {"const": true}
+      }
+    },
+    "candidate_identity": {
+      "const": "sha256(candidate_schema,policy_id,campaign_id,first_qualifying_campaign_revision_id)"
+    },
+    "candidate_states": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate", "abstain", "degraded", "reason_codes"],
+      "properties": {
+        "candidate": {"const": "research_candidate"},
+        "abstain": {"const": "abstain"},
+        "degraded": {"const": "degraded"},
+        "reason_codes": {
+          "type": "array",
+          "minItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "BEFORE_POLICY_FREEZE",
+              "BEFORE_ACTIVATION_BOUNDARY",
+              "CAMPAIGN_RECEIPT_INVALID",
+              "CAMPAIGN_NOT_PROSPECTIVE",
+              "INSUFFICIENT_CAMPAIGN_MEMBERS",
+              "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
+              "NO_VALID_NBBO_MEASUREMENT",
+              "EVIDENCE_CLOCK_INVALID",
+              "SOURCE_EXPLICITLY_STALE_OR_UNAVAILABLE",
+              "UPSTREAM_AUTHORITY_VIOLATION"
+            ]
+          }
+        }
+      }
+    },
+    "clock_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_formed_at",
+        "first_observed_at",
+        "decision_at",
+        "available_at",
+        "published_at",
+        "formation_evidence_cutoff",
+        "source_freshness_rule",
+        "backdating_policy"
+      ],
+      "properties": {
+        "source_formed_at": {"const": "first_qualifying_campaign_revision.formed_at"},
+        "first_observed_at": {"const": "candidate_first_observed_at"},
+        "decision_at": {"const": "candidate_first_observed_at"},
+        "available_at": {"const": "candidate_durable_write_time"},
+        "published_at": {"const": "consumer_publication_time"},
+        "formation_evidence_cutoff": {"const": "each_formation_leg.available_at<=candidate_first_observed_at"},
+        "source_freshness_rule": {"const": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening"},
+        "backdating_policy": {"const": "never_backdate_candidate_to_campaign_formed_at"}
+      }
+    },
+    "context_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eod", "package", "tactical"],
+      "properties": {
+        "eod": {"const": "supplemental_only_after_ad1t2_acceptance_never_v1_formation_predicate"},
+        "package": {"const": "supplemental_unresolved_allowed_never_v1_formation_predicate"},
+        "tactical": {"const": "consumer_evidence_only_no_radar_or_entry_origination_authority"}
+      }
+    },
+    "update_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["later_campaign_revision", "later_eod", "corrections", "outcomes"],
+      "properties": {
+        "later_campaign_revision": {"const": "versioned_update_same_candidate_identity"},
+        "later_eod": {"const": "post_decision_context_only_with_own_clock"},
+        "corrections": {"const": "append_or_version_never_rewrite_initial_formation"},
+        "outcomes": {"const": "join_after_frozen_candidate_never_formation_input"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_score",
+        "may_rank",
+        "may_issue",
+        "may_size",
+        "may_trade",
+        "may_publish_pick",
+        "may_train_prophet",
+        "may_feed_neural_web",
+        "may_create_tactical_event",
+        "may_infer_bullish_bearish_probability",
+        "may_compute_option_pnl"
+      ],
+      "properties": {
+        "may_score": {"const": false},
+        "may_rank": {"const": false},
+        "may_issue": {"const": false},
+        "may_size": {"const": false},
+        "may_trade": {"const": false},
+        "may_publish_pick": {"const": false},
+        "may_train_prophet": {"const": false},
+        "may_feed_neural_web": {"const": false},
+        "may_create_tactical_event": {"const": false},
+        "may_infer_bullish_bearish_probability": {"const": false},
+        "may_compute_option_pnl": {"const": false}
+      }
+    }
+  }
+}

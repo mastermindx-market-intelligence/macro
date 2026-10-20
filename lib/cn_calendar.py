@@ -10,8 +10,8 @@ reference that makes the China board's own lag computable: pure rule arithmetic,
 dependencies, stdlib only. Mirrors lib/hk_calendar.py and lib/nyse_calendar.py.
 
 Scope: full-day closures for the Shanghai and Shenzhen exchanges, which share one holiday
-schedule. The session day is 09:30-15:00 CST; ``expected_last_session`` uses a 17:00 CST
-settle buffer.
+schedule. The main session ends at 15:00 CST; applicable after-hours fixed-price trading
+runs until 15:30. ``expected_last_session`` preserves the 17:00 CST settle buffer.
 
 DIRECTION OF ERROR — the rule this table is built on
     Marking a real holiday as a session  → we over-count sessions behind → a false "stale"
@@ -23,11 +23,11 @@ So the holiday spans below encode only days that are closed EVERY year. Mainland
 set annually by the State Council and routinely run longer than the statutory core (Spring
 Festival is commonly 8-9 calendar days; Labour Day and Qingming are commonly 3-5). Those extra
 days are intentionally NOT encoded — they land in the false-stale direction by construction.
-The State Council also designates makeup workdays that turn a Saturday into a real session;
-those are not encoded either, and a missed one costs at most one session of under-count, which
-cannot by itself flip a >= 2-session verdict.
+For years covered by a complete official exchange notice, that notice replaces the
+approximation below. Government-designated makeup workdays do not create SSE/SZSE
+weekend sessions: Saturdays and Sundays remain closed, including makeup weekends.
 
-Because the table is deliberately incomplete, callers must not treat it as the only guard:
+Because uncovered years remain approximate, callers must not treat this as the only guard:
 scripts/build_china_library.compute_board_staleness pairs it with a calendar-day backstop
 (MAX_LEGIT_CLOSURE_DAYS) so a genuine long freeze is disclosed even if every rule here is wrong.
 
@@ -39,6 +39,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+from lib.exchange_holidays import announced_holidays
 
 CST = ZoneInfo("Asia/Shanghai")
 
@@ -112,10 +114,13 @@ _HOLIDAY_CACHE: dict[int, frozenset[date]] = {}
 
 
 def holidays(year: int) -> frozenset[date]:
-    """Scheduled full-day SSE/SZSE closures for `year` (rule-computed, cached).
+    """Scheduled full-day SSE/SZSE closures for `year`.
 
-    Deliberately minimal — see the module docstring's DIRECTION OF ERROR note.
+    Complete official notices override the deliberately minimal historical fallback.
     """
+    announced = announced_holidays("CN", year)
+    if announced is not None:
+        return frozenset(announced)
     got = _HOLIDAY_CACHE.get(year)
     if got is not None:
         return got

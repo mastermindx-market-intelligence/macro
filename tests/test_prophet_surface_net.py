@@ -145,6 +145,28 @@ HEALTHY_INTAKE = {
     "lossless": True,
 }
 
+ZERO_ORIGINATIONS_INTAKE = {
+    "admitted": 1,
+    "duplicate_id_blocked": 1,
+    "reorigination_blocked": 0,
+    "validation_failed": 0,
+    "originated": 0,
+    "eligible_after_skips": 0,
+    "unaccounted": 0,
+    "lossless": True,
+}
+
+ONE_ORIGINATION_INTAKE = {
+    "admitted": 1,
+    "duplicate_id_blocked": 0,
+    "reorigination_blocked": 0,
+    "validation_failed": 0,
+    "originated": 1,
+    "eligible_after_skips": 1,
+    "unaccounted": 0,
+    "lossless": True,
+}
+
 INTAKE_PREDICATES = [
     ("freshness_sentinel", fs.intake_identity_breach),
     ("check_nightly_liveness", nl.intake_identity_breach),
@@ -220,7 +242,7 @@ def _healthy_tree(root: Path, session: str = "2026-08-25", run_id: str = "999") 
         "staleness": {"price_through": session},
     })
     _write_json(root / "site" / "prophet" / "index.json", {
-        "intake": HEALTHY_INTAKE,
+        "intake": ONE_ORIGINATION_INTAKE,
         "plans": [
             {"id": "AAPL-BULL-20260825", "recorded_at": session},
         ],
@@ -243,6 +265,69 @@ def test_acceptance_script_accepts_a_fully_healthy_tree(tmp_path):
     assert problems == [], problems
 
 
+def test_acceptance_requires_a_receipt_for_a_delayed_market_session_cohort(tmp_path):
+    import datetime as dt
+
+    session = "2026-09-11"
+    published = "2026-09-13"
+    plan_id = "AAPL-BULL-20260911"
+    _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
+        "as_of": session,
+        "buy": [{"ticker": "AAPL"}],
+        "lane_counts": {"live": 1},
+        "staleness": {"price_through": session},
+    })
+    _write_json(tmp_path / "site" / "prophet" / "index.json", {
+        "intake": HEALTHY_INTAKE,
+        "plans": [{
+            "id": plan_id,
+            "price_basis_date": session,
+            "entry_date": session,
+            "recorded_at": published,
+        }],
+    })
+    _write_json(
+        tmp_path / "site" / "prophet" / "plans" / f"{plan_id}.json",
+        {"id": plan_id, "recorded_at": published, "asset": "AAPL"},
+    )
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 9, 13, 20, 0, tzinfo=dt.timezone.utc),
+    )
+    assert any("receipt" in problem for problem in problems), problems
+    assert any("market session 2026-09-11" in problem for problem in problems), problems
+
+
+def test_acceptance_price_basis_date_precedes_conflicting_publication_clocks(tmp_path):
+    import datetime as dt
+
+    session = "2026-09-11"
+    _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
+        "as_of": session,
+        "buy": [{"ticker": "AAPL"}],
+        "lane_counts": {"live": 1},
+        "staleness": {"price_through": session},
+    })
+    _write_json(tmp_path / "site" / "prophet" / "index.json", {
+        "intake": ZERO_ORIGINATIONS_INTAKE,
+        "plans": [{
+            "id": "NOT-FRIDAY",
+            "price_basis_date": "2026-09-10",
+            "entry_date": session,
+            "recorded_at": session,
+        }],
+    })
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 9, 13, 20, 0, tzinfo=dt.timezone.utc),
+    )
+    assert problems == [], problems
+
+
 def test_acceptance_script_flags_a_plan_recorded_but_never_originated(tmp_path):
     """recorded_at presence pin: a plan the run's receipt says it originated but
     that carries no recorded_at stamp on disk is a breach."""
@@ -255,17 +340,15 @@ def test_acceptance_script_flags_a_plan_recorded_but_never_originated(tmp_path):
     assert any("recorded_at" in p for p in problems), problems
 
 
-def test_acceptance_script_requires_a_receipt_only_when_the_cohort_is_non_empty(tmp_path):
-    """A night with ZERO new plans legitimately writes no receipt at all
-    (build_prophet's own `if not new_ids: raise SystemExit(0)`) — the acceptance
-    script must not manufacture a false alarm out of an honestly-empty night."""
+def test_acceptance_script_requires_no_receipt_when_this_run_originated_nothing(tmp_path):
+    """A run with zero new IDs legitimately writes no origination receipt."""
     import datetime as dt
     _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
         "as_of": "2026-08-25", "buy": [{"ticker": "AAPL"}],
         "lane_counts": {"live": 1}, "staleness": {"price_through": "2026-08-25"},
     })
     _write_json(tmp_path / "site" / "prophet" / "index.json", {
-        "intake": HEALTHY_INTAKE, "plans": [],
+        "intake": ZERO_ORIGINATIONS_INTAKE, "plans": [],
     })
     problems = pba.check(tmp_path, "999", dt.datetime(2026, 8, 25, 22, 0, tzinfo=dt.timezone.utc))
     assert not any("receipt" in p for p in problems), problems
@@ -279,6 +362,105 @@ def test_acceptance_script_flags_a_missing_receipt_when_the_cohort_is_non_empty(
         p.unlink()
     problems = pba.check(tmp_path, "999", dt.datetime(2026, 8, 25, 22, 0, tzinfo=dt.timezone.utc))
     assert any("receipt" in p for p in problems), problems
+
+
+def test_acceptance_does_not_require_a_receipt_for_an_existing_cohort_rerun(tmp_path):
+    """The publisher writes no receipt when this attempt originates zero new IDs.
+
+    A delayed rerun can still carry a non-empty Friday cohort from the first
+    attempt.  Existing session membership is not evidence that this attempt owes
+    a new origination receipt; ``index.intake.originated`` is that fact.
+    """
+    import datetime as dt
+
+    session = "2026-09-11"
+    published = "2026-09-13"
+    plan_id = "AAPL-BULL-20260911"
+    _write_json(tmp_path / "site" / "factordata" / "us_standouts.json", {
+        "as_of": session,
+        "buy": [{"ticker": "AAPL"}],
+        "lane_counts": {"live": 1},
+        "staleness": {"price_through": session},
+    })
+    _write_json(tmp_path / "site" / "prophet" / "index.json", {
+        "intake": ZERO_ORIGINATIONS_INTAKE,
+        "plans": [{
+            "id": plan_id,
+            "price_basis_date": session,
+            "entry_date": session,
+            "recorded_at": published,
+        }],
+    })
+    _write_json(
+        tmp_path / "site" / "prophet" / "plans" / f"{plan_id}.json",
+        {"id": plan_id, "recorded_at": published, "asset": "AAPL"},
+    )
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 9, 13, 20, 0, tzinfo=dt.timezone.utc),
+    )
+    assert problems == [], problems
+
+
+def test_acceptance_does_not_accept_a_prior_attempt_receipt(
+    tmp_path, monkeypatch, capsys
+):
+    """A run-attempt retry must prove its own receipt, not inherit attempt 1."""
+    _healthy_tree(tmp_path, run_id="999")  # writes only 999-1-*.json
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
+    monkeypatch.setattr(pba, "_push_alert", lambda _message: None)
+
+    rc = pba.main([
+        "--root", str(tmp_path),
+        "--run-id", "999",
+        "--now", "2026-08-25T22:00:00+00:00",
+    ])
+    out = capsys.readouterr().out
+
+    assert rc == 1, out
+    assert "999-2-*.json" in out, out
+
+
+def test_acceptance_rejects_a_malformed_current_attempt_receipt(tmp_path):
+    import datetime as dt
+
+    _healthy_tree(tmp_path)
+    receipt = next(
+        (tmp_path / "data" / "prophet" / "origination_receipts").glob("999-1-*.json")
+    )
+    _write_json(receipt, {"originated_plan_ids": "AAPL-BULL-20260825"})
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 8, 25, 22, 0, tzinfo=dt.timezone.utc),
+    )
+    assert any("originated_plan_ids" in problem for problem in problems), problems
+
+
+def test_acceptance_rejects_receipt_count_disagreement(tmp_path):
+    import datetime as dt
+
+    _healthy_tree(tmp_path)
+    index_path = tmp_path / "site" / "prophet" / "index.json"
+    index_doc = json.loads(index_path.read_text(encoding="utf-8"))
+    index_doc["intake"] = dict(
+        ONE_ORIGINATION_INTAKE,
+        admitted=2,
+        eligible_after_skips=2,
+        originated=2,
+    )
+    _write_json(index_path, index_doc)
+
+    problems = pba.check(
+        tmp_path,
+        "999",
+        dt.datetime(2026, 8, 25, 22, 0, tzinfo=dt.timezone.utc),
+    )
+    assert any("identifies 1 unique plan" in problem for problem in problems), problems
+    assert any("intake.originated=2" in problem for problem in problems), problems
 
 
 def test_acceptance_script_flags_the_restamp_trap():
@@ -325,6 +507,13 @@ def test_acceptance_script_annotation_is_a_bare_line_start_print(tmp_path, capsy
 def test_acceptance_script_warns_under_workflow_dispatch(tmp_path, monkeypatch, capsys):
     _healthy_tree(tmp_path)
     monkeypatch.setenv("GITHUB_EVENT_NAME", "workflow_dispatch")
+    # Pin the attempt: `main()` defaults `--run-attempt` from GITHUB_RUN_ATTEMPT
+    # and `check()` refuses any attempt >= 2 (the prior-attempt pin covered by
+    # test_acceptance_does_not_accept_a_prior_attempt_receipt). Left unpinned,
+    # this rc == 0 case failed inside every GitHub re-run of ci-pack-9 while
+    # passing on attempt 1 (#7938, 2026-09-24), so `gh run rerun --failed`
+    # could never green the pack.
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
     rc = pba.main([
         "--root", str(tmp_path), "--run-id", "999",
         "--now", "2026-08-25T22:00:00+00:00",

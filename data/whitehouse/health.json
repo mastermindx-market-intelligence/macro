@@ -1,29 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-16T20:07:49.002278+00:00",
+  "as_of": "2026-10-20T06:01:05.116184+00:00",
   "posts_seen": 8,
-  "seen_total": 192,
-  "evaluated": 3,
-  "activated": 1,
+  "seen_total": 302,
+  "evaluated": 1,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-16-national-pow-mia-recognition-day-2026",
-      "importance": 5,
+      "id": "wh-2026-10-20-presidential-message-on-national-forest-products-week-5753",
+      "importance": 30,
       "activated": false,
       "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-09-16-safer-stronger-built-in-america-president-trumps-record-in-north-carolina",
-      "importance": 25,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "tw-2026-09-10-tga-build",
-      "importance": 78,
-      "activated": true,
-      "degraded_reason": null
     }
   ]
 }

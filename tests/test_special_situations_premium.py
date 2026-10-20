@@ -348,3 +348,88 @@ def test_builder_tolerates_a_missing_or_corrupt_receipt(tmp_path):
     assert _featured_premium(tmp_path) is None
     (d / "premium_featured.json").write_text(json.dumps({"schema": "wrong"}), encoding="utf-8")
     assert _featured_premium(tmp_path) is None
+
+
+# ── nightly receipt path (MO-B F09-14, MO-PAID-064 live proof) ──────────────
+# On origin/main write_receipt() was reachable only from engine/special_situations.py
+# main(), which no workflow runs, so the capital-structure panel always printed its
+# no-receipt empty state. These tests pin the production shape: the nightly
+# build(refresh=True) writes the receipt, build(refresh=False) never does, and the
+# write lands after desk_payload() so it reflects tonight's sweep. No network, no
+# data/ or site/ writes — tmp_path only.
+
+
+class _Stop(Exception):
+    """Private: aborts build() right after the receipt call, before any render."""
+
+
+def test_nightly_build_path_writes_the_premium_receipt(tmp_path, monkeypatch, capsys):
+    from lib import config
+    import scripts.build_special_situations as bss
+    fx = _load("premium_computed_deal.json")
+    expected = prem.premium_for_event(
+        fx["event"], closes=_closes_series(fx["closes"]), lifecycle_row=fx["lifecycle_row"],
+        ledger=fx["ledger"], asof="2026-09-06 00:00 UTC")
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(prem, "featured_premium", lambda: expected)
+    out = bss._write_premium_receipt()
+    target = tmp_path / "data" / "special_situations" / "premium_featured.json"
+    assert out == target
+    assert out.exists()
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["schema"] == "special_situations.premium.v1"
+    assert payload["ticker"] == expected["ticker"]
+    lines = [ln for ln in capsys.readouterr().out.splitlines()
+             if ln.startswith("[premium-receipt]")]
+    assert len(lines) == 1 and lines[0].startswith("[premium-receipt] wrote ")
+
+
+def test_no_refresh_build_never_touches_the_receipt(tmp_path, monkeypatch):
+    from lib import config
+    import scripts.build_special_situations as bss
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    calls: list[int] = []
+
+    def _receipt_spy():
+        calls.append(1)
+        raise AssertionError("receipt must not be written on --no-refresh")
+
+    monkeypatch.setattr(bss, "_write_premium_receipt", _receipt_spy)
+    monkeypatch.setattr(bss.sse, "desk_payload",
+                        lambda *a, **k: {"situations": [], "built": "2026-09-06 00:00 UTC"})
+    monkeypatch.setattr(bss, "_prior_built", lambda: "2026-09-06 00:00 UTC")
+    monkeypatch.setattr(bss, "_would_thin_the_desk", lambda n: (True, 5))  # thin-guard exit
+    bss.build(refresh=False)
+    assert calls == []
+    assert not (tmp_path / "data" / "special_situations" / "premium_featured.json").exists()
+
+
+def test_refresh_build_writes_the_receipt_after_the_desk_payload(tmp_path, monkeypatch):
+    import collectors.special_intl as colintl
+    import collectors.special_news as colnews
+    import collectors.special_prices as colpx
+    import collectors.special_situations as col
+    import scripts.build_special_situations as bss
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    no_network = [(col, n) for n in ("fetch_events", "enrich_text", "enrich_filers",
+                                     "enrich_classify", "enrich_summaries", "enrich_extraction")]
+    no_network += [(colnews, "fetch_news_situations"), (colintl, "fetch_intl_situations"),
+                   (colpx, "fetch_arb_prices")]
+    for mod, name in no_network:
+        monkeypatch.setattr(mod, name, lambda *a, **k: None)
+    order: list[str] = []
+
+    def _desk_payload_spy(*a, **k):
+        order.append("desk_payload")
+        return {"situations": [], "built": "2026-09-06 00:00 UTC"}
+
+    def _receipt_spy():
+        order.append("receipt")
+        raise _Stop
+
+    monkeypatch.setattr(bss.sse, "desk_payload", _desk_payload_spy)
+    monkeypatch.setattr(bss, "_write_premium_receipt", _receipt_spy)
+    with pytest.raises(_Stop):
+        bss.build(refresh=True)
+    assert order == ["desk_payload", "receipt"]

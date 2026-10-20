@@ -84,6 +84,70 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_help_build_clock_is_one_exact_public_ui_asset():
+    """Public Help must load its local clock; nearby resources stay gated."""
+    asset = "/help_refresh.js"
+    assert asset in POLICY["public"]["exact"]
+    assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+    adjacent = {"/help_refresh.json", "/help_refresh.js.map", "/help_refresh_private.js",
+                "/api/help_refresh", "/help_refresh.js/private"}
+    assert not adjacent.intersection(POLICY["public"]["exact"])
+    for matcher in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert asset in paths, matcher
+        assert not adjacent.intersection(paths), matcher
+        assert not any(p.startswith("/help_refresh") and p != asset for p in paths), matcher
+
+
+def test_market_memory_callback_assets_load_before_session_exchange():
+    """OAuth returns before its code becomes a session; UI-only assets must load."""
+    assets = {"/market_memory_intent.js", "/market_memory_retained.js",
+              "/market_memory_retained.css"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+    for matcher in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher == "reg_asset_err" else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())}
+        assert assets <= paths, matcher
+        # Never make evidence responses public or cache them as UI assets.
+        assert not any(p.startswith("/api/market-memory") for p in paths)
+    for asset in assets:
+        assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+
+
+
+def test_macro_risk_overlay_script_public_but_signal_payload_remains_gated():
+    """The public macro shell cannot parser-block on a registration-gated JS asset."""
+    asset = "/risk_envelope_live.js"
+    feed = "/live/risk_envelope.json"
+    public = POLICY["public"]
+    assert asset in public["exact"]
+    assert asset in _caddy_public_exclusions()
+    assert feed not in public["exact"]
+    assert not any(feed.startswith(p.rstrip("/") + "/") for p in public["prefixes"])
+    for name in ("reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{name}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, name
+        directive = "not path" if name == "reg_asset_err" else "path"
+        paths = [p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.lstrip().removeprefix(directive).strip())]
+        assert asset in paths, name
+        assert feed not in paths, name
+    template = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    assert '<script async src="risk_envelope_live.js"></script>' in template
+    assert '<script async src="release_publications_live.js"></script>' in template
+
+
 def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     shell_paths = {"/biocatalyst.html", "/biocatalyst.css", "/biocatalyst.js"}
     assert shell_paths <= set(POLICY["public"]["exact"])
@@ -110,6 +174,46 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     assert "def require_site_full_user(" in api_source
     assert "Depends(require_site_full_user)" in api_source
     assert "enforce_site_full" in api_source
+
+
+def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
+    """F04-X1: the shell's CSS/JS are reachable anonymously; every current value is not.
+
+    The page is a public-safe shell whose only endpoint reference is the
+    authenticated snapshot API, so its presentation assets must be anonymously
+    reachable or the shell renders unstyled and inert for logged-out visitors.
+    The asset route is default-deny and compared byte-for-byte against this
+    policy, so an omission here is invisible until someone opens the page.
+    """
+    assets = {"/ontology.css", "/ontology.js"}
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    assert assets <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy matcher @reg_asset_err missing"
+    assert assets <= set(shlex.split(error_matcher.group(1)))
+
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, f"Caddy matcher @{matcher} missing"
+        paths = {
+            token
+            for path_line in re.findall(r"^\s*path\s+([^\n]+)", block.group(1), flags=re.M)
+            for token in shlex.split(path_line)
+        }
+        assert assets <= paths
+
+    # The snapshot itself is never public: no payload path is whitelisted, and
+    # the router resolves the shared authority rather than declaring a second one.
+    public_exact = set(POLICY["public"]["exact"])
+    assert not any(path.startswith("/api/ontology") for path in public_exact)
+    api_source = (ROOT / "app" / "ontology_explorer.py").read_text()
+    assert "from app.main import require_user" in api_source
+    assert "enforce_site_full" in api_source
+    assert "always=True" in api_source
 
 
 def test_retired_movers_route_redirects_to_the_consolidated_hub_section():

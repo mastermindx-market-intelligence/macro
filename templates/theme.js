@@ -471,25 +471,52 @@
      window.MMAccount.open(), which the settings-gear signed-in row calls. Identity
      rides the shared .mastermind-x.com cookie (credentials:include) — so it never
      loads a Supabase SDK here (jsdelivr is GFW-blocked). Path-depth aware; idempotent. */
-  (function loadAccount() {
-    if (window.__mmAccountLoading) return;
-    window.__mmAccountLoading = true;
+/* Account singleton loader -- drop-in replacement for the original loadAccount
+   IIFE (same scope, same net effect).  On every ordinary page this behaves
+   exactly as before and runs synchronously.  The single addition is a bounded
+   opt-in deferral: when the gov page publishes window.MDX_PROGRESSIVE_BOOT
+   carrying a ready.then promise, the SAME original loader below is deferred
+   until whichever comes first -- ready resolution, ready rejection, a 1500ms
+   fallback timer, or the first pointerdown/keydown input.  The original loader
+   body is unchanged: the __mmAccountLoading singleton guard is claimed
+   synchronously at execution (so a duplicate boot can never double-load), and
+   the MM_API default, the _mmSharedAssetRoot source prefix and the account.js
+   release key are all retained.  The deferral arms (timer + both listeners)
+   are removed on release and the loader fires exactly once.  No scheduler,
+   storage, auth, session or entitlement access is added. */
+(function loadAccount() {
+  if (window.__mmAccountLoading) return;
+  window.__mmAccountLoading = true;
+  var done = false;
+  function run() {
+    if (done) return;
+    done = true;
     window.MM_API = window.MM_API || 'https://app.mastermind-x.com';
-    /* Derive the shared-asset root from this script's own URL.  The previous
-       pathname special-case only knew about /sectors/, so every other nested
-       estate (/basket_canada/, /basket/, /rotation/, …) requested account.js
-       from its page folder.  That 404 also prevented account.js from loading
-       nav_market.js, leaving those pages on the legacy dropdown.  The rendered
-       theme.js reference already carries the correct ../ depth, so reuse it as
-       the single source of truth for every current and future nested page. */
+    /* Shared-asset root comes from this script's own URL context via
+       _mmSharedAssetRoot (the rendered theme.js reference already carries the
+       correct ../ depth); the explicit release key below keeps a year-cached
+       account.js from pinning an older navigation loader. */
     var pfx = _mmSharedAssetRoot;
     var s = document.createElement('script');
-    // Keep the dynamic dependency cache-safe too. theme.js itself is
-    // content-hashed in every page; this explicit release key prevents a
-    // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20260814-sf-inter-font-upgrade'; s.async = true;
+    s.src = pfx + 'account.js?v=20261015-mm-return-language'; s.async = true;
     document.head.appendChild(s);
-  })();
+  }
+  var boot = window.MDX_PROGRESSIVE_BOOT;
+  var ready = (boot && boot.ready && typeof boot.ready.then === 'function') ? boot.ready : null;
+  if (!ready) { run(); return; }
+  var timer = setTimeout(release, 1500);
+  document.addEventListener('pointerdown', release, true);
+  document.addEventListener('keydown', release, true);
+  ready.then(release, release);
+  function release() {
+    if (done) return;
+    clearTimeout(timer);
+    document.removeEventListener('pointerdown', release, true);
+    document.removeEventListener('keydown', release, true);
+    run();
+  }
+})();
+
 
   /* ---- Plotly charts: re-theme to the active theme -------------------------
      Charts are built transparent with neutral-grey axes (build_site.py); here we
@@ -1290,12 +1317,17 @@
       window.requestAnimationFrame(function () { input.focus(); });
     }
 
-    function closeSearch() {
+    function closeSearch(restoreFocus) {
       box.classList.remove('open');
       document.body.classList.remove('nav-search-focus');
       trigger.setAttribute('aria-expanded', 'false');
       input.blur();
       selected = -1;
+      if (restoreFocus) {
+        window.requestAnimationFrame(function () {
+          try { trigger.focus({ preventScroll: true }); } catch (e) { trigger.focus(); }
+        });
+      }
     }
 
     function idleTick() {
@@ -1332,7 +1364,7 @@
     }
 
     trigger.addEventListener('click', openSearch);
-    closeButton.addEventListener('click', closeSearch);
+    closeButton.addEventListener('click', function () { closeSearch(true); });
     input.addEventListener('compositionstart', function () { isComposing = true; });
     input.addEventListener('compositionend', function () {
       isComposing = false;
@@ -1358,7 +1390,8 @@
         e.preventDefault();
         go(pageRows[selected >= 0 ? selected : 0]);
       } else if (e.key === 'Escape') {
-        closeSearch();
+        e.preventDefault();
+        closeSearch(true);
       }
     });
     dropdown.addEventListener('mousedown', function (e) {
@@ -1415,7 +1448,8 @@
     /* extra specificity so the tap-flight beats the idle bob above */
     "button.nav-totop.launch svg{animation:nav-totop-launch .5s cubic-bezier(.5,0,.6,1)}",
     "@media (max-width:900px){",
-      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:10px;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent}",
+      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-sm,10px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent;touch-action:manipulation}",
+      ".nav-toggle:focus-visible{outline:2px solid currentColor;outline-offset:2px}",
       ".nav-toggle-bars,.nav-toggle-bars::before,.nav-toggle-bars::after{content:'';display:block;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .22s ease,opacity .2s ease}",
       ".nav-toggle-bars{position:relative}",
       ".nav-toggle-bars::before{position:absolute;left:0;top:-6px}",
@@ -3584,6 +3618,13 @@
   // (script unreachable): navigate to the landing with the param — index.html
   // always carries the sheet.
   function _mmOpenOnboard(mode) {
+    // Every global entry (including Settings and an already loaded sheet) must
+    // freeze this page's current reference before provider navigation. Waiting
+    // for a catalogue response can leave an older same-tab capsule in place.
+    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
+      var memoryReturn = window.MarketMemoryIntent.syncReturn();
+      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
+    }
     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
@@ -3593,7 +3634,18 @@
     var s = document.createElement('script');
     s.src = pfx + 'onboard.js'; s.defer = true;
     var fbQ = (m === 'signup') ? 'signup=1' : (m === 'upgrade') ? 'upgrade=1' : 'signin=1';
-    var fallback = function () { location.href = pfx + 'index.html?' + fbQ; };
+    var fallbackTarget = pfx + 'index.html?' + fbQ;
+    try {
+      var returnParams = new URL(location.href).searchParams;
+      var returnPath = returnParams.get('ret');
+      var returnUrl = new URL(returnPath || '', location.origin);
+      if (returnParams.getAll('ret').length === 1 && returnPath && returnPath.length <= 4096
+          && returnPath.charAt(0) === '/' && returnPath.slice(0, 2) !== '//'
+          && returnUrl.origin === location.origin) {
+        fallbackTarget += '&ret=' + encodeURIComponent(returnUrl.pathname + returnUrl.search + returnUrl.hash);
+      }
+    } catch (e) { /* Invalid or ambiguous return state cannot choose a destination. */ }
+    var fallback = function () { location.href = fallbackTarget; };
     var t = setTimeout(function () { if (!window.MMOnboard) fallback(); }, 4000);
     s.onload = function () {
       clearTimeout(t); window.__mmOnboardLoading = false;
@@ -3980,7 +4032,15 @@
      (not per blob), so an account that has only ever had `prefs`, and one that is
      half migrated, both read correctly. Nothing writes the nested blob any more;
      it survives as a read-only fallback. The Terminal half of this change is
-     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch). */
+     terminal/lib/accountPrefs.ts (readSharedPrefs / sharedPrefsPatch).
+
+     Single owner (site-20 S1 follow-up): account.js owns the `theme` and `lang`
+     writes whenever its panel is mounted with a loaded signed-in account — it
+     posts them to /api/account/prefs with its own queued/sent/acked/failed state.
+     _savePrefToServer asks MMAccount.claimsPref(key) and skips a claimed key, so
+     one request owns each key and a failed save is never masked by a second
+     silent writer. `theme_auto` is browser-only and stays here; a page without
+     the account panel (no MMAccount) keeps this path as the writer. */
   var _prefSyncing = false, _prefSaveTimer = null, _prefSavePending = null;
 
   /* v2 atomic if valid, else the legacy nested sibling. Per FIELD. */
@@ -3993,6 +4053,15 @@
   function _isTheme(v) { return v === 'light' || v === 'dark'; }
   function _isFlag(v) { return v === '1' || v === '0'; }
   function _isLang(v) { return v === 'en' || v === 'zh'; }
+  /* True when the mounted account panel owns the write for this key (single-owner
+     note above). Any error reads as "not claimed": this path keeps writing rather
+     than dropping the pref. */
+  function _acctOwnsPref(which) {
+    try {
+      var acc = window.MMAccount;
+      return !!(acc && typeof acc.claimsPref === 'function' && acc.claimsPref(which));
+    } catch (e) { return false; }
+  }
 
   function _applyServerPrefs(user) {
     if (!user) return;
@@ -4006,7 +4075,11 @@
       if (theme && theme !== curTheme()) setTheme(theme);
       if (themeAuto === '1') setThemeAuto();
       var lg = docEl.getAttribute('data-lang') || 'en';
-      if (lang && lang !== lg) setLang(lang);
+      if (lang && lang !== lg) {
+        if (window.MarketMemoryIntent && typeof window.MarketMemoryIntent.applyProfileLanguage === 'function') {
+          window.MarketMemoryIntent.applyProfileLanguage(lang, setLang);
+        } else setLang(lang);
+      }
     } catch (e) {}
     _prefSyncing = false;
   }
@@ -4017,11 +4090,16 @@
   function _savePrefToServer(which) {
     if (_prefSyncing || !_curUser || !_authEnabled) return;
     var patch = _prefSavePending || {};
+    // account.js owns theme/lang while its panel holds a signed-in account; this path
+    // then carries only the browser-only theme_auto flag, which is never claimed.
+    var owned = _acctOwnsPref(which);
     if (which === 'theme') {
-      try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      if (!owned) {
+        try { patch.theme = localStorage.getItem('theme') || curTheme(); } catch (e) { patch.theme = curTheme(); }
+      }
       try { patch.theme_auto = localStorage.getItem('themeAuto') || '0'; } catch (e) { patch.theme_auto = '0'; }
     } else if (which === 'lang') {
-      patch.lang = curLang();
+      if (!owned) patch.lang = curLang();
     }
     if (!Object.keys(patch).length) return;
     _prefSavePending = patch;
@@ -4092,7 +4170,8 @@
        the gear — no trip to screen-centre — and follows it on scroll. No scrim;
        click-outside / Esc / a second click on the gear closes it. */
     '.nav-settings{position:relative;display:inline-flex;flex:none}',
-    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:50%;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent}',
+    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-pill,999px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+    '.nav-settings-btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}',
     '.nav-settings-btn:hover{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));transform:translateY(-1px);box-shadow:0 5px 14px -6px color-mix(in srgb,var(--link,var(--blue)) 45%,transparent)}',
     '.nav-settings-btn:active{transform:translateY(0);box-shadow:none}',
     '.nav-settings-btn[aria-expanded="true"]{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));background:color-mix(in srgb,var(--link,var(--blue)) 13%,var(--panel2,var(--card)))}',
@@ -4119,12 +4198,12 @@
     '}',
     '.settings-head{display:flex;align-items:center;gap:8px;margin:0;padding:0 2px 2px}',
     '.settings-head h2{margin:0;padding:0;border:0;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;color:var(--muted,var(--ink-3))}',
-    '.settings-close{width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-close{width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-close:hover{background:var(--panel2,var(--card));color:var(--text,var(--ink))}',
     '.settings-close svg{width:15px;height:15px}',
     '.settings-close:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     /* expand-to-dashboard button: sits at the header end, pushed right with the close */
-    '.settings-expand{margin-left:auto;width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-expand{margin-left:auto;width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-expand:hover{background:var(--panel2,var(--card));color:var(--ink-link, var(--link,var(--blue)))}',
     '.settings-expand svg{width:15px;height:15px}',
     '.settings-expand:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -4147,7 +4226,8 @@
     '.settings-pop .theme-switch .knob::before{content:"🌙"}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob{transform:translateX(29px);background:#285fff}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob::before{content:"☀️"}',
-    '.settings-pop .lang-toggle{display:inline-flex;position:relative;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;flex:none;cursor:pointer}',
+    '.settings-pop .lang-toggle{display:inline-flex;align-items:center;position:relative;min-height:40px;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:var(--r-pill,999px);padding:3px;flex:none;cursor:pointer;touch-action:manipulation}',
+    '.settings-pop .lang-toggle:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-pop .lang-toggle .pill{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);border-radius:999px;background:var(--link,var(--blue));transition:transform .34s cubic-bezier(.34,1.4,.5,1)}',
     'html[data-lang="zh"] .settings-pop .lang-toggle .pill{transform:translateX(100%)}',
     '.settings-pop .lang-toggle .opt{position:relative;z-index:1;min-width:30px;text-align:center;padding:3px 11px;font-size:11.5px;font-weight:600;color:var(--muted,var(--ink-3));transition:color .25s;user-select:none}',
@@ -4158,6 +4238,8 @@
     '.settings-acct .sa-d{font-size:11.5px;color:var(--muted,var(--ink-3));line-height:1.5;margin:0 0 9px}',
     '.settings-acct .sa-btns{display:flex;gap:8px}',
     '.settings-acct .sa-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:not-allowed;border:1px solid var(--line,var(--grid));font-family:inherit}',
+    '.settings-acct .sa-btn{min-height:40px;touch-action:manipulation}',
+    '.settings-acct .sa-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct .sa-btn .sr-ic{color:inherit}',
     '.settings-acct .sa-btn.ghost{background:transparent;color:var(--text,var(--ink))}',
     '.settings-acct .sa-btn.solid{background:var(--link,var(--blue));border-color:var(--link,var(--blue));color:#fff;opacity:.92}',
@@ -4168,15 +4250,19 @@
     '.settings-acct .sa-btn.solid:hover{filter:brightness(1.07);opacity:1}',
     '.settings-acct-in{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:var(--panel2,var(--card));border:1px solid var(--line,var(--grid))}',
     '.settings-acct-in .sa-avatar{flex:none;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--link,var(--blue,#4f8cff)),color-mix(in srgb,var(--link,var(--blue,#4f8cff)) 55%,#9b5cff))}',
-    '.settings-acct-in .sr-main{flex:1;min-width:0}',
+    '.settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;flex-direction:column;justify-content:center;border-radius:var(--r-sm,10px);touch-action:manipulation}',
+    '.settings-acct-in .sr-main[role="button"]:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sr-lbl{display:block;font-size:13px;font-weight:700;color:var(--text,var(--ink));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
     '.settings-acct-in .sr-desc{display:block;font-size:11px;color:var(--muted,var(--ink-3));margin-top:1px}',
     '.settings-acct-in .sa-signout{flex:none;padding:7px 11px;border-radius:9px;border:1px solid var(--line,var(--grid));background:transparent;color:var(--text,var(--ink));font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .18s,color .18s}',
+    '.settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}',
+    '.settings-acct-in .sa-signout:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sa-signout:hover{border-color:var(--down,#ff5c6c);color:var(--ink-down, var(--down,#ff5c6c))}',
     '@media (prefers-reduced-motion:reduce){.settings-pop{transition:opacity .14s ease,visibility 0s linear .14s}.settings-pop.open,.nav-settings:not(.settings-dismissed):hover .settings-pop,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] + .settings-pop{transition:opacity .14s ease}.nav-settings-btn:hover svg,.nav-settings-btn[aria-expanded="true"] svg,.nav-settings:not(.settings-dismissed):hover .nav-settings-btn svg,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] svg{transform:none}}',
     /* ---- three-way theme segment + on/off toggle (shared by fx and live-prices) */
     '.set-theme-seg{display:inline-flex;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;gap:2px;flex:none}',
     '.set-seg-btn{padding:3px 10px;border:none;border-radius:999px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted,var(--ink-3));transition:background .2s,color .2s;white-space:nowrap}',
+    '.set-seg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;touch-action:manipulation}',
     '.set-seg-btn.active{background:var(--link,var(--blue));color:#fff}',
     '.set-seg-btn:hover:not(.active){background:color-mix(in srgb,var(--text,#fff) 9%,transparent);color:var(--text,var(--ink))}',
     '.set-seg-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -4882,13 +4968,27 @@
       var rowStep = Math.max(1, parseInt(grid.getAttribute('data-showmore-rows'), 10) || 3);
       var cardStep = Math.max(1, parseInt(grid.getAttribute('data-showmore'), 10) || 12);
       var items = [].filter.call(grid.children, function (el) { return el.nodeType === 1; });
-      var total = items.length;
       // P0 #6185: group HEADINGS are grid children (the candidate board prints one per
       // stage) but they are not records, so counting children would state a number no
-      // record kind on the page has. Paging still walks every child — a row stays a row —
-      // while the DISPLAYED count walks records only. Grids with no headings are
-      // unaffected: recTotal === total.
+      // record kind on the page has. The plan-book grid additionally names one lifecycle
+      // excluded from its DEFAULT pager: resolved history stays in the DOM for the
+      // lifecycle filter, but it is not part of the unresolved inventory/page count.
+      // Remove only that declared lifecycle from this pager's private population and
+      // leave it sm-hidden for the existing lifecycle-filter CSS to reveal on demand.
+      // Other grids carry no exclusion attribute and retain child-unit paging exactly.
+      var excludeLife = grid.getAttribute('data-showmore-exclude-life') || '';
       function isHd(el){ return el.hasAttribute('data-sm-heading'); }
+      function isDefaultExcluded(el){
+        return !!excludeLife && el.getAttribute('data-life') === excludeLife;
+      }
+      if (excludeLife) {
+        items = items.filter(function (el) {
+          if (!isDefaultExcluded(el)) return true;
+          el.classList.add('sm-hidden');
+          return false;
+        });
+      }
+      var total = items.length;
       var recTotal = items.filter(function (el) { return !isHd(el); }).length;
       // Live column count from the resolved grid tracks ("330px 330px 330px" → 3);
       // "none"/empty (not a grid / display:none, e.g. an inactive tab) falls back to 1.
@@ -5085,7 +5185,9 @@
       // Keyboard operability (WCAG 2.1 SC 2.1.1): make the lang-toggle reachable and
       // operable via keyboard without breaking existing CSS.
       if (!t.hasAttribute('tabindex')) t.setAttribute('tabindex', '0');
-      if (!t.getAttribute('role')) t.setAttribute('role', 'switch');
+      // The template historically labelled this as a group even though the whole pill
+      // is one two-state control. Override stale markup so aria-checked has valid switch semantics.
+      if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');
       // aria-checked reflects zh = true / en = false; synced on langchange + immediately
       function _syncLangAria() {
         var zh = (docEl.getAttribute('data-lang') || 'en') === 'zh';
@@ -5427,7 +5529,7 @@
   // A focusable control NESTED INSIDE a tip container owns its own taps. The click
   // handler has always honoured that; `nestedCtrl` is that same test, hoisted so the
   // focusin handler below cannot drift from it.
-  var CTRL_SEL = 'button, a, input, select, textarea, label, [role="button"]';
+  var CTRL_SEL = 'button, a, input, select, textarea, label, summary, [role="button"]';
   function nestedCtrl(target, t) {
     var ctrl = target && target.closest && target.closest(CTRL_SEL);
     return !!(ctrl && ctrl !== t && t.contains(ctrl));
@@ -5450,11 +5552,16 @@
     '.lens-term:hover,.lens-term.lens-on,.lens-term:focus-visible{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-bottom:1px solid var(--info,var(--blue,#5b9bf0));background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 9%,transparent);outline:none}' +
     /* upgraded legacy "?" icons pick up the same live hover accent as .lens-q */
-    'span.help.help-upgraded{cursor:help;transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
+    'span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;' +
+      'transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
     'span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-color:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 55%,transparent);' +
       'background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 13%,transparent);' +
       'box-shadow:0 0 0 3px color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 12%,transparent)}' +
+    'span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;' +
+      'outline:2px solid currentColor;outline-offset:3px}' +
+    '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{content:"";position:absolute;' +
+      'left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}' +
     /* One glass shell, shared with the rotation hover card and the heatmap card so
        every popup on a page reads as one component. --glass-* are theme-aware
        (theme.css rebinds them for light); the dark values stay inlined as fallbacks
@@ -5528,9 +5635,11 @@
       '.lens-pop.open{transform:none}' +
       '.lens-grab{display:block;width:38px;height:4px;border-radius:2px;margin:10px auto 2px;' +
         'background:color-mix(in srgb,var(--lens-text) 22%,transparent)}' +
-      '.lens-x{display:grid;place-items:center;position:absolute;top:10px;right:12px;width:26px;height:26px;' +
+      '.lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;z-index:2;width:40px;height:40px;' +
         'border-radius:50%;border:0;padding:0;font:600 11px/1 var(--font-ui,Inter,sans-serif);' +
         'color:var(--lens-mut);background:color-mix(in srgb,var(--lens-mut) 14%,transparent);cursor:pointer}' +
+      '.lens-x{touch-action:manipulation}' +
+      '.lens-x:focus-visible{outline:2px solid var(--lens-accent);outline-offset:-3px;color:var(--lens-text)}' +
       '.lens-hd{padding-top:8px}' +
       '.lens-ill{width:38px;height:38px}' +
       '.lens-ttl{padding:8px 18px 0;font-size:14px}' +
@@ -5649,7 +5758,11 @@
     pop.textContent = '';
     var grab = document.createElement('div'); grab.className = 'lens-grab'; pop.appendChild(grab);
     var x = document.createElement('button'); x.type = 'button'; x.className = 'lens-x';
-    x.setAttribute('aria-label', 'Close'); x.textContent = '✕'; pop.appendChild(x);
+    x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
+    x.textContent = '✕'; pop.appendChild(x);
     if (c.rich) {
       pop.classList.remove('lens-plain');
       var wrap = document.createElement('div'); wrap.innerHTML = c.rich;
@@ -5773,7 +5886,24 @@
     // bare data-tip chips: desktop clicks pass through (hover already shows the tip)
   }, true);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) hide();
+    if (e.key === 'Escape' && isOpen()) { hide(); return; }
+    if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
+        e.target && e.target.closest) {
+      var help = e.target.closest('span.help.help-upgraded');
+      if (help && contentFor(help)) {
+        e.preventDefault();
+        e.stopPropagation();
+        show(help);
+      }
+    }
+  });
+  document.addEventListener('langchange', function () {
+    if (!pop) return;
+    var x = pop.querySelector('.lens-x');
+    if (x) x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
   });
   window.addEventListener('scroll', function () {
     // The floating card FOLLOWS its trigger; it hides only when the trigger leaves
@@ -5790,6 +5920,8 @@
     });
   }, true);
   window.addEventListener('resize', function () { if (isOpen()) hide(); });
+  // Fragment navigation ends a transient explanation, including a pending hover.
+  window.addEventListener('hashchange', hide);
 
   /* Upgrade the legacy help() icons site-wide to this same popover system.
      The old help() macro renders EXACTLY
@@ -5835,13 +5967,24 @@
     if (!en) return false;
     el.setAttribute('data-tip-en', en);
     el.setAttribute('data-tip-zh', zh || en);
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
     el.classList.add('help-upgraded');
+    syncUpgradedHelpLabel(el);
     return true;
+  }
+  function syncUpgradedHelpLabel(el) {
+    if (!el) return;
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    el.setAttribute('aria-label', zh ? '更多信息' : 'More information');
   }
   function upgradeHelpIcons(root) {
     var icons = (root || document).querySelectorAll('span.help:not([data-tip-en])');
     for (var i = 0; i < icons.length; i++) upgradeOne(icons[i]);
   }
+  document.addEventListener('langchange', function () {
+    document.querySelectorAll('span.help.help-upgraded').forEach(syncUpgradedHelpLabel);
+  });
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { upgradeHelpIcons(); });
   } else {
@@ -5849,4 +5992,335 @@
   }
   window.upgradeHelpIcons = upgradeHelpIcons;   // exposed for client-rendered content
   window._upgradeHelpIcon = upgradeOne;         // JIT hook used by the pointerover/click handlers
+})();
+
+/* Packet2: enhance existing entitled row details; no fetch, store, router or auth owner.
+   Move the live detail nodes into one dialog and return them to their exact origin. */
+(function () {
+  'use strict';
+  if (window.__pvSetupBound || typeof HTMLDialogElement === 'undefined') return;
+  window.__pvSetupBound = true;
+  var dialog = null, active = null;
+  /* PR 8801 follow-up — ONE transient, in-memory context for the most recent
+     candidate→Plan journey. It is not a router, a store, a history or a second
+     navigation surface: it holds only the live nodes of the origin this owner has
+     just released, so the reader can come back to the SAME row with the SAME view.
+     It is dropped on source replacement/removal/recycling, a published generation
+     change, loss of access, any unrelated navigation, a second journey, or removal
+     of the exact Plan target. */
+  var journey = null, journeyBtn = null, journeyPass = null, journeyCheckQueued = false;
+  function node(tag, cls, text) {
+    var x = document.createElement(tag); if (cls) x.className = cls;
+    if (text !== undefined) x.textContent = text; return x;
+  }
+  function bilingual(parent, en, zh) {
+    parent.append(node('span', 'l-en', en), node('span', 'l-zh', zh)); return parent;
+  }
+  function build() {
+    if (dialog) return;
+    dialog = node('dialog', 'pv-setup-dialog'); dialog.id = 'pv-setup-dialog';
+    dialog.setAttribute('aria-labelledby', 'pvs-dialog-title');
+    var head = node('header', 'pvs-dialog-head'), titles = node('div');
+    var title = node('h2'); title.id = 'pvs-dialog-title';
+    titles.append(title, bilingual(node('p'), 'Setup detail · read only', '形态详情 · 只读'));
+    var close = bilingual(node('button', 'pvs-close'), 'Close ×', '关闭 ×'); close.type = 'button';
+    close.addEventListener('click', function () { dismiss(true); });
+    head.append(titles, close);
+    var body = node('div', 'pvs-dialog-content'), foot = node('footer', 'pvs-dialog-foot');
+    var link = bilingual(node('a', 'pvs-native-link'), 'Open stock page ↗', '打开个股页面 ↗');
+    foot.append(link, bilingual(node('span'), 'Close to return to the same row', '关闭后返回同一行'));
+    dialog.append(head, body, foot); document.body.append(dialog);
+    dialog.addEventListener('cancel', function (e) { e.preventDefault(); dismiss(true); });
+    dialog.addEventListener('click', function (e) {
+      if (e.target !== dialog) return;
+      var r = dialog.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dismiss(true);
+    });
+    dialog.addEventListener('close', function () { if (!dialog.open) release(true); });
+    dialog.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var nodes = Array.from(dialog.querySelectorAll('button,a[href],input,select,textarea,summary,[tabindex]')).filter(function (n) {
+        return !n.disabled && n.tabIndex >= 0 && n.getClientRects().length;
+      });
+      if (!nodes.length) { e.preventDefault(); return; }
+      var first = nodes[0], last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+  function release(restoreFocus) {
+    var old = active; active = null;
+    if (!old) return;
+    // Restore only to the original live node. A replaced source is never resurrected.
+    old.moved.forEach(function (pair) {
+      if (old.row.isConnected && old.row.contains(old.details) && pair.owner.isConnected &&
+          (pair.owner === old.details || old.details.contains(pair.owner)) && pair.home.contains(pair.mark)) pair.mark.replaceWith(pair.node);
+      else { pair.node.remove(); pair.mark.remove(); }
+    });
+    dialog.querySelector('.pvs-dialog-content').replaceChildren();
+    dialog.querySelector('#pvs-dialog-title').textContent = '';
+    dialog.querySelector('.pvs-native-link').removeAttribute('href');
+    if (!old.hadLock) document.documentElement.classList.remove('pv-setup-lock');
+    if (restoreFocus && old.trigger.isConnected && old.trigger.getClientRects().length) old.trigger.focus({preventScroll: true});
+    else if (restoreFocus) {
+      var fallback = document.querySelector('#ucp-search, #us-src-btn-cand');
+      if (fallback) fallback.focus({preventScroll: true});
+    }
+    window.scrollTo({left:old.x, top:old.y, behavior:'instant'});
+    if (journey) mountJourney();   // the Plan detail closed: the one action is still usable, outside it
+  }
+  function dismiss(restoreFocus) {
+    // End native modal inertness before restoring focus to the source row.
+    if (dialog && dialog.open) dialog.close();
+    release(restoreFocus);
+  }
+  // Copy only the already-painted publisher geometry, not markup strings or live quote overlays.
+  // This bounded display guard is not a data sanitizer service or a new chart engine.
+  function chartCopy(svg) {
+    if (!svg) return null;
+    var tags = new Set(['svg','g','rect','line','polyline','polygon','path','circle','ellipse']);
+    var numeric = new Set(['x','y','x1','x2','y1','y2','cx','cy','r','rx','ry','width','height','viewBox','points','stroke-width','stroke-dasharray','stroke-opacity','fill-opacity','opacity']);
+    var all = [svg].concat(Array.from(svg.querySelectorAll('*')));
+    if (all.length > 1000) return null;
+    for (var n of all) {
+      if (!tags.has(n.localName) || n.namespaceURI !== 'http://www.w3.org/2000/svg') return null;
+      for (var attr of n.attributes) {
+        var k = attr.name, v = attr.value;
+        if (numeric.has(k) && /^[\d\s.,%+eE-]+$/.test(v)) continue;
+        if (k === 'fill' || k === 'stroke') { if (/^(none|currentColor|#[0-9a-fA-F]{3,8}|var\(--(up|down|warn|muted|text|line)\))$/.test(v)) continue; }
+        if (k === 'class' && /^[A-Za-z0-9_ -]*$/.test(v)) continue;
+        if (k === 'd' && /^[MmLlHhVvCcSsQqTtAaZz\d\s.,+eE-]+$/.test(v)) continue;
+        if (k === 'preserveAspectRatio' && /^(none|x(Min|Mid|Max)Y(Min|Mid|Max)( (meet|slice))?)$/.test(v)) continue;
+        if (k === 'xmlns' && v === 'http://www.w3.org/2000/svg') continue;
+        if (k === 'stroke-linejoin' && /^(miter|round|bevel)$/.test(v)) continue;
+        if (k === 'stroke-linecap' && /^(butt|round|square)$/.test(v)) continue;
+        return null;
+      }
+    }
+    var copy = svg.cloneNode(true); copy.setAttribute('role', 'img');
+    copy.setAttribute('aria-label', 'Published source chart'); return copy;
+  }
+  function sourceStamp(row) {
+    var scope = row.closest('#us-candidate-pool,#us-standouts');
+    return scope ? ['data-source-digest','data-as-of','data-board-asof'].map(function (k) {return scope.getAttribute(k) || '';}).join('|') : '';
+  }
+  function journeyNative(row) {
+    var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
+    return link ? link.getAttribute('href') : null;
+  }
+  /* The origin is only serviceable while it is the SAME live source: exact nodes,
+     the same published generation digest/as-of, the same native identity/link, the
+     exact Plan target still in the page, and no access/withhold marker. Zero rects
+     alone is NOT access loss — while Plans is selected the candidate population is
+     hidden by the source-mode rule, which is why `reachable` is only demanded at the
+     moment of return, after the source mode and view have been restored. */
+  function journeyUsable(j, reachable) {
+    if (!j || !j.row.isConnected || !j.details.isConnected || !j.trigger.isConnected ||
+        !j.row.contains(j.details) || !j.details.contains(j.trigger)) return false;
+    if (sourceStamp(j.row) !== j.stamp) return false;
+    if (journeyNative(j.row) !== j.href) return false;
+    if ((j.details.dataset.setupTicker || j.row.dataset.ticker || '') !== j.ticker) return false;
+    if (!j.planCard.isConnected || j.planCard.getAttribute('id') !== j.targetId) return false;
+    if (j.row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return false;
+    if (reachable && (!j.row.getClientRects().length || !j.trigger.getClientRects().length)) return false;
+    return true;
+  }
+  function journeyState(on) {
+    if (document.body && document.body.dataset) document.body.dataset.pvsCandidateReturn = on ? 'available' : 'clear';
+  }
+  /* One canonical bilingual action, existing header link-button styling, no new
+     component and no duplicated Today/Screener/Plans navigation. */
+  function journeyButton() {
+    if (journeyBtn) return journeyBtn;
+    journeyBtn = bilingual(node('button', 'gbtn mx-sec-link'), 'Return to candidate', '返回候选');
+    journeyBtn.type = 'button';
+    journeyBtn.setAttribute('data-pvs-return', 'candidate');
+    journeyBtn.addEventListener('click', function (e) { if (e && e.preventDefault) e.preventDefault(); returnToCandidate(); });
+    return journeyBtn;
+  }
+  /* Existing owner rendering only: the action lives in the source owner's own panel
+     header row, or — while THAT journey's Plan detail is open — in this dialog's own
+     footer. The same single node is re-hosted, never duplicated. */
+  function mountJourney() {
+    var parent = null;
+    if (dialog && dialog.open && active && journey && active.row === journey.planCard) {
+      parent = dialog.querySelector('.pvs-dialog-foot');
+    }
+    if (!parent) {
+      var owner = window.USProphetSource;
+      parent = owner && owner.returnHost ? owner.returnHost() : null;
+    }
+    if (!journey || !parent || !parent.append) {
+      if (journeyBtn) journeyBtn.remove();
+      journeyState(false);
+      return;
+    }
+    var btn = journeyButton();
+    if (btn.parentNode !== parent) { btn.remove(); parent.append(btn); }
+    journeyState(true);
+  }
+  function clearJourney() {
+    journey = null; journeyPass = null;
+    if (journeyBtn) journeyBtn.remove();
+    journeyState(false);
+  }
+  /* Live quote ticks mutate this page constantly; the browser already coalesces
+     MutationObserver delivery into a microtask, so one revalidation per turn is both
+     prompt (before the next paint) and bounded. */
+  function queueJourneyCheck() {
+    if (journeyCheckQueued) return;
+    journeyCheckQueued = true;
+    Promise.resolve().then(function () {
+      journeyCheckQueued = false;
+      if (journey && !journeyUsable(journey, false)) clearJourney();
+    });
+  }
+  function returnToCandidate() {
+    if (!journey || !journeyUsable(journey, false)) { clearJourney(); return false; }
+    var j = journey, want = j.mode || 'candidates';
+    // Release the Plan dialog before restoring the origin scroll. Its close owner
+    // otherwise restores the Plan scroll while the candidate is being reopened.
+    if (active) dismiss(false);
+    journeyPass = want;                       // the return hop is the journey's own
+    if (window.USProphetSource && window.USProphetSource.set) {
+      try { window.USProphetSource.set(want); } catch (e) {}
+    }
+    journeyPass = null;
+    /* Existing view owner: applyView only re-arms classes/aria, so the exact source
+       row is never re-rendered away. */
+    if (j.view && window.USStockTable && window.USStockTable._setView) {
+      try { window.USStockTable._setView(j.view); } catch (e) {}
+    }
+    window.scrollTo({left: j.x, top: j.y, behavior: 'instant'});
+    if (!journeyUsable(j, true)) { clearJourney(); return false; }
+    if (open(j.trigger, j.details, j.row) !== true) { clearJourney(); return false; }
+    clearJourney();                           // home again: nothing left to return from
+    return true;
+  }
+  function open(trigger, details, row) {
+    if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
+        row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return;
+    var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
+    if (!link) return;
+    var nativeHref = link.getAttribute('href');
+    if (!nativeHref || !/^stock\.html#[^\s]*$/.test(nativeHref)) return;
+    if (details.classList.contains('pv-setup-table')) {
+      var panel = row.closest('#us-standouts');
+      if (!panel || (details.dataset.setupAsof || '') !== (panel.dataset.boardAsof || '')) return;
+      var bound = details.dataset.setupTicker;
+      // Same row's native anchor and presentation must agree; no ticker lookup/join.
+      if (!bound || nativeHref !== 'stock.html#' + bound) return;
+    }
+    // Table-only content stays in its own inert template until opened. The Table
+    // itself requires JS; card/Plan inline disclosures keep their no-JS fallback.
+    var holder = details.querySelector(':scope > template.pvs-body-source');
+    var source = holder ? holder.content.querySelector('.pv-setup-body') : details.querySelector(':scope > .pv-setup-body');
+    if (details.classList.contains('pv-setup-table') && !source) return;
+    build(); if (active) release(false);
+    var nodes = source ? [source] : Array.from(details.children).filter(function (n) { return n.localName !== 'summary'; });
+    var slot = source && source.querySelector('[data-pvs-chart]');
+    if (slot) {
+      slot.replaceChildren();
+      var geometry = row.querySelector('.pv-chart > svg');
+      if (details.classList.contains('pv-setup-table')) {
+        var encoded = details.querySelector(':scope > .pvs-chart-source');
+        var text = encoded && encoded.content ? encoded.content.textContent : '';
+        geometry = null;
+        if (text && text.length <= 100000 && !/<!doctype|<!entity/i.test(text)) {
+          var parsed = new DOMParser().parseFromString(text, 'image/svg+xml');
+          // Publisher SVG is normally parsed as HTML on its card, where the SVG
+          // namespace is implicit. Restore only that namespace for inert XML parsing.
+          if (!parsed.querySelector('parsererror') && parsed.documentElement.localName === 'svg' && !parsed.documentElement.namespaceURI) {
+            text = text.replace(/^(\s*<svg)(?=[\s>])/, '$1 xmlns="http://www.w3.org/2000/svg"');
+            parsed = new DOMParser().parseFromString(text, 'image/svg+xml');
+          }
+          if (!parsed.querySelector('parsererror')) geometry = parsed.documentElement;
+        }
+      }
+      var svg = chartCopy(geometry);
+      if (svg) slot.append(svg);
+      slot.append(bilingual(node('p'), svg ? 'Published mini-chart · no new price series' : 'Chart unavailable for this source row', svg ? '来源迷你图 · 不新增价格序列' : '此来源记录未提供可用图表'));
+    }
+    /* Any detail opened for another source is an explicit navigation away from the
+       journey in flight; only that journey's own exact Plan keeps it alive. */
+    if (journey && row !== journey.planCard) clearJourney();
+    active = {trigger: trigger, row: row, details: details, moved: [], x: window.scrollX, y: window.scrollY,
+      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row),
+      href: nativeHref, ticker: details.dataset.setupTicker || row.dataset.ticker || ''};
+    var title = details.dataset.setupTicker || row.dataset.ticker || '';
+    if (row.dataset.recordOnly === '1') title += ' · ' + (row.id || '').replace(/^pv-/, '');
+    dialog.querySelector('#pvs-dialog-title').textContent = title;
+    dialog.querySelector('.pvs-native-link').setAttribute('href', nativeHref);
+    var target = dialog.querySelector('.pvs-dialog-content');
+    nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
+    document.documentElement.classList.add('pv-setup-lock');
+    if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    mountJourney();
+    return true;
+  }
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest && e.target.closest('.pv-setup-inline > summary, .pv-record-detail > summary');
+    if (!trigger || !trigger.closest('#us-standouts,#us-candidate-pool')) return;
+    var details = trigger.parentElement, row = details.closest('.pvcard, .ucp-row');
+    if (!row && details.classList.contains('pv-setup-table') && details.closest('#us-stocktable-wrap')) row = details.closest('tr');
+    if (!row) return;
+    if (open(trigger, details, row) === true) e.preventDefault();
+  });
+  // Existing owner events. The detail never decides entitlement or fetches a missing row.
+  /* Hydration replaces the current board, and an auth/tier turn can take
+     entitlement away with it: both end any journey. A language turn does not — the
+     action carries its own EN/ZH pair — but the open detail still returns to its row. */
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); clearJourney(); }, true);
+  document.addEventListener('langchange', function () { dismiss(true); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); clearJourney(); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); clearJourney(); });
+  new MutationObserver(function () {
+    if (journey) queueJourneyCheck();
+    if (!active) return;
+    if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
+        sourceStamp(active.row) !== active.sourceStamp ||
+        !active.row.contains(active.details) ||
+        active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
+          !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','aria-hidden','class','id','href','data-setup-ticker','data-ticker','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
+  /* The plan-link owner in dashboard.html.j2 is the only caller: it snapshots while
+     this owner still holds the live candidate source (before its own .pvs-close),
+     and only claims the journey after USProphetLife.selectPlan confirmed the target. */
+  window.PVSetupReturn = {
+    snapshot: function (origin) {
+      if (active && !active.row.closest('#us-plan-block,#us-life-grid')) {
+        journeyPass = 'plans';                // armed for this journey's own Plans hop
+        return {trigger: active.trigger, details: active.details, row: active.row,
+          stamp: active.sourceStamp, href: active.href, ticker: active.ticker,
+          x: active.x, y: active.y, mode: origin && origin.mode, view: origin && origin.view};
+      }
+      // Re-clicking the same candidate's link (a double click, or coming back for the
+      // same record) has no live detail to snapshot; the bound origin has not changed,
+      // so this hop must not cost the reader the return they already have.
+      if (journey) journeyPass = 'plans';
+      return null;
+    },
+    claim: function (mode) {
+      if (journeyPass === mode) { journeyPass = null; return true; }
+      return false;
+    },
+    establish: function (snap, targetId, planCard) {
+      journeyPass = null;
+      if (!snap) {
+        if (journey && journey.targetId === targetId && journey.planCard === planCard) return true;
+        clearJourney();
+        return false;
+      }
+      if (!targetId || !planCard || (snap.stamp !== sourceStamp(snap.row))) { clearJourney(); return false; }
+      journey = {trigger: snap.trigger, details: snap.details, row: snap.row, stamp: snap.stamp,
+        href: snap.href, ticker: snap.ticker, x: snap.x, y: snap.y,
+        mode: snap.mode || 'candidates', view: snap.view || 'grid', targetId: targetId, planCard: planCard};
+      mountJourney();
+      return true;
+    },
+    abandon: function () { clearJourney(); },
+    clear: function () { clearJourney(); },
+    available: function () { return !!journey && journeyUsable(journey, false); },
+    run: function () { return returnToCandidate(); }
+  };
 })();

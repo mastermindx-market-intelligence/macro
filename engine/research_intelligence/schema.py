@@ -18,6 +18,11 @@ _DIRECTIONS = {"bullish", "bearish", "mixed", "neutral", "unclear"}
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 
 
+def thesis_direction_values() -> tuple[str, ...]:
+    """Return the deterministic vocabulary accepted by the thesis validator."""
+    return tuple(sorted(_DIRECTIONS))
+
+
 def _text(value: Any, limit: int = 8000) -> str:
     return " ".join(str(value or "").split())[:limit]
 
@@ -57,12 +62,14 @@ def _evidence(value: Any, *, limit: int = 12) -> list[dict[str, str]]:
 
 
 def _support(value: Any, claim_count: int) -> list[int]:
-    if not isinstance(value, list):
+    # Never retain an assertion after silently losing one of its references.
+    # Empty support rejects the mandatory thesis and drops optional assertions.
+    if not isinstance(value, list) or len(value) > 30:
         return []
     out: list[int] = []
-    for raw in value[:30]:
+    for raw in value:
         if type(raw) is not int or raw < 0 or raw >= claim_count:
-            continue
+            return []
         if raw not in out:
             out.append(raw)
     return out
@@ -156,12 +163,16 @@ def validate_rio(
         "authority": "descriptive_research_only",
     }
 
-    for raw in value.get("claims") if isinstance(value.get("claims"), list) else []:
+    raw_claims = value.get("claims")
+    # Analysis references positions in the submitted array. Silently dropping a
+    # malformed row could attach an assertion to a different surviving claim.
+    # Structural gaps must fail before the separate grounding/remapping stage.
+    for index, raw in enumerate(raw_claims if isinstance(raw_claims, list) else []):
         if not isinstance(raw, dict):
-            continue
+            raise ValueError(f"claims[{index}] must be an object")
         statement = _text(raw.get("statement"), 1800)
         if not statement:
-            continue
+            raise ValueError(f"claims[{index}].statement must be nonempty")
         normalized["claims"].append({
             "statement": statement,
             "evidence": _evidence(raw.get("evidence")),

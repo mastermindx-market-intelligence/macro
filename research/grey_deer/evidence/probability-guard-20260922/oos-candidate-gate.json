@@ -1,0 +1,126 @@
+{
+  "base_prob_cal": {
+    "h10": {
+      "calm": 0.06,
+      "caution": 0.08,
+      "elevated": 0.12,
+      "risk-off": 0.17,
+      "watch": 0.06
+    },
+    "h21": {
+      "calm": 0.13,
+      "caution": 0.16,
+      "elevated": 0.25,
+      "risk-off": 0.33,
+      "watch": 0.13
+    },
+    "h5": {
+      "calm": 0.02,
+      "caution": 0.03,
+      "elevated": 0.05,
+      "risk-off": 0.08,
+      "watch": 0.02
+    }
+  },
+  "candidate_prob_cal": {
+    "h10": {
+      "calm": 0.06338028169014084,
+      "caution": 0.06491051172170406,
+      "elevated": 0.2514792899408284,
+      "risk-off": 0.26358695652173914,
+      "watch": 0.06338028169014084
+    },
+    "h21": {
+      "calm": 0.12892741061755147,
+      "caution": 0.15490294933198892,
+      "elevated": 0.4188626907073509,
+      "risk-off": 0.4188626907073509,
+      "watch": 0.12892741061755147
+    },
+    "h5": {
+      "calm": 0.02038534319628419,
+      "caution": 0.02038534319628419,
+      "elevated": 0.15088757396449703,
+      "risk-off": 0.15670289855072464,
+      "watch": 0.02038534319628419
+    }
+  },
+  "candidate_source_result_sha256": "fda111a565af85a5e4b2bb90a0d5f36329fc5c2bd48771820141d02635f60dd4",
+  "expected": "reject_pre2020_refit",
+  "probability_gate": {
+    "authority_partition_after": {
+      "calm": false,
+      "caution": false,
+      "elevated": true,
+      "risk-off": true,
+      "watch": false
+    },
+    "authority_partition_before": {
+      "calm": false,
+      "caution": false,
+      "elevated": true,
+      "risk-off": true,
+      "watch": false
+    },
+    "authority_partition_ok": true,
+    "brier_nonworse": false,
+    "comparison_ready": true,
+    "passes": false,
+    "populations_match": true,
+    "reason": "probability_brier_worse",
+    "required": true,
+    "strict_brier_improvement": true,
+    "windows": {
+      "h10": {
+        "full": {
+          "base_brier": 0.07446023641238118,
+          "delta": -0.0010473220814038453,
+          "nonworse": true,
+          "proposed_brier": 0.07341291433097734,
+          "same_population": true
+        },
+        "y2020": {
+          "base_brier": 0.06991884317233156,
+          "delta": -0.0007087835420393623,
+          "nonworse": true,
+          "proposed_brier": 0.0692100596302922,
+          "same_population": true
+        }
+      },
+      "h21": {
+        "full": {
+          "base_brier": 0.13737399633923122,
+          "delta": -0.0007028091519218904,
+          "nonworse": true,
+          "proposed_brier": 0.13667118718730933,
+          "same_population": true
+        },
+        "y2020": {
+          "base_brier": 0.13218529411764707,
+          "delta": 0.0009648343337334553,
+          "nonworse": false,
+          "proposed_brier": 0.13315012845138052,
+          "same_population": true
+        }
+      },
+      "h5": {
+        "full": {
+          "base_brier": 0.03251511728169529,
+          "delta": -0.0005843878942881561,
+          "nonworse": true,
+          "proposed_brier": 0.03193072938740713,
+          "same_population": true
+        },
+        "y2020": {
+          "base_brier": 0.032716256837098695,
+          "delta": -7.744708680142848e-05,
+          "nonworse": true,
+          "proposed_brier": 0.03263880975029727,
+          "same_population": true
+        }
+      }
+    }
+  },
+  "schema": "risk_radar_probability_guard_proof.v1",
+  "source_candidate_commit": "bba22080324f15a34025f896559a2db69bad149c"
+}

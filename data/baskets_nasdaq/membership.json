@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-09-16",
+ "as_of": "2026-10-15",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -32,24 +32,24 @@
      "name": "Intel Corp"
     },
     {
-     "ticker": "ARM",
-     "name": "Arm Holdings Plc ADR"
-    },
-    {
      "ticker": "TXN",
      "name": "Texas Instruments Inc"
+    },
+    {
+     "ticker": "ARM",
+     "name": "Arm Holdings Plc ADR"
     },
     {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -82,20 +82,20 @@
      "name": "Automatic Data Processing Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -236,6 +236,10 @@
      "name": "Vertex Pharmaceuticals Inc"
     },
     {
+     "ticker": "MRNA",
+     "name": "Moderna Inc"
+    },
+    {
      "ticker": "REGN",
      "name": "Regeneron Pharmaceuticals Inc"
     },
@@ -316,10 +320,6 @@
      "name": "Lumentum Holdings Inc"
     },
     {
-     "ticker": "ANET",
-     "name": "ANET"
-    },
-    {
      "ticker": "CIEN",
      "name": "CIEN"
     },
@@ -344,10 +344,6 @@
     {
      "ticker": "KTOS",
      "name": "KTOS"
-    },
-    {
-     "ticker": "AVAV",
-     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -390,24 +386,24 @@
      "name": "Intel Corp"
     },
     {
-     "ticker": "ARM",
-     "name": "Arm Holdings Plc ADR"
-    },
-    {
      "ticker": "TXN",
      "name": "Texas Instruments Inc"
+    },
+    {
+     "ticker": "ARM",
+     "name": "Arm Holdings Plc ADR"
     },
     {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "MPWR",
@@ -452,10 +448,6 @@
     {
      "ticker": "LITE",
      "name": "Lumentum Holdings Inc"
-    },
-    {
-     "ticker": "ANET",
-     "name": "ANET"
     },
     {
      "ticker": "CIEN",
@@ -528,20 +520,20 @@
      "name": "Automatic Data Processing Inc"
     },
     {
-     "ticker": "ADBE",
-     "name": "Adobe Inc"
-    },
-    {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
     },
     {
+     "ticker": "ADBE",
+     "name": "Adobe Inc"
+    },
+    {
      "ticker": "CDNS",
      "name": "Cadence Design Systems Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "MSTR",
@@ -586,10 +578,6 @@
     {
      "ticker": "KTOS",
      "name": "KTOS"
-    },
-    {
-     "ticker": "AVAV",
-     "name": "AVAV"
     },
     {
      "ticker": "LUNR",
@@ -667,7 +655,7 @@
     },
     {
      "ticker": "WBD",
-     "name": "Warner Bros. Discovery Inc"
+     "name": "WBD"
     },
     {
      "ticker": "EA",
@@ -794,6 +782,10 @@
      "name": "Vertex Pharmaceuticals Inc"
     },
     {
+     "ticker": "MRNA",
+     "name": "Moderna Inc"
+    },
+    {
      "ticker": "REGN",
      "name": "Regeneron Pharmaceuticals Inc"
     },
@@ -861,7 +853,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

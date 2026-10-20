@@ -15,6 +15,7 @@ never imports scripts.build_bonds.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import math
 import re
@@ -34,6 +35,17 @@ from scripts import build_macro_suite_pages as builder
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = ROOT / "templates"
 BUILT_AT = "2026-09-09T12:00:00Z"
+T11_DATA = ROOT / "tests" / "fixtures" / "macro_suite_t11"
+# The page goldens PAIRED with T11_DATA: the exact committed site/ bytes that the
+# frozen inputs produced (source-binding.json ``expected_pages`` plus the rates
+# page). Live site/macro_*.html is render-owned and rebaked nightly from newer
+# macrodata, so comparing frozen inputs against it tests input drift, not the
+# renderer. See tests/fixtures/macro_suite_t11/README.md.
+T11_PAGES = T11_DATA / "pages"
+# sha256 of the paired rates_curves golden (git blob 72ddcbfbded7, the page
+# committed beside the frozen inputs at #8986's head 9255dba36c9b).
+T11_RATES_CURVES_GOLDEN_SHA256 = (
+    "c54e63f63aa20289ac30d300585b8d9ad55b57a8b8e098b0c88f34f659003102")
 
 NOMINAL_TENORS = ("3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y")
 TENOR_TO_SERIES = {
@@ -150,7 +162,10 @@ T11_SITE_PAGES = (
 # partials this packet never touches.
 _SUITE_REGION = ('<nav class="mq-suitenav"',
                  '<div class="mq-scrim" id="mq-scrim" hidden></div>')
-_HUB_REGION = ('<main class="mq-shell mq-hub"', "</main>")
+# Macro Command P1/P5 superseded the legacy ``mq-shell mq-hub`` container.
+# Bind T11 to the current canonical page owner without weakening the closing
+# boundary or the unconditional byte comparison below.
+_HUB_REGION = ('<main class="mc-shell" id="mc-shell"', "</main>")
 
 ARTIFACT = {
     "path": "macrodata/workspaces/rates_curves/US/latest.json",
@@ -700,6 +715,154 @@ def _t11_collapse_main_prior_label(html: str) -> str:
     )
 
 
+# T21 (reviewed 2026-10-17): the frozen T11 goldens in
+# tests/fixtures/macro_suite_t11/pages/ froze BASE e38026e9f4e's
+# rendering, in which the T21 label keys had no table entry and
+# rendered as the de-slugged fallback. The reviewed T21 strings now
+# ship in lib/macro_suite_labels.py, so the entries below collapse
+# exactly those measured strings back to BASE's fallback text for the
+# T11 comparison only. Every entry is a MEASURED whole text node
+# (`>…<` boundaries, exact node text) from the R1 diff of the
+# re-rendered suite against the committed goldens; the goldens are
+# never regenerated from the candidate renderer
+# (tests/fixtures/macro_suite_t11/README).
+_T21_LABEL_COLLAPSE: tuple[tuple[tuple[str, ...], str, str], ...] = (
+    # (label refs "vocab:key:lang", T21 rendered text, BASE e38026e9 rendered text)
+    (("metric:glt_real_yield_10y_contribution_z:en",), ">10-year real yield, against its own history<", ">Glt real yield 10y contribution z<"),
+    (("metric:glt_real_yield_10y_contribution_z:zh",), ">10年期实际收益率（对比自身历史）<", ">10年期实际收益率贡献 z 值<"),
+    (("metric:glt_boj_monetary_contribution_z:en",), ">BoJ balance sheet, against its own history<", ">Glt boj monetary contribution z<"),
+    (("metric:cb_boj_balance_sheet_impulse_13w:en",), ">BoJ balance sheet, change over 13 weeks<", ">Cb boj balance sheet impulse 13w<"),
+    (("metric:cb_boj_balance_sheet_impulse_52w:en",), ">BoJ balance sheet, change over 52 weeks<", ">Cb boj balance sheet impulse 52w<"),
+    (("metric:cb_boj_balance_sheet_level:en",), ">BoJ balance sheet, local currency<", ">Cb boj balance sheet level<"),
+    (("metric:glt_broad_dollar_contribution_z:en",), ">Broad dollar, against its own history<", ">Glt broad dollar contribution z<"),
+    (("metric:glt_monetary_coverage_ratio:en",), ">Central-bank coverage<", ">Glt monetary coverage ratio<"),
+    (("basis:trailing_13w_pct_change:en",), ">Change over the last 13 weeks<", ">Trailing 13w pct change<"),
+    (("basis:trailing_52w_pct_change:en",), ">Change over the last 52 weeks<", ">Trailing 52w pct change<"),
+    (("metric:glt_funding_coverage_ratio:en",), ">Dollar-funding coverage<", ">Glt funding coverage ratio<"),
+    (("metric:glt_ecb_monetary_contribution_z:en",), ">ECB balance sheet, against its own history<", ">Glt ecb monetary contribution z<"),
+    (("metric:cb_ecb_balance_sheet_impulse_13w:en",), ">ECB balance sheet, change over 13 weeks<", ">Cb ecb balance sheet impulse 13w<"),
+    (("metric:cb_ecb_balance_sheet_impulse_52w:en",), ">ECB balance sheet, change over 52 weeks<", ">Cb ecb balance sheet impulse 52w<"),
+    (("metric:cb_ecb_balance_sheet_level:en",), ">ECB balance sheet, local currency<", ">Cb ecb balance sheet level<"),
+    (("unit:EUR billions:en",), ">EUR bn<", ">Eur billions<"),
+    (("metric:glt_fed_monetary_contribution_z:en",), ">Fed balance sheet, against its own history<", ">Glt fed monetary contribution z<"),
+    (("metric:cb_fed_balance_sheet_impulse_52w:en",), ">Fed balance sheet, change over 52 weeks<", ">Cb fed balance sheet impulse 52w<"),
+    (("metric:cb_fed_balance_sheet_level:en",), ">Fed balance sheet, local currency<", ">Cb fed balance sheet level<"),
+    (("metric:glt_high_yield_oas_contribution_z:en",), ">High-yield spread, against its own history<", ">Glt high yield oas contribution z<"),
+    (("direction:higher_easier_funding:en",), ">Higher = easier dollar funding<", ">Higher easier funding<"),
+    (("direction:higher_more_accommodative:en",), ">Higher = more accommodative<", ">Higher more accommodative<"),
+    (("direction:higher_more_coverage:en",), ">Higher = more coverage<", ">Higher more coverage<"),
+    (("direction:higher_more_expansionary:en",), ">Higher = more expansionary<", ">Higher more expansionary<"),
+    (("unit:JPY billions:en",), ">JPY bn<", ">Jpy billions<"),
+    (("basis:standardized_monetary_contribution:en",), ">Standardized contribution to the central-bank money reading<", ">Standardized monetary contribution<"),
+    (("basis:standardized_funding_contribution:en",), ">Standardized contribution to the dollar-funding reading<", ">Standardized funding contribution<"),
+    (("unit:USD billions:en",), ">USD bn<", ">Usd billions<"),
+    (("unit:ratio_0_1:en",), ">share (0–1)<", ">Ratio 0 1<"),
+    (("unit:ratio_0_1:zh",), ">占比（0–1）<", ">比率（0–1）<"),
+    (("metric:glt_monetary_coverage_ratio:zh",), ">央行数据覆盖率<", ">全球货币覆盖率<"),
+    (("basis:standardized_monetary_contribution:zh",), ">对央行货币读数的标准化贡献<", ">标准化货币贡献<"),
+    (("basis:standardized_funding_contribution:zh",), ">对美元融资读数的标准化贡献<", ">标准化融资贡献<"),
+    (("metric:glt_broad_dollar_contribution_z:zh",), ">广义美元（对比自身历史）<", ">广义美元贡献 z 值<"),
+    (("direction:higher_easier_funding:zh",), ">数值越高＝美元融资越宽松<", ">数值越高＝融资越容易<"),
+    (("direction:higher_more_coverage:zh",), ">数值越高＝覆盖越全<", ">数值越高＝覆盖越广<"),
+    (("direction:higher_more_expansionary:zh",), ">数值越高＝越扩张<", ">数值越高＝越宽松<"),
+    (("metric:cb_boj_balance_sheet_impulse_13w:zh",), ">日本央行资产负债表（13周变化）<", ">日本央行资产负债表脉冲（13周）<"),
+    (("metric:cb_boj_balance_sheet_impulse_52w:zh",), ">日本央行资产负债表（52周变化）<", ">日本央行资产负债表脉冲（52周）<"),
+    (("metric:glt_boj_monetary_contribution_z:zh",), ">日本央行资产负债表（对比自身历史）<", ">日本央行货币贡献 z 值<"),
+    (("metric:cb_boj_balance_sheet_level:zh",), ">日本央行资产负债表（本币）<", ">日本央行资产负债表水平<"),
+    (("metric:cb_ecb_balance_sheet_impulse_13w:zh",), ">欧洲央行资产负债表（13周变化）<", ">欧央行资产负债表脉冲（13周）<"),
+    (("metric:cb_ecb_balance_sheet_impulse_52w:zh",), ">欧洲央行资产负债表（52周变化）<", ">欧央行资产负债表脉冲（52周）<"),
+    (("metric:glt_ecb_monetary_contribution_z:zh",), ">欧洲央行资产负债表（对比自身历史）<", ">欧央行货币贡献 z 值<"),
+    (("metric:cb_ecb_balance_sheet_level:zh",), ">欧洲央行资产负债表（本币）<", ">欧央行资产负债表水平<"),
+    (("metric:glt_funding_coverage_ratio:zh",), ">美元融资数据覆盖率<", ">全球融资覆盖率<"),
+    (("metric:cb_fed_balance_sheet_impulse_52w:zh",), ">美联储资产负债表（52周变化）<", ">美联储资产负债表脉冲（52周）<"),
+    (("metric:glt_fed_monetary_contribution_z:zh",), ">美联储资产负债表（对比自身历史）<", ">美联储货币贡献 z 值<"),
+    (("metric:cb_fed_balance_sheet_level:zh",), ">美联储资产负债表（本币）<", ">美联储资产负债表水平<"),
+    (("basis:trailing_13w_pct_change:zh",), ">近13周变化<", ">过去13周百分比变化<"),
+    (("basis:trailing_52w_pct_change:zh",), ">近52周变化<", ">过去52周百分比变化<"),
+    (("metric:glt_high_yield_oas_contribution_z:zh",), ">高收益利差（对比自身历史）<", ">高收益利差贡献 z 值<"),
+)
+
+
+def _t11_collapse_t21_labels(html: str) -> str:
+    """Collapse the reviewed T21 label strings back to BASE's fallback.
+
+    T21 reviewed these labels; the T11 goldens froze BASE e38026e9's
+    de-slugged fallback rendering. Only the exact measured text in
+    ``_T21_LABEL_COLLAPSE`` collapses (whole text node or attribute
+    value, boundaries included), so the byte-identity check still
+    fails on any other edit. The goldens are never regenerated from
+    the candidate renderer (tests/fixtures/macro_suite_t11/README).
+    """
+    for _refs, _new, _old in _T21_LABEL_COLLAPSE:
+        html = html.replace(_new, _old)
+    return html
+
+
+def test_11_t21_label_collapse_is_bound_to_reviewed_labels() -> None:
+    """Every ``_T21_LABEL_COLLAPSE`` entry is bound to the shipped labels.
+
+    For each entry: the ref names a key that exists in the labels module;
+    the T21 text is exactly the shipped label string (its boundaries wrap a
+    whole text node or an attribute value); and replacing the shipped
+    string by that key's BASE fallback — ``deslug`` for EN, the labels
+    module's own zh-parity applied to the de-slugged pair for ZH, both
+    computed with the module's functions, never retyped literals — yields
+    the BASE text exactly. No entry's rendered text is a transformed form
+    of its label, so no escaping/formatting function is recorded.
+    """
+    from lib import macro_suite_labels as L
+
+    assert _T21_LABEL_COLLAPSE, "the T21 collapse table must not be empty"
+    for refs, new, old in _T21_LABEL_COLLAPSE:
+        assert refs and new != old, (refs, new, old)
+        assert (new.startswith(">") and new.endswith("<")) or (
+            new.startswith('="') and new.endswith('"')), (refs, new)
+        assert (old.startswith(">") and old.endswith("<")) or (
+            old.startswith('="') and old.endswith('"')), (refs, old)
+        new_text, old_text = new[1:-1], old[1:-1]
+        rebuilt = new_text
+        for ref in refs:
+            vocab, key, lang = ref.split(":", 2)
+            table = L._VOCABULARIES.get(vocab)
+            assert table is not None and key in table, ref
+            shipped = L.label(vocab, key)[lang]
+            fallback_pair = L.apply_zh_parity(
+                L._pair(L.deslug(key), L.deslug(key)))
+            rebuilt = rebuilt.replace(shipped, fallback_pair[lang])
+        assert rebuilt == old_text, (refs, new, old, rebuilt)
+
+
+def test_11_t21_label_collapse_does_not_mask_other_edits() -> None:
+    """Relabelling the golden with the T21 strings passes T11; any other
+    single-character edit inside the compared region still fails it."""
+    name = "macro_liquidity_central_banks.html"
+    golden = (T11_PAGES / name).read_text(encoding="utf-8")
+    relabelled = golden
+    for _refs, new, old in _T21_LABEL_COLLAPSE:
+        relabelled = relabelled.replace(old, new)
+    assert relabelled != golden
+    _assert_same_macro_suite_region(golden, relabelled, name)
+    marker = _SUITE_REGION[0]
+    idx = relabelled.find(marker)
+    assert idx >= 0, "golden LCB page must carry the suite-region start marker"
+    mutated = (relabelled[:idx + len(marker)] + "X"
+               + relabelled[idx + len(marker):])
+    with pytest.raises(AssertionError):
+        _assert_same_macro_suite_region(golden, mutated, name)
+
+
+def _assert_same_macro_suite_region(before_html: str, after_html: str, name: str) -> None:
+    before = _region(before_html, name)
+    after = _region(after_html, name)
+    assert before is not None and after is not None, f"{name}: no macro-suite region"
+    assert (_t11_collapse_t21_labels(_t11_collapse_main_prior_label(before))
+            == _t11_collapse_t21_labels(_t11_collapse_main_prior_label(after))), (
+        f"{name}: the macro-suite region is NOT byte-identical to the committed "
+        "page. That is a regression introduced by this packet's shared-surface "
+        "edits, not main-side drift."
+    )
+
+
 def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     """Region-level byte identity of the macro-suite region (the slice
     enclosing <main>) on all fourteen T11 targets, unconditionally.
@@ -713,16 +876,19 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     Each target is rendered with that committed page's own page-built stamp
     so a stamp sitting inside the region cannot itself become a mismatch, and
     so a sibling rebake that moves one stamp cannot disable this test.
+
+    The immutable paired publication inputs are the original Git bytes behind
+    these committed page regions. Nightly site/macrodata republishes independently
+    of the HTML goldens; comparing two different generations tests input drift,
+    not preservation by the current renderer. No provenance is substituted.
     """
-    assert (ROOT / "site" / "macrodata").is_dir(), (
-        "site/ is not materialised — python3 scripts/worktree_sparse.py add site"
-    )
+    assert T11_DATA.is_dir(), "the paired T11 publication fixture is missing"
     _copy_site_assets(tmp_path)
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     entries: list[Any] = []
     for page in builder.SUITE_PAGES:
-        committed_path = ROOT / "site" / page.output
+        committed_path = T11_PAGES / page.output
         assert committed_path.exists(), page.output
         stamp = _page_built_stamp(committed_path.read_text(encoding="utf-8")) or BUILT_AT
         _path, _ok, entry = builder.build_page(
@@ -730,7 +896,7 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
             page_built_at=stamp,
         )
         entries.append(entry)
-    hub_committed = ROOT / "site" / "macro_monetary.html"
+    hub_committed = T11_PAGES / "macro_monetary.html"
     assert hub_committed.exists()
     hub_stamp = _page_built_stamp(hub_committed.read_text(encoding="utf-8")) or BUILT_AT
     builder.build_hub(entries, out_dir=tmp_path, env=env, page_built_at=hub_stamp)
@@ -743,19 +909,16 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     identical: list[str] = []
     drifted: list[str] = []
     for name in targets:
-        committed_path = ROOT / "site" / name
+        committed_path = T11_PAGES / name
         rendered_path = tmp_path / name
         assert rendered_path.exists(), name
         if committed_path.read_bytes() == rendered_path.read_bytes():
             identical.append(name)
             continue
-        before = _region(committed_path.read_text(encoding="utf-8"), name)
-        after = _region(rendered_path.read_text(encoding="utf-8"), name)
-        assert before is not None and after is not None, f"{name}: no macro-suite region"
-        assert _t11_collapse_main_prior_label(before) == _t11_collapse_main_prior_label(after), (
-            f"{name}: the macro-suite region is NOT byte-identical to the committed "
-            "page. That is a regression introduced by this packet's shared-surface "
-            "edits, not main-side drift."
+        _assert_same_macro_suite_region(
+            committed_path.read_text(encoding="utf-8"),
+            rendered_path.read_text(encoding="utf-8"),
+            name,
         )
         drifted.append(name)
     print(f"T11 identical: {identical}")
@@ -765,12 +928,31 @@ def test_11_thirteen_other_suite_pages_byte_identical(tmp_path) -> None:
     assert len(identical) + len(drifted) == 14
 
 
+def test_11_current_macro_command_region_is_recognized_and_mutation_fails() -> None:
+    """The current hub owner is admitted, but a real body mutation still reds T11."""
+    name = "macro_monetary.html"
+    committed = (ROOT / "site" / name).read_text(encoding="utf-8")
+    region = _region(committed, name)
+    assert region is not None
+    assert region.startswith(_HUB_REGION[0])
+
+    marker = '<h1 class="mc-title">'
+    assert marker in committed
+    mutated = committed.replace(
+        marker,
+        '<h1 class="mc-title" data-ci-mutation="true">',
+        1,
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(committed, mutated, name)
+
+
 def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> None:
     """M4. Altering one sibling's page-built stamp in a tmp copy must not
     skip T11, and the region assertion still runs.
     """
     name = "macro_trade_flows.html"
-    committed_path = ROOT / "site" / name
+    committed_path = T11_PAGES / name
     assert committed_path.exists(), name
     original = committed_path.read_text(encoding="utf-8")
     stamp = _page_built_stamp(original)
@@ -785,7 +967,7 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     # that uses the altered stamp. A skip is impossible here — there is no
     # shared-stamp gate.
     env = builder._environment(ROOT)
-    data = ROOT / "site" / "macrodata"
+    data = T11_DATA
     page = next(p for p in builder.SUITE_PAGES if p.output == name)
     out = tmp_path / "rendered"
     out.mkdir()
@@ -800,6 +982,75 @@ def test_11_stamp_mismatch_does_not_disable_the_region_assertion(tmp_path) -> No
     assert before == after
     assert altered_stamp in before
     assert stamp not in before
+
+
+def test_11_paired_publication_bytes_and_generations_are_preserved() -> None:
+    binding = json.loads((T11_DATA / "source-binding.json").read_text())
+    assert binding["source_commit"] == "a58cf3cb6de26b702069515292beeba8309e32ab"
+    expected_paths = {"workspaces/manifest.json"} | {
+        f"workspaces/{page.workspace_id}/{page.region}/latest.json"
+        for page in builder.SUITE_PAGES
+    }
+    assert {item["path"] for item in binding["files"]} == expected_paths
+    assert len(binding["files"]) == len(expected_paths) == 15
+    for item in binding["files"]:
+        original_bytes = (T11_DATA / item["path"]).read_bytes()
+        assert len(original_bytes) == item["bytes"]
+        assert hashlib.sha256(original_bytes).hexdigest() == item["sha256"]
+    for page in builder.SUITE_PAGES:
+        # The production reader still validates contract, content hash and the
+        # original manifest's byte count before any rendering happens.
+        snapshot, _artifact = builder.read_workspace(T11_DATA, page)
+        committed = (T11_PAGES / page.output).read_text()
+        assert snapshot["generation"]["content_sha256"] in committed
+        assert snapshot["generation"]["generation_id"] in committed
+
+
+def _git_blob_sha1(data: bytes) -> str:
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+def test_11_page_goldens_are_the_paired_committed_bytes() -> None:
+    """The page goldens are the exact site/ bytes bound beside the inputs.
+
+    Each sibling and the hub must match source-binding.json ``expected_pages``
+    by sha256 AND git blob id, and the rates page by its pinned sha256, so a
+    golden cannot be regenerated from the candidate renderer or swapped for a
+    later render-lane bake.
+    """
+    binding = json.loads((T11_DATA / "source-binding.json").read_text())
+    expected = {item["path"]: item for item in binding["expected_pages"]}
+    assert sorted(expected) == sorted(T11_SITE_PAGES)
+    on_disk = sorted(p.name for p in T11_PAGES.glob("*.html"))
+    assert on_disk == sorted(
+        [Path(rel).name for rel in T11_SITE_PAGES] + ["macro_rates_curves.html"])
+    for rel, item in expected.items():
+        data = (T11_PAGES / Path(rel).name).read_bytes()
+        assert hashlib.sha256(data).hexdigest() == item["sha256"], rel
+        assert _git_blob_sha1(data) == item["git_blob"], rel
+    rates = (T11_PAGES / "macro_rates_curves.html").read_bytes()
+    assert hashlib.sha256(rates).hexdigest() == T11_RATES_CURVES_GOLDEN_SHA256
+
+
+def test_11_wrong_rendered_provenance_still_fails(tmp_path, monkeypatch) -> None:
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "trade_flows")
+    committed = (T11_PAGES / page.output).read_text()
+    evidence = macro_suite_view._evidence
+
+    def wrong_producer_revision(*args, **kwargs):
+        result = evidence(*args, **kwargs)
+        result["generation"]["code_version"] = "0" * 40
+        return result
+
+    monkeypatch.setattr(macro_suite_view, "_evidence", wrong_producer_revision)
+    builder.build_page(
+        ROOT, page, data_root=T11_DATA, out_dir=tmp_path,
+        env=builder._environment(ROOT), page_built_at=_page_built_stamp(committed),
+    )
+    with pytest.raises(AssertionError, match="NOT byte-identical"):
+        _assert_same_macro_suite_region(
+            committed, (tmp_path / page.output).read_text(), page.output,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -1537,14 +1788,19 @@ def test_axis_method_and_metric_none_fields_render_em_dash_not_token() -> None:
     _assert_no_standalone_none_in_page(html)
 
 
-_NO_PRIOR_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_EN = (
     "No vector is drawn: there is no method-comparable prior print to move from."
 )
-_NO_PRIOR_VECTOR_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
-_INCOMPLETE_VECTOR_EN = (
+_NO_PRIOR_VECTOR_JARGON_ZH = "不绘制向量：不存在方法可比的历史读数作为起点。"
+_INCOMPLETE_VECTOR_JARGON_EN = (
     "The vector is not drawn: one of its two components is missing this cycle."
 )
-_INCOMPLETE_VECTOR_ZH = "不绘制向量：本周期缺少其中一个分量。"
+_INCOMPLETE_VECTOR_JARGON_ZH = "不绘制向量：本周期缺少其中一个分量。"
+# Autoescape turns the apostrophe in "can't" into &#39;; pin the unique tail.
+_INCOMPLETE_VECTOR_PLAIN_EN = (
+    "one of the two readings this cycle is missing."
+)
+_INCOMPLETE_VECTOR_PLAIN_ZH = "本周期缺少其中一个读数。"
 
 
 def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> None:
@@ -1552,6 +1808,10 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     machine token, must not claim there is no prior print, and must take
     the typed incomplete-vector branch. Defensive: no producer emits a
     half-vector today; this is a synthetic fixture.
+
+    User-openable ``mc-details`` is still user-facing, so the incomplete
+    sentence is the same plain pair as the reading path — not the jargon
+    "vector / components" line.
     """
     snap = _snapshot()
     snap["headline"]["one_month_vector"] = {
@@ -1559,10 +1819,12 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     }
     html = _render_rates_page(snap)
     _assert_no_standalone_none_in_page(html)
-    assert _NO_PRIOR_VECTOR_EN not in html
-    assert _NO_PRIOR_VECTOR_ZH not in html
-    assert _INCOMPLETE_VECTOR_EN in html
-    assert _INCOMPLETE_VECTOR_ZH in html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in html
+    assert _NO_PRIOR_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in html
+    assert _INCOMPLETE_VECTOR_JARGON_ZH not in html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN in html
+    assert _INCOMPLETE_VECTOR_PLAIN_ZH in html
     vec = _view(snap)["headline"]["vector"]
     assert vec["incomplete"] is True
     assert vec["present"] is False
@@ -1576,8 +1838,9 @@ def test_incomplete_present_vector_does_not_print_none_or_false_no_prior() -> No
     control_vec = _view(control)["headline"]["vector"]
     assert control_vec["incomplete"] is False
     assert control_vec["present"] is True
-    assert _INCOMPLETE_VECTOR_EN not in control_html
-    assert _NO_PRIOR_VECTOR_EN not in control_html
+    assert _INCOMPLETE_VECTOR_PLAIN_EN not in control_html
+    assert _INCOMPLETE_VECTOR_JARGON_EN not in control_html
+    assert _NO_PRIOR_VECTOR_JARGON_EN not in control_html
 
 
 _NONE_TOKEN = re.compile(r"\bNone\b")

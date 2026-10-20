@@ -656,7 +656,7 @@ PUBLIC_EXACT = frozenset({
     # reader it exists for.
     "/about.html",
     "/", "/index.html", "/plans.html", "/macro.html", "/start.html",
-    "/us_stocks.html", "/confluence_screener.html", "/research_vault.html",
+    "/us_stocks.html", "/confluence_screener.html", "/research_screener.html", "/research_screener.css", "/research_vault.html",
     "/research_vault_app.js",
     # The two Special Situations tier-preview SHELLS (docs/TIER_PREVIEW_PATTERN.md),
     # promoted from free_registered to anonymous-public by SEO_SUPERCHARGE_MASTERPLAN
@@ -727,7 +727,7 @@ PUBLIC_EXACT = frozenset({
     "/theme.css", "/navigation-refresh.css", "/product-nav-icons.css",
     "/logo_config.js", "/stock-logos.js", "/theme.js", "/dashboard-icons.css",
     "/dashboard-icons.js", "/chart_i18n.js", "/timemachine.js", "/tablesort.js",
-    "/charts.js", "/risk_state_live.js", "/release_publications_live.js",
+    "/charts.js", "/risk_state_live.js", "/china_risk_state_live.js", "/release_publications_live.js",
     "/heatmap.js", "/stocktable.js", "/globe-deck.js", "/sky.js",
     "/hub-welcome.js", "/vendor/d3-array.min.js", "/vendor/d3-geo.min.js",
     "/vendor/topojson-client.min.js", "/world-110m.json", "/account.js",

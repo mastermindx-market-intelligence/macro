@@ -16,6 +16,7 @@ import re
 from pathlib import Path
 
 import pytest
+from rjsmin import jsmin
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_JS = ROOT / "templates" / "theme.js"
@@ -28,9 +29,16 @@ FOCUSABLE = ("button", "a", "input", "select", "textarea", "label", '[role="butt
 
 
 def _lens_region(src: str) -> str:
-    """The lens IIFE, from its SEL definition to the end of its keydown binding."""
-    start = src.index("var SEL = '[data-tip-en], .lens-q, .lens-term';")
-    end = src.index("if (e.key === 'Escape' && isOpen()) hide();", start)
+    """The lens event core, from SEL through the delegated keydown binding."""
+    start = src.index(jsmin("var SEL = '[data-tip-en], .lens-q, .lens-term';"))
+    end = src.index(jsmin("  window.addEventListener('scroll'"), start)
+    return src[start:end]
+
+
+def _lens_full_region(src: str) -> str:
+    """The full lens implementation, including the legacy-help upgrade tail."""
+    start = src.index(jsmin("var SEL = '[data-tip-en], .lens-q, .lens-term';"))
+    end = src.index(jsmin("  window._upgradeHelpIcon = upgradeOne;"), start)
     return src[start:end]
 
 
@@ -46,7 +54,7 @@ def _handler_body(region: str, event: str) -> str:
     # Anchored on `document.` on purpose: the lens also binds a 'click' listener on
     # `pop` (the .lens-x close button), and an unanchored match finds that one first.
     m = re.search(
-        r"document\.addEventListener\('" + event + r"',\s*function\s*\(e\)\s*\{(.*?)\n  \},\s*true\);",
+        r"document\.addEventListener\('" + event + r"',\s*function\s*\(e\)\s*\{(.*?)\s*\},\s*true\);",
         region,
         re.S,
     )
@@ -61,8 +69,8 @@ def _sources():
     than dropped, so a thinned worktree cannot quietly halve what green means."""
     assert TEMPLATE_JS.exists(), TEMPLATE_JS
     return [
-        ("templates/theme.js", TEMPLATE_JS.read_text(encoding="utf-8")),
-        ("site/theme.js", SITE_JS.read_text(encoding="utf-8") if SITE_JS.exists() else None),
+        ("templates/theme.js", jsmin(TEMPLATE_JS.read_text(encoding="utf-8"), keep_bang_comments=True)),
+        ("site/theme.js", jsmin(SITE_JS.read_text(encoding="utf-8"), keep_bang_comments=True) if SITE_JS.exists() else None),
     ]
 
 
@@ -101,10 +109,10 @@ def test_the_scrim_gate_matches_the_condition_show_mounts_a_scrim_under(name, sr
     region = _lens_region(src)
     body = _handler_body(region, "focusin")
     assert "isSheet()" in body, f"{name}: focusin gate must be tied to isSheet()"
-    show_fn = region[region.index("function show(t)"):]
-    show_fn = show_fn[: show_fn.index("function hide()")]
+    show_fn = region[region.index(jsmin("function show(t)")):]
+    show_fn = show_fn[: show_fn.index(jsmin("function hide()"))]
     scrim_open = show_fn.index("scrim.classList.add('open')")
-    assert "if (isSheet())" in show_fn[:scrim_open], (
+    assert jsmin("if (isSheet())") in show_fn[:scrim_open], (
         f"{name}: show() no longer mounts the scrim under isSheet() — the focusin "
         "gate in this file is now guarding the wrong condition"
     )
@@ -130,7 +138,7 @@ def test_carve_out_covers_every_focusable_control_kind(name, src):
     """A kind missing from the selector is a kind whose tap is still stolen."""
     src = _require(name, src)
     region = _lens_region(src)
-    m = re.search(r"var CTRL_SEL = '([^']+)';", region)
+    m = re.search(r"var CTRL_SEL\s*=\s*'([^']+)';", region)
     assert m, f"{name}: CTRL_SEL not found in the lens region"
     sel = m.group(1)
     missing = [k for k in FOCUSABLE if k not in sel]
@@ -146,6 +154,58 @@ def test_the_toggle_this_healed_still_carries_its_tooltip():
         "the tooltip was removed instead of relying on the lens carve-out — if that "
         "was deliberate, delete this test and say why in the PR"
     )
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_upgraded_help_icons_have_keyboard_and_coarse_pointer_affordances(name, src):
+    """The tiny legacy glyph may stay visually compact, but its real interaction
+    contract must not remain a 15px mouse-only target."""
+    src = _require(name, src)
+    region = _lens_full_region(src)
+    assert (
+        "span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;"
+        in region
+    )
+    assert (
+        "span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{" in region
+    )
+    assert (
+        "span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;"
+        in region
+    )
+    assert (
+        "outline:2px solid currentColor;outline-offset:3px}" in region
+    )
+    assert (
+        '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{'
+        'content:"";position:absolute;' in region
+    )
+    assert (
+        'left:50%;top:50%;width:40px;height:40px;'
+        'transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}'
+        in region
+    )
+    assert jsmin("el.setAttribute('tabindex', '0');") in region
+    assert jsmin("el.setAttribute('role', 'button');") in region
+    assert "syncUpgradedHelpLabel(el);" in region
+    assert jsmin("zh ? '更多信息' : 'More information'") in region
+    assert "document.addEventListener('langchange'" in region
+    assert "e.target.closest('span.help.help-upgraded')" in region
+    assert jsmin("e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'") in region
+
+
+@pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
+def test_mobile_lens_sheet_close_is_a_real_touch_and_keyboard_target(name, src):
+    src = _require(name, src)
+    region = _lens_region(src)
+    assert (
+        ".lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;"
+        "z-index:2;width:40px;height:40px;" in region
+    )
+    assert ".lens-x{touch-action:manipulation}" in region
+    assert ".lens-x:focus-visible{outline:2px solid var(--lens-accent);" in region
+    assert jsmin("document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'") in region
+    assert "document.addEventListener('langchange'" in region
 
 
 # ---------------------------------------------------------------------------
@@ -188,9 +248,27 @@ def test_intelligence_hub_promotion_accepts_real_symbol_punctuation_only(name, s
     assert "/^[A-Z0-9][A-Z0-9.-]{0,15}$/" in region
 
 
+_DOT_SYMBOL_TK_RE = re.compile(r'<span class="tk">[A-Z0-9]+\.[A-Z0-9]+</span>')
+
+
 def test_current_hub_fixture_contains_a_dot_symbol_regression_case():
+    """A dot symbol (BRK.B, BF.B) must reach the Terminal route as ONE token.
+
+    The mechanical pin is the template: the hub renders `d.ticker` verbatim
+    inside the `tk` span, and the route regex asserted above accepts the dot.
+    The committed bake is nightly DATA — which names sit on the hub changes
+    every night (the 2026-09-23 bake carried no dot symbol at all, which is
+    how this guard went red on main with no code change) — so the live page
+    is asserted only when it actually lists a dot symbol.
+    """
+    template = (ROOT / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
+    assert '<span class="tk">{{ d.ticker }}</span>' in template
     hub = HUB_HTML.read_text(encoding="utf-8")
-    assert '<span class="tk">BRK.B</span>' in hub
+    dotted = _DOT_SYMBOL_TK_RE.findall(hub)
+    if not dotted:
+        pytest.skip("today's committed hub bake lists no dot-symbol ticker; "
+                    "the template pin above is the mechanical guard")
+    assert all(re.fullmatch(r'<span class="tk">[A-Z0-9][A-Z0-9.-]{0,15}</span>', d) for d in dotted)
 
 
 @pytest.mark.parametrize("name,src", SOURCES, ids=SOURCE_IDS)
@@ -202,4 +280,4 @@ def test_hub_reuses_the_single_existing_terminal_click_controller(name, src):
     assert "iframe" not in region.lower()
     assert "MDXTerminalOverlay" not in region
     assert "openTerminal(" not in region
-    assert src.count("openTerminal(target.ticker, a, target.url)") == 1
+    assert src.count(jsmin("openTerminal(target.ticker, a, target.url)")) == 1

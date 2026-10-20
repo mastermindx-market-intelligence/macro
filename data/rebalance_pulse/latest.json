@@ -1,23 +1,14 @@
 {
-  "date": "2026-09-15",
+  "date": "2026-10-16",
   "class": "quiet",
-  "market_vol_ratio": 1.009,
+  "market_vol_ratio": null,
   "up_share": null,
   "basis": "volume_only",
-  "n_megacap_rvol2": 1,
-  "megacap_rvol": {
-    "JPM": 2.43,
-    "BAC": 1.76,
-    "ORCL": 1.33,
-    "HD": 1.24,
-    "CVX": 1.21,
-    "ABBV": 1.17,
-    "AMZN": 1.15,
-    "META": 1.11
-  },
+  "n_megacap_rvol2": 0,
+  "megacap_rvol": {},
   "calendar": {
     "is_quarter_end": false,
-    "td_to_quarter_end": 11,
+    "td_to_quarter_end": -12,
     "in_qtr_end_window": false,
     "is_russell_recon_session": false,
     "in_recon_week": false,

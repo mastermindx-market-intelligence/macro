@@ -1,0 +1,17 @@
+{
+  "path": "/opt/macro/data/reference/_receipt.json",
+  "read_started_at": "2026-10-14T14:24:25.809344+00:00",
+  "read_completed_at": "2026-10-14T14:24:25.810427+00:00",
+  "stable": true,
+  "bytes": 34029,
+  "sha256": "d96591309fe348ff410b77a24ef74657fb53ef81b962bdc3b7a4d1a9f0f3d68f",
+  "generation": "2026-10-11T16:03:17",
+  "code_version": "bb0830d8d778ba4d9e5b56b9b4c2f2a856f70112",
+  "publication_present": false,
+  "identity_observations_present": false,
+  "authority_consumers": [
+    "gmi.identity_resolution/v1"
+  ],
+  "runtime_mutations": 0,
+  "verdict": "STILL_MISSING_REQUIRED_OWNER_SEALS"
+}
