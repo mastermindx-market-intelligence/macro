@@ -1,0 +1,272 @@
+{
+  "schema": "mmx.commodities.local_validation.v1",
+  "date": "2026-10-20",
+  "scope": "qualified late-main integration preserving current published legacy HTML; unchanged historical research inputs; production acceptance remains separate",
+  "accepted_base": "fe5093cc4ebab5f4a041f4d35430cb7164bd96d3",
+  "workspace_fingerprint": "2d3d68280a023930ac7cf9a8c2ece1cfeda609ea9b297c3b954a56fa34c88d47",
+  "hashes": {
+    "site/commodities.html": "4fc0a17403b47bd4344ab37f7bbca4c97508c8218bc47c8b879cafcb509fbb82",
+    "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
+    "engine/commodity_decision_workspace.py": "178a3f28c6ee944f6b490896cbf1b5cf6dca2493ed36eec9e268874daf028d69",
+    "engine/commodity_workspace_adapter.py": "67da828b903b70e88bf519ec1c5eb99e891d6391d0dd8dc0831ade1dc0b0f146",
+    "scripts/build_commodities.py": "91a2bee2f361a3e5eaa93f66ae5f44613b11b99232393c91d8fc95a875547c59",
+    "templates/commodity-workspace.js": "d2fc2eeb62dc9f83563a6aa20cc83ffb4f28b00e639d93b8156efb4f6ba93025",
+    "templates/commodity-workspace.css": "9306248c3c9f936f465e8cc053d66d889715bd44d378b3362a7e5ebf1fb3e608",
+    "templates/_commodity_decision_workspace.html.j2": "f3ce330f35b6cd2d205147cdb29be5189530764ce74728c004ef21ee71952cef",
+    "scripts/render_commodity_workspace_review.py": "d705101fecdcececf5564eaf2e27548f76c960d618e58fdfc34a6081d815069f",
+    "scripts/verify_commodity_workspace_browser.py": "7db0d3859f532e56f504a2d46a10d3ebe0a33cef5baa342e5291a97f886a77d4",
+    "tests/test_commodity_supply_context.py": "a947006cbaa14130209851c6f0d48d8b56b766fc315cb534816a0d660d06c682",
+    "tests/test_commodity_decision_workspace.py": "989ef6b626f9e7f1d46e0e1c227ac80261a0fe5313c4a67e40f3618fa8229bc4",
+    "tests/test_commodity_workspace_ui.js": "c9d09dd5a300a645c351ff2cfabfc354a0eef8532efefbe38dc0cc9f5c7bbed5",
+    "mockups/evidence/commodities-r3/browser-journey.json": "4abea9b402040e2133145ef3e75d68dbc815d364b0fb2006ed0c59ce6ef30604",
+    "mockups/evidence/commodities-r3/overview/manifest.json": "3d8a9b4d8c7335f94f76eacb2c8ce63f595d1271e916d418c7c072c12e3baad5",
+    "mockups/evidence/commodities-r3/physical/manifest.json": "eb50ff07fbb642ec958372fa72773161e93515343a5c83748b372fc79d553deb",
+    "mockups/evidence/commodities-r3/relationships/manifest.json": "beb6e4d96b9e0156630e045f5cf9de05afab12c7a687b10c492bda0a97b27518",
+    "templates/commodities.html.j2": "491dbf23a195ad9efc3a64d8f393a5f34a4842c06c2be85872fc99e6a1eeaf55",
+    ".github/ci/legacy-jobs.yml": "0665855d468e5283209a751c4782549def61a5e20bd8fafa181cb9bfc9a70555",
+    "tests/test_ci_pack.py": "458824a2abb9bb42302e4728c6b201f8fc94f79b7ddd6c5bf38a46ab7d64257a",
+    "tests/test_commodity_workspace_contracts.js": "5c26eb02bd6936994342c434c38fd32be30927a775242a62f862ada30071a43a",
+    "mockups/evidence/commodities-r3/source/dom-receipt.json": "e1ae612b42f5264a8dbcf2e1d4f658e51438d6fc44e6869a3b83bf5d32798189",
+    "mockups/evidence/commodities-r3/source/boundary-repair-review.json": "9e56fd9a11cb69ddae73a3a59b058170be95f65dcd1a52f121f0b4988a7704f4",
+    "mockups/evidence/commodities-r3/source/engine-render-integration.json": "6d3a848a828ef86b2118f0f199ab871235af65088a7507d77a5481e105cd5837",
+    "mockups/evidence/commodities-r3/source/render-public-integration.json": "1765ca25f09f9dc9881329155ec7aff202e0f37a3f92815da89111a77cc85a18",
+    "mockups/evidence/commodities-r3/weekly-update/manifest.json": "8b8235bbed5f480b531996ea6d4acb26d4ba948618f42d08496880c37c88a4a4",
+    "mockups/evidence/commodities-r3/source/review-receipt.json": "2d886c93f6539b5a50aa63f9989c99f24a3360b352d41782b3de4f10a977ef45",
+    "mockups/evidence/commodities-r3/source/component.html": "a0393fd2f06421629d4b5700d96928828231813c3fd2a1d4e89b5394bf032d83",
+    "mockups/evidence/commodities-r3/source/late-main-integration.json": "6e6fffb31b1336696f5b347255a6732471f101c9f07d64fa31ffaf1841dba4b5"
+  },
+  "python": {
+    "command": "python3 -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_critical_minerals_display.py tests/test_critical_minerals_panel.py tests/test_commodities_w6_truth.py tests/test_commodities_ignition_copy.py tests/test_commodity_mtf_verdict_honesty.py -q",
+    "exit": 0,
+    "tests_passed": 188,
+    "subtests_passed": 35,
+    "warnings": 6,
+    "warning_scope": "preexisting pytest garbage-directory cleanup; no failing source assertion",
+    "qualification": "Fresh rerun after integrating fe5093cc4ebab5f4a041f4d35430cb7164bd96d3"
+  },
+  "rendered_dom": {
+    "command": "NODE_PATH=/tmp/commodities-r3-ui-validation-20261020/node_modules node tests/test_commodity_workspace_ui.js",
+    "passed": 27,
+    "assets": 17,
+    "snapshot": "2d3d68280a023930ac7cf9a8c2ece1cfeda609ea9b297c3b954a56fa34c88d47",
+    "visual_layout_verified": false,
+    "receipt": "mockups/evidence/commodities-r3/source/dom-receipt.json",
+    "export_limit_and_exact_round_trip": "Reverified by the current browser-journey receipt"
+  },
+  "browser": {
+    "receipt": "mockups/evidence/commodities-r3/browser-journey.json",
+    "passed": true,
+    "checks": 26,
+    "production_verified": false,
+    "fresh_document_exact_round_trip": true,
+    "company_return_scope": "intercepted first-party-origin fixture; authenticated Terminal unverified"
+  },
+  "gates": [
+    {
+      "name": "claims",
+      "command": [
+        "python3",
+        "scripts/check_validated_claims.py",
+        "--scope",
+        "source"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 22.47,
+      "output": "check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] \u2014 every affirmative 'validated' claim is backed.\n"
+    },
+    {
+      "name": "design",
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        ".cache/commodities-r3-recovery/late-main.diff"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.87,
+      "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
+    },
+    {
+      "name": "runtime",
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 2.1,
+      "output": "runtime style injection guard OK (239 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+    },
+    {
+      "name": "ui-evidence",
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        ".cache/commodities-r3-recovery/late-main.diff"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.91,
+      "output": ""
+    },
+    {
+      "name": "whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "fe5093cc4ebab5f4a041f4d35430cb7164bd96d3"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.64,
+      "output": ""
+    }
+  ],
+  "visual": {
+    "current_explore_cells": 16,
+    "current_relationships_cells": 16,
+    "current_overview_cells": 24,
+    "matrix": "EN/ZH x dark/light x desktop1440x900/mobile390x844; anonymous",
+    "captures_are_production_proof": false,
+    "representative_final_review": {
+      "role": "independent read-only source and visual review",
+      "verdict": "PASS: 40 unaffected retained cells and 16 fresh WTI cells",
+      "samples": [
+        "weekly-update/98052f7026a352f1.png",
+        "weekly-update/2aab6569ea8f826b.png",
+        "weekly-update/45b4f951e9521301.png",
+        "weekly-update/777b87ed7fe9a17e.png"
+      ]
+    },
+    "limitations": [
+      "40 unaffected cells retain narrowly scoped markup/style/script equivalence;16 WTI cells were freshly captured.",
+      "Old WTI capture rows in physical/relationships manifests are historical and superseded by weekly-update/manifest.json.",
+      "No capture is production acceptance; authenticated Terminal and served R3 acceptance remain outstanding; M1 Paper is parked."
+    ],
+    "capture_base": "ef029bd56030c313bc36906a31f6b508c199410b",
+    "relationships_capture_base": "53c380daf74247672d62cca270743555d52fd409",
+    "unchanged_section_equivalence": "mockups/evidence/commodities-r3/source/render-public-integration.json",
+    "current_relationships_samples": [
+      "weekly-update/45b4f951e9521301.png",
+      "weekly-update/777b87ed7fe9a17e.png"
+    ],
+    "integration_applies_to_base": "fe5093cc4ebab5f4a041f4d35430cb7164bd96d3",
+    "active_manifest_selection": [
+      {
+        "manifest": "mockups/evidence/commodities-r3/overview/manifest.json",
+        "routes": [
+          "/commodities.html"
+        ],
+        "cells": 24
+      },
+      {
+        "manifest": "mockups/evidence/commodities-r3/physical/manifest.json",
+        "routes": [
+          "/commodities.html#cw/explore/gold?hypothesis=rates"
+        ],
+        "cells": 8
+      },
+      {
+        "manifest": "mockups/evidence/commodities-r3/relationships/manifest.json",
+        "routes": [
+          "/commodities.html#cw/relationships/gold?hypothesis=rates"
+        ],
+        "cells": 8
+      },
+      {
+        "manifest": "mockups/evidence/commodities-r3/weekly-update/manifest.json",
+        "routes": [
+          "/commodities.html#cw/explore/oil?hypothesis=supply",
+          "/commodities.html#cw/relationships/oil?hypothesis=supply"
+        ],
+        "cells": 16
+      }
+    ],
+    "late_main_retention": {
+      "receipt": "mockups/evidence/commodities-r3/source/late-main-integration.json",
+      "active_cells": 56,
+      "component_equal_except_payload_and_methodology_fingerprint": true,
+      "canonical_theme_css_js_unchanged": true,
+      "new_production_capture": false
+    }
+  },
+  "publication_status": {
+    "previous_confirmed_head": "b08ece31c517cc95b87b053540218bad17d18c63",
+    "previous_head_ci": "success",
+    "current_revision": "late-main integration; latest published head and CI are authoritative in PR9878",
+    "merged": false,
+    "production_accepted": false
+  },
+  "ci_registration": {
+    "job": "commodities-research-workspace",
+    "gate": "code",
+    "named_paths": 105,
+    "manifest_validation_passed": true,
+    "closure_startability_narrow_selection_tests_passed": 4,
+    "packing_thresholds_changed": false,
+    "note": "Required code gate runs fixture-based Python and six pure Node contracts. DOM and actual Chromium journeys remain local snapshot qualification.",
+    "manifest_jobs": 271,
+    "curated_registry_membership_checked": true,
+    "total_manifest_jobs": 342
+  },
+  "integration_history": {
+    "previous_integrated_head": "6b8b3e48022eb1761a565ee35b079d652579ad3f",
+    "previous_proof_base": "53c380daf74247672d62cca270743555d52fd409",
+    "final_upstream_base": "fe5093cc4ebab5f4a041f4d35430cb7164bd96d3",
+    "provenance_equivalence_receipt": "mockups/evidence/commodities-r3/source/provenance-repin.json",
+    "python_source_hashes_unchanged": true,
+    "current_main_dom_and_browser_repeated": true,
+    "current_main_ci_manifest_revalidated": true,
+    "followup_projection_revision": 6,
+    "engine_render_integration_receipt": "mockups/evidence/commodities-r3/source/engine-render-integration.json",
+    "new_main_job_preserved": "options-pilot-chronology-code",
+    "job_order_rearranged": false,
+    "render_public_integration_receipt": "mockups/evidence/commodities-r3/source/render-public-integration.json",
+    "source_data_refreshed": "Ten accepted EIA parquet series advanced to October 9; strict payload diff contains249 leaves scoped to petroleum, immutable provenance and global fingerprint.",
+    "late_main_integration": {
+      "previous_accepted_base": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738",
+      "previous_workspace_fingerprint": "6f617af0e84e0ae1469858475f03afec4e8f7128c1b80a715f3b0887180649e3",
+      "published_head": "b08ece31c517cc95b87b053540218bad17d18c63",
+      "ci_run": 39450879542,
+      "ci_conclusion": "success",
+      "fences_run": 39450879665,
+      "fences_conclusion": "success",
+      "previous_dom_receipt": {
+        "command": "NODE_PATH=/tmp/commodities-r3-ui-validation-20261020/node_modules node tests/test_commodity_workspace_ui.js",
+        "passed": 27,
+        "assets": 17,
+        "snapshot": "6f617af0e84e0ae1469858475f03afec4e8f7128c1b80a715f3b0887180649e3",
+        "export_bytes": 74754,
+        "visual_layout_verified": false,
+        "receipt": "mockups/evidence/commodities-r3/source/dom-receipt.json"
+      },
+      "receipt": "mockups/evidence/commodities-r3/source/late-main-integration.json",
+      "source_data_refreshed": false
+    }
+  },
+  "projection_revision": 6,
+  "javascript_contracts": {
+    "command": "node tests/test_commodity_workspace_contracts.js",
+    "passed": 6,
+    "dependencies": "Node built-ins only; synthetic dated fixture",
+    "in_required_ci": true,
+    "qualification_retention": "Fresh six-contract rerun on this integration"
+  },
+  "ci_repair": {
+    "previous_run": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/39431819003",
+    "previous_head": "8d7212be4264ddccf78d5d5fa3f087c12218791b",
+    "introduced_failures": [
+      "validated-claims-source: validateDraft identifier",
+      "ci-control-plane-contracts: missing commodities-research-workspace curated registry member"
+    ],
+    "repairs": [
+      "Rename helper to checkDraft; affirmative-claims guard unchanged and source scope passes",
+      "Add exact curated registry member; equality assertion and packing thresholds unchanged"
+    ],
+    "previous_commodities_python_job": {
+      "passed": 41,
+      "subtests_passed": 25
+    }
+  }
+}
