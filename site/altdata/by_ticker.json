@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-20",
-  "generated_utc": "2026-10-20T02:40:31.871646+00:00",
+  "generated_utc": "2026-10-20T11:36:21.553773+00:00",
   "n_tickers": 2940,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -3317,31 +3317,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "ARMK": {
-      "ticker": "ARMK",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "AVTR": {
-      "ticker": "AVTR",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "days_to_earnings": 15,
-      "next_earnings": "2026-11-04",
-      "earnings_surprise_pct": 10.5,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "BTSG": {
       "ticker": "BTSG",
       "channels": [
@@ -3360,6 +3335,31 @@
       ],
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "GAP": {
+      "ticker": "GAP",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.94,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "TER": {
+      "ticker": "TER",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 0.94,
+      "days_to_earnings": 7,
+      "next_earnings": "2026-10-27",
+      "earnings_surprise_pct": 21.1,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false

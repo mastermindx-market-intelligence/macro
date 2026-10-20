@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-10-17",
-  "data_session": "2026-10-16",
+  "as_of": "2026-10-19",
+  "data_session": "2026-10-19",
   "state": "warming",
   "k_count": 2,
   "chips": [
@@ -77,8 +77,8 @@
       "lit": true,
       "fresh": true,
       "since": "2026-10-16",
-      "detail_en": "20d log-RS slope=0.0101 (positive); turned positive 0bd ago",
-      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=0.0101\uff08\u6b63\u5411\uff09\uff1b0\u65e5\u524d\u8f6c\u6b63",
+      "detail_en": "20d log-RS slope=0.0125 (positive); turned positive 1bd ago",
+      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=0.0125\uff08\u6b63\u5411\uff09\uff1b1\u65e5\u524d\u8f6c\u6b63",
       "source": "yahoo/RSP,SPY"
     },
     {
@@ -94,8 +94,8 @@
     }
   ],
   "regime": {
-    "label_en": "Theme ignition \u2014 XLU, participation OK",
-    "label_zh": "\u4e3b\u9898\u70b9\u706b \u2014 XLU\uff0c\u53c2\u4e0e\u5ea6\u5c1a\u53ef",
+    "label_en": "Theme ignition \u2014 XLB, participation OK",
+    "label_zh": "\u4e3b\u9898\u70b9\u706b \u2014 XLB\uff0c\u53c2\u4e0e\u5ea6\u5c1a\u53ef",
     "fragile": false,
     "do_en": "Theme ignition with adequate participation. Evidence read, not a buy call \u2014 confluence with your own entry process.",
     "do_zh": "\u4e3b\u9898\u70b9\u706b\u4e14\u53c2\u4e0e\u5ea6\u5c1a\u53ef\u3002\u8bc1\u636e\u8bfb\u53d6\uff0c\u975e\u4e70\u5165\u4fe1\u53f7 \u2014 \u8bf7\u7ed3\u5408\u60a8\u7684\u5165\u573a\u6d41\u7a0b\u7efc\u5408\u5224\u65ad\u3002"
@@ -103,77 +103,8 @@
   "narrow": {
     "items": [
       {
-        "id": "XLU",
-        "ignition_score": 0.9861,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.9791,
-          "rs_slope_raw": 0.09616,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLU",
-        "name_zh": "XLU",
-        "category": "Sector ETF",
-        "type": "etf",
-        "rs_new_high": false,
-        "above_200d_rising": false
-      },
-      {
-        "id": "XLP",
-        "ignition_score": 0.9838,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.9757,
-          "rs_slope_raw": 0.09236,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLP",
-        "name_zh": "XLP",
-        "category": "Sector ETF",
-        "type": "etf",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
-        "id": "XLV",
-        "ignition_score": 0.9681,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.9521,
-          "rs_slope_raw": 0.07476,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLV",
-        "name_zh": "XLV",
-        "category": "Sector ETF",
-        "type": "etf",
-        "rs_new_high": true,
-        "above_200d_rising": true
-      },
-      {
         "id": "XLB",
-        "ignition_score": 0.9614,
+        "ignition_score": 0.9936,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -181,8 +112,8 @@
             0,
             0
           ],
-          "rs_slope_change": 0.9421,
-          "rs_slope_raw": 0.06973,
+          "rs_slope_change": 0.9904,
+          "rs_slope_raw": 0.11598,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -195,8 +126,8 @@
         "above_200d_rising": true
       },
       {
-        "id": "XLRE",
-        "ignition_score": 0.9384,
+        "id": "XLY",
+        "ignition_score": 0.9819,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -204,14 +135,14 @@
             0,
             0
           ],
-          "rs_slope_change": 0.9076,
-          "rs_slope_raw": 0.05711,
+          "rs_slope_change": 0.9729,
+          "rs_slope_raw": 0.08949,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "XLRE",
-        "name_zh": "XLRE",
+        "name": "XLY",
+        "name_zh": "XLY",
         "category": "Sector ETF",
         "type": "etf",
         "rs_new_high": false,
@@ -241,29 +172,6 @@
         "above_200d_rising": true
       },
       {
-        "id": "XLF",
-        "ignition_score": 0.7698,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.6547,
-          "rs_slope_raw": 0.01599,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLF",
-        "name_zh": "XLF",
-        "category": "Sector ETF",
-        "type": "etf",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
         "id": "retail",
         "ignition_score": 0.7097,
         "state": "igniting",
@@ -285,6 +193,98 @@
         "type": "basket",
         "rs_new_high": false,
         "above_200d_rising": false
+      },
+      {
+        "id": "industrial_distribution",
+        "ignition_score": 0.6766,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.25,
+          "breadth_n": [
+            3,
+            12
+          ],
+          "rs_slope_change": 0.9415,
+          "rs_slope_raw": 0.06945,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "Industrial Distribution & Capital Goods",
+        "name_zh": "\u5de5\u4e1a\u5206\u9500\u4e0e\u8d44\u672c\u54c1",
+        "category": "Industrials",
+        "type": "basket",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "defensives",
+        "ignition_score": 0.6724,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.4444,
+          "breadth_n": [
+            8,
+            18
+          ],
+          "rs_slope_change": 0.7366,
+          "rs_slope_raw": 0.02571,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "Defensives",
+        "name_zh": "\u9632\u5fa1\u677f\u5757",
+        "category": "Consumer Defensive",
+        "type": "basket",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "XLP",
+        "ignition_score": 0.6624,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": null,
+          "breadth_n": [
+            0,
+            0
+          ],
+          "rs_slope_change": 0.9936,
+          "rs_slope_raw": 0.12621,
+          "mtf_confirm": 0.0,
+          "mtf_ok": false,
+          "commodity_flip": false
+        },
+        "name": "XLP",
+        "name_zh": "XLP",
+        "category": "Sector ETF",
+        "type": "etf",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "XLV",
+        "ignition_score": 0.6483,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": null,
+          "breadth_n": [
+            0,
+            0
+          ],
+          "rs_slope_change": 0.9724,
+          "rs_slope_raw": 0.08908,
+          "mtf_confirm": 0.0,
+          "mtf_ok": false,
+          "commodity_flip": false
+        },
+        "name": "XLV",
+        "name_zh": "XLV",
+        "category": "Sector ETF",
+        "type": "etf",
+        "rs_new_high": false,
+        "above_200d_rising": true
       }
     ],
     "event_excluded": [
@@ -292,7 +292,7 @@
         "id": "XLE",
         "name": "XLE",
         "name_zh": "XLE",
-        "ignition_score": 0.9352,
+        "ignition_score": 0.6604,
         "state": "igniting",
         "reason": "geopolitical event sector outside broad ignition (suspension 2026-07-23: single-sector bids \u2260 ignition)"
       },
@@ -322,22 +322,22 @@
       }
     ],
     "n_scored": 61,
-    "n_qualifying": 31,
+    "n_qualifying": 32,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-10-17"
+    "as_of": "2026-10-19"
   },
   "narrow_top": {
-    "basket_id": "XLU",
-    "name": "XLU",
-    "name_zh": "XLU",
-    "score": 0.9861,
-    "streak_sessions": 5
+    "basket_id": "XLB",
+    "name": "XLB",
+    "name_zh": "XLB",
+    "score": 0.9936,
+    "streak_sessions": 2
   },
   "radar_xref": {
     "state": "caution",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.65
+  "_timing_s": 2.77
 }

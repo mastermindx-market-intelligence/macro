@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-10-20T02:40:21.574339+00:00",
+  "generated_utc": "2026-10-20T11:36:09.537893+00:00",
   "as_of": "2026-10-20",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27430,17 +27430,6 @@
         "hot": true
       },
       {
-        "ticker": "ADI",
-        "net_up_30d": 23,
-        "breadth": 1.0,
-        "est_chg_30d": 0.0,
-        "n_analysts": 23,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
         "ticker": "TXN",
         "net_up_30d": 23,
         "breadth": 1.0,
@@ -27452,10 +27441,21 @@
         "hot": true
       },
       {
+        "ticker": "ADI",
+        "net_up_30d": 23,
+        "breadth": 1.0,
+        "est_chg_30d": 0.83,
+        "n_analysts": 23,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 23,
+        "hot": true
+      },
+      {
         "ticker": "BBY",
         "net_up_30d": 20,
         "breadth": 1.0,
-        "est_chg_30d": 0.01,
+        "est_chg_30d": 0.1,
         "n_analysts": 20,
         "bull_ratio": 1.0,
         "rising": true,
@@ -27562,28 +27562,6 @@
         "hot": true
       },
       {
-        "ticker": "ARMK",
-        "net_up_30d": 14,
-        "breadth": 1.0,
-        "est_chg_30d": -0.09,
-        "n_analysts": 14,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
-        "hot": true
-      },
-      {
-        "ticker": "AVTR",
-        "net_up_30d": 14,
-        "breadth": 1.0,
-        "est_chg_30d": -0.47,
-        "n_analysts": 14,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
-        "hot": true
-      },
-      {
         "ticker": "MSI",
         "net_up_30d": 14,
         "breadth": 1.0,
@@ -27634,6 +27612,28 @@
         "est_chg_30d": 0.0,
         "n_analysts": 14,
         "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 14,
+        "hot": true
+      },
+      {
+        "ticker": "GAP",
+        "net_up_30d": 14,
+        "breadth": 0.88,
+        "est_chg_30d": -0.15,
+        "n_analysts": 16,
+        "bull_ratio": 0.94,
+        "rising": true,
+        "revision_delta": 14,
+        "hot": true
+      },
+      {
+        "ticker": "TER",
+        "net_up_30d": 14,
+        "breadth": 0.88,
+        "est_chg_30d": 0.0,
+        "n_analysts": 16,
+        "bull_ratio": 0.94,
         "rising": true,
         "revision_delta": 14,
         "hot": true
@@ -32069,6 +32069,13 @@
         "last_surprise_pct": 1.3
       },
       {
+        "ticker": "TER",
+        "next_date": "2026-10-27",
+        "days_to": 7,
+        "eps_forecast": 2.04,
+        "last_surprise_pct": 21.1
+      },
+      {
         "ticker": "UPS",
         "next_date": "2026-10-27",
         "days_to": 7,
@@ -32942,13 +32949,6 @@
         "days_to": 15,
         "eps_forecast": 1.15,
         "last_surprise_pct": 6.7
-      },
-      {
-        "ticker": "AVTR",
-        "next_date": "2026-11-04",
-        "days_to": 15,
-        "eps_forecast": 0.21,
-        "last_surprise_pct": 10.5
       },
       {
         "ticker": "BG",
