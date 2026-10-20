@@ -51,6 +51,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -575,7 +576,19 @@ def _index_gex_history_store_override(dirs) -> Path | None:
 
 
 def publish(dirs, dry_run: bool = False, workers: int = 32,
-            manifest: bool = True, force_manifest: bool = False) -> int:
+            manifest: bool = True, force_manifest: bool = False,
+            stock_ticker: str | None = None) -> int:
+    # A narrow, explicitly selected stock-library record uses this incumbent
+    # publisher, with its normal hash delta, upload retry and failure reporting.
+    # It must never replace the universe manifest or walk unrelated local files.
+    if stock_ticker is not None:
+        if (dirs != ["stockdata"] or manifest or force_manifest
+                or not isinstance(stock_ticker, str)
+                or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.^=-]{0,31}", stock_ticker) is None):
+            raise ValueError("one stock ticker requires stockdata and --no-manifest")
+        candidate = config.ROOT / config.load()["storage"]["site_dir"] / "stockdata" / (stock_ticker + ".json")
+        if not candidate.is_file() or candidate.is_symlink() or candidate.parent.is_symlink():
+            raise ValueError("selected stock record must be a regular local file")
     index_store = _index_gex_history_store_override(dirs)
     s3 = _client(workers)
     if s3 is None:
@@ -621,7 +634,8 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
         # publish-side file-list doc put at the end of the run.
         # _walk_files, not rglob: the store's tier dirs are symlinks on the ops
         # host and rglob does not descend through them (see _walk_files).
-        files = _uploadable(d, base, _walk_files(base))
+        files = ([base / (stock_ticker + ".json")] if stock_ticker is not None
+                 else _uploadable(d, base, _walk_files(base)))
         total = sum(p.stat().st_size for p in files) if d in _DATA_DIRS else None
         ok, why = _data_dir_syncable(d, len(files), total)
         if not ok:
@@ -733,12 +747,15 @@ def main() -> int:
     ap.add_argument("--no-manifest", dest="manifest", action="store_false",
                     help="sync files but leave _manifest.json untouched — REQUIRED for "
                          "partial-tree invocations (checkout lacking the full dir)")
+    ap.add_argument("--stock-ticker", default=None,
+                    help="publish exactly one existing stockdata record; requires --dirs stockdata --no-manifest")
     ap.add_argument("--force-manifest", action="store_true",
                     help="override the shrink guard (intentional deep universe cull)")
     a = ap.parse_args()
     dirs = [d.strip() for d in a.dirs.split(",") if d.strip()]
+    selected = {} if a.stock_ticker is None else {"stock_ticker": a.stock_ticker}
     return publish(dirs, dry_run=a.dry_run, workers=a.workers,
-                   manifest=a.manifest, force_manifest=a.force_manifest)
+                   manifest=a.manifest, force_manifest=a.force_manifest, **selected)
 
 
 if __name__ == "__main__":

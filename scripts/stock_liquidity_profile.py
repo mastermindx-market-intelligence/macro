@@ -17,6 +17,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 from engine.liquidity_profile import project
+from engine.liquidity_source_availability import coverage_clock, source_expected_session
 from lib import nyse_calendar
 from lib.massive_ticker import artifact_relative_path
 
@@ -30,10 +31,16 @@ def read_profile(ticker: str, *, data_root: Path, recorded_at: datetime,
     """Return one typed projection from native producer inputs, with no effects.
 
     ``currency_evidence`` is an explicit qualified input, not inferred from a
-    ticker, country, profile currency or a current-only reference. The current
-    stock-library caller has no window-valid currency receipt and passes None.
+    ticker, country, profile currency or a current-only reference. The
+    stock-library caller adopts only the retained, exact dated-session receipt
+    under stock_currency; missing evidence remains unknown.
     """
-    expected = nyse_calendar.expected_last_session(recorded_at)
+    try:
+        expected = source_expected_session(recorded_at)
+    except ValueError:
+        return project(None, ticker=ticker, expected_session=None,
+                       recorded_at=recorded_at, ingested_at=None,
+                       source_sha256=None, currency_evidence=currency_evidence)
     kwargs = dict(ticker=ticker, expected_session=expected,
                   recorded_at=recorded_at, ingested_at=None,
                   source_sha256=None, currency_evidence=currency_evidence)
@@ -78,6 +85,24 @@ def read_profile(ticker: str, *, data_root: Path, recorded_at: datetime,
         result = project(None, **kwargs)
         result.update(status="READ_UNAVAILABLE", reason="SOURCE_UNREADABLE")
         return result
+    # Use the observed final bar only when it meets the provider's availability
+    # floor and names a completed market session. A normal T+1 gap is explicit;
+    # the pure projection still rejects future/malformed/gapped source rows.
+    market_completed = nyse_calendar.expected_last_session(recorded_at)
+    if isinstance(frame.index, pd.DatetimeIndex) and len(frame.index):
+        final = frame.index[-1].date()
+        if expected <= final <= market_completed:
+            kwargs["expected_session"] = final
+    if currency_evidence is None:
+        receipt_path = Path(data_root) / "stock_currency" / artifact_relative_path(ticker).with_suffix(".json")
+        try:
+            if not receipt_path.is_symlink():
+                with receipt_path.open("rb") as stream:
+                    receipt_bytes = stream.read(3 * 1024 * 1024 + 1)
+                if len(receipt_bytes) <= 3 * 1024 * 1024:
+                    kwargs["currency_evidence"] = json.loads(receipt_bytes)
+        except (OSError, ValueError, TypeError):
+            pass
     # A store manifest's updated_at is not a ticker's ingestion time. Retain it
     # as a separately named observation rather than promoting it to known_at.
     store_updated_at = None
@@ -93,6 +118,7 @@ def read_profile(ticker: str, *, data_root: Path, recorded_at: datetime,
         pass
     result = project(frame, **kwargs)
     result["store_updated_at"] = store_updated_at
+    result["availability"] = coverage_clock(recorded_at)
     # This producer's parser fills a missing volume with zero. Its retained
     # parquet cannot distinguish that from genuine zero activity, so a window
     # containing zero cannot earn a qualified full-coverage turnover metric.

@@ -132,3 +132,41 @@ def test_native_zero_filled_volume_does_not_become_qualified_activity(tmp_path):
     assert result["status"] == "READ_NO_COVERAGE"
     assert result["reason"] == "ZERO_VOLUME_SOURCE_AMBIGUOUS"
     assert result["metrics"] is None and result["thinly_traded"] is None
+
+
+def test_source_availability_window_is_not_completed_market_cutoff(tmp_path):
+    from engine.liquidity_profile import _expected_sessions
+    from datetime import date
+    days = _expected_sessions(date(2026, 10, 16), 20)
+    root = tmp_path / "massive_stock_day"
+    root.mkdir()
+    pd.DataFrame({"close": [100.0]*20, "volume": [1000000]*20},
+                 index=pd.DatetimeIndex(days)).to_parquet(root / "MU.parquet")
+    early = read_profile("MU", data_root=tmp_path, recorded_at=NOW)
+    assert early["reason"] == "CURRENCY_NOT_QUALIFIED"
+    assert early["expected_session"] == "2026-10-16"
+    assert early["availability"]["market_completed_session"] == "2026-10-19"
+    assert early["availability"]["source_expected_session"] == "2026-10-16"
+    late = read_profile("MU", data_root=tmp_path,
+                        recorded_at=datetime(2026,10,20,15,tzinfo=timezone.utc))
+    assert late["reason"] == "STALE_NO_EXPECTED_SESSION"
+    assert late["metrics"] is None
+
+
+def test_observed_newer_completed_file_is_usable_before_scheduled_floor(tmp_path):
+    from engine.liquidity_profile import _expected_sessions
+    from datetime import date
+    days = _expected_sessions(date(2026,10,19),20)
+    root = tmp_path / "massive_stock_day"; root.mkdir()
+    pd.DataFrame({"close":[100.0]*20,"volume":[1000000]*20},index=pd.DatetimeIndex(days)).to_parquet(root / "MU.parquet")
+    result=read_profile("MU",data_root=tmp_path,recorded_at=NOW)
+    assert result["reason"] == "CURRENCY_NOT_QUALIFIED"
+    assert result["expected_session"] == "2026-10-19"
+    assert result["availability"]["source_expected_session"] == "2026-10-16"
+
+
+@pytest.mark.parametrize("clock", [None, datetime(2026,10,20)])
+def test_reader_clock_refusal_does_not_guess_timezone_or_raise(tmp_path, clock):
+    result=read_profile("MU", data_root=tmp_path, recorded_at=clock)
+    assert result["status"] == "READ_UNAVAILABLE"
+    assert result["metrics"] is None and result["recorded_at"] is None

@@ -39,6 +39,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -1882,6 +1884,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -2785,6 +2789,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -6564,6 +6570,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -8850,6 +8858,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -10788,6 +10798,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -16012,6 +16024,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
@@ -17912,7 +17926,7 @@ jobs:
   stock-liquidity-profile:
     if: ${{ false }}
     gate: code
-    # Producer-only F08 contract; no holdings, account, collector or live writes.
+    # F08 source qualification, retained dated currency and one-record writer; tests use no network/user state.
     # Exact native import/read closure; temporary parquet fixtures do not own
     # unrelated product code. Keep the existing packing-probe ceilings intact.
     scope: exclusive
@@ -17922,6 +17936,8 @@ jobs:
       - engine/__init__.py
       - engine/liquidity_chip.py
       - engine/liquidity_profile.py
+      - engine/liquidity_currency.py
+      - engine/liquidity_source_availability.py
       - lib/__init__.py
       - lib/massive_ticker.py
       - lib/nyse_calendar.py
@@ -17932,6 +17948,13 @@ jobs:
       - tests/test_liquidity_chip.py
       - tests/test_liquidity_profile.py
       - tests/test_stock_liquidity_profile.py
+      - lib/config.py
+      - scripts/capture_stock_liquidity_currency.py
+      - tests/test_capture_stock_liquidity_currency.py
+      - tests/test_liquidity_currency.py
+      - tests/test_liquidity_currency_source.py
+      - data/stock_currency/MU.json
+      - tests/test_liquidity_source_availability.py
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17939,9 +17962,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: raw-source qualification and existing one-record writer
-        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py -q
+        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py tests/test_liquidity_currency.py tests/test_liquidity_currency_source.py tests/test_liquidity_source_availability.py tests/test_capture_stock_liquidity_currency.py -q
 
   pick-lab-liquidity:
     if: ${{ false }}
@@ -19021,6 +19044,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
@@ -19797,6 +19822,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -21797,6 +21824,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -23462,6 +23491,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
@@ -24251,6 +24282,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -25364,6 +25397,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
@@ -26714,6 +26749,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/dataos/sec_filing_identity.py"
       - "engine/bond_issue_parser.py"
@@ -29725,6 +29762,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -30220,6 +30259,8 @@ jobs:
     scope: exclusive
     paths:
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
@@ -33203,6 +33244,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
@@ -34705,6 +34748,8 @@ jobs:
     paths:
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
+      - "engine/liquidity_currency.py"
+      - "engine/liquidity_source_availability.py"
       - "scripts/stock_liquidity_profile.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"

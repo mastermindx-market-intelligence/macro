@@ -1072,3 +1072,54 @@ def test_symlinked_store_under_the_min_files_floor_is_still_refused(tmp_path, mo
     assert pr2.publish(["thetadata_eod"]) == 0
     assert s3.uploaded == []
     assert s3.manifest_puts == []
+
+
+# Explicit single-record stock-library publication uses the incumbent path.
+from scripts import publish_r2 as p
+
+@pytest.mark.parametrize('dirs,manifest,force,ticker',[
+ (['stockdata'],True,False,'MU'),(['ohlc'],False,False,'MU'),
+ (['stockdata','ohlc'],False,False,'MU'),(['stockdata'],False,True,'MU'),
+ (['stockdata'],False,False,'../MU'),(['stockdata'],False,False,''),
+ (['stockdata'],False,False,'MU/OTHER'),(['stockdata'],False,False,True),
+])
+def test_invalid_scope_refused_before_client(monkeypatch,dirs,manifest,force,ticker):
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no network/client'))
+ with pytest.raises(ValueError): p.publish(dirs,manifest=manifest,force_manifest=force,stock_ticker=ticker)
+
+def test_selected_stock_only_uses_native_upload_and_never_manifest(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (root/'MU.json').write_text('{"ticker":"MU"}')
+ (root/'OTHER.json').write_text('{"ticker":"OTHER"}')
+ calls=[]
+ class Client:
+  def upload_file(self,*a,**kw): calls.append((a,kw))
+  def put_object(self,*a,**kw):pytest.fail('no manifest put')
+ monkeypatch.setattr(p,'_client',lambda *a:Client())
+ monkeypatch.setattr(p,'_remote_etags',lambda *a:{})
+ monkeypatch.setattr(p,'_walk_files',lambda *a:pytest.fail('no broad walk'))
+ monkeypatch.setenv('R2_BUCKET','synthetic-test-bucket')
+ assert p.publish(['stockdata'],manifest=False,workers=1,stock_ticker='MU')==0
+ assert len(calls)==1 and calls[0][0][2]=='stockdata/MU.json'
+ assert (root/'OTHER.json').read_text()=='{"ticker":"OTHER"}'
+
+def test_missing_or_symlink_record_is_not_noop(tmp_path,monkeypatch):
+ monkeypatch.setattr(p.config,'ROOT',tmp_path)
+ monkeypatch.setattr(p.config,'load',lambda:{'storage':{'site_dir':'site','data_dir':'data'}})
+ monkeypatch.setattr(p,'_client',lambda *a:pytest.fail('no client'))
+ with pytest.raises(ValueError): p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+ root=tmp_path/'site'/'stockdata';root.mkdir(parents=True)
+ (tmp_path/'real.json').write_text('{}');(root/'MU.json').symlink_to(tmp_path/'real.json')
+ with pytest.raises(ValueError):p.publish(['stockdata'],manifest=False,stock_ticker='MU')
+
+
+def test_explicit_cli_selection_reaches_existing_publisher(monkeypatch):
+ import sys
+ seen={}
+ def publish(dirs,**kwargs): seen.update(dirs=dirs,**kwargs);return 0
+ monkeypatch.setattr(p,'publish',publish)
+ monkeypatch.setattr(sys,'argv',['publish_r2','--dirs','stockdata','--no-manifest','--stock-ticker','MU'])
+ assert p.main()==0
+ assert seen['stock_ticker']=='MU' and seen['manifest'] is False and seen['dirs']==['stockdata']
