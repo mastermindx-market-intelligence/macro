@@ -1,0 +1,68 @@
+{
+  "base_head": "0e52902e57b630d9f77661d014e51a99833d26fa",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "scope": "Actual owner correlation_matrix and equity_risk_all with synthetic inputs; no acquisition, current market qualification or live acceptance.",
+  "repair": [
+    "Use existing text/panel2 tokens for Unknown regime chip only.",
+    "Explain that mean correlation can conceal opposing pairs and does not establish portfolio diversification; retain all supplied matrix values."
+  ],
+  "counterexamples": {
+    "unknown_light_before_ratio": 1.1942221445759043,
+    "unknown_light_after_ratio": 10.206763978564855,
+    "unknown_dark_after_ratio": 10.612071246506734,
+    "matrix": "Owner average below0 despite JP/KR1.00 and JP/TW<=-0.99; owner read promises diversification. Display omits promise, preserves estimates."
+  },
+  "tests": {
+    "render_unique_pass": 5,
+    "new_render_cases": 1,
+    "browser_unique_pass": 4,
+    "width_states": 8,
+    "original_render_failures": 1,
+    "original_browser_failures": 1,
+    "inherited_pytest_cleanup_warnings": 14,
+    "counts_overlap": true
+  },
+  "visual": {
+    "canonical_states": 16,
+    "canonical_widths": [
+      1440,
+      390
+    ],
+    "focused_states_read": 16,
+    "focused_widths": [
+      1440,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "routes": [
+      "Cross-country",
+      "Correlation"
+    ],
+    "manifest_sha256": "dc42928c8ad70083ca81f07851394d4d550baef12de2b73343f7797442d5b2d6",
+    "parent_review": "Assigning parent, not independent. Dark muted depth and Light pale material each retain readable unknown state, focus and wrapping explanation. Narrow table scroll preserves values.",
+    "capture_session": "Original33586 lost handle at heartbeat; completion retained in16entry report and capture log; no observed exit code and no replay.",
+    "fixture_missing_asset": "live_config.js404 remains isolated fixture limitation",
+    "limits": "No complete accessibility, screen-reader speech, native zoom, physical touch or served acceptance."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "72fc92e696900cd340768b91801b77bff70defa5c0c2724ffd6f8363c083a0d2",
+    "tests/intl_workspace_page.test.cjs": "e8eef6d09334732a6ec4039c94e47dbc38bca67a8313fbb2a920edb78a1e9264",
+    "tests/test_intl_correlation_coverage_render.py": "965c99b9ed36035f0ae175feedb134f9da612da43f2f4cb25163df0e46455811"
+  },
+  "owners_unchanged": {
+    "engine/intl_performance.py": "4aaed61e435ca87ba6845bd93eb0bc815eb5969d651d8ff81526b0401ecb2038",
+    "engine/intl_equity_risk.py": "505a908e5efeb8a0a71a2c236c08ed825abf48692abb5ddb2ff41e4532d5b166",
+    "engine/extension.py": "b4dafe1a69e6c3d9567e3c0d522dc449fa04c7984d850efa79c8ce70cc4cc5fd",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/reference-reading-limits-20261015-r1"
+}

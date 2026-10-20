@@ -10,7 +10,10 @@
     if (!config || !controls || !window.IntlWorkspace) return;
 
     function relabel() {
-      var zh = document.documentElement.lang.toLowerCase().indexOf('zh') === 0;
+      // Publication can defer theme.js after this entry. The head bootstrap
+      // has already selected data-lang before theme.js synchronizes html.lang.
+      var language = document.documentElement.getAttribute('data-lang') || document.documentElement.lang;
+      var zh = language.toLowerCase().indexOf('zh') === 0;
       root.querySelectorAll('option[data-im-label-en]').forEach(function (option) {
         option.textContent = option.getAttribute(zh ? 'data-im-label-zh' : 'data-im-label-en');
       });

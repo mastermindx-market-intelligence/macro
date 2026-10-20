@@ -1,0 +1,49 @@
+{
+  "schema": "paper.rates_geometry.acceptance.v1",
+  "state": "BUILT_NOT_PROVEN",
+  "base_head": "adc095a619d4260706c865838fc418c43e413af2",
+  "source_sha256": "1edad611da6919bc003c515dce95362403a13727468e83dd69a0bf372261790d",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/rates-curve-geometry-20261014-r1",
+  "causal_red": {
+    "render": "9 new failures +8 existing passes; separate shared-scale case fails",
+    "browser": "3 product failures: negative labels overlap at320; fourth case optimizer stall, not product red"
+  },
+  "green": {
+    "render": "47 passed,14 inherited warnings across rates and integration",
+    "browser": "8 passed,0failed:4 new geometry cases plus4 affected absence journeys",
+    "geometry_observations": 64,
+    "geometry_width_states": 8,
+    "absence_width_states": 8,
+    "source_binding": "Functional green precedes only radius50percent-to-canonical-r-pill repair. Final eight captures remade on final source; no manual restamp.",
+    "final_browser": "4 geometry cases passed on final canonical-token source; same64pair observations, not additive coverage"
+  },
+  "harness_repair": "Bound publication optimizer subprocess to30s and acquire browser only after optimizer succeeds. Original stalled child and test-owned browser settled; no original live profile touched.",
+  "visual": {
+    "scope": "Parent visual/source adjudication only; independent review pending under original refusal",
+    "final_template_sha256": "1edad611da6919bc003c515dce95362403a13727468e83dd69a0bf372261790d",
+    "capture_manifest_sha256": "5a38ee4b2a3dcfdd8af426d4a8c97f7bdbab6989622eb958a843fbb12a634c47",
+    "final_capture_states": 8,
+    "same_pixels_after_token_repair": false,
+    "viewed_sha256": [
+      "a8a5a69955621b5f947af9aba4bd3c68968ac80536f3d3138bae7fcec4694df1",
+      "ed75b5d8b4d4b5ec8d6a878af6812c1830bbbe82027cf17613fe618fd109607d",
+      "3f08479a6ae80d400e6db3424f96544f9865dbe2fbb921ca2e78abcefb745945",
+      "fd330aaaa23aac1ca70f7f03e0df04a8bae30267085ca18b8623e9d4518a1179"
+    ],
+    "findings": [
+      "Supplied negative/high/near/equal values remain readable in separate maturity labels; no label collision in browser geometry.",
+      "Dark instrument cards retain luminance hierarchy; Light uses cool canvas, white controls and bounded panel2 research cards.",
+      "Shared scale intentionally keeps tiny differences tiny; separate labeled endpoints do not imply larger economic differences.",
+      "Existing mobile launcher proximity, live_config.js404 and four wider elements without document overflow retained; no whole-page or accessibility acceptance."
+    ],
+    "review_status": "INDEPENDENT_PENDING"
+  },
+  "holds": [
+    "No deployed/live acceptance",
+    "Independent review pending; no retry of refused Fabric request",
+    "CI unobserved; no admission/poll",
+    "No ready/merge/autoarm/deploy",
+    "IW2 exclusively owns TerminalPR804",
+    "All original rights/Saved/qualification/frozen-effect/release holds retained"
+  ]
+}

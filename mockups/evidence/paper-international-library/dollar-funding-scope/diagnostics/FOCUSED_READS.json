@@ -1,0 +1,194 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "funding-1440-dark-en.png",
+    "sha256": "51050c412035e4d2a8519246bf8fd0e89223ba48e2527d7f5e593986710731f5",
+    "text": "DOLLAR FUNDING\nThreshold triggered\nSOFR \u2212 IORB: +2.0 bp\nFed swap lines: $1.2bn\nRule: spread > 0 for 5 observations; quarter-end effects may be technical.",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 1056,
+        "y": 380.40625,
+        "width": 321,
+        "height": 139.484375,
+        "top": 380.40625,
+        "right": 1377,
+        "bottom": 519.890625,
+        "left": 1056
+      },
+      "scrollWidth": 319,
+      "clientWidth": 319
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "desk-clock-1440-dark-en.png",
+    "sha256": "95368bba0e4566624ade34ec7a96421c003b2cc92d5edd39fb5e59325713acfd",
+    "text": "Desk built: Unavailable \u00b7 context only, not a forecast",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 63,
+        "y": 533.890625,
+        "width": 1314,
+        "height": 17.046875,
+        "top": 533.890625,
+        "right": 1377,
+        "bottom": 550.9375,
+        "left": 63
+      },
+      "scrollWidth": 1314,
+      "clientWidth": 1314
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "funding-1440-light-en.png",
+    "sha256": "bfe4365cf4470037553731022ef1a67c8fa1332dd17258a3c2acd5479e3fd3c5",
+    "text": "DOLLAR FUNDING\nThreshold triggered\nSOFR \u2212 IORB: +2.0 bp\nFed swap lines: $1.2bn\nRule: spread > 0 for 5 observations; quarter-end effects may be technical.",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 1056,
+        "y": 380.40625,
+        "width": 321,
+        "height": 139.484375,
+        "top": 380.40625,
+        "right": 1377,
+        "bottom": 519.890625,
+        "left": 1056
+      },
+      "scrollWidth": 319,
+      "clientWidth": 319
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "desk-clock-1440-light-en.png",
+    "sha256": "30a742e927201bec4d7c923f65601175a31e027d95b74cb5895d51c2604deb26",
+    "text": "Desk built: Unavailable \u00b7 context only, not a forecast",
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "element": {
+        "x": 63,
+        "y": 533.890625,
+        "width": 1314,
+        "height": 17.046875,
+        "top": 533.890625,
+        "right": 1377,
+        "bottom": 550.9375,
+        "left": 63
+      },
+      "scrollWidth": 1314,
+      "clientWidth": 1314
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "funding-390-dark-zh.png",
+    "sha256": "1ebcd22efc3a147905e3a9121688e9b5bb7f152d06bb266bdc4763d45cb80c57",
+    "text": "\u7f8e\u5143\u878d\u8d44\n\u9608\u503c\u5df2\u89e6\u53d1\nSOFR \u2212 IORB\uff1a +2.0 bp\n\u7f8e\u8054\u50a8\u4e92\u6362\u4f59\u989d\uff1a12.0\u4ebf\u7f8e\u5143\n\u89c4\u5219\uff1a\u5229\u5dee\u8fde\u7eed5\u4e2a\u89c2\u6d4b\u503c\u5927\u4e8e0\uff1b\u5b63\u672b\u5f71\u54cd\u53ef\u80fd\u5c5e\u4e8e\u6280\u672f\u56e0\u7d20\u3002",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 43,
+        "y": 380.296875,
+        "width": 304,
+        "height": 139.484375,
+        "top": 380.296875,
+        "right": 347,
+        "bottom": 519.78125,
+        "left": 43
+      },
+      "scrollWidth": 302,
+      "clientWidth": 302
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "desk-clock-390-dark-zh.png",
+    "sha256": "ab2195056f416805d2cd01e61a972fe683e581c2ee5c7db45bc56757c4148878",
+    "text": "\u98ce\u9669\u53f0\u751f\u6210\uff1a\u4e0d\u53ef\u7528 \u00b7 \u4ec5\u4f9b\u53c2\u8003\uff0c\u975e\u9884\u6d4b",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 43,
+        "y": 533.78125,
+        "width": 304,
+        "height": 17.046875,
+        "top": 533.78125,
+        "right": 347,
+        "bottom": 550.828125,
+        "left": 43
+      },
+      "scrollWidth": 304,
+      "clientWidth": 304
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "funding-390-light-zh.png",
+    "sha256": "a6d0f404d2da29b7684cc25dc8768cc93cd151214cd3c7230f916fdaa9c6166b",
+    "text": "\u7f8e\u5143\u878d\u8d44\n\u9608\u503c\u5df2\u89e6\u53d1\nSOFR \u2212 IORB\uff1a +2.0 bp\n\u7f8e\u8054\u50a8\u4e92\u6362\u4f59\u989d\uff1a12.0\u4ebf\u7f8e\u5143\n\u89c4\u5219\uff1a\u5229\u5dee\u8fde\u7eed5\u4e2a\u89c2\u6d4b\u503c\u5927\u4e8e0\uff1b\u5b63\u672b\u5f71\u54cd\u53ef\u80fd\u5c5e\u4e8e\u6280\u672f\u56e0\u7d20\u3002",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 43,
+        "y": 380.296875,
+        "width": 304,
+        "height": 139.484375,
+        "top": 380.296875,
+        "right": 347,
+        "bottom": 519.78125,
+        "left": 43
+      },
+      "scrollWidth": 302,
+      "clientWidth": 302
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "desk-clock-390-light-zh.png",
+    "sha256": "035631af1d2c669c1d0b032dcf008d22e163f79752d38ad74b76be157b7e1f56",
+    "text": "\u98ce\u9669\u53f0\u751f\u6210\uff1a\u4e0d\u53ef\u7528 \u00b7 \u4ec5\u4f9b\u53c2\u8003\uff0c\u975e\u9884\u6d4b",
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "element": {
+        "x": 43,
+        "y": 533.78125,
+        "width": 304,
+        "height": 17.046875,
+        "top": 533.78125,
+        "right": 347,
+        "bottom": 550.828125,
+        "left": 43
+      },
+      "scrollWidth": 304,
+      "clientWidth": 304
+    }
+  }
+]

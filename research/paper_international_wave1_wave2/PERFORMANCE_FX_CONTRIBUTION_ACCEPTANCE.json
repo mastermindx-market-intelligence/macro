@@ -1,0 +1,53 @@
+{
+  "base_head": "733e8adad4811ac2a5824faac646fbf39e8ca321",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Actual usd_series and usd_leaderboard over synthetic local/FX frames; no data acquisition or qualification.",
+  "counterexample": "Local+5percent/currency-3percent yields owner-roundedUSD1.8/local5.0/FXcontribution-3.2. FX field is percentage-point contribution, not raw currency return.40-observation markets supply1m but no12m.",
+  "repair": [
+    "Label FX contribution in percentage points and distinguish composite rotation ordering from return period.",
+    "Keep missing12m explicit in rotation mode; empty selected period has a message while shorter valid periods remain usable.",
+    "Native named Library target and keyboard period selection preserve return/query context.",
+    "Repair measured8px mobile bar with two-row narrow layout; retain actual decomposition geometry and owner values."
+  ],
+  "tests": {
+    "render_unique_pass": 3,
+    "browser_unique_pass": 6,
+    "browser_main_width_states": 8,
+    "browser_empty_narrow_cases": 2,
+    "original_render_red": 2,
+    "original_focus_red": 1,
+    "empty_period_red": 2,
+    "narrow_geometry_red": 1,
+    "counts_overlap": true,
+    "warnings": "14 inherited pytest cleanup warnings",
+    "reuse": "Three render passes predate narrow-only CSS and empty-board message; their payload/target/unit assertions unchanged. Final six browser cases exercise final bytes."
+  },
+  "visual": {
+    "canonical": 8,
+    "focused_return": 8,
+    "focused_empty": 4,
+    "manifest_sha256": "13e91490862067f11c1c0e7b68b70efa4a0467c49efb49aa20d8c5f80c9219b9",
+    "parent": {
+      "reviewer": "assigning parent; independent review pending",
+      "final_focused_views_read": 12,
+      "dark": "Existing dark panels preserve local bar, negative contribution segment and net USD marker; missing-period copy is readable.",
+      "light": "Existing pale canvas and white research panels retain separate material hierarchy, local/FX colors and visible text.",
+      "narrow": "Original320px bars measured8px. Two-row narrow layout retains a full-width bar beneath labels. New >=80px assertions pass at320/1440 in both languages/themes; final320px images show decomposition and true zero distinctly.",
+      "limits": "No served/physical touch/native zoom/speech/current qualification acceptance."
+    },
+    "initial_geometry_evidence": "before-narrow-repair/MANIFEST.json preserves original render/capture bytes; initial captures are not final proof."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "6a5b53979d05f1ed163c4d9266c01039afa401bb5f735d5d9d41cda438a0c6e4",
+    "tests/test_intl_performance_reading_render.py": "7468868dca3f08df5cb5c3ec0ff15c21e42a4e0968e7b3dd9b4704d6c971bec9",
+    "tests/intl_workspace_page.test.cjs": "8f7fe9f7762b8325158afeee75e8a1b3a6ba60c2095dc50a18b5cc2d70209f7d"
+  },
+  "owners_unchanged": {
+    "engine/intl_performance.py": "4aaed61e435ca87ba6845bd93eb0bc815eb5969d651d8ff81526b0401ecb2038",
+    "engine/intl_rotation.py": "d26d99e2b736af9311d7e7bdd65f10abdb3cd8606c51d1505610f626d068f52b",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0",
+    "lib/intl_library_mount.py": "5689c95196c8f107dc7499c2b249cb36de061969c7baad3e9cf7eca1a3fb8c76"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/performance-fx-contribution-20261014-r1"
+}

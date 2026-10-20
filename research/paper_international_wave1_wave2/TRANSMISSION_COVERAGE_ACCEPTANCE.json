@@ -1,0 +1,46 @@
+{
+  "base_head": "47d0d0874b06180fbb5eb6b1e56e0567df0d9485",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Report assessed coverage for four owner US threshold tests; missing and short-history inputs remain unavailable; independent dollar flag is informational.",
+  "source_hashes": {
+    "templates/intl.html.j2": "efb515bf1448c0b752aa6396b241679dc678598c7829eb1d7ccb20eb5a6258f1",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "tests/test_intl_transmission_coverage_render.py": "351c5841847ef2088c86127480330468b8d77427998075ec79a165ec6745c906",
+    "tests/intl_workspace_page.test.cjs": "9f60ddad5f7f2170d4b5185f0998c96787107fa3056a75bd6d018eeecef096ac"
+  },
+  "verification": {
+    "red": "10PythonFAIL;1browserFAIL",
+    "green": "10PythonPASS14inheritedwarnings;8unique browserPASS16widthstates320/1440",
+    "canonical": "8DarkLightENZH1440/390 captures of absent owner fixture;27bound assets"
+  },
+  "parent_review": {
+    "files": [
+      "coverage-1440-dark-en.png",
+      "channels-1440-dark-en.png",
+      "coverage-1440-light-en.png",
+      "channels-1440-light-en.png",
+      "coverage-390-dark-zh.png",
+      "channels-390-dark-zh.png",
+      "coverage-390-light-zh.png",
+      "channels-390-light-zh.png"
+    ],
+    "result": "All8actual focused images viewed: neutral absence, clear denominator and separate informational flag; readable wraps and containment in both material directions. Not independent approval."
+  },
+  "capture_diagnostics": "One inherited live_config.js404 in static fixture; no page horizontal overflow. Four mobile wider-than-viewport elements retained. Known EM/VAR wording outside this repair.",
+  "manifest_sha256": "e1172bcb257402248a023c75818c5be99f12e54af61cb58622cbec151801d279",
+  "limits": [
+    "Synthetic actual-owner inputs; no acquisition or qualification change.",
+    "No thresholds, owner calculation, source dates or trading contract changed.",
+    "Not live acceptance, screen-reader speech, physical touch, native zoom or complete accessibility.",
+    "All review, release, rights, Saved, migration, frozen-effect, browser, CI and IW2 custody holds remain."
+  ],
+  "next": {
+    "state": "ACTUAL_OWNER_COUNTEREXAMPLES_REPRODUCED",
+    "source": "engine/intl_risk.py em_stress; template first hero chip",
+    "finding": "0/6 available currently claims all signals normal;3/6 calm omits coverage and gives No action needed EM positions.",
+    "next": "Preserve owner state and thresholds; distinguish insufficient/partial/full coverage and remove unsupported position guidance.",
+    "evidence": "../em-stress-coverage-20261014-r1/OWNER_COUNTEREXAMPLES.json"
+  }
+}

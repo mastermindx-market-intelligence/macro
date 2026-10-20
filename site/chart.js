@@ -279,7 +279,9 @@
     // its hourly bars are lazy-fetched from intraday/<T>.json on first 4H select.
     this.intraday = !!this.opts.intraday;
     this.intradayRows = null;
+    this._timeframeSerial = 0;
     this.chart = null; this.S = {};            // series refs
+    this._destroyed = false;                  // async responses cannot revive a retired instance
     var pr = loadPrefs();
     this.tf = pr.tf || '1D';
     if (this.tf === '4H') this.tf = '1D';      // 4H loads on demand, not at mount
@@ -293,20 +295,39 @@
     this._onTheme = this.rerender.bind(this);
     this._onLang = this.rebuildUI.bind(this);
     var self = this;
-    this._onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) self.exitFull(); };
+    this._onKey = function (e) {
+      if (!self.wrap || !self.wrap.classList.contains('bchart-full') || e.defaultPrevented || e.isComposing || e.keyCode === 229) return;
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        e.preventDefault(); self.exitFull();
+      } else if (e.key === 'Tab' && !e.altKey && !e.ctrlKey && !e.metaKey) {
+        // The fixed overlay covers the rest of the page. Keep sequential focus on
+        // its visible controls, including a signals disclosure that arrives later.
+        var stops = Array.prototype.filter.call(self.wrap.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex]'), function (n) {
+          return !n.disabled && n.tabIndex >= 0 && n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+        });
+        var first = stops[0], last = stops[stops.length - 1], active = document.activeElement;
+        if (first && (!self.wrap.contains(active) || (e.shiftKey ? active === first : active === last))) {
+          e.preventDefault(); (e.shiftKey ? last : first).focus();
+        }
+      }
+    };
   }
 
   Instance.prototype.mount = function () {
+    if (this._destroyed) return this;
     injectCSS();
     this.host.innerHTML = '';
     this.wrap = document.createElement('div'); this.wrap.className = 'bchart';
     this.host.appendChild(this.wrap);
-    this.renderMsg(tt('Loading chart…', '正在加载图表…'));
+    document.addEventListener('langchange', this._onLang);
+    this.renderMsg('Loading chart…', '正在加载图表…');
     var self = this;
     function use(j) {
-      if (!j || !j.bars || !j.bars.length) { self.renderMsg(tt(
+      if (self._destroyed) return;
+      // Legacy inline payloads can omit t; a supplied identity must match the request.
+      if (!j || (j.t !== undefined && j.t !== self.ticker) || !j.bars || !j.bars.length) { self.renderMsg(
         'Live chart unavailable for this name — the analysis above stands on its own.',
-        '该标的暂无图表数据 —— 上方分析独立成立。')); return; }
+        '该标的暂无图表数据 —— 上方分析独立成立。'); return; }
       self.data = j;
       self.rows = normalise(j);
       self.hasVol = self.rows.some(function (r) { return r.v != null && r.v > 0; });
@@ -314,22 +335,24 @@
       self.rerender();
       self.loadSignals();   // lazy-load site/signals/<T>.json (markers + Last Signals panel)
       document.addEventListener('themechange', self._onTheme);
-      document.addEventListener('langchange', self._onLang);
       document.addEventListener('keydown', self._onKey);
     }
     // Inline data (HK) renders without a round-trip; otherwise fetch the market's dir.
     if (this.opts.data) { use(this.opts.data); return this; }
     var url = this.ohlcDir + '/' + safeName(this.ticker) + '.json';
     fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(use)
-      .catch(function () { self.renderMsg(tt('Chart failed to load.', '图表加载失败。')); });
+      .catch(function () { self.renderMsg('Chart failed to load.', '图表加载失败。'); });
     return this;
   };
 
-  Instance.prototype.renderMsg = function (msg) {
-    this.wrap.innerHTML = '<div class="bchart-msg">' + msg + '</div>';
+  Instance.prototype.renderMsg = function (en, zh) {
+    if (this._destroyed) return;
+    this._message = [en, zh];
+    this.wrap.innerHTML = '<div class="bchart-msg">' + tt(en, zh) + '</div>';
   };
 
   Instance.prototype.buildUI = function () {
+    this._message = null;
     var self = this;
     this.wrap.innerHTML = '';
     // toolbar
@@ -340,6 +363,7 @@
     TFS.forEach(function (tfp) {
       var b = document.createElement('button'); b.textContent = tfp[1]; b.dataset.tf = tfp[0];
       if (self.tf === tfp[0]) b.className = 'on';
+      b.setAttribute('aria-pressed', String(self.tf === tfp[0]));
       b.onclick = function () { self.setTimeframe(tfp[0]); };
       seg.appendChild(b);
     });
@@ -354,6 +378,7 @@
       b.dataset.k = d[0];
       var on = d[0] === 'ema' ? self.ema : self.inds.has(d[0]);
       if (on) b.classList.add('on');
+      b.setAttribute('aria-pressed', String(!!on));
       b.onclick = function () {
         if (d[0] === 'ema') self.ema = !self.ema;
         else { if (self.inds.has(d[0])) self.inds.delete(d[0]); else self.inds.add(d[0]); }
@@ -374,7 +399,7 @@
     this.fsbtn.className = 'bchart-fsbtn';
     var isFull = this.wrap.classList.contains('bchart-full');
     this.fsbtn.innerHTML = isFull ? FS_COLLAPSE : FS_EXPAND;
-    this.fsbtn.setAttribute('aria-label', tt('Full screen', '全屏'));
+    this.fsbtn.setAttribute('aria-label', isFull ? tt('Exit full screen', '退出全屏') : tt('Full screen', '全屏'));
     this.fsbtn.onclick = function () { self.toggleFull(); };
     canvas.appendChild(this.legend); canvas.appendChild(this.plot); canvas.appendChild(this.fsbtn);
     this.wrap.appendChild(canvas);
@@ -388,6 +413,7 @@
     if (this.fsbtn) {
       this.fsbtn.innerHTML = full ? FS_COLLAPSE : FS_EXPAND;
       this.fsbtn.setAttribute('aria-label', full ? tt('Exit full screen', '退出全屏') : tt('Full screen', '全屏'));
+      this.fsbtn.focus();
     }
     var self = this;
     requestAnimationFrame(function () {
@@ -400,32 +426,54 @@
   Instance.prototype.exitFull = function () {
     if (this.wrap && this.wrap.classList.contains('bchart-full')) this.toggleFull();
   };
-  Instance.prototype.rebuildUI = function () { if (this.rows) { this.buildUI(); this.rerender(); } };
+  Instance.prototype.rebuildUI = function () {
+    if (this._message) { this.renderMsg(this._message[0], this._message[1]); return; }
+    if (!this.rows) return;
+    var active = document.activeElement;
+    var restore = this.wrap.contains(active);
+    var focusAttr = ['data-tf', 'data-k', 'data-sig'].find(function (name) { return active.hasAttribute(name); });
+    var focusValue = focusAttr && active.getAttribute(focusAttr);
+    var wasSummary = active.tagName === 'SUMMARY';
+    this.buildUI(); this.rerender();
+    if (restore) {
+      var target = focusAttr ? Array.prototype.find.call(this.wrap.querySelectorAll('[' + focusAttr + ']'), function (n) {
+        return n.getAttribute(focusAttr) === focusValue;
+      }) : wasSummary ? this.wrap.querySelector('summary') : null;
+      (target || this.fsbtn).focus();
+    }
+  };
   // Timeframe switch. 4H lazy-loads its hourly intraday file once; daily-derived
   // frames (1D/3D/1W/1M) just re-render. A failed/empty 4H fetch leaves the current
   // frame in place (syncBar un-highlights 4H) — the button only shows for names we
   // expect to have data, so this is a rare graceful no-op.
   Instance.prototype.setTimeframe = function (tf) {
-    var self = this;
+    if (this._destroyed) return;
+    var self = this, serial = ++this._timeframeSerial;
     if (tf === '4H' && !this.intradayRows) {
       fetch('intraday/' + safeName(this.ticker) + '.json')
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
-          if (j && j.bars && j.bars.length) {
+          if (self._destroyed || serial !== self._timeframeSerial) return;
+          if (j && (j.t === undefined || j.t === self.ticker) && j.bars && j.bars.length) {
             self.intradayRows = normaliseIntra(j);
             self.tf = '4H'; self.persist(); self.syncBar(); self.rerender();
           } else { self.syncBar(); }
-        }).catch(function () { self.syncBar(); });
+        }).catch(function () { if (!self._destroyed && serial === self._timeframeSerial) self.syncBar(); });
       return;
     }
     this.tf = tf; this.persist(); this.syncBar(); this.rerender();
   };
   Instance.prototype.syncBar = function () {
     if (!this.bar) return; var self = this;
-    this.bar.querySelectorAll('[data-tf]').forEach(function (b) { b.className = (self.tf === b.dataset.tf) ? 'on' : ''; });
+    this.bar.querySelectorAll('[data-tf]').forEach(function (b) {
+      var on = self.tf === b.dataset.tf;
+      b.className = on ? 'on' : '';
+      b.setAttribute('aria-pressed', String(on));
+    });
     this.bar.querySelectorAll('[data-k]').forEach(function (b) {
       var on = b.dataset.k === 'ema' ? self.ema : self.inds.has(b.dataset.k);
       b.classList.toggle('on', !!on);
+      b.setAttribute('aria-pressed', String(!!on));
     });
   };
   Instance.prototype.persist = function () {
@@ -436,7 +484,7 @@
   // (re)build the whole chart — cheap (data already in memory) and avoids any
   // pane-index bookkeeping. The visible range is preserved across rebuilds.
   Instance.prototype.rerender = function () {
-    if (!this.rows) return;
+    if (this._destroyed || !this.rows) return;
     // Preserve the user's zoom/pan ONLY across changes that keep the same x-axis
     // (toggling an indicator, theme/lang). A timeframe switch changes the bar
     // count, so a stale logical range would land in empty space past the series —
@@ -691,6 +739,8 @@
   };
 
   Instance.prototype.destroy = function () {
+    if (this._destroyed) return;
+    this._destroyed = true;
     document.removeEventListener('themechange', this._onTheme);
     document.removeEventListener('langchange', this._onLang);
     document.removeEventListener('keydown', this._onKey);
@@ -769,11 +819,14 @@
   }
 
   Instance.prototype.loadSignals = function () {
+    if (this._destroyed) return;
     var self = this, dir = this.opts.signalsDir || 'signals';
     fetch(dir + '/' + safeName(this.ticker) + '.json')
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
-        if (!j || !j.markers || !j.markers.length) return;   // no file (non-US, or none) -> silent
+        if (self._destroyed || !j || !j.markers || !j.markers.length) return;   // no file (non-US, or none) -> silent
+        // Anonymous legacy payloads remain supported; supplied identity must agree.
+        if (j.ticker !== undefined && j.ticker !== self.ticker) return;
         self.signals = j;
         if (self.chips && !self.chips.querySelector('[data-sig]')) self.appendSignalsChip();
         self.renderSignals();   // chart already built: attach overlay + panel, no full rebuild
@@ -786,12 +839,14 @@
     var self = this;
     var b = document.createElement('button');
     b.className = 'bchart-chip' + (this.showSig ? ' on' : '');
+    b.setAttribute('aria-pressed', String(this.showSig));
     b.dataset.sig = '1';
     b.textContent = tt('Signals', '信号');
     b.title = tt('Buy / sell / cut signal markers (display-only)', '买/卖/止损信号标记（仅供参考）');
     b.onclick = function () {
       self.showSig = !self.showSig; self.persist();
       b.classList.toggle('on', self.showSig);
+      b.setAttribute('aria-pressed', String(self.showSig));
       self.renderSignals();
     };
     this.chips.appendChild(b);

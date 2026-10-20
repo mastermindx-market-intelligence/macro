@@ -1,0 +1,114 @@
+[
+  {
+    "width": 1440,
+    "theme": "dark",
+    "lang": "en",
+    "file": "cards-1440-dark-en.png",
+    "sha256": "79393e614ad44b8daeae175b0563d77361ea5b480f7922eaea70a2e2888d33a2",
+    "cells": [
+      "EM HIGH-YIELD SPREADS\n7.01%\nAbove usual 20d change",
+      "ASIA CREDIT SPREADS\n12.99%\nBelow usual 20d change",
+      "LATAM CREDIT SPREADS\n21.75%\nNear usual 20d change",
+      "EMEA CREDIT SPREADS\n\u2014\nUnavailable",
+      "\u2014\nYield curves inverted\nUnavailable \u2014 curve coverage is missing."
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 35.84375,
+        "width": 673,
+        "height": 321.46875,
+        "top": 35.84375,
+        "right": 1400,
+        "bottom": 357.3125,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "file": "cards-1440-light-en.png",
+    "sha256": "925db6d473bdc275871a5fd3e4dde699797ec1eaa8c52a39adcab344790dbb00",
+    "cells": [
+      "EM HIGH-YIELD SPREADS\n7.01%\nAbove usual 20d change",
+      "ASIA CREDIT SPREADS\n12.99%\nBelow usual 20d change",
+      "LATAM CREDIT SPREADS\n21.75%\nNear usual 20d change",
+      "EMEA CREDIT SPREADS\n\u2014\nUnavailable",
+      "\u2014\nYield curves inverted\nUnavailable \u2014 curve coverage is missing."
+    ],
+    "geometry": {
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "panel": {
+        "x": 727,
+        "y": 35.84375,
+        "width": 673,
+        "height": 321.46875,
+        "top": 35.84375,
+        "right": 1400,
+        "bottom": 357.3125,
+        "left": 727
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "file": "cards-390-dark-zh.png",
+    "sha256": "ab90634351f207c7f51b12cd11975f9a73eec5c82e1eb8ae4a3f4a483b2a1127",
+    "cells": [
+      "\u65b0\u5174\u5e02\u573a\u9ad8\u6536\u76ca\u5229\u5dee\n7.01%\n20\u65e5\u53d8\u52a8\u9ad8\u4e8e\u5e38\u6001",
+      "\u4e9a\u6d32\u4fe1\u7528\u5229\u5dee\n12.99%\n20\u65e5\u53d8\u52a8\u4f4e\u4e8e\u5e38\u6001",
+      "\u62c9\u7f8e\u4fe1\u7528\u5229\u5dee\n21.75%\n20\u65e5\u53d8\u52a8\u63a5\u8fd1\u5e38\u6001",
+      "\u6b27\u975e\u4e2d\u4e1c\u4fe1\u7528\u5229\u5dee\n\u2014\n\u4e0d\u53ef\u7528",
+      "\u2014\n\u6536\u76ca\u7387\u66f2\u7ebf\u5012\u6302\n\u4e0d\u53ef\u7528\u2014\u2014\u7f3a\u5c11\u66f2\u7ebf\u8986\u76d6\u6570\u636e\u3002"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 602.15625,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 602.21875,
+        "left": 20
+      }
+    }
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "lang": "zh",
+    "file": "cards-390-light-zh.png",
+    "sha256": "b38c29a3992e4c54942a691b7d5ddb6189b6d67ac38bd956c41d5dc775ee0852",
+    "cells": [
+      "\u65b0\u5174\u5e02\u573a\u9ad8\u6536\u76ca\u5229\u5dee\n7.01%\n20\u65e5\u53d8\u52a8\u9ad8\u4e8e\u5e38\u6001",
+      "\u4e9a\u6d32\u4fe1\u7528\u5229\u5dee\n12.99%\n20\u65e5\u53d8\u52a8\u4f4e\u4e8e\u5e38\u6001",
+      "\u62c9\u7f8e\u4fe1\u7528\u5229\u5dee\n21.75%\n20\u65e5\u53d8\u52a8\u63a5\u8fd1\u5e38\u6001",
+      "\u6b27\u975e\u4e2d\u4e1c\u4fe1\u7528\u5229\u5dee\n\u2014\n\u4e0d\u53ef\u7528",
+      "\u2014\n\u6536\u76ca\u7387\u66f2\u7ebf\u5012\u6302\n\u4e0d\u53ef\u7528\u2014\u2014\u7f3a\u5c11\u66f2\u7ebf\u8986\u76d6\u6570\u636e\u3002"
+    ],
+    "geometry": {
+      "viewport": 390,
+      "documentWidth": 390,
+      "panel": {
+        "x": 20,
+        "y": 0.0625,
+        "width": 350,
+        "height": 602.15625,
+        "top": 0.0625,
+        "right": 370,
+        "bottom": 602.21875,
+        "left": 20
+      }
+    }
+  }
+]

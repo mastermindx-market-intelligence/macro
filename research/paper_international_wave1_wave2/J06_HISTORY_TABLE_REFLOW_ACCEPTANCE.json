@@ -1,0 +1,117 @@
+{
+  "schema": "paper.history_table_reflow.v1",
+  "status": "LOCAL_VERIFIED_INDEPENDENT_REVIEW_PENDING",
+  "base_commit": "430d69034a193a3513d300a08dad81b4293bc27f",
+  "problem": "At320px equal-width cells fragment exact observation timestamps into5-6 lines in the permanent fixture. The prior actual-reader journey showed additional dense wrapping. No date shortening or missing character was inferred.",
+  "repair": "Use existing tbl-scroll wrapper as a labelled keyboard-focusable region; natural-width table columns preserve exact single-line text. Scope CSS to dated History observations. Canonical shared theme and data paths remain intact.",
+  "rejected_intermediate": "New unnamed-to-theme wrapper caused incumbent theme.js to insert a nested tbl-scroll. Outer focused region had no scroll extent while the last column lay outside. Reused canonical class instead of changing the shared wrapper owner.",
+  "verification": {
+    "red_browser_tests": 4,
+    "focused_browser_tests": 4,
+    "width_text_states": 32,
+    "rendered_cases": 12,
+    "captured_positions": 24,
+    "assets": 26,
+    "full_page_closure": {
+      "tests": 24,
+      "pass": 24,
+      "fail": 0,
+      "skip": 0,
+      "duration_seconds": 76.649741209,
+      "includes_previous_compass_cases": true
+    },
+    "python_closure": {
+      "tests": 39,
+      "pass": 39,
+      "warnings": 14,
+      "warning_scope": "pytest temporary-directory cleanup warnings from other retained test directories; no manual cleanup",
+      "duration_seconds": 22.15
+    },
+    "checks": [
+      {
+        "name": "DESIGN",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1/SOURCE.diff"
+        ],
+        "rc": 0,
+        "log_sha256": "2ebc31876be9497677a3913b4f73c1f6ea697ef5c904404f14f60d51d0244c40"
+      },
+      {
+        "name": "VISUAL_GUARD",
+        "command": [
+          "python3",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1/SOURCE.diff"
+        ],
+        "rc": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "SYNC",
+        "command": [
+          "python3",
+          "scripts/check_template_site_sync.py"
+        ],
+        "rc": 0,
+        "log_sha256": "c19954ce729e34c84461941c5a6df4754de47995b49f3230c6fe361409603c8c"
+      },
+      {
+        "name": "DIFF",
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "rc": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "agentos": "0 errors;146 inherited warnings"
+  },
+  "harness_corrections": [
+    "Two early native-scroll checks timed out during repeated viewport/scroll resets; wait for two rendering frames before native key input. No product retry or condition weakened.",
+    "Initial screenshots captured while native keyboard animation was still active. Those24 files are retained under unsettled-captures and rejected as position proof. Final capture waits for native scroll settlement and asserts exact start/end positions."
+  ],
+  "parent_viewed": [
+    "light-en-390-1x-start.png",
+    "dark-zh-320-2x-start.png",
+    "light-zh-1440-1x-end.png"
+  ],
+  "theme_treatment": "Existing graphite/hairline dark and white/material light treatments remain. Focus outline uses existing link token. No new palette or font scale.",
+  "review": "Parent source/cause and rendered inspection only; independent review remains pending under original Fabric support-publication policy refusal. No retry/replacement/acceptance.",
+  "limits": [
+    "Synthetic positive History and EOD fixtures are not current source rights.",
+    "Text-size scaling is not native browser200percent zoom.",
+    "Horizontal scrolling is intentionally confined to the dated table; very long dates may require scrolling within their own column at320px doubled text.",
+    "No deployed/live, screen-reader speech, Saved, original-known history or programme acceptance. All release/frozen/IW2 holds persist."
+  ],
+  "source_sha256": {
+    "templates/intl_workspace/history.html.j2": "c08ce7d210065c0abf6ae3ba84442fda810c3ad8e816717712f2484e51290cea",
+    "templates/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+    "site/intl_workspace_history.css": "2c907a5d990ca9a5b78c66258d54144fde87ab2c1df84296718f26a47bb88999",
+    "tests/intl_workspace_page.test.cjs": "c00bd4c120a7c43711405681e6baeb2f16bc17013398cfdd2fe449efa9ef0b55",
+    "tests/test_intl_workspace_integration.py": "e08826f62eae04eb91d986b20542e96b1755d29c239cc49c1c04a5d41be04872"
+  },
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/history-table-reflow-20261014-r1",
+  "evidence_sha256": {
+    "RED.log": "b42d7be0678551c42b73c1324af5fe5d3b2c232eaa704b37268850a648ef5b9d",
+    "GREEN.log": "b4fabd572c3002dbe3770fdba5bb7e32ea129b0f7548c0e4981258ee9d6f1191",
+    "BOUNDS_DIAGNOSIS.log": "ecf77f4a45ea95890e20fde21a276b77f61c8ef6869687a937b3dacef320aaa6",
+    "OVERFLOW_DIAGNOSIS.log": "81a8a59f6d63e429d8e4c4a4e649b570e03d6d632ce8830a9e9f7cb0628ff6dd",
+    "GREEN_CANONICAL.log": "a487425f2ed53e7aba798cbbb271b3ce53ec518a154b80e4963e51fe989451c1",
+    "KEYBOARD_DIAGNOSIS.log": "4d46f309736553a2619c2be3676447ac2c9a31e3ecd38b122d02362c12e3e0e5",
+    "GREEN_SETTLED.log": "5635a3013ea40930674e4283852c4d7023e75c7bbcd67b63fdfc6b43ee02a9bf",
+    "RENDERED_SETTLED.json": "c56305456e87e83e2ed73db5c3ac4fa0598aa9c918c342f1fd9e676881b930d1",
+    "CHECKS.json": "e16a51daa49073c6f1ff786d74660be4935e60fb7f95cefcd2104a99f707011e",
+    "DESIGN.md": "af6bd1dd69538943f6053df4e4b5604068325e9830d01447f680e530f73ee736",
+    "FULL_PAGE.log": "94940e98c2bddcd6e08573070f26cdcba9cc35ed2bf1a407ea781c2c4ea67773",
+    "PYTHON.log": "ad0ea921fc20db37285dde8af274be432f9458494d0a2f567bb3a7b944229653",
+    "AGENTOS.log": "a4aee9f3b749b142f999fed07afc9e17d0a41fea68a7dd64459fc29228015f5d"
+  }
+}

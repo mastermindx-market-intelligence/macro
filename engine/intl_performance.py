@@ -112,67 +112,89 @@ def _bench_series() -> pd.Series | None:
 def _bench_series_fresh(
     intl_closes: pd.DataFrame | None = None,
 ) -> tuple[pd.Series | None, str | None]:
-    """ITR-R6 benchmark freshness fail-open.
+    """Admit a current ^GSPC or separately fresh SPY, else disclose withholding.
 
-    Returns (series, bench_note).  bench_note is non-None when SPY was
-    substituted because ^GSPC is more than 5 business days stale relative to
-    the newest available international index close.
-
-    Staleness definition: the number of business days between the benchmark's
-    last date and the newest intl close exceeds 5.
-
-    The fallback loads SPY from data/yahoo/SPY.parquet (same store path as
-    other yahoo tickers).  If SPY is also unavailable, returns (None, None).
+    A missing, future-dated or >5 business-day-old reference cannot authenticate
+    current US-relative claims. A fallback is qualified against the *same* intl
+    source clock, never just against the presence of some SPY price history.
     """
     _STALE_THRESHOLD_BDAYS = 5
-    _SPY_TICKER = "SPY"
-
     primary_ticker = _pcfg().get("benchmark", "^GSPC")
-    primary_df = store.read("yahoo", primary_ticker)
-    primary: pd.Series | None = None
-    if primary_df is not None and "close" in primary_df.columns:
-        primary = primary_df["close"].dropna()
-
-    # Determine the newest intl close date to compare against
     if intl_closes is None:
         try:
-            from engine import intl_inputs as _ii
-            intl_closes = _ii._intl_closes()
-        except Exception:  # noqa: BLE001
-            pass
-
+            intl_closes = intl_inputs._intl_closes()
+        except Exception:  # noqa: BLE001 — missing clock stays unqualified
+            intl_closes = None
+    # Only positive, finite close prices from configured primary equity
+    # indexes can advance the US comparison clock. The input frame also has FX,
+    # and a later FX-only or malformed (zero/negative/infinite) index bar is not
+    # a new equity close. A flat *positive* price series remains admissible.
+    # Compare exchange-local dates, not instants in unrelated time zones.
     newest_intl: pd.Timestamp | None = None
-    if intl_closes is not None and not intl_closes.empty:
-        per_col = intl_closes.apply(lambda s: s.dropna().index[-1] if s.dropna().any() else pd.NaT)
-        newest_intl = per_col.max()
+    if (intl_closes is not None and not intl_closes.empty
+            and isinstance(intl_closes.index, pd.DatetimeIndex)
+            and not intl_closes.index.hasnans
+            and not intl_closes.index.has_duplicates
+            and intl_closes.index.is_monotonic_increasing):
+        primary_names = {country["index"] for country in intl_inputs.countries().values()}
+        columns = [col for col in intl_closes.columns if col in primary_names]
+        prices = intl_closes[columns].select_dtypes(include="number")
+        if not prices.empty:
+            valid_prices = prices.where(np.isfinite(prices) & prices.gt(0))
+            observed = valid_prices.dropna(how="all")
+            if not observed.empty:
+                newest_intl = pd.Timestamp(observed.index[-1])
+    if newest_intl is None:
+        return None, "US benchmark withheld: international observation clock unavailable"
 
-    if primary is not None and newest_intl is not None and not pd.isna(newest_intl):
-        bench_last = primary.index[-1]
-        stale_bdays = len(pd.bdate_range(bench_last, newest_intl)) - 1
-        if stale_bdays > _STALE_THRESHOLD_BDAYS:
-            # Attempt SPY substitution
-            spy_df = store.read("yahoo", _SPY_TICKER)
-            if spy_df is not None and "close" in spy_df.columns:
-                spy = spy_df["close"].dropna()
-                if not spy.empty:
-                    note = (
-                        f"US benchmark: SPY substituted "
-                        f"(^GSPC stale since {bench_last.date()})"
-                    )
-                    log.warning(
-                        "ITR-R6: benchmark %s last date %s is %d business days stale "
-                        "(threshold=%d); substituting SPY (last=%s)",
-                        primary_ticker, bench_last.date(), stale_bdays,
-                        _STALE_THRESHOLD_BDAYS, spy.index[-1].date(),
-                    )
-                    return spy, note
-            # SPY also unavailable — fall through to primary (stale but non-None)
-            log.warning(
-                "ITR-R6: benchmark %s stale (%d bdays) and SPY unavailable; "
-                "returning stale series", primary_ticker, stale_bdays,
-            )
+    def _load(ticker: str) -> pd.Series | None:
+        df = store.read("yahoo", ticker)
+        if df is None or "close" not in df.columns:
+            return None
+        px = df["close"].dropna()
+        if (px.empty or not pd.api.types.is_numeric_dtype(px)
+                or pd.api.types.is_bool_dtype(px)):
+            return None
+        try:
+            values = px.to_numpy(dtype=float)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        # Historical nonpositive/nonfinite closes can poison the RS ratio too.
+        # Do not manufacture a usable benchmark by silently removing such dates.
+        if not np.isfinite(values).all() or (values <= 0).any():
+            return None
+        return px
 
-    return primary, None
+    def _current(series: pd.Series | None) -> bool:
+        if series is None or not isinstance(series.index, pd.DatetimeIndex):
+            return False
+        if (series.index.hasnans or series.index.has_duplicates
+                or not series.index.is_monotonic_increasing):
+            return False
+        last_date = series.index[-1].date()
+        intl_date = newest_intl.date()
+        if last_date > intl_date:  # Future observations aren't comparable proof.
+            return False
+        elapsed = len(pd.bdate_range(last_date, intl_date)) - 1
+        return 0 <= elapsed <= _STALE_THRESHOLD_BDAYS
+
+    primary = _load(primary_ticker)
+    if _current(primary):
+        return primary, None
+    spy = _load("SPY") if primary_ticker != "SPY" else None
+    if _current(spy):
+        origin = (f"{primary_ticker} unqualified (last {primary.index[-1].date()})"
+                  if primary is not None else f"{primary_ticker} unavailable")
+        note = f"US benchmark: qualified SPY substituted ({origin}); SPY as of {spy.index[-1].date()}"
+        log.warning("ITR-R6: %s", note)
+        return spy, note
+    primary_date = str(primary.index[-1].date()) if primary is not None else "unavailable"
+    spy_date = str(spy.index[-1].date()) if spy is not None else "unavailable"
+    note = (f"US-relative benchmark withheld: no qualified {primary_ticker} "
+            f"(last {primary_date}) or SPY (last {spy_date}) versus "
+            f"international observation {newest_intl.date()}")
+    log.warning("ITR-R6: %s", note)
+    return None, note
 
 
 def _ret(s: pd.Series, n: int) -> float | None:
@@ -251,8 +273,10 @@ def usd_leaderboard(closes: pd.DataFrame | None = None,
     return out
 
 
+_BENCH_UNSET = object()  # Sentinels distinguish omitted from explicitly withheld.
+
 def relative_to_us(closes: pd.DataFrame | None = None,
-                   bench: pd.Series | None = None,
+                   bench: pd.Series | None | object = _BENCH_UNSET,
                    usd_map: dict[str, pd.Series] | None = None) -> dict | None:
     """RRG-style relative-strength vs the US (S&P price index, already USD).
 
@@ -266,8 +290,8 @@ def relative_to_us(closes: pd.DataFrame | None = None,
     """
     if closes is None:
         closes = intl_inputs._intl_closes()
-    if bench is None:
-        bench = _bench_series()
+    if bench is _BENCH_UNSET:
+        bench, _ = _bench_series_fresh(intl_closes=closes)
     if bench is None:
         return None
     if usd_map is None:
@@ -322,7 +346,7 @@ def relative_to_us(closes: pd.DataFrame | None = None,
 
 
 def correlation_matrix(closes: pd.DataFrame | None = None,
-                       bench: pd.Series | None = None,
+                       bench: pd.Series | None | object = _BENCH_UNSET,
                        usd_map: dict[str, pd.Series] | None = None) -> dict | None:
     """Pairwise correlation of the USD WEEKLY-return streams (intl + US), plus the
     average off-diagonal as a one-number 'diversification on offer' read.
@@ -343,8 +367,8 @@ def correlation_matrix(closes: pd.DataFrame | None = None,
         if usd is not None and len(usd) > win // 2:
             series[cc] = usd
             labels[cc] = {"name": c["name"], "flag": c["flag"]}
-    if bench is None:
-        bench = _bench_series()
+    if bench is _BENCH_UNSET:
+        bench, _ = _bench_series_fresh(intl_closes=closes)
     if bench is not None:
         series["US"] = bench
         labels["US"] = {"name": "United States", "flag": "🇺🇸"}

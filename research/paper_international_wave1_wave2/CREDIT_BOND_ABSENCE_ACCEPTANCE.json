@@ -1,0 +1,198 @@
+{
+  "schema": "paper.credit_bond_absence.acceptance.v1",
+  "state": "BUILT_NOT_PROVEN",
+  "base_head": "fdbc044f91f03b740aaa58e3023064c20f91ac64",
+  "source_sha256": "35d263ec7692166b9d2fefcfffd658f45c405aee0a42e3aa92875e0b3c6c1e57",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/credit-bond-absence-20261014-r1",
+  "effect": "Missing credit velocity renders unavailable without a directional arrow; absent/zero inversion coverage stays unavailable; actual supplied counts remain exact and no-inversion copy includes flat curves. Existing heading supports native fragment focus. Corrected inversion tooltip to actual preferred/fallback maturities and partial coverage.",
+  "owner_trace": {
+    "at": "2026-10-14T13:00:12.323204+00:00",
+    "kind": "SOURCE_CONTRACT_TRACE_ONLY",
+    "sources": [
+      {
+        "path": "engine/intl_risk.py",
+        "sha256": "b52e136e5015d76e5bc47fd7c8b33b4afb2f8d1c10eab1277148dae056157355"
+      },
+      {
+        "path": "engine/contagion.py",
+        "sha256": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8"
+      },
+      {
+        "path": "engine/intl_bonds.py",
+        "sha256": "33fb65eca94044c810afb5a47f1168c51425126da479f54d2274adf2fdb9d812"
+      },
+      {
+        "path": "engine/ird_velocity.py",
+        "sha256": "44dd672933dc32ec3bd38c544d97e66bcbd8677c0b8e29db07847d583cfc6f22"
+      },
+      {
+        "path": "templates/intl.html.j2",
+        "sha256": "9199ace32826ae321c60264eb3a409f8a5da5ca5dfa0a693346270520011ba60"
+      }
+    ],
+    "findings": [
+      "intl_risk._leg returns None for absent/empty series; present series can retain value with null vel_20d_z.",
+      "contagion regional_oas rows are None for absent/empty series; present rows preserve nullable vel_20d_z.",
+      "ird_velocity.velocity_fields returns None for insufficient change history, zero standard deviation or nonfinite result. A real z-score zero is distinct from missing.",
+      "inversion_board counts only sovereigns with data, prefers 10y-2y and falls back to 10y-3m. Empty owner result is n_inverted=0,n_total=0,countries=[].",
+      "Template invents 0/6 for absent counts and says positively sloped/no recession signal when n_inverted=0, including absent input. Flat zero slopes are not inverted in owner code.",
+      "Template velocity label uses standardized change deviation as if raw change direction. This is a separate semantic concern; preserve actual grammar and do not silently change meaning."
+    ],
+    "next": "Add discriminating source-render cases for absent/empty/partial payload, present value without velocity, genuine zero and partial inversion coverage. Repair only bounded missing-input presentation; separately expose or record the existing z-score semantics and exact slope basis.",
+    "holds": "No owner data, qualification, engine semantics, live state or release authority changed. Original publication operation session1811 remains unresolved; do not duplicate it."
+  },
+  "red": "Six source-render failures/four passes and one browser failure at missing-velocity text on original source",
+  "verification": {
+    "python": "10PASS14inheritedtemporarycleanupwarnings",
+    "browser": "4PASS0FAIL0SKIP;8widthstates320/1440 Dark/Light EN/ZH;8nativeLibraryEnter/Back returns retaining exact URL and query",
+    "canonical_captures": 8,
+    "focused_images_parent_viewed": 4
+  },
+  "visual": {
+    "state": "PARENT_SCOPED_ACCEPTANCE_INDEPENDENT_PENDING",
+    "manifest_sha256": "a3693b85fd23bb0c2e989655cbef6de4236c8ff656b33ca56f11b4ef98a5f8f1",
+    "viewed": [
+      {
+        "width": 1440,
+        "theme": "dark",
+        "lang": "en",
+        "file": "cards-1440-dark-en.png",
+        "sha256": "290dfe86601681b0b9f8ed62a9c89c7dc17cd96a14c1fce79bd9a6b702beb491",
+        "cells": [
+          "EM HIGH-YIELD SPREADS\n0.00%\nUnavailable",
+          "ASIA CREDIT SPREADS\n\u2014\nUnavailable",
+          "LATAM CREDIT SPREADS\n0.00%\n\u2192 Steady",
+          "EMEA CREDIT SPREADS\n1.25%\nUnavailable",
+          "\u2014\nYield curves inverted\nUnavailable \u2014 curve coverage is missing."
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 727,
+            "y": 52.84375,
+            "width": 673,
+            "height": 304.421875,
+            "top": 52.84375,
+            "right": 1400,
+            "bottom": 357.265625,
+            "left": 727
+          }
+        }
+      },
+      {
+        "width": 1440,
+        "theme": "light",
+        "lang": "en",
+        "file": "cards-1440-light-en.png",
+        "sha256": "7eeb7e794340b16651e6c098fa74c27ef251ee5d426b65f39fda062898810f0f",
+        "cells": [
+          "EM HIGH-YIELD SPREADS\n0.00%\nUnavailable",
+          "ASIA CREDIT SPREADS\n\u2014\nUnavailable",
+          "LATAM CREDIT SPREADS\n0.00%\n\u2192 Steady",
+          "EMEA CREDIT SPREADS\n1.25%\nUnavailable",
+          "\u2014\nYield curves inverted\nUnavailable \u2014 curve coverage is missing."
+        ],
+        "geometry": {
+          "viewport": 1440,
+          "documentWidth": 1440,
+          "panel": {
+            "x": 727,
+            "y": 52.84375,
+            "width": 673,
+            "height": 304.421875,
+            "top": 52.84375,
+            "right": 1400,
+            "bottom": 357.265625,
+            "left": 727
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "dark",
+        "lang": "zh",
+        "file": "cards-390-dark-zh.png",
+        "sha256": "1b5fc07cf7af99ac58b653b4ae1767190dc5496543c8aed9fbd5afa9ae2be5b8",
+        "cells": [
+          "\u65b0\u5174\u5e02\u573a\u9ad8\u6536\u76ca\u5229\u5dee\n0.00%\n\u4e0d\u53ef\u7528",
+          "\u4e9a\u6d32\u4fe1\u7528\u5229\u5dee\n\u2014\n\u4e0d\u53ef\u7528",
+          "\u62c9\u7f8e\u4fe1\u7528\u5229\u5dee\n0.00%\n\u2192 \u6301\u5e73",
+          "\u6b27\u975e\u4e2d\u4e1c\u4fe1\u7528\u5229\u5dee\n1.25%\n\u4e0d\u53ef\u7528",
+          "\u2014\n\u6536\u76ca\u7387\u66f2\u7ebf\u5012\u6302\n\u4e0d\u53ef\u7528\u2014\u2014\u7f3a\u5c11\u66f2\u7ebf\u8986\u76d6\u6570\u636e\u3002"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 602.15625,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 602.21875,
+            "left": 20
+          }
+        }
+      },
+      {
+        "width": 390,
+        "theme": "light",
+        "lang": "zh",
+        "file": "cards-390-light-zh.png",
+        "sha256": "82ad8e1a4a6e93e0a65f90c8bc33dd0d11a6675f7faab6bb2e07c8d825816989",
+        "cells": [
+          "\u65b0\u5174\u5e02\u573a\u9ad8\u6536\u76ca\u5229\u5dee\n0.00%\n\u4e0d\u53ef\u7528",
+          "\u4e9a\u6d32\u4fe1\u7528\u5229\u5dee\n\u2014\n\u4e0d\u53ef\u7528",
+          "\u62c9\u7f8e\u4fe1\u7528\u5229\u5dee\n0.00%\n\u2192 \u6301\u5e73",
+          "\u6b27\u975e\u4e2d\u4e1c\u4fe1\u7528\u5229\u5dee\n1.25%\n\u4e0d\u53ef\u7528",
+          "\u2014\n\u6536\u76ca\u7387\u66f2\u7ebf\u5012\u6302\n\u4e0d\u53ef\u7528\u2014\u2014\u7f3a\u5c11\u66f2\u7ebf\u8986\u76d6\u6570\u636e\u3002"
+        ],
+        "geometry": {
+          "viewport": 390,
+          "documentWidth": 390,
+          "panel": {
+            "x": 20,
+            "y": 0.0625,
+            "width": 350,
+            "height": 602.15625,
+            "top": 0.0625,
+            "right": 370,
+            "bottom": 602.21875,
+            "left": 20
+          }
+        }
+      }
+    ],
+    "findings": [
+      "Dark instrument cards and Light research cards preserve their existing materials; unavailable inversion uses neutral background, border and text tokens instead of reassuring green.",
+      "Four focused images viewed:1440EN Dark/Light and390ZH Dark/Light. Missing velocity and coverage remain legible; zero values stay0.00percent; retained existing genuine-zero standardized score shows Steady.",
+      "Native destination focus visible; narrow cards stack without clipped absence copy. No complete accessibility, live, speech, physical-touch or nativezoom claim."
+    ],
+    "open_semantic_issue": "Present standardized score labels retain inherited raw-direction wording; actual helper counterexample retained in NEXT_VELOCITY_SEMANTICS.json, not accepted as correct meaning."
+  },
+  "limits": [
+    "Synthetic inputs through existing owners; no real data acquisition, qualification or served acceptance.",
+    "Source not deployed; independent review pending under original policy refusal; current CI not observed.",
+    "Original IW2/rights/Saved/migration/frozen-effect/release and original Chrome UI holds preserved.",
+    "Existing standardized-score directional wording is a separate retained defect; no blanket Credit/bond acceptance."
+  ],
+  "next": "NEXT_VELOCITY_SEMANTICS.json: make existing score meaning truthful without inventing raw deltas or changing owners.",
+  "capture_limits": {
+    "console_error_count": 1,
+    "by_viewport": {
+      "desktop": {
+        "document_height_px": 3736,
+        "elements_wider_than_viewport": 0,
+        "horizontal_overflow": false
+      },
+      "mobile": {
+        "document_height_px": 5055,
+        "elements_wider_than_viewport": 4,
+        "horizontal_overflow": false
+      }
+    },
+    "note": "Isolated fixture retains missing live_config.js resource; wide-element heuristics do not imply document overflow or complete accessibility."
+  }
+}

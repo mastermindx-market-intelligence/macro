@@ -9,9 +9,11 @@ from html import unescape
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+from bs4 import BeautifulSoup
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from test_intl_workspace_macro import cycle, inputs, measure
+from test_intl_workspace_macro import components, cycle, inputs, measure
 
 
 SOURCE_NOTICE = {
@@ -170,6 +172,292 @@ def collect(html):
     collector = Collector()
     collector.feed(html)
     return collector
+
+
+def source_reference_measure(**overrides):
+    return measure(**{
+        "quality": "stale", "reason": "source_stale", "source_reference": None,
+        "instrument": {"kind": "macro_yoy", "id": "gdp", "market_id": "EZ"},
+        "evidence_key": "synthetic:gdp-zero", **overrides,
+    })
+
+
+def source_reference_slot(**overrides):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = inputs(measures={"EZ.gdp_yoy": source_reference_measure(**overrides)},
+                    cycle_evidence={}, destinations={})
+    section = build_macro_section(**packet)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    assert section == before
+    return soup.select_one('[data-im-macro-market="EZ"] .intl-macro__metric-slot[id$="-gdp_yoy"]')
+
+
+@pytest.mark.parametrize("quality,reason,permission", [
+    ("stale", "source_stale", "allowed"), ("missing", "not_supplied", "allowed"),
+    ("failed", "source_failed", "allowed"), ("denied", "value_denied", "denied"),
+])
+def test_absent_measure_source_reference_is_bilingual_without_borrowing(quality, reason, permission):
+    slot = source_reference_slot(quality=quality, reason=reason, value_permission=permission)
+    reference = slot.select_one(".intl-macro__source-reference")
+    assert reference.select_one(".l-en").get_text(strip=True) == "Not supplied"
+    assert reference.select_one('.l-zh[lang="zh"]').get_text(strip=True) == "未提供"
+    assert "None" not in reference.get_text()
+    assert not reference.select("a")
+    assert "2026-09-10" in slot.get_text()
+    assert "synthetic:gdp-zero" in slot.get_text()
+    value = slot.select_one("[data-im-macro-value]")
+    assert (value.get_text() if value else None) == ("0" if quality == "stale" else None)
+
+
+@pytest.mark.parametrize("reference", ["None", 'synthetic:<script>alert(1)</script>&"owner"'])
+def test_supplied_measure_source_reference_remains_exact_escaped_text(reference):
+    slot = source_reference_slot(source_reference=reference)
+    node = slot.select_one(".intl-macro__source-reference")
+    assert node.get_text() == reference
+    assert not node.select("script, a, .l-en, .l-zh")
+
+
+@pytest.mark.parametrize("metadata", ["denied", "unknown"])
+def test_measure_source_reference_does_not_open_withheld_metadata(metadata):
+    slot = source_reference_slot(metadata=metadata, quality="denied", reason="metadata_denied",
+                                 value_permission="denied", source_reference="private-source")
+    assert not slot.select(".intl-macro__evidence")
+    assert "private-source" not in slot.get_text()
+
+
+def render_source_reference_page():
+    """Synthetic permitted metadata through the existing native publication path."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(None, workspace_generation=f"im-workspace-generation:{uuid4()}")
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"], "bases": workspace["config"]["bases"],
+    }
+    workspace = attach_macros(workspace, registry=registry,
+                              measures={"EZ.gdp_yoy": source_reference_measure()},
+                              cycle_evidence={}, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
+
+
+CYCLE_LABELS = [
+    ("Q1", "goldilocks", "Goldilocks", "金发女孩"),
+    ("Q2", "reflation", "Reflation", "再通胀"),
+    ("Q3", "stagflation", "Stagflation", "滞胀"),
+    ("Q4", "growth_scare", "Growth-scare", "增长恐慌"),
+]
+
+
+def cycle_label_packet(quad, key):
+    packet = inputs()
+    evidence = packet["cycle_evidence"]["EZ"]
+    evidence.update(reported_quad=quad, raw_quad=quad)
+    evidence["economic_support"]["heading_key"] = key
+    return packet
+
+
+@pytest.mark.parametrize("quad,key,en,zh", CYCLE_LABELS)
+def test_supported_cycle_heading_has_bilingual_reading_and_selected_link(quad, key, en, zh):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = cycle_label_packet(quad, key)
+    section = build_macro_section(**packet)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    composite = soup.select_one(".intl-macro__composite section")
+    heading = composite.find("p")
+    link = soup.select_one(".intl-macro__reads > section:first-child a")
+    for node in (heading, link):
+        assert node.select_one(".l-en").get_text(strip=True) == en
+        assert node.select_one('.l-zh[lang="zh"]').get_text(strip=True) == zh
+    assert link["href"] == "/research/euro-area"
+    assert section == before
+    assert section["cycle_rows"][0]["supported_heading"] == key
+    assert "owner/economic-cycle@1" in composite.get_text()
+
+
+@pytest.mark.parametrize("kind", ["mixed", "stale", "disagreement"])
+def test_cycle_labels_do_not_promote_unqualified_source(kind):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = cycle_label_packet("Q1", "goldilocks")
+    evidence = packet["cycle_evidence"]["EZ"]
+    if kind == "mixed":
+        evidence.update(method_kind="mixed_composite", economic_support=None)
+    elif kind == "stale":
+        evidence.update(quality="stale", reason="source_stale")
+    else:
+        evidence["economic_support"]["disagreement"] = True
+    section = build_macro_section(**packet)
+    assert section["cycle_rows"][0]["supported_heading"] is None
+    soup = BeautifulSoup(render(section, packet["registry"]), "html.parser")
+    assert not soup.select_one(".intl-macro__reads > section:first-child a")
+    assert "no economic-cycle diagnosis is claimed" in soup.get_text()
+    for _, _, en, zh in CYCLE_LABELS:
+        assert en not in soup.get_text()
+        assert zh not in soup.get_text()
+
+
+def render_cycle_label_page():
+    """Synthetic admitted headings through the native publisher, not live qualification."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(None, workspace_generation=f"im-workspace-generation:{uuid4()}")
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"], "bases": workspace["config"]["bases"],
+    }
+    measures, cycles = {}, {}
+    for market, (quad, key, _, _) in zip(countries(), CYCLE_LABELS):
+        packet = cycle_label_packet(quad, key)
+        evidence = packet["cycle_evidence"]["EZ"]
+        evidence["economic_support"]["dependency_keys"] = [f"{market}.gdp_yoy", f"{market}.cpi_yoy"]
+        cycles[market] = evidence
+        for field in ("gdp_yoy", "cpi_yoy"):
+            metric = packet["measures"][f"EZ.{field}"]
+            metric["value"] = 2
+            metric["instrument"]["market_id"] = market
+            measures[f"{market}.{field}"] = metric
+    workspace = attach_macros(workspace, registry=registry, measures=measures,
+                              cycle_evidence=cycles, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
+
+
+def stale_component_fixture(method_ref="owner/mixed@7"):
+    from lib.intl_workspace_macro import build_macro_section
+    packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
+        quality="stale", reason="source_stale", method_kind="mixed_composite",
+        method_ref=method_ref, asof=None, components=None, economic_support=None,
+    )})
+    return build_macro_section(**packet), packet["registry"]
+
+
+@pytest.mark.parametrize("method_ref", ["owner/mixed@7", None])
+def test_stale_composite_without_components_keeps_panel_readable(method_ref):
+    section, registry = stale_component_fixture(method_ref)
+    before = copy.deepcopy(section)
+    html = render(section, registry)
+    composite = BeautifulSoup(html, "html.parser").select_one(".intl-macro__composite")
+    text = composite.get_text(" ", strip=True)
+    assert "Component evidence not supplied." in text
+    assert "未提供分项依据。" in text
+    assert "Stale data" in text and "数据过期" in text
+    assert "None" not in text
+    assert "As of" not in text and "2026-09-10" not in text
+    assert ("owner/mixed@7" in text) == (method_ref is not None)
+    assert "Available macro observations" in html
+    assert section == before
+
+
+def test_supplied_composite_keeps_its_original_components_and_clock():
+    section, registry = build_fixture()
+    html = render(section, registry)
+    composite = BeautifulSoup(html, "html.parser").select_one(".intl-macro__composite")
+    text = composite.get_text(" ", strip=True)
+    assert "Component evidence not supplied." not in text
+    for axis in ("growth", "inflation"):
+        for component in section["cycle_rows"][0]["components"][axis]:
+            assert component["key"] in text
+    assert section["cycle_rows"][0]["components"]["asof"] in text
+
+
+def component_values_fixture(score, weight, *, zero_inflation=False, empty_axes=()):
+    from lib.intl_workspace_macro import build_macro_section
+    supplied = components()
+    supplied["growth"] = [{"key": "gdp_trend", "score": score, "weight": weight}]
+    supplied["inflation"] = [{"key": "cpi_direction", "score": score, "weight": weight}]
+    if zero_inflation:
+        supplied["inflation"][0].update(score=0, weight=0)
+    for axis in ("growth", "inflation"):
+        if axis in empty_axes:
+            supplied[axis] = []
+        supplied[f"{axis}_score"] = supplied[axis][0]["score"] if supplied[axis] else None
+        supplied[f"{axis}_n_components"] = int(bool(supplied[axis]) and supplied[axis][0]["score"] is not None)
+    packet = inputs(measures={}, cycle_evidence={"EZ": cycle(
+        method_kind="mixed_composite", economic_support=None, components=supplied,
+    )})
+    return build_macro_section(**packet), packet["registry"]
+
+
+@pytest.mark.parametrize("axis_index", [0, 1])
+@pytest.mark.parametrize("score,weight", [(None, None), (0, 0), (-1.0, 0.75), (None, 1.0)])
+def test_component_readings_distinguish_missing_from_zero(axis_index, score, weight):
+    section, registry = component_values_fixture(score, weight)
+    before = copy.deepcopy(section)
+    soup = BeautifulSoup(render(section, registry), "html.parser")
+    for translation in soup.select(".l-zh"):
+        translation.decompose()
+    reading = soup.select(".intl-macro__composite dd")[axis_index].get_text(" ", strip=True)
+    assert "None" not in reading
+    expected_score = "Not supplied" if score is None else str(score)
+    expected_weight = "Not supplied" if weight is None else str(weight)
+    assert re.search(r"Score\s*:\s*" + re.escape(expected_score) + r"(?:\s|$)", reading)
+    assert re.search(r"Weight\s*:\s*" + re.escape(expected_weight) + r"(?:\s|$)", reading)
+    assert section == before
+
+
+@pytest.mark.parametrize("empty_axes", [("growth",), ("inflation",), ("growth", "inflation")])
+def test_empty_component_axes_are_explicit_without_erasing_supplied_zero(empty_axes):
+    section, registry = component_values_fixture(0, 0, empty_axes=empty_axes)
+    before = copy.deepcopy(section)
+    composite = BeautifulSoup(render(section, registry), "html.parser").select_one(".intl-macro__composite")
+    readings = composite.select("dd")
+    for axis, reading in zip(("growth", "inflation"), readings[:2], strict=True):
+        text = reading.get_text(" ", strip=True)
+        if axis in empty_axes:
+            assert text == "No components supplied. 未提供分项。"
+        else:
+            assert "No components supplied" not in text
+            assert re.search(r"Score:\s*评分：\s*0", text)
+            assert re.search(r"Weight:\s*权重：\s*0", text)
+    assert readings[2].get_text(strip=True) == before["cycle_rows"][0]["components"]["asof"]
+    assert composite.select_one("[data-im-macro-components-unavailable]") is None
+    assert section == before
+
+
+def component_workspace_fixture(*, missing_components=False, empty_axes=()):
+    """Native mount and full page with explicitly synthetic component inputs."""
+    from uuid import uuid4
+    from engine.intl_inputs import countries
+    from engine.intl_workspace_overview import build_workspace_overviews
+    from lib.intl_macro_mount import attach_macros
+    from tests.test_intl_workspace_integration import render_fixture
+    workspace = build_workspace_overviews(
+        None, workspace_generation=f"im-workspace-generation:{uuid4()}",
+    )
+    registry = {
+        "markets": [{"market_id": key, "name_en": row["name"], "name_zh": row["name_zh"]}
+                    for key, row in countries().items()],
+        "horizons": workspace["config"]["horizons"],
+        "bases": workspace["config"]["bases"],
+    }
+    supplied = components()
+    supplied.update(growth=[{"key": "gdp_trend", "score": None, "weight": None}],
+                    inflation=[{"key": "cpi_direction", "score": 0, "weight": 0}],
+                    growth_score=None, growth_n_components=0,
+                    inflation_score=0, inflation_n_components=1)
+    for axis in empty_axes:
+        supplied[axis] = []
+        supplied[f"{axis}_score"] = None
+        supplied[f"{axis}_n_components"] = 0
+    evidence = cycle(method_kind="mixed_composite", economic_support=None,
+                     components=supplied, method_ref="synthetic:component-reading")
+    if missing_components:
+        evidence.update(quality="stale", reason="source_stale", components=None,
+                        method_ref=None, asof=None)
+    workspace = attach_macros(workspace, registry=registry, measures={},
+                              cycle_evidence={"EZ": evidence}, destinations={})
+    workspace["macro_registry"] = registry
+    return render_fixture(workspace_payload=workspace)
 
 
 def test_actual_projection_positive_zero_stale_and_denied_render():

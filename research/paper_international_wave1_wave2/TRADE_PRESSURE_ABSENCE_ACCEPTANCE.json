@@ -1,0 +1,64 @@
+{
+  "base_head": "ceedddcc21b8e0e6d72984fbd4fc4b9bb8d228ac",
+  "state": "SOURCE_VERIFIED_NOT_DEPLOYED",
+  "review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "product_ci": "UNOBSERVED",
+  "capability": "Trade/supply distinguishes missing history from supplied zero and assessed levels, keeps supplied exporters, renders valid bars without Risk desk, contains source chips at320px, and avoids current-tape and structural-only gap claims.",
+  "source_hashes": {
+    "templates/intl.html.j2": "134cf4b1d9900905399dc593fc3bcd218e7c0245dcef6351e9cc4ca1e514952c",
+    "tests/test_intl_trade_pressure_absence_render.py": "e21e3470f2114efe70353983c69a2c87e2b2a6494a6dd3efd39d85befb2f6ba2",
+    "tests/intl_workspace_page.test.cjs": "9e05c23f9e8be299cb810d8d75e057441ddf05703378d9907522d16f593ac78d",
+    "engine/contagion_links.py": "ebac0bc13f04cea29b577c4c0f0bed2918065d8d3ecaea81b544fb0b94ab39f1",
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "owner_preservation": {
+    "base_head": "ceedddcc21b8e0e6d72984fbd4fc4b9bb8d228ac",
+    "unchanged": {
+      "engine/contagion_links.py": "ebac0bc13f04cea29b577c4c0f0bed2918065d8d3ecaea81b544fb0b94ab39f1",
+      "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+      "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+    },
+    "scope": "No analytics, thresholds, matrices, source acquisition, forward-log or ledger changes."
+  },
+  "verification": {
+    "render": "10 unique cases PASS,14 inherited cleanup warnings. Earlier8overlap.",
+    "browser": "5new unique cases PASS:4theme/locale cases\u00d72widths plus1with/withoutRisk case. Four affected existing Library return cases PASS before final wrapping-only change. Earlier candidate runs overlap.",
+    "red": "5missing/sort/unknown render failures;1browser absence failure;1zero-height style-dependency failure;2freshness-copy failures;1source-chip containment failure.",
+    "canonical": "8final Dark/Light EN/ZH1440/390captures;27source assets. live_config.js404 remains an isolated-fixture omission.",
+    "parent_visual": "Final8focusedviews:6pixel-identical to viewed pre-token source,2English320views freshly inspected. Existing launcher animation/scroll-position overlap is not full accessibility acceptance."
+  },
+  "synthetic_scope": "Actual compute() over absent store/forward-log inputs or synthetic declining US bench. Three explicitly injected schema display controls provide pct0/.75/.9 and low/moderate/high; not model-derived findings or qualified market data.",
+  "manifest_sha256": "f2599098b0ef57b291a4bf95384ef55e096bfd99be5e3b217a6931aa25c70eec",
+  "retained_failures": [
+    "RED_RENDER.log",
+    "RED_BROWSER.log",
+    "RED_STYLE_DEPENDENCY.log",
+    "RED_FRESHNESS_COPY.log",
+    "RED_CHIP_CONTAINMENT.log",
+    "before-freshness-copy/",
+    "before-chip-containment/"
+  ],
+  "limits": [
+    "Engine calculations/thresholds/matrices/schema/ledger/source acquisition unchanged.",
+    "No common observation date inferred from build time or destination bench.",
+    "Source fixture proof is not live, speech, native zoom, touch or complete accessibility.",
+    "Original review refusal, IW2 custody, qualification/EFFECT_UNKNOWN, frozen operations, rights, Saved, migration and release holds remain."
+  ],
+  "next": "Original live Library-to-Stock return requires Chris to complete/dismiss the recorded Chrome extension UI. Compare/Saved qualification and independent review need actual admitted owner input; do not invent contracts, retry refusals or poll held surfaces.",
+  "tested_source_hashes_before_radius_token": {
+    "templates/intl.html.j2": "b2af99a4f19446062bc55f54ba68b6e6a939f81e2240bf42644e0316ff2159a9",
+    "tests/test_intl_trade_pressure_absence_render.py": "e21e3470f2114efe70353983c69a2c87e2b2a6494a6dd3efd39d85befb2f6ba2",
+    "tests/intl_workspace_page.test.cjs": "9e05c23f9e8be299cb810d8d75e057441ddf05703378d9907522d16f593ac78d",
+    "engine/contagion_links.py": "ebac0bc13f04cea29b577c4c0f0bed2918065d8d3ecaea81b544fb0b94ab39f1",
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "radius_token_correction": {
+    "initial_guard": "enforce-added refused two relocated literal3px radius declarations; no commit or push ran",
+    "repair": "Use existing registered --r-pill with canonical999px fallback on six-pixel track/fill. No other product change.",
+    "verification": "Fresh8canonical+8focused source captures.6focused pixel-identical;2English320differences confined to bottom-right floatinglauncher region and visually inspected. Pressure content, bar geometry and wrapping unchanged. Prior behavioral checks reused; no whole-suite replay.",
+    "pixel_diff": "TOKEN_PIXEL_DIFF.json",
+    "design_check": "DESIGN_TOKEN.log rc0"
+  }
+}

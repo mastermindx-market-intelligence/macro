@@ -1,0 +1,96 @@
+{
+  "schema": "paper.rates_missing_endpoints.v1",
+  "base_head": "4a9fe8554e964f72490875c7e8ce08d209cc3b8e",
+  "status": "SOURCE_VERIFIED_REVIEW_RELEASE_PENDING",
+  "gap": "An absent short3m rendered as a plotted zero endpoint when10y was supplied; absent US2y printed None%.",
+  "repair": "Require both supplied endpoints for existing curve marks/line. Missing3m retains known10y text with bilingual unavailable copy. Absent US2y uses a dash withoutpercent; present precision is unchanged.",
+  "data_scope": "Explicit synthetic existing rates_desk output shape; no collector or store I/O, no real qualification, contract, rank or owner change.",
+  "verification": {
+    "python_red": {
+      "failed": 2,
+      "passed": 6
+    },
+    "browser_red": {
+      "failed": 1,
+      "passed": 0,
+      "scope": "Native Library rates navigation at320 on original source, absent3m had2plottedpoints."
+    },
+    "python_green": {
+      "passed": 8,
+      "failed": 0,
+      "inherited_warnings": 14,
+      "scope": "None vs genuine0 vs positive/negative; absent10y; US2y missing/0/precision; input unchanged; no data I/O."
+    },
+    "browser_green": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "width_states": 8,
+      "widths": [
+        320,
+        1440
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "claims": [
+        "Native Library Enter reaches existing rates destination.",
+        "Absent3m has no plotted endpoints or connectingline; retained10y and localized unavailability visible.",
+        "Genuine0 and negative supplied values retain their existing points and text; no claim of corrected negative-scale geometry.",
+        "Absent10y retains existing no-curve state; US2y does not print None.",
+        "No document horizontal overflow; Back restores exact analytical URL and rawquery."
+      ]
+    },
+    "design": {
+      "blocking": 0,
+      "inherited": 25368
+    },
+    "diff_check_exit_code": 0,
+    "visual_guard_exit_code": 0,
+    "agentos": {
+      "status": "PASS_AFTER_DOCUMENT_REPAIR",
+      "first_pass": "4errors from incorrectly matched nested next_action edit; uncommitted workstream restored from currentHEAD and only top-level next_action updated. All11wave records retained.",
+      "exit_code": 0,
+      "errors": 0,
+      "inherited_warnings": 146,
+      "log": "agentos-final.log"
+    }
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "51042922968f0f38ddc4cb5eb22e0ffdc13166da6b3069e2fdd55db9e9a2ec26",
+    "tests/test_intl_rates_render.py": "7f028f364e5a7b3c852184d0869ad400c475eaab1528e299b4e1ac2433815572",
+    "tests/test_intl_workspace_integration.py": "1124cccc4da9727e6f452a39f1437be45eb56309cb29ed1d98992f551eef2047",
+    "tests/intl_workspace_page.test.cjs": "e7ad309a04233a61386dd75fb848b8a7927312f7625a5f261f6862645d9d9960",
+    "engine/intl_rates.py": "c5da6a12ceb8ec8bbd86d3cd36496072f96d7548e1f4273bc53d31673f78cc99"
+  },
+  "visual_evidence": {
+    "status": "ABSENCE_REPAIR_PARENT_REVIEWED_WITH_RETAINED_PRESENT_VALUE_GAP",
+    "manifest": "mockups/evidence/paper-international-library/rates-missing-endpoints/manifest.json",
+    "manifest_sha256": "af4876471a57a3bce8c95fadd63972ea48a474dc152ed5ebc4d5a070e7bc0e2a",
+    "captured": 8,
+    "matrix": "1440/390 Dark/Light EN/ZH",
+    "parent_viewed": [
+      "20d9e5d2c0105d64.png",
+      "acc0707dd918328f.png",
+      "899eb893bb506316.png",
+      "c0a4f337c5a5c81a.png"
+    ],
+    "judgment": "Four fullpages show readable missing3m copy, retained10y and US2y dash in both art directions. Known-zero and absent-both states retained. Synthetic negative pair visibly overlaps under inherited geometry; no whole Rates visual-acceptance claim.",
+    "limits": [
+      "Inherited negative endpoint4percent floor collapses two supplied negative values and overlaps labels; distinct next gap.",
+      "Source clocks remain synthetic and are not newly surfaced or qualified by this repair.",
+      "live_config.js404 retained;4mobile wide elements without document overflow.",
+      "Shared launcher overlap remains. No served/nativezoom/speech/physicaltouch or whole accessibility acceptance."
+    ],
+    "negative_gap_receipt": "mockups/evidence/paper-international-library/rates-missing-endpoints/diagnostics/NEXT_NEGATIVE_GEOMETRY.json"
+  },
+  "independent_review": "PENDING original ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED; no retry, replacement or alternate reviewer.",
+  "release": "NOT_DEPLOYED; CI unobserved; no ready/merge/autoarm/deploy.",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/rates-missing-endpoints-20261014-r1",
+  "holds": "IW2 owns all Terminal804; original live Chrome UI and Codexapp/nativezoom refusals remain. Qualification/EFFECT_UNKNOWN, frozen reviews/T03k, rights/Saved/migration/release persist; appattachmentcell44PENDING_UNKNOWN, no duplicate. No fakeSaved, cross-chat message or CIpoll."
+}

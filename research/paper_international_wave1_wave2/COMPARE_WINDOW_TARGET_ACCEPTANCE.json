@@ -1,0 +1,69 @@
+{
+  "status": "PARENT_VERIFIED_SOURCE_REPAIR_INDEPENDENT_REVIEW_PENDING",
+  "base_head": "2aae6530bbc257da6d54f36b04f7d034457e3742",
+  "product_changed": true,
+  "deployed": false,
+  "problem": "Compare calculation-window anchors are40px high in English and20px in Chinese at320px; adjacent form controls meet44px. Existing block anchors lack minimum target height.",
+  "repair": "Add min-block-size:44px to the existing .intl-compare__market a rule; synchronize canonical/plain-copy asset. No template, controller, data, palette or typography change.",
+  "sources": {
+    "templates/intl_workspace.css": "4edc3ffa0b8cb37e738f10960ef7dfc83269b9319ede66954ec72bc08edec989",
+    "site/intl_workspace.css": "4edc3ffa0b8cb37e738f10960ef7dfc83269b9319ede66954ec72bc08edec989",
+    "tests/intl_workspace_page.test.cjs": "4425114e7883304ee39bf8b6503383ea7bd94f09c658579a4f80ba28d926f3b6"
+  },
+  "original_css_sha256": "33b4f73c7ef3a30ca48c37e4b0120d6d138960cc20f7db96dd6e65baafbf44c4",
+  "red": {
+    "tests": 4,
+    "pass": 0,
+    "fail": 4,
+    "assertion": "All four fail at320px on seven too-short calculation-window anchors; not a harness failure.",
+    "log_sha256": "db4a676112da1914eb42ee2f0df907ce29f70db8a0d7da34f9b7db61a12e6a78"
+  },
+  "green": {
+    "tests": 4,
+    "pass": 4,
+    "fail": 0,
+    "skip": 0,
+    "width_state_observations": 12,
+    "link_geometry_observations": 84,
+    "matrix": "Dark/Light x English/Chinese; each320/390/1440 CSS px",
+    "minimum_height_css_px": 44,
+    "native_keyboard_activations": 4,
+    "checks": [
+      "All links at least44 by44px; no page overflow.",
+      "Keyboard Enter reaches the actual cohort section; native hash changes, analytical query and active Compare panel remain."
+    ],
+    "log_sha256": "997eae2cf102bb80a21546b6b9dbdfc3b1dbcc55b65c6ded427b9714fd9d553a"
+  },
+  "canonical_visual_evidence": {
+    "receipt": "mockups/evidence/paper-international-compare/window-targets/EVIDENCE.yml",
+    "manifest": "mockups/evidence/paper-international-compare/window-targets/manifest.json",
+    "manifest_sha256": "6587f5028180a3a7eeba17f8689da40bfaecefef40772b90b0a4a2a1afefdd2b",
+    "captured_cells": 8,
+    "matrix": "1440/390 x English/Chinese x Dark/Light",
+    "capture_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "capture_driver_sha256": "6c03164f4507169aeb714ef26bbd31006d83ceca67d4e58df5e56d3eef06c0ea",
+    "capture_input_sha256": "8945a10310155498c01830656a7bc6b194d361f87c50e07119f8da149d4445b3",
+    "parent_viewed": [
+      "mobile dark English",
+      "mobile light Chinese",
+      "desktop light English"
+    ],
+    "parent_finding": "Existing distinct material treatments and readable exact labels retained; no new clipping in viewed states. Existing floating launcher remains visible and is not repaired.",
+    "console_and_resource_limit": "The isolated fixture omits live_config.js: canonical capture records a404 and corresponding console error. This is retained and is not a zero-error page claim; current source asset closure and target geometry are separately bound. External requests are aborted.",
+    "synthetic_data": true
+  },
+  "baseline_census": "NARROW_CONTROL_GEOMETRY_ACCEPTANCE.json is the earlier20state form-control/disclosure census at2aae, not evidence that all links passed. ANCHORS.json then exposed14undersized link observations. Final regression verifies repaired link source.",
+  "reuse": "Auto boundary observation remains at2aae; this anchor-only CSS rule does not alter its Scenario/Inspector/theme callback claim. Prior source/rights/journey proofs retain original scope; none are rerun here.",
+  "independent_review": "PENDING; original ROUTING_CRITICAL_POLICY_MISMATCH/SUPPORT_PUBLICATION_REFUSED unchanged; no retry/replacement/alternate reviewer/carrier.",
+  "limits": [
+    "No live repaired acceptance, native zoom, physical touch study, full design/accessibility approval or release.",
+    "Current source/rights qualification, chart/benchmark contract, genuine Saved, migration and deployment gates remain.",
+    "IW2 retains exclusive ALL TerminalPR804 surfaces. Chrome extension handoff, Codex-app CUA/nativezoom refusals and original appattachmentcell44 remain untouched."
+  ],
+  "checks": {
+    "design_added_lines": "PASS; zero blocking,25368 inherited estate findings",
+    "template_site_parity": "PASS;115pairs",
+    "agentos": "PASS;0errors146inheritedwarnings",
+    "diff_whitespace": "PASS"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "origin": "Actual stored observation/provenance; qualification and trusted context require separate explicit caller evidence. This fixture is NOT production admission.",
+  "measure": {
+    "quality": "qualified",
+    "reason": null,
+    "metadata": "allowed",
+    "value_permission": "allowed",
+    "value": 2.5,
+    "unit": "percent",
+    "instrument": {
+      "kind": "official_policy",
+      "id": "deposit_facility",
+      "market_id": "EZ"
+    },
+    "period": null,
+    "observation_at": "2026-10-06",
+    "calculation_at": null,
+    "source_reference": "https://data.ecb.europa.eu/data/datasets/FM/FM.D.U2.EUR.4F.KR.DFR.LEV#artifact=d5ce385fa74960c5449f4d06ec807f889e6833053b02a2d90fda5cb5f8f0bce8&provenance=9b12934a0d5d6f9da843a01066b6701e5fc238ac2567fc5de22328636e52af2f",
+    "evidence_key": "fixture:display-key-not-qualification"
+  },
+  "missing_live_inputs": [
+    "retained publisher decision_ref",
+    "trusted nine-field context",
+    "rights clock if requested"
+  ]
+}

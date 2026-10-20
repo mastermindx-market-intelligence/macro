@@ -1,0 +1,55 @@
+{
+  "base_head": "d3a957ce2133fb50ed88230b625ebd9848a96fbf",
+  "source_state": "NOT_DEPLOYED",
+  "independent_review": "PENDING_ORIGINAL_POLICY_REFUSAL",
+  "scope": "Trade/supply method and native keyboard explanation only. Actual owner compute over synthetic rebound/absent inputs; no acquisition, qualification, write or calibration.",
+  "counterexample": "US latest synthetic observation rebounds 92/91-1 while dd21=.08, ret10=-.08 and sigma=1. Canada US linkage weight=.3469, equal to all its raw pressure, hence 35% is not contribution share.",
+  "repair": [
+    "Describe recent drawdown/loss model, preset weights and available ETF-volatility weights.",
+    "Distinguish linkage percentages, contribution ordering and historical level bands from causal shares, latest direction or forecast.",
+    "Explain available trailing 504-observation window with minimum252, not guaranteed two-calendar-year coverage.",
+    "Focus native Trade heading and retain canonical keyboard method/escape/back."
+  ],
+  "tests": {
+    "render_unique_pass": 5,
+    "render_initial": "3 causal fails +2 incorrect pre-upgrade help selectors; corrected targeted2 also fail causally. Candidate3pass+2 Chinese substring harnessfails; targeted2pass.",
+    "browser_unique_pass": 4,
+    "browser_width_states": 8,
+    "browser_initial": "1 causal focus fail. Candidate English2pass/Chinese2 substring harnessfails; targeted Chinese2pass.",
+    "counts_overlap": true,
+    "original_failures_retained": true,
+    "product_unchanged_after_candidate": "Only Chinese test substring correction after candidate source; passing English/3render reused."
+  },
+  "visual": {
+    "canonical": 8,
+    "focused": 8,
+    "widths": [
+      1440,
+      390,
+      320
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "parent": "Eight actual focused method captures viewed: complete text, bounded popover, unclipped close control; both art directions retain existing canonical treatments.",
+    "manifest_sha256": "b2fcb2bbf726762ea326885bada7b145729b30a9a48093d11a48d5a7d11a7d54",
+    "limits": "Source fixture only, not live, independent review, native zoom, OS high contrast or speech."
+  },
+  "source_sha256": {
+    "templates/intl.html.j2": "46db8184820449cf942d84b1a03f9a8f0ed7010690e09add03bdba5b2e4a56e5",
+    "tests/test_intl_trade_pressure_method_render.py": "7ebf6840250216c703c8adb90660c735e42cdfa2e01a7759477cedb4e11623a9",
+    "tests/intl_workspace_page.test.cjs": "f4125946642720b4fa214bd3c07b39d3a9b5bf8094d490dbe21e6f21d3cd4b48"
+  },
+  "owners_unchanged": {
+    "engine/contagion_links.py": "ebac0bc13f04cea29b577c4c0f0bed2918065d8d3ecaea81b544fb0b94ab39f1",
+    "engine/contagion.py": "46d76068692117ff1b74d27443f7963b7bc517240253f3ec9558427788d4eed8",
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "scripts/build_intl.py": "04620696a4a6b4f11cd4b6b95effcfd1c42b0d3fd96b98cf6320951f63005ef0"
+  },
+  "evidence_path": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/trade-pressure-method-20261014-r1"
+}

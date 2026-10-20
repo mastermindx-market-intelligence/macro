@@ -1,0 +1,49 @@
+{
+  "schema": "paper.j08_search_announcement.v1",
+  "status": "SOURCE_ACCEPTED_RELEASE_HELD",
+  "base_head": "036ad38f7d5d6f117df57e56d2152254be58c227",
+  "change": "Successful Library search now updates the existing polite live status with localized count and committed raw query. Distinct equal-count queries announce distinct text. Empty, invalid, Clear, IME interim and transactional behavior are retained.",
+  "source_sha256": {
+    "templates/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "site/intl_workspace.js": "0a5299a6083b03aef9b5796f3161ccacd5c291ad2f251808d9a6848e6028b24f",
+    "tests/intl_workspace_library_controller.test.cjs": "2bca7c2e4f43721a208a4f7c538abb3042ec1488e35c92a484169e1c8a83d7e3"
+  },
+  "red": {
+    "controller_regressions": 2,
+    "full_page_locale_cases": 2,
+    "reason": "Positive matches existed but status text was empty",
+    "red_log_sha256": "b99743903be8a3f81fbc56f316ab2dbfa5692692f52d174498ead80e3715a484",
+    "environment_setup_error_separate": "ENV_ERROR.log missing Node module path; no product claim"
+  },
+  "green": {
+    "library_controller_tests": 20,
+    "new_regressions_included": 2,
+    "full_page_cases": 2,
+    "exact_label_queries_in_full_pages": 36,
+    "dual_theme_locale_width_cases": 8,
+    "narrow_status_font_px": [
+      14,
+      28
+    ],
+    "template_site_pairs": 115,
+    "scoped_diff_check_exit": 0
+  },
+  "review": {
+    "run": "paper-01a1101f-j08-announcement-review-20261014-r1",
+    "result_sha256": "f5aab741a2b9ab68fe301d2b505906c3757f62d55c00cf6e79dd7accb60d08b4",
+    "bytes": 4472,
+    "parent_adjudication": "Accepted bounded source review with four explicit scope/rollback corrections",
+    "worker_runtime_proof": false,
+    "usage_receipt": "MISSING"
+  },
+  "render_limits": [
+    "Synthetic EOD supplied-frame fixture, not live qualification",
+    "Narrow text measured14px to28px; not native browser200percent zoom",
+    "Initial root-font-only probe retained and not accepted as doubled text",
+    "Inherited floating launcher overlaps nearby content; full visual acceptance remains open",
+    "Role/status DOM and event behavior verified; actual screen-reader speech and genuine OS IME not executed"
+  ],
+  "programme_status": "INCOMPLETE",
+  "release_holds": "All original source rights, qualification, Saved, migrations, frozen effects, deployment and Terminal IW2 custody holds retained",
+  "evidence_directory": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/j08-search-announcement-20261014-r1"
+}

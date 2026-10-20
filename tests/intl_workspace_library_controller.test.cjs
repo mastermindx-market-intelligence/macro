@@ -363,3 +363,39 @@ for (const query of ['', 'currency']) test('focused Library item survives resize
     assert.equal(await row.locator('a').evaluate(n=>document.activeElement===n),true);
   });
 });
+
+for (const [lang, query, secondQuery, single, secondSingle, multiple] of [
+  ['en', 'FX', 'currency', '1 tool found for “FX”.', '1 tool found for “currency”.', '2 tools found for “USD”.'],
+  ['zh-CN', '汇率', '表现', '“汇率”的搜索结果：1 个工具。', '“表现”的搜索结果：1 个工具。', '“USD”的搜索结果：2 个工具。']
+]) test(`successful Library search announces settled counts in ${lang}`, async () => {
+  await withPage(async page => {
+    await page.evaluate(lang => document.documentElement.setAttribute('lang', lang), lang);
+    await mountLibrary(page); const url = page.url();
+    const input = page.locator('[data-im-library-search]');
+    const status = page.locator('[data-im-library-status]');
+    assert.equal(await status.getAttribute('role'), 'status');
+    assert.equal(await status.getAttribute('aria-live'), 'polite');
+    await input.fill(query);
+    assert.equal(await status.textContent(), single);
+    await input.fill(secondQuery);
+    assert.equal(await status.textContent(), secondSingle);
+    await input.fill('USD');
+    assert.equal(await status.textContent(), multiple);
+    await input.evaluate(input => {
+      input.dispatchEvent(new CompositionEvent('compositionstart', {bubbles:true}));
+      input.value = '轮';
+      input.dispatchEvent(new InputEvent('input', {bubbles:true,isComposing:true}));
+    });
+    assert.equal(await status.textContent(), multiple);
+    await input.evaluate(input => {
+      input.value = '轮动';
+      input.dispatchEvent(new CompositionEvent('compositionend', {bubbles:true}));
+    });
+    assert.equal(await status.textContent(), lang === 'en' ? '1 tool found for “轮动”.' : '“轮动”的搜索结果：1 个工具。');
+    await page.click('[data-im-library-clear]');
+    assert.equal(await status.textContent(), '');
+    assert.equal(await input.inputValue(), '');
+    assert.equal(await input.evaluate(n => n === document.activeElement), true);
+    assert.equal(page.url(), url);
+  });
+});
