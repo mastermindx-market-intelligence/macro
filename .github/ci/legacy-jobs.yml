@@ -35060,6 +35060,7 @@ jobs:
       - "config/usgs_mcs_sources.yml"
       - "engine/__init__.py"
       - "engine/critical_minerals_supply.py"
+      - "site/basketdata/critical_minerals_supply.json"
       - "scripts/build_site*.py"
       - "tests/fixtures/usgs_mcs/**"
       - "tests/test_usgs_mcs.py"
