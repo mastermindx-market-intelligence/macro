@@ -1,0 +1,192 @@
+{
+  "schema": "biocatalyst_correction_fence_source_verification.v1",
+  "recorded_at_utc": "2026-10-20T09:58:51Z",
+  "session": "Redesign BioCatalyst User First",
+  "scope": "Local publication correction fence; source verification only",
+  "status": "DRAFT_HOLD",
+  "operation_id": "catalyst-company-evidence-r2-20261019",
+  "branch": "sol/web-catalyst-company-evidence-r2-20261019",
+  "pull_request": 9662,
+  "repository": "mastermindx-market-intelligence/macro",
+  "source_lineage": {
+    "company_evidence_head": "430234957531693b6b13f026a161e28542086a82",
+    "bio_repair_r9_head": "76f5a28d5d8e8200fbb9c36882f158541809ec3e",
+    "two_parent_integration_head": "7ac8fae13e7a9e7164064c58595985ea5ee5d902",
+    "delivery_commit": "The containing Git commit; exact verified source files are identified below."
+  },
+  "source_files": [
+    {
+      "path": "engine/biocatalyst/publication.py",
+      "sha256": "60e62aabd5bf2ac19cb56e237e9e6e67acdd5edefe0df52cb2ce4dfba7c02fdc",
+      "line_count": 3089
+    },
+    {
+      "path": "scripts/biocatalyst_worker.py",
+      "sha256": "076f4091f8c4957539625250d651e5289743daf158991546ff8693f1bf105e7c",
+      "line_count": 3045
+    },
+    {
+      "path": "app/biocatalyst.py",
+      "sha256": "e6833f4b73930eac850c8f9a8d5e26f8ffed008ddcf72454450f7f4a5a2f2986",
+      "line_count": 4881
+    },
+    {
+      "path": "tests/test_biocatalyst_wmn_publication.py",
+      "sha256": "12730a751d342b092c0c7a1b2573f73b19c4cdb8e213d9d8535894b336a1f25e",
+      "line_count": 703
+    },
+    {
+      "path": "tests/test_biocatalyst_wmn_api.py",
+      "sha256": "bd34b9194b6b5709c1afa2ad9af38699dd1d08fd0195c9ccf163404405f6547c",
+      "line_count": 664
+    },
+    {
+      "path": "tests/test_company_catalyst_public_evidence.py",
+      "sha256": "c7430ef4c265c80b4701422aa40b65a4074afa7460fcde1c22c0a7c713b6091c",
+      "line_count": 524
+    }
+  ],
+  "verification": {
+    "execution_owner": "Root implementation owner through Studio Direct C2 Personal",
+    "runtime": "Python 3.12, existing M2 Studio registered workspace",
+    "product": {
+      "process_id": 36854,
+      "exit_code": 0,
+      "passed": 376,
+      "failed": 0,
+      "errors": 0,
+      "warnings": 10,
+      "pytest_seconds": 281.66,
+      "command": [
+        "python3.12",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "--basetemp=.pytest_cache/wmn_fence_7ac8fae1_r10_verification",
+        "tests/test_company_catalyst_public_evidence.py",
+        "tests/test_company_intelligence_catalyst_event.py",
+        "tests/test_biocatalyst_research_priority.py",
+        "tests/test_biocatalyst_what_matters_next.py",
+        "tests/test_biocatalyst_wmn_api.py",
+        "tests/test_biocatalyst_wmn_publication.py",
+        "tests/test_biocatalyst_worker.py",
+        "tests/test_biocatalyst_api.py"
+      ],
+      "command_path_note": "Shown relative to the registered repository working directory; execution supplied the equivalent absolute basetemp path.",
+      "output_summary": "376 passed, 10 warnings in 281.66s (0:04:41)",
+      "warning_categories": [
+        "Starlette/httpx test client deprecation",
+        "FastAPI on_event deprecations",
+        "Existing duplicate OpenAPI operation IDs"
+      ]
+    },
+    "ci_scope": {
+      "process_id": 21120,
+      "exit_code": 0,
+      "passed": 2,
+      "warnings": 2,
+      "pytest_seconds": 187.42,
+      "command": [
+        "python3.12",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+        "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure"
+      ],
+      "output_summary": "2 passed, 2 warnings in 187.42s (0:03:07)",
+      "warning_categories": [
+        "Cleanup warnings for an unrelated pre-existing Chromium pytest temporary tree"
+      ]
+    },
+    "integration_before_fence": {
+      "passed": 152,
+      "ci_scope_passed": 2,
+      "receipt": "r9_integration.md"
+    },
+    "diff_check": "passed",
+    "post_test_source_check": "All six source/test SHA-256 values matched the reviewed snapshot; only AST-identical blank-line test cleanup occurred while the final product run was active.",
+    "environment_diagnostic": {
+      "initial_broad_result": {
+        "process_id": 20558,
+        "passed": 205,
+        "failed": 66,
+        "errors": 105,
+        "warnings": 12,
+        "pytest_seconds": 42.94
+      },
+      "first_cause": "BIOCATALYST_R2_ACTIVATION_GATE_INVALID before worker collection/publication",
+      "diagnostic_process_id": 35342,
+      "expected_uid": 501,
+      "expected_gid": 20,
+      "observed_tmp_gid": 0,
+      "expected_directory_mode": "0750",
+      "expected_file_mode": "0440",
+      "unchanged_from_integration_head": [
+        "scripts/biocatalyst_worker.py::_read_activation_artifact",
+        "scripts/biocatalyst_worker.py::_default_activation_verifier",
+        "tests/test_biocatalyst_worker.py"
+      ],
+      "resolution": "Use a fresh basetemp under the workspace-owned .pytest_cache after verifying the parent group equals the effective process group. No activation verifier, fixture, global permissions or activation policy was changed."
+    },
+    "development_failures_resolved": [
+      "Two initial red tests established that admission was absent and a direct worker could publish without a consumed ticket.",
+      "One expanded late-read fixture needed the existing runtime-layout preparation before writing its service handoff.",
+      "One expected digest used Company canonical JSON (which appends newline) instead of the Sector/Bio full-payload recipe (which does not); the assertion was corrected and both recipes are now distinguished explicitly."
+    ],
+    "sparse_fixtures": "Five ClinicalTrials and three ClinicalTrials-history fixtures were restored byte-for-byte from the existing Git index because the retained sparse checkout omitted them; no generated fixture bytes were substituted."
+  },
+  "source_review": {
+    "reviewer": "C3 biocatalyst_integration_judgment",
+    "judgment": "Local correction-fence source gap closed; no required production repair remains.",
+    "scope": "Independent architecture/source inspection of the three production files at the recorded hashes",
+    "test_execution": false,
+    "execution_receipts_owner": "Root",
+    "production_paths": [
+      "engine/biocatalyst/publication.py",
+      "scripts/biocatalyst_worker.py",
+      "app/biocatalyst.py"
+    ],
+    "final_concurrence": "Full validated v2 cut is CAS-admitted before coarse worker lock; consumed ticket fences installed artifacts, promotion and final WMN response checks; pointer rollback cannot undo admission."
+  },
+  "semantics": {
+    "admission": "A successful local durable admission transaction, not an upstream handoff-file replacement or native owner admission.",
+    "ticket_fields": [
+      "sequence",
+      "admission_id",
+      "inputs_sha256"
+    ],
+    "admission_contract": "biocatalyst_wmn_admission.v1",
+    "admission_schema_version": "1.0.0",
+    "pointer_contract": "biocatalyst_current_pointer.v1",
+    "legacy_pointer_schema_version": "1.0.0",
+    "fenced_pointer_schema_version": "1.1.0",
+    "digest": "SHA-256 of the complete validated, normalized WMN v2 payload encoded as UTF-8, sorted keys, compact separators, ensure_ascii=False, no trailing newline.",
+    "artifact_digest_distinction": "Publisher artifact bytes and Company canonical_json_bytes include a trailing newline; their byte hashes are intentionally different from the admission payload digest.",
+    "lock": "Stable wmn_publication.lock inode, exclusive writer/shared read-only server flock; durable initialization marker prevents silent state-loss reset.",
+    "response_consistency_point": "Final current-state recheck after JSONResponse encoding and before returning from the handler.",
+    "historical_reads": "Legacy pointer/artifact versions remain historical-trial-readable; current WMN requires a matching fenced republish."
+  },
+  "test_boundaries": [
+    "New disk-backed API proofs use the actual publisher, installed bundle, composer and final eligibility gate with synthetic authentication and runtime-import seams.",
+    "The existing pure API harness stubs its publication recheck gate; it is not counted as native admission or final-gate proof.",
+    "The worker concurrency witness uses a real separate OS process for advisory-lock exclusion.",
+    "Source-context-only changes at the same Company event revision change the admission digest.",
+    "No actual entitled user session, upstream native owner artifacts, scientific validation, deployed API or source-rights admission is established by these fixtures."
+  ],
+  "remaining_gates": [
+    "Native owner-authorized WMN v2 handoff with independently established Company event and DataOS issuer-master/vendor-alias custody and admission.",
+    "Adoption by the existing BioCatalyst native publisher and serving owner behind #6712, with both using the same durable admission state and pointer.",
+    "Compatible pointer 1.1.0 readers must precede writers that emit pointer 1.1.0.",
+    "Actual entitled list/detail serving and existing #9611 Decision Desk source-to-user proof.",
+    "Supported release-base adoption, exact-current-head hosted CI, serving packaging, and separate release approval."
+  ],
+  "limitations": [
+    "Independent upstream file replacement alone does not invalidate a local ticket until the local acceptance transaction completes.",
+    "The final check cannot revoke an already in-flight HTTP response or an already displayed browser view.",
+    "Native runtime activation, deployment, production entitlement, source-rights qualification, scientific/trading approval and merge approval remain held.",
+    "Historical hosted failures at 43023495 are not current-head CI observations; local curated scope checks are not blanket hosted CI acceptance."
+  ]
+}

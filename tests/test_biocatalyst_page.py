@@ -204,7 +204,8 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
     assert "localStorage" not in js
     assert "sessionStorage" not in js
     assert "clinicaltrials.gov/study/" in js
-    assert "probability" not in js.lower()
+    legacy_js = js.split("var WMN_API = '/api/biocatalyst/v1/what-matters-next';", 1)[0]
+    assert "probability" not in legacy_js.lower()
     assert "normalized.replace(/_/g, ' ')" not in js
     for forbidden in (
         "protocol amendment",
@@ -216,7 +217,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
         "pdufa",
         "approval",
     ):
-        assert forbidden not in js.lower()
+        assert forbidden not in legacy_js.lower()
 
 
 def test_biocatalyst_assets_have_responsive_motion_and_focus_guards():
@@ -640,6 +641,7 @@ def test_biocatalyst_first_seen_tape_is_prospective_current_only_and_never_recas
     assert "state.filters.change_kind = '';" not in set_mode_body
     assert "} else params.set('milestone_kind', state.filters.field);" in js
 
+    legacy_js = js.split("var WMN_API = '/api/biocatalyst/v1/what-matters-next';", 1)[0]
     for forbidden in (
         "probability",
         "forecast",
@@ -649,7 +651,7 @@ def test_biocatalyst_first_seen_tape_is_prospective_current_only_and_never_recas
         "sessionStorage",
         "innerHTML",
     ):
-        assert forbidden not in js.lower()
+        assert forbidden not in legacy_js.lower()
 
     for token in (
         ".bci-mode-control { display: grid; grid-template-columns: minmax(0, 1fr);",
@@ -743,3 +745,113 @@ def test_biocatalyst_runtime_is_valid_javascript():
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+def test_biocatalyst_what_matters_next_is_primary_decision_surface():
+    """V3 lands as a real user-facing consumer without weakening Trial truth law."""
+
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    css = (TEMPLATES / "biocatalyst.css").read_text(encoding="utf-8")
+
+    assert 'id="bci-wmn"' in html
+    assert html.index('id="bci-wmn"') < html.index('class="bci-information"')
+    assert 'id="bci-wmn-queue"' in html
+    assert 'id="bci-wmn-detail"' in html
+    assert 'href="#bci-trial-intelligence"' in html
+    assert "What Matters Next" in html
+    assert "下一步看什么" in html
+    assert "Biotech Decision Intelligence" in html
+    assert "生物科技决策智能" in html
+
+    for token in (
+        "var WMN_API = '/api/biocatalyst/v1/what-matters-next';",
+        "var WMN_DETAIL_API = '/api/biocatalyst/v1/what-matters-next/detail';",
+        "biocatalyst_what_matters_next.v1",
+        "biocatalyst_wmn_detail.v1",
+        "research_priority_only",
+        "trade_origination === false",
+        "changes_availability === false",
+        "position_sizing === false",
+        "prophet_admission === false",
+        "NOT_ESTIMABLE",
+        "function makeWmnRow(",
+        "function showWmnDetail(",
+        "function selectWhatMattersNextRow(",
+        "function showGenerationBoundTrialDetail(",
+        "window.BioCatalystTrialWorkspace = Object.freeze({",
+        "generation_id",
+        "event_fact_ref",
+        "Research triage only",
+    ):
+        assert token in js
+
+    assert "Catalyst Score" not in html
+    assert "Catalyst Score" not in js
+    assert "generic catalyst score" not in js.lower()
+    for token in (
+        ".bci-wmn",
+        ".bci-wmn-card",
+        ".bci-wmn-lane",
+        ".bci-wmn-estimate",
+        ".bci-wmn-missing",
+        ".bci-wmn-detail",
+    ):
+        assert token in css
+
+    for legacy_mode in ("milestones", "screen", "peers", "changes", "prospective"):
+        assert f'data-mode="{legacy_mode}"' in html
+    assert "Trial Screen" in html
+    assert "First-seen Tape" in html
+
+
+def test_biocatalyst_wmn_trial_detail_stays_generation_bound_and_reuses_trial_inspector():
+    """A WMN registry event may open Trial Intelligence, but never by fetching latest."""
+
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    wmn = js[js.index("var WMN_API = '/api/biocatalyst/v1/what-matters-next';"):]
+
+    assert "function selectWhatMattersNextRow(" in wmn
+    assert "function validGenerationBoundTrial(trial)" in wmn
+    assert "payload.trial!==null" in wmn
+    assert "window.BioCatalystTrialWorkspace" in wmn
+    assert "trialWorkspace.showGenerationBoundTrialDetail(payload.trial,trigger)" in wmn
+
+    # The legacy selector owns latest-record reads. The WMN path must only use
+    # its generation-bound detail endpoint and the narrow render bridge.
+    assert "TRIAL_API + '/'" not in wmn
+    assert "selectTrial(" not in wmn
+    assert "fetchJson(WMN_DETAIL_API+'?'+params.toString()" in wmn
+
+    legacy = js[:js.index("var WMN_API = '/api/biocatalyst/v1/what-matters-next';")]
+    bridge = legacy[legacy.index("function showGenerationBoundTrialDetail("):]
+    assert "fetchJson(" not in bridge.split("function updateMetadata(payload)", 1)[0]
+    assert "openInspector(" in bridge
+    assert "showDetail(detail, null, null)" in bridge
+
+
+def test_biocatalyst_wmn_uses_frozen_research_lane_copy_not_internal_act_now_label():
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+
+    assert 'value="ACT_NOW" data-label-en="Review soon" data-label-zh="近期核查"' in html
+    assert "ACT NOW</option>" not in html
+    for token in (
+        "ACT_NOW:['Review soon','近期核查']",
+        "RECONCILE:['Needs review','需要核实']",
+        "RESEARCH_NEXT:['Research next','后续研究']",
+        "MONITOR:['Monitor','持续关注']",
+        "The scheduled window is entirely within the next 7 calendar days. Check its evidence.",
+        "Resolve the highlighted source, timing or identity gap before relying on this record.",
+        "This window overlaps the next 90 calendar days; its full timing precision remains shown.",
+        "A later schedule or resolved event history; this is not a return forecast.",
+    ):
+        assert token in js
+    assert "Act now — research" not in js
+
+
+def test_biocatalyst_wmn_exposes_every_frozen_research_horizon():
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    for horizon in ("7", "30", "90", "180", "365"):
+        assert f'data-horizon="{horizon}"' in html
+        assert f"'{horizon}': true" in js

@@ -7,9 +7,11 @@ the small current pointer last.  A failure never rewrites the last good pointer.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 import errno
+import fcntl
 from hashlib import sha256
 import json
 import os
@@ -19,6 +21,7 @@ import shutil
 import stat
 import tempfile
 from typing import Any, Callable, Mapping, Sequence
+from uuid import uuid4
 
 from engine.sector_intelligence import (
     canonical_json_bytes,
@@ -42,6 +45,8 @@ from .prospective import (
     validate_public_model as validate_prospective_public_model,
     validate_publication_evidence as validate_prospective_publication_evidence,
 )
+from .what_matters_next import validate_current_wmn_inputs, validate_wmn_inputs
+from engine.company_intelligence.contracts import ContractError as CompanyContractError
 from .change_tape import (
     ChangeTapeError,
     build_trial_change_tape_read_model,
@@ -126,15 +131,21 @@ _POINTER_KEYS = frozenset(
         "published_at",
     }
 )
+_WMN_FENCED_POINTER_KEYS = _POINTER_KEYS | {"wmn_admission"}
+_WMN_TICKET_KEYS = frozenset(("sequence", "admission_id", "inputs_sha256"))
+_WMN_ADMISSION_KEYS = frozenset(("contract_id", "schema_version", "ticket"))
+_WMN_LOCK_MARKER = b"biocatalyst-wmn-admission-initialized.v1\n"
 _ARTIFACT_KEYS = frozenset(("name", "sha256", "byte_count"))
 _PUBLIC_GENERATION_SCHEMAS = frozenset(
-    ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0")
+    ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0")
 )
 _TRIAL_SNAPSHOT_DIRECTORY = "trial_snapshots"
 _TRIAL_HISTORY_DIRECTORY = "history"
 _TRIAL_PROSPECTIVE_DIRECTORY = "prospective"
 _TRIAL_PROTOCOL_DIRECTORY = "protocols"
 _TRIAL_CHANGE_TAPE_DIRECTORY = "change_tapes"
+_WMN_INPUT_ARTIFACT = "what_matters_next_inputs.json"
+_WMN_GENERATION_SCHEMAS = frozenset(("1.8.0", "1.9.0"))
 _HEALTH_KEYS = frozenset(
     {
         "schema_version",
@@ -220,6 +231,37 @@ class CommittedGeneration:
 
 
 @dataclass(frozen=True)
+class WmnAdmissionTicket:
+    """Local publisher admission identity; not a native owner/source receipt."""
+
+    sequence: int
+    admission_id: str
+    inputs_sha256: str
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "sequence": self.sequence,
+            "admission_id": self.admission_id,
+            "inputs_sha256": self.inputs_sha256,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Any, *, code: str) -> WmnAdmissionTicket:
+        if not isinstance(value, Mapping) or set(value) != _WMN_TICKET_KEYS:
+            raise PublicationError(code)
+        sequence = value["sequence"]
+        admission_id = value["admission_id"]
+        if (
+            not isinstance(sequence, int) or isinstance(sequence, bool) or sequence < 1
+            or not isinstance(admission_id, str)
+            or re.fullmatch(r"[0-9a-f]{32}", admission_id) is None
+            or not _valid_digest(value["inputs_sha256"])
+        ):
+            raise PublicationError(code)
+        return cls(sequence, admission_id, value["inputs_sha256"])
+
+
+@dataclass(frozen=True)
 class PreparedGeneration:
     generation_id: str
     stage_path: Path
@@ -227,6 +269,7 @@ class PreparedGeneration:
     watermark_after: str
     published_at: str
     source_dataset_timestamp_raw: str
+    wmn_admission: WmnAdmissionTicket | None = None
 
 
 @dataclass(frozen=True)
@@ -239,6 +282,10 @@ class CommittedTrialProjection:
     history_models_by_nct: Mapping[str, dict[str, Any]]
     prospective_models_by_nct: Mapping[str, dict[str, Any]]
     change_tapes_by_nct: Mapping[str, dict[str, Any]] = field(default_factory=dict)
+    # Retained owner artifact, not current eligibility. WMN serving must also
+    # pass assert_wmn_current using this request's exact pointer proof.
+    what_matters_next_inputs: Mapping[str, Any] | None = None
+    wmn_pointer: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -256,6 +303,7 @@ class ValidatedGenerationArtifacts:
     history_models_by_nct: Mapping[str, dict[str, Any]]
     prospective_models_by_nct: Mapping[str, dict[str, Any]]
     change_tapes_by_nct: Mapping[str, dict[str, Any]]
+    what_matters_next_inputs: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -1360,6 +1408,209 @@ class PublicGenerationPublisher:
         return self.public_root / "current.json"
 
     @property
+    def wmn_admission_path(self) -> Path:
+        return self.public_root / "wmn_admission.json"
+
+    @contextmanager
+    def _publication_lock(self, *, write: bool):
+        """One stable inode serializes admission, pointer changes and WMN reads.
+
+        Serving opens an existing file read-only. No reader creates state or
+        acquires state-file write access. This lock is never replaced/unlinked.
+        """
+        lock_path = self.public_root / "wmn_publication.lock"
+        descriptor: int | None = None
+        try:
+            if write:
+                _require_real_directory(
+                    self.public_root, code="WMN_ADMISSION_LOCK_UNAVAILABLE", create=True
+                )
+            flags = (os.O_RDWR | os.O_CREAT) if write else os.O_RDONLY
+            flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+            descriptor = os.open(lock_path, flags, 0o644)
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+                raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE")
+            fcntl.flock(descriptor, fcntl.LOCK_EX if write else fcntl.LOCK_SH)
+            current = lock_path.lstat()
+            if (
+                not stat.S_ISREG(current.st_mode) or current.st_nlink != 1
+                or (current.st_dev, current.st_ino) != (metadata.st_dev, metadata.st_ino)
+            ):
+                raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE")
+        except (OSError, PublicationError) as exc:
+            if descriptor is not None:
+                os.close(descriptor)
+            if isinstance(exc, PublicationError):
+                raise
+            raise PublicationError("WMN_ADMISSION_LOCK_UNAVAILABLE") from exc
+        try:
+            yield descriptor
+        finally:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+            finally:
+                os.close(descriptor)
+
+    @staticmethod
+    def _wmn_lock_marker(descriptor: int) -> bytes:
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        return os.read(descriptor, len(_WMN_LOCK_MARKER) + 1)
+
+    @staticmethod
+    def _wmn_admission_document(ticket: WmnAdmissionTicket | None) -> dict[str, Any]:
+        return {
+            "contract_id": "biocatalyst_wmn_admission.v1",
+            "schema_version": "1.0.0",
+            "ticket": ticket.as_dict() if ticket is not None else None,
+        }
+
+    def _read_wmn_admission_document(self) -> WmnAdmissionTicket | None:
+        try:
+            metadata = self.wmn_admission_path.lstat()
+        except OSError as exc:
+            raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE") from exc
+        if (
+            not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+            or metadata.st_size > 4096
+        ):
+            raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+        value = _load_json_object(
+            self.wmn_admission_path, code="WMN_ADMISSION_STATE_INVALID"
+        )
+        if (
+            set(value) != _WMN_ADMISSION_KEYS
+            or value.get("contract_id") != "biocatalyst_wmn_admission.v1"
+            or value.get("schema_version") != "1.0.0"
+        ):
+            raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+        ticket = value["ticket"]
+        return (
+            None if ticket is None else WmnAdmissionTicket.from_dict(
+                ticket, code="WMN_ADMISSION_STATE_INVALID"
+            )
+        )
+
+    def _read_wmn_admission_locked(self, descriptor: int) -> WmnAdmissionTicket | None:
+        if self._wmn_lock_marker(descriptor) != _WMN_LOCK_MARKER:
+            raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE")
+        return self._read_wmn_admission_document()
+
+    def initialize_wmn_admission(self) -> None:
+        """Adopt an uninitialized local store; never reset lost admission history.
+
+        The stable lock inode receives a durable initialization marker before
+        any ticket can be admitted. Missing state after that marker is an error,
+        including when the first corrected build never produced a pointer.
+        """
+        with self._publication_lock(write=True) as descriptor:
+            marker = self._wmn_lock_marker(descriptor)
+            if marker == _WMN_LOCK_MARKER:
+                self._read_wmn_admission_locked(descriptor)
+                return
+            if marker:
+                raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+            pointer = self._read_current_pointer()
+            if pointer is not None and pointer.get("schema_version") == "1.1.0":
+                raise PublicationError("WMN_ADMISSION_STATE_UNAVAILABLE")
+            if self.wmn_admission_path.exists() or self.wmn_admission_path.is_symlink():
+                # Complete only a first-initialization interruption. An admitted
+                # ticket with a missing marker is not an empty store.
+                if self._read_wmn_admission_document() is not None:
+                    raise PublicationError("WMN_ADMISSION_STATE_INVALID")
+            else:
+                atomic_write(
+                    self.wmn_admission_path,
+                    _json_bytes(self._wmn_admission_document(None)),
+                )
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            if os.write(descriptor, _WMN_LOCK_MARKER) != len(_WMN_LOCK_MARKER):
+                raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+            os.fsync(descriptor)
+            _fsync_directory(self.public_root)
+            self._read_wmn_admission_locked(descriptor)
+
+    def capture_wmn_admission(self) -> WmnAdmissionTicket | None:
+        """Capture the token before reading the fixed owner handoff."""
+        with self._publication_lock(write=False) as descriptor:
+            return self._read_wmn_admission_locked(descriptor)
+
+    @staticmethod
+    def _wmn_inputs_digest(inputs: Mapping[str, Any]) -> str:
+        try:
+            normalized = validate_current_wmn_inputs(inputs)
+        except CompanyContractError as exc:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+        # This is the canonical payload digest, not the manifest's artifact
+        # digest, which also covers the on-disk trailing newline.
+        return canonical_json_sha256(normalized)
+
+    def admit_wmn_inputs(
+        self, inputs: Mapping[str, Any], *, expected: WmnAdmissionTicket | None
+    ) -> WmnAdmissionTicket:
+        """CAS-admit a complete cut; a late FD read cannot acquire a newer token.
+
+        This local admission is not evidence of native Data OS admission.
+        accepted_at and cut timestamps do not determine the local sequence.
+        """
+        digest = self._wmn_inputs_digest(inputs)
+        with self._publication_lock(write=True) as descriptor:
+            current = self._read_wmn_admission_locked(descriptor)
+            if current != expected:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+            if current is not None and current.inputs_sha256 == digest:
+                return current
+            ticket = WmnAdmissionTicket(
+                (current.sequence + 1) if current is not None else 1,
+                uuid4().hex,
+                digest,
+            )
+            replacement = _json_bytes(self._wmn_admission_document(ticket))
+            try:
+                atomic_write(self.wmn_admission_path, replacement)
+                if self.wmn_admission_path.read_bytes() != replacement:
+                    raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+                if self._read_wmn_admission_locked(descriptor) != ticket:
+                    raise PublicationError("WMN_ADMISSION_WRITE_FAILED")
+            except (OSError, PublicationError) as exc:
+                # Never restore an older admitted cut after a post-replace fault.
+                raise PublicationError("WMN_ADMISSION_WRITE_FAILED") from exc
+            return ticket
+
+    def require_wmn_admission(
+        self, inputs: Mapping[str, Any], ticket: WmnAdmissionTicket | None
+    ) -> None:
+        digest = self._wmn_inputs_digest(inputs)
+        if not isinstance(ticket, WmnAdmissionTicket):
+            raise PublicationError("WMN_ADMISSION_REQUIRED")
+        if ticket.inputs_sha256 != digest:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
+        with self._publication_lock(write=False) as descriptor:
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+
+    def assert_wmn_current(self, projection: CommittedTrialProjection) -> None:
+        """Linearize current WMN eligibility after request-local composition."""
+        pointer = projection.wmn_pointer
+        inputs = projection.what_matters_next_inputs
+        if (
+            not isinstance(pointer, Mapping)
+            or pointer.get("schema_version") != "1.1.0"
+            or not isinstance(inputs, Mapping)
+        ):
+            raise PublicationError("WMN_ADMISSION_REQUIRED")
+        ticket = WmnAdmissionTicket.from_dict(
+            pointer.get("wmn_admission"), code="WMN_ADMISSION_REQUIRED"
+        )
+        if ticket.inputs_sha256 != self._wmn_inputs_digest(inputs):
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
+        with self._publication_lock(write=False) as descriptor:
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+            if self._read_current_pointer() != dict(pointer):
+                raise PublicationError("WMN_GENERATION_CHANGED")
+
+    @property
     def health_path(self) -> Path:
         return self.public_root / "health.json"
 
@@ -1403,15 +1654,15 @@ class PublicGenerationPublisher:
             if item.is_dir()
         }
         expected_directories = {"trials"}
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_SNAPSHOT_DIRECTORY)
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_HISTORY_DIRECTORY)
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
             expected_directories.add(_TRIAL_PROSPECTIVE_DIRECTORY)
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_PROTOCOL_DIRECTORY)
-        if generation_schema in {"1.6.0", "1.7.0"}:
+        if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_CHANGE_TAPE_DIRECTORY)
         if directories != expected_directories:
             raise PublicationError("PUBLIC_GENERATION_INVALID")
@@ -1463,20 +1714,24 @@ class PublicGenerationPublisher:
             if not isinstance(artifact.get("byte_count"), int) or artifact["byte_count"] < 1:
                 raise PublicationError("PUBLIC_GENERATION_INVALID")
             source_state_artifact = bool(re.fullmatch(r"trials/NCT[0-9]{8}\.json", str(name)))
-            trial_snapshot_artifact = generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_snapshot_artifact = generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"trial_snapshots/NCT[0-9]{8}\.json", str(name))
             )
-            trial_history_artifact = generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_history_artifact = generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"history/NCT[0-9]{8}\.json", str(name))
             )
-            trial_prospective_artifact = generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and bool(
+            trial_prospective_artifact = generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and bool(
                 re.fullmatch(r"prospective/NCT[0-9]{8}\.json", str(name))
             )
-            trial_protocol_artifact = generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_protocol_artifact = generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"protocols/NCT[0-9]{8}\.json", str(name))
             )
-            trial_change_tape_artifact = generation_schema in {"1.6.0", "1.7.0"} and bool(
+            trial_change_tape_artifact = generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"change_tapes/NCT[0-9]{8}\.json", str(name))
+            )
+            wmn_input_artifact = (
+                generation_schema in _WMN_GENERATION_SCHEMAS
+                and name == _WMN_INPUT_ARTIFACT
             )
             if (
                 name not in {"source_manifest.json", "health.json"}
@@ -1486,6 +1741,7 @@ class PublicGenerationPublisher:
                 and not trial_prospective_artifact
                 and not trial_protocol_artifact
                 and not trial_change_tape_artifact
+                and not wmn_input_artifact
             ):
                 raise PublicationError("PUBLIC_GENERATION_INVALID")
             path = _safe_child(generation, name)
@@ -1496,22 +1752,24 @@ class PublicGenerationPublisher:
         required = {"source_manifest.json", "health.json"}
         if not required.issubset(seen) or not any(name.startswith("trials/NCT") for name in seen):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_SNAPSHOT_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_HISTORY_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and not any(
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_PROSPECTIVE_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_PROTOCOL_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
+        if generation_schema in _WMN_GENERATION_SCHEMAS and _WMN_INPUT_ARTIFACT not in seen:
+            raise PublicationError("WMN_OWNER_INPUT_UNAVAILABLE")
         all_files = {
             item.relative_to(generation).as_posix()
             for item in tree
@@ -1574,6 +1832,7 @@ class PublicGenerationPublisher:
                 *trial_prospective_names,
                 *trial_protocol_names,
                 *trial_change_tape_names,
+                *((_WMN_INPUT_ARTIFACT,) if generation_schema in _WMN_GENERATION_SCHEMAS else ()),
             ),
             allowed_extra_directories=(
                 (
@@ -1583,14 +1842,14 @@ class PublicGenerationPublisher:
                     _TRIAL_PROTOCOL_DIRECTORY,
                     _TRIAL_CHANGE_TAPE_DIRECTORY,
                 )
-                if generation_schema == "1.7.0"
+                if generation_schema in {"1.7.0", "1.9.0"}
                 else (
                     _TRIAL_SNAPSHOT_DIRECTORY,
                     _TRIAL_HISTORY_DIRECTORY,
                     _TRIAL_PROTOCOL_DIRECTORY,
                     _TRIAL_CHANGE_TAPE_DIRECTORY,
                 )
-                if generation_schema == "1.6.0"
+                if generation_schema in {"1.6.0", "1.8.0"}
                 else (
                     _TRIAL_SNAPSHOT_DIRECTORY,
                     _TRIAL_HISTORY_DIRECTORY,
@@ -1627,7 +1886,7 @@ class PublicGenerationPublisher:
         change_tapes_by_nct: dict[str, dict[str, Any]] = {}
         if generation_schema == "1.0.0" and trial_snapshot_names:
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             states_by_nct = dict(states)
             expected_trial_names = {
                 f"{_TRIAL_SNAPSHOT_DIRECTORY}/{nct_id}.json"
@@ -1645,7 +1904,7 @@ class PublicGenerationPublisher:
                     source_state=states_by_nct[nct_id],
                     nct_id=nct_id,
                 )
-            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_history_names = {
                     f"{_TRIAL_HISTORY_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1660,7 +1919,7 @@ class PublicGenerationPublisher:
                     history_models_by_nct[nct_id] = _validate_trial_history_model_binding(
                         history_model, nct_id=nct_id
                     )
-            if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+            if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
                 expected_prospective_names = {
                     f"{_TRIAL_PROSPECTIVE_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1679,7 +1938,7 @@ class PublicGenerationPublisher:
                     if prospective_model.get("nct_id") != nct_id:
                         raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_INVALID")
                     prospective_models_by_nct[nct_id] = prospective_model
-            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_protocol_names = {
                     f"{_TRIAL_PROTOCOL_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1697,7 +1956,7 @@ class PublicGenerationPublisher:
                         trial_snapshot=trial_snapshots_by_nct[nct_id],
                         nct_id=nct_id,
                     )
-            if generation_schema in {"1.6.0", "1.7.0"}:
+            if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_change_tape_names = {
                     f"{_TRIAL_CHANGE_TAPE_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1716,6 +1975,29 @@ class PublicGenerationPublisher:
                         )
                     except ChangeTapeError as exc:
                         raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_INVALID") from exc
+        wmn_inputs: dict[str, Any] | None = None
+        if generation_schema in _WMN_GENERATION_SCHEMAS:
+            path = generation / _WMN_INPUT_ARTIFACT
+            raw_wmn = _load_json_object(path, code="WMN_OWNER_INPUT_INVALID")
+            try:
+                wmn_inputs = validate_wmn_inputs(
+                    raw_wmn, forbidden_generation_id=generation_id
+                )
+            except CompanyContractError as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if path.read_bytes() != _json_bytes(wmn_inputs):
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            try:
+                cut_time = datetime.fromisoformat(
+                    wmn_inputs["input_cut"]["cutoff"].replace("Z", "+00:00")
+                )
+                published_time = datetime.fromisoformat(
+                    str(manifest["published_at"]).replace("Z", "+00:00")
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if cut_time > published_time:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
         if (
             manifest["configured_nct_count"] != len(manifest["configured_nct_ids"])
             or manifest["observed_nct_count"] != len(states)
@@ -1740,6 +2022,7 @@ class PublicGenerationPublisher:
                 history_models_by_nct=history_models_by_nct,
                 prospective_models_by_nct=prospective_models_by_nct,
                 change_tapes_by_nct=change_tapes_by_nct,
+                what_matters_next_inputs=wmn_inputs,
             ),
         )
 
@@ -1767,9 +2050,19 @@ class PublicGenerationPublisher:
         if not stat.S_ISREG(pointer_metadata.st_mode):
             raise PublicationError("PUBLIC_POINTER_INVALID")
         pointer = _load_json_object(self.pointer_path, code="PUBLIC_POINTER_INVALID")
-        if set(pointer) != _POINTER_KEYS:
+        if pointer.get("contract_id") != "biocatalyst_current_pointer.v1":
             raise PublicationError("PUBLIC_POINTER_INVALID")
-        if pointer.get("contract_id") != "biocatalyst_current_pointer.v1" or pointer.get("schema_version") != "1.0.0":
+        schema = pointer.get("schema_version")
+        if schema == "1.0.0":
+            if set(pointer) != _POINTER_KEYS:
+                raise PublicationError("PUBLIC_POINTER_INVALID")
+        elif schema == "1.1.0":
+            if set(pointer) != _WMN_FENCED_POINTER_KEYS:
+                raise PublicationError("PUBLIC_POINTER_INVALID")
+            WmnAdmissionTicket.from_dict(
+                pointer["wmn_admission"], code="PUBLIC_POINTER_INVALID"
+            )
+        else:
             raise PublicationError("PUBLIC_POINTER_INVALID")
         generation_id = pointer.get("generation_id")
         if not isinstance(generation_id, str) or not _RUN_ID_RE.fullmatch(generation_id):
@@ -1828,12 +2121,7 @@ class PublicGenerationPublisher:
         current = self._read_current_pointer()
         if current is None:
             return False
-        return (
-            current.get("generation_id") == validated.committed.generation_id
-            and current.get("manifest_sha256") == validated.committed.manifest_sha256
-            and current.get("watermark_after") == validated.committed.watermark_after
-            and current.get("published_at") == validated.committed.published_at
-        )
+        return current == dict(validated.pointer)
 
     def read_committed(self) -> CommittedGeneration | None:
         """Read a fully validated committed state, never a loose watermark file."""
@@ -1900,26 +2188,26 @@ class PublicGenerationPublisher:
         manifest = validated.manifest
         artifacts = validated.artifacts
         generation_schema = manifest.get("schema_version")
-        if generation_schema not in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema not in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             raise PublicationError("TRIAL_PROJECTION_UNAVAILABLE")
         nct_ids = tuple(manifest["configured_nct_ids"])
         if set(artifacts.source_states_by_nct) != set(nct_ids):
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
         if set(artifacts.trial_snapshots_by_nct) != set(nct_ids):
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and set(
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(
             artifacts.protocols_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_PROTOCOL_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and set(
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(
             artifacts.history_models_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_HISTORY_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and set(
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and set(
             artifacts.prospective_models_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.6.0", "1.7.0"} and set(artifacts.change_tapes_by_nct) != set(
+        if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(artifacts.change_tapes_by_nct) != set(
             nct_ids
         ):
             raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_BINDING_MISMATCH")
@@ -1930,9 +2218,9 @@ class PublicGenerationPublisher:
         change_tapes_by_nct: dict[str, dict[str, Any]] = {}
         for nct_id in nct_ids:
             trials.append(artifacts.trial_snapshots_by_nct[nct_id])
-            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 protocols_by_nct[nct_id] = artifacts.protocols_by_nct[nct_id]
-            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 history_models_by_nct[nct_id] = artifacts.history_models_by_nct[nct_id]
             else:
                 # B1b remains readable after B2 ships.  It has no public
@@ -1942,14 +2230,14 @@ class PublicGenerationPublisher:
                     "available": False,
                     "unavailable_reason": "not_collected",
                 }
-            if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+            if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
                 prospective_models_by_nct[nct_id] = artifacts.prospective_models_by_nct[nct_id]
             else:
                 prospective_models_by_nct[nct_id] = {
                     "available": False,
                     "unavailable_reason": "baseline_not_established",
                 }
-            if generation_schema in {"1.6.0", "1.7.0"}:
+            if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 change_tapes_by_nct[nct_id] = artifacts.change_tapes_by_nct[nct_id]
             else:
                 change_tapes_by_nct[nct_id] = {
@@ -1960,7 +2248,7 @@ class PublicGenerationPublisher:
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
         if len(history_models_by_nct) != len(trials):
             raise PublicationError("TRIAL_HISTORY_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and len(protocols_by_nct) != len(trials):
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and len(protocols_by_nct) != len(trials):
             raise PublicationError("TRIAL_PROTOCOL_PROJECTION_BINDING_MISMATCH")
         if len(prospective_models_by_nct) != len(trials):
             raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_BINDING_MISMATCH")
@@ -1968,11 +2256,17 @@ class PublicGenerationPublisher:
             raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_BINDING_MISMATCH")
         return CommittedTrialProjection(
             generation=committed,
+            wmn_pointer=dict(validated.pointer),
             trials=tuple(trials),
             protocols_by_nct=protocols_by_nct,
             history_models_by_nct=history_models_by_nct,
             prospective_models_by_nct=prospective_models_by_nct,
             change_tapes_by_nct=change_tapes_by_nct,
+            what_matters_next_inputs=(
+                artifacts.what_matters_next_inputs
+                if generation_schema in _WMN_GENERATION_SCHEMAS
+                else None
+            ),
         )
 
     def _prior_history_model_bytes(self, nct_id: str) -> bytes | None:
@@ -1986,7 +2280,7 @@ class PublicGenerationPublisher:
         if committed is None:
             return None
         manifest = self._load_generation_manifest(committed.generation_id)
-        if manifest.get("schema_version") not in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if manifest.get("schema_version") not in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             return None
         if nct_id not in manifest.get("configured_nct_ids", ()):
             return None
@@ -2017,7 +2311,7 @@ class PublicGenerationPublisher:
         if committed is None:
             return None
         manifest = self._load_generation_manifest(committed.generation_id)
-        if manifest.get("schema_version") not in {"1.6.0", "1.7.0"}:
+        if manifest.get("schema_version") not in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             return None
         if nct_id not in manifest.get("configured_nct_ids", ()):
             return None
@@ -2051,10 +2345,34 @@ class PublicGenerationPublisher:
         history_evidence_by_nct: Mapping[str, HistoryPublicationEvidence] | None = None,
         prospective_models_by_nct: Mapping[str, Mapping[str, Any]] | None = None,
         prospective_evidence_by_nct: Mapping[str, ProspectivePublicationEvidence] | None = None,
+        wmn_inputs: Mapping[str, Any] | None = None,
+        wmn_admission: WmnAdmissionTicket | None = None,
     ) -> PreparedGeneration:
         """Make a complete sanitized generation outside the actual public root."""
 
         run = _validate_run(run, expected_watermark=expected_watermark)
+        normalized_wmn_inputs: dict[str, Any] | None = None
+        if wmn_inputs is not None:
+            try:
+                normalized_wmn_inputs = validate_current_wmn_inputs(
+                    wmn_inputs, forbidden_generation_id=run["run_id"]
+                )
+            except CompanyContractError as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            try:
+                input_cut_time = datetime.fromisoformat(
+                    normalized_wmn_inputs["input_cut"]["cutoff"].replace("Z", "+00:00")
+                )
+                published_time = datetime.fromisoformat(
+                    str(run["finished_at"]).replace("Z", "+00:00")
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if input_cut_time > published_time:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            self.require_wmn_admission(normalized_wmn_inputs, wmn_admission)
+        elif wmn_admission is not None:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
         collector_generation = _require_within(
             collector_generation,
             collector_public_root,
@@ -2273,6 +2591,11 @@ class PublicGenerationPublisher:
                     final_stage / _TRIAL_CHANGE_TAPE_DIRECTORY / f"{nct_id}.json",
                     change_tape_bytes_by_nct[nct_id],
                 )
+            if normalized_wmn_inputs is not None:
+                atomic_write(
+                    final_stage / _WMN_INPUT_ARTIFACT,
+                    _json_bytes(normalized_wmn_inputs),
+                )
             atomic_write(final_stage / "health.json", _json_bytes(dict(health)))
             artifact_paths = sorted(
                 path for path in final_stage.rglob("*") if path.is_file()
@@ -2288,9 +2611,17 @@ class PublicGenerationPublisher:
             payload: dict[str, Any] = {
                 "contract_id": "biocatalyst_public_generation.v1",
                 "schema_version": (
-                    "1.7.0"
-                    if normalized_prospective_models is not None
-                    else "1.6.0"
+                    (
+                        "1.9.0"
+                        if normalized_prospective_models is not None
+                        else "1.8.0"
+                    )
+                    if normalized_wmn_inputs is not None
+                    else (
+                        "1.7.0"
+                        if normalized_prospective_models is not None
+                        else "1.6.0"
+                    )
                 ),
                 "generation_id": run["run_id"],
                 "run_id": run["run_id"],
@@ -2319,6 +2650,7 @@ class PublicGenerationPublisher:
                 watermark_after=run["watermark_after"],
                 published_at=run["finished_at"],
                 source_dataset_timestamp_raw=run["source_dataset_timestamp_before_raw"],
+                wmn_admission=wmn_admission,
             )
         except Exception:
             if final_stage.exists():
@@ -2367,12 +2699,29 @@ class PublicGenerationPublisher:
         return target
 
     def write_pointer(self, prepared: PreparedGeneration) -> None:
-        """Advance the one last-good pointer only after all earlier stages succeed."""
+        """Compare the consumed admission and promote under one serialization."""
+        with self._publication_lock(write=True) as descriptor:
+            self._write_pointer_locked(prepared, descriptor)
 
-        # Verify the installed target again immediately before its pointer can move.
-        manifest = self._load_generation_manifest(prepared.generation_id)
+    def _write_pointer_locked(self, prepared: PreparedGeneration, descriptor: int) -> None:
+        # Re-prove immutable bytes and the complete normalized input digest.
+        # Hashes in the generation manifest include the artifact's newline.
+        materialized = self._materialize_validated_generation(prepared.generation_id)
+        manifest = materialized.manifest
         if manifest["manifest_sha256"] != prepared.manifest_sha256:
             raise PublicationError("PUBLIC_GENERATION_ARTIFACT_MISMATCH")
+        inputs = materialized.artifacts.what_matters_next_inputs
+        ticket = prepared.wmn_admission
+        if inputs is not None:
+            digest = self._wmn_inputs_digest(inputs)
+            if not isinstance(ticket, WmnAdmissionTicket):
+                raise PublicationError("WMN_ADMISSION_REQUIRED")
+            if ticket.inputs_sha256 != digest:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            if self._read_wmn_admission_locked(descriptor) != ticket:
+                raise PublicationError("WMN_ADMISSION_CHANGED")
+        elif ticket is not None:
+            raise PublicationError("WMN_OWNER_INPUT_INVALID")
         pointer = {
             "contract_id": "biocatalyst_current_pointer.v1",
             "schema_version": "1.0.0",
@@ -2381,6 +2730,9 @@ class PublicGenerationPublisher:
             "watermark_after": prepared.watermark_after,
             "published_at": prepared.published_at,
         }
+        if ticket is not None:
+            pointer["schema_version"] = "1.1.0"
+            pointer["wmn_admission"] = ticket.as_dict()
         replacement = _json_bytes(pointer)
         if self.pointer_path.is_symlink():
             raise PublicationError("POINTER_STATE_UNCERTAIN")
@@ -2395,18 +2747,18 @@ class PublicGenerationPublisher:
                 after_replace=self._pointer_after_replace_hook,
             )
         except Exception as exc:
-            self._rollback_pointer(previous, replacement)
+            self._rollback_pointer_locked(previous, replacement)
             raise PublicationError("POINTER_WRITE_FAILED") from exc
         try:
             actual = self.pointer_path.read_bytes()
         except OSError as exc:
             raise PublicationError("POINTER_STATE_UNCERTAIN") from exc
         if actual != replacement:
-            self._rollback_pointer(previous, replacement)
+            self._rollback_pointer_locked(previous, replacement)
             raise PublicationError("POINTER_STATE_UNCERTAIN")
 
-    def _rollback_pointer(self, previous: bytes | None, replacement: bytes) -> None:
-        """Restore the old pointer after a post-replace durability fault.
+    def _rollback_pointer_locked(self, previous: bytes | None, replacement: bytes) -> None:
+        """Restore only known pointer bytes while holding the publication lock.
 
         An error after ``os.replace`` is not evidence that the old pointer won.
         We inspect the file and either prove it is old, roll the known new bytes

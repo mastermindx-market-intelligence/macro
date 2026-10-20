@@ -39,9 +39,20 @@ from ..earnings_narrative.public_wire import wire_slug
 _NARRATIVE_KEY_RE = re.compile(r"^(?P<ticker>[^/]+)/(?P<period>\d{4}Q[1-4])$")
 _CIE_ID_RE = re.compile(r"^cie_[0-9a-f]{24}$")
 _CANONICAL_ID_RE = re.compile(r"^evt_cik\d{10}_\d{4}(?:q[1-4]|fy)_[a-z0-9]+$")
+_SOURCE_CANONICAL_ID_RE = re.compile(r"^evt_source_[0-9a-f]{64}$")
 _PUBLIC_SLUG_RE = re.compile(
     r"^(?P<slug_ticker>[a-z0-9.-]+)-(?P<period>\d{4}q[1-4])-call-record$"
 )
+
+
+def canonical_event_id_variant(event_id: object) -> str:
+    """Name the two admitted canonical Company Intelligence event-id variants."""
+    text = str(event_id or "").strip()
+    if _CANONICAL_ID_RE.fullmatch(text):
+        return "fiscal"
+    if _SOURCE_CANONICAL_ID_RE.fullmatch(text):
+        return "source"
+    raise AliasError(f"not a canonical company event id: {event_id!r}")
 
 
 class AliasError(ContractError):

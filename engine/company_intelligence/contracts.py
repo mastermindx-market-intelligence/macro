@@ -682,3 +682,445 @@ def validate_manifest(payload: object, *, allow_unmaterialized_files: bool = Fal
             for key, value in observed_map.items():
                 if key not in _OBSERVED_COUNT_KEYS or isinstance(value, bool) or not isinstance(value, int) or value < 0:
                     raise ContractError(f"manifest.source.{name}.observed_counts invalid")
+
+# ---------------------------------------------------------------------------
+# company_catalyst_event.v1 -- bounded non-fiscal disclosure read port
+# ---------------------------------------------------------------------------
+
+COMPANY_CATALYST_EVENT_CONTRACT = "company_catalyst_event.v1"
+COMPANY_CATALYST_EVENT_SCHEMA_VERSION = "1.0.0"
+CATALYST_EVENT_FAMILIES = frozenset({
+    "issuer_readout_guidance",
+    "regulatory_target_disclosed",
+    "advisory_meeting_disclosed",
+    "result_announced",
+    "regulatory_action",
+})
+# R1B's first executable producer is issuer disclosure. Additional namespaces
+# are admitted only with their owner-native key grammar and source proof; this
+# bounded set must not become a permissive catch-all.
+CATALYST_SOURCE_NAMESPACES = frozenset({"issuer_disclosure"})
+CATALYST_OCCURRENCE_STATES = frozenset({
+    "uncorroborated", "corroborated", "cancelled", "withdrawn"
+})
+CATALYST_TIMING_STATES = frozenset({"consistent", "conflicted", "missing"})
+CATALYST_TIMING_SOURCE_CLASSES = frozenset({
+    "issuer_guided", "regulator_disclosed", "unresolved"
+})
+CATALYST_TIMING_PRECISIONS = frozenset({
+    "day", "month", "quarter", "year", "window", "unknown"
+})
+CATALYST_SOURCE_FACT_AUTHORITY = {
+    "classification": "source_fact",
+    "decision_authority": False,
+    "allowed_uses": ["display", "context", "explain"],
+    "forbidden_uses": [
+        "originate_signal",
+        "rank_security",
+        "select_security",
+        "size_position",
+        "gate_decision",
+        "execute_trade",
+        "raise_authority",
+    ],
+}
+_CATALYST_EVENT_KEYS = frozenset({
+    "contract_id", "schema_version", "event_id", "company_id", "issuer_cik",
+    "event_family", "native_identity", "revision_ref", "revision_is_current",
+    "occurrence", "timing", "source_available_at", "observed_at",
+    "document_refs", "public_evidence", "asset_mentions", "relationship_claims",
+    "authority",
+})
+_CATALYST_NATIVE_IDENTITY_KEYS = frozenset({"source_namespace", "native_event_key"})
+_CATALYST_TIMING_KEYS = frozenset({
+    "state", "source_class", "lower_date", "upper_date", "precision",
+    "source_timezone", "source_wording", "evidence_refs",
+})
+_CATALYST_SOURCE_EVENT_ID_RE = re.compile(r"^evt_source_[0-9a-f]{64}$")
+_COMPANY_CIK_ID_RE = re.compile(r"^cik:(?P<cik>[0-9]{10})$")
+_CIK10_RE = re.compile(r"^[0-9]{10}$")
+
+
+def _strict_knowledge_timestamp(value: object, *, field: str) -> tuple[str, datetime]:
+    """Normalize a real offset-bearing instant; never invent a source timezone."""
+    if not isinstance(value, str):
+        raise ContractError(f"{field} requires an explicit timezone")
+    text = value.strip()
+    if "T" not in text:
+        raise ContractError(f"{field} requires an explicit timezone")
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ContractError(f"{field} requires an explicit timezone") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ContractError(f"{field} requires an explicit timezone")
+    utc = parsed.astimezone(timezone.utc)
+    return utc.isoformat(timespec="seconds").replace("+00:00", "Z"), utc
+
+
+def _catalyst_ref_list(value: object, *, field: str, allow_empty: bool = True) -> list[str]:
+    if not isinstance(value, list):
+        raise ContractError(f"{field} must be a list")
+    if not allow_empty and not value:
+        raise ContractError(f"{field} must not be empty")
+    if len(value) > 256:
+        raise ContractError(f"{field} too large")
+    if any(not isinstance(item, str) or not item or len(item) > 512 for item in value):
+        raise ContractError(f"{field} contains an invalid reference")
+    if len(value) != len(set(value)):
+        raise ContractError(f"{field} contains duplicate references")
+    return list(value)
+
+
+def _validate_catalyst_timing(value: object) -> dict[str, Any]:
+    item = _require_mapping(value, name="timing")
+    _require_exact_keys(item, _CATALYST_TIMING_KEYS, name="timing")
+    state = item.get("state")
+    source_class = item.get("source_class")
+    precision = item.get("precision")
+    if state not in CATALYST_TIMING_STATES:
+        raise ContractError("timing.state invalid")
+    if source_class not in CATALYST_TIMING_SOURCE_CLASSES:
+        raise ContractError("timing.source_class invalid")
+    if precision not in CATALYST_TIMING_PRECISIONS:
+        raise ContractError("timing.precision invalid")
+    lower_raw = item.get("lower_date")
+    upper_raw = item.get("upper_date")
+
+    def exact_date(raw: object, *, field: str) -> str | None:
+        if raw is None:
+            return None
+        if not isinstance(raw, str) or len(raw) != 10:
+            raise ContractError(f"timing.{field} invalid")
+        parsed = parse_date(raw, field=f"timing.{field}")
+        if raw != parsed.isoformat():
+            raise ContractError(f"timing.{field} invalid")
+        return raw
+
+    lower = exact_date(lower_raw, field="lower_date")
+    upper = exact_date(upper_raw, field="upper_date")
+    if state == "conflicted" and (lower is not None or upper is not None):
+        raise ContractError("timing conflicted summary must not choose bounds")
+    if state == "missing" and (lower is not None or upper is not None):
+        raise ContractError("timing missing summary must not carry bounds")
+    if lower is not None and upper is not None and lower > upper:
+        raise ContractError("timing lower_date exceeds upper_date")
+    source_timezone = item.get("source_timezone")
+    if source_timezone is not None and (
+        not isinstance(source_timezone, str) or not source_timezone or len(source_timezone) > 80
+    ):
+        raise ContractError("timing.source_timezone invalid")
+    source_wording = item.get("source_wording")
+    if source_wording is not None and (
+        not isinstance(source_wording, str) or not source_wording or len(source_wording) > 2_000
+    ):
+        raise ContractError("timing.source_wording invalid")
+    refs = _catalyst_ref_list(item.get("evidence_refs"), field="timing.evidence_refs")
+    return {
+        "state": state,
+        "source_class": source_class,
+        "lower_date": lower,
+        "upper_date": upper,
+        "precision": precision,
+        "source_timezone": source_timezone,
+        "source_wording": source_wording,
+        "evidence_refs": refs,
+    }
+
+
+def validate_company_catalyst_event(
+    payload: object,
+    *,
+    generation_cutoff: object | None = None,
+) -> dict[str, Any]:
+    """Validate the first bounded Company Intelligence non-fiscal event port.
+
+    Version 1.0.0 retains its identity/timing-only contract. Version 1.1.0 also
+    admits the closed, source-context evidence projection below. Asset and
+    relationship ports remain withheld. Schema validation never grants source
+    admission, publication rights, or semantic support for an event claim.
+    """
+    item = _require_mapping(payload, name="company_catalyst_event")
+    _require_exact_keys(item, _CATALYST_EVENT_KEYS, name="company_catalyst_event")
+    if item.get("contract_id") != COMPANY_CATALYST_EVENT_CONTRACT:
+        raise ContractError("company_catalyst_event contract_id invalid")
+    schema_version = item.get("schema_version")
+    if not isinstance(schema_version, str) or schema_version not in {
+        COMPANY_CATALYST_EVENT_SCHEMA_VERSION, "1.1.0"
+    }:
+        raise ContractError("company_catalyst_event schema_version invalid")
+
+    company_id = item.get("company_id")
+    company_match = _COMPANY_CIK_ID_RE.fullmatch(str(company_id or ""))
+    if company_match is None or company_match.group("cik") == "0000000000":
+        raise ContractError("company_catalyst_event company_id invalid")
+    issuer_cik = item.get("issuer_cik")
+    if not isinstance(issuer_cik, str) or _CIK10_RE.fullmatch(issuer_cik) is None:
+        raise ContractError("company_catalyst_event issuer_cik invalid")
+    if issuer_cik == "0000000000" or issuer_cik != company_match.group("cik"):
+        raise ContractError("company_catalyst_event issuer_cik does not match company_id")
+
+    event_family = item.get("event_family")
+    if event_family not in CATALYST_EVENT_FAMILIES:
+        raise ContractError("company_catalyst_event event_family invalid")
+    native = _require_mapping(item.get("native_identity"), name="native_identity")
+    _require_exact_keys(native, _CATALYST_NATIVE_IDENTITY_KEYS, name="native_identity")
+    source_namespace = native.get("source_namespace")
+    native_event_key = native.get("native_event_key")
+    if source_namespace not in CATALYST_SOURCE_NAMESPACES:
+        raise ContractError("company_catalyst_event source_namespace invalid")
+    _require_text(native_event_key, field="native_identity.native_event_key", limit=1_024, allow_null=False)
+
+    identity = {
+        "company_id": company_id,
+        "source_namespace": source_namespace,
+        "native_event_key": native_event_key,
+        "event_family": event_family,
+    }
+    expected_event_id = "evt_source_" + canonical_json_sha256(identity)
+    event_id = item.get("event_id")
+    if not isinstance(event_id, str) or _CATALYST_SOURCE_EVENT_ID_RE.fullmatch(event_id) is None:
+        raise ContractError("company_catalyst_event event_id invalid")
+    if event_id != expected_event_id:
+        raise ContractError("company_catalyst_event event_id is not canonical")
+
+    revision_ref = item.get("revision_ref")
+    _require_text(revision_ref, field="revision_ref", limit=512, allow_null=False)
+    if not isinstance(item.get("revision_is_current"), bool):
+        raise ContractError("revision_is_current must be boolean")
+    occurrence = item.get("occurrence")
+    if occurrence not in CATALYST_OCCURRENCE_STATES:
+        raise ContractError("occurrence invalid")
+    timing = _validate_catalyst_timing(item.get("timing"))
+
+    # The explicit evidence version preserves the selected owner's subsecond
+    # knowledge. The original v1.0 normalization remains unchanged.
+    parse_clock = _catalyst_public_timestamp if schema_version == "1.1.0" else _strict_knowledge_timestamp
+    source_available_at, source_available_time = parse_clock(
+        item.get("source_available_at"), field="source_available_at"
+    )
+    observed_at, observed_time = parse_clock(
+        item.get("observed_at"), field="observed_at"
+    )
+    if observed_time < source_available_time:
+        raise ContractError("observed_at precedes source_available_at")
+    if generation_cutoff is not None:
+        _cutoff_text, cutoff_time = parse_clock(
+            generation_cutoff, field="generation_cutoff"
+        )
+        if source_available_time > cutoff_time or observed_time > cutoff_time:
+            raise ContractError("knowledge timestamp exceeds generation cutoff")
+
+    document_refs = _catalyst_ref_list(
+        item.get("document_refs"), field="document_refs", allow_empty=False
+    )
+    for field in ("asset_mentions", "relationship_claims"):
+        if item.get(field) != []:
+            raise ContractError(f"{field} is not admitted in the first producer slice")
+    evidence = item.get("public_evidence")
+    if schema_version == "1.0.0":
+        if evidence != []:
+            raise ContractError("public_evidence is not admitted in the first producer slice")
+        public_evidence = []
+    else:
+        if not isinstance(evidence, list) or len(evidence) > 128:
+            raise ContractError("public_evidence must be a bounded list")
+        public_evidence = [
+            validate_catalyst_public_evidence(
+                value, event_id=event_id, event_revision_ref=revision_ref,
+                issuer_cik=issuer_cik, document_refs=document_refs,
+                event_observed_at=observed_at, generation_cutoff=generation_cutoff,
+            )
+            for value in evidence
+        ]
+        keys = [(value["document_ref"], value["span_ref"]) for value in public_evidence]
+        if len(keys) != len(set(keys)):
+            raise ContractError("public_evidence contains duplicate source spans")
+    authority = item.get("authority")
+    if authority != CATALYST_SOURCE_FACT_AUTHORITY:
+        raise ContractError("company_catalyst_event authority invalid")
+
+    return {
+        "contract_id": COMPANY_CATALYST_EVENT_CONTRACT,
+        "schema_version": schema_version,
+        "event_id": event_id,
+        "company_id": company_id,
+        "issuer_cik": issuer_cik,
+        "event_family": event_family,
+        "native_identity": {
+            "source_namespace": source_namespace,
+            "native_event_key": native_event_key,
+        },
+        "revision_ref": revision_ref,
+        "revision_is_current": item["revision_is_current"],
+        "occurrence": occurrence,
+        "timing": timing,
+        "source_available_at": source_available_at,
+        "observed_at": observed_at,
+        "document_refs": document_refs,
+        "public_evidence": public_evidence,
+        "asset_mentions": [],
+        "relationship_claims": [],
+        "authority": {
+            "classification": "source_fact",
+            "decision_authority": False,
+            "allowed_uses": ["display", "context", "explain"],
+            "forbidden_uses": list(CATALYST_SOURCE_FACT_AUTHORITY["forbidden_uses"]),
+        },
+    }
+
+
+# Public evidence is a projection of existing document/filing/span owners.
+# A valid JSON object is not an intake, rights, or publication admission receipt.
+CATALYST_PUBLIC_EVIDENCE_CONTRACT = "company_catalyst_public_evidence.v1"
+CATALYST_PUBLIC_EVIDENCE_MAX_BYTES = 16 * 1024 * 1024
+_CATALYST_PUBLIC_EVIDENCE_KEYS = frozenset({
+    "contract_id", "schema_version", "scope", "role", "event_id",
+    "event_revision_ref", "issuer_cik", "document_ref", "document_revision",
+    "accession", "document_content_sha256", "document_bytes", "span_ref",
+    "span_start_byte", "span_end_byte", "span_text_sha256", "url", "label",
+    "excerpt", "source_class", "rights_profile", "rights_state", "filed_on",
+    "source_available_at", "observed_at", "projection_cutoff", "authority",
+})
+_PUBLIC_DOCUMENT_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$")
+_PUBLIC_REVISION_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:#-]{0,511}$")
+_PUBLIC_SPAN_REF_RE = re.compile(r"^span_[0-9a-f]{20}$")
+_PUBLIC_EVIDENCE_TIME_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z$"
+)
+_SEC_ACCESSION_RE = re.compile(r"^[0-9]{10}-[0-9]{2}-[0-9]{6}$")
+_SEC_PUBLIC_DOCUMENT_RE = re.compile(
+    r"^https://www\.sec\.gov/Archives/edgar/data/"
+    r"(?P<cik>[1-9][0-9]*)/(?P<accession>[0-9]{18})/"
+    r"[A-Za-z0-9][A-Za-z0-9_.-]{0,255}\.(?:htm|html|txt)$"
+)
+
+
+def _catalyst_public_timestamp(value: object, *, field: str) -> tuple[str, datetime]:
+    """Retain the new port's UTC knowledge without truncating precision."""
+    if not isinstance(value, str) or not _PUBLIC_EVIDENCE_TIME_RE.fullmatch(value):
+        raise ContractError(f"{field} requires UTC with at most six fractional digits")
+    _literal, instant = _strict_knowledge_timestamp(value, field=field)
+    return instant.isoformat().replace("+00:00", "Z"), instant
+
+
+def validate_catalyst_source_url(value: object, *, issuer_cik: str, accession: str) -> str:
+    """Admit this slice's exact public SEC locator, never guess one from IDs."""
+    match = _SEC_PUBLIC_DOCUMENT_RE.fullmatch(value) if isinstance(value, str) else None
+    if (
+        match is None or not _CIK10_RE.fullmatch(issuer_cik)
+        or not _SEC_ACCESSION_RE.fullmatch(accession)
+        or match.group("cik") != str(int(issuer_cik))
+        or match.group("accession") != accession.replace("-", "")
+    ):
+        raise ContractError("public evidence SEC locator does not bind the filing")
+    return value
+
+
+def validate_catalyst_public_evidence(
+    payload: object,
+    *,
+    event_id: str,
+    event_revision_ref: str,
+    issuer_cik: str,
+    document_refs: list[str],
+    event_observed_at: object,
+    generation_cutoff: object | None,
+) -> dict[str, Any]:
+    """Validate a detached, URL-only source-context projection and its joins.
+
+    Byte replay and document admission belong to the producer. This consumer
+    checks the closed wire and selected event/cut bindings; it does not convert
+    supplied provenance into native intake, claim support, or historical rights.
+    """
+    item = _require_mapping(payload, name="catalyst_public_evidence")
+    _require_exact_keys(item, _CATALYST_PUBLIC_EVIDENCE_KEYS, name="catalyst_public_evidence")
+    literals = {
+        "contract_id": CATALYST_PUBLIC_EVIDENCE_CONTRACT,
+        "schema_version": "1.0.0",
+        "scope": "event_source_context",
+        "role": "source_context",
+        "rights_profile": "rp_public_primary_v1",
+        "rights_state": "public_primary",
+        "label": "SEC source document",
+    }
+    if any(item.get(key) != value for key, value in literals.items()):
+        raise ContractError("public evidence version, role, source, or rights projection invalid")
+    if item.get("excerpt") is not None:
+        raise ContractError("public evidence excerpts are not admitted")
+    if (
+        item.get("event_id") != event_id
+        or item.get("event_revision_ref") != event_revision_ref
+        or item.get("issuer_cik") != issuer_cik
+    ):
+        raise ContractError("public evidence does not bind the selected event revision")
+    if not isinstance(event_revision_ref, str) or not _PUBLIC_REVISION_REF_RE.fullmatch(event_revision_ref):
+        raise ContractError("public evidence event revision reference invalid")
+    document_ref = item.get("document_ref")
+    if (
+        not isinstance(document_ref, str)
+        or not _PUBLIC_DOCUMENT_REF_RE.fullmatch(document_ref)
+        or document_ref not in document_refs
+    ):
+        raise ContractError("public evidence document is not in the selected event")
+    span_ref = item.get("span_ref")
+    if not isinstance(span_ref, str) or not _PUBLIC_SPAN_REF_RE.fullmatch(span_ref):
+        raise ContractError("public evidence span reference invalid")
+    accession = item.get("accession")
+    if not isinstance(accession, str) or not _SEC_ACCESSION_RE.fullmatch(accession):
+        raise ContractError("public evidence accession invalid")
+    source_class = item.get("source_class")
+    if not isinstance(source_class, str) or source_class not in {"primary_filing", "issuer_release"}:
+        raise ContractError("public evidence source class is not admitted")
+    for key in ("document_content_sha256", "span_text_sha256"):
+        _require_sha(item.get(key), field=key)
+    revision = item.get("document_revision")
+    if type(revision) is not int or revision < 1:
+        raise ContractError("public evidence document revision invalid")
+    size, start, end = (item.get(key) for key in ("document_bytes", "span_start_byte", "span_end_byte"))
+    if (
+        any(type(value) is not int for value in (size, start, end))
+        or not 0 < size <= CATALYST_PUBLIC_EVIDENCE_MAX_BYTES
+        or not 0 <= start < end <= size
+    ):
+        raise ContractError("public evidence byte bounds invalid")
+    url = validate_catalyst_source_url(item.get("url"), issuer_cik=issuer_cik, accession=accession)
+    filed_on = item.get("filed_on")
+    if filed_on is not None and (
+        not isinstance(filed_on, str)
+        or len(filed_on) != 10
+        or parse_date(filed_on, field="public evidence filed_on").isoformat() != filed_on
+    ):
+        raise ContractError("public evidence filing date invalid")
+    clocks = {}
+    for key in ("source_available_at", "observed_at", "projection_cutoff"):
+        _literal, instant = _catalyst_public_timestamp(item.get(key), field=key)
+        clocks[key] = instant
+    _literal, event_observed = _catalyst_public_timestamp(event_observed_at, field="event_observed_at")
+    if not clocks["source_available_at"] <= clocks["observed_at"] <= event_observed <= clocks["projection_cutoff"]:
+        raise ContractError("public evidence clocks do not bind the selected event cut")
+    if filed_on is not None and parse_date(filed_on, field="filed_on") > clocks["projection_cutoff"].date():
+        raise ContractError("public evidence filing date exceeds its projection cut")
+    if generation_cutoff is not None:
+        _literal, cutoff = _catalyst_public_timestamp(generation_cutoff, field="generation_cutoff")
+        if clocks["projection_cutoff"] > cutoff:
+            raise ContractError("public evidence projection exceeds generation cutoff")
+    authority = item.get("authority")
+    if (
+        authority != CATALYST_SOURCE_FACT_AUTHORITY
+        or not isinstance(authority, Mapping)
+        or authority.get("decision_authority") is not False
+    ):
+        raise ContractError("public evidence authority invalid")
+    # Every non-authority field has a closed primitive type; no caller-owned
+    # nested dictionaries or raw document/locator fields survive this copy.
+    result = {key: item[key] for key in _CATALYST_PUBLIC_EVIDENCE_KEYS if key != "authority"}
+    result["url"] = url
+    for key, instant in clocks.items():
+        result[key] = instant.isoformat().replace("+00:00", "Z")
+    result["authority"] = {
+        **CATALYST_SOURCE_FACT_AUTHORITY,
+        "allowed_uses": list(CATALYST_SOURCE_FACT_AUTHORITY["allowed_uses"]),
+        "forbidden_uses": list(CATALYST_SOURCE_FACT_AUTHORITY["forbidden_uses"]),
+    }
+    return result
