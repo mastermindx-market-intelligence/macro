@@ -60,3 +60,46 @@ def representative_key(row, rights=None) -> tuple:
         reason is None, score, bool(row["teaser"]),
         int(row["last_sequence"] or 0), str(row["source"]), str(row["source_item_id"]),
     )
+
+
+def reporting_state(rows, rights=None) -> str:
+    """Compare eligible current headlines without deciding which account is true."""
+    from engine.qbus_news_cluster import _compatible
+
+    titles = set()
+    for row in rows:
+        if rights is None or rights.allows(str(row["source"]), "title"):
+            title = display_text(row["title"])
+            if title:
+                titles.add(title)
+        if len(titles) > 32:
+            return "comparison_limited"
+    ordered = sorted(titles)
+    if any(
+        not _compatible(title, prior)
+        for index, title in enumerate(ordered)
+        for prior in ordered[:index]
+    ):
+        return "reports_differ"
+    return "no_material_difference"
+
+
+def representatives_in_display_order(rows, rights=None, *, comparison=None):
+    """Use quality within compatible reporting; keep material updates visible.
+
+    A stable group can contain opposing facts after one source revises its item.
+    Source prestige cannot decide that disagreement. Fall back to current
+    journal order until reporting converges. This does not adjudicate truth.
+    """
+    rows = list(rows)
+    comparison = comparison or reporting_state(rows, rights)
+    if comparison in {"reports_differ", "comparison_limited"}:
+        return sorted(
+            rows,
+            key=lambda row: (
+                int(row["last_sequence"] or 0),
+                str(row["source"]), str(row["source_item_id"]),
+            ),
+            reverse=True,
+        )
+    return sorted(rows, key=lambda row: representative_key(row, rights), reverse=True)

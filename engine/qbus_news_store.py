@@ -23,7 +23,7 @@ import urllib.parse
 from collections.abc import Mapping
 from typing import Iterable, Sequence
 
-from engine.qbus_news_quality import display_text, publisher_identity, representative_key
+from engine.qbus_news_quality import display_text, publisher_identity, representatives_in_display_order, reporting_state
 from engine.qbus_news_contract import NewsRevision
 from engine.qbus_news_cluster import (
     UNKNOWN_CLUSTER_POLICY_VERSION,
@@ -160,6 +160,8 @@ class StoryRow:
     updated_at: datetime | None
     received_at: datetime
     universe_revision: str
+    reporting_state: str = "not_compared"
+    reporting_sources: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,6 +186,13 @@ class ChangeRow:
     security_ids: tuple[str, ...]
     universe_revision: str
     observed_at: datetime
+    source_count: int | None = None
+    item_count: int | None = None
+    published_at: datetime | None = None
+    updated_at: datetime | None = None
+    received_at: datetime | None = None
+    reporting_state: str = "not_compared"
+    reporting_sources: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -201,6 +210,7 @@ class StoryDetail:
     source_count: int
     item_count: int
     members: tuple[StoryRow, ...]
+    reporting_state: str = "not_compared"
 
 
 # qbus_meta key naming the cluster policy version of the most recent
@@ -560,6 +570,8 @@ def _projection_story(
     item_count: int,
     universe_revision: str,
     rights: NewsReadRights,
+    comparison: str = "not_compared",
+    comparison_sources: tuple[str, ...] = (),
 ) -> StoryRow:
     received_at = _projection_dt(row["received_at"], required=True)
     assert received_at is not None
@@ -577,6 +589,8 @@ def _projection_story(
         updated_at=_projection_dt(row["updated_at"]),
         received_at=received_at,
         universe_revision=universe_revision,
+        reporting_state=comparison,
+        reporting_sources=comparison_sources,
     )
 
 
@@ -1608,7 +1622,12 @@ class NewsStore:
             members = members_by_cluster.get(cluster_id, [])
             if not members:
                 continue
-            representative = max(members, key=lambda row: representative_key(row, rights))
+            comparison = reporting_state(members, rights)
+            comparison_sources = tuple(sorted({
+                str(member["source"]) for member in members
+                if rights.allows(str(member["source"]), "title") and member["title"]
+            }))
+            representative = representatives_in_display_order(members, rights, comparison=comparison)[0]
             out.append(
                 _projection_story(
                     sequence=int(cluster["cluster_sequence"]),
@@ -1622,6 +1641,8 @@ class NewsStore:
                         representative["universe_revision"]
                     ),
                     rights=rights,
+                    comparison=comparison,
+                    comparison_sources=comparison_sources,
                 )
             )
         rows = tuple(out)
@@ -1680,6 +1701,7 @@ class NewsStore:
                 stories.append({
                     "story_id": item.story_id, "story_sequence": item.sequence,
                     "source_count": detail.source_count, "item_count": detail.item_count,
+                    "reporting_state": detail.reporting_state,
                     "reports_truncated": detail.item_count > len(reports), "reports": reports,
                 })
             return {"stories": stories, "has_more": snapshot.has_more or text_limited}
@@ -1847,7 +1869,12 @@ class NewsStore:
         ).fetchall()
         if not rows:
             return None
-        rows = sorted(rows, key=lambda row: representative_key(row, rights), reverse=True)
+        comparison = reporting_state(rows, rights)
+        comparison_sources = tuple(sorted({
+            str(row["source"]) for row in rows
+            if rights.allows(str(row["source"]), "title") and row["title"]
+        }))
+        rows = representatives_in_display_order(rows, rights, comparison=comparison)
         source_count = len({publisher_identity(str(row["source"]), str(row["url"])) for row in rows})
         item_count = len(rows)
         members = tuple(
@@ -1859,6 +1886,8 @@ class NewsStore:
                 item_count=item_count,
                 universe_revision=str(row["universe_revision"]),
                 rights=rights,
+                comparison=comparison,
+                comparison_sources=comparison_sources,
             )
             for row in rows
         )
@@ -1868,6 +1897,7 @@ class NewsStore:
             source_count=source_count,
             item_count=item_count,
             members=members,
+            reporting_state=comparison,
         )
 
     def changes_for_security(
@@ -1944,6 +1974,11 @@ class NewsStore:
                 projected.append(replace(
                     row, kind="upsert", source=best.source, source_item_id=best.source_item_id,
                     title=best.title, url=best.url, teaser=best.teaser,
+                    source_count=detail.source_count, item_count=detail.item_count,
+                    published_at=best.published_at, updated_at=best.updated_at,
+                    received_at=best.received_at, universe_revision=best.universe_revision,
+                    reporting_state=detail.reporting_state,
+                    reporting_sources=best.reporting_sources,
                 ))
             return ChangePage(page.schema, tuple(projected), page.next_sequence, page.has_more)
         finally:

@@ -234,3 +234,62 @@ After a qualified release, verify:
 Rollback uses the existing Git-gated release and service owner. The added index is
 additive; do not delete or rebuild the durable news store during rollback.
 No held Tiingo/financial-news cache work is modified or recreated by this change.
+
+
+## Continuation after session handoff — 20 October 2026
+
+The Chairman confirmed that the sister session had stopped and authorized takeover
+of this same operation and branch. Its final implementation commit
+`af58eb070dc752d04978cf004f51fb6e9987e545` and main-merge checkpoint
+`0a31325c07762ea683fda9ee73e126824d1e68fa` were recovered with a clean working tree.
+No replacement source carrier was created.
+
+The continuation fixes two reproduced correctness defects:
+
+- Quality selects the representative only within materially compatible current
+  reporting. If eligible current reports differ on the existing fact
+  discriminators, the current journal order keeps an accepted update visible.
+  Both current reports remain in the same stable group; recency does not establish
+  truth or imply that one publisher corrected another.
+- Live streams revalidate source/field and derivative-processing scope on every
+  cycle and after a shared read, immediately before each frame. A changed scope
+  emits `restricted` and closes, including a quiet stream with no new revision.
+  Consumers must purge previously delivered rows, annotations and expanded reports.
+
+Snapshot, detail and live projection now carry the same report counts and display
+clocks. Upsert events include `source_count`, `item_count`, `published_at`,
+`updated_at` and `received_at`, so a consumer can apply a validated live row
+without a second snapshot request. Older or incomplete events still require
+authoritative reconciliation. The journal sequence remains the stream cursor;
+these events describe the current projection, not an intermediate-history replay.
+
+The additive `reporting_state` distinguishes `reports_differ`,
+`no_material_difference`, `comparison_limited` and `not_compared`. Comparisons
+use only eligible current titles and stop at 32 distinct titles. Displaying this
+derived state requires derivative permission for every compared source.
+Internal comparison-source metadata is removed from HTTP payloads. Evidence bundles
+include the comparison state alongside exact current report revisions and retain
+their separate audience/publication restrictions.
+
+A focused local run passed **83 tests** across shared-news integration, ticker-news
+API, store, clustering and annotation, with `git diff --check` clean. This includes
+an idle receipt expiry without file changes, derivative revocation with and without
+another report, permission change while awaiting a shared read, material correction
+visibility across all projections, restricted comparison isolation, and complete
+live-row display fields. These are controlled tests, not production acceptance.
+
+A read-only production check at approximately **07:20 UTC** found both the existing
+API and sole news writer active, with a live health receipt and no unresolved gap.
+The configured receipt covers Benzinga through Alpaca for `site_full`, including
+teasers and derivative processing, through 11 October 2027. Additional publisher
+receipts and the optional Massive flag were not configured in the news services.
+This establishes current deployment configuration, not the organization's entire
+commercial entitlement inventory. No receipt, credential or production
+configuration was changed.
+
+The indexed retrieval repair for the reproduced same-security burst miss and the
+browser delivery repair remain in separate bounded Fabric runs under this root.
+Their requests and local controller observations do not constitute accepted
+worker returns. Final integration must preserve this continuation's projection
+changes, qualify the saturation case and the real browser permission lifecycle,
+then follow the existing review, CI, merge and release owners.

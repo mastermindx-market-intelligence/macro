@@ -149,6 +149,47 @@ def test_quality_representative_matches_snapshot_detail_and_stream(tmp_path):
         assert changes.next_sequence == row.sequence
 
 
+
+def test_accepted_correction_stays_visible_over_an_older_high_quality_report(tmp_path):
+    original = "Nvidia wins $8.2 billion contract"
+    corrected = "Nvidia wins $9.1 billion contract"
+    with NewsStore(tmp_path / "q.db", source_key="test") as store:
+        store.commit([massive(title=original), benzinga(title=original)], expected_cursor=None, next_cursor="1")
+        before = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights()).rows[0]
+        assert before.source == "massive:reuters.com"
+        store.commit([benzinga(title=corrected, minute=2)], expected_cursor="1", next_cursor="2")
+        current = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=all_rights()).rows[0]
+        detail = store.story(before.story_id, rights=all_rights())
+        changes = store.projected_changes_for_security(
+            "sec-NVDA", after_sequence=before.sequence, limit=200, rights=all_rights(),
+        )
+        assert current.story_id == before.story_id
+        assert current.title == detail.members[0].title == changes.rows[0].title == corrected
+        assert current.source == detail.members[0].source == changes.rows[0].source == "benzinga"
+        assert len(changes.rows) == 1
+        assert current.item_count == current.source_count == 2
+        assert any(member.title == original for member in detail.members)
+        assert current.reporting_state == detail.reporting_state == changes.rows[0].reporting_state == "reports_differ"
+        assert changes.rows[0].source_count == current.source_count
+        assert changes.rows[0].item_count == current.item_count
+        assert changes.rows[0].published_at == current.published_at
+        assert changes.rows[0].updated_at == current.updated_at
+        assert changes.rows[0].received_at == current.received_at
+        # An ineligible competing report cannot disclose a disagreement.
+        restricted = store.snapshot(
+            "sec-NVDA", limit=20, cursor=None,
+            rights=NewsReadRights(frozenset({"massive:reuters.com"})),
+        ).rows[0]
+        assert restricted.title == original
+        assert restricted.reporting_state == "no_material_difference"
+        from app import ticker_news
+        full = ticker_news._story_row(current, permitted=frozenset({"benzinga", "massive:reuters.com"}))
+        partial = ticker_news._story_row(current, permitted=frozenset({"benzinga"}))
+        assert full["reporting_state"] == "reports_differ"
+        assert partial["reporting_state"] == "not_compared"
+        assert "reporting_sources" not in full and "reporting_sources" not in partial
+
+
 def test_restricted_best_report_cannot_hide_or_leak_into_eligible_view(tmp_path):
     rights = NewsReadRights(
         frozenset({"benzinga"}),
@@ -239,34 +280,119 @@ def test_failed_shared_read_is_not_cached():
     asyncio.run(scenario())
 
 
-def test_stream_rechecks_changed_derivative_policy_without_reparsing_unchanged_policy(monkeypatch, tmp_path):
+@pytest.fixture
+def stream_scope(monkeypatch, tmp_path):
+    """Exercise the real receipt owner with a controllable clock."""
     from app import ticker_news
-    db = tmp_path / "q.db"
-    rights_path = tmp_path / "rights.json"
+    db, rights_path = tmp_path / "q.db", tmp_path / "rights.json"
     policy = receipt(derivative=True)
+    clock = [T0]
+
+    class ReceiptClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock[0].astimezone(tz) if tz else clock[0].replace(tzinfo=None)
+
     rights_path.write_text(json.dumps(policy))
     monkeypatch.setenv("MM_TICKER_NEWS_DB", str(db))
     monkeypatch.setenv("MM_TICKER_NEWS_RIGHTS", str(rights_path))
     monkeypatch.delenv("MM_TICKER_NEWS_ADDITIONAL_RIGHTS", raising=False)
+    monkeypatch.setattr(ticker_news, "datetime", ReceiptClock)
     monkeypatch.setattr(ticker_news, "_security_or_404", lambda *a, **k: ("NVDA", "sec-NVDA"))
-    monkeypatch.setattr(ticker_news, "_rights_for_user", lambda user: NewsReadRights.all_internal())
     with NewsStore(db, source_key="test") as store:
         store.commit([benzinga(title="Nvidia wins $10 billion contract")], expected_cursor=None, next_cursor="1")
+    return ticker_news, db, rights_path, policy, clock
+
+
+@pytest.mark.parametrize("new_revision", [False, True])
+def test_stream_purges_on_derivative_revocation_even_without_new_reporting(stream_scope, new_revision):
+    ticker_news, db, rights_path, policy, _ = stream_scope
 
     async def scenario():
         events = []
         async for chunk in ticker_news._sse_events(ticker="NVDA", user={}, after_sequence=0, poll_seconds=0, max_cycles=2):
+            events.append(chunk)
             if chunk.startswith("event: upsert"):
-                payload = json.loads(next(line[6:] for line in chunk.splitlines() if line.startswith("data: ")))
-                events.append(payload)
-                if len(events) == 1:
-                    policy["capabilities"]["derivative_processing"] = False
-                    rights_path.write_text(json.dumps(policy))
+                policy["capabilities"]["derivative_processing"] = False
+                rights_path.write_text(json.dumps(policy))
+                if new_revision:
                     with NewsStore(db, source_key="test") as store:
                         store.commit([benzinga(title="Nvidia wins $11 billion contract", minute=2)], expected_cursor="1", next_cursor="2")
         assert len(events) == 2
-        assert events[0]["annotation"] is not None
-        assert events[1]["annotation"] is None
+        payload = json.loads(next(line[6:] for line in events[0].splitlines() if line.startswith("data: ")))
+        assert payload["annotation"] is not None
+        assert events[1].startswith("event: restricted")
+        assert "$11" not in events[1]
+    asyncio.run(scenario())
+
+
+def test_stream_rechecks_permission_after_waiting_for_shared_read(stream_scope, monkeypatch):
+    ticker_news, _, rights_path, policy, _ = stream_scope
+
+    class RevokeDuringRead:
+        async def read(self, key, read_page):
+            page = read_page()
+            policy["capabilities"]["derivative_processing"] = False
+            rights_path.write_text(json.dumps(policy))
+            return page
+
+    monkeypatch.setattr(ticker_news, "_STREAM_CHANGE_READER", RevokeDuringRead())
+
+    async def scenario():
+        events = [chunk async for chunk in ticker_news._sse_events(
+            ticker="NVDA", user={}, after_sequence=0, poll_seconds=0, max_cycles=1,
+        )]
+        assert len(events) == 1 and events[0].startswith("event: restricted")
+        assert "$10" not in events[0]
+    asyncio.run(scenario())
+
+
+def test_quiet_stream_expires_a_receipt_without_file_changes(stream_scope):
+    ticker_news, _, rights_path, policy, clock = stream_scope
+    policy["expires_at"] = (T0 + timedelta(seconds=10)).isoformat()
+    rights_path.write_text(json.dumps(policy))
+    unchanged = rights_path.stat()
+
+    async def scenario():
+        events = []
+        async for chunk in ticker_news._sse_events(
+            ticker="NVDA", user={}, after_sequence=0, poll_seconds=0, max_cycles=2,
+        ):
+            events.append(chunk)
+            if chunk.startswith("event: upsert"):
+                clock[0] = T0 + timedelta(seconds=10)
+        assert len(events) == 2
+        assert events[0].startswith("event: upsert")
+        assert events[1].startswith("event: restricted")
+        current = rights_path.stat()
+        assert (current.st_ino, current.st_mtime_ns, current.st_size) == (
+            unchanged.st_ino, unchanged.st_mtime_ns, unchanged.st_size,
+        )
+    asyncio.run(scenario())
+
+
+
+def test_live_upsert_contains_the_display_fields_needed_without_another_snapshot(stream_scope):
+    ticker_news, db, _, _, _ = stream_scope
+    with NewsStore.open_readonly(db, source_key="display-contract") as store:
+        row = store.snapshot(
+            "sec-NVDA", limit=20, cursor=None, rights=ticker_news._rights_for_user({}),
+        ).rows[0]
+    expected = ticker_news._story_row(row, permitted=True)
+
+    async def scenario():
+        events = [chunk async for chunk in ticker_news._sse_events(
+            ticker="NVDA", user={}, after_sequence=0, poll_seconds=0, max_cycles=1,
+        )]
+        assert len(events) == 1 and events[0].startswith("event: upsert")
+        payload = json.loads(next(line[6:] for line in events[0].splitlines() if line.startswith("data: ")))
+        for field in (
+            "story_id", "sequence", "source", "source_item_id", "source_count",
+            "item_count", "title", "url", "teaser", "published_at", "updated_at",
+            "received_at", "universe_revision", "reporting_state", "publisher", "quality",
+        ):
+            assert payload[field] == expected[field], field
+        assert "reporting_sources" not in payload
     asyncio.run(scenario())
 
 

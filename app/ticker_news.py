@@ -636,13 +636,24 @@ def _attach_annotation(
 ) -> dict[str, Any]:
     allowed = payload.get("source") in permitted if isinstance(permitted, frozenset) else permitted
     payload["annotation"] = annotate_row(title, teaser) if allowed else None
+    compared_sources = frozenset(payload.pop("reporting_sources", ()))
+    comparison_allowed = (
+        bool(compared_sources) and compared_sources.issubset(permitted)
+        if isinstance(permitted, frozenset) else permitted is True
+    )
+    if not comparison_allowed:
+        payload["reporting_state"] = "not_compared"
     source = str(payload.get("source") or "")
     url = str(payload.get("url") or "")
     payload["publisher"] = publisher_identity(source, url)
     payload["provider"] = "massive" if source.startswith("massive:") else None
     if title:
         score, reason = story_quality(title=title, url=url, source=source)
-        payload["quality"] = {"score": score, "low_value": reason is not None, "reason": reason}
+        # A material difference must remain discoverable in the signal view.
+        low_value = reason is not None and payload.get("reporting_state") not in {
+            "reports_differ", "comparison_limited",
+        }
+        payload["quality"] = {"score": score, "low_value": low_value, "reason": reason}
     else:
         payload["quality"] = None
     return payload
@@ -759,6 +770,10 @@ def ticker_news_story(
             teaser=member.teaser,
             permitted=permitted,
         )
+    payload["reporting_state"] = (
+        payload["members"][0].get("reporting_state", "not_compared")
+        if payload["members"] else "not_compared"
+    )
     payload["annotations"] = _annotations_payload(permitted)
     return JSONResponse(
         payload,
@@ -872,7 +887,7 @@ async def _sse_events(
     cycles = 0
     permitted = False
     next_heartbeat = 0.0
-    derivative_generation = None
+    previous_scope = None
     previous_rights = None
     while max_cycles is None or cycles < max_cycles:
         cycles += 1
@@ -889,6 +904,16 @@ async def _sse_events(
             )
             return
         previous_rights = rights
+        scope = (rights, _derivative_permitted_after_rights())
+        if previous_scope is not None and scope != previous_scope:
+            yield _sse_encode(
+                "restricted",
+                {"schema": "ticker_news.restricted.v1", "ticker": normalized,
+                 "detail": "ticker news permissions changed; refresh required"},
+            )
+            return
+        previous_scope = scope
+        permitted = scope[1]
         def read_page():
             with _open_store() as store:
                 return store.projected_changes_for_security(
@@ -908,24 +933,14 @@ async def _sse_events(
                 },
             )
             return
-        generation = _rights_generation()
-        if generation != derivative_generation:
-            permitted = _derivative_permitted_after_rights()
-            derivative_generation = generation
-
         for row in page.rows:
-            # A cached read or a slow reader can cross a policy expiry/revocation.
-            # Do not deliver an already-read row under an obsolete permission.
-            if _rights_for_user(user) != rights:
-                yield _sse_encode("restricted", {
-                    "schema": "ticker_news.restricted.v1", "ticker": normalized,
-                    "detail": "ticker news rights changed; reload the current view",
-                })
+            if (_rights_for_user(user), _derivative_permitted_after_rights()) != scope:
+                yield _sse_encode(
+                    "restricted",
+                    {"schema": "ticker_news.restricted.v1", "ticker": normalized,
+                     "detail": "ticker news permissions changed; refresh required"},
+                )
                 return
-            current_generation = _rights_generation()
-            if current_generation != derivative_generation:
-                permitted = _derivative_permitted_after_rights()
-                derivative_generation = current_generation
             sequence = max(sequence, row.sequence)
             payload = _attach_annotation(
                 jsonable_encoder(asdict(row)),
