@@ -946,7 +946,9 @@ async def _sse_events(
             yield _sse_encode(row.kind, payload)
         if not page.rows and time.monotonic() >= next_heartbeat:
             yield ": heartbeat\n\n"
-            next_heartbeat = time.monotonic() + 15.0
+            # EdgeOne's HTTP/1 origin idle deadline defaults to 15 seconds.
+            # Keep quiet streams comfortably inside it without changing reads.
+            next_heartbeat = time.monotonic() + 5.0
         sequence = max(sequence, page.next_sequence)
         if poll_seconds > 0 and not page.has_more:
             await asyncio.sleep(poll_seconds)
