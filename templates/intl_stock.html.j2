@@ -279,6 +279,7 @@
 <script>
 (function () {
   var idx = [], cal = null, sel = -1, items = [], lookupSerial = 0, activeChart = null;
+  var currentRecord = null, statusKey = '', statusTicker = '';
   var q = document.getElementById('q'), sugg = document.getElementById('sugg');
   function lang() { return document.documentElement.getAttribute('data-lang') || 'en'; }
   var T = {
@@ -326,6 +327,11 @@
     return lang() === 'zh' ? (d.label_zh || d.label) + ' · ' + (d.action_zh || d.action)
                            : d.label + ' · ' + d.action;
   }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
   q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
 
   // One unified universe: independent indexes feed the existing market routes.
@@ -351,11 +357,12 @@
     }).then(function (d) {
       // Retain foreign records that settled before this response.
       idx = tagMkt(d, home).concat(idx);
+      refreshPendingSuggestions();
     }).catch(function () { /* Search is optional for a direct stock link. */ });
     STOCK_MKTS.forEach(function (m) {
       if (m[1] === STOCK_HOME) return;
       fetch(m[0] + 'index.json').then(function (r) { return r.json(); })
-        .then(function (e) { idx = idx.concat(tagMkt(e, m)); }).catch(function () {});
+        .then(function (e) { idx = idx.concat(tagMkt(e, m)); refreshPendingSuggestions(); }).catch(function () {});
     });
   })();
   fetch('intlstockdata/calibration.json').then(r => r.ok ? r.json() : null)
@@ -364,21 +371,23 @@
   function fromHash() {
     var t;
     try { t = decodeURIComponent((location.hash || '').slice(1)); }
-    catch (error) { lookupSerial += 1; showLookupStatus(L('invalidlink')); return; }
+    catch (error) { lookupSerial += 1; showLookupStatus('invalidlink'); return; }
     if (t) load(t);
     else { lookupSerial += 1; showLookupStatus(''); }
   }
   window.addEventListener('hashchange', fromHash);
   fromHash();
 
+  var suggestionsActive = false;
   function hideSuggestions() {
+    suggestionsActive = false;
     sugg.style.display = 'none';
     q.setAttribute('aria-expanded', 'false');
     q.removeAttribute('aria-activedescendant');
     sel = -1;
   }
   q.addEventListener('blur', hideSuggestions);
-  q.addEventListener('input', function () {
+  function renderSuggestions() {
     var v = q.value.trim().toLowerCase();
     sel = -1; q.removeAttribute('aria-activedescendant');
     if (!v) { hideSuggestions(); return; }
@@ -394,22 +403,31 @@
     }).slice(0, 12);
     sugg.innerHTML = items.map(function (x, i) {
       return '<div id="intl-stock-option-' + i + '" role="option" aria-selected="false" data-i="' + i + '">' +
-             (x._fl ? '<span style="flex:none;width:18px;text-align:center">' + x._fl + '</span>' : '') +
-             '<b>' + x.t + '</b><small>' + x.n +
-             (x.s ? ' · ' + x.s : '') + '</small><span class="muted" style="font-size:11px">' +
-             disp(x.st) + '</span></div>';
+             (x._fl ? '<span style="flex:none;width:18px;text-align:center">' + esc(x._fl) + '</span>' : '') +
+             '<b>' + esc(x.t) + '</b><small>' + esc(x.n) +
+             (x.s ? ' · ' + esc(x.s) : '') + '</small><span class="muted" style="font-size:11px">' +
+             esc(disp(x.st)) + '</span></div>';
     }).join('');
     sugg.style.display = items.length ? 'block' : 'none';
     q.setAttribute('aria-expanded', items.length ? 'true' : 'false');
+  }
+  function refreshPendingSuggestions() {
+    // A late index may complete an active query, but must not reopen a dismissed
+    // search or change the identity selected for the next Enter key.
+    if (suggestionsActive && document.activeElement === q && sel < 0) renderSuggestions();
+  }
+  q.addEventListener('input', function () {
+    suggestionsActive = true;
+    renderSuggestions();
   });
   q.addEventListener('keydown', function (e) {
     if (e.isComposing || e.keyCode === 229) return;
+    if (e.key === 'Escape') { hideSuggestions(); return; }
     if (sugg.style.display === 'none') return;
     var divs = sugg.querySelectorAll('div');
     if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, divs.length - 1); e.preventDefault(); }
     else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); e.preventDefault(); }
     else if (e.key === 'Enter') { pick(sel >= 0 ? sel : 0); e.preventDefault(); return; }
-    else if (e.key === 'Escape') { hideSuggestions(); return; }
     divs.forEach(function (d, i) {
       d.classList.toggle('sel', i === sel);
       d.setAttribute('aria-selected', i === sel ? 'true' : 'false');
@@ -440,7 +458,7 @@
     var serial = ++lookupSerial;
     // A hash or preference change can start another request before this one
     // settles. Neither a stale record nor its failure may repaint that selection.
-    showLookupStatus(t + ' · ' + L('loading'));
+    showLookupStatus('loading', t);
     var safe = t.replace('=', '_').replace('^', '_');
     fetch('intlstockdata/' + safe + '.json').then(function (r) {
       if (!r.ok) {
@@ -455,20 +473,30 @@
         throw new Error('stock record identity mismatch');
       }
       render(d);
-      document.getElementById('lookup_status').textContent = '';
+      currentRecord = d;
+      statusKey = statusTicker = '';
+      paintLookupStatus();
     }).catch(function (error) {
       if (serial !== lookupSerial) return;
-      showLookupStatus(t + ' · ' + (error.status === 404 ? L('notlib') : L('unavailable')));
+      showLookupStatus(error.status === 404 ? 'notlib' : 'unavailable', t);
     });
   }
 
-  function showLookupStatus(message) {
+  function paintLookupStatus() {
+    var message = statusKey ? L(statusKey) : '';
+    document.getElementById('lookup_status').textContent =
+      message && statusTicker ? statusTicker + ' · ' + message : message;
+  }
+
+  function showLookupStatus(key, ticker) {
+    currentRecord = null;
+    statusKey = key || ''; statusTicker = ticker || '';
     // Keep old facts, chart and decision bands out of the accessible/visible page
     // until the current selection has a complete record. Do not move search focus.
     if (activeChart) { activeChart.destroy(); activeChart = null; }
     document.getElementById('result').style.display = 'none';
     liveHeaderPx({});
-    document.getElementById('lookup_status').textContent = message;
+    paintLookupStatus();
   }
 
   // unified Conviction Profile hero — renders the SAME block as the standout card on
@@ -526,7 +554,7 @@
   // allow_limited idiom, universe-wide (the search universe IS the library universe —
   // scripts/build_intl_library.py:105 was the drop site). Shows an honest limited card —
   // identity, listing date, chart; hides every analysis panel so nothing stale leaks through.
-  function renderLimited(d) {
+  function renderLimited(d, keepChart) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g,
       function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]; }); };
     liveHeaderPx(d);   // no tech.price on a limited rec -> hides a prior ticker's live chip
@@ -553,17 +581,17 @@
       'New listing — first traded ' + d.listed + ', only ' + n + ' session' + (n === 1 ? '' : 's') +
       ' of history so far. The cycle & momentum model needs about a year of trading, so the full analysis unlocks as data accrues. Watch — don\'t chase. Price chart below.',
       '新上市 —— 首个交易日 ' + d.listed + '，目前仅有 ' + n + ' 个交易日。周期与动量模型需约一年历史，完整分析将随数据积累解锁。宜观察，勿追高。下方为价格走势图。')) + '</div>';
-    if (window.StockChart) {
+    if (!keepChart && window.StockChart) {
       try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish — the banner above stands alone */ }
     }
     hideEmptyGroups();
   }
 
-  function render(d) {
+  function render(d, keepChart) {
     document.getElementById('result').style.display = 'block';
     document.getElementById('r_name').textContent = d.name + ' (' + d.ticker + ')';
-    if (d.limited) { renderLimited(d); return; }
+    if (d.limited) { renderLimited(d, keepChart); return; }
     // a full record may follow a limited one — re-show the panels it hid and drop
     // its banner (SV.mount rebuilds sv-decision only when the view-model mounts)
     ['panel_deep', 'panel_mtf', 'r_cal_panel'].forEach(function (id) { var el = document.getElementById(id); if (el) el.style.display = ''; });
@@ -772,7 +800,7 @@
 
     // Bespoke self-hosted chart (chart.js) from our own intl closes (intlohlc/<T>.json):
     // area + client-side RSI/Stoch/MACD/Stoch-RSI/EMA, 1D/3D/1W. Garnish — fails quietly.
-    if (window.StockChart) {
+    if (!keepChart && window.StockChart) {
       try { activeChart = window.StockChart.mount(document.getElementById('tvbox'), d.ticker, {name: d.name, ohlcDir: 'intlohlc'}); }
       catch (e) { /* chart is garnish */ }
     }
@@ -786,11 +814,20 @@
       g.style.display = (panels.length && !anyVisible) ? 'none' : '';
     });
   }
-  document.addEventListener('themechange', function () {
-    fromHash();
-  });
   document.addEventListener('langchange', function () {
-    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果')); fromHash();
+    q.placeholder = L('ph'); q.setAttribute('aria-label', L('ph')); sugg.setAttribute('aria-label', lz('Stock search results', '股票搜索结果'));
+    if (sugg.style.display !== 'none' && items && items.length) {
+      sugg.querySelectorAll('div[data-i]').forEach(function (d) {
+        var x = items[+d.dataset.i]; if (!x) return;
+        var m = d.querySelector('span.muted'); if (m) m.textContent = disp(x.st);
+      });
+    }
+    // Translate the accepted record in place; the chart owns its locale repaint.
+    // Pending/error states keep their request identity and never revive old facts.
+    var requested = '';
+    try { requested = decodeURIComponent((location.hash || '').slice(1)); } catch (e) { /* invalid link */ }
+    if (currentRecord && currentRecord.ticker === requested) render(currentRecord, true);
+    else paintLookupStatus();
   });
 })();
 </script>

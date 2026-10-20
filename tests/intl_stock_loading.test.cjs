@@ -159,18 +159,19 @@ test('clearing the route invalidates a pending stock response', async t => {
   assert.equal(await page.locator('#result').isVisible(), false);
 });
 
-test('latest request wins even when a preference change requests the same ticker', async t => {
+test('latest request wins after an explicit same-ticker reselection', async t => {
   const {page, select, reply, requested}=await setup(t);
-  await select('SAME');
-  const second=requested('SAME');
-  await page.evaluate(()=>document.dispatchEvent(new Event('langchange'))); await second;
+  await select('RETRY');
+  const second=requested('RETRY');
+  await page.locator('#q').fill('RETRY');
+  await page.locator('#q').press('Enter'); await second;
   // The old request settles first. It must remain hidden until the current one settles.
-  const settled=page.waitForEvent('requestfinished',req=>req.url().endsWith('/SAME.json'));
-  await reply('SAME', record('SAME',{name:'Obsolete'})); await settled;
+  const settled=page.waitForEvent('requestfinished',req=>req.url().endsWith('/RETRY.json'));
+  await reply('RETRY', record('RETRY',{name:'Obsolete'})); await settled;
   await page.evaluate(()=>new Promise(requestAnimationFrame));
   assert.equal(await page.locator('#result').isVisible(), false);
-  await reply('SAME', record('SAME',{name:'Current'})); await renderedStock(page,'SAME','Current');
-  assert.equal(await page.locator('#r_name').innerText(), 'Current (SAME)');
+  await reply('RETRY', record('RETRY',{name:'Current'})); await renderedStock(page,'RETRY','Current');
+  assert.equal(await page.locator('#r_name').innerText(), 'Current (RETRY)');
 });
 
 test('selecting the same ticker retries a failed lookup through the native search control', async t => {

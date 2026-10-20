@@ -319,13 +319,15 @@
     this.host.innerHTML = '';
     this.wrap = document.createElement('div'); this.wrap.className = 'bchart';
     this.host.appendChild(this.wrap);
-    this.renderMsg(tt('Loading chart…', '正在加载图表…'));
+    document.addEventListener('langchange', this._onLang);
+    this.renderMsg('Loading chart…', '正在加载图表…');
     var self = this;
     function use(j) {
       if (self._destroyed) return;
-      if (!j || !j.bars || !j.bars.length) { self.renderMsg(tt(
+      // Legacy inline payloads can omit t; a supplied identity must match the request.
+      if (!j || (j.t !== undefined && j.t !== self.ticker) || !j.bars || !j.bars.length) { self.renderMsg(
         'Live chart unavailable for this name — the analysis above stands on its own.',
-        '该标的暂无图表数据 —— 上方分析独立成立。')); return; }
+        '该标的暂无图表数据 —— 上方分析独立成立。'); return; }
       self.data = j;
       self.rows = normalise(j);
       self.hasVol = self.rows.some(function (r) { return r.v != null && r.v > 0; });
@@ -333,23 +335,24 @@
       self.rerender();
       self.loadSignals();   // lazy-load site/signals/<T>.json (markers + Last Signals panel)
       document.addEventListener('themechange', self._onTheme);
-      document.addEventListener('langchange', self._onLang);
       document.addEventListener('keydown', self._onKey);
     }
     // Inline data (HK) renders without a round-trip; otherwise fetch the market's dir.
     if (this.opts.data) { use(this.opts.data); return this; }
     var url = this.ohlcDir + '/' + safeName(this.ticker) + '.json';
     fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(use)
-      .catch(function () { self.renderMsg(tt('Chart failed to load.', '图表加载失败。')); });
+      .catch(function () { self.renderMsg('Chart failed to load.', '图表加载失败。'); });
     return this;
   };
 
-  Instance.prototype.renderMsg = function (msg) {
+  Instance.prototype.renderMsg = function (en, zh) {
     if (this._destroyed) return;
-    this.wrap.innerHTML = '<div class="bchart-msg">' + msg + '</div>';
+    this._message = [en, zh];
+    this.wrap.innerHTML = '<div class="bchart-msg">' + tt(en, zh) + '</div>';
   };
 
   Instance.prototype.buildUI = function () {
+    this._message = null;
     var self = this;
     this.wrap.innerHTML = '';
     // toolbar
@@ -424,9 +427,10 @@
     if (this.wrap && this.wrap.classList.contains('bchart-full')) this.toggleFull();
   };
   Instance.prototype.rebuildUI = function () {
+    if (this._message) { this.renderMsg(this._message[0], this._message[1]); return; }
     if (!this.rows) return;
     var active = document.activeElement;
-    var restore = this.wrap.classList.contains('bchart-full') && this.wrap.contains(active);
+    var restore = this.wrap.contains(active);
     var focusAttr = ['data-tf', 'data-k', 'data-sig'].find(function (name) { return active.hasAttribute(name); });
     var focusValue = focusAttr && active.getAttribute(focusAttr);
     var wasSummary = active.tagName === 'SUMMARY';
@@ -450,7 +454,7 @@
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (j) {
           if (self._destroyed || serial !== self._timeframeSerial) return;
-          if (j && j.bars && j.bars.length) {
+          if (j && (j.t === undefined || j.t === self.ticker) && j.bars && j.bars.length) {
             self.intradayRows = normaliseIntra(j);
             self.tf = '4H'; self.persist(); self.syncBar(); self.rerender();
           } else { self.syncBar(); }
@@ -821,6 +825,8 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
         if (self._destroyed || !j || !j.markers || !j.markers.length) return;   // no file (non-US, or none) -> silent
+        // Anonymous legacy payloads remain supported; supplied identity must agree.
+        if (j.ticker !== undefined && j.ticker !== self.ticker) return;
         self.signals = j;
         if (self.chips && !self.chips.querySelector('[data-sig]')) self.appendSignalsChip();
         self.renderSignals();   // chart already built: attach overlay + panel, no full rebuild
