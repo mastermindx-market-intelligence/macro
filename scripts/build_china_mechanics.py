@@ -340,15 +340,47 @@ def _cross_market_panel() -> dict:
 # advises, scores, ranks or originates state (CN-SYS-R1).
 
 _WHO_EN = {"institutional": "institutions", "offshore": "offshore money (HK southbound)",
-           "retail": "retail traders", "margin": "leveraged (margin) money"}
+           "retail": "retail traders", "margin": "leveraged (margin) money",
+           "state_proxy": "a state-proxy pattern (falling turnover with southbound outflow)",
+           "mixed": "no single group"}
 _WHO_ZH = {"institutional": "机构", "offshore": "外资（港股通南向）",
-           "retail": "散户", "margin": "融资盘"}
+           "retail": "散户", "margin": "融资盘",
+           "state_proxy": "国家队代理形态（成交萎缩且南向流出）", "mixed": "无单一主导方"}
 _IMPULSE_EN = {"easing": "broad easing", "targeted_support": "targeted support",
                "market_rescue": "market rescue", "neutral": "neutral", "tightening": "tightening"}
 _IMPULSE_ZH = {"easing": "全面宽松", "targeted_support": "定向支持",
                "market_rescue": "救市", "neutral": "中性", "tightening": "收紧"}
-_RISK_EN = {"frothy": "frothy", "fire_sale": "fire-sale", "normal": "near-normal"}
-_RISK_ZH = {"frothy": "泡沫化", "fire_sale": "恐慌抛售", "normal": "接近正常"}
+_RISK_EN = {"frothy": "frothy", "fire_sale": "fire-sale", "normal": "near-normal", "low": "low"}
+_RISK_ZH = {"frothy": "泡沫化", "fire_sale": "恐慌抛售", "normal": "接近正常", "low": "低"}
+_REGIME_LABELS = {
+    "dormant": ("Dormant", "沉寂"),
+    "institutional_accumulation": ("Institutional Accumulation", "机构吸筹"),
+    "retail_ignition": ("Retail Ignition", "散户点火"),
+    "margin_acceleration": ("Margin Acceleration", "杠杆加速"),
+    "broad_mania": ("Broad Mania", "全面亢奋"), "distribution": ("Distribution", "派发"),
+    "forced_deleveraging": ("Forced Deleveraging", "强制去杠杆"), "unclear": ("Unclear", "不明朗")}
+_WHO_LABELS = {
+    "retail": ("retail", "散户"), "institutional": ("institutional", "机构"),
+    "margin": ("margin (leveraged)", "融资盘"), "state_proxy": ("state-proxy pattern", "国家队代理形态"),
+    "offshore": ("offshore (southbound)", "外资（南向）"),
+    "mixed": ("mixed — no single leg dominates", "多方混合，无单一主导"),
+    "unclear": ("unclear — data gaps", "不明朗（数据缺口）")}
+_RISK_LABELS = {"low": ("low", "低"), "normal": ("normal", "正常"), "frothy": ("frothy", "泡沫化"),
+                "fire_sale": ("fire-sale", "恐慌抛售")}
+_UNCLASSIFIED = ("not classified", "未分类")
+
+
+def _participation_labels(latest: dict | None) -> dict:
+    """Return {'regime'|'who'|'risk': {'en': str, 'zh': str}} for the participation row."""
+    lpl = latest or {}
+    out = {}
+    for key, field, table in (("regime", "regime", _REGIME_LABELS),
+                              ("who", "who_controls", _WHO_LABELS),
+                              ("risk", "risk", _RISK_LABELS)):
+        val = lpl.get(field) or ("unclear" if key == "regime" else None)
+        en, zh = table.get(val, _UNCLASSIFIED) if val else ("—", "—")
+        out[key] = {"en": en, "zh": zh}
+    return out
 
 
 def _compose_state_reading(participation: dict, phase: dict, policy: dict) -> dict:
@@ -383,6 +415,8 @@ def _compose_state_reading(participation: dict, phase: dict, policy: dict) -> di
     turnover_ref = tz20 if tz20 is not None else tz60
     p_en = "Participation is led by " + (_WHO_EN.get(who, "no single group") if who else "no single group")
     p_zh = "参与方面，" + (_WHO_ZH.get(who, "无单一主导方") if who else "无单一主导方") + "主导"
+    if who == "unclear":
+        p_en, p_zh = "Participation could not be classified (data gaps)", "参与结构无法判定（数据缺口）"
     bits_en, bits_zh = [], []
     if sbz is not None and sbz >= 1.0:
         bits_en.append(f"offshore (southbound) flow is unusually active at z=+{sbz:.1f}")
@@ -445,6 +479,7 @@ def build_payload() -> dict:
         "state_reading": state_reading,
         "phase_catalog": PHASE_CATALOG,
         "participation": participation,
+        "participation_labels": _participation_labels((participation or {}).get("latest")),
         "limits": limits,
         "phase": phase,
         "policy": policy,
