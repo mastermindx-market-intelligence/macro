@@ -816,6 +816,88 @@ def _validate_reported_change_evidence(
             raise EvidenceError("reported-change source_ref_ids invalid")
 
 
+_PROFITABILITY_NATIVE_FIELDS = frozenset({
+    "schema", "kind", "issuer_id", "profit_metric", "current_fiscal_period",
+    "prior_fiscal_period", "currency", "unit", "accounting_basis",
+    "current_event_id", "prior_event_id", "current_revenue", "prior_revenue",
+    "current_profit", "prior_profit", "current_margin", "prior_margin",
+    "margin_change_bps", "revenue_change_fraction", "profit_change",
+    "revenue_component", "margin_component", "decomposition", "source_refs",
+    "source_available_at", "decision_at", "rank_authority", "entry_authority",
+})
+
+
+def _validate_profitability_evidence(
+    item: Mapping[str, Any], *, issuer_id: str, event_id: str, parent_decision: datetime
+) -> None:
+    """Recheck the native serialized bridge; this does not authenticate sources.
+
+    Original Actual period/basis admission remains the producer's responsibility.
+    Only quantities, source references and clocks actually carried by this output
+    can be revalidated here; missing original source context is never invented.
+    """
+    if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
+            or item.get("kind") != "COMPARABLE_PROFITABILITY_BRIDGE"):
+        raise EvidenceError("invalid profitability bridge")
+    if frozenset(item) != _PROFITABILITY_NATIVE_FIELDS:
+        raise EvidenceError("profitability bridge fields are not closed")
+    if item["issuer_id"] != issuer_id or item["current_event_id"] != event_id:
+        raise EvidenceError("profitability bridge identity mismatch")
+    for key in ("issuer_id", "current_event_id", "prior_event_id", "current_fiscal_period",
+                "prior_fiscal_period", "currency", "unit", "accounting_basis"):
+        required_text(item[key], "profitability " + key)
+    if (not isinstance(item["profit_metric"], str)
+            or item["profit_metric"] not in {"gross_profit", "operating_income", "net_income"}):
+        raise EvidenceError("profitability profit metric invalid")
+    if item["decomposition"] != "SYMMETRIC_REVENUE_MARGIN_IDENTITY_NOT_CAUSAL_ATTRIBUTION":
+        raise EvidenceError("profitability decomposition invalid")
+    _require_non_authoritative_child(item)
+    child_decision = aware_utc(item["decision_at"], "profitability decision_at")
+    if child_decision > parent_decision:
+        raise EvidenceError("profitability bridge is from the future")
+    refs, clocks = item["source_refs"], item["source_available_at"]
+    if not isinstance(refs, list) or len(refs) != 4:
+        raise EvidenceError("profitability source references invalid")
+    if not isinstance(clocks, list) or len(clocks) != 4:
+        raise EvidenceError("profitability source clocks invalid")
+    for ref, clock in zip(refs, clocks):
+        required_text(ref, "profitability source reference")
+        if aware_utc(clock, "profitability source clock") > child_decision:
+            raise EvidenceError("profitability source evidence is from the future")
+    values = [finite(item[key]) for key in
+              ("current_revenue", "prior_revenue", "current_profit", "prior_profit")]
+    if any(value is None for value in values):
+        raise EvidenceError("profitability values must be finite")
+    cr, pr, cp, pp = values
+    if cr <= 0 or pr <= 0:
+        raise EvidenceError("profitability revenue denominators must be positive")
+    cm, pm = cp / cr, pp / pr
+    revenue_change, margin_change = cr - pr, cm - pm
+    expected = {
+        "current_margin": cm, "prior_margin": pm,
+        "margin_change_bps": margin_change * 10000,
+        "revenue_change_fraction": revenue_change / pr,
+        "profit_change": cp - pp,
+        "revenue_component": revenue_change * (cm / 2 + pm / 2),
+        "margin_component": margin_change * (cr / 2 + pr / 2),
+    }
+    if not all(isfinite(value) for value in expected.values()):
+        raise EvidenceError("profitability calculation overflow")
+    for key, expected_value in expected.items():
+        actual = finite(item[key])
+        # Numerical tolerance may not reverse the explanation's direction or
+        # turn a true zero into favorable/adverse evidence.
+        if (actual is None or (actual > 0) != (expected_value > 0)
+                or (actual < 0) != (expected_value < 0)
+                or not isclose(actual, expected_value, rel_tol=1e-12, abs_tol=1e-12)):
+            raise EvidenceError("profitability " + key + " mismatch")
+    if not isclose(expected["revenue_component"] + expected["margin_component"],
+                   expected["profit_change"], rel_tol=1e-10,
+                   abs_tol=1e-10 * max(1.0, abs(expected["revenue_component"]),
+                                      abs(expected["margin_component"]))):
+        raise EvidenceError("profitability arithmetic failed to reconcile")
+
+
 def factual_dossier(
     *,
     event_id: str,
@@ -900,14 +982,8 @@ def factual_dossier(
         _require_non_authoritative_child(item)
 
     for item in profit_bridges:
-        if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
-                or item.get("kind") != "COMPARABLE_PROFITABILITY_BRIDGE"):
-            raise EvidenceError("invalid profitability bridge")
-        if item.get("issuer_id") != issuer_id or item.get("current_event_id") != event_id:
-            raise EvidenceError("profitability bridge identity mismatch")
-        if aware_utc(str(item.get("decision_at"))) > decision:
-            raise EvidenceError("profitability bridge is from the future")
-        _require_non_authoritative_child(item)
+        _validate_profitability_evidence(
+            item, issuer_id=issuer_id, event_id=event_id, parent_decision=decision)
 
     for cash in cash_flows:
         _validate_cash_flow_case(cash,issuer_id=issuer_id,event_id=event_id,decision_at=decision_at)
@@ -1340,9 +1416,8 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
                       "signed_gap_to_initial_midpoint": delivered.get("signed_gap_to_initial_midpoint")}))
 
     for index, bridge in enumerate(rows("profitability_bridges")):
-        if (bridge.get("issuer_id") != issuer or bridge.get("current_event_id") != event
-                or aware_utc(bridge.get("decision_at")) > decision):
-            raise EvidenceError("brief profitability identity or clock mismatch")
+        _validate_profitability_evidence(
+            bridge, issuer_id=issuer, event_id=event, parent_decision=decision)
         delta = number(bridge.get("margin_change_bps"), "margin change")
         sales = number(bridge.get("revenue_change_fraction"), "sales change")
         metric = bridge.get("profit_metric")
@@ -1354,7 +1429,7 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
         if delta != 0:
             text += f" by {abs(delta):.1f} basis points"
         text += ". Revenue growth and margin improvement are separate facts."
-        (counters if delta < 0 else facts).append(item("MARGIN_COMPRESSION" if delta < 0 else "MARGIN_EXPANSION" if delta > 0 else "MARGIN_UNCHANGED",text,ref,
+        (counters if delta < 0 else facts if delta > 0 else context).append(item("MARGIN_COMPRESSION" if delta < 0 else "MARGIN_EXPANSION" if delta > 0 else "MARGIN_UNCHANGED",text,ref,
             {"margin_change_bps": delta, "revenue_change_fraction": sales,
              "profit_change": bridge.get("profit_change"),
              "revenue_component": bridge.get("revenue_component"),

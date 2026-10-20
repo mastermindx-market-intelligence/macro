@@ -8479,6 +8479,8 @@ jobs:
     paths:
       - "app/prophet_lab.py"
       - "engine/prophet_lab/**"
+      - "engine/sue.py"
+      - "tests/test_us_prophet_fusion.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
@@ -8574,6 +8576,10 @@ jobs:
           python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
           tests/test_prophet_today_provenance.py
           tests/test_prophet_daily_brief_api.py -q
+      - name: Prophet profitability evidence - native arithmetic and interpretation boundaries
+        run: >-
+          python -m pytest tests/test_us_prophet_fusion.py -q
+          -k 'profitability or unchanged_margin_is_neutral or native_json_bridge'
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry

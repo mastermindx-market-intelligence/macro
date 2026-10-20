@@ -5115,8 +5115,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_700),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -6033,6 +6033,25 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
     ceilings, suites, scopes, commands, assertions and ten-pack limit remain
     unchanged. These are planning weights, not execution times.
+
+    2026-10-20 Prophet profitability ingress integrity (original PR9821):
+    Accepted main fc16cd51 and the integrated manifest were measured from
+    the original worktree on the same combined source tree
+    e67d034c0e5de13f9c3166a53f28481f9173d9ae. The existing prophet-lab job
+    gains one focused profitability/neutral-margin/native-bridge regression
+    step. It adds exactly three estimator units and no selected job:
+
+        templates/index.html          135 jobs, 5822 -> 5825 weight
+        scripts/build_free_content.py 134 jobs, 5697 -> 5700 weight
+        engine/prophet/plan_book.py    128 jobs, 5571 -> 5574 weight
+
+    All selected job IDs are identical between the two measurements; each
+    remains at ten packs. Fund only the two measured weight breaches:
+    index 5822 -> 5825 and build 5697 -> 5700. Preserve the plan-book bound,
+    every job-count/pack bound, scope, suite, assertion and dependency owner.
+    These are planning weights, not measured execution times. The prior
+    diagnostic run from the Mac home directory is excluded: qualification
+    uses the canonical repository working directory, as the test does.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
