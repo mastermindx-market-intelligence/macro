@@ -4918,7 +4918,7 @@ CURATED_EXCLUSIVE = {
     # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
     # fixtures, which opaque inference smeared onto build_free_content
     # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
-    # Pin the full measured eight-file static closure plus ancestor inits and
+    # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
 }
@@ -5089,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_667),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_670),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5182,6 +5182,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
 
+    The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
+    2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
+    in unrun-vector-baskets right after W23-L11's (job weight 34 -> 37,
+    measured on the merged run text). Same job, same pure run-text
+    weight, no new entrant: build_free_content rises by exactly 3 on any
+    base that already holds #9819, so fund 5,661 -> 5,664. index.html and
+    plan_book stay under their ceilings even if they select this job
+    (5,789 and 5,538 at most). Every other bound stays unchanged.
+
     WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
     to prophet-lab's existing invocation. The unchanged estimator retains eight
     commands and one command-length unit; explicit test paths increase 20 -> 23,
@@ -5210,6 +5219,13 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The fixed pin carries the nine-unit country-cycles step; its existing
     three-unit Spvector allowance is retained without asserting that suite
     is present. Validate the actual combined manifest; other bounds stay fixed.
+
+    Accepted 92c51f composition (2026-10-20) retains both W23-L11 and
+    W23-L13 Spvector steps and adds only the six required WM/KO units:
+    5,664 + 6 = 5,670. The older f54eeb allowance above describes that
+    earlier pin; both vector steps are present at this accepted base.
+    Validate the full combined manifest with the unchanged canonical
+    estimator and absolute assertion; every other bound stays fixed.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

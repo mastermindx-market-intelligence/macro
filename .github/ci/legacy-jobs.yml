@@ -5087,6 +5087,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "scripts/__init__.py"
+      - "scripts/local_projection_alfred_panel.py"
       - "scripts/run_local_projections.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
@@ -9973,7 +9974,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install capital-structure test deps
-        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3
+        run: pip install pytest pandas numpy pyarrow jsonschema==4.26.0 requests pyyaml jinja2 fastapi httpx boto3 beautifulsoup4
       # P1 unrun backfill 2026-08-14: the REGISTRATION-LIFECYCLE compiler joins the step
       # that already owns every other capital-structure compiler and contract.
       # tests/test_compile_capital_structure_registration_lifecycles.py was named by no
@@ -10043,7 +10044,7 @@ jobs:
           tests/test_capital_structure_pit.py
           tests/test_capital_structure_projection.py
           tests/test_build_capital_structure_projection.py
-          tests/test_capital_structure_page.py
+          tests/test_capital_structure_page.py tests/test_bond_issue_terms.py tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10792,6 +10793,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
@@ -13751,6 +13753,19 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      # Native LP card import/source closure, measured after consumer adoption.
+      - "engine/local_projection_research_card.py"
+      - "engine/local_projections.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json"
+      - "research/local_projections/reproduce_alfred_cpi_payroll_v2.py"
+      - "scripts/local_projection_alfred_panel.py"
+      - "scripts/run_local_projections.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
@@ -15998,6 +16013,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -18967,6 +18985,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -25260,6 +25280,15 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: vector allocation surfaces + the calibration ledger and basket pulse they read
         run: python -m pytest tests/test_basket_turn_watch.py tests/test_btc_overrides.py tests/test_regime_dynamics_null_gaps.py tests/test_signal_surface_bugfixes.py tests/test_spvector_page.py tests/test_trial_log_refresh.py tests/test_validation_effective_t.py tests/test_vector_conviction.py -q
+      # W23-L11 (S&P Vector, 2026-10-20): the chip that read "Dislocation" computes the re-deploy
+      # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
+      - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs
+        run: python -m pytest tests/test_spvector_gate_chips.py -q
+      # W23-L13 (S&P Vector, 2026-10-20): the scorecard states its basis -- backtest window, the
+      # bootstrap CI definition, the Sharpe>0 share and the drawdown CI -- and the overlay card
+      # tallies its forward log (days, builds, veto days). Pure helper + fixture renders.
+      - name: W23-L13 spvector scorecard basis + overlay forward-log tally
+        run: python -m pytest tests/test_spvector_scorecard_basis.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
@@ -25298,6 +25327,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -26642,6 +26674,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
