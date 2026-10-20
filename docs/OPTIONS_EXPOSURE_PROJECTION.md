@@ -119,10 +119,15 @@ Counts and digests are independent of viewport/legacy marginal windowing.
 `cell_count` reports the entire candidate grid. `cells_status=complete` means
 all candidate cells are serialized (not that their Greeks qualify). With no
 owner context, the grid is withheld as `source_unqualified`, retaining population
-counts and aggregate exclusion reasons. A grid exceeding 2 MiB of compact JSON
-is withheld in full as `payload_limit`, leaving room within the incumbent feed's
-8 MiB event limit. Neither state is an empty book or a truncated ranking; a
-consumer must not substitute legacy rows for an unavailable projection.
+counts and aggregate exclusion reasons. No cells are truncated. The existing
+nightly publisher measures the entire GEX SSE event (legacy fields and attached
+history included) against its unchanged 8 MiB ceiling with a 1 KiB control-frame
+reserve. If necessary it withholds the whole optional projection as
+`payload_limit`, preserving counts and aggregate qualification metadata. If the
+legacy envelope still exceeds the budget, publication is suppressed to preserve
+the last-good object. Neither withholding state is an empty book or permission
+to promote legacy rows to qualified cells. A separately validated dated legacy
+reference retains its own availability and explicit reference status.
 Correction/source identity changes alter the membership digest. A historical
 source keeps its historical session and expiry, regardless of viewing time.
 
@@ -148,3 +153,47 @@ dry run first; this flag does not authorize publication, overwrite or source acc
 Focused verification: `tests/test_options_exposure_projection.py`, plus existing
 Options Hub/contract-v2/nightly-builder tests. Synthetic owner receipts exercise
 the accepted and refusal paths; they are not real source or production evidence.
+
+
+## Version 2 compact wire representation
+
+The producer now emits `schema=options_hub.exposure_projection/v2` with
+`cell_encoding=tuple-v1`. Source, clocks, input digest, aggregate metrics,
+population, cell count and withholding status retain their previous meanings.
+Only cell representation changes; values are neither rounded nor sampled.
+Units, status names and identity strings are shared in explicit tables:
+
+```text
+metric_order = [gamma, vanna, charm]
+metric_statuses = [unavailable, partial, complete_observed, complete_expected]
+cell_fields = [expiry_index, strike, population_index, metrics, joint]
+metric_fields = [expected, received, qualified, missing, status_index, net, gross,
+  known_net, known_gross, qualified_population_index, call, put, exclusions]
+joint_fields = [expected, received, qualified, missing, population_index,
+  model_index, complete]
+```
+
+`expiry_terms` contains `[expiry,economic_expiry_at|null]` pairs. `population_ids`
+contains the exact original 64-hex digests; `model_refs` contains exact model
+references. Table indices are zero-based integers. A cell has the five fields
+above; its `metrics` array has exactly three tuples in `metric_order`.
+`metric_units` maps those metric names to their exact existing dollar units.
+Each metric tuple has 13 fields and each joint tuple has seven. The joint
+`model_index` is null when there is no common model. No table reference may be
+coerced, truncated or used outside its table. The field arrays and encoding
+version are serialized explicitly so unsupported shapes can be refused.
+
+`expand_projection_cells` is the Python reference expansion, exercised by
+lossless round-trip tests. Terminal validates untrusted v2 bytes and expands
+them into the same in-memory metric/cell contract; older v1 reads remain a
+consumer compatibility responsibility. No duplicate verbose cell array ships.
+
+The native EOD Greek normalizer now retains raw `timestamp` and
+`underlying_timestamp` columns when supplied, across order1/2/3 slicing. It
+does not infer zones, underlying clocks, first availability or absent columns.
+The exact input digest binds either raw clock when present, so changing its
+observation invalidates an old receipt. Older rows without the columns retain
+their prior digest shape and do not acquire retrospective clocks. Different raw
+observation clocks survive full-row dedup; duplicate economic keys must remain
+subject to the existing downstream qualification/refusal rule, never summed as
+if they were separate contracts. No collector endpoint or service was activated.

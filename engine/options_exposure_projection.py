@@ -8,6 +8,7 @@ All arithmetic delegates to exposure_math; no fallback IV or tenor floor.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from decimal import Decimal
 import hashlib
 import json
 import math
@@ -28,10 +29,134 @@ RAW_UNITS = {
     "charm": "delta_per_elapsed_calendar_year",
 }
 
-# The incumbent SSE consumer caps the complete event at 8 MiB. Reserve space
-# for the legacy payload; withhold an oversized joint projection as a whole,
-# never rank a silently truncated population.
-MAX_CELL_BYTES = 2 * 1024 * 1024
+# The incumbent SSE consumer caps the complete event at 8 MiB. A projection
+# cannot exceed that by itself; the publisher separately budgets ALL fields.
+MAX_GEX_SSE_BYTES = 8 * 1024 * 1024
+SSE_CONTROL_RESERVE_BYTES = 1024
+MAX_CELL_BYTES = MAX_GEX_SSE_BYTES - SSE_CONTROL_RESERVE_BYTES
+CELL_ENCODING = "tuple-v1"
+CELL_FIELDS = ("expiry_index", "strike", "population_index", "metrics", "joint")
+METRIC_FIELDS = ("expected", "received", "qualified", "missing", "status_index",
+                 "net", "gross", "known_net", "known_gross", "qualified_population_index",
+                 "call", "put", "exclusions")
+JOINT_FIELDS = ("expected", "received", "qualified", "missing", "population_index",
+                "model_index", "complete")
+METRIC_STATUSES = ("unavailable", "partial", "complete_observed", "complete_expected")
+
+
+def encode_projection_cells(cells):
+    """Lossless v2 wire encoding; repeated units, keys and identities are shared.
+
+    The five cell fields and nested tuple columns are explicit on the wire.
+    Values, nulls, counts and all original identity digests retain their precision.
+    There is no row sampling, rounded numeric encoding or inferred denominator.
+    """
+    populations, models, expiries = {}, {}, {}
+
+    def intern(table, value):
+        if value not in table:
+            table[value] = len(table)
+        return table[value]
+
+    encoded = []
+    for cell in cells:
+        metrics = []
+        for metric in METRIC_UNITS:
+            m = cell[metric]
+            metrics.append([m["expected"], m["received"], m["qualified"], m["missing"],
+                METRIC_STATUSES.index(m["status"]), m["net"], m["gross"], m["known_net"],
+                m["known_gross"], intern(populations, m["qualified_population_id"]),
+                m["call"], m["put"], m["exclusions"]])
+        j = cell["joint"]
+        encoded.append([
+            intern(expiries, (cell["expiry"], cell["economic_expiry_at"])), cell["strike"],
+            intern(populations, cell["population_id"]), metrics,
+            [j["expected"], j["received"], j["qualified"], j["missing"],
+             intern(populations, j["population_id"]),
+             None if j["model_ref"] is None else intern(models, j["model_ref"]), j["complete"]],
+        ])
+    return {"cell_encoding": CELL_ENCODING, "cell_fields": list(CELL_FIELDS),
+        "metric_order": list(METRIC_UNITS), "metric_fields": list(METRIC_FIELDS),
+        "joint_fields": list(JOINT_FIELDS), "metric_statuses": list(METRIC_STATUSES),
+        "metric_units": dict(METRIC_UNITS), "population_ids": list(populations),
+        "model_refs": list(models), "expiry_terms": [list(pair) for pair in expiries],
+        "cells": encoded}
+
+
+def expand_projection_cells(projection):
+    """Reference expansion of producer v2 bytes for Python integration/tests.
+
+    The Terminal independently validates untrusted wire bytes before expansion.
+    This helper accepts the producer's own v2 shape, not an admission receipt.
+    """
+    if (projection.get("schema") != "options_hub.exposure_projection/v2"
+            or projection.get("cell_encoding") != CELL_ENCODING
+            or projection.get("cell_fields") != list(CELL_FIELDS)
+            or projection.get("metric_fields") != list(METRIC_FIELDS)
+            or projection.get("joint_fields") != list(JOINT_FIELDS)
+            or projection.get("metric_order") != list(METRIC_UNITS)
+            or projection.get("metric_statuses") != list(METRIC_STATUSES)
+            or projection.get("metric_units") != METRIC_UNITS):
+        raise ValueError("Unsupported exposure cell encoding")
+    out = []
+    for exp, strike, pop, metric_rows, joint in projection["cells"]:
+        expiry, economic = projection["expiry_terms"][exp]
+        cell = {"expiry": expiry, "economic_expiry_at": economic, "strike": strike,
+                "population_id": projection["population_ids"][pop]}
+        for metric, values in zip(METRIC_UNITS, metric_rows, strict=True):
+            m = dict(zip(METRIC_FIELDS, values, strict=True))
+            m["unit"] = METRIC_UNITS[metric]
+            m["status"] = METRIC_STATUSES[m.pop("status_index")]
+            m["qualified_population_id"] = projection["population_ids"][m.pop("qualified_population_index")]
+            cell[metric] = m
+        j = dict(zip(JOINT_FIELDS, joint, strict=True))
+        j["population_id"] = projection["population_ids"][j.pop("population_index")]
+        idx = j.pop("model_index")
+        j["model_ref"] = None if idx is None else projection["model_refs"][idx]
+        cell["joint"] = j
+        out.append(cell)
+    return out
+
+
+def gex_sse_bytes(payload):
+    """Conservative UTF-8 budget for the broadcaster's `data: JSON` frame.
+
+    JavaScript writes 1e-6 through 1e20 in decimal form where Python may choose
+    scientific notation. Budget that expansion rather than relying on the small
+    control reserve to absorb a large array of tiny/large finite values.
+    """
+    def number_expansion(value):
+        if isinstance(value, dict):
+            return sum(number_expansion(v) for v in value.values())
+        if isinstance(value, (list, tuple)):
+            return sum(number_expansion(v) for v in value)
+        if isinstance(value, float) and 1e-6 <= abs(value) < 1e21:
+            text = repr(value)
+            if "e" in text.lower():
+                return max(0, len(format(Decimal(text), "f")) - len(text))
+        return 0
+
+    return (len(json.dumps(payload, ensure_ascii=False, separators=(",", ":"),
+                           allow_nan=False).encode()) + len(b"data: \n\n")
+            + number_expansion(payload))
+
+
+def fit_gex_transport(payload):
+    """Bound the whole incumbent GEX event, including legacy fields and history.
+
+    Never truncate cells or legacy fields. If necessary, withhold the entire
+    optional projection and retain its population/counts. A legacy envelope
+    that still exceeds the actual feed ceiling is not publishable.
+    """
+    budget = MAX_GEX_SSE_BYTES - SSE_CONTROL_RESERVE_BYTES
+    if gex_sse_bytes(payload) <= budget:
+        return True, payload
+    candidate = payload
+    projection = payload.get("exposure_projection")
+    if isinstance(projection, dict) and projection.get("schema") == "options_hub.exposure_projection/v2":
+        candidate = {**payload, "exposure_projection": {
+            **projection, **encode_projection_cells([]), "cells_status": "payload_limit"}}
+    return gex_sse_bytes(candidate) <= budget, candidate
 
 
 def _number(value):
@@ -113,6 +238,12 @@ def exposure_input_digest(greeks_df, oi_df, asof, root):
                    "strike": _number(r.get("strike")), "right": str(r.get("right", "")).upper()}
             for field in (("underlying_price", "implied_vol", "gamma", "vanna", "charm") if greek else ("open_interest",)):
                 row[field] = _number(r.get(field))
+            # Preserve raw observation identity when the native collector carries
+            # it. Naive vendor text is not turned into a timezone/availability.
+            for field in ("timestamp", "underlying_timestamp") if greek else ():
+                if field in r:
+                    value = r[field]
+                    row[field] = None if pd.isna(value) else str(value)
             out.append(row)
         return sorted(out, key=lambda row: json.dumps(row, sort_keys=True))
     return _digest([root, asof, records(greeks_df, True), records(oi_df, False)])
@@ -311,12 +442,13 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
                     and (expected_known or {r["right"] for r in members} == {"C", "P"})}})
     cells_status = "complete"
     cell_count = len(cells)
+    wire = encode_projection_cells(cells)
     if not context:
-        cells, cells_status = [], "source_unqualified"
-    elif len(json.dumps(cells, separators=(",", ":"), allow_nan=False).encode()) > MAX_CELL_BYTES:
-        cells, cells_status = [], "payload_limit"
+        wire, cells_status = encode_projection_cells([]), "source_unqualified"
+    elif len(json.dumps(wire, separators=(",", ":"), allow_nan=False).encode()) > MAX_CELL_BYTES:
+        wire, cells_status = encode_projection_cells([]), "payload_limit"
     return {
-        "schema": "options_hub.exposure_projection/v1", "kind": "modeled_exposure",
+        "schema": "options_hub.exposure_projection/v2", "kind": "modeled_exposure",
         "root": root, "source_snapshot_ref": context.get("source_snapshot_ref"),
         "input_sha256": input_digest,
         "security_id": context.get("security_id"),
@@ -339,5 +471,5 @@ def build_exposure_projection(greeks_df, oi_df, asof, root, *, context=None):
             "invalid_rows": {"greeks": invalid_greek, "oi": invalid_oi,
                              "expected": invalid_expected, "terms": invalid_terms}},
         "metrics": {m: _summary(rows, m, expected_known, both_sides=True) for m in METRIC_UNITS},
-        "cell_count": cell_count, "cells_status": cells_status, "cells": cells,
+        "cell_count": cell_count, "cells_status": cells_status, **wire,
     }

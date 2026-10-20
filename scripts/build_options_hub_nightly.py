@@ -708,6 +708,14 @@ def _gex_publish_decision(
       - gex_payload:  possibly mutated (no_data_reason added for genuine empty store)
       - is_guarded:   True when upload was suppressed by the mid-backfill guard
     """
+    from engine.options_exposure_projection import fit_gex_transport
+
+    fits, gex_payload = fit_gex_transport(gex_payload)
+    if not fits:
+        log.warning("options_hub_builder: GEX envelope exceeds existing SSE budget for %s; "
+                    "skipping publication to preserve last-good object", root)
+        return False, gex_payload, True
+
     if gex_payload.get("by_strike"):
         return True, gex_payload, False
 

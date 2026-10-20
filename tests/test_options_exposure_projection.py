@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from engine.options_exposure_projection import build_exposure_projection, exposure_input_digest, RAW_UNITS
+from engine.options_exposure_projection import build_exposure_projection, exposure_input_digest, expand_projection_cells, RAW_UNITS
 
 ASOF = "2026-10-15"
 EXP = "2026-10-23"
@@ -41,7 +41,8 @@ def project(g=None, oi=None, ctx=None):
     if ctx:
         # Synthetic test owner admits each deliberately mutated test book.
         ctx = {**ctx, "input_sha256": exposure_input_digest(g, oi, ASOF, "SPY")}
-    return build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
+    p = build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
+    return {**p, "cells": expand_projection_cells(p)}
 
 
 def test_cancellation_preserves_gross_and_one_time_signed_units():
@@ -228,7 +229,7 @@ def test_hub_publishes_projection_even_when_legacy_drops_all_oi(monkeypatch):
     ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
     p = options_hub.compute_gex(g, oi, ASOF, "SPY", exposure_context=ctx)
     assert p["by_strike"] == []
-    assert p["exposure_projection"]["cells"][0]["gamma"]["net"] == 0
+    assert expand_projection_cells(p["exposure_projection"])[0]["gamma"]["net"] == 0
     assert p["exposure_projection"]["population"]["received_contracts"] == 2
 
 
@@ -278,7 +279,7 @@ def test_builder_threads_owner_receipt_into_existing_payload(monkeypatch):
     monkeypatch.setattr(builder, "_load_oi_for_date", lambda *a: oi)
     _, p, _ = builder.build_root("SPY", ASOF, None, exposure_context=ctx)
     assert p["exposure_projection"]["source_snapshot_ref"] == ctx["source_snapshot_ref"]
-    assert p["exposure_projection"]["cells"][0]["gamma"]["gross"] == 20000
+    assert expand_projection_cells(p["exposure_projection"])[0]["gamma"]["gross"] == 20000
 
 
 def test_malformed_expiry_and_ambiguous_series_binding_cannot_qualify():
@@ -332,3 +333,121 @@ def test_explicit_builder_receipt_input_never_discovers_or_rebinds(tmp_path):
         load_exposure_contexts(str(path))
     with pytest.raises(FileNotFoundError):
         load_exposure_contexts(str(tmp_path / "absent.json"))
+
+
+def dense_book(cell_count):
+    """Production-sized synthetic grid, varied values and exact per-series terms."""
+    g, oi, ctx = book()
+    greeks, interests, terms = [], [], []
+    dates = pd.bdate_range(EXP, periods=40).date.astype(str).tolist()
+    base_g, base_o = g.to_dict("records"), oi.to_dict("records")
+    for index in range(cell_count):
+        expiry = dates[index % 40]
+        strike = 75 + (index // 40) * .1
+        economic = pd.Timestamp(expiry + "T16:00:00", tz="America/New_York").tz_convert("UTC").isoformat()
+        for side in range(2):
+            key = {"expiration": expiry, "strike": strike}
+            greeks.append({**base_g[side], **key, "gamma": .002 + index * 1e-7,
+                "vanna": -.2 + index * 1e-6, "charm": .365 + index * 1e-5})
+            interests.append({**base_o[side], **key, "open_interest": 100 + index + side})
+            original = ctx["contract_terms"][side]
+            terms.append({**original, **key, "economic_expiry_at": economic,
+                "series_id": original["series_id"] + str(index),
+                "terms_ref": original["terms_ref"] + str(index)})
+    ctx["contract_terms"] = terms
+    ctx["expected_contracts"] = [{k: r[k] for k in ("root", "expiration", "strike", "right")} for r in interests]
+    g, oi = pd.DataFrame(greeks), pd.DataFrame(interests)
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
+    return g, oi, ctx
+
+
+@pytest.mark.parametrize("cell_count", [2795, 10_000, 12_000])
+def test_realistic_books_fit_lossless_v2_and_whole_incumbent_envelope(cell_count, monkeypatch):
+    from engine import options_hub
+    from engine.options_exposure_projection import gex_sse_bytes, MAX_GEX_SSE_BYTES
+    from scripts.build_options_hub_nightly import _gex_publish_decision
+    g, oi, ctx = dense_book(cell_count)
+    monkeypatch.setattr(options_hub, "_flip_and_profile", lambda *args: (None, None))
+    payload = options_hub.compute_gex(g, oi, ASOF, "SPY", exposure_context=ctx)
+    # Include the existing downstream history attachment before publisher admission.
+    payload["history"] = [{"date": ASOF, "net_gex_bn": 1.2, "gamma_flip": 100,
+                           "call_wall": 105, "put_wall": 95, "regime": "long"}] * 30
+    publish, payload, guarded = _gex_publish_decision(payload, "SPY", ASOF, None)
+    p = payload["exposure_projection"]
+    assert publish and not guarded
+    assert p["schema"] == "options_hub.exposure_projection/v2"
+    assert p["cells_status"] == "complete" and len(p["cells"]) == p["cell_count"] == cell_count
+    assert p["population"]["expected_contracts"] == 2 * cell_count
+    assert p["metrics"]["gamma"]["qualified"] == 2 * cell_count
+    decoded = expand_projection_cells(p)
+    assert len({(c["expiry"], c["strike"]) for c in decoded}) == cell_count
+    assert sum(c["gamma"]["expected"] for c in decoded) == 2 * cell_count
+    assert sum(c["gamma"]["qualified"] for c in decoded) == 2 * cell_count
+    assert sum(c["gamma"]["gross"] for c in decoded) == pytest.approx(p["metrics"]["gamma"]["gross"])
+    assert gex_sse_bytes(payload) < MAX_GEX_SSE_BYTES - 1024
+
+
+def test_v2_roundtrip_preserves_partial_zero_and_all_source_digests():
+    from engine.options_exposure_projection import encode_projection_cells
+    g, oi, ctx = book()
+    g.loc[0, "vanna"] = np.nan
+    oi.loc[1, "open_interest"] = 0
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
+    p = build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
+    expanded = expand_projection_cells(p)
+    assert encode_projection_cells(expanded) == {k: p[k] for k in encode_projection_cells(expanded)}
+    c = expanded[0]
+    assert c["gamma"]["put"] == 0
+    assert c["vanna"]["net"] is None and c["vanna"]["known_net"] == 0
+    assert c["vanna"]["qualified"] == 1 and c["vanna"]["missing"] == 1
+    assert c["vanna"]["exclusions"] == {"greek_missing": 1}
+    assert c["gamma"]["qualified_population_id"] != c["vanna"]["qualified_population_id"]
+    # Complete-case repeated qualified populations share one table entry, preserving
+    # the original digest rather than replacing it with a lossy short hash.
+    assert len(p["population_ids"]) < 5
+    assert all(len(d) == 64 for d in p["population_ids"])
+
+
+def test_publisher_budgets_entire_legacy_envelope_before_publication():
+    from engine.options_exposure_projection import gex_sse_bytes, MAX_GEX_SSE_BYTES
+    from scripts.build_options_hub_nightly import _gex_publish_decision
+    g, oi, ctx = book()
+    p = build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)
+    payload = {"root": "SPY", "asof": ASOF, "by_strike": [{"strike": 100}],
+               "exposure_projection": p}
+    # Projection itself fits, but the full legacy/history object consumes the budget.
+    payload["large_legacy"] = "x" * (MAX_GEX_SSE_BYTES - 1024 - gex_sse_bytes(payload) + 16)
+    publish, bounded, guarded = _gex_publish_decision(payload, "SPY", ASOF, None)
+    assert publish and not guarded
+    assert bounded["exposure_projection"]["cells_status"] == "payload_limit"
+    assert bounded["exposure_projection"]["cell_count"] == 1
+    assert bounded["exposure_projection"]["cells"] == []
+    assert bounded["exposure_projection"]["population"] == p["population"]
+    assert bounded["large_legacy"] == payload["large_legacy"]
+    assert gex_sse_bytes(bounded) <= MAX_GEX_SSE_BYTES - 1024
+    bounded["large_legacy"] += "x" * MAX_GEX_SSE_BYTES
+    publish, _, guarded = _gex_publish_decision(bounded, "SPY", ASOF, None)
+    assert not publish and guarded
+
+
+def test_raw_observation_clock_changes_invalidate_source_receipt():
+    g, oi, ctx = book()
+    g["timestamp"] = ASOF + "T15:00:00.000"
+    g["underlying_timestamp"] = ASOF + "T14:59:59.999"
+    ctx["input_sha256"] = exposure_input_digest(g, oi, ASOF, "SPY")
+    assert build_exposure_projection(g, oi, ASOF, "SPY", context=ctx)["metrics"]["gamma"]["qualified"] == 2
+    for field in ("timestamp", "underlying_timestamp"):
+        changed = g.copy()
+        changed.loc[0, field] = ASOF + "T15:00:00.001"
+        p = build_exposure_projection(changed, oi, ASOF, "SPY", context=ctx)
+        assert p["metrics"]["gamma"]["qualified"] == 0
+        assert p["metrics"]["gamma"]["exclusions"] == {"source_inputs_do_not_match_receipt": 2}
+
+
+def test_full_event_budget_accounts_for_javascript_decimal_expansion():
+    from engine.options_exposure_projection import gex_sse_bytes
+    # JSON.stringify uses 0.000001 and 100000000000000000000 for these doubles,
+    # while Python's encoder chooses the much shorter scientific notation.
+    payload = {"v": [1e-6, -1e-6, 1e20] * 1000}
+    node_equivalent = '{"v":[' + ','.join(['0.000001', '-0.000001', '100000000000000000000'] * 1000) + ']}'
+    assert gex_sse_bytes(payload) >= len(('data: ' + node_equivalent + '\n\n').encode())

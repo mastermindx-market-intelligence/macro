@@ -1086,8 +1086,12 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     else:
         greek_cols = _ALL_GREEK_COLS
 
+    # Retain supplied observation text, including naive/unknown clocks. Neither
+    # is first availability; date derivation above remains the historical rule.
+    # Missing columns stay absent. Different observations must not dedup merely
+    # because their rounded Greek values happen to match.
     id_cols = ["root", "expiration", "strike", "right", "date", "bid", "ask",
-               "underlying_price"]
+               "underlying_price", "timestamp", "underlying_timestamp"]
     keep = id_cols + [c for c in greek_cols if c not in id_cols and c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
