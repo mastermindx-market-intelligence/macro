@@ -37,6 +37,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -1882,6 +1884,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -2786,6 +2790,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -8896,6 +8902,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -22138,6 +22146,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30569,6 +30579,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -33553,6 +33565,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/treasury_history.py"
+      - "lib/treasury_daily_history.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"

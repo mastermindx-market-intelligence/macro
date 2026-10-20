@@ -5115,8 +5115,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_826),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_701),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5125,6 +5125,14 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-20 Treasury internal input (MO-DELTA-014, PR9880) adds two
+    focused composer/transport suites to the existing prophet-lab invocation.
+    Hosted contract-delta39430792073/job118655030591 measured no new selected
+    jobs: templates/index.html 5822 -> 5826 and build_free_content 5697 ->
+    5701, exactly four estimator units for those two suites. Fund only that
+    measured work. Preserve every job-count ceiling, the plan-book weight,
+    the ten-pack ceiling, all scope/closure audits and every suite/assertion.
 
     2026-10-19 Research Vault full-body/producer composition: the existing
     code-gated job gains its complete 36-suite invocation (estimated weight

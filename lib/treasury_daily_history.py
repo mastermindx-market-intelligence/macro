@@ -14,8 +14,6 @@ from datetime import date, datetime, timezone
 from numbers import Real
 from pathlib import Path
 
-import pandas as pd
-
 SCHEMA = "treasury.daily_history.v1"
 NATIVE_PATH = Path("data/fred/DGS3MO.parquet")
 MAX_BYTES = 16 * 1024 * 1024
@@ -27,7 +25,8 @@ def _date(value) -> date:
         return value
     if isinstance(value, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         return date.fromisoformat(value)
-    if isinstance(value, pd.Timestamp) and value.tzinfo is None and value == value.normalize():
+    if isinstance(value, datetime) and value.tzinfo is None and value == value.replace(
+            hour=0, minute=0, second=0, microsecond=0) and getattr(value, "nanosecond", 0) == 0:
         return value.date()
     raise ValueError("invalid_date")
 
@@ -74,6 +73,8 @@ def compose_history(frame, *, start, end, expected_through, read_at=None) -> dic
     if frame is None:
         out["reason"] = "missing"
         return out
+    import pandas as pd  # Request-scoped native data work, never API import/auth.
+
     if not isinstance(frame, pd.DataFrame) or list(frame.columns) != ["us3m"]:
         out["reason"] = "invalid"
         return out
@@ -118,6 +119,8 @@ def read_history(root: Path, *, start, end, expected_through, read_at=None) -> d
             out["reason"] = "oversized"
             return out
         digest = hashlib.sha256(content).hexdigest()
+        import pandas as pd  # Only after the authorized, bounded native read.
+
         frame = pd.read_parquet(io.BytesIO(content))
     except FileNotFoundError:
         out["reason"] = "missing"

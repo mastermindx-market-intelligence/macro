@@ -2,7 +2,10 @@
 import hashlib
 import importlib
 import importlib.util
+import subprocess
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -108,3 +111,31 @@ def test_fixed_native_read_hash_missing_corrupt_and_no_mkdir(tmp_path):
 
 def test_future_source_date_is_not_admitted():
     assert compose(frame((4,), ("2026-10-21",)))["reason"] == "invalid"
+
+
+def test_subday_timestamp_is_not_silently_normalized():
+    stamp = pd.Timestamp("2026-10-16T00:00:00.000000001")
+    assert compose(frame((4,), (stamp,)))["reason"] == "invalid"
+
+
+def test_import_envelope_and_missing_input_do_not_require_pandas(tmp_path):
+    # The lean API can authenticate/refuse without loading the data-reader stack.
+    code = '''
+import sys, importlib.abc
+from datetime import datetime, timezone
+from pathlib import Path
+class NoPandas(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == 'pandas' or fullname.startswith('pandas.'):
+            raise ModuleNotFoundError('pandas deliberately absent')
+sys.meta_path.insert(0, NoPandas())
+from lib.treasury_daily_history import compose_history, read_history
+args=dict(start='2026-10-13',end='2026-10-19',expected_through='2026-10-16',
+          read_at=datetime(2026,10,20,tzinfo=timezone.utc))
+assert compose_history(None,**args)['reason']=='missing'
+assert read_history(Path(sys.argv[1]),**args)['reason']=='missing'
+assert 'pandas' not in sys.modules
+'''
+    result = subprocess.run([sys.executable, "-c", code, str(tmp_path)],
+                            cwd=Path(__file__).parents[1], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
