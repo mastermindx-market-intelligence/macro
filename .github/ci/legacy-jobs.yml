@@ -713,6 +713,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -2443,6 +2444,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -3267,6 +3269,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -5757,6 +5760,7 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/dataos/**"
+      - "config/dataset_registry.yml"
       - "lib/delisted_symbols.py"
       - "lib/ticker_aliases.py"
       - "config/delisted_symbols.yml"
@@ -9160,6 +9164,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -10328,6 +10333,7 @@ jobs:
       - "app/__init__.py"
       - "app/mailer.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -16361,6 +16367,7 @@ jobs:
       - engine/intelligence_workspace/runtime.py
       - engine/quote_resolution.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/price_views.py
@@ -21225,6 +21232,7 @@ jobs:
       - lib/commercial_path.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
@@ -24673,6 +24681,7 @@ jobs:
       - "lib/dataos/price.py"
       # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
@@ -25522,6 +25531,7 @@ jobs:
       - "lib/dataos/price.py"
       # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
@@ -28163,6 +28173,7 @@ jobs:
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/probation.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -29511,6 +29522,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -31057,6 +31069,7 @@ jobs:
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
@@ -31578,29 +31591,16 @@ jobs:
         # pandas+pyarrow: the suite reads the committed security_master/vendor_aliases
         # parquet through lib.dataos.identity.VendorAliasTable. pyyaml: the registry itself.
         run: pip install pytest pyyaml pandas pyarrow
-      - name: basket composition read binds membership, identity and price to one request (U04)
+      - name: basket, identity, market support, universe and materialization contracts
+        # These suites use the same dependencies, environment and pytest flags.
+        # Keep every suite explicit while sharing one interpreter and pytest session.
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_basket_read.py -q -rs
-      - name: identity seams — ADOPT surfaces must agree, divergences must stay declared
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_identity_seam_agreement.py -q -rs
-      - name: market support matrix — record matches the code, every market keeps its read (M01)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_support_matrix.py -q -rs
-      - name: security master universe admits the S&P 400/600 constituents (hermetic)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_build_security_master_universe.py -q -rs
-      - name: view-contract sidecar emitter writes data/stocks/_view_contract.json (C04, hermetic)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_emit_view_contract.py -q -rs
-      - name: SPY materialization binds its admitted catalog without changing stock qualification
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_dataos_basket_read.py
+          tests/test_identity_seam_agreement.py
+          tests/test_dataos_support_matrix.py
+          tests/test_build_security_master_universe.py
+          tests/test_emit_view_contract.py
           tests/test_terminal_spy_yahoo_materialization.py -q -rs
 
   ticker-news-qbus:
@@ -32279,6 +32279,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -34026,6 +34027,7 @@ jobs:
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py

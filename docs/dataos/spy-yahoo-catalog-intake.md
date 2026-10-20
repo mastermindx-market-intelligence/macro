@@ -320,3 +320,90 @@ obligations. These focused passing tests do not classify them as waived.
 The proposed Terminal adapter and browser/API reader activation are separate
 consumer delivery work. This section does not assert their production use or
 that an adjusted historical series has acquired point-in-time provenance.
+
+
+### 2026-10-20 recovery: retained reference-read precision
+
+Recovery review reproduced an additional precision hole in the shared retained
+catalog validator at `d24ee29c2c6c0582514b602245993122ebcb4a93`. A resealed
+`reference_read_completed_at` one nanosecond after admission was accepted when
+Python truncated the clock to microseconds. Both dot and comma fractional
+forms reproduced the failure. The named Terminal SPY materializer already
+refused these inputs with `MATERIALIZATION_CLOCK_INVALID`; this finding does
+not establish an incorrectly qualified live price artifact.
+
+The repair reuses the existing strict capture-clock grammar for the retained
+reference-read clock. It does not change the general clock parser or the
+ordinary stock materializer. Two negative regression cases failed before the
+repair, while the exact microsecond admission/read boundary passed. After the
+repair, the original five-file selection above plus the three new regressions
+passed **525 tests** in an actual owned-workspace run (160.88 seconds, exit 0;
+`PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q
+ tests/test_dataos_spy_yahoo_catalog.py tests/test_dataos_direct_registrant.py
+ tests/test_dataos_prospective_reference.py tests/test_emit_view_contract.py
+ tests/test_terminal_spy_yahoo_materialization.py -p no:cacheprovider
+ --basetemp=/tmp/returns-spy-clock-recovery-20261020-pytest`).
+
+The named consumer now reports `MATERIALIZATION_SPY_CATALOG_INVALID` for these
+malformed retained clocks because shared catalog validation refuses them before
+the materializer's separate publication-clock checks. The refusal outcome is
+preserved; the two negative regressions now assert that exact code as well as
+shared-validator rejection. An actual focused run of those two cases and the
+valid boundary passed **3 tests** (5.63 seconds, exit 0).
+
+### 2026-10-20 recovery: independent review and CI registration
+
+The bounded independent review `returns-intelligence-20261018-spy-contract-review-d24-clock-20261020-v1`
+reproduced the helper patch from the published d24 source and matched SHA-256
+`6e635a475bb480428e88ea6bbc70a87adb087cf3ac08737bc6ca6833df7b2c80`.
+Its separate scratch execution passed all **47** named materialization tests;
+it did not rerun the parent's 525-test selection. The parent accepted its
+scoped semantic review with response SHA-256
+`409097f935bddc8db4885d69859a26a716f89e34429c3c6c9c46975a5b2c9b4e`.
+The refusal-code finding above is addressed. The review is not approval of the
+later CI manifest repair, a future integrated head, or production release.
+
+Hosted d24 run `39375204727` exposed 15 import-closure omissions and a
+three-unit packing increase: the new pytest invocation contributed one command
+unit and its explicit test path contributed two units. The manifest now names
+the shared helper in the 14 affected exclusive jobs and the dataset registry in
+`gmi-classification-axes`. Every existing declared path remains.
+
+The six contiguous pytest invocations in `dataos-identity-seams` use identical
+dependencies, environment and flags. They now share one invocation with all six
+test paths explicit and in their original order. No tests, jobs, thresholds,
+timeouts or dependency settings were removed or relaxed. This removes five
+interpreter starts; the estimator retains all six test-path contributions.
+Its C04 weight changes from 19 to 14 (run commands 7 to 2, six explicit paths,
+command-length contribution zero on both sides). This is estimator accounting,
+not a claim of five measured seconds saved.
+
+Actual owned-workspace verification:
+
+- The complete combined six-suite invocation passed **249 tests**, with one
+  existing strict expected failure, in 7.85 seconds, exit 0. That expected
+  failure is `test_m01_adjusted_volume_is_refused_by_the_raw_view`, documenting
+  the existing RAW-view volume limitation.
+- `test_curated_exclusive_scopes_cover_their_own_import_closure` and
+  `test_exclusive_curation_narrows_ordinary_code_prs` both passed: **2 tests**
+  in 246.66 seconds, exit 0.
+- The later refusal-code assertion change passed the focused three-case run
+  above and did not change helper or materializer code.
+
+The stock owner PR #9619 merged at
+`ed72c2dc83997bea51e64efd9014f30b882b8a76`. The SPY branch still needs explicit
+integration with current protected main, including the materializer add/add
+resolution, followed by review and hosted checks on that integrated source.
+These local results do not establish current-base or hosted CI success.
+
+The four broader failures remain in `tests/test_dataos_security_master.py`:
+`test_receipt_carries_the_security_axis_block`,
+`test_every_produced_row_names_a_real_store_and_a_real_producer`,
+`test_us_coverage_scope_holds_through_lawful_admissions`, and
+`test_gmi_us_regression_bands_cn_hk_and_legacy_us`.
+The precision and CI registration repairs do not waive them or raise a ceiling.
+
+Draft PR #9835 remains held for protected-base integration, review and hosted
+checks on that source, publication of the closed Terminal consumer, and
+installed-owner/live proof. The original admission clocks, evidence and scope
+remain authoritative, and predictive probabilities remain withheld.

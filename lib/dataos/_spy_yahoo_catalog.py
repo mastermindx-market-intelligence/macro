@@ -122,9 +122,17 @@ def _validate_source_evidence(evidence: dict, current_master_rows: list[dict],
                 or evidence["limits"] != list(_SPY_YAHOO_LIMITS)
                 or evidence["yahoo_identity"] != _SPY_YAHOO_META):
             raise ValueError("retained SPY Yahoo profile conflict")
+        def capture_clock(value):
+            # This profile retains actual microsecond capture clocks. Refuse
+            # extra precision instead of truncating an availability boundary.
+            if not isinstance(value, str) or not re.fullmatch(
+                    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})", value):
+                raise ValueError("unsupported SPY capture clock grammar")
+            return clock_ns(value)
+
         decision = clock_ns(evidence["decision_at"])
         latest = clock_ns(latest_at)
-        read = clock_ns(evidence["reference_read_completed_at"])
+        read = capture_clock(evidence["reference_read_completed_at"])
         known = clock_iso(decision)
         on = date.fromisoformat(evidence["valid_from"])
         if (not 0 < read <= decision <= latest
@@ -135,14 +143,6 @@ def _validate_source_evidence(evidence: dict, current_master_rows: list[dict],
         first = evidence["yahoo_first_trade_date"]
         if type(first) is not int or not 0 < first <= decision // 1000000000:
             raise ValueError("invalid retained provider firstTradeDate")
-
-        def capture_clock(value):
-            # This profile retains actual microsecond capture clocks. Refuse
-            # extra precision instead of truncating an availability boundary.
-            if not isinstance(value, str) or not re.fullmatch(
-                    r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})", value):
-                raise ValueError("unsupported SPY capture clock grammar")
-            return clock_ns(value)
 
         urls = {"yahoo": _SPY_YAHOO_URL, "issuer": _SPY_ISSUER_URL}
         if type(evidence["sources"]) is not dict or set(evidence["sources"]) != set(urls):

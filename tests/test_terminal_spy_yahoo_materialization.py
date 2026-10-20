@@ -220,6 +220,37 @@ def test_spy_later_qualification_uses_complete_admission_and_current_triplet(cas
     assert current["read_at"] != summary["reference_read_completed_at"]
 
 
+@pytest.mark.parametrize("read_clock", [
+    "2026-10-19T04:00:00.000001001+00:00",
+    "2026-10-19T04:00:00,000001001+00:00",
+])
+def test_shared_retention_cannot_floor_reference_read_past_admission(case, read_clock):
+    # Both clocks are one nanosecond after admission. Resealing must not turn
+    # impossible ordering into admissible retained evidence through truncation.
+    case["catalog_evidence"]["reference_read_completed_at"] = read_clock
+    _reseal(case)
+    with pytest.raises(spy.SpyCatalogError):
+        spy.validate_retained(
+            case["catalog_evidence"], case["alias_records"], case["master_records"],
+            alias_binding_sha256=alias_binding_sha256, latest_at=CURRENT_READ,
+        )
+    # The shared catalog validator now rejects the malformed retained evidence
+    # before the named materializer reaches its separate publication-clock checks.
+    result = _bind(case)
+    assert result["status"] == "refused"
+    assert result["refusal_reasons"] == ["MATERIALIZATION_SPY_CATALOG_INVALID"]
+
+
+def test_shared_retention_allows_exact_microsecond_admission_read_boundary(case):
+    case["catalog_evidence"]["reference_read_completed_at"] = ADMITTED
+    _reseal(case)
+    spy.validate_retained(
+        case["catalog_evidence"], case["alias_records"], case["master_records"],
+        alias_binding_sha256=alias_binding_sha256, latest_at=CURRENT_READ,
+    )
+    assert _bind(case)["status"] == "bound"
+
+
 def test_spy_exact_admission_read_and_materialization_boundary_is_valid(case):
     case["reference"]["read_at"] = ADMITTED
     case["materialized_at"] = ADMITTED
