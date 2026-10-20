@@ -5049,6 +5049,24 @@ jobs:
   local-projections:
     if: ${{ false }}
     gate: code
+    # The native CLI test enumerates tmp_path fixtures only. Pin the measured
+    # import closure so that opaque traversal never selects unrelated builders.
+    # All estimator/ingestion cases and packing ceilings remain unchanged.
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/local_projections.py"
+      - "engine/seasonality/__init__.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "engine/trial_ledger.py"
+      - "engine/validation.py"
+      - "scripts/__init__.py"
+      - "scripts/run_local_projections.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_local_projections.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
