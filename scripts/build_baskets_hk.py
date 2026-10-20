@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts import _baskets_scorecard as BS  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_baskets_hk")
@@ -197,6 +198,7 @@ def main() -> int:
         provenance_json=json.dumps(provenance, separators=(",", ":"), ensure_ascii=False),
         freshness_json=json.dumps(freshness, separators=(",", ":"), ensure_ascii=False),
         radar_json=json.dumps(radar, separators=(",", ":"), ensure_ascii=False),
+        scorecard=BS.scorecard_subset(ignition),
         bench_en="Hang Seng", bench_zh="恒生指数",
         generated_utc=built)
     write_page(site / "baskets_hk.html", html)
