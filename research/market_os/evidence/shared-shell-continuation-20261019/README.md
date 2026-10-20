@@ -507,3 +507,44 @@ This proof import is a documentation-only delta above 6d566. It preserves all pr
 Protected Mastermind master was freshly read as `b96dd69efb0588c3a678ee09ddd5408fa5a40b12`; the complete comparison from the compatible 065b pin changes none of the INDEX or nine required laws. Original principal custody continues under the recorded SessionBridge exception. Bounded advisers reviewed the source composition, actual P0B binding and beta recovery without claiming independent native execution or new source authority.
 
 Next: validate and commit this extension, normal-push the sole branch and attend exact-head hosted CI; use only incumbent MOG for landing and existing render.yml/engine-render/macro-update for covering render and served-source proof; complete canonical DNS/TLS/auth/public browser and remaining applicable acceptance. The connected Tencent/DNSPod surface was last observed signed out and the public beta certificate mismatched. An authenticated domain-owner session is required for that DNS repair, not for source, CI or Macro publication. No certificate bypass or alternate-origin public proof is used. Terminal #859 and R93 remain COMPLETE/DO_NOT_REDO; C4 remains SPEC_ONLY/UNAPPLIED/UNRUN; no duplicate PR, renderer, carrier or watcher.
+
+
+## 2026-10-20 19:29 UTC continuation: measured df3 composition and retained fixture lineage
+
+The original branch's source/proof push608dfad299e2e48ab7703bf0b180e0dca1318229 was confirmed at19:00:51 UTC, after the previously confirmed interrupted b312 push. Its1013 indexed proof files are preserved by this extension. GitHub found a real conflict against newer main, with no normal ci/fences admission. MOG remained unarmed; only the original worktree and branch continued.
+
+### Exact source composition
+
+The ordinary merge of df3cba80e5ff43e3411209381b32d9d4df06bd1f is now committed locally as 5f4bdfe152847f118b2930c98eb233a45abf292a, parents608dfad/df3, source tree17f8cca6de011cb467cd13246c3cf076e56b9e05. The six actual conflicts were the CI declaration, packing test, updater and ETF/US/labor HTML. All341 jobs and incoming nonpath intent are retained; the literal dependency union preserves both parents, including inherited and independently added duplicate path occurrences. The updater combines the independent Shell and qbus-news additions exactly; bash syntax passes, with no updater execution.
+
+ETF and US each start with the complete incoming canonical generation and apply only the existing one/three source adapters. Forward B-to-H and inverse candidate-to-M comparisons are exact. All34 loaded assets match staged blobs. Labor comes from the existing15-page suite renderer, with stable18 data inputs and all copy guards passing; only labor is adopted. Its raw254945-byte output is finalized by existing injection/optimization/page owners to255252 bytes, then rechecked. Sector retains its six views and basket navigation; Paper remains REVISE.
+
+Two early resolver assertions refused before any source write: one rejected inherited duplicate paths, the other rejected additive occurrences introduced independently by both parents. Their original scripts and refusal receipts remain. The corrected resolver enforces each parent's semantics and precise additive path accounting; it does not normalize away coverage.
+
+### Measured CI bound and actual checks
+
+The canonical planner on the actual composed tree selected index135 jobs/5829 weight/10 packs, free-content135/5802/10, and plan-book128/5578/10. Its only breach was free-content5802 against5795. On exactly those candidate-selected IDs, incoming definitions weigh5822/5795/5571. The only differences are data-base-shim7-to-12 and unrun-nav-chrome30-to-32. Incoming ticker-news-qbus98 is already part of5795 and is selected only by free-content. This is a same-ID weight attribution, not a full incoming-tree selection replay.
+
+Only the free-content bound changes5795-to-5802. An AST comparison proves every other executable test node unchanged; job-count/other-weight/ten-pack limits, selectors and suites remain. The source receipt includes the exact measured note and prior bytes.
+
+Actual composed checks passed: 4 existing scope/packing nodes, 513 affected updater/Shell/Sector/labor tests, and 184 JavaScript tests, totaling701. P0B closure, all136 template/site pairs and whitespace also pass. Source and index remained frozen. Local Python3.14.7 results remain separate from exact-head hosted admission.
+
+### Reused actual browser proof, precisely scoped
+
+Fresh lineage verifies all67 inputs of the18:33-18:38 P0B producer,56 loaded/construction bindings, and20 accepted output files against current raw/staged bytes and the accepted608 files. The actual128cases/16screenshots and12 historical entries are retained unchanged. No browser or producer was rerun, and no receipt pass/hash was rewritten.
+
+All52 About presentation inputs and the actual recorded About/landing.css/shared_shell.css response bytes remain identical to the18:47-18:48 eight-cell replay. The53rd old manifest member, unvisited site/macro.html, changed in incoming main. The old53-file manifest is therefore historical, not asserted fully current. Only the unchanged About presentation/focus proof is reused: eight sizes/locales,18 ordered Tabtargets per cell. No new route navigation, actual200%zoom, public beta or Terminal qualification is claimed.
+
+### Read-only census and evidence retention
+
+A mistakenly broad all-history object inventory was stopped only after identifying its exact owned read process. It had no source/host effect and does not count as a complete census. The bounded incoming delta reported13 missing historical objects; none belong to the complete current incoming tree. The ordinary merge then completed with the recorded six conflicts. Exact exit/operation/binding receipts are included. Two large reproducible object-listing text products remain named native scratch artifacts with hashes/dispositions in the manifest; they are not effect receipts or silently asserted complete.
+
+The same proof pack preserves all1013 prior originals, prior handoff body and workstream/README byte prefixes. Current conflict, repair, test, lineage and previous608 commit/push receipts are appended. The final import receipt is external by design; the PR checkpoint binds its final hash/tree and eventual push. Bounded adviser reviews found measured CI and three-HTML composition NONBLOCKING; those reads are not independent native execution or new admission authority.
+
+### Remaining delivery gates
+
+Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The previously recorded strict beta stop proof remains false, while one separately checked normal start recovered the same acceptedA at18:53:31 with PID3306695/start7622818757695/status200 and unchanged compared production. No further service or installer operation occurred. previous_runtime=null; this is not A-to-B-to-A, graceful shutdown or full hostname withdrawal.
+
+Next: commit this same-pack documentation extension and normal-push the original branch; attend exact-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Merely newer data/site main commits do not require an unsolicited refresh under the incumbent owner's freshness rules; a real source conflict still belongs to this original writer.
+
+DNSPod/Tencent sign-in remains incomplete. Authenticated domain-owner access is required for actual beta DNS repair and consequent canonical TLS/auth/public-browser acceptance, not for independent Macro source/CI/publication work. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
