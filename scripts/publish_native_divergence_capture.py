@@ -5,7 +5,12 @@ stage outputs leave the retained capture unavailable without affecting other des
 """
 from __future__ import annotations
 import os
+import sys
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.research_vault import divergence_handoff as handoff
 
 def main(*,repo_root=None,environ=None):
