@@ -2,10 +2,10 @@
   "schema": "mmx.commodities.local_validation.v1",
   "date": "2026-10-20",
   "scope": "current-main integration candidate; anonymous rendered snapshot review; not GitHub CI or deployed acceptance",
-  "accepted_base": "ef029bd56030c313bc36906a31f6b508c199410b",
-  "workspace_fingerprint": "46ae1e030c0bc34d4573a578ba31ada16ddf065b03c9d798535ce3e9d0ac4839",
+  "accepted_base": "53c380daf74247672d62cca270743555d52fd409",
+  "workspace_fingerprint": "622ea8ef4536469d71f95e580287d20b2757a7e71b9cfe574a39dbdf7a3d36f5",
   "hashes": {
-    "site/commodities.html": "de0e52bd017627219a7b470e9a42dac27e5ed51f19cb0e0c6620362a2a2857f5",
+    "site/commodities.html": "48993a26bfbee68433cf3d7756adfbf982abde92060d3414a7c85b19fdbadb68",
     "engine/commodity_supply_context.py": "a5173b755dc2c92359464a0ed07a003addc3df9d283d9d9cba5a830e8d0c413b",
     "engine/commodity_decision_workspace.py": "f3520dc77675e83d2687dfd7a61f59bbff32cad245796ac18336cd7542cd34c0",
     "engine/commodity_workspace_adapter.py": "67da828b903b70e88bf519ec1c5eb99e891d6391d0dd8dc0831ade1dc0b0f146",
@@ -18,12 +18,12 @@
     "tests/test_commodity_supply_context.py": "a947006cbaa14130209851c6f0d48d8b56b766fc315cb534816a0d660d06c682",
     "tests/test_commodity_decision_workspace.py": "a54ec283371a094288b4d8a2c45447578a14a64e554dc9d530f5a78ac6a713bd",
     "tests/test_commodity_workspace_ui.js": "8ed7c18f5b09e35163ce08955fd4b5d10d69162682df693ea9f7d2a0a00a7133",
-    "mockups/evidence/commodities-r3/browser-journey.json": "b1e4735d5036abedd81f368e4462166af808e711e8a18f5d7647d7f771253ea6",
+    "mockups/evidence/commodities-r3/browser-journey.json": "4dca847d02caf872c3eddb5d6c4fbbb8f95c2090ebab470b4e19a251226c6428",
     "mockups/evidence/commodities-r3/overview/manifest.json": "3d8a9b4d8c7335f94f76eacb2c8ce63f595d1271e916d418c7c072c12e3baad5",
     "mockups/evidence/commodities-r3/physical/manifest.json": "eb50ff07fbb642ec958372fa72773161e93515343a5c83748b372fc79d553deb",
     "mockups/evidence/commodities-r3/relationships/manifest.json": "2d3147263f72d6d4b68f3fb55dee10a57b209e2b4187a6ceeea5a2154a48a15b",
     "templates/commodities.html.j2": "491dbf23a195ad9efc3a64d8f393a5f34a4842c06c2be85872fc99e6a1eeaf55",
-    ".github/ci/legacy-jobs.yml": "579cb6738eec850b509d406f3d8abeac0f3e92f0467eb31c13925eefd5ed101d"
+    ".github/ci/legacy-jobs.yml": "210c1a8f33020fce24e4717c87cf54c8d46c29fdccb575d756bc40fd2cc3098d"
   },
   "python": {
     "command": "python3 -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_critical_minerals_display.py tests/test_critical_minerals_panel.py tests/test_commodities_w6_truth.py tests/test_commodities_ignition_copy.py tests/test_commodity_mtf_verdict_honesty.py -q",
@@ -37,7 +37,7 @@
     "command": "NODE_PATH=/tmp/commodities-r3-ui-validation-20261020/node_modules node tests/test_commodity_workspace_ui.js",
     "passed": 20,
     "assets": 17,
-    "snapshot": "46ae1e030c0bc34d4573a578ba31ada16ddf065b03c9d798535ce3e9d0ac4839",
+    "snapshot": "622ea8ef4536469d71f95e580287d20b2757a7e71b9cfe574a39dbdf7a3d36f5",
     "export_bytes": 74842,
     "visual_layout_verified": false
   },
@@ -119,14 +119,16 @@
     "limitations": [
       "Six actual final images independently judged; automated capture covers all 56 matrix cells.",
       "After capture, two source EOF blank lines were removed; page regenerated and DOM/Chromium journeys passed again; no layout or styling change.",
-      "Authenticated access, native Paper and deployed site not verified."
-    ]
+      "Authenticated access, native Paper and deployed site not verified.",
+      "Final main update changes upstream build timestamps and immutable source commit references/fingerprints only; strict structured and normalized component equivalence passed. Existing capture bytes remain the accepted content/layout proof; they were not relabeled as new captures."
+    ],
+    "capture_base": "ef029bd56030c313bc36906a31f6b508c199410b"
   },
   "publication_status": {
     "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/9878",
     "initial_published_head": "0003a455e471b8e559d8789615ec08103843c9c3",
     "initial_native_commit_and_push": "APPLIED with exact remote readback",
-    "candidate_stage": "locally qualified current-main integration awaiting merge commit and push at receipt creation"
+    "candidate_stage": "qualified final-main integration at merge-commit preparation; exact pushed head and CI state belong to PR #9878"
   },
   "ci_registration": {
     "job": "commodities-research-workspace",
@@ -136,5 +138,14 @@
     "closure_startability_narrow_selection_tests_passed": 3,
     "packing_thresholds_changed": false,
     "note": "DOM and actual Chromium journeys are local snapshot validation; the PR code gate executes the fixture-based Python contracts."
+  },
+  "integration_history": {
+    "previous_integrated_head": "c26fcebea67efd19f9aba07fbd9050d9fe21739c",
+    "previous_proof_base": "ef029bd56030c313bc36906a31f6b508c199410b",
+    "final_upstream_base": "53c380daf74247672d62cca270743555d52fd409",
+    "provenance_equivalence_receipt": "mockups/evidence/commodities-r3/source/provenance-repin.json",
+    "python_source_hashes_unchanged": true,
+    "current_main_dom_and_browser_repeated": true,
+    "current_main_ci_manifest_revalidated": true
   }
 }

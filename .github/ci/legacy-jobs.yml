@@ -193,6 +193,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -464,6 +465,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2082,6 +2084,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -2307,6 +2310,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -2947,6 +2951,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -3188,6 +3193,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -9053,6 +9059,7 @@ jobs:
       - "site/fif_saved_briefcase.js"
       - "scripts/build_financial_intelligence_packet.py"
       - "collectors/sec_request_pacer.py"
+      - "scripts/capture_fif3a2_aapl_package.py"
       - "tests/fundamental_forensics_*.test.mjs"
       - ".github/workflows/daily.yml"
       - ".github/workflows/deploy-api-secrets.yml"
@@ -9901,6 +9908,7 @@ jobs:
           tests/test_fundamental_forensics_financial_revision_api.py
           tests/test_fundamental_forensics_financial_revision_service.py
           tests/test_fundamental_forensics_five_issuer_sic_contract.py
+          tests/test_fundamental_forensics_formula_not_presented.py
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
@@ -9912,6 +9920,7 @@ jobs:
           tests/test_fundamental_forensics_metric_registry.py
           tests/test_fundamental_forensics_no_request_time_sec.py
           tests/test_fundamental_forensics_normalize.py
+          tests/test_fundamental_forensics_not_presented.py
           tests/test_fundamental_forensics_p0_view_contract.py
           tests/test_fundamental_forensics_pack_evaluation.py
           tests/test_fundamental_forensics_page.py
@@ -9929,6 +9938,7 @@ jobs:
           tests/test_fundamental_forensics_query.py
           tests/test_fundamental_forensics_query_exports.py
           tests/test_fundamental_forensics_query_metric_qualification.py
+          tests/test_fundamental_forensics_query_not_presented.py
           tests/test_fundamental_forensics_query_snapshots.py
           tests/test_fundamental_forensics_raw_ledger.py
           tests/test_fundamental_forensics_refusal_entry_readers.py
@@ -16531,6 +16541,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_score.yml
       - config/fundamental_forensics/coverage/five_issuer_v1.json
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/metabolism_budget.yml
       - config/sector_legs.json
@@ -16799,6 +16810,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/peer_cohort.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -18275,6 +18287,41 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
         run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
+
+  narrative-radar-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China narrative radar page display contract (W28F-L30). Both suites render the real
+    # templates/china_narrative_radar.html.j2 (autoescape on, as the builder renders it) from
+    # a synthetic payload; they import only json, re, pathlib and jinja2 and never run the
+    # builder. They pin the cycle inputs printed beside each score chip (drawdown from the
+    # 1y high, distance from the 200d SMA) and the intro's description of top_members as a
+    # current-membership snapshot rather than entry history. Exclusive so the page's own
+    # suites do not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/china_narrative_radar.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_narrative_radar_cycle_inputs.py"
+      - "tests/test_narrative_radar_member_claim.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
+        run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -22307,6 +22354,7 @@ jobs:
       - config/earnings_story_promotion.yml
       - config/flow_detector.yml
       - config/flow_score.yml
+      - config/fundamental_forensics/metrics/v1/not_presented/core.yaml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/government_revenue/candidate_historical_suppressions.v1.json
       - config/government_revenue/candidate_issuance_corrections.v1.json
@@ -22526,6 +22574,7 @@ jobs:
       - engine/fundamental_forensics/metric_registry.py
       - engine/fundamental_forensics/models.py
       - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/not_presented.py
       - engine/fundamental_forensics/packet_service.py
       - engine/fundamental_forensics/periods.py
       - engine/fundamental_forensics/private_state.py
@@ -25772,6 +25821,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
       - "config/metabolism_budget.yml"
@@ -25978,6 +26028,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/peer_cohort.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -30796,6 +30847,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -31041,6 +31093,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"
@@ -33730,6 +33783,7 @@ jobs:
       - "config/delisted_symbols.yml"
       - "config/earnings_story_promotion.yml"
       - "config/flow_score.yml"
+      - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/government_revenue/candidate_historical_suppressions.v1.json"
       - "config/government_revenue/candidate_issuance_corrections.v1.json"
@@ -33943,6 +33997,7 @@ jobs:
       - "engine/fundamental_forensics/metric_registry.py"
       - "engine/fundamental_forensics/models.py"
       - "engine/fundamental_forensics/normalize.py"
+      - "engine/fundamental_forensics/not_presented.py"
       - "engine/fundamental_forensics/packet_service.py"
       - "engine/fundamental_forensics/periods.py"
       - "engine/fundamental_forensics/private_state.py"

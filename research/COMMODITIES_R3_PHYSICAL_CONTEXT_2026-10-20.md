@@ -1,5 +1,21 @@
 # Commodities R3 — physical and regional context continuation
 
+## Current owner recovery status — 2026-10-20
+
+The original publisher has been repaired through the accepted owner procedure: its command budget is now 45 seconds, with its installed source, repository grants and Paper capabilities retained. Native commit and push succeeded at `0003a455e471b8e559d8789615ec08103843c9c3`; [PR #9878](https://github.com/mastermindx-market-intelligence/macro/pull/9878) is the delivery record. The earlier claim below that the installed source still used a fresh read-tree index was stale; the installed implementation already seeds its private index from the real index. The historical 15-second timeout was not reproduced in the isolated owner diagnostic.
+
+Current-main integration was committed at `c26fcebea67efd19f9aba07fbd9050d9fe21739c` against `ef029bd56030c313bc36906a31f6b508c199410b`. The final local integration also incorporates `53c380daf74247672d62cca270743555d52fd409`; its commodities changes are two upstream build timestamps. Regeneration repins immutable source references and resulting fingerprints while preserving the workspace's economic payload, content and layout. `source/provenance-repin.json` records the exact equivalence check.
+
+Local verification now includes **187 Python tests plus 25 subtests, 20 DOM checks, 22 Chromium checks and 56 refreshed visual captures**. Six representative images passed independent visual judgment. The dedicated canonical CI job has 104 named dependency paths; manifest validation and three targeted scope/packing tests passed. No packing threshold or global selection exception was changed.
+
+The current source, base, fingerprint and validation hashes are authoritative in `mockups/evidence/commodities-r3/source/validation-receipt.json` and `review-receipt.json`. The current PR supplies publication and CI state; local validation is not a deployment receipt. M1 Paper is parked by the owner while that machine is unavailable and does not block Git delivery.
+
+Next release gates: publish the final integrated head, conclude CI and review, merge through the ordinary path, then verify the normal deployed render and one real company continuation. Preserve USGS critical-minerals context and keep any later petroleum-flow integration's observation clock separate from the price snapshot.
+
+## Historical implementation record
+
+The account below preserves the earlier snapshots and failure evidence. Its old HEAD, fingerprint, test counts, capture references and publication-blocker statements are historical and superseded by the current status above.
+
 ## Verified local source · 20 October 2026
 
 This record describes the source completed after recovery of the original “Upgrade commodities dashboard” session. It is an implementation and method record, not production acceptance. The original branch and worktree remain authoritative.
