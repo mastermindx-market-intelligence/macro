@@ -5139,7 +5139,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_664),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_668),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5240,6 +5240,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     base that already holds #9819, so fund 5,661 -> 5,664. index.html and
     plan_book stay under their ceilings even if they select this job
     (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
+    tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
+    W23-L9 SPR step in unrun-macro-panels (job weight 78 -> 82, measured
+    on the merged run text). contract-delta on the PR (run 39379143776)
+    measures build_free_content 134 jobs / 5,668 against base 5,664. No
+    new entrant. index.html (5,793) and plan_book (5,542) stay under
+    their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
+    Every other bound stays unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
