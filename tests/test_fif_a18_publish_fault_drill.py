@@ -394,16 +394,24 @@ def test_s2_immediate_absence_writes_typed_partial_report_then_clean_rerun(
     loaded = PDS.load_generation(store, primary, latest.generation_id)
     assert loaded.generation_id == latest.generation_id
     # No run-1 object is dangling unreferenced: the store was empty after
-    # run 1, and the issuer prefix holds exactly the pointer plus the one
-    # generation manifest the pointer names.
+    # run 1, and the issuer prefix holds exactly the pointer, the one
+    # generation manifest the pointer names and (A21, R-A21-STORE-TRACE)
+    # the observation record THIS clean run wrote for its own publication —
+    # never a run-1 object, which the withheld commit-phase record proves.
     assert set(drill["keys2"]) >= {
         PDS.production_latest_key(primary),
         PDS.production_manifest_key(primary, latest.generation_id),
     }
-    assert set(store.list_prefix(_issuer_key_prefix(primary))) == {
+    observation_key = producer.observation_key(primary)
+    issuer_keys = set(store.list_prefix(_issuer_key_prefix(primary)))
+    assert issuer_keys - {observation_key} == {
         PDS.production_latest_key(primary),
         PDS.production_manifest_key(primary, latest.generation_id),
     }
+    if observation_key in issuer_keys:
+        observation = json.loads(store.get_bytes(observation_key) or b"{}")
+        assert observation["state"] == "new_filing"
+        assert observation["publication"]["generation_id"] == latest.generation_id
 
 
 def test_s2_drop_after_commit_alone_is_inert_at_base(

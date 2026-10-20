@@ -1,0 +1,129 @@
+{
+  "observed_at": "2026-10-18T03:49:31.603003+00:00",
+  "status": "final two-file cloud candidate frozen; native acceptance and production qualification pending",
+  "native_base_reported_by_parent": "d65414e89ad3b930d84d614196a91d3cce8ba589",
+  "candidate": [
+    {
+      "path": "release_review/candidate/scripts/deploy_code_to_vps.sh",
+      "bytes": 20370,
+      "sha256": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8"
+    },
+    {
+      "path": "release_review/candidate/tests/test_deploy_provenance.py",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+    }
+  ],
+  "unchanged_originals": [
+    {
+      "path": "release_review/source/scripts/deploy_code_to_vps.sh",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "path": "release_review/source/tests/test_deploy_provenance.py",
+      "bytes": 19097,
+      "sha256": "1bc5bf5e1980cb97fb8051d062e90e60536432b03782ff008cb31066f950bd3c"
+    }
+  ],
+  "first_party_changed_paths": [
+    "scripts/deploy_code_to_vps.sh",
+    "tests/test_deploy_provenance.py"
+  ],
+  "new_first_party_support_files": [],
+  "validation": {
+    "runner": "stdlib AST loader; exact standalone fixture test bodies, no pytest/app imports",
+    "passed": 44,
+    "failed": 0,
+    "receipt": "release_review/HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+    "rsync_version": "rsync  version 3.2.7  protocol version 31",
+    "bash_syntax_check": "passed",
+    "original_five_app_test_function_asts": "unchanged",
+    "exclusion_array": "byte-identical to supplied helper",
+    "original_red_cases": {
+      "passed": 0,
+      "failed": 6
+    },
+    "review_active_authority_red_cases": {
+      "passed": 0,
+      "failed": 2
+    },
+    "review_silent_scan_red_cases": {
+      "passed": 0,
+      "failed": 1
+    },
+    "excluded_cache_container_refusal_control": {
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "first_party_modules_imported": false,
+  "native_pytest_run": false,
+  "network_or_production_calls": false,
+  "source_wrapper_changed": false,
+  "source_tag_helper_changed": false,
+  "source_forward_module_changed": false,
+  "remaining_limits_report": "release_review/HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+  "artifacts": [
+    {
+      "path": "release_review/helper_fixture_driver_20261018.py",
+      "bytes": 3434,
+      "sha256": "380ea13a8dcda1ef7a25eb888a5223e43ae1ab8bc36276509917303e9864be44"
+    },
+    {
+      "path": "release_review/HELPER_RED_BASELINE_2026-10-18.json",
+      "bytes": 6341,
+      "sha256": "0f8c3a9246788da8499e3868073ffc1a15e2216ce937ebc7ba12d95d6955e837"
+    },
+    {
+      "path": "release_review/red_baseline/scripts/deploy_code_to_vps.sh",
+      "bytes": 14934,
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "path": "release_review/red_baseline/tests/test_deploy_provenance.py",
+      "bytes": 26234,
+      "sha256": "8a5a275be5243201428c80636b531b778e43dd4503e1037d8e927306dd63a8aa"
+    },
+    {
+      "path": "release_review/HELPER_ACTIVE_COHORT_REVIEW_RED_2026-10-18.json",
+      "bytes": 3620,
+      "sha256": "e707a31ee264c2138c6448db9be559a8b8800e00185e6bca9c1d371dd2291594"
+    },
+    {
+      "path": "release_review/HELPER_RECEIPT_SCAN_REVIEW_RED_2026-10-18.json",
+      "bytes": 1576,
+      "sha256": "2c0049ac553fd7787f9c0e7d2832145f5a2aba8d9e02f9782720e1cb1c975b01"
+    },
+    {
+      "path": "release_review/HELPER_EXCLUDED_CACHE_REVIEW_CONTROL_2026-10-18.json",
+      "bytes": 572,
+      "sha256": "f43a30f87f673fcca0e1aff7ab61c2e34aad96645064504dfce1dcd960259251"
+    },
+    {
+      "path": "release_review/review_red_baseline/scripts/deploy_code_to_vps.sh",
+      "bytes": 19919,
+      "sha256": "c64b940d75a70db26eeed6af1305c2c0e7c924201026a45b69aaa8de2ebe483d"
+    },
+    {
+      "path": "release_review/review_red_baseline/tests/test_deploy_provenance.py",
+      "bytes": 39649,
+      "sha256": "a4ed6d45ed39eec1aa92ac9d4aeb82219dcefc60e9632e7f27dd8b00f6bfb42a"
+    },
+    {
+      "path": "release_review/HELPER_CANDIDATE_REVIEWED_VERIFICATION_2026-10-18.json",
+      "bytes": 8506,
+      "sha256": "dbfe8dc9ec6b5f70d060883b7e34e0ca285e09c6ae7f35dcb1372546d046a003"
+    },
+    {
+      "path": "release_review/HELPER_REPAIR_IMPLEMENTATION_2026-10-18.md",
+      "bytes": 13987,
+      "sha256": "ad594ef818feb2091bb1146464fbb93bfb26dde96988551e09af09d70f6c0416"
+    },
+    {
+      "path": "release_review/HELPER_CANDIDATE_MANIFEST_PRE_REVIEW_2026-10-18.json",
+      "bytes": 854,
+      "sha256": "a8d1128358c2aa020562c8beeda3ecce7f9a6d7da0f2a70d77fca27d4c2fca7e"
+    }
+  ]
+}
