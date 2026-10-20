@@ -1195,7 +1195,9 @@ def _compose_peer_cohort(
         if binding_cik != member["cik10"]:
             exclusions.append(_member_exclusion(
                 member, issuer_id, _PEER_EXCLUSION_IDENTITY,
-                "contract cik disagrees with owner binding",
+                # A14 review F1: the authority-side cik is carried in the
+                # reason so the disagreement is reconstructable from the row.
+                f"contract cik disagrees with owner binding cik {binding_cik}",
             ))
             continue
         # the binding's listing label wins; the contract ticker survives only

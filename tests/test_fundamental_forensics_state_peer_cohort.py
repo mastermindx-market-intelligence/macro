@@ -719,7 +719,9 @@ def test_state_peer_cohort_excludes_a_contract_cik_disagreeing_with_owner_bindin
     assert cohort is not None
     by_ticker = {row["ticker"]: row for row in cohort["member_exclusions"]}
     assert by_ticker["BBB"]["code"] == "issuer_identity_unresolved"
-    assert by_ticker["BBB"]["reason"] == "contract cik disagrees with owner binding"
+    assert by_ticker["BBB"]["reason"] == (
+        "contract cik disagrees with owner binding cik 0000000099"
+    )
     assert by_ticker["BBB"]["issuer_id"] == _issuer_id("BBB")
     # never enters any table, as member or anchor
     for table in cohort["tables"]:
