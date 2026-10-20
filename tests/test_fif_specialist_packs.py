@@ -33,6 +33,14 @@ NEGATIVE issuer here; its bank path is proven on a synthetic in-test ledger.
 PK09 (controls, auditor, going concern) is text-span driven: the narrative
 locator over the AAPL 10-K primary document plus synthetic 10-Q/material-
 weakness probes.
+
+PK10 (proxy compensation and governance) reads DEF 14A packages only. No
+proxy capture path exists at this BASE, so the AAPL 10-K fixture proves the
+honest not-supplied envelope (applicability ``not_evaluable`` +
+``proxy_package_not_supplied``), and a synthetic in-test DEF 14A package
+proves the supplied path: four text-span rows valued, six reserved
+table-cell rows abstaining typed, a prose numeral typed
+``numeric_value_in_narrative_only`` and never scraped.
 """
 from __future__ import annotations
 
@@ -59,6 +67,7 @@ from engine.fundamental_forensics.specialist_packs import base as pack_base
 from engine.fundamental_forensics.specialist_packs import narrative as pack_narrative
 from engine.fundamental_forensics.specialist_packs import pk06_leases
 from engine.fundamental_forensics.specialist_packs import pk09_controls
+from engine.fundamental_forensics.specialist_packs import pk10_proxy
 from engine.fundamental_forensics import specialist_pack_contract as contract
 from engine.fundamental_forensics import ixbrl_raw_ledger as ixbrl_module
 from engine.fundamental_forensics.ixbrl_raw_ledger import (
@@ -448,8 +457,24 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK09", "PK11", "PK12"}
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK06",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    )
+    assert set(PACK_PRODUCERS) == {
+        "PK01",
+        "PK02",
+        "PK06",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    }
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -522,6 +547,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
         "engine/fundamental_forensics/specialist_packs/narrative.py",
         "engine/fundamental_forensics/specialist_packs/pk09_controls.py",
+        "engine/fundamental_forensics/specialist_packs/pk10_proxy.py",
         "engine/fundamental_forensics/specialist_packs/pk11_bank.py",
         "engine/fundamental_forensics/specialist_packs/pk12_biotech.py",
         "scripts/fif_specialist_packs.py",
@@ -2033,8 +2059,16 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "sic_in_biotech_set=false" in result["receipts"]
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
-    # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
+    # §TESTS 1: BASE packs plus PK12/PK10, not the full twelve at this BASE.
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK06",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    )
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -2731,3 +2765,332 @@ def test_pk09_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 9
     assert "cam_count=1" in envelope["receipts"]
+
+
+# 33. PK10: proxy compensation and governance (DEF 14A) -----------------------
+#
+# The committed AAPL fixture carries no DEF 14A package (no proxy capture
+# path exists at this BASE; it is owned by the D3 seam), so AAPL proves the
+# honest not-supplied envelope. The supplied path is proven on a synthetic
+# in-test DEF 14A package admitted by the same strict parser path as the
+# golden fixture, reusing the PK09 synthetic-package builder.
+
+PK10_QUERY = {**QUERY, "requested_metrics": ["proxy"]}
+# Invariance pins captured at BASE before this lane's edits (§TESTS 4): PK10
+# registration must not move any BASE pack's AAPL envelope. PK06/PK01/PK12
+# carry their own pins earlier in this file; this map re-asserts all six
+# canonical envelope digests in one place (PK02/PK11/PK09 are pinned here
+# for the first time).
+BASE_AAPL_ENVELOPE_SHA256 = {
+    "PK06": "b24c566f00870a6a91431df4b2983b5395868c05be091c211d872d220c5d1a24",
+    "PK01": "235a3ce6e9681e0bd3c3e284bc57cf972809ebe06e24a61bc5dba17a41e40a74",
+    "PK02": "878837747052a8ef1ed46b8b9f562fa0b707279e09340debadb25e9737c3c254",
+    "PK11": "60aab59f30c6f3d6853a1f7b3368867783c9e1f40885b41eba5e1186df18db17",
+    "PK12": "e76d3cbe85619224b81a288b6b368f8b5505086535c6293b0273d4dd2be87a1f",
+    "PK09": "ed7ef49e519d0380eee17af6b47f26ced3536981b65f9a8f9abd0b9362ac1cb3",
+}
+_BASE_PACK_METRICS = {
+    "PK06": "leases",
+    "PK01": "debt",
+    "PK02": "stock_compensation",
+    "PK11": "bank",
+    "PK12": "cash_runway",
+    "PK09": "controls",
+}
+# This producer's own byte-determinism pin, captured at the lane's fork
+# point after the PK10 producer landed.
+PK10_AAPL_ENVELOPE_SHA256 = (
+    "9acde5d4380fe7d3afa2e69a43c27be3b8b6c2be53039411b063ed4badbd89e6"
+)
+PK10_TABLE_CELL_FIELDS = (
+    "ceo_total_comp",
+    "other_neo_total",
+    "comp_actually_paid_peo",
+    "compensation_year",
+    "total_shareholder_return",
+    "peer_group_tsr",
+)
+PK10_TEXT_SPAN_FIELDS = (
+    "performance_measure_selected",
+    "director_independence_span",
+    "related_party_span",
+    "say_on_pay_frequency",
+)
+
+
+def _pk10_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK10_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk10_result() -> dict:
+    return produce_pack("PK10", _pk10_input())
+
+
+def test_pk10_aapl_not_supplied_envelope(pk10_result: dict) -> None:
+    # §TESTS 1 / B.5: no DEF 14A package admitted -> not_evaluable +
+    # proxy_package_not_supplied (never form_outside_pack_forms: the pack is
+    # applicable in principle to every issuer).
+    assert pk10_result["applicability"]["state"] == "not_evaluable"
+    assert pk10_result["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert pk10_result["applicability"]["rule_id"] == "pack.pk10.applicability/v1"
+    catalogue = contract.load_pack_schema("PK10")
+    assert [row["field_id"] for row in pk10_result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    for row in pk10_result["fields"]:
+        assert row["quality_state"] == "not_evaluable"
+        assert row["non_value_state"] == "not_evaluable"
+        assert row["coverage_state"] == "unmapped"
+        assert row["reason"] == "proxy_package_not_supplied"
+        assert row["value"] is None and row["text_value"] is None
+        assert row["source_span"] is None
+    assert [check["check_id"] for check in pk10_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+    for check in pk10_result["checks"]:
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "proxy_package_not_supplied"
+    assert pk10_result["coverage"] == {
+        "valued_fields": 0,
+        "missing_fields": 0,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 10,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "not_supplied",
+    }
+    assert "proxy_forms_seen=none" in pk10_result["receipts"]
+    assert (
+        "pk10.proxy_package_not_supplied: no DEF 14A package admitted for "
+        "this entity; capture path owned by the D3 seam"
+        in pk10_result["limitations"]
+    )
+    assert contract.validate_pack_result(pk10_result) == []
+
+
+def test_pk10_aapl_envelope_digest_is_pinned() -> None:
+    result = produce_pack("PK10", _pk10_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert sha256(payload.encode("utf-8")).hexdigest() == PK10_AAPL_ENVELOPE_SHA256
+
+
+def test_pk10_production_is_deterministic() -> None:
+    first = produce_pack("PK10", _pk10_input())
+    second = produce_pack("PK10", _pk10_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+def test_pk10_cli_not_supplied_run_exits_zero(tmp_path: Path) -> None:
+    # The CLI's frozen rule (scripts/fif_specialist_packs.py docstring): exit
+    # 0 is a produced envelope in ANY applicability state — including PK10's
+    # not_evaluable not-supplied result; 2 is a usage error, 1 a refusal.
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk10.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK10_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK10",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "not_evaluable"
+    assert envelope["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert "proxy_forms_seen=none" in envelope["receipts"]
+
+
+# The supplied probe: a tiny DEF 14A primary document. The preamble sentence
+# ends with ". " so every following sentence-span text_value starts at its
+# own sentence (the whole text is the section; no Item-numbered sections
+# exist in a proxy statement).
+_PK10_PROXY_BODY = (
+    "<div>Proxy statement of Test Co for the 2026 meeting of stockholders."
+    "</div>"
+    "<div>The most important performance measure for fiscal 2025 executive"
+    " compensation was adjusted operating income.</div>"
+    "<div>The Board has determined that each director is independent under"
+    " the listing standards of the national securities exchange on which"
+    " the Company's common stock is listed.</div>"
+    "<div>All related-party transactions were reviewed and approved by the"
+    " Audit Committee in accordance with its written charter.</div>"
+    "<div>The Board recommends that the say-on-pay vote be held every"
+    " year.</div>"
+)
+_PK10_NUMERAL_BODY = (
+    _PK10_PROXY_BODY
+    + "<div>The principal executive officer received total compensation of"
+    " $74,610,000 for fiscal 2025.</div>"
+)
+
+
+def _pk10_supplied_result(body: str = _PK10_PROXY_BODY) -> dict:
+    return produce_pack(
+        "PK10",
+        _pk10_input(packages=(_synthetic_package("DEF 14A", body),)),
+    )
+
+
+def test_pk10_supplied_proxy_text_rows_valued() -> None:
+    result = _pk10_supplied_result()
+    assert result["applicability"]["state"] == "applicable"
+    assert result["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert result["pack_id"] == "PK10"
+    # The four frozen B.2 text-span rows resolve over the proxy narrative.
+    assert (
+        _row(result, "performance_measure_selected")["text_value"]
+        == "The most important performance measure for fiscal 2025 executive"
+        " compensation was adjusted operating income."
+    )
+    director = _row(result, "director_independence_span")
+    assert director["text_value"].startswith(
+        "The Board has determined that each director is independent"
+    )
+    assert "independent under the" in director["text_value"]
+    assert _row(result, "related_party_span")["text_value"].startswith(
+        "All related-party transactions"
+    )
+    assert _row(result, "say_on_pay_frequency")["text_value"] == "annual"
+    for field_id in PK10_TEXT_SPAN_FIELDS:
+        row = _row(result, field_id)
+        assert row["quality_state"] == "valued"
+        assert row["reason"] is None
+        assert row["evidence_kind"] == "text_span"
+        assert row["required_evidence_kind"] == "text_span"
+        assert row["coverage_state"] == "source_trace_complete"
+        assert row["mapping_rule_id"] == f"PK10.{field_id}.text_span/v1"
+        span = row["source_span"]
+        assert isinstance(span, dict)
+        assert span["document_id"] == "doc.htm"
+        assert span["accession"] == "0000000099-26-000001"
+        assert span["end_offset"] > span["start_offset"] >= 0
+    # The six reserved table-cell rows abstain typed (C2).
+    for field_id in PK10_TABLE_CELL_FIELDS:
+        row = _row(result, field_id)
+        assert row["quality_state"] == "unsupported"
+        assert row["non_value_state"] == "unsupported"
+        assert row["reason"] == "missing_dependency"
+        assert row["evidence_kind"] == "table_cell"
+        assert row["required_evidence_kind"] == "table_cell"
+        assert row["value"] is None and row["text_value"] is None
+    # All four checks abstain on the reserved tables; cap_vs_sct_total never
+    # splices CAP and SCT Total into one number.
+    for check_id in (
+        "pvp_table_present",
+        "sct_table_present",
+        "sct_year_matches_fiscal",
+        "cap_vs_sct_total",
+    ):
+        check = _check(result, check_id)
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "missing_dependency"
+        assert check["tolerance"] is None
+    assert result["coverage"] == {
+        "valued_fields": 4,
+        "missing_fields": 0,
+        "unsupported_fields": 6,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+    assert "proxy_forms_seen=DEF 14A" in result["receipts"]
+    assert (
+        "pk10.table_extraction_reserved: SCT and PvP tables are sources for "
+        "a later lane; no numeric row is produced from prose"
+        in result["limitations"]
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_prose_numeral_is_never_scraped() -> None:
+    # §TESTS 3: the SCT total appears only inside narrative text; the row
+    # types the refusal, it never carries the number.
+    result = _pk10_supplied_result(_PK10_NUMERAL_BODY)
+    row = _row(result, "ceo_total_comp")
+    assert row["quality_state"] == "unsupported"
+    assert row["reason"] == "numeric_value_in_narrative_only"
+    assert row["value"] is None and row["text_value"] is None
+    # Quantities with no prose numeral stay on the reserved-table reason.
+    assert _row(result, "other_neo_total")["reason"] == "missing_dependency"
+    assert _row(result, "comp_actually_paid_peo")["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_supplied_proxy_without_matching_spans_types_missing() -> None:
+    # A span the frozen patterns cannot locate resolves as the valued
+    # absence "not_disclosed" over the whole document: the PK10 catalogue
+    # carries no narrative_span_not_located code, and a supplied proxy must
+    # never crash the producer over one missing phrase.
+    result = _pk10_supplied_result(
+        "<div>This proxy statement contains no governing phrases.</div>"
+    )
+    for field_id in PK10_TEXT_SPAN_FIELDS:
+        row = _row(result, field_id)
+        assert row["quality_state"] == "valued"
+        assert row["text_value"] == "not_disclosed"
+        assert row["reason"] is None
+        span = row["source_span"]
+        assert isinstance(span, dict) and span["end_offset"] > span["start_offset"]
+    assert result["coverage"]["valued_fields"] == 4
+    assert result["coverage"]["disclosure_coverage_state"] == "present"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_deafa14a_only_is_still_not_supplied() -> None:
+    # B.1 keys applicability on a DEF 14A package being present; a DEFA14A
+    # soliciting material alone never substitutes.
+    result = produce_pack(
+        "PK10",
+        _pk10_input(packages=(_synthetic_package("DEFA14A", _PK10_PROXY_BODY),)),
+    )
+    assert result["applicability"]["state"] == "not_evaluable"
+    assert result["applicability"]["reason"] == "proxy_package_not_supplied"
+    assert "proxy_forms_seen=DEFA14A" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+@pytest.mark.parametrize("pack_id", sorted(BASE_AAPL_ENVELOPE_SHA256))
+def test_base_pack_envelopes_unchanged_by_pk10_edits(pack_id: str) -> None:
+    # §TESTS 4: every pack registered at BASE keeps its AAPL envelope
+    # byte-identical to BASE after PK10 registers.
+    metric = _BASE_PACK_METRICS[pack_id]
+    result = produce_pack(
+        pack_id, _pack_input(query={**QUERY, "requested_metrics": [metric]})
+    )
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert (
+        sha256(payload.encode("utf-8")).hexdigest()
+        == BASE_AAPL_ENVELOPE_SHA256[pack_id]
+    )
