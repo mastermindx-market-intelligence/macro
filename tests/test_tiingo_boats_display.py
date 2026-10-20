@@ -32,6 +32,33 @@ def test_only_archived_trade_age_can_qualify_and_quotes_do_not_refresh():
  assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
 
 
+@pytest.mark.parametrize('quote_offset', [1.025, -60])
+def test_quote_clock_failure_cannot_erase_or_refresh_a_valid_trade(quote_offset):
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ watermark=r.watermarks['AMD']
+ consume(r,frame('Q',quote_offset),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+ assert r.watermarks['AMD']==watermark
+ assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
+
+
+@pytest.mark.parametrize('kind', ['Q', 'T', 'B'])
+def test_invalid_identity_remains_fail_closed_for_every_message_kind(kind):
+ r=reducer();consume(r,frame())
+ obj=json.loads(frame(kind,1));obj['data'][3]=123
+ consume(r,json.dumps(obj),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+def test_malformed_quote_clock_does_not_change_last_trade_state():
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ quote=json.loads(frame('Q',1));quote['data'][1]='invalid-clock'
+ consume(r,json.dumps(quote),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+
+
 def test_break_invalidates_even_without_matching_price_or_size():
  r=reducer();consume(r,frame())
  consume(r,frame('B',1,price=77,size=3),1)
@@ -350,3 +377,83 @@ def test_client_initialization_failure_is_scrubbed_and_denial_stops_callbacks(mo
   assert 'publication stopped for this invocation' in caplog.text
  assert calls==[True]
  assert 'SECRET_PROVIDER_BODY' not in caplog.text
+
+
+# ── coverage capacity: MAX_BOATS_SYMBOLS raises the 500-symbol display bound ──
+
+def capacity_symbols(count, first=None):
+ symbols=[f"Z{index:05d}" for index in range(count)]
+ if first is not None:
+  symbols[0]=first
+ return symbols
+
+def capacity_reducer(count):
+ r=BoatsLastTrade(capacity_symbols(count,first='AMD'),'12345678-1234-1234-1234-123456789abc')
+ r.reset('connected',1)
+ return r
+
+def test_full_observed_universe_of_15380_valid_covered_names_is_accepted_and_delivered():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(15380)
+ assert len(r.symbols)==15380
+ assert r.symbols[0]=='AMD' and r.symbols[-1]=='Z15379'
+ # Stable coverage ordering survives the capacity lift.
+ assert list(r.symbols)==capacity_symbols(15380,first='AMD')
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='Z00600',price=101),2)
+ consume(r,frame(offset=3,symbol='z15379',price=102),3)
+ payload=r.snapshot(NOW+timedelta(seconds=3))
+ assert set(payload['quotes'])=={'AMD','Z00600','Z15379'}
+ assert payload['coverage_symbols'][600]=='Z00600' and payload['coverage_symbols'][-1]=='Z15379'
+ # Names above the previous 500-symbol bound are validated and delivered.
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))==payload
+ assert public_boats_payload(payload,NOW+timedelta(seconds=3))['quotes']['Z15379']['extPrice']==102
+
+def test_hard_boundary_accepts_20000_and_refuses_20001():
+ from scripts.build_ext_quotes import public_boats_payload, MAX_BOATS_SYMBOLS
+ assert capacity_reducer(MAX_BOATS_SYMBOLS).snapshot(NOW)['coverage_symbols'].__len__()==20_000
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(20_001),'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={};p['stream_status']='ended'
+ exact=dict(p);exact['coverage_symbols']=capacity_symbols(20_000,first='AMD')
+ assert public_boats_payload(exact,NOW)['coverage_symbols'].__len__()==20_000
+ over=dict(p);over['coverage_symbols']=capacity_symbols(20_001,first='AMD')
+ with pytest.raises(ValueError):
+  public_boats_payload(over,NOW)
+
+def test_duplicate_coverage_is_rejected_at_either_bound():
+ from scripts.build_ext_quotes import public_boats_payload
+ with pytest.raises(ValueError):
+  BoatsLastTrade(['AMD','AMD'],'12345678-1234-1234-1234-123456789abc')
+ with pytest.raises(ValueError):
+  BoatsLastTrade(capacity_symbols(20_000,first='AMD')[:-1]+['AMD'],'12345678-1234-1234-1234-123456789abc')
+ p=public_snapshot();p['quotes']={}
+ duplicated=dict(p);duplicated['coverage_symbols']=['AMD','AMD']
+ with pytest.raises(ValueError):
+  public_boats_payload(duplicated,NOW)
+
+def test_uncovered_rows_are_rejected_at_full_universe_coverage():
+ from scripts.build_ext_quotes import public_boats_payload
+ r=capacity_reducer(15380)
+ consume(r,frame(offset=1),1)
+ consume(r,frame(offset=2,symbol='MSFT'),2)  # uncovered vendor symbol
+ payload=r.snapshot(NOW+timedelta(seconds=2))
+ assert set(payload['quotes'])=={'AMD'}
+ stranger=dict(payload);stranger['quotes']={'ZZZZZ':payload['quotes']['AMD']}
+ with pytest.raises(ValueError):
+  public_boats_payload(stranger,NOW+timedelta(seconds=2))
+
+def test_stale_and_gap_invalidation_are_unchanged_at_capacity():
+ r=capacity_reducer(15380)
+ consume(r,frame(offset=1),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']
+ # Stale trades still age out at the same 30-second deadline.
+ assert r.snapshot(NOW+timedelta(seconds=32))['quotes']=={}
+ consume(r,frame(offset=2),2)
+ assert 'AMD' in r.snapshot(NOW+timedelta(seconds=2))['quotes']
+ consume(r,frame('B',3,symbol='AMD'),3)
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ # A gap still clears every covered symbol without touching coverage.
+ r.reset('gap')
+ assert r.snapshot(NOW+timedelta(seconds=3))['quotes']=={}
+ assert len(r.snapshot(NOW+timedelta(seconds=3))['coverage_symbols'])==15380

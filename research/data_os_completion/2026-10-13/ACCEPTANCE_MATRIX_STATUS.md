@@ -24,7 +24,7 @@ A02, A03); A01 adds a known-answer corpus; R01 is a source review of MERGED pull
 R03 are plans only (running them is a seat act). No row asserts anything about trading alpha,
 model quality or allocation.
 
-Summary: PASS 15, PASS-WITH-GAPS 12, FINDING 5, UNFINISHED 9.
+Summary: PASS 16, PASS-WITH-GAPS 12, FINDING 4, UNFINISHED 9.
 
 
 ### F01 (O5)
@@ -51,7 +51,7 @@ Summary: PASS 15, PASS-WITH-GAPS 12, FINDING 5, UNFINISHED 9.
 | Row | Statement (abridged) | Status | Evidence | Open item |
 | --- | --- | --- | --- | --- |
 | Q02.01 | A permitted end-to-end read succeeds while mismatched/revoked/old-generation variants refuse at the actual... | **PASS-WITH-GAPS** | research/data_os_completion/2026-10-13/Q02_ACCESS.md cases A1-A6; `tests/verification/test_access_q02.py` (PR #9273) | UNFINISHED: no authenticated Studio/MCP principal reached the dispatcher (Remaining real-principal gates) |
-| Q02.02 | Receipt-only refusal, disappeared artifact and A→B→A changes cannot silently resurrect invalid current evid... | **FINDING** | research/data_os_completion/2026-10-13/Q02_ACCESS.md cases B1-B6 (PR #9273) | FINDING Q02-F1: an unreadable basket-history parquet is answered as basis=current_membership ('no PIT history yet') - a read failure looks like absence |
+| Q02.02 | Receipt-only refusal, disappeared artifact and A→B→A changes cannot silently resurrect invalid current evid... | **PASS** | research/data_os_completion/2026-10-13/Q02_ACCESS.md cases B1-B6 (PR #9273); RESOLVED 2026-10-19 by PR #9654 (claude/dataos-q02f1-2026-10-19): unreadable history now answers basis=membership_unreadable and the basket read refuses MEMBERSHIP_UNREADABLE; strict-xfail removed. | FINDING Q02-F1: an unreadable basket-history parquet is answered as basis=current_membership ('no PIT history yet') - a read failure looks like absence |
 | Q02.03 | Authorized-then-guest cache sequences cannot replay private results. | **PASS-WITH-GAPS** | research/data_os_completion/2026-10-13/Q02_ACCESS.md cases C1-C4 (PR #9273) | UNFINISHED: same sequence under two real authenticated principals |
 | Q02.04 | Simulated responses alone do not substitute for the real handler/browser composition or real source-byte ve... | **PASS-WITH-GAPS** | research/data_os_completion/2026-10-13/Q02_ACCESS.md D1-D2, L1-L3, Source-byte verification (PR #9273) | GAP: a successful read carries content_sha256=None (stat-identity `statv1`, not byte-verified); browser composition not exercised |
 

@@ -98,6 +98,20 @@ def test_invalid_tag_is_neither_recorded_nor_logged(caplog):
     assert not caplog.records
 
 
+def test_stage_fields_are_bounded_and_require_an_active_catalog_read(caplog):
+    caplog.set_level(logging.INFO, logger=api._read_observation_log.name)
+    with api._observe_admitted_read('retained_catalog') as seq:
+        for stage, wall, cpu in [('private-user/path', 1, 1), ('projections', float('nan'), 1),
+                                 ('projections', 1, -1), ('projections', True, 1)]:
+            api._read_observation_stage(seq, stage, wall, cpu)
+        api._read_observation_stage(seq, 'projections', 12.5, 3.25)
+    api._read_observation_stage(seq, 'projections', 1, 1)
+    stages = [r.args[1] for r in caplog.records if '.stage ' in r.getMessage()]
+    assert stages == [{'tag': 'retained_catalog', 'seq': seq, 'stage': 'projections',
+                       'elapsed_ms': 12.5, 'thread_cpu_ms': 3.25}]
+    assert 'private-user/path' not in caplog.text
+
+
 def test_info_events_reach_the_default_server_handler():
     script = '''
 import logging.config
@@ -109,14 +123,15 @@ logging.config.dictConfig({
                 'uvicorn.error': {'level': 'INFO'}},
 })
 from app import market_memory as api
-with api._observe_admitted_read('retained_catalog'):
+with api._observe_admitted_read('retained_catalog') as seq:
+    api._read_observation_stage(seq, 'projections', 12.5, 3.25)
     api._read_observation_busy('retained_saved')
 '''
     result = subprocess.run([sys.executable, '-c', script], capture_output=True,
                             text=True, timeout=30, check=False)
     assert result.returncode == 0, result.stderr
     assert all('market_memory.read.' + event in result.stderr
-               for event in ('start', 'busy', 'finish'))
+               for event in ('start', 'stage', 'busy', 'finish'))
 
 
 # Frozen from pre-implementation bbfd64b2ba58b5c44ad8ba38a05bcd319f13708c.
@@ -155,8 +170,25 @@ class StripObserver(ast.NodeTransformer):
         self.generic_visit(node)
         if len(node.items) == 1 and isinstance(node.items[0].context_expr, ast.Call):
             call = node.items[0].context_expr
-            if isinstance(call.func, ast.Name) and call.func.id == '_observe_admitted_read':
+            if isinstance(call.func, ast.Name) and call.func.id in {
+                    '_observe_admitted_read', '_observe_catalog_stage'}:
                 return node.body
+        return node
+
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        if (isinstance(node.func, ast.Attribute) and node.func.attr == 'read_catalog'
+                and isinstance(node.func.value, ast.Name) and node.func.value.id == 'catalog'):
+            node.keywords = [item for item in node.keywords if item.arg != 'stage_observer']
+        return node
+
+    def visit_FunctionDef(self, node):
+        self.generic_visit(node)
+        if node.name == 'read_catalog':
+            for index, arg in reversed(list(enumerate(node.args.kwonlyargs))):
+                if arg.arg == 'stage_observer':
+                    del node.args.kwonlyargs[index]
+                    del node.args.kw_defaults[index]
         return node
 
     def visit_Expr(self, node):
@@ -171,6 +203,14 @@ def test_routes_preserve_exact_original_authorization_limits_and_payloads(name, 
     node = ast.parse(inspect.getsource(getattr(api, name))).body[0]
     actual = StripObserver().visit(node)
     assert _ast_digest(actual) == digest
+
+
+def test_catalog_preserves_the_entire_pre_timing_read_contract():
+    from engine.neuralweb import market_memory_retained_catalog as catalog
+    node = ast.parse(inspect.getsource(catalog.read_catalog)).body[0]
+    # Exact fa559344 pre-timing body, with only timing scopes/argument removed.
+    assert _ast_digest(StripObserver().visit(node)) == (
+        'c9e0315bcd0fbbfbecd7dcfabaff1e98de4feab27b2632cc061435859509eede')
 
 
 @pytest.mark.parametrize('left,right', [

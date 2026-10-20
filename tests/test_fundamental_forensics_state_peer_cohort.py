@@ -10,7 +10,9 @@ the golden provider is proven absent from the process.
 """
 from __future__ import annotations
 
+import copy
 import json
+import shutil
 import sys
 from datetime import date
 from decimal import Decimal
@@ -20,13 +22,17 @@ import pandas as pd
 
 import scripts.build_fundamental_forensics as bff
 from engine.fundamental_forensics.detectors import issuer_class_for_sic
+from engine.fundamental_forensics.metric_registry import _content_digest
 from engine.fundamental_forensics.peer_cohort import (
     CohortDefinition,
     CohortMember,
     MetricObservation,
     build_cohort_table,
 )
-from engine.fundamental_forensics.production_datasets import ProductionDatasetError
+from engine.fundamental_forensics.production_datasets import (
+    ProductionDatasetError,
+    snapshot_core_registry_payload,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 GEN_AT = "2026-10-12T00:00:00+00:00"
@@ -35,12 +41,14 @@ _MODULES_BEFORE: set = set()
 
 # Five synthetic members (contract order is load-bearing: tables follow it).
 #   AAA/BBB/CCC  admitted (sic pinned, generation with trees)
+#   CCC          bank SIC: its not-applicable set is exactly the shipped
+#                catalog's bank class closure (G0-b), never a ticker key
 #   DDD          sic pinned but NO generation      -> production_dataset_absent
 #   EEE          generation but NO pinned sic      -> issuer_sic_unavailable
 MEMBERS: tuple[tuple[str, str, str | None], ...] = (
     ("AAA", "0000000001", "3571"),
     ("BBB", "0000000002", "7372"),
-    ("CCC", "0000000003", "3500"),
+    ("CCC", "0000000003", "6199"),
     ("DDD", "0000000004", "6022"),
     ("EEE", "0000000005", None),
 )
@@ -48,8 +56,11 @@ ADMITTED = tuple(entry for entry in MEMBERS if entry[0] in {"AAA", "BBB", "CCC"}
 PERIOD_END = "2026-06-30"
 REVENUE = {"AAA": "101", "BBB": "202", "CCC": "303", "EEE": "404"}
 NET_INCOME = {"AAA": "11", "BBB": "22", "CCC": "33", "EEE": "44"}
-# AAA's ni is not applicable per the contract's field-denominator map.
-NOT_APPLICABLE = {"AAA": {"ni": "synthetic class exclusion"}}
+# gross_profit is the one cohort metric inside the shipped bank class
+# closure, so the bank-SIC member is not applicable for it and only it —
+# the class-realistic replacement for the retired ticker-keyed
+# field-denominator overlay.
+GROSS_PROFIT = {"AAA": "61", "BBB": "122", "CCC": "244", "EEE": "488"}
 
 
 def _issuer_id(ticker: str) -> str:
@@ -81,7 +92,7 @@ def _write_root(root: Path, *, members: tuple = MEMBERS, master_rows: list | Non
             "cik": cik,
             "fiscal_year_end": "--06-30",
             "identity_binding_state": "synthetic",
-            "issuer_class": "industrial",
+            "issuer_class": issuer_class_for_sic(sic) if sic is not None else "unknown",
             "legal_name": ticker,
             "accessions": [{
                 "accession": f"0000000-26-00000{ticker[-1]}",
@@ -99,19 +110,34 @@ def _write_root(root: Path, *, members: tuple = MEMBERS, master_rows: list | Non
         "contract_id": CONTRACT_ID,
         "issuers": issuers,
         "field_denominator": {
-            "metric_ids": ["revenue", "ni"],
-            "not_applicable": NOT_APPLICABLE,
+            "metric_ids": ["revenue", "ni", "gross_profit"],
         },
     }
     path = root / bff.COVERAGE_CONTRACT_RELATIVE
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(contract, indent=1), encoding="utf-8")
 
+    # The projection derives every class exclusion from the shipped governed
+    # registry (G0-b), so each synthetic root stages the REAL catalog bytes —
+    # plus the two companion files the loader requires — never a stub: the
+    # bank closure exercised below is the shipped one.
+    metric_root = ROOT / "config" / "fundamental_forensics" / "metrics" / "v1"
+    staged_root = root / "config" / "fundamental_forensics" / "metrics" / "v1"
+    (staged_root / "mappings").mkdir(parents=True, exist_ok=True)
+    (staged_root / "formulas").mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(metric_root / "metric_catalog.yaml", staged_root / "metric_catalog.yaml")
+    shutil.copyfile(metric_root / "mappings" / "core.yaml", staged_root / "mappings" / "core.yaml")
+    shutil.copyfile(metric_root / "formulas" / "core.yaml", staged_root / "formulas" / "core.yaml")
+
 
 def _member_tree(ticker: str) -> dict:
     """One precomputed statement tree: revenue + ni cells for the member."""
     rows = []
-    for metric_id, value in (("revenue", REVENUE[ticker]), ("ni", NET_INCOME[ticker])):
+    for metric_id, value in (
+        ("revenue", REVENUE[ticker]),
+        ("ni", NET_INCOME[ticker]),
+        ("gross_profit", GROSS_PROFIT[ticker]),
+    ):
         rows.append({
             "order": len(rows),
             "depth": 0,
@@ -187,7 +213,10 @@ def _install_store(monkeypatch, *, generations: dict[str, _FakeGeneration] | Non
 
 def _expected_observations() -> dict[str, dict[str, MetricObservation]]:
     observations: dict[str, dict[str, MetricObservation]] = {}
-    for ticker, _, _ in ADMITTED:
+    for ticker, _, sic in ADMITTED:
+        # the bank-class member is not applicable for exactly the shipped
+        # catalog's bank closure (gross_profit here); no ticker key exists
+        bank = issuer_class_for_sic(sic) == "bank"
         observations[_issuer_id(ticker)] = {
             "revenue": MetricObservation(
                 value=Decimal(REVENUE[ticker]),
@@ -199,8 +228,13 @@ def _expected_observations() -> dict[str, dict[str, MetricObservation]]:
                 value=Decimal(NET_INCOME[ticker]),
                 period_end=date.fromisoformat(PERIOD_END),
                 period_basis="duration",
-                # the contract's field-denominator map excludes AAA's ni
-                applicable=ticker not in NOT_APPLICABLE or "ni" not in NOT_APPLICABLE[ticker],
+                applicable=True,
+            ),
+            "gross_profit": MetricObservation(
+                value=Decimal(GROSS_PROFIT[ticker]),
+                period_end=date.fromisoformat(PERIOD_END),
+                period_basis="duration",
+                applicable=not bank,
             ),
         }
     return observations
@@ -277,7 +311,7 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
             cohort_id=f"{CONTRACT_ID}:{anchor_id}",
             anchor_issuer_id=anchor_id,
             members=expected_members,
-            metric_ids=("revenue", "ni"),
+            metric_ids=("revenue", "ni", "gross_profit"),
         )
         expected = build_cohort_table(definition, expected_observations).to_dict()
         actual = next(t for t in tables if t["anchor_issuer_id"] == anchor_id)
@@ -300,15 +334,21 @@ def test_state_peer_cohort_projection_from_store(tmp_path: Path, monkeypatch) ->
                 assert str(Decimal(row["value"])) == row["value"]  # canonical text, not a float
     _walk_for_floats(state["payload"])
 
-    # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue; ni loses AAA
-    # to the contract's class exclusion, leaving two rows under min_n)
+    # ranked vs below-min-n both appear (AAA/BBB/CCC rank revenue and ni;
+    # gross_profit loses the bank-SIC member to the shipped catalog's bank
+    # class closure, leaving two rows under min_n). The anchor_unavailable
+    # emission is covered in tests/test_fundamental_forensics_peer_comparability.py.
     revenue_emission = next(
         e for t in tables for e in t["emissions"] if e["metric_id"] == "revenue"
     )
     assert revenue_emission["emission_state"] == "ranked"
     assert revenue_emission["ranks"] is not None
     ni_emission = next(e for t in tables for e in t["emissions"] if e["metric_id"] == "ni")
-    assert ni_emission["emission_state"] == "below_min_n"
+    assert ni_emission["emission_state"] == "ranked"
+    gross_profit_emission = next(
+        e for t in tables for e in t["emissions"] if e["metric_id"] == "gross_profit"
+    )
+    assert gross_profit_emission["emission_state"] == "below_min_n"
     assert any(
         exclusion["code"] == "A35-B1"
         for t in tables for exclusion in t["exclusions"]
@@ -396,3 +436,181 @@ def test_state_peer_cohort_identity_unresolved_is_typed(tmp_path: Path, monkeypa
     assert [t["anchor_issuer_id"] for t in cohort["tables"]] == [
         _issuer_id(ticker) for ticker, _, _ in ADMITTED
     ]
+
+
+def _with_revenue_cells(ticker: str, *cells: tuple[str, str]) -> dict:
+    """The member tree with its revenue row carrying the given (start, value) cells."""
+    tree = _member_tree(ticker)
+    row = next(
+        r for r in tree["statements"][0]["rows"] if r["standardized_metric_id"] == "revenue"
+    )
+    template = row["cells"][0]
+    row["cells"] = [
+        {**template, "period": {**template["period"], "start": start}, "value": value}
+        for start, value in cells
+    ]
+    return tree
+
+
+def test_state_peer_cohort_aligns_a_same_end_tie_to_each_anchor(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Composer wiring: a peer's quarter/year-to-date tie resolves per anchor.
+
+    AAA reports only year-to-date revenue, CCC only the quarter, and BBB both
+    on the same end date (year-to-date cell first). AAA's table carries BBB's
+    year-to-date value and drops CCC under A35-D1; BBB's and CCC's tables carry
+    BBB's quarter value, the default shortest pick.
+    """
+    trees = {
+        "AAA": _with_revenue_cells("AAA", ("2026-01-01", "1001")),
+        "BBB": _with_revenue_cells("BBB", ("2026-01-01", "2002"), ("2026-04-01", "202")),
+        "CCC": _member_tree("CCC"),
+        "EEE": _member_tree("EEE"),
+    }
+    generations = {
+        _issuer_id(ticker): _FakeGeneration({f"0000000-26-00000{ticker[-1]}": tree})
+        for ticker, tree in trees.items()
+    }
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+    tables = {table["anchor_issuer_id"]: table for table in cohort["tables"]}
+
+    def revenue_value(anchor: str, member: str) -> str | None:
+        emission = next(
+            e for e in tables[_issuer_id(anchor)]["emissions"] if e["metric_id"] == "revenue"
+        )
+        return next(
+            (row["value"] for row in emission["rows"] if row["issuer_id"] == _issuer_id(member)),
+            None,
+        )
+
+    def revenue_codes(anchor: str, member: str) -> set[str]:
+        return {
+            x["code"] for x in tables[_issuer_id(anchor)]["exclusions"]
+            if x["metric_id"] == "revenue" and x["issuer_id"] == _issuer_id(member)
+        }
+
+    assert revenue_value("AAA", "AAA") == "1001"
+    assert revenue_value("AAA", "BBB") == "2002"
+    assert revenue_codes("AAA", "BBB") == set()
+    assert revenue_value("AAA", "CCC") is None
+    assert "A35-D1" in revenue_codes("AAA", "CCC")
+    assert revenue_value("BBB", "BBB") == "202"
+    assert revenue_value("CCC", "BBB") == "202"
+    assert revenue_codes("CCC", "BBB") == set()
+
+
+def _registry_role_bytes(*, revenue_version: str | None = None) -> bytes:
+    """The shipped registry snapshot as a generation's registry role payload."""
+    payload = copy.deepcopy(snapshot_core_registry_payload(ROOT))
+    if revenue_version is not None:
+        entry = next(
+            m for m in payload["catalog"]["metrics"] if m["metric_id"] == "revenue"
+        )
+        entry["rule"] = {**entry["rule"], "version": revenue_version}
+        # a real re-versioned catalog re-pins its own content digest
+        payload["catalog"]["content_sha256"] = _content_digest(payload["catalog"])
+    return json.dumps(payload, sort_keys=True).encode("utf-8")
+
+
+def _cohort_codes(cohort: dict, anchor: str, member: str, metric_id: str) -> set[str]:
+    table = next(
+        t for t in cohort["tables"] if t["anchor_issuer_id"] == _issuer_id(anchor)
+    )
+    return {
+        x["code"] for x in table["exclusions"]
+        if x["metric_id"] == metric_id and x["issuer_id"] == _issuer_id(member)
+    }
+
+
+def test_generation_metric_versions_reads_each_member_registry() -> None:
+    """A35-V1 input: the version comes from the member's pinned registry role."""
+    metric_ids = ("revenue", "net_income_loss", "no_such_metric")
+    assert bff._generation_metric_versions(_FakeGeneration({}), metric_ids) == {}
+    broken = _FakeGeneration({})
+    broken.role_payloads = {"registry_json": b"{not json"}
+    assert bff._generation_metric_versions(broken, metric_ids) == {}
+    malformed = _FakeGeneration({})
+    malformed.role_payloads = {"registry_json": b'{"catalog": {}}'}
+    assert bff._generation_metric_versions(malformed, metric_ids) == {}
+
+    generation = _FakeGeneration({})
+    generation.role_payloads = {"registry_json": _registry_role_bytes()}
+    cache: dict = {}
+    versions = bff._generation_metric_versions(generation, metric_ids, cache)
+    assert versions == {"revenue": "1.0.0", "net_income_loss": "1.0.0"}
+    assert bff._generation_metric_versions(generation, metric_ids, cache) is versions
+
+    bumped = _FakeGeneration({})
+    bumped.role_payloads = {"registry_json": _registry_role_bytes(revenue_version="1.0.1")}
+    assert bff._generation_metric_versions(bumped, metric_ids, cache) == {
+        "revenue": "1.0.1",
+        "net_income_loss": "1.0.0",
+    }
+
+
+def test_state_peer_cohort_excludes_a_peer_whose_metric_version_differs(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A35-V1 fires through the composer, not only in the kernel.
+
+    BBB's generation pins a registry whose revenue rule is 1.0.1 while every
+    other member pins 1.0.0: revenue is excluded both ways across that line,
+    and ni (same version everywhere) is untouched.
+    """
+    generations = {}
+    for ticker in ("AAA", "BBB", "CCC", "EEE"):
+        generation = _FakeGeneration({f"0000000-26-00000{ticker[-1]}": _member_tree(ticker)})
+        generation.role_payloads = {
+            "registry_json": _registry_role_bytes(
+                revenue_version="1.0.1" if ticker == "BBB" else None
+            )
+        }
+        generations[_issuer_id(ticker)] = generation
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+
+    assert "A35-V1" in _cohort_codes(cohort, "AAA", "BBB", "revenue")
+    assert "A35-V1" in _cohort_codes(cohort, "BBB", "AAA", "revenue")
+    assert "A35-V1" in _cohort_codes(cohort, "BBB", "CCC", "revenue")
+    assert _cohort_codes(cohort, "AAA", "CCC", "revenue") == set()
+    assert _cohort_codes(cohort, "AAA", "BBB", "ni") == set()
+
+
+def test_state_peer_cohort_drops_cells_without_a_unit_or_period_kind(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """A35-K1/U1 input: an observation of unknown basis or unit is not comparable.
+
+    BBB's revenue cell states no unit and CCC's ni cell no period kind; each
+    contributes nothing, so the member reports a missing observation rather
+    than slipping past the anchor's unit and basis controls.
+    """
+    trees = {ticker: _member_tree(ticker) for ticker in ("AAA", "BBB", "CCC", "EEE")}
+    for ticker, metric_id, mutate in (
+        ("BBB", "revenue", lambda cell: {**cell, "unit": None}),
+        ("CCC", "ni", lambda cell: {**cell, "period": {**cell["period"], "kind": None}}),
+    ):
+        row = next(
+            r for r in trees[ticker]["statements"][0]["rows"]
+            if r["standardized_metric_id"] == metric_id
+        )
+        row["cells"] = [mutate(cell) for cell in row["cells"]]
+    generations = {
+        _issuer_id(ticker): _FakeGeneration({f"0000000-26-00000{ticker[-1]}": tree})
+        for ticker, tree in trees.items()
+    }
+    _install_store(monkeypatch, generations=generations)
+    _write_root(tmp_path)
+    cohort = bff.compose_state(tmp_path, generated_at=GEN_AT)["payload"]["peer_cohort"]
+    assert cohort is not None
+
+    assert "A35-X1" in _cohort_codes(cohort, "AAA", "BBB", "revenue")
+    assert "A35-X1" in _cohort_codes(cohort, "AAA", "CCC", "ni")
+    assert _cohort_codes(cohort, "AAA", "BBB", "ni") == set()
+    assert _cohort_codes(cohort, "AAA", "CCC", "revenue") == set()
