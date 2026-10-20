@@ -663,7 +663,7 @@ def refresh_disclosure(root: Path, generated_utc: str | None, *,
         en = "This Help page was built less than an hour ago. Data pages show their own update times."
         zh = "本帮助页于不到一小时前构建。数据页面会分别显示各自的更新时间。"
     else:
-        en = f"This Help page was built {age} hours ago. Data pages show their own update times."
+        en = f"This Help page was built {age} {'hour' if age == 1 else 'hours'} ago. Data pages show their own update times."
         zh = f"本帮助页于 {age} 小时前构建。数据页面会分别显示各自的更新时间。"
     return {"state": state, "stamp_utc": generated_utc if parsed else None,
             "age_hours": age, "line_en": en, "line_zh": zh,

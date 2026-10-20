@@ -36,6 +36,9 @@ def test_source_clock_contract(stamp, age, state):
         assert "0 hours" not in result["line_en"]
     if age == 0:
         assert "less than an hour" in result["line_en"]
+    if age == 1:
+        assert "1 hour ago." in result["line_en"]
+        assert "1 hours" not in result["line_en"]
 
 
 def test_root_is_unread():
@@ -72,6 +75,8 @@ window:{addEventListener:(k,f)=>events[k]=f,setInterval:f=>events.timer=f},Date:
 vm.runInNewContext(SOURCE,context);
 function read(){return {state:attrs['data-refresh-state'],en:parts['.l-en'].textContent,zh:parts['.l-zh'].textContent};}
 const values=[read()];
+now = Date.parse('2026-10-20T12:30:00Z'); events.timer(); const singular = read();
+if (!singular.en.includes('1 hour ago.') || singular.en.includes('1 hours')) throw new Error('singular hour copy');
 now = Date.parse('2026-10-22T12:00:00Z'); events.pageshow(); values.push(read());
 now = Date.parse('2026-10-20T11:00:00Z'); events.visibilitychange(); values.push(read());
 attrs['data-build-stamp']=''; events.timer(); values.push(read());
