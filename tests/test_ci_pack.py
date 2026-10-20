@@ -4918,7 +4918,7 @@ CURATED_EXCLUSIVE = {
     # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
     # fixtures, which opaque inference smeared onto build_free_content
     # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
-    # Pin the full measured eight-file static closure plus ancestor inits and
+    # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
 }
@@ -5089,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_661),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_668),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5192,6 +5192,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     stays clean. Fund only the twelve-unit joint excess: 5,649 -> 5,661.
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
+
+    Shared Shell/current-main composition (2026-10-20, PR7949):
+    the four existing scope/packing checks on 0f058428 plus this branch
+    measure index.html 135 jobs / 5,793, build_free_content 134 / 5,668,
+    and plan_book 128 / 5,542, with ten packs and the same selected job
+    IDs as the prior f54 composition. That prior composition measured
+    5,665 while the vector suite was still pending. Incoming 0f058428
+    now includes its exact unrun-vector-baskets 31 -> 34 (+3) change.
+    On these same selected IDs, incoming-manifest command weight is
+    5,661; the retained Shared Shell data-base-shim +5 and nav-chrome +2
+    produce 5,668. Fund only that measured seven-unit excess, 5,661 ->
+    5,668. Preserve both incoming histories above, all suites, selectors,
+    job and pack bounds, and the other two weight ceilings.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

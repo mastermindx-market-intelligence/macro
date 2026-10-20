@@ -5,10 +5,9 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: 'Same original commission. Published b98 remained the sole reconciled Macro branch; ordinary merge
-  d528 and minimal two-file CI repair passed locally at index1996dbf7. Original Terminal correction #1080 is protected
-  R93, canonical bootstrap A succeeded, and separate runtime36-check/filesystem acceptance passed. Historical body
-  is retained; subsequent source publication and public gates remain distinct.'
+state_before: Same original programme. Published69e8566; local intermediate6c preserves f54 merge and its observed
+  budget breach. Current0f05 merge and minimal measured5668 correction pass focused local gates at index252deb9f.
+  Beta originalA accepted under protectedR93; public DNS/TLS/browser and new-head hosted/publication remain distinct.
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -49,6 +48,11 @@ changed:
     adapters, added the exact research-vault shared_shell dependency and measured seven-unit packing correction.
     Persisted full hosted/local failures, focused/full canonical green, protected bootstrap and actual filesystem
     receipts without another installer or renderer.
+- path: .github/ci/legacy-jobs.yml; app/deploy/Caddyfile; tests/test_ci_pack.py; site/etfs.html; site/us_stocks.html;
+    existing evidence and handoff
+  what: Ordinary f54 then0f05 merges preserve both owners and generated content. Actual5668 measurement funds only
+    seven-unit retained Shell command cost; histories/suites/selectors/job/pack bounds preserved. Same proof pack
+    retains producing failures/green and browser boundary.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -179,6 +183,16 @@ verified:
   result: Exit0 at03:10:47.408012Z; zero introduced/zero inherited; source/index1996dbf7 unchanged. Override only
     disables unrelated stale-base cleanup; assertions and own temporary base remain. Exact patch42dec7c9 and producing
     evidence independently reviewed NONBLOCKING. Fresh published-head hosted admission is still due.
+- claim: Current0f05 composition and exact measured packing repair pass scoped local gates.
+  command: Four existing CI scope/packing nodes; final packing-only check after exact literal/history change; two
+    incumbent Node adapter suites; exact three-way source proofs.
+  result: Three scope nodesPASS; actual packing5668vs5661 reproduced; minimal5661→5668 rerunPASS. Rows135/5793/10,134/5668/10,128/5542/10.78adapterPASS.
+    Earlier28boundaryPASS bound to unchanged source. Hosted admission not inferred.
+- claim: Accepted original beta generation remains healthy at04:42; V2 filesystem review is nonblocking.
+  command: Read-only originalSSH owner service/receipt/build/status/DNS/TLS observation and bounded independent
+    actual-V2 review.
+  result: BetaA/PID2427329/runtime698204ef/HTTP200 stable; productionservice/build/owner stable. Caddy17aefed exactlyincoming0f05
+    changed independently. DNSstillEdgeOne/strictTLShostnamefailure. No rerun or mutation.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -193,28 +207,26 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Programme OPEN. Current locally tested candidate1996dbf7 is not yet committed/pushed in this frontier; original
-  PR7949 remains unarmed pending exact published-head gates and durable proof.
-- Canonical R93 bootstrap and runtime/filesystem acceptance are complete. Do not repeat them. Public DNS/TLS/auth/browser
-  and original Macro publication remain separate.
-- Fresh03:23:45 remote fence observed main d19e1fb148397af3c62adde06a1869aa6bc510b3 with unrelated CI/Caddy changes;
-  immutable read did not merge or rewrite the tested d528 candidate. Same original remote branch remains b98.
-- DNSPod last actual account state was sign-in; resumed extension currently lacks originating browser context. A
-  fresh cloud beta tab opens but returns upstream connection failure. Supabase13 redirects are configuration proof
-  only.
-- Six Sector views and sector-to-basket remain; Paper REVISE; C4/provenance suggestions SPEC_ONLY/UNAPPLIED/UNRUN.
-- SessionBridge lookup backend_unavailable; previously retained principal exception applies. Advisers remain bounded
-  consultations, not replacement Fabric execution workers.
+- Programme OPEN. Current local index252deb9f is awaiting final proof commit/push and exact new-head hosted gates;
+  remotePR7949 last observed69e8566/unarmed.
+- R93 bootstrap/runtime/filesystem acceptance complete. Do not repeat. First-install containment/recovery is supported;
+  previous acceptedruntimeNULL means no executedupgrade rollback is claimed.
+- DNSPod secure choice selectedWeChat but iframeSiteUnavailable; resumedUIunchanged/sign-in. DNS remains EdgeOne
+  and strictTLSfails. No credentials/security setting/DNS edit by root.
+- Incumbent coveringrender/generated-main and actualserved publication remain required after source landing.
+- Six Sector views and sector-to-basket retained; PaperREVISE; C4 SPEC_ONLY/UNAPPLIED/UNRUN.
+- Original SessionBridge backend_unavailable exception retained; bounded consultations are not replacement Fabric
+  workers. Historical SNI artifact consultation unqualified because readneverreturned.
 next_actions:
-- Finish normal original-branch commit/push with the same evidence pack and obtain exact new-head hosted CI. Preserve
-  measured local source proof and unrelated incoming work.
-- Refresh actual public DNS and publication prerequisites, then arm incumbent Macro merge-on-green LAST after required
-  gates; no native auto-merge or post-arm push.
-- Consume existing render.yml/engine-render covering generated-main and macro-update served-tree/asset/capability/header
+- Commit/push exact composed source and same proof pack on original branch, inspect actual new-head hostedCI/review,
+  resolve concrete failures only.
+- Refresh actual publication prerequisites and arm existing Macro merge-on-green LAST after final gates; no nativeauto
+  or post-arm push.
+- Consume incumbent render.yml/engine-render covering generated-main and macro-update actualserved asset/capability/header
   proof.
-- Complete original DNSPod direct-A/TLS/auth/public responsive navigation/history/theme/language/native-handoff/error
-  and applicable initial/rollback acceptance.
-- Persist actual follow-on receipts in original PR7949 checkpoint and same handoff; keep programme OPEN until accepted.
+- Complete DNSPod user sign-in boundary, original directbetaA/DNS/TLS/auth/public responsive navigation/history/theme/language/nativehandoff/error
+  and applicablefirst-install/rollback acceptance.
+- Persist actual follow-on results into original PR7949 checkpoint/same handoff; programme staysOPEN until accepted.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -1114,3 +1126,25 @@ Preserve all six Sector views **overview/map/moving/money/explore/confluence** a
 Last completed native public DNS/TLS reads at01:51/01:56 still show the EdgeOne CNAME and addresses43.159.98.106/43.159.99.101, with strict TLS hostname validation failing. Reviewed desired beta A target is146.190.142.17; no DNS cutover occurred. DNSPod's last accessible connected-browser state was sign-in. On this resume the extension reports that its originating browser context is unavailable. A fresh cloud browser was opened for public beta and displayed an upstream connection failure; this is no application/browser acceptance. No security warning or authentication bypass occurred. Supabase's 13-redirect configuration proof remains separate from a real auth journey.
 
 Next, finish the same original Macro commit/push and exact-head hosted gates, then arm the incumbent merge-on-green owner LAST with no native auto-merge or post-arm push. Consume the existing render.yml/engine-render generated-main and macro-update served-tree evidence separately. Complete direct beta DNS/TLS, real auth, public1440/820/390 navigation/history/theme/language/native handoff/error recovery, and applicable initial/rollback acceptance. No new PR, renderer, source carrier or watcher. SessionBridge backend_unavailable and the previously recorded principal exception remain bounded to this commission. Continue until accepted; this checkpoint is not completion.
+
+## 2026-10-20 attended continuation — composed main0f058428 and measured CI budget
+
+Same WS:MARKET-OS/root market-os-shared-shell-design-20260924-sol-001/parent shared-shell-production-20261018-c1, original PR7949/branch/shared-shell-r27. Compatible protected INDEX/laws065b7fe719bb07407eae965ffb15e300ae2395f6; no replacement carrier or watcher.
+
+Published69e8566 was ordinarily merged with f54. Three exact conflicts preserved both manifest intents, incoming Caddy's four help_refresh.js entries and both test histories. The producing four CI nodes plus28boundary cases gave31PASS/1FAIL: only build-free-content5665>5661. Incoming-manifest weight on those same IDs5658; retained Shell commands+5/+2. That first candidate became local intermediate6c0f54d2 (parents69e8566/f54, tree4bac8f07), deliberately unpublished. The prepared5665 repair was UNRUN.
+
+During secure sign-in, incoming0f058428 added the vector suite (+3 exact command weight), LP closure paths and a generated-site refresh. Its immutable fetch exited0 with retained old-object read warnings; the exact chosen input objects were usable. No broad repository repair/health claim. The original worktree then ordinarily merged0f05, true basef54, preview73c503c2. Exactly three conflicts: manifest retains all329 job fields/order/path multiplicities and both additions; ETF/US preserve incoming bytes through exact incumbent one/three adapters plus canonical block, proved by forward/reverse/idempotency. Eleven unchanged owner/access/Caddy/Sector-template bindings preserve earlier boundary evidence.
+
+The actual resulting indexb4588872 has no unmerged or unstaged entries. Four incoming US whitespace lines were detected by the prior-head guard, retained unchanged, and independently matched to incoming. Owned delta against exactincoming passes whitespace. The first candidate preflight stopped before source edits because new Shell paths are absent from main; the corrected tree-entry comparison covers absence explicitly.
+
+Actual Python3.12 four-node run04:41:56.866937–04:45:31.753659Z:3PASS/1FAIL, only5668>5661. Measured rows: index135/5793/10, build-free134/5668/10, plan128/5542/10. Selected IDs exactly match priorf54; incoming0f05 command weights on those sameIDs give5661 for build-free, plus retained Shell5+2. Minimal applied correction changes only5661→5668 and history; executable AST otherwise identical. A standalone helper first failed Python parsing before execution; retained original plus compiled v2 record that refusal honestly. Corrected source index252deb9ff390ad3677a2c29ce9fd05a54e609e04; patchSHA4b3bfe30934f96fd5f9c4369b0fe65c559aefdbc42652820f18526d0b386351e.
+
+Final packing-only producing validation: 2026-10-20T04:46:43.076423+00:00 through 2026-10-20T04:48:32.735239+00:00, exit0; source/index unchanged. LogSHAd6a4456afc56532332ed3bfba0631592b7714ba4896d442ae3797ba744d4a5f9. Three scope passes remain on unchanged manifest. Existing navigation/owner adapters78PASS/0skip. No new full local differential run or hosted-green claim.
+
+Bounded current candidate and actual CI reviews are retained separately. Beta V2 actual-result review NONBLOCKING: outer filesystem acceptancePASS, inner conservative disposition retained; seccomp/cgroup equivalence not claimed. The older d528 SNI consultation never received its artifact read (aborted5079.4s), so it is explicitly UNQUALIFIED and creates no extra gate.
+
+Fresh04:42 read: accepted beta A/PID2427329/start7560285026653/runtimec62950826aca6fd8 retained, loopbackHTTP200/private/no-store/noindex. Production PID2336355/start7552363880288/build50a8/globalowner6d05 unchanged. Installed Caddy17aefed changed externally and exactly matches incoming0f05; no actor attribution or root mutation. No pending/stage; rootfree36765310976B/mount16176545792B. R93 bootstrap/recovery and filesystem acceptance remain complete: DO NOT REPEAT.
+
+Public DNS still EdgeOneCNAME with43.159.99.101/43.159.98.106; strictTLS hostname mismatch. DNSPod cloudtab3 remains Tencent sign-in; secure method choice selectedWeChat but its iframe isSiteUnavailable. No authenticated console/DNS change. This is a concrete remaining user sign-in boundary, not public beta acceptance. First-install containment/recovery of originalA is supported; previousruntimeNULL/futurebaseline eligibility does not prove executedA→B→A rollback.
+
+Programme OPEN. This is a precommit proof snapshot; original PR checkpoint records eventual commit/push/head. Current-head hostedCI/review, merge-on-green LAST, incumbent coveringrender/generated-main and actualmacro-update served-tree remain required. DNS/TLS/auth/public1440×900/820×1180/390×844 navigation/history/theme/language/nativehandoff/errors and applicable recovery acceptance remain separate. No duplicate PR/renderer/sourcecarrier/watcher; no production mutation. Preserve overview/map/moving/money/explore/confluence and sector→basket; PaperREVISE; C4comments6255134033…6255716294 SPEC_ONLY/UNAPPLIED/UNRUN. Historical16-cell CSS fixture remains historical, not refreshed generated pixels.
