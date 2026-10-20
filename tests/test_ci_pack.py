@@ -4348,6 +4348,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
     "research-vault",
@@ -4915,6 +4916,12 @@ CURATED_EXCLUSIVE = {
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
+    # fixtures, which opaque inference smeared onto build_free_content
+    # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
+    # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
+    # pytest fixture owners. No suite/assertion/packing ceiling is removed.
+    "local-projections",
 }
 
 
@@ -5083,7 +5090,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_638),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_668),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5140,6 +5147,59 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     (index.html and plan_book also +4, both under their ceilings). No new
     entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
     selector, job/pack bound and both other probe ceilings stay unchanged.
+
+    Methodology disclosures + seasonality page claims (2026-10-19, W23-L3/L6)
+    add tests/test_methodology_disclosures.py and
+    tests/test_seasonality_page_claims.py to unrun-builders-render. The local
+    probe on main 55130f60 measures build_free_content 134 jobs / 5,638; on
+    the PR merged into that main, the same 134 job ids / 5,642 (index.html
+    5,767 and plan_book 5,516, both under their ceilings). No new entrant.
+    Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
+    job/pack bound and both other probe ceilings stay unchanged.
+
+    SPR page JODI vintage + zh assess badges (2026-10-19, W23-L9) give
+    tests/test_strategic_reserves.py (off the unrun baseline),
+    tests/test_spr_jodi_vintage.py and tests/test_spr_assess_badge_zh.py
+    their own step in unrun-macro-panels. contract-delta on the PR merged
+    into main d52827f2 measures build_free_content 134 jobs / 5,649 (base
+    the same 134 / 5,642; index.html 5,774 and plan_book 5,523, both under
+    their ceilings). No new entrant. Fund only the seven-unit excess:
+    5,642 -> 5,649. Every suite, selector, job/pack bound and both other
+    probe ceilings stay unchanged.
+
+    Spvector gate chips (W23-L11, PR #9819) and the country-cycles panels
+    (W23-L10/L12, PR #9818), 2026-10-20, give
+    tests/test_spvector_gate_chips.py its own step in unrun-vector-baskets
+    (job weight 31 -> 34) and the four tests/test_country_cycles_*.py
+    suites their own step in unrun-macro-panels (69 -> 78). contract-delta
+    on each PR against base 5,642 measures build_free_content 134 jobs /
+    5,645 (#9819, run 39363164849) and 5,651 (#9818, run 39362507998). No
+    new entrant. The two jobs are disjoint and a job's weight is a pure
+    function of its own run text, so on main 6629c268 (5,649) the excess
+    adds: 5,652 with #9819, 5,658 with #9818 and 5,661 with both
+    (index.html 5,786 and plan_book 5,535, both under their ceilings).
+    Both PRs carry this identical note and ceiling, so the second to merge
+    stays clean. Fund only the twelve-unit joint excess: 5,649 -> 5,661.
+    Every suite, selector, job/pack bound and both other probe ceilings
+    stay unchanged.
+
+    The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
+    2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
+    in unrun-vector-baskets right after W23-L11's (job weight 34 -> 37,
+    measured on the merged run text). Same job, same pure run-text
+    weight, no new entrant: build_free_content rises by exactly 3 on any
+    base that already holds #9819, so fund 5,661 -> 5,664. index.html and
+    plan_book stay under their ceilings even if they select this job
+    (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
+    tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
+    W23-L9 SPR step in unrun-macro-panels (job weight 78 -> 82, measured
+    on the merged run text). contract-delta on the PR (run 39379143776)
+    measures build_free_content 134 jobs / 5,668 against base 5,664. No
+    new entrant. index.html (5,793) and plan_book (5,542) stay under
+    their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
+    Every other bound stays unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py

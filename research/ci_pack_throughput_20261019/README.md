@@ -3,7 +3,7 @@
 Commission: `/Users/chriswong/Desktop/MASTERMIND-CI-PACKS-CODEX-ASTRA-HANDOFF-2026-10-19.md`, directly assigned to Codex chat `01a153e8-3c85-7bb2-af63-7f477b570512`.
 Source: Macro `168c96bf9ca68427749bc70664902c343d968d9c`; protected procedure: Mastermind `5469f12de01158b0e495d616d2be6f56c03cf8a8`, skillpack 1.0.1/bootstrap 1.
 
-Status: **two bounded optimizations merged with full hosted proof; fleet throughput outcome not yet proven**.
+Status: **three bounded optimizations merged with full hosted proof; a fourth parser trial passed local validation; fleet throughput outcome not yet proven**.
 
 ## Decision
 
@@ -175,3 +175,61 @@ The tail's complete log contains only **1525.04 seconds of logical command group
 A real local Git regression builds a two-parent merge with divergent20-commit histories and two independent shallow clones. Original source fetches three extra times for the second consumer and fails the regression. The candidate retains complete ancestry without a second fetch, while the separate shallow clone must still fetch and prove its own ancestry. All nine fetch/recovery tests pass. The proof/authority corpus passed199 tests; its one mock assuming unconditional fetch was corrected to model missing-then-ready ancestry, and that remaining test passed independently. Manifest validation passes for329 legacy jobs across both gate classes. All runs retain42 inherited pytest temporary-directory cleanup warnings. Hosted normal CI remains the release gate.
 
 The first deepening may be necessary; the two intervals must not both be advertised as savings. Intervening job commands can change local ancestry, in which case the new precheck correctly falls through. The hosted trial must show actual reuse and cost before claiming a fleet improvement. Rollback is a normal revert of this precheck and its notice, with no cache, configuration or runtime state to unwind.
+
+
+## Exact-ancestry trial landed with hosted reuse
+
+[PR9791](https://github.com/mastermindx-market-intelligence/macro/pull/9791) merged at **2026-10-19T21:52:31Z** as `c3c67487f42e1c54986b2e95dca327946fdc5ed0`. [Run39324251115](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39324251115) passed all **258 logical jobs / 554 semantic proof units**, with zero infrastructure findings and all active authority/fence checks. All eight intended source, test and report blobs match the landed commit. `ancestry-success-result.json` retains exact plan, source and stage identities.
+
+The hosted runner emitted **one** `exact tested-tree ancestry already complete; retaining local history` notice before `ruling-graph` in pack10. Five other consumers still deepened incomplete history from depth2 to8. This demonstrates both real reuse and continued recovery when needed. It does not measure the counterfactual cost of the skipped fetch, nor prove that the historical 726-second interval was saved here.
+
+The full trial took **2527 seconds / 42.12 minutes** from run creation to gate, **362.57 summed job wall minutes**, and **3 seconds** from last pack completion to gate start. Pack checkout totaled2945 seconds; command groups totaled15075.19 seconds;177 dependency-install groups totaled1679.59 seconds. FIF alone was critical: pack0 took2396 seconds, including229 seconds checkout and2120.20 seconds of commands. Pack5 followed at2379 seconds. The ancestry reuse occurred in noncritical pack10 (1837 seconds), so this observation does not establish an end-to-end benefit from reuse.
+
+Compared with natural global run39309256542, both select258 jobs, but FIF, prelaunch-hardening and research-vault have changed execution definitions. Compared with the previous successful weighted full trial, the selected population also changed. The apparent latency decrease is descriptive, not a causal gain or cost-neutrality proof. Keep twelve packs and both calibrated weights; no further source expansion is justified yet.
+
+The next natural cohort starts at this merge, requires tested planner blob `f92be10fc37455fd427829f0f964c5ef581b3a80` and base ancestry from the merge, and remains separate from the prior weighted cohort. At21:54Z one first-attempt run was in progress and none had completed. Preserve exact selected/execution-proof matching and pending/failure/cancellation strata. Batch its comparison with this result when informative; do not create a report PR for each wake.
+
+
+## First natural ancestry cohort: real reuse, no matched gain estimate
+
+At **2026-10-19T23:56Z**,29 post-merge first attempts comprise **12 successful completions,13 pending and4 cancelled**; no reruns or completed failures. All12 completed runs verify the exact planner blob and merge ancestry. The previously missing metadata for run39332378137 is now retained. `ancestry-natural-comparison.json` includes the rows, exposure/critical-stage summaries and source/matching limitations.
+
+| Metric | Original scoped successes | Ancestry scoped successes |
+| --- | ---: | ---: |
+| N | 14 | 11 |
+| Run-to-gate p50 / p95 | 54.43 / 67.90 min | 33.02 / 47.72 min |
+| Summed job wall p50 / p95 | 223.02 / 257.63 min | 196.25 / 278.23 min |
+
+The sole global success39336503626 took52.17 minutes and329.15 summed job wall minutes for258 jobs. There are no completed failures from which to estimate actionable-red latency. Thirteen pending observations can materially change the tail; atN11 nearest-rank p95 is simply the largest scoped success. These different-work summaries prove neither the30% target nor cost neutrality.
+
+One scoped selected-set match exists: run39341997524 and original control39235580372 both select105 jobs, but `dataos-identity-seams` and `research-factory-authority` execution definitions differ. There are **zero full execution-proof matches** to the original baseline or the retained19 weighted completions. The global run shares a selected set with two weighted observations but also lacks a full proof match. Do not relax these identities to manufacture a causal estimate.
+
+Eight of12 plans put multiple fetch-depth-zero consumers in one pack; in only two runs does such a pack finish last (39336610321 and39333873303). This is potential exposure, not evidence of reuse. The inspected natural log for [39330880213](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39330880213) actually shows five incomplete-history deepening notices and one retained-history notice in pack8. Its critical pack11 has no such consumer and takes1588 seconds including217 seconds checkout and1349 seconds wrapper execution. Actual reuse therefore does not establish end-to-end latency savings in this observation.
+
+**Decision:** publish the landed trial and this first natural comparison as one batch. Retain twelve packs, the two calibrated weights and the exact ancestry precheck. Before considering another implementation slice, inspect the two naturally exposed critical packs and extend the same cohort, preserving pending/cancelled/failure strata. Do not rerun CI, broaden shards or claim a causal improvement from an unmatched p95.
+
+
+## Fixed31-completion snapshot and critical-path reuse
+
+Report [PR9801](https://github.com/mastermindx-market-intelligence/macro/pull/9801) merged at2026-10-20T00:22:12Z as `368c4c3a660215a0bf4809c9b8ff5e65098f413a`; all active checks passed and all six report blobs match the candidate. The new00:55Z snapshot is held fixed for failure classification rather than continually moving the observation window. It contains45 discovered runs:31 eligible first-attempt completions (29successes,2failures),7pending,7cancelled. All31 satisfy the exact implementation blob and base-ancestry checks.
+
+Scoped successes N27 have run-to-gate p50/p951966/2863 seconds (32.77/47.72 minutes) and summed job wall186.47/278.23 minutes. Two scoped failures have first-failed-step completion p50/p951435.5/1564 seconds; their run-to-gate range is2681–2751 seconds and summed wall range262.35–274.88 minutes. Two global successes have run-to-gate p50/p952873/3130 seconds and summed wall318.22/329.15 minutes. Excluding this commission's report run leaves scoped-success N26 p50/p951969.5/2863 seconds and wall188.52/278.23 minutes. These remain different-work descriptive metrics with seven pending observations; no causal gain or cost neutrality is established.
+
+There is one original-baseline selected-set match and four selected-set matches to the retained weighted cohort, but **zero full execution-proof matches to either**. Run39342972042 (PR9479,pack11) fails biocatalyst-deploy-integration on missing API-import/schema restart coverage; isolated base replay passes289 tests and the semantic gate classifies pr_regression. Run39342630438 (PR9797,pack4) fails market-memory-e0-contract with unsafe_metadata_ancestor in an installed allocator-byte test; isolated base replay passes505 tests and the semantic gate classifies pr_ci_contract_change. Both full logs are retained. These are candidate-specific failures on existing carriers, not observed ancestry-precheck failures; no duplicate repair or rerun was introduced.
+
+The two targeted natural logs now confirm actual reuse in critical packs, beyond potential plan exposure. Run39336610321 reuses complete ancestry in critical pack5 and noncritical pack8; critical commands total635.75 seconds, installs103.17, checkout197, wrapper781. Run39333873303 reuses ancestry in critical pack9; commands1622.43 seconds, installs175.35, checkout205, wrapper2039. Its largest command groups are government-revenue candidate projection586.43 seconds, dashboard rendering434.58 and signal-gate-pair coherence204.52. Neither log supplies the counterfactual fetch cost, so no saved-seconds estimate is assigned.
+
+Across31 completions, the last-finishing pack contains FIF alone in9 runs, control-plane contracts alone in8, and mixed jobs in14. Nineteen plans co-locate ancestry consumers; only three do so in the critical pack, including this commission's report run. This supports rejecting speculative outer-shard expansion: it cannot shorten those17 single-job critical paths. Keep the current implementation. Failure classification is complete. The next justified work is exact-source localization and bounded profiling of the dominant FIF interval, preserving its active writers and full test/proof contracts; no split or optimization is authorized by the progress timestamps alone. Do not rerun CI or expand the cohort merely to find a favorable match.
+
+The six slowest scoped successes all finish on FIF alone, with2187–2346-second execution wrappers,195–307-second checkout and2–3-second final-gate wait. The existing full-trial log places760.67 seconds between67% and71% pytest progress (ordinals1441–1512 under that run's output). This is a bounded localization lead, not per-test timing: exact collection order and source identity must be bound before attributing cost or proposing a fix. Active FIF mapping/coverage carriers9761,9794 and9799 are preserved; no competing source edit was made.
+
+
+## Fourth trial: avoid repeated parser scans inside FIF
+
+The exact-source 72-test interval passed locally in 403.73 seconds. Its slowest publisher case took 42.37 seconds. A focused cProfile run of that case passed and recorded 52 SEC parses consuming 60.24 cumulative seconds, including profiler overhead. It exposed 67.5 million Python generator calls for ASCII validation and 36,618 direct-text calls scanning entire event streams. These overlapping profiler totals are a localization tool, not hosted timing.
+
+The candidate makes two small changes in the existing parser: `bytes.isascii()` replaces the equivalent per-byte predicate, and `_direct_text` uses the existing source-order bisect index before retaining the same owner-identity filter. Direct excluded text is still included; nested text is still distinguished from direct text. Plain-list callers keep their old scan. Limits, refusal conditions, source spans, parsed-output schema/version, producer state, and CI proof/selection/sharding contracts remain unchanged. The known active FIF carriers #9761, #9794 and #9799 do not touch these parser paths and retain their source ownership.
+
+All 214 parser tests pass. A new mixed-content regression covers multibyte text, entity expansion, CDATA, comments, nested/excluded text, empty elements, and unrelated siblings; it fails against the original full-stream scan. The publisher differential run exercised 52 parses of two distinct large filing documents and produced identical complete outputs. Three alternating local samples of those two parses plus canonical output serialization reduced median CPU time from 0.8960 to 0.6836 seconds (23.7%); wall time was 0.9044 versus 0.6890 seconds. The unprofiled publisher case passed in 29.41 seconds versus the earlier 42.37 seconds, a single-case descriptive comparison.
+
+The same 72 tests pass after the change in 335.45 seconds versus 403.73 seconds before (16.9% lower); the slowest case in the group is 31.17 seconds. Both runs retain 42 inherited pytest cleanup warnings. This is one local before/after observation, with no controlled fleet estimate. Normal hosted proof remains pending. `parser-trial.json` retains identities, full-output hashes, benchmark samples and limitations. No fleet p95, cost-neutrality, or 30% mission-target claim follows from these local results. Rollback is a normal source revert of the two parser optimizations; there is no cache, stored state or runtime configuration to unwind.

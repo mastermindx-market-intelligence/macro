@@ -1,6 +1,6 @@
 ---
 workstream: "WS:CI-MERGE-CONTROL-PLANE"
-session: "01a153e8-3c85-7bb2-af63-7f477b570512 / claude/ci-pack-throughput-natural-20261019"
+session: "01a153e8-3c85-7bb2-af63-7f477b570512 / codex/ci-throughput-parser-20261020"
 model: codex
 ended_because: ci_handoff
 mission: >
@@ -13,7 +13,7 @@ state_before: >
   Mastermind 5469f12de01158b0e495d616d2be6f56c03cf8a8, skillpack 1.0.1/bootstrap 1.
 changed:
   - path: scripts/run_ci_pack.py
-    what: Landed duplicate-traversal repair; next trial calibrates only FIF/earnings weights.
+    what: Landed traversal/weight trials; third trial preserves already-complete exact ancestry.
   - path: tests/test_ci_pack.py
     what: Add calibrated assignment, complete coverage and unchanged execution-proof regression.
   - path: contracts/market_memory/e0_reviewer_plan.v1.schema.json
@@ -52,7 +52,7 @@ unverified:
 unresolved:
   - Comparable post-merge natural-traffic improvement remains unproven; hosted correctness and merge are verified.
 next_actions:
-  - Collect natural first attempts after the second merge, with exact treatment and execution proof identities.
+  - Consume parser trial local verification, then deliver its normal hosted PR and verify source landing.
   - Compare actual install, checkout, queue, command and total wall cost before further expansion.
 do_not_redo:
   - Preserve the accepted September scope-test reuse in PR 8126.
@@ -63,89 +63,66 @@ danger_areas:
   - Local green and one hosted run do not prove the fleet p95 target.
 ---
 
-Workspace: `/Volumes/Mastermind/agent-workspaces/codex/ffcf/macro-main`.
-Branch: `claude/ci-pack-throughput-natural-20261019`, fresh main after report PR9780.
-Original root: `01a153e8-3c85-7bb2-af63-7f477b570512`.
-Evidence: `/Volumes/Mastermind/ci-pack-throughput-20261019/`.
-Report: `research/ci_pack_throughput_20261019/README.md`.
+# Current checkpoint — October 20, 2026
 
-PR9722 merged7736fd72895fc24e55bf2d4bbc7b1f4e94203414; accepted scope parity,
-CPU, tests and same-ID review remain settled. PR9763 merged18:49:48Z as
-38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae, head996a22e7e5acebc5fd883068f04fa803d7a1aab7.
-Full CI39298424658 passed all257 jobs/twelve packs/gate plus active authority
-and fences. Plan3f62b28f67c5a17df6094debca5aa845ebf562c605cf5ce454798aeac5dfa4cb;
-tested treea111b2f49b0d46b06d8a2d4f22dec9bf4d6acd6c. Planner/schema blobs and
-new regression landed; other independent test edits remain. No observer remains:
-50933,57835,70423,44369 are all settled/consumed; never recreate.
+Original root01a153e8-3c85-7bb2-af63-7f477b570512. Working branch
+codex/ci-throughput-parser-20261020 starts at pinned main
+d52827f26b062f67d594350a65becf406710d4d1. Own report edits carried intact.
+Source and result history: research/ci_pack_throughput_20261019/README.md.
+Raw evidence: /Volumes/Mastermind/ci-pack-throughput-20261019/.
 
-Two weights1630/1070 only; twelve packs/commands/proof/isolation unchanged.
-Defense heal9758 incorporated. One-field reviewer-plan schema ID repair
-reproduced3 failures before, passed181 affected and1345 owning tests/429subtests
-after, then hosted proof passed. Prior39282678531/39290075936 include base
-replay and are not successful throughput samples. Optional Fabric weight review
-was denied before execution canonical_source_unreadable; no verdict or bypass.
+Settled source releases9722/9763/9791 and reports9780/9801 are accepted;
+all observers and log downloads are settled, no CI observer remains.
+Latest implementation9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0;
+report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a, six blobs verified.
+Do not repeat accepted logs/tests. Optional weight review was denied before
+execution (canonical_source_unreadable); no verdict or bypass. Initial dedup
+review accepted on original ID; it does not cover subsequent changes.
 
-Full accepted logs: trial-full.log, weight-success-full.log (do not redownload).
-New metadata weight-success-run.json; per-step weight-success-stage-costs.json;
-command/install groups weight-success-command-comparison.json; exact manifest
-weight-success-legacy-jobs.yml; assignment replay weight-success-replay.json.
-Weighted result48.82min/371.70 summed wall min versus78.08/337.38 first trial.
-Gate wait3sec versus825sec. Two added jobs/seven changed definitions, so no
-causal gain, cost neutrality or30% fleet p95 established. Exact-run fixed-cost
-replay: old heuristic2694.53 -> calibrated2266.33sec max; excludes overhead.
-Retain calibration; no speculative expansion.
+Natural00:55 cohort is FIXED:45runs,31qualified first attempts(29success/2failure),
+7pending/7cancelled. Scoped successN27 p50/p951966/2863sec, summedwall186.47/278.23min.
+Zero full execution-proof matches to original or weighted baseline. Critical ancestry
+reuse proven in39336610321/39333873303 retained logs; counterfactual cost unknown.
+Six slowest scoped successes are FIF-alone critical; twelve packs remain appropriate.
+Candidate-specific failures39342972042(PR9479) and39342630438(PR9797) have passing
+isolated bases; preserve their existing carriers. No duplicate heals or cohort expansion.
 
-Natural weighted20:48 snapshot:32 runs,19 verified first-attempt completions
-(14success/5failure),9pending,4cancelled. All19 qualify tested planner blob
-f5e4e9c3202c35c9b29c6d038e1d077661fe6375 and base ancestry from
-38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae. Scoped success N13 p50/p95
-2106/3941sec, summed wall215.68/399.37min. Scoped failure N4 first-red
-1669.5/2105sec. No exact original baseline selected-set/execution-proof matches.
-Nine completions select neither calibrated job; five scoped exposed successes
-have2452/3941sec and277.48/399.37 summed wall. All statistics descriptive.
-Early6-success p95 2426sec became3941 as slower work completed; no causal gain,
-cost neutrality or30% target established. No speculative shard/weight expansion.
+FIF localization: exact hosted tree ff3996daeb00dd92c50f93865d685c4cd5044f5d,
+2121 collected node IDs. Ordinals1441..1512 map70publisher+2freshness tests;
+count equality alone is not hosted order/timing proof. Exact original run36308
+settled:72pass/42inherited cleanup warnings/403.73sec. Slowest unchanged-refusal
+publisher test42.37sec. Focused cProfile2162 settled:1pass/94.36sec including
+profiling overhead;52parses/60.24cumulative sec;67.5million ASCII generator calls;
+36618 direct-text calls scan complete event lists. Retained fif-slowest.pstats and
+fif-slowest-profile-summary.json, no reprofile needed.
 
-Retained weighted-natural-runs/comparison/summary/stage-summary-2048.json plus
-weighted-exposure-2048.json. Prior19:52 and dedup-only16:50 cohorts preserved.
-Exploratory adjacent control16:50..18:49:48:35runs,22plans screened. Exact pair
-39300382055(control,verified old blob/base) and39306252071(weighted) selects
-91jobs but neither calibrated job. Control failed; weighted passed. It cannot
-estimate calibration speedup. Do not replace baseline or relax full proof match.
-Supplementary evidence late-control-matches/exact-match-2048.json retained.
+Fourth bounded trial changes only collectors/sec_filing_parser.py:
+bytes.isascii replaces equivalent Python byte loop; direct text uses the existing
+source-order bisect index but retains owner identity and includes excluded text.
+Plain list fallback, parser limits, refusals, result/proof formats, commands,
+shards and CI selection are unchanged. Active FIF9761/9794/9799 checked; their
+paths do not overlap parser/tests. No producer or registry edits.
 
-Successful tail39311574352(PR9639):159jobs after476-file change/27selected job
-changes. Critical pack6 wall3610sec, checkout377, wrapper3205; commands1525.04.
-Two depth8->32 waits691.30/725.67sec target the same exact merge SHA before
-signal-gate-pair-coherence/ruling-graph. Full log recovered by one same-carrier
-read after cooldown; weighted-tail-39311574352.log now retained, do not download
-again. Natural global success39309256542 full log retained:258jobs,2517sec/
-373.43wall min; FIF1989.85sec, control1269.95, earnings779.43,nw-lobe681.92.
-Critical checkout479sec. Details weighted-natural-tail-costs-2048.json.
+Local checks:214parser tests pass, including new mixed-content/sibling scan
+regression; that regression fails against original function. Publisher parity3178
+settled:52calls/two distinct large filing documents, full outputs identical.
+Unprofiled slowest test29.41sec after vs42.37before, descriptive local evidence.
+Run84051 settled:72pass/42inherited warnings/335.45sec vs403.73before.
+Alternating2document medianCPU0.8960->0.6836sec(23.7percent), outputs identical.
+Logs/parser-benchmark.json and fif-targeted-after-result.json retained.
+All local runners settled. Next: batch fixed-cohort evidence with this source trial,
+normal PR/required hosted checks/merge, verify landing. No causal fleet30% or
+cost-neutrality claim. No artificial CI or workflow dispatch.
 
-Third bounded source slice is now prepared: _prepare_provided_actions checks
-existing _tested_tree_ancestry_ready(root,trusted_git_env,exactSHA) BEFORE the
-first depth2 fetch. Every invocation rechecks live local ancestry; no success
-cache, cross-repository reuse, weakened predicate, command/proof or shard change.
-Incomplete ancestry retains all bounded/legacy recovery rungs. New notice makes
-real hosted reuse observable. Source changed only this precheck/notice.
-Real shallow-Git regression shows original second consumer makes3 extra fetches;
-after fix complete history persists and a separate shallow repo still fetches.
-Nine fetch/recovery tests pass5.70sec.199 authority tests pass; one unconditional
-fetch mock corrected to missing-then-ready and passes2.15sec.42 inherited cleanup
-warnings retained.329-job all-gate manifest validates. Logs ancestry-before,
-ancestry-after, ancestry-authority, ancestry-authority-repair, ancestry-manifest.
-First acquisition may remain necessary; neither23.6min aggregate nor12.1min
-second interval is an accepted saving. Hosted trial must establish real behavior.
+Profiling checkout remains detached and unchanged at exact hosted tree:
+/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/ci-fif-profile-20261020-d2a18633b13632ae
+Do not remint/adopt it. Its helper receipt retains its original branch identity.
+Main checkout's earlier moving-ref switch race was diagnosed and repaired only
+on eight exact parent-tree reversals; own report edits preserved. Use pinned SHAs
+for switches, never reset/clean/stash or touch another writer.
 
-Open-PR title scan and existing workspace inventory found no competing ancestry
-repair. Preserve PR8094's separate curation scope and PR9773's active FIF repair.
-Implementations9722/9763 and report9780 remain merged/verified; all old observers
-are settled/consumed. Do not create a new observer per current heartbeat limit.
-
-Next: finish this batched comparison plus bounded ancestry trial through normal
-GitHub source, active authority/full hosted proof and normal merge. Use existing
-hourly heartbeat as fallback attention and one bounded same-carrier read at a
-useful boundary after cooldown; do not hot-poll or manufacture CI. Keep this one
-checkpoint current; preserve original root, active writers and unknown effects.
-No peer messages, new control plane, speculative shards or unrelated deployment.
+Preserve root, active writers and unknown effects. No peer messages, control plane,
+speculative shards or unrelated deploy. Full logs FIRST before same-run metadata;
+300sec read cooldown, no alternate reader/reset. Existing hourly heartbeat only;
+notify material results, diagnose after two unchanged wakes, back off60min.
+Pause only on completion or a sole identified human/unknown-effect gate.

@@ -292,6 +292,8 @@ public:
     # runtime publishable token it renders deterministic local monograms.
     - /stock-logos.js
     - /theme.js
+    # Public Help build-age clock; UI-only, no data requests or account actions.
+    - /help_refresh.js
     # Presentation/runtime code required by the three public dashboard shells.
     # The signal-bearing JSON endpoints these scripts request remain outside
     # this allowlist and therefore keep their existing account/tier gates.
