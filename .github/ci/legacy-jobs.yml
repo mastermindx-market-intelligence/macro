@@ -9094,6 +9094,7 @@ jobs:
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
+      - "tests/fixtures/fundamental_forensics_registry_v1_0_0/**"
       - "research/financial_intelligence_fabric/**"
       - "templates/fundamental_forensics.*"
       - "templates/fif_saved_briefcase.js"
