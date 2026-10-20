@@ -13,12 +13,16 @@ authorized consumer.
 """
 from __future__ import annotations
 
+import re
 from copy import deepcopy
 from datetime import date, datetime
 from typing import Mapping, Sequence
 
 from engine.prophet_candidate_state import validate_candidate_state_projection
-from engine.prophet_entry_availability import validate_entry_availability
+from engine.prophet_entry_availability import (
+    AVAILABILITY_STATES,
+    validate_entry_availability,
+)
 from engine.prophet_lab.contracts import ALL_FALSE_AUTHORITY
 from lib.dataos.identity import VendorAliasTable
 from lib.opportunity_evidence import validate_vector
@@ -30,6 +34,7 @@ B4_SCHEMA = "prophet.entry_availability/v1"
 IDENTITY_BINDING_SCHEMA = "prophet.lab_opportunity_identity/v1"
 PORTFOLIO_RELATION_SCHEMA = "prophet.lab_portfolio_relation/v1"
 OEV_SCHEMA = "opportunity_evidence.vector.v1"
+_AVAILABILITY_ID_RE = re.compile(r"^pea:[0-9a-f]{64}$")
 
 _UNJOINED_USER_STATE = {
     "plan": {
@@ -897,8 +902,36 @@ def validate_opportunity_context(payload: Mapping[str, object]) -> None:
             raise OpportunityContextContractError(
                 "missing B4 must remain unknown rather than a false verdict"
             )
-    elif type(entry.get("entry_open")) is not bool:
-        raise OpportunityContextContractError("owner-issued B4 entry_open must be boolean")
+    else:
+        if type(entry.get("entry_open")) is not bool:
+            raise OpportunityContextContractError(
+                "owner-issued B4 entry_open must be boolean"
+            )
+        # The display copy is never re-derived, but it must still carry the
+        # native B4 state/permission relation the owner issued at the
+        # composition boundary. The projected subset cannot recompute the
+        # original `pea:` digest, so the retained id is checked for shape
+        # only, never as receipt authentication.
+        state = entry.get("state")
+        if not isinstance(state, str) or state not in AVAILABILITY_STATES:
+            raise OpportunityContextContractError(
+                "owner-issued B4 state is outside the native availability vocabulary"
+            )
+        if entry.get("entry_open") is not (state == "ENTRY_OPEN"):
+            raise OpportunityContextContractError(
+                "owner-issued B4 entry_open disagrees with availability state"
+            )
+        if state == "ENTRY_OPEN" and entry.get("blockers"):
+            raise OpportunityContextContractError(
+                "owner-issued B4 ENTRY_OPEN cannot carry blockers"
+            )
+        availability_id = entry.get("availability_id")
+        if not isinstance(availability_id, str) or not _AVAILABILITY_ID_RE.fullmatch(
+            availability_id
+        ):
+            raise OpportunityContextContractError(
+                "owner-issued B4 availability_id is not canonical identifier shape"
+            )
 
     user_state = payload.get("user_state")
     if not isinstance(user_state, Mapping) or set(user_state) != {"plan", "watchlist", "portfolio"}:

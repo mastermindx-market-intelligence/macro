@@ -209,3 +209,114 @@ before any protected outcome access.
 Independent review of #8333 remains requested from `mastermindx-2`; no duplicate
 review lane is created. Product P0 and records/science preparation may continue while
 science promotion and route/release gates remain held. MISSION_COMPLETE stays false.
+
+
+## 2026-10-20 continuation — B4 display invariant and current-native integration
+
+Current Chairman continued this same OLI commission in Pro. The accountable
+receiver retains `oli-existing-owner-recovery-20261003-astra-001`, #8328 and
+original #8333; protected procedure remains
+`Mastermind@fd1159695b0491a1b2c8d3042dce1232ad8365b4` (Skillpack 1.0.1/bootstrap 1).
+No new programme, source owner, scanner, history store or identity namespace.
+
+### Original repair, not a reconstructed worker patch
+
+The new B4 presentation finding (#8333 comment 6282926096) is repaired in the
+existing `engine/prophet_lab/opportunity_context.py` and its existing test file.
+A later display copy can no longer pair an owner non-open state with true entry
+permission, claim an unknown B4 state, attach blockers to ENTRY_OPEN, or retain a
+malformed `pea:` identity. The native AVAILABILITY_STATES vocabulary is reused;
+no B4 evaluator, policy, quote logic, strategy or wire key changes. Identifier
+shape does NOT authenticate an owner receipt. Full native B4 validation stays at
+`_bound_entry`, and missing B4 still means UNAVAILABLE_DATA / entry_open=null /
+B4_NOT_AVAILABLE, distinct from an owner-issued unavailable verdict with false.
+
+Original paid leaf: `oli-b4-view-invariant-repair-20261020-001`, root/parent
+`oli-commission-20261003`, native GLM route; terminal rc=0. Exact retained response
+SHA256 `f237ba052301135c07ea3a291e70dfa47e61f7b5920e7f9a99b2049f95f2a503`.
+The original patch was recovered from its actual Ubuntu3 artifact directory and
+all seven retained patch/manifest/log/environment files passed SHA256 readback.
+Patch SHA256 `7f28dffbf19458a6eba7396a104780f6f410f3a550b5bf531be180cc677b5434`.
+Module postimage SHA256
+`bc2a227eb5ae6df37eeab6dfa1fcf3c3a665dacbec0e43498db5adb79ab4dce2`;
+test postimage SHA256
+`fc37e167d4a820a49fe03602e264bdf15fdf3de2fafeff2bb3bd471e6e2288c1`.
+
+The old auxiliary census `oli-c0-readonly-contract-audit-20261019-001` is terminal
+and rejected, not accepted: it confused this programme with Information-to-Price.
+Parent disposition #8328/6288835161 is readback-verified. Preserve that actual
+auxiliary lineage/accounting rather than re-rooting it; it is not authentication
+or a replacement organisational owner. Do not reuse its ITP scope or trial budget.
+
+### Actual tests and current-main proof, not hosted or live acceptance
+
+Source preimage is #8333@5d6ad94d3c0785378173caa067645d2ce0d0a3b9. Current-main
+proof composes that source with `16f7269bb72a08b65cda3a8075c498a748f1bf90`:
+conflict-free tree `cd85ec9b6600035de754d1386377175a76d7c64b`, local proof-only
+commit `aa0e1e37714dfabf465304b89d3f9e1daddd75c1`. Neither is a release.
+
+- Worker exact pinned focused suite: baseline 62; tests-first RED 19 failed / 64
+  passed; original patch GREEN 83 passed. Broader worker sparse-source failures
+  remain disclosed in its logs and are not represented as full-repository green.
+- Parent independently reproduced RED 19 / 64 on the current-main composition,
+  log SHA256 `6584f0f31b5bbc8017df4ce5b2e41d5acd6c5c09b2ba3796e0665e21bfdf4470`.
+- Current incumbent nine-suite Lab battery plus six new scratch native B1/B3-to-OLI
+  integration cases: **583 passed / 0 failed / 16 warnings** after the original
+  patch, log SHA256
+  `baeca2d418f689a3eb2c42b19366aa7ae1ed7ce6561f05d33c6a2a432ac372dd`.
+- The original CI import-closure discriminator plus those six native cases passed
+  7/7 separately, log SHA256
+  `8f29feb3f59596e36321f8bc18efc003c65e3ffe0a0fb4280ab26490605c9d16`.
+- Initial sparse Lab run was honestly 554 passed / 2 failed. Only the four exact
+  canonical status/registration-clock JSON metadata files were materialized from
+  the pinned main; both missing-metadata tests then passed. No outcome, board,
+  market-history or production user data was opened, and no assertion was weakened.
+- Warnings include unrelated existing OpenAPI duplicate operation IDs and pytest
+  cleanup directory-not-empty warnings. No unrelated cleanup was attempted.
+
+Proof artifacts remain in the canonical isolated review workspace
+`/Volumes/Mastermind 2/agent-workspaces/macro/review/oli-p0-b4-integration-proof-20261020-001/.oli-proof/`.
+The original managed source workspace and all ignored caches remain preserved;
+its previous PRESERVED_DIRTY report was diagnosed as ignored test/cache files,
+not unexplained tracked source edits. It is not a writer-release receipt.
+
+### Native consumer frontier
+
+Current B3 now owns `build_native_factual_assessment_result` and its strict
+`verified_pair()` over one actual on-disk-validated B1 generation and exact
+candidate source key/receipt. The six new synthetic cases prove that original
+OLI can consume that same read without reminting a B3 projection: identity,
+source session versus assembly time, owner phase, invalid receipt refusal,
+mutated-pair refusal and response noninterference are preserved. B4/evidence/
+private state remain unavailable or not joined; all action authority is false.
+This is a synthetic native-source compatibility result, not production admission.
+Do not substitute Today selection or Turn Watch's observation population for the
+full Candidate Pool; their source/denominator contracts remain separate.
+
+#7264 remains the existing held route carrier at 214e0eda8cea910a52aa592a1b7fdecc345748fc.
+At the pinned current main it has four exact conflict paths: app/prophet_lab.py,
+app/deploy/update.sh, .github/ci/legacy-jobs.yml and templates/dashboard.html.j2.
+Its independent review, Source Continuity, source-serving and real product gates
+remain. No wholesale conflict-side selection or route source takeover occurred.
+
+A new narrow changed-risk review `oli-b4-view-changed-risk-review-20261020-001`
+was requested within the same auxiliary root; controller 63816 is a submission
+receipt, not START or approval. It does not replace the existing author-distinct
+formal #8333 review. Consume that original result; do not duplicate it.
+
+### Preserved exclusions and next execution
+
+The historically denied B1 lifecycle-projector write is not retried. The accepted
+P0-C sibling `prophet.lab_opportunity_change/v1` and honest unjoined-evidence
+rulings remain, without silently widening context v1. S0 species/endpoint and
+Eval-OS architecture are accepted as specified on #6805/6011338216 and 6011484488,
+but source-era admission, registration and all outcomes remain held. Preserve
+W1 #7107, W2 #7094, #7963, Terminal #784, Top OOT, Phase22 and private holdings gates.
+
+Next: verify the original #8333 source publication and consume the exact small
+review; repair concrete findings on the same carrier, then qualify the current
+hosted integration and full independent acceptance. Native P0-T/P0-C still need
+lawful route insertion, real authenticated source/API/renderer, correction/replay,
+responsive EN/ZH light/dark browser and machine/UI semantic-equality proof. No
+merge, deployment, source-era admission, forecast, ranking, entry origination,
+sizing, Plan write or trading acceptance is claimed. **MISSION_COMPLETE:false.**

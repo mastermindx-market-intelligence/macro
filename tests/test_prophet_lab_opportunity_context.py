@@ -947,3 +947,146 @@ def test_missing_b4_cannot_masquerade_as_an_owner_issued_state():
     out["fresh_entry"]["entry_open"] = False
     with pytest.raises(OpportunityContextContractError, match="missing B4"):
         validate_opportunity_context(out)
+
+
+def _non_open_owner_availability(p=None):
+    """Genuine owner-issued non-open B4 from the native evaluator (WAIT_PULLBACK)."""
+    p = p or projection()
+    mutated = facts()
+    mutated["geometry"]["owner_status"] = "wait_pullback"
+    return evaluate_entry_availability(
+        p,
+        episode_id=eid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        facts=mutated,
+    )
+
+
+def _dark_owner_availability(p=None):
+    """Genuine owner-issued UNAVAILABLE_DATA B4 that still carries an owner id."""
+    p = p or projection()
+    mutated = facts()
+    mutated["quote"]["freshness"] = "STALE"
+    return evaluate_entry_availability(
+        p,
+        episode_id=eid(),
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        facts=mutated,
+    )
+
+
+def test_genuine_owner_non_open_context_still_validates():
+    p = projection()
+    b4 = _non_open_owner_availability(p)
+    assert b4["state"] == "WAIT_PULLBACK"
+    assert b4["entry_open"] is False
+    out = compose_opportunity_context(p, episode_id=eid(), entry_availability=b4)
+    assert out["fresh_entry"]["state"] == "WAIT_PULLBACK"
+    assert out["fresh_entry"]["entry_open"] is False
+    assert out["fresh_entry"]["blockers"] == ["OWNER_STATUS_REQUIRES_PULLBACK"]
+    validate_opportunity_context(out)
+
+
+def test_genuine_owner_dark_state_with_owner_id_still_validates():
+    p = projection()
+    b4 = _dark_owner_availability(p)
+    assert b4["state"] == "UNAVAILABLE_DATA"
+    assert b4["entry_open"] is False
+    out = compose_opportunity_context(p, episode_id=eid(), entry_availability=b4)
+    assert out["fresh_entry"]["state"] == "UNAVAILABLE_DATA"
+    assert out["fresh_entry"]["entry_open"] is False
+    assert out["fresh_entry"]["availability_id"] == b4["availability_id"]
+    assert out["fresh_entry"]["blockers"] == ["QUOTE_STALE"]
+    validate_opportunity_context(out)
+
+
+def test_owner_issued_non_open_state_cannot_claim_open_permission():
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=_non_open_owner_availability(p),
+    )
+    bad = deepcopy(out)
+    bad["fresh_entry"]["entry_open"] = True
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="entry_open disagrees with availability state",
+    ):
+        validate_opportunity_context(bad)
+
+
+def test_owner_issued_open_state_cannot_display_false_permission():
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=availability(p),
+    )
+    assert out["fresh_entry"]["state"] == "ENTRY_OPEN"
+    bad = deepcopy(out)
+    bad["fresh_entry"]["entry_open"] = False
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="entry_open disagrees with availability state",
+    ):
+        validate_opportunity_context(bad)
+
+
+@pytest.mark.parametrize("bad_state", [
+    "ENTRY_CONFIRMED",
+    "entry_open",
+    1,
+    True,
+    None,
+    ["ENTRY_OPEN"],
+    {"state": "ENTRY_OPEN"},
+])
+def test_owner_issued_state_stays_inside_native_vocabulary(bad_state):
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=_non_open_owner_availability(p),
+    )
+    bad = deepcopy(out)
+    bad["fresh_entry"]["state"] = bad_state
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="native availability vocabulary",
+    ):
+        validate_opportunity_context(bad)
+
+
+def test_owner_issued_open_state_cannot_carry_blockers():
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=availability(p),
+    )
+    bad = deepcopy(out)
+    bad["fresh_entry"]["blockers"] = ["DISPLAY_INVENTED_BLOCKER"]
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="ENTRY_OPEN cannot carry blockers",
+    ):
+        validate_opportunity_context(bad)
+
+
+@pytest.mark.parametrize("bad_id", [
+    "pe:" + "a" * 64,
+    "PEA:" + "a" * 64,
+    "pea:" + "a" * 63,
+    "pea:" + "a" * 65,
+    "pea:" + "A" * 64,
+    "pea:" + "g" * 64,
+    "pea:" + "a" * 64 + "\n",
+    "pea:" + "a" * 64 + " ",
+    "",
+])
+def test_owner_issued_availability_id_keeps_canonical_shape(bad_id):
+    p = projection()
+    out = compose_opportunity_context(
+        p, episode_id=eid(), entry_availability=_non_open_owner_availability(p),
+    )
+    assert out["fresh_entry"]["availability_id"] != bad_id
+    bad = deepcopy(out)
+    bad["fresh_entry"]["availability_id"] = bad_id
+    with pytest.raises(
+        OpportunityContextContractError,
+        match="availability_id is not canonical",
+    ):
+        validate_opportunity_context(bad)
