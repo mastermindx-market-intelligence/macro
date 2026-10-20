@@ -26,3 +26,9 @@ confidence: verified
 Source-only current-roster census, not a point-in-time replay, statistical independence,
 provider-rights decision, prediction or investment permission. The published package
 contains aggregates, not a replacement identity registry. All action flags remain false.
+
+
+Native follow-through distinguishes deliberate B reuse refusal, expired PSKY
+membership with retained PSKY store key, and three unresolved ADRs. Five unknowns
+are not five authorized alias inserts. Source correction packet and namespace
+witnesses remain inputs to existing Data OS #9121/#8478/#9571; #9617 is untouched.

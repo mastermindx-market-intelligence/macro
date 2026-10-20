@@ -57,3 +57,30 @@ Next: submit these exact five source gaps to the incumbent identity owner, prese
 unknowns until its references qualify, and make Q05 group-conditioning designs
 explicit about overlapping rosters, issuer versus listing units and source curation.
 Do not modify current group weights or add a new peer score on this audit's authority.
+
+
+## Root causes reconciled with the actual incumbent owner
+
+The initial five-unknown census remains numerically correct, but it must NOT be read
+as five missing alias rows. A second native namespace read now pins their causes:
+
+- PSKY resolves in membership through2026-10-05, then is deliberately absent. SKYD
+  resolves from2026-10-06 to the same SEC:US-XNAS-PSKY. Store/yahoo_fetch intentionally
+  remain PSKY. This accepted #8828 behavior is described by existing issue9571. The
+  basket snapshot still presents the old membership key; neither a new issuer nor a
+  fictitious store migration is the fix. The October6 issuer/SEC release confirms
+  the current SKYD spelling; the2025 merger/accounting source is historical context.
+- B is named in DEFERRED_IDENTITY_KEYS in the existing security-master builder. Its
+  absence is deliberate: Barnes previously used NYSE B; Barrick changed GOLD to B;
+  Gold.com later reused GOLD. Existing issue8478 already names this required negative
+  case. A bare symbol-pair rename would merge different issuers. Keep it refused
+  pending the owner's scoped continuation/reuse amendment.
+- The three ADR symbols remain absent across the four inspected namespaces. Current
+  first-party instrument facts are supplied as qualification inputs, not adoption.
+
+namespace-reconciliation.json records this bounded exact-source differential. No
+alias, data file or publisher was modified, and the original report hashes/counts
+remain unchanged. Identity completeness alone does not qualify current listing,
+tradability, financial comparability or historical availability; each requires its
+own declared source and effective-time contract. The canonical Data OS programme
+remains the receiving owner; its #9617 publisher hold is preserved.
