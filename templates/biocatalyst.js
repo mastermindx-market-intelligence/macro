@@ -7,6 +7,7 @@
   // were deleted (dead code review verdict) rather than kept as an inert
   // fossil -- activeApi()/activeWindow() never had a live path that could
   // reach them.
+  var decisionDeskHost = null, sourceResearch = null;
   var RADAR_API = '/api/biocatalyst/v1/catalyst-radar';
   var CHANGE_API = '/api/biocatalyst/v1/trials/change-tape';
   var PROSPECTIVE_API = '/api/biocatalyst/v1/trials/prospective-changes';
@@ -974,7 +975,7 @@
     assign('pc_to', state.filters.pc_to, true);
     assign('review_state', state.filters.review_state === 'all' ? '' : state.filters.review_state, true);
     assign('cohort', isPeerMode() ? state.cohort.join(',') : '', true);
-    window.history.replaceState(null, '', url.pathname + (params.toString() ? '?' + params.toString() : '') + url.hash);
+    window.history.replaceState(window.history.state, '', url.pathname + (params.toString() ? '?' + params.toString() : '') + url.hash);
   }
   function paintChangeKindOptions() {
     var allLabel = isProspectiveMode() ? tr('All observed fields', '所有观测字段') : tr('All registry fields', '所有登记字段');
@@ -2475,6 +2476,8 @@
     paintClientFaultWorkspace();
   }
   function loadMilestones(options) {
+    if (sourceResearch && !sourceResearch.open) return;
+    if (decisionDeskHost && !(window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user())) { lockWorkspace(); return; }
     options = options || {}; var append = options.append === true, cursor = append ? state.nextCursor : '';
     if (append && (!cursor || state.pageLoading)) return;
     abort('listController'); var controller = new AbortController(), token = state.listToken + 1; state.listToken = token; state.listController = controller;
@@ -2661,6 +2664,45 @@
       if (isPeerMode() && state.rows.length && state.peerNarrow !== window.matchMedia('(max-width: 760px)').matches) renderQueue();
     });
   }
+  function installDecisionDesk() {
+    var root = document.getElementById('bci-decision-root');
+    if (!root) return;
+    sourceResearch = document.getElementById('bci-source-research');
+    var routeNotice = document.getElementById('bci-decision-route-status');
+    var params = new URLSearchParams(window.location.search);
+    var legacyKeys = ['mode', 'trial', 'field', 'window', 'horizon', 'change_kind', 'q', 'phase', 'status', 'condition', 'sponsor', 'intervention', 'study_type', 'pc_from', 'pc_to', 'review_state', 'cohort'];
+    if (sourceResearch && legacyKeys.some(function (key) { return params.has(key); })) sourceResearch.open = true;
+    function sourceAccessChanged() {
+      abort('facetsController'); state.facetsToken += 1; state.facets = null; paintFacets();
+      lockWorkspace();
+      closeInspector({ restoreFocus: false, writeUrl: false, render: false });
+      showInspectorEmpty(tr('Trial dossier', '试验档案'), tr('Choose a current record after access is confirmed.', '访问确认后，选择当前记录。'));
+    }
+    if (window.BioCatalystDecisionDeskHost && window.BioCatalystDecisionDesk) {
+      decisionDeskHost = window.BioCatalystDecisionDeskHost.mount({root: root, window: window, fetchJson: fetchJson,
+        onRouteUnavailable: function (issue) {
+          if (!routeNotice) return;
+          routeNotice.hidden = !issue;
+          routeNotice.textContent = !issue ? '' : issue === 'CASE_NOT_IN_LOADED_PAGE'
+            ? tr('This case is not in the loaded review. Check the review view or time horizon.', '此案例不在已载入的研究中，请检查查看范围或时间范围。')
+            : tr('This case link is incomplete or invalid. Open BioCatalyst without the case link to continue.', '此案例链接不完整或无效，请不带案例链接打开 BioCatalyst 后继续。');
+        }
+      });
+    } else {
+      root.textContent = tr('The decision desk is unavailable. Trial evidence remains below.', '决策工作台暂不可用，试验证据仍可在下方查看。');
+    }
+    if (sourceResearch) sourceResearch.addEventListener('toggle', function () {
+      if (sourceResearch.open && !state.loading) loadMilestones({ replace: true });
+    });
+    window.addEventListener('mdx-auth', function () {
+      sourceAccessChanged();
+      if (window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user()) loadMilestones({ replace: true });
+    });
+    window.addEventListener('pagehide', sourceAccessChanged);
+    window.addEventListener('pageshow', function (event) {
+      if (event.persisted) loadMilestones({ replace: true });
+    });
+  }
   function init() {
     // syncControls() must run before localizeControls(): paintWindowOptions()
     // (invoked at the top of syncControls()) repaints the shared window
@@ -2670,7 +2712,9 @@
     // active "365" button announces as "90 days" for the whole first-load
     // session (MAJOR 5).
     cacheUi(); readUrl(); syncControls(); localizeControls(); bindEvents();
-    writeUrl(); paintFrame();
+    installDecisionDesk();
+    if (!sourceResearch || sourceResearch.open) writeUrl();
+    paintFrame();
     showInspectorEmpty(tr('Trial dossier', '试验档案'), tr('Choose a ' + activeSingularNoun() + ' to read the current trial record and its source evidence.', '选择一项' + activeSingularNoun() + '，查看当前试验记录及其来源证据。'));
     loadMilestones({ replace: true });
   }

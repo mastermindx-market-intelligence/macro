@@ -82,3 +82,13 @@ html[data-theme="light"] .bci-dd-view[aria-pressed="true"] { background: var(--p
   .bci-dd-tab { min-width: 0; flex: 1; padding: 9px 7px; font-size: var(--fs-sm); }
 }
 @media (prefers-reduced-motion: reduce) { .bci-decision-desk { scroll-behavior: auto; } }
+
+/* The existing trial workbench remains a secondary evidence drill-down. */
+.bci-source-research { max-width: 1280px; margin: 0 auto; padding: var(--sp-6,24px); border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel); }
+.bci-source-research > summary { cursor: pointer; font: 600 var(--fs-h2)/1.4 var(--font-ui); color: var(--text); padding: var(--sp-3,12px); }
+.bci-source-research > summary:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+.bci-host-route-status { max-width: 1280px; margin: 0 auto var(--sp-4,16px); padding: var(--sp-4,16px); color: var(--text); font: 400 var(--fs-body)/1.5 var(--font-ui); border: 1px solid var(--line); border-radius: var(--r-ctl,8px); }
+:root[data-theme="light"] .bci-source-research { background: var(--panel); box-shadow: var(--shadow-card,none); }
+@media (max-width: 760px) {
+  .bci-source-research { padding: var(--sp-3,12px); }
+}

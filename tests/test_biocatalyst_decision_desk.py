@@ -22,3 +22,17 @@ def test_decision_desk_contract_and_response_lifecycle():
     assert "late old list response cannot resurrect" in result.stdout
     assert "context change immediately clears" in result.stdout
     assert "fixtures retain exact API response bytes" in result.stdout
+
+
+def test_decision_desk_host_account_route_and_request_lifecycle():
+    node = shutil.which("node")
+    assert node, "Decision Desk host verification requires Node"
+    root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [node, str(root / "tests/test_biocatalyst_decision_desk_host.cjs")],
+        cwd=root, text=True, capture_output=True, timeout=30, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "idle logout clears rendered owner data synchronously" in result.stdout
+    assert "a direct case URL restores only a row admitted" in result.stdout
+    assert "initial anonymous context stays access-required" in result.stdout

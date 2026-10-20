@@ -271,7 +271,11 @@ def test_the_decision_sentence_ships_even_when_the_answer_is_nothing():
     assert "if (!list.length) noteState(list, 'normal'" in JS
     # It is painted before the first payload lands and on every terminal state,
     # so no surface can render with a blank stance.
-    assert "writeUrl(); paintFrame();" in JS
+    # The primary Decision Desk does not rewrite legacy query defaults. The
+    # trial stance is still painted unconditionally before source fetching.
+    init = JS[JS.index("  function init() {"):]
+    assert "if (!sourceResearch || sourceResearch.open) writeUrl();" in init
+    assert init.index("paintFrame();") < init.index("loadMilestones(")
     for painter in (
         "paintLockedWorkspace",
         "paintUnavailableWorkspace",

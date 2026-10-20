@@ -110,6 +110,9 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
+    - /biocatalyst_decision_desk.css
+    - /biocatalyst_decision_desk.js
+    - /biocatalyst_decision_desk_host.js
     # WTI Live Trace presentation assets only; every current value is served
     # by authenticated /api/ontology/explorer/v1, never by these files.
     - /ontology.css
