@@ -1,0 +1,22 @@
+{
+  "schema": "grey_deer.principal_release_judgment.v1",
+  "author": "/root/release_judgment",
+  "rehearsed_candidate": "a7553e0a18339c910eef9687c730b06605dd710e",
+  "successor_candidate": "8bce27bb731f475885352add0be7f885e0862714",
+  "decision": "Sufficient to present reserved production decision after exact successor archive/receiver and unchanged critical implementation bindings; no further material qualification or repeated startup/rollback rehearsal warranted by #1647/#1228.",
+  "findings": [
+    "Linux behavior is preserved: _has_multiple_parall_claude_wrappers returns False before filesystem inspection when sys.platform != darwin.",
+    "Added local provider policy and Parall isolation code uses explicit CLI installation entry points; copying source does not activate provider settings or hooks.",
+    "Release-critical startup/scheduler/portfolio/control-plane/dependency/helper/wrapper implementations remain unchanged."
+  ],
+  "conditions": [
+    "Archive sha256 28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92; 5,152 members; successor read-only receiver comparison exit 0.",
+    "Attribute actual executed rehearsal to a755 and successor acceptance to bounded compatibility; no false claim of executed 8bce rehearsal.",
+    "Immediately before authorized execution recheck exact master, runtime/service namespace, established cohort, readable NAV guards, absence of pending target/WAL/settlement receipts, deployment custody and writer conditions.",
+    "Invoke accepted scripts/deploy_from_git.sh with explicit 8bce27bb731f475885352add0be7f885e0862714; source advancement must refuse and return for material-delta qualification.",
+    "No application of provider-policy/Parall installers is included in the VPS upgrade decision.",
+    "Code restore cannot undo runtime data effects; preserve receipts and honest failure if recovery incomplete."
+  ],
+  "production_authorized": false,
+  "production_acceptance": false
+}

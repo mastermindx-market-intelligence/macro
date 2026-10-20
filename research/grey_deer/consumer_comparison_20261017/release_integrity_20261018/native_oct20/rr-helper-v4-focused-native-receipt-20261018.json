@@ -1,0 +1,65 @@
+{
+  "schema": "risk_radar.helper_focused_native.v1",
+  "status": "COMPLETED",
+  "started_at_utc": "2026-10-18T10:15:38.854105+00:00",
+  "base_source_head": "797c760f3e18eb6993579f56986103de9d9fdcb4",
+  "source_status": "WORKTREE_CANDIDATE",
+  "source_sha256": {
+    "scripts/deploy_code_to_vps.sh": "1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8",
+    "tests/test_deploy_provenance.py": "80ebb89997b575aed4b8986fdec11f27a1987c0ec5cb3e3d80ad8041c9ae7d10",
+    "tests/conftest.py": "27f8e1b605eac16fad17a17b92878e2d561b8dd17d2481c6ecf5fb8024245f80",
+    "tests/test_datadog_vps_install.py": "a5a118e2c852902dd908913929a0f598f1c00bf970475a0c780e81b484244e95",
+    "tests/test_forward_evaluation.py": "637c6dbe5b304bd69a66f68ae4d8e58538bd1279914132c40d2cf924f7d4cf8d",
+    "tests/test_portfolio_archival.py": "0d82dc934e3d16b954c859cfec2c9cfff17013cf9d785678eb5a8ee26a4ad384"
+  },
+  "argv": [
+    "/Volumes/Mastermind 2/agent-workspaces/web/risk-radar-release-integrity-20261018-0310/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-rA",
+    "--basetemp=/tmp/rr-helper-v4-focused-20261018-pytest",
+    "--junitxml=/tmp/rr-helper-v4-focused-native-20261018.xml",
+    "tests/test_deploy_provenance.py::test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments"
+  ],
+  "fuses": {
+    "BOT_TEST_LIVE_LLM": "0",
+    "MASTERMIND_BOT_RESPONSE_LOG_DISABLED": "1",
+    "MASTERMIND_RESEARCH_LLM": "0",
+    "AUTONOMOUS_FIRST_RUN": "0",
+    "CHINA_FIRST_RUN": "0",
+    "HK_FIRST_RUN": "0",
+    "ETF_FIRST_RUN": "0"
+  },
+  "changed_test_only": "test_python_fixture_launcher_preserves_spaced_interpreter_and_arguments",
+  "prior_combined114": {
+    "receipt": "/tmp/rr-helper-combined114-native-receipt-20261018.json",
+    "passed": 113,
+    "failed": 1,
+    "unchanged_other_113_cases": true
+  },
+  "fresh_combined_114_run": false,
+  "purpose": "Correct the sole new regression cross-platform identity assumption; preserve the observed113 passing unchanged cases without redundant rerun.",
+  "production_deploy": false,
+  "completed_at_utc": "2026-10-18T10:15:40.587981+00:00",
+  "elapsed_seconds": 1.733,
+  "exit_code": 0,
+  "log_path": "/tmp/rr-helper-v4-focused-native-20261018.log",
+  "log_bytes": 354,
+  "log_sha256": "3c1f9bf26fa8021e9f9d914547085ed1c0c59240edc7136d458c20309aa6e450",
+  "post_source_hashes_match": true,
+  "post_git_status": " M tests/test_datadog_vps_install.py\n M tests/test_deploy_provenance.py\n M tests/test_forward_evaluation.py\n M tests/test_portfolio_archival.py\n",
+  "junit_sha256": "90b5fc336d9c91f0aaebc6fec1c2703d4e94a15e3636a4bada62f2da01a8d91c",
+  "counts": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "1.261",
+      "timestamp": "2026-10-18T03:15:39.147292-07:00",
+      "hostname": "m2studio"
+    }
+  ]
+}

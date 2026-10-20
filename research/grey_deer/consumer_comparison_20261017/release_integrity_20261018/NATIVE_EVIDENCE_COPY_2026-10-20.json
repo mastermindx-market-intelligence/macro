@@ -1,0 +1,197 @@
+{
+  "schema": "grey_deer.native_evidence_copy.v1",
+  "started_at": "2026-10-20T03:13:32.078776+00:00",
+  "completed_at": "2026-10-20T03:13:32.125180+00:00",
+  "head_at_copy": "ac08d5bd630d480a97fcbd0d9814946724250011",
+  "files": [
+    {
+      "source": "/tmp/rr-helper-companion59-native-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion59-native-receipt-20261018.json",
+      "bytes": 2647,
+      "sha256": "8e86c3d51482e59fde8fae6b4981037010aabe9fd069526284a4a38c1d60f614"
+    },
+    {
+      "source": "/tmp/rr-helper-companion59-native-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion59-native-20261018.log",
+      "bytes": 6493,
+      "sha256": "3a8647141f9387f298cd48cbcadaf19c6decd2d3de5ce31f0fe669f6a6340df2"
+    },
+    {
+      "source": "/tmp/rr-helper-companion59-native-20261018.xml",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion59-native-20261018.xml",
+      "bytes": 8445,
+      "sha256": "62b66662fa6524631bf0e57dd8b5572aec9de4a107421f66ee16b7d3e50080cf"
+    },
+    {
+      "source": "/tmp/rr-helper-companion-modules-native-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion-modules-native-receipt-20261018.json",
+      "bytes": 3336,
+      "sha256": "6b12d3d261df9a3047ca98ea259c78ccd997fcd1d2682a0c2a4200e4f467f617"
+    },
+    {
+      "source": "/tmp/rr-helper-companion-modules-native-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion-modules-native-20261018.log",
+      "bytes": 12568,
+      "sha256": "9c75322966d041fe1390804bbccea9fcba8d23925615c200fd52bb41a6d5a5cb"
+    },
+    {
+      "source": "/tmp/rr-helper-companion-modules-native-20261018.xml",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-companion-modules-native-20261018.xml",
+      "bytes": 14366,
+      "sha256": "c69ee28e247a0385c0102a25c569875d6f2aa50a547eff90436bf2cd436d28d3"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-environment-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-environment-receipt-20261018.json",
+      "bytes": 4992,
+      "sha256": "b1e22bee3ed22690e1faf740d5b34f311d53493fd843ae94bcff155a7588c315"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-environment-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-environment-20261018.log",
+      "bytes": 5294,
+      "sha256": "c482100c4ceb76bf136417bcc18032682b8e60ec3140f26f1514e7083180a4a1"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-install-report-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-install-report-20261018.json",
+      "bytes": 115756,
+      "sha256": "13925d7a0e611924a27d87289463939bcf9ec34eece3d788ba4ef5df6e627312"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-dev-pins-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-dev-pins-receipt-20261018.json",
+      "bytes": 2900,
+      "sha256": "807d16d1353590466e8145c33ac56a718840e0d13c2a46586319c3d8017db64f"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-dev-pins-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-dev-pins-20261018.log",
+      "bytes": 5691,
+      "sha256": "46ff69b380b4819baa075a16db2a1fd8e00e7b24ea35f313e6fb17fe98621296"
+    },
+    {
+      "source": "/tmp/rr-helper-native-sdk-dev-pins-report-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-native-sdk-dev-pins-report-20261018.json",
+      "bytes": 36889,
+      "sha256": "7becde020161fedc838246a80165c85a2fee16f8d946acb57f249db30a22971a"
+    },
+    {
+      "source": "/tmp/rr-helper-ci-sdk-version-binding-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-ci-sdk-version-binding-20261018.json",
+      "bytes": 853,
+      "sha256": "4a9c70785b66bbb716e4d5af539862e40c142a93f483d3aff51166526a7784a3"
+    },
+    {
+      "source": "/tmp/rr-helper-combined113-native-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined113-native-receipt-20261018.json",
+      "bytes": 3096,
+      "sha256": "5a108e6f30f14e155468d7bc6e414aedd259e8f0a3e2f259bbeb0773c549ae99"
+    },
+    {
+      "source": "/tmp/rr-helper-combined113-native-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined113-native-20261018.log",
+      "bytes": 91911,
+      "sha256": "b0c051e75a52ae36ae9129f08708d7d241570805a8b15e137629371087cbcf6b"
+    },
+    {
+      "source": "/tmp/rr-helper-combined113-native-20261018.xml",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined113-native-20261018.xml",
+      "bytes": 120605,
+      "sha256": "917560cfc39a900c466e101a29b01cd916b5d811992cb70c13afa54496e5ffbc"
+    },
+    {
+      "source": "/tmp/rr-helper-combined114-native-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined114-native-receipt-20261018.json",
+      "bytes": 3067,
+      "sha256": "a772d2efe38fc8d327d66a88f18c3577eefef02e67d62233cde62c09269f8828"
+    },
+    {
+      "source": "/tmp/rr-helper-combined114-native-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined114-native-20261018.log",
+      "bytes": 14384,
+      "sha256": "3e8686ef13a11d893e1c89424e81e99a3d440941a2898963599e2be40eb07263"
+    },
+    {
+      "source": "/tmp/rr-helper-combined114-native-20261018.xml",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-combined114-native-20261018.xml",
+      "bytes": 18352,
+      "sha256": "d22bcd254a3d5b80dd962171877b2aa6234a5742402b6428dfd9cb0e83595829"
+    },
+    {
+      "source": "/tmp/rr-helper-v4-focused-native-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-v4-focused-native-receipt-20261018.json",
+      "bytes": 2861,
+      "sha256": "bcbca15c2a54147ade02412f6195efabcd349045c2d0eea15101023a9f1dbe69"
+    },
+    {
+      "source": "/tmp/rr-helper-v4-focused-native-20261018.log",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-v4-focused-native-20261018.log",
+      "bytes": 354,
+      "sha256": "3c1f9bf26fa8021e9f9d914547085ed1c0c59240edc7136d458c20309aa6e450"
+    },
+    {
+      "source": "/tmp/rr-helper-v4-focused-native-20261018.xml",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-v4-focused-native-20261018.xml",
+      "bytes": 389,
+      "sha256": "90b5fc336d9c91f0aaebc6fec1c2703d4e94a15e3636a4bada62f2da01a8d91c"
+    },
+    {
+      "source": "/tmp/rr-helper-v4-local-commit-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-v4-local-commit-20261020.json",
+      "bytes": 6271,
+      "sha256": "be2158ec2b13cbfabbc8eb669a7b2868bca6d938f00527f8b1fe5b5797cc768f"
+    },
+    {
+      "source": "/tmp/rr-helper-v4-push-20261020.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-v4-push-20261020.json",
+      "bytes": 1168,
+      "sha256": "25c51e24f053b20cd21c91f08b9b82ab12ec8730ebf19498f4ee0fea63bc579c"
+    },
+    {
+      "source": "/tmp/rr-helper-complete-candidate-static-scope-v2-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-complete-candidate-static-scope-v2-20261018.json",
+      "bytes": 6430336,
+      "sha256": "4c5e5f9046016ae917f4a311905aa09b98605384b27aaa02155699d6021d05bb"
+    },
+    {
+      "source": "/tmp/rr-helper-complete-candidate-static-scope-v2-receipt-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-complete-candidate-static-scope-v2-receipt-20261018.json",
+      "bytes": 12062,
+      "sha256": "c55fe81e1e9e2c56c2811e859b9635a0d72548d26f7e88c26234eea8c73bc52f"
+    },
+    {
+      "source": "/tmp/rr-helper-complete-candidate-source-delta-20261018.json",
+      "destination": "research/grey_deer/consumer_comparison_20261017/release_integrity_20261018/native_oct20/rr-helper-complete-candidate-source-delta-20261018.json",
+      "bytes": 191775,
+      "sha256": "aac6ff55868a19c0cdf4f3f6e98704c515e125899e888d625ec0c112ede108cc"
+    },
+    {
+      "source": "/tmp/rr-w5-engine-job117575031870-extract-20261018.json",
+      "destination": "research/grey_deer/w5_natural_issuance_20261018/ROOT_ENGINE_JOB_117575031870_EXTRACT_2026-10-18.json",
+      "bytes": 1501,
+      "sha256": "2a2e5562e65ad6268538f8516276ed6ee2f9d6828688fa44af76b1c53ac430cb"
+    },
+    {
+      "source": "/tmp/rr-price-only-r1-adoption-20261020.json",
+      "destination": "research/grey_deer/all_date_census/r1_candidate/rr-price-only-r1-adoption-20261020.json",
+      "bytes": 579,
+      "sha256": "261f244a56b6cf18853040345807fffac9a6088b0eff5ca30eaadffbf18b433b"
+    },
+    {
+      "source": "/tmp/rr-action-snapshot-execution-20261020.json",
+      "destination": "research/grey_deer/action_snapshot_20261020/EXECUTION_RECEIPT_2026-10-20.json",
+      "bytes": 727,
+      "sha256": "e94e1266c5a98cfdebfccec1577402adab68b972d2c9924ecd6865e13e4b9197"
+    },
+    {
+      "source": "/tmp/rr-action-snapshot-20261020.log",
+      "destination": "research/grey_deer/action_snapshot_20261020/EXECUTION_2026-10-20.log",
+      "bytes": 5536,
+      "sha256": "937f360131ad52aa009815ea3e508172d2b1d30255e95fa3216feed397d62249"
+    }
+  ],
+  "bytes": 7125204,
+  "runtime_changes": false,
+  "source_or_model_reruns": false
+}
