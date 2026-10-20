@@ -438,6 +438,7 @@ def test_fixed_adapter_order_is_not_metric_ranking() -> None:
     assert [card["method_family"] for card in envelope["cards"]] == [
         "synthetic_control",
         "event_study",
+        "local_projections",
     ]
     assert (
         envelope["cards"][0]["outputs"][0]["value"]
@@ -467,3 +468,117 @@ def test_measurement_builder_writes_same_contract_machine_projection(
     assert [card["card_id"] for card in projected["cards"]] == [
         card["card_id"] for card in js_payload["research_implications"]["cards"]
     ]
+
+
+# F10 native local projections: retained producer input, complete preregistration,
+# no estimator execution in the read-only product adapter or its tests.
+def _lp_inputs(destination: Path) -> Path:
+    from engine import local_projection_research_card as lpc
+    _copy_inputs(ROOT, destination, tuple(lpc.PINS) + ("data/trial_ledger.jsonl",))
+    return destination
+
+
+def test_native_lp_card_preserves_source_gap_search_n_and_zero_authority():
+    from engine import local_projection_research_card as lpc
+    before = (ROOT / "data/trial_ledger.jsonl").read_bytes()
+    card = lpc.adapt_local_projections(ROOT)
+    assert card["method_family"] == "local_projections"
+    assert card["quality"] == "ARTIFACT_INCOMPLETE"
+    assert card["sample_n"] == 332 and card["effective_n"] is None
+    assert _coded(card["null_reasons"], "effective_n")["reason"] == "INDEPENDENT_EPISODES_NOT_IDENTIFIED"
+    assert _coded(card["diagnostics"], "registered_search_n")["value"] == 3
+    assert _coded(card["exclusions"], "recent_unavailable_months")["count"] == 13
+    assert "2025" in _coded(card["missingness"], "requested_recent_source_window")["detail"]["en"]
+    assert [x["code"] for x in card["placebos_or_counterexamples"]] == ["robustness_lags_2_h3", "robustness_lags_8_h3"]
+    assert all(metric["unit"] == "log_payroll_change_per_cpi_percentage_point" for metric in card["outputs"])
+    assert any(s["role"] == "preregistration" for s in card["source_artifacts"])
+    assert any(s["role"] == "original_source_refusal" for s in card["source_artifacts"])
+    _assert_closed_false_authority(card)
+    assert (ROOT / "data/trial_ledger.jsonl").read_bytes() == before
+
+
+@pytest.mark.parametrize("artifact_role", ["result", "preregistration", "input", "registration", "custody"])
+def test_lp_artifact_tamper_cannot_be_displayed(tmp_path, artifact_role):
+    from engine import local_projection_research_card as lpc
+    root = _lp_inputs(tmp_path)
+    relative = next(path for path, (role, _) in lpc.PINS.items() if role == artifact_role)
+    with (root / relative).open("ab") as stream:
+        stream.write(b" ")
+    with pytest.raises(CardContractError, match="digest mismatch"):
+        lpc.adapt_local_projections(root)
+
+
+@pytest.mark.parametrize("change", ["missing", "duplicate", "extra_configuration", "timestamp", "cutoff"])
+def test_lp_live_ledger_requires_exact_original_family(tmp_path, change):
+    from engine import local_projection_research_card as lpc
+    from engine.trial_ledger import _hash
+    root = _lp_inputs(tmp_path)
+    ledger = root / "data/trial_ledger.jsonl"
+    rows = [json.loads(line) for line in ledger.read_bytes().splitlines()]
+    owned = [r for r in rows if r.get("family") == lpc.FAMILY]
+    assert len(owned) == 3
+    other = [r for r in rows if r.get("family") != lpc.FAMILY]
+    if change == "missing":
+        owned.pop()
+    elif change == "duplicate":
+        owned.append(deepcopy(owned[0]))
+    elif change == "extra_configuration":
+        extra = deepcopy(owned[0]); extra["config"]["lags"] = 6
+        extra["config_hash"] = _hash(lpc.FAMILY, extra["config"]); owned.append(extra)
+    elif change == "timestamp":
+        owned[0]["ts"] = "2000-01-01T00:00:00+00:00"
+    elif change == "cutoff":
+        owned[0]["info_cutoff"] = "2026-10-18T00:00:00+00:00"
+    ledger.write_text("".join(json.dumps(r) + "\n" for r in other + owned))
+    with pytest.raises(CardContractError, match="registration"):
+        lpc.adapt_local_projections(root)
+
+
+def test_lp_other_family_appends_do_not_invalidate_original_registration(tmp_path):
+    from engine import local_projection_research_card as lpc
+    from engine.trial_ledger import _hash
+    root = _lp_inputs(tmp_path)
+    row = json.loads((root / lpc.REGISTRATION).read_text())["new_rows"][0]
+    row["family"] = "fixture_unrelated_study"
+    row["config_hash"] = _hash(row["family"], row["config"])
+    with (root / "data/trial_ledger.jsonl").open("a") as stream:
+        stream.write(json.dumps(row) + "\n")
+    assert lpc.adapt_local_projections(root) == lpc.adapt_local_projections(ROOT)
+
+
+@pytest.mark.parametrize("change", ["authority", "missing_lag", "lag_order", "cutoff", "scientific_acceptance"])
+def test_lp_owner_bundle_cannot_promote_or_select_specification(change):
+    from engine import local_projection_research_card as lpc
+    bundle = json.loads((ROOT / lpc.RESULT).read_text())
+    spec = json.loads((ROOT / lpc.SPEC).read_text())
+    reg = json.loads((ROOT / lpc.REGISTRATION).read_text())
+    if change == "authority":
+        bundle["authority"]["forecast"] = True
+    elif change == "missing_lag":
+        bundle["runs"].pop()
+    elif change == "lag_order":
+        bundle["runs"][1:] = reversed(bundle["runs"][1:])
+    elif change == "cutoff":
+        bundle["runs"][0]["envelope"]["registration"]["config"]["cutoff"] = "2026-10-18T00:00:00+00:00"
+    elif change == "scientific_acceptance":
+        bundle["scientific_acceptance"] = True
+    with pytest.raises(CardContractError):
+        lpc._verify_owner_bundle(bundle, spec, reg)
+
+
+def test_lp_native_abstention_remains_null_without_invented_curve(tmp_path, monkeypatch):
+    from engine import local_projection_research_card as lpc
+    root = _lp_inputs(tmp_path)
+    path = root / lpc.RESULT
+    bundle = json.loads(path.read_text())
+    bundle["runs"][0]["envelope"]["result"]["irf"][1] = {
+        "schema": "local_projections.abstention/v1", "h": 1,
+        "abstained": True, "reason": "insufficient_observations", "n": 12}
+    path.write_text(json.dumps(bundle))
+    pins = dict(lpc.PINS); pins[lpc.RESULT] = ("result", sha256_file(path))
+    monkeypatch.setattr(lpc, "PINS", pins)
+    card = lpc.adapt_local_projections(root)
+    assert _coded(card["null_reasons"], "horizon_1")["reason"] == "insufficient_observations"
+    assert "beta_h1" not in {metric["code"] for metric in card["outputs"]}
+    assert card["ordered_effect_path"] is None
+    assert card["quality"] == "ARTIFACT_INCOMPLETE"
