@@ -96,8 +96,10 @@ def require_desk_user(
     request: Request,
     authorization: str | None = Header(default=None),
 ) -> dict:
-    # Same cookie/Bearer identity and launch-switch policy as the incumbent
-    # aggregate desk. Licensed ticker-news keeps its separate paid/rights gate.
+    # All four aggregate desk routes intentionally share the incumbent owner:
+    # registered accounts while PAYWALL_ENABLED is off, site_full when armed.
+    # Retained-history privacy is not an alternative entitlement policy.
+    # Licensed ticker-news keeps its separate always-on paid/rights gate.
     from app.main import require_user
     from app.paywall import enforce_site_full
     return enforce_site_full(require_user(authorization, request=request))
@@ -235,8 +237,11 @@ def _read_current_history(*, now: datetime | None = None) -> dict:
 def _revision(payload: dict) -> str:
     # The export clock advances even when no news arrives. Keep it out of the
     # change identity; story corrections/removals and health transitions count.
-    if payload is _cache_payload and _cache_revision:
-        return _cache_revision
+    # Coverage also calls this helper outside the cache owner. Keep the
+    # identity check and cached revision read in the same critical section.
+    with _cache_lock:
+        if payload is _cache_payload and _cache_revision:
+            return _cache_revision
     semantic = {key: value for key, value in payload.items() if key != "updated_at"}
     wire = json.dumps(semantic, sort_keys=True, ensure_ascii=False,
                       separators=(",", ":"), allow_nan=False).encode("utf-8")

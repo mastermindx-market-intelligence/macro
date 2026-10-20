@@ -2279,8 +2279,8 @@ def test_owner_receipt_corrects_health_before_publication_and_stays_private(tmp_
     assert receipt["schema"] == owner.ACCEPTANCE_SCHEMA
     item = receipt["items"]["retained-one"]
     assert item == {"feed_id": "official", "submitted_revision": "retained-one-r1",
-                    "source_revision": "retained-one-r1", "accepted_revision_at": stamp, "disposition": "current"}
-    assert receipt["feeds"]["official"] == {"accepted_item_count": 1, "superseded_item_count": 0,
+                    "source_revision": "retained-one-r1", "accepted_revision_at": stamp, "disposition": "current", "changed": True}
+    assert receipt["feeds"]["official"] == {"accepted_item_count": 1, "changed_item_count": 1, "superseded_item_count": 0,
                                             "last_accepted_at": stamp, "last_outcome": "accepted"}
     assert "acceptance_receipt" not in result
     assert health[0]["last_changed_item_count"] == 99  # caller's proposal is not mutated
@@ -2308,6 +2308,22 @@ def test_owner_receipt_failed_export_replays_the_original_acceptance_clock(tmp_p
     assert receipt["feeds"]["official"]["accepted_item_count"] == 1
     assert result["source_health"][0]["last_accepted_at"] == stamp
     assert result["stories"][0]["accepted_revision_at"] == stamp
+
+
+def test_owner_receipt_replay_ack_is_not_a_new_changed_revision(tmp_path):
+    cfg = {"source_health": _history_health()}
+    kwargs = dict(root=tmp_path, cfg=cfg, db_path=tmp_path / "desk.db", snapshot_path=tmp_path / "desk.json")
+    first = update_intelligence_desk([_history_packet()], now=NOW, **kwargs)
+    receipt = {}
+    replay = update_intelligence_desk([_history_packet(at=NOW + timedelta(minutes=2))],
+        now=NOW + timedelta(minutes=2), acceptance_receipt=receipt, **kwargs)
+    assert replay["source_health"][0]["last_changed_item_count"] == 0
+    assert receipt["items"]["retained-one"]["disposition"] == "current"
+    assert receipt["items"]["retained-one"]["changed"] is False
+    assert receipt["feeds"]["official"]["accepted_item_count"] == 1
+    assert receipt["feeds"]["official"]["changed_item_count"] == 0
+    assert receipt["feeds"]["official"]["last_outcome"] == "unchanged"
+    assert replay["source_health"][0]["last_accepted_at"] == first["source_health"][0]["last_accepted_at"]
 
 
 def test_owner_receipt_superseded_input_does_not_refresh_health_or_ack_count(tmp_path):

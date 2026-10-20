@@ -1094,3 +1094,12 @@ def test_page_width_and_mobile_dialog_are_scoped_to_news():
     assert "prefers-reduced-motion" in css
     assert '.nd-dialog [hidden]{display:none!important}' in css
     assert not re.search(r'\.site-nav\s*\{', css)
+
+
+@pytest.mark.parametrize("asset", ["news_desk.js", "news_company.js", "news_research.js", "news_desk.css"])
+def test_committed_news_page_contains_current_canonical_asset(asset):
+    # Caddy serves the committed page, not this suite's freshly rendered VM.
+    # An old inline asset must therefore fail even when source-only DOM tests pass.
+    source = (ROOT / "templates" / asset).read_text(encoding="utf-8").strip()
+    page = (ROOT / "site" / "news.html").read_text(encoding="utf-8")
+    assert source and page.count(source) == 1, f"stale or duplicated committed News asset: {asset}"

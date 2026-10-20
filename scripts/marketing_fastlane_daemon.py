@@ -606,7 +606,7 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
                 versions[identity] = item["source_revision"]
         feed_receipt = receipt.get("feeds", {}).get(fid)
         if feed_receipt:
-            proposal["last_changed_item_count"] = feed_receipt["accepted_item_count"]
+            proposal["last_changed_item_count"] = feed_receipt["changed_item_count"]
             proposal["last_outcome"] = feed_receipt["last_outcome"]
             clocks = [applied[fid].get("last_applied_at", ""), feed_receipt.get("last_accepted_at", "")]
             def clock_key(value):
@@ -619,7 +619,7 @@ def _run_research_rss_tick(*, state: dict, press_cfg: dict, now: datetime) -> di
         applied[fid].update(proposal)
     _save_press_state(state)
     return {"enabled": lane_enabled, "due": len(outcomes), "accepted": True,
-            "revisions": sum(feed.get("accepted_item_count", 0) for feed in receipt.get("feeds", {}).values())}
+            "revisions": sum(feed.get("changed_item_count", 0) for feed in receipt.get("feeds", {}).values())}
 
 
 def _run_press_tick(*, dry_run: bool) -> dict:

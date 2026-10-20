@@ -65,6 +65,43 @@ def test_cookie_request_is_passed_to_canonical_identity(monkeypatch):
     assert seen == {"authorization": None, "cookie": "incumbent=session", "enforced": "registered"}
 
 
+@pytest.mark.parametrize("route", ["/api/news-desk/snapshot", "/api/news-desk/stream", "/api/news-desk/coverage", "/api/news-desk/history"])
+@pytest.mark.parametrize("switch,entitled,expected_read", [
+    (None, False, True), ("0", False, True), ("1", False, False), ("1", True, True),
+])
+def test_every_desk_route_uses_the_real_launch_switch_entitlement_owner(
+    monkeypatch, route, switch, entitled, expected_read,
+):
+    # Only identity and the remote entitlement lookup are hermetic substitutes.
+    # The actual canonical enforce_site_full policy decides before artifact I/O.
+    import importlib
+    paywall = importlib.import_module("app.paywall")
+    identity = types.ModuleType("app.main")
+    identity.require_user = lambda authorization, request: {"id": "fixture-registered"}
+    monkeypatch.setitem(sys.modules, "app.main", identity)
+    if switch is None:
+        monkeypatch.delenv("PAYWALL_ENABLED", raising=False)
+    else:
+        monkeypatch.setenv("PAYWALL_ENABLED", switch)
+    checked, reads = [], []
+    def lookup(user_id, feature):
+        checked.append((user_id, feature))
+        return entitled, "pro" if entitled else "free"
+    monkeypatch.setattr(paywall, "_entitled", lookup)
+    def unavailable():
+        reads.append(True)
+        raise HTTPException(503, "fixture artifact deliberately absent")
+    monkeypatch.setattr(desk, "_read_snapshot", unavailable)
+    with client(monkeypatch) as c:
+        response = c.get(route)
+    assert response.status_code == (503 if expected_read else 403)
+    assert bool(reads) is expected_read
+    assert bool(checked) is (switch == "1")
+    assert response.headers["cache-control"] == "private, no-store"
+    if not expected_read:
+        assert response.json()["detail"]["required_feature"] == "site_full"
+
+
 @pytest.mark.parametrize("route", ["/api/news-desk/snapshot", "/api/news-desk/coverage", "/api/news-desk/history"])
 def test_missing_artifact_is_private_503_after_auth(monkeypatch, tmp_path, route):
     monkeypatch.setenv("MM_NEWS_DESK_SNAPSHOT", str(tmp_path / "absent.json"))
@@ -98,6 +135,29 @@ def test_read_size_is_bounded(monkeypatch, tmp_path):
     monkeypatch.setenv("MM_NEWS_DESK_SNAPSHOT", str(path))
     with pytest.raises(HTTPException):
         desk._read_snapshot()
+
+
+def test_coverage_revision_observes_the_cached_pair_under_its_owner_lock(monkeypatch):
+    payload = packet()
+    expected = desk._revision(payload)
+    class ObservedLock:
+        depth = 0
+        def __enter__(self):
+            self.depth += 1
+            return self
+        def __exit__(self, *exc):
+            self.depth -= 1
+    lock = ObservedLock()
+    class GuardedRevision(str):
+        def __bool__(self):
+            assert lock.depth > 0, "cached payload/revision pair must be read under the owner lock"
+            return True
+    monkeypatch.setattr(desk, "_cache_lock", lock)
+    monkeypatch.setattr(desk, "_cache_payload", payload)
+    monkeypatch.setattr(desk, "_cache_revision", GuardedRevision(expected))
+    coverage = desk._build_coverage(payload, now=datetime(2026, 10, 18, 12, tzinfo=timezone.utc))
+    assert coverage["artifact_revision"] == expected
+    assert lock.depth == 0
 
 
 def test_export_clock_does_not_invent_a_news_revision():

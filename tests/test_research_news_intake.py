@@ -258,7 +258,10 @@ def test_failed_acceptance_keeps_applied_validators_and_recovers_same_revision(m
     packet = json.loads((tmp_path / "desk.json").read_text())["stories"][0]
     assert packet["first_seen"] == packet["accepted_revision_at"] == NOW.strftime("%Y-%m-%dT%H:%M:%SZ")
     assert state["research_rss"]["policy"]["applied_etag"] == "new"
-    assert state["research_rss"]["policy"]["last_outcome"] == "accepted"
+    # Republication acknowledges the original stored revision, not a new change.
+    assert state["research_rss"]["policy"]["last_outcome"] == "unchanged"
+    assert state["research_rss"]["policy"]["last_changed_item_count"] == 0
+    assert result["revisions"] == 0
     assert state["research_rss"]["policy"]["last_acceptance_error"] == ""
     assert state["research_rss"]["policy"]["last_applied_at"] == packet["accepted_revision_at"]
     health = json.loads((tmp_path / "desk.json").read_text())["source_health"][0]
@@ -368,6 +371,34 @@ def test_source_health_distinguishes_first_acceptance_and_unchanged_replay(monke
     assert second["last_outcome"] == "unchanged" and second["last_changed_item_count"] == 0
     assert second["last_eligible_item_count"] == 1
     assert second["last_accepted_at"] == first["last_accepted_at"]
+
+
+@pytest.mark.parametrize("loss", ["validator_eviction", "state_loss"])
+def test_replayed_stored_revision_acknowledges_without_inventing_changed_items(monkeypatch, tmp_path, loss):
+    daemon, cfg = _tick_setup(monkeypatch, tmp_path)
+    attempts = []
+    def fetch(*args):
+        attempts.append(True)
+        return {"status": 200, "body": rss(), "etag": f"observed-{len(attempts)}"}
+    monkeypatch.setattr(news_rss, "_research_fetch", fetch)
+    state = {}
+    assert daemon._run_research_rss_tick(state=state, press_cfg=cfg, now=NOW)["revisions"] == 1
+    first = json.loads((tmp_path / "desk.json").read_text())["source_health"][0]
+    versions = dict(state["research_rss"]["policy"]["latest_applied_revision_by_item"])
+    if loss == "validator_eviction":
+        state["research_rss"]["policy"]["latest_applied_revision_by_item"].clear()
+    else:
+        state.clear()
+    result = daemon._run_research_rss_tick(state=state, press_cfg=cfg, now=NOW + timedelta(minutes=2))
+    entry = state["research_rss"]["policy"]
+    health = json.loads((tmp_path / "desk.json").read_text())["source_health"][0]
+    assert result["accepted"] is True
+    assert health["last_changed_item_count"] == 0
+    assert entry["last_changed_item_count"] == 0 and result["revisions"] == 0
+    assert health["last_outcome"] == entry["last_outcome"] == "unchanged"
+    assert health["last_accepted_at"] == first["last_accepted_at"]
+    assert entry["applied_etag"] == "observed-2"
+    assert entry["latest_applied_revision_by_item"] == versions
 
 
 def test_research_cannot_enter_editorial_drafting_or_approval(monkeypatch, tmp_path):

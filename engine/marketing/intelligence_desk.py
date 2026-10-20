@@ -840,7 +840,7 @@ class IntelligenceStore:
                timeline_max: int = DEFAULT_TIMELINE_MAX,
                acceptance_receipts: dict | None = None) -> int:
         count = 0
-        submitted, receipts = {}, {}
+        submitted, receipts, changed_research_ids = {}, {}, set()
         with self.db:
             for packet in packets:
                 if not isinstance(packet, dict) or packet.get("schema") != PACKET_SCHEMA:
@@ -874,6 +874,10 @@ class IntelligenceStore:
                 if old == merged:
                     count += 1  # accepted idempotently; preserve every source clock
                     continue
+                # Count unique actual stored changes, not current no-op ACKs.
+                # Repeated revisions of one identity in a batch count once.
+                if packet.get("purpose") == "research":
+                    changed_research_ids.add(sid)
                 self.db.execute(
                     """
                     INSERT INTO stories(story_id, first_seen, updated_at, packet_json)
@@ -901,6 +905,7 @@ class IntelligenceStore:
                 receipts[sid] = {
                     **incoming,
                     "source_revision": current["source_revision"],
+                    "changed": sid in changed_research_ids,
                     "accepted_revision_at": _iso(accepted) if accepted and accepted <= _utc(now) else "",
                     "disposition": ("current" if current["source_revision"] == incoming["submitted_revision"]
                                     else "superseded"),
@@ -1165,11 +1170,13 @@ def _receipt_source_health(rows: list, previous: list, items: dict, *, now: date
         clocks.extend(intelligence_history._at(item["accepted_revision_at"]) for item in group)
         last = max((at for at in clocks if at is not None and at <= _utc(now)), default=None)
         accepted_count = sum(item["disposition"] == "current" for item in group)
+        changed_count = sum(item["changed"] is True for item in group)
         feeds[feed_id] = {
             "accepted_item_count": accepted_count,
+            "changed_item_count": changed_count,
             "superseded_item_count": len(group) - accepted_count,
             "last_accepted_at": _iso(last) if last else "",
-            "last_outcome": "accepted" if accepted_count else "unchanged",
+            "last_outcome": "accepted" if changed_count else "unchanged",
         }
     corrected = []
     for row in rows:
@@ -1179,7 +1186,7 @@ def _receipt_source_health(rows: list, previous: list, items: dict, *, now: date
         result = dict(row)
         accepted = feeds.get(row.get("id")) if isinstance(row.get("id"), str) else None
         if accepted is not None:
-            result.update(last_changed_item_count=accepted["accepted_item_count"],
+            result.update(last_changed_item_count=accepted["changed_item_count"],
                           last_accepted_at=accepted["last_accepted_at"],
                           last_outcome=accepted["last_outcome"], last_acceptance_error="")
         corrected.append(result)
