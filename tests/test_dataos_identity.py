@@ -37,6 +37,7 @@ from lib.dataos.identity import (
     IssuerMaster,
     KNOWN_MICS,
     ARCX,
+    TXSE,
     ListingKey,
     SecurityIssuerRow,
     VendorAliasTable,
@@ -66,7 +67,7 @@ TENCENT = ListingKey("HK", XHKG, "00700")
 
 # ── listing keys ─────────────────────────────────────────────────────────────
 def test_the_admitted_venues_are_all_known() -> None:
-    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    assert KNOWN_MICS == {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
     assert ListingKey("US", BATS, "CBOE").render() == "US-BATS-CBOE"
 
 
@@ -1844,6 +1845,7 @@ def test_P06_venue_maps_cover_exactly_the_known_mics() -> None:
         (XNAS, "America/New_York", "USD"),
         (XASE, "America/New_York", "USD"),
         (ARCX, "America/New_York", "USD"),
+        (TXSE, "America/New_York", "USD"),
         (XTSE, "America/Toronto", "CAD"),
         (XTSX, "America/Toronto", "CAD"),
         (XHKG, "Asia/Hong_Kong", "HKD"),

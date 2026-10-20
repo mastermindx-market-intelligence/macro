@@ -107,11 +107,17 @@ def validate_snapshot(doc: dict) -> tuple[str, datetime]:
             or not isinstance(receipt["request_path"], str)):
         raise ValueError("invalid receipt identity")
     url = urlsplit(receipt["request_path"])
-    query = parse_qs(url.query)
+    query = parse_qs(url.query, keep_blank_values=True)
+    latest_session = "startDate" not in query and "endDate" not in query
+    dated_session = (query.get("startDate") == [doc["session_date"]]
+                     and query.get("endDate") == [doc["session_date"]])
     if (url.scheme or url.netloc or url.path != f"/boats/{history['symbol']}/prices"
             or query.get("resampleFreq") != ["1min"]
-            or query.get("startDate") != [doc["session_date"]] or query.get("endDate") != [doc["session_date"]]):
+            or not (latest_session or dated_session)):
         raise ValueError("receipt does not bind one overnight session")
+    # A date-free request explicitly selects Tiingo's latest session. Bind it
+    # to the receipt observation and every returned minute below, never to the
+    # wall clock at delivery. Retain compatibility with original dated receipts.
     def session_at(value):
         local = value.astimezone(ZoneInfo("America/New_York"))
         if 4 <= local.hour < 20:
