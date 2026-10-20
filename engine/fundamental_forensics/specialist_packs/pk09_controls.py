@@ -56,16 +56,36 @@ ICFR_REPORT = narrative.SectionSpec(
 # only capitalized occurrence and B.7's valued expectation is unreachable.
 # The window is narrowed to 15 so the heading matches while an immediately
 # following "communicated" is still rejected.
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): every arm is anchored
+# to its management-conclusion phrase, so a remediated-acquisition "not
+# effective" earlier in the section can no longer win by leftmost hit; the
+# material-weakness arm is tied to a nearby unnegated management conclusion.
 ICFR_CONCLUSION = (
-    r"internal control over financial reporting (?:was|is) "
+    r"internal control over financial reporting (?:was|is|were) "
     r"(?P<effective>effective)"
-    r"|(?P<ineffective>not effective|ineffective)"
-    r"|(?P<material_weakness>material weakness)"
+    r"|internal control over financial reporting (?:was|is|were) "
+    r"(?P<ineffective>not effective|ineffective)"
+    r"|(?P<material_weakness>concluded"
+    r"(?![^.]{0,80}?(?:no|not|without)\b[^.]{0,60}?material weakness)"
+    r"[^.]{0,80}?material weakness)"
 )
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): the ineffective arm
+# carries the same disclosure-controls anchor as the effective arm.
 DISCLOSURE_CONTROLS = (
     r"disclosure controls and procedures[^.]{0,400}?(?:were|are) "
     r"(?P<effective>effective)"
-    r"|(?P<ineffective>not effective|ineffective)"
+    r"|disclosure controls and procedures[^.]{0,400}?(?:were|are) "
+    r"(?P<ineffective>not effective|ineffective)"
+)
+# B.3 pattern revision v2 (review F1/F2, 2026-10-20): the boolean fires only
+# on an affirmative identification or existence; negated mentions ("no
+# material weakness", "did not identify any material weakness", "without a
+# material weakness") and bare remediation prose no longer flip it to true.
+MATERIAL_WEAKNESS_IDENTIFIED = (
+    r"(?<!not )(?<!not yet )identif(?:y|ied)(?![^.]{0,40}?(?:no|not|without)\b)"
+    r"[^.]{0,40}?material weakness"
+    r"|(?<![Nn]o )material weakness(?:es)?(?![^.]{0,80}?(?:no|not|without)\b)"
+    r"[^.]{0,80}?exists?"
 )
 ICFR_CHANGE = (
     r"(?:no changes|changes) in (?:the Company.s |our )?"
@@ -126,8 +146,9 @@ _FIELD_MAPPINGS = {
     ),
     "material_weakness_present": TextSpanMapping(
         # ITEM9A ONLY: the auditor's report carries the phrase as boilerplate.
+        # B.3 pattern revision v2 (review F1/F2, 2026-10-20).
         section=ITEM9A,
-        pattern="material weakness",
+        pattern=MATERIAL_WEAKNESS_IDENTIFIED,
         kind="boolean",
         absent_value=False,
     ),
