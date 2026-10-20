@@ -101,10 +101,25 @@ class PackSpec:
 
 @dataclass(frozen=True)
 class FactMapping:
-    """Map a field onto the first standard concept that resolves."""
+    """Map a field onto the first standard concept that resolves.
+
+    ``period_select="cover_instant"`` (A.1) admits, for an ``instant`` field,
+    the latest instant context on or after ``period_of_report`` and on or
+    before ``filed_at``; the row's ``period`` reports the instant actually
+    used. ``optional_axes`` (A.2) emits the undimensioned fact first as the
+    consolidated row, then one row per admitted axis member, all under the
+    same ``field_id``; ``consolidated_row=False`` suppresses the consolidated
+    row (B.2: it duplicates another field). ``concepts=()`` (A.3) declares the
+    field unmapped. ``limitation_when_absent`` is appended to the envelope's
+    limitations when the mapping yields a ``missing`` row.
+    """
 
     concepts: tuple[str, ...]
     dimensions_allowed: tuple[str, ...] = ()
+    period_select: str = "primary"
+    optional_axes: tuple[str, ...] = ()
+    consolidated_row: bool = True
+    limitation_when_absent: str | None = None
 
 
 @dataclass(frozen=True)
@@ -230,10 +245,21 @@ class Reconcile:
 
 @dataclass(frozen=True)
 class CrossStatement:
+    """Two-operand relation, or an A.5 named-rule check over ``operands``.
+
+    The historical ``left``/``right``/``relation`` form is unchanged. A
+    ``rule`` id (resolved through the producer's ``check_rules``) selects the
+    A.5 form: ``operands`` names the participating fields and the rule
+    callable decides pass/fail; ``same_period_required`` makes differing
+    operand periods ``not_evaluable`` / ``unit_mismatch`` — never a pass.
+    """
+
     check_id: str
-    left: str
-    right: str
-    relation: str
+    left: str = ""
+    right: str = ""
+    relation: str = "equal"
+    operands: tuple[str, ...] = ()
+    rule: str = ""
 
 
 @dataclass(frozen=True)
@@ -243,6 +269,41 @@ class Presence:
 
 
 CheckSpec = SumIdentity | Rollforward | Reconcile | CrossStatement | Presence
+
+
+@dataclass(frozen=True)
+class RuleOperand:
+    """One named operand of an A.5 rule check, with its emitted rows."""
+
+    field_id: str
+    value: Decimal | None
+    decimals: int | None
+    unit: str | None
+    period: Mapping[str, Any] | None
+    rows: tuple[Mapping[str, Any], ...]
+
+
+@dataclass(frozen=True)
+class RuleOutcome:
+    """A rule callable's verdict; ``tolerance`` overrides the printed one."""
+
+    status: str
+    reason: str | None = None
+    tolerance: Decimal | None = None
+
+
+CheckRuleFn = Callable[[Mapping[str, RuleOperand]], RuleOutcome]
+
+
+@dataclass(frozen=True)
+class CheckRule:
+    """A named producer-side rule an A.5 CrossStatement cites by id."""
+
+    rule_id: str
+    fn: CheckRuleFn
+    same_period_required: bool = False
+    limitation_when_period_mismatch: str | None = None
+
 
 ExtraApplicabilityFn = Callable[
     [Any, RawFactLedger | None], tuple[str, str] | None
@@ -273,6 +334,8 @@ class PackProducer:
     field_mappings: Mapping[str, FieldMapping]
     checks: tuple[CheckSpec, ...] = ()
     limitations: tuple[str, ...] = ()
+    # A.5: rule_id -> named rule callable for rule-based CrossStatements.
+    check_rules: Mapping[str, CheckRule] = field(default_factory=dict)
     # Optional extra R-K1 rule evaluated after the framework's own rules.
     extra_applicability: ExtraApplicabilityFn | None = None
     # Extension prefixes this producer acknowledges, prefix -> namespace URI.
@@ -335,9 +398,23 @@ def _select_primary(
 # --------------------------------------------------------------------------
 
 
-def _period_matches(occurrence: Any, period_kind: str, por: date) -> bool:
+def _period_matches(
+    occurrence: Any,
+    period_kind: str,
+    por: date,
+    *,
+    filed_at: date | None = None,
+    period_select: str = "primary",
+) -> bool:
     context = occurrence.context
     if period_kind == "instant":
+        if period_select == "cover_instant":
+            # A.1: latest DEI cover instant inside [period_of_report, filed_at].
+            if context.instant is None:
+                return False
+            if context.instant < por:
+                return False
+            return filed_at is None or context.instant <= filed_at
         return context.instant is not None and context.instant == por
     if context.end is None or context.start is None or context.end != por:
         return False
@@ -391,10 +468,25 @@ def _extension_prefix(
 
 
 def _mapping_digest(mapping: FactMapping) -> str:
-    payload = canonical_json(
-        [list(mapping.concepts), list(mapping.dimensions_allowed)]
-    )
-    return sha256(payload.encode("utf-8")).hexdigest()
+    # The payload keeps its historical two-element shape for mappings that use
+    # no A.1/A.2 hook, so an existing producer's digest (and envelope bytes)
+    # cannot move when the new keywords stay at their defaults.
+    payload: list[Any] = [list(mapping.concepts), list(mapping.dimensions_allowed)]
+    if (
+        mapping.period_select != "primary"
+        or mapping.optional_axes
+        or not mapping.consolidated_row
+        or mapping.limitation_when_absent is not None
+    ):
+        payload.append(
+            {
+                "period_select": mapping.period_select,
+                "optional_axes": list(mapping.optional_axes),
+                "consolidated_row": mapping.consolidated_row,
+                "limitation_when_absent": mapping.limitation_when_absent,
+            }
+        )
+    return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -404,6 +496,9 @@ class _FieldOutcome:
     ``value`` is the field total a check consumes — for a dimensioned field
     the sum of every valued member row (A.5). ``extra_rows`` carries the
     member rows after the first; they keep catalogue order and adjacency.
+    A.2 optional-axis fields additionally expose the emitted consolidated
+    value and the per-member values (``None`` for a non-valued member row)
+    under ``axis_breakdown`` for the A.4 table check shape.
     """
 
     row: dict[str, Any]
@@ -411,6 +506,9 @@ class _FieldOutcome:
     decimals: int | None
     unit: str | None
     extra_rows: tuple[dict[str, Any], ...] = ()
+    consolidated_value: Decimal | None = None
+    member_values: tuple[Decimal | None, ...] = ()
+    axis_breakdown: bool = False
 
 
 def _base_row(catalogue_field: Mapping[str, Any], por: date) -> dict[str, Any]:
@@ -475,9 +573,19 @@ def _resolve_fact_mapping(
     ledger: RawFactLedger,
     por: date,
     extension_prefixes: Mapping[str, str],
+    filed_at: date | None = None,
 ) -> _FieldOutcome:
     period_kind = catalogue_field["period_kind"]
     field_id = catalogue_field["field_id"]
+    if not mapping.concepts:
+        # A.3: an empty alias tuple is a declared unmapped field.
+        allowed_kinds = list(
+            catalogue_field.get("allowed_evidence_kinds") or ["xbrl_fact"]
+        )
+        outcome = _unsupported_row(catalogue_field, por, allowed_kinds[0])
+        outcome.row["mapping_rule_id"] = f"{pack_id}.{field_id}.fact/v1"
+        outcome.row["mapping_rule_digest"] = _mapping_digest(mapping)
+        return outcome
     by_concept: dict[str, list[Any]] = {}
     for occurrence in ledger.events:
         by_concept.setdefault(occurrence.concept_qname, []).append(occurrence)
@@ -489,7 +597,13 @@ def _resolve_fact_mapping(
             occurrence
             for occurrence in by_concept.get(concept, ())
             if not occurrence.is_nil
-            and _period_matches(occurrence, period_kind, por)
+            and _period_matches(
+                occurrence,
+                period_kind,
+                por,
+                filed_at=filed_at,
+                period_select=mapping.period_select,
+            )
         ]
         for occurrence in candidates:
             if _dimensions_admitted(occurrence, mapping.dimensions_allowed):
@@ -522,6 +636,12 @@ def _resolve_fact_mapping(
                 pack_id=pack_id,
             )
         if period_kind == "instant":
+            if mapping.period_select == "cover_instant":
+                # A.1: the latest admissible cover instant wins.
+                latest = max(item.context.instant for item in admitted)
+                admitted = [
+                    item for item in admitted if item.context.instant == latest
+                ]
             representative = min(admitted, key=lambda item: item.occurrence_id)
         else:
             representative = max(admitted, key=_duration_days)
@@ -553,6 +673,12 @@ def _resolve_fact_mapping(
                 "kind": "duration",
                 "start": representative.context.start.isoformat(),
                 "end": representative.context.end.isoformat(),
+            }
+        elif mapping.period_select == "cover_instant":
+            # A.1: the row reports the instant actually used, not period_of_report.
+            row["period"] = {
+                "kind": "instant",
+                "end": representative.context.instant.isoformat(),
             }
         catalogue_unit = catalogue_field.get("unit")
         row["unit"] = (
@@ -804,6 +930,266 @@ def _resolve_dimensioned_fact_mapping(
     )
 
 
+def _axes_valued_row(
+    *,
+    catalogue_field: Mapping[str, Any],
+    por: date,
+    occurrences: Sequence[Any],
+    representative: Any,
+    dimensions: Sequence[tuple[str, Any]] = (),
+    instant: date | None = None,
+) -> tuple[dict[str, Any], Decimal, int | None]:
+    """Build one valued A.2 row (consolidated or member) from its facts."""
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["concept"] = representative.concept_qname
+    row["taxonomy"] = (
+        "extension"
+        if representative.concept_qname.startswith("{")
+        else representative.concept_qname.split(":", 1)[0]
+    )
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in occurrences}
+    )
+    if dimensions:
+        row["dimensions"] = [
+            {"axis": axis, "member": str(member)} for axis, member in dimensions
+        ]
+    if instant is not None:
+        row["period"] = {"kind": "instant", "end": instant.isoformat()}
+    elif catalogue_field["period_kind"] != "instant":
+        row["period"] = {
+            "kind": "duration",
+            "start": representative.context.start.isoformat(),
+            "end": representative.context.end.isoformat(),
+        }
+    catalogue_unit = catalogue_field.get("unit")
+    row["unit"] = (
+        catalogue_unit
+        if catalogue_unit is not None
+        else _unit_measure(representative.unit)
+    )
+    if catalogue_field["type"] in contract.NUMERIC_TYPES:
+        row["value"] = decimal_text(Decimal(str(representative.parsed_value)))
+    else:
+        token = representative.raw_token
+        row["text_value"] = (
+            token if token is not None else str(representative.parsed_value)
+        )
+    decimals: int | None = None
+    if (
+        representative.decimals is not None
+        and representative.decimals != "INF"
+    ):
+        decimals = int(representative.decimals)
+    return row, Decimal(str(representative.parsed_value)), decimals
+
+
+def _resolve_axes_fact_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: FactMapping,
+    ledger: RawFactLedger,
+    por: date,
+    filed_at: date | None,
+) -> _FieldOutcome:
+    """A.2: consolidated row first, then one row per optional-axis member.
+
+    Facts carrying any axis outside ``optional_axes`` are ignored. The
+    undimensioned fact (when ``consolidated_row`` admits it) is the
+    consolidated row; member rows are ordered by the canonical JSON of their
+    ``dimensions``. With neither an admitted consolidated row nor a member
+    row, exactly one ``missing`` row is emitted — ``disallowed_dimension``
+    when facts exist only under other axes, else ``missing_standard_fact``.
+    """
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    allowed_axes = set(mapping.optional_axes)
+
+    undimensioned: list[Any] = []
+    members: list[Any] = []
+    foreign_axis_seen = False
+    concept = mapping.concepts[0]
+    for candidate in mapping.concepts:
+        concept = candidate
+        undimensioned, members, foreign_axis_seen = [], [], False
+        for occurrence in ledger.events:
+            if occurrence.concept_qname != candidate or occurrence.is_nil:
+                continue
+            if not _period_matches(
+                occurrence,
+                period_kind,
+                por,
+                filed_at=filed_at,
+                period_select=mapping.period_select,
+            ):
+                continue
+            context = occurrence.context
+            axes = {axis for axis, _m in context.explicit_dimensions} | {
+                axis for axis, _m in context.typed_dimensions
+            }
+            if not axes:
+                undimensioned.append(occurrence)
+            elif axes <= allowed_axes:
+                members.append(occurrence)
+            else:
+                foreign_axis_seen = True
+        if undimensioned or members:
+            break  # first concept in order that resolves wins
+
+    def stamp(row: dict[str, Any]) -> None:
+        row["mapping_rule_id"] = f"{pack_id}.{field_id}.fact/v1"
+        row["mapping_rule_digest"] = _mapping_digest(mapping)
+
+    if not undimensioned and not members:
+        reason = (
+            "disallowed_dimension"
+            if foreign_axis_seen
+            else f"missing_standard_fact:{concept}"
+        )
+        outcome = _absence_row(
+            catalogue_field, por, "missing", reason, concept=concept
+        )
+        stamp(outcome.row)
+        return _FieldOutcome(
+            row=outcome.row,
+            value=None,
+            decimals=None,
+            unit=outcome.unit,
+            axis_breakdown=True,
+        )
+
+    if undimensioned and mapping.consolidated_row:
+        distinct = {str(item.parsed_value) for item in undimensioned}
+        if len(distinct) > 1:
+            # The FactMapping conflict rule aborts the whole field.
+            units = {_unit_measure(item.unit) for item in undimensioned}
+            outcome = _absence_row(
+                catalogue_field,
+                por,
+                "not_evaluable",
+                "unit_mismatch" if len(units) > 1 else "missing_dependency",
+                concept=concept,
+                occurrence_ids=[item.occurrence_id for item in undimensioned],
+            )
+            stamp(outcome.row)
+            return _FieldOutcome(
+                row=outcome.row,
+                value=None,
+                decimals=None,
+                unit=outcome.unit,
+                axis_breakdown=True,
+            )
+
+    groups: dict[tuple[tuple[tuple[str, Any], ...], Any], list[Any]] = {}
+    for occurrence in members:
+        context = occurrence.context
+        key = (
+            tuple(sorted(context.explicit_dimensions)),
+            tuple(sorted(context.typed_dimensions)),
+        )
+        groups.setdefault(key, []).append(occurrence)
+
+    emitted: list[dict[str, Any]] = []
+    decimals_seen: list[int] = []
+    consolidated_value: Decimal | None = None
+    member_values: list[Decimal | None] = []
+    cover = mapping.period_select == "cover_instant" and period_kind == "instant"
+
+    if undimensioned and mapping.consolidated_row:
+        representative = min(undimensioned, key=lambda item: item.occurrence_id)
+        instant = representative.context.instant if cover else None
+        row, value, decimals = _axes_valued_row(
+            catalogue_field=catalogue_field,
+            por=por,
+            occurrences=undimensioned,
+            representative=representative,
+            instant=instant,
+        )
+        stamp(row)
+        emitted.append(row)
+        consolidated_value = value
+        if decimals is not None:
+            decimals_seen.append(decimals)
+
+    member_rows: list[tuple[str, dict[str, Any], Decimal | None]] = []
+    for (explicit_key, typed_key), occurrences in groups.items():
+        distinct = {str(item.parsed_value) for item in occurrences}
+        if len(distinct) > 1:
+            units = {_unit_measure(item.unit) for item in occurrences}
+            row = _base_row(catalogue_field, por)
+            row["quality_state"] = "not_evaluable"
+            row["non_value_state"] = "not_evaluable"
+            row["coverage_state"] = "unmapped"
+            row["reason"] = (
+                "unit_mismatch" if len(units) > 1 else "missing_dependency"
+            )
+            row["concept"] = concept
+            row["source_occurrence_ids"] = sorted(
+                {item.occurrence_id for item in occurrences}
+            )
+            stamp(row)
+            member_rows.append((canonical_json(row["dimensions"]), row, None))
+            continue
+        representative = min(occurrences, key=lambda item: item.occurrence_id)
+        row, value, decimals = _axes_valued_row(
+            catalogue_field=catalogue_field,
+            por=por,
+            occurrences=occurrences,
+            representative=representative,
+            dimensions=explicit_key,
+            instant=representative.context.instant if cover else None,
+        )
+        stamp(row)
+        member_rows.append((canonical_json(row["dimensions"]), row, value))
+        if decimals is not None:
+            decimals_seen.append(decimals)
+
+    member_rows.sort(key=lambda item: canonical_json([item[0], item[1]["concept"]]))
+    for _key, row, value in member_rows:
+        emitted.append(row)
+        member_values.append(value)
+
+    if not emitted:
+        # consolidated_row=False suppressed the only admitted facts.
+        reason = (
+            "disallowed_dimension"
+            if foreign_axis_seen and not undimensioned
+            else f"missing_standard_fact:{concept}"
+        )
+        outcome = _absence_row(
+            catalogue_field, por, "missing", reason, concept=concept
+        )
+        stamp(outcome.row)
+        return _FieldOutcome(
+            row=outcome.row,
+            value=None,
+            decimals=None,
+            unit=outcome.unit,
+            axis_breakdown=True,
+        )
+
+    total: Decimal | None = consolidated_value
+    if total is None and member_values and all(
+        item is not None for item in member_values
+    ):
+        total = sum(member_values, Decimal("0"))
+    return _FieldOutcome(
+        row=emitted[0],
+        value=total,
+        decimals=min(decimals_seen) if decimals_seen else None,
+        unit=emitted[0]["unit"],
+        extra_rows=tuple(emitted[1:]),
+        consolidated_value=consolidated_value,
+        member_values=tuple(member_values),
+        axis_breakdown=True,
+    )
+
+
 def _resolve_formula(
     *,
     catalogue_field: Mapping[str, Any],
@@ -886,6 +1272,12 @@ class _OperandResolver:
         outcome = self._outcomes.get(name)
         return None if outcome is None else str(outcome.row["quality_state"])
 
+    def outcome(self, name: str) -> _FieldOutcome | None:
+        """The own-pack field outcome behind an operand, A.4/A.5 access."""
+        if not self.own(name):
+            return None
+        return self._outcomes.get(name)
+
     def reason(self, name: str) -> str | None:
         if not self.own(name):
             return None
@@ -956,6 +1348,8 @@ def _evaluate_check(
     catalogue_check: Mapping[str, Any],
     specs: Sequence[CheckSpec],
     resolver: _OperandResolver,
+    check_rules: Mapping[str, CheckRule] | None = None,
+    limitation_sink: list[str] | None = None,
 ) -> dict[str, Any]:
     check_id = catalogue_check["check_id"]
     kind = catalogue_check["kind"]
@@ -964,6 +1358,7 @@ def _evaluate_check(
     operand_decimals: list[int | None] = []
     statuses: list[str] = []
     reasons: list[str | None] = []
+    rule_tolerance: Decimal | None = None
 
     def resolve_many(
         names: Sequence[str],
@@ -1010,6 +1405,40 @@ def _evaluate_check(
         if isinstance(spec, SumIdentity):
             names = [*spec.addends, spec.total]
             own_operands.extend(name for name in names if resolver.own(name))
+            if len(spec.addends) == 1 and spec.addends[0] == spec.total:
+                # A.4 catalogue shape (antidilutive_table_total_vs_rows): the
+                # consolidated row of an optional-axis field is the TOTAL and
+                # its member rows are the ADDENDS.
+                field = spec.addends[0]
+                gate = not_applicable_gate(names)
+                if gate is not None:
+                    statuses.append("not_applicable")
+                    reasons.append(gate)
+                    continue
+                outcome = resolver.outcome(field)
+                if outcome is None or not outcome.axis_breakdown:
+                    raise SpecialistPackError(
+                        f"check {check_id} lists {field!r} as its only operand"
+                        " but the field carries no optional-axis breakdown"
+                    )
+                operand_decimals.append(outcome.decimals)
+                if (
+                    outcome.consolidated_value is None
+                    or not outcome.member_values
+                    or any(item is None for item in outcome.member_values)
+                ):
+                    statuses.append("not_evaluable")
+                    reasons.append("missing_dependency")
+                    continue
+                tolerance = _identity_tolerance([outcome.decimals])
+                addends = sum(outcome.member_values, Decimal("0"))
+                statuses.append(
+                    "pass"
+                    if abs(outcome.consolidated_value - addends) <= tolerance
+                    else "fail"
+                )
+                reasons.append(None)
+                continue
             identity(names, len(spec.addends))
         elif isinstance(spec, Rollforward):
             if not spec.opening or not spec.closing:
@@ -1052,6 +1481,101 @@ def _evaluate_check(
             own_operands.extend(name for name in names if resolver.own(name))
             identity(names, len(spec.parts))
         elif isinstance(spec, CrossStatement):
+            if spec.rule:
+                if spec.left or spec.right:
+                    raise SpecialistPackError(
+                        f"check {check_id} declares both a rule and left/right"
+                        " operands"
+                    )
+                rules = check_rules or {}
+                if spec.rule not in rules:
+                    raise SpecialistPackError(
+                        f"check {check_id} cites unknown rule {spec.rule!r}"
+                    )
+                rule = rules[spec.rule]
+                names = tuple(spec.operands)
+                if not names:
+                    raise SpecialistPackError(
+                        f"check {check_id} cites rule {spec.rule!r} with no"
+                        " operands"
+                    )
+                own_operands.extend(name for name in names if resolver.own(name))
+                gate = not_applicable_gate(names)
+                if gate is not None:
+                    statuses.append("not_applicable")
+                    reasons.append(gate)
+                    continue
+                operands: dict[str, RuleOperand] = {}
+                for name in names:
+                    value, decimals, unit = resolver.resolve(name)
+                    outcome = resolver.outcome(name)
+                    if outcome is None:
+                        operand_decimals.append(decimals)
+                        operands[name] = RuleOperand(
+                            field_id=name,
+                            value=value,
+                            decimals=decimals,
+                            unit=unit,
+                            period=None,
+                            rows=(),
+                        )
+                        continue
+                    operand_decimals.append(decimals)
+                    operands[name] = RuleOperand(
+                        field_id=name,
+                        value=value,
+                        decimals=decimals,
+                        unit=unit,
+                        period=outcome.row.get("period"),
+                        rows=(outcome.row, *outcome.extra_rows),
+                    )
+                if any(
+                    operand.value is None
+                    and not any(
+                        row.get("quality_state") == "valued"
+                        for row in operand.rows
+                    )
+                    for operand in operands.values()
+                ):
+                    statuses.append("not_evaluable")
+                    reasons.append("missing_dependency")
+                    continue
+                if rule.same_period_required:
+                    periods = {
+                        canonical_json(operand.period)
+                        for operand in operands.values()
+                        if operand.period is not None
+                    }
+                    if len(periods) > 1:
+                        # A.5: differing period bases are never a pass.
+                        statuses.append("not_evaluable")
+                        reasons.append("unit_mismatch")
+                        if (
+                            rule.limitation_when_period_mismatch is not None
+                            and limitation_sink is not None
+                        ):
+                            limitation_sink.append(
+                                rule.limitation_when_period_mismatch
+                            )
+                        continue
+                try:
+                    verdict = rule.fn(operands)
+                except ZeroDivisionError:
+                    statuses.append("not_evaluable")
+                    reasons.append("division_by_zero")
+                    continue
+                if verdict.status not in ("pass", "fail", "not_evaluable"):
+                    raise SpecialistPackError(
+                        f"rule {spec.rule!r} returned unknown status"
+                        f" {verdict.status!r}"
+                    )
+                statuses.append(verdict.status)
+                reasons.append(
+                    verdict.reason if verdict.status != "pass" else None
+                )
+                if verdict.tolerance is not None:
+                    rule_tolerance = verdict.tolerance
+                continue
             if spec.relation not in _CROSS_RELATIONS:
                 raise SpecialistPackError(
                     f"check {check_id} declares unknown relation {spec.relation!r}"
@@ -1116,6 +1640,8 @@ def _evaluate_check(
     tolerance = (
         _identity_tolerance(operand_decimals) if operand_decimals else None
     )
+    if rule_tolerance is not None:
+        tolerance = rule_tolerance
     return {
         "check_id": check_id,
         "kind": kind,
@@ -1198,6 +1724,8 @@ def produce_pack_result(
     if not por_text:
         raise SpecialistPackError("primary package carries no period_of_report")
     por = date.fromisoformat(por_text[:10])
+    filed_at_text = str(primary_manifest.get("filing_date") or "")
+    filed_at = date.fromisoformat(filed_at_text[:10]) if filed_at_text else None
     issuer_class = detectors.issuer_class_for_sic(pack_input.issuer_sic)
     state, reason = evaluate_applicability(
         producer, pack_input, primary_form, ledger
@@ -1210,6 +1738,8 @@ def produce_pack_result(
     fact_only_outcomes: dict[str, _FieldOutcome] = {}
     # B.3-style conditional limitations emitted when a formula branch won.
     branch_limitations: list[str] = []
+    # A.5/B.3 conditional limitations emitted when a rule check trips a gate.
+    rule_limitations: list[str] = []
 
     if state != "applicable":
         for catalogue_field in catalogue["fields"]:
@@ -1261,14 +1791,25 @@ def produce_pack_result(
                     por=por,
                 )
             elif isinstance(mapping, FactMapping):
-                outcomes[field_id] = _resolve_fact_mapping(
-                    pack_id=pack_id,
-                    catalogue_field=catalogue_field,
-                    mapping=mapping,
-                    ledger=ledger,
-                    por=por,
-                    extension_prefixes=producer.extension_prefixes,
-                )
+                if mapping.optional_axes:
+                    outcomes[field_id] = _resolve_axes_fact_mapping(
+                        pack_id=pack_id,
+                        catalogue_field=catalogue_field,
+                        mapping=mapping,
+                        ledger=ledger,
+                        por=por,
+                        filed_at=filed_at,
+                    )
+                else:
+                    outcomes[field_id] = _resolve_fact_mapping(
+                        pack_id=pack_id,
+                        catalogue_field=catalogue_field,
+                        mapping=mapping,
+                        ledger=ledger,
+                        por=por,
+                        extension_prefixes=producer.extension_prefixes,
+                        filed_at=filed_at,
+                    )
             elif isinstance(mapping, FactOrFormulaMapping):
                 fact_only_outcomes[field_id] = _resolve_fact_mapping(
                     pack_id=pack_id,
@@ -1277,6 +1818,7 @@ def produce_pack_result(
                     ledger=ledger,
                     por=por,
                     extension_prefixes=producer.extension_prefixes,
+                    filed_at=filed_at,
                 )
             else:
                 outcomes[field_id] = None  # formulas resolve after facts
@@ -1334,6 +1876,19 @@ def produce_pack_result(
             assert outcome is not None
             fields_rows.append(outcome.row)
             fields_rows.extend(outcome.extra_rows)
+        # B.2 conditional limitations: a mapping-declared note that fires when
+        # its field resolved to a missing row (e.g. no axis members tagged).
+        for field_id, mapping in producer.field_mappings.items():
+            if not isinstance(mapping, FactMapping):
+                continue
+            if mapping.limitation_when_absent is None:
+                continue
+            outcome = outcomes.get(field_id)
+            if (
+                outcome is not None
+                and outcome.row["quality_state"] == "missing"
+            ):
+                branch_limitations.append(mapping.limitation_when_absent)
 
         specs_by_check: dict[str, list[CheckSpec]] = {}
         for check_spec in producer.checks:
@@ -1346,7 +1901,15 @@ def produce_pack_result(
                 raise SpecialistPackError(
                     f"{pack_id} producer declares no check: {check_id}"
                 )
-            checks_rows.append(_evaluate_check(catalogue_check, specs, resolver))
+            checks_rows.append(
+                _evaluate_check(
+                    catalogue_check,
+                    specs,
+                    resolver,
+                    check_rules=producer.check_rules,
+                    limitation_sink=rule_limitations,
+                )
+            )
 
     coverage_counts = {
         "valued_fields": 0,
@@ -1401,7 +1964,12 @@ def produce_pack_result(
 
     limitations = list(
         dict.fromkeys(
-            (DISPLAY_ONLY_LIMITATION, *producer.limitations, *branch_limitations)
+            (
+                DISPLAY_ONLY_LIMITATION,
+                *producer.limitations,
+                *branch_limitations,
+                *rule_limitations,
+            )
         )
     )[:32]
 
@@ -1439,6 +2007,8 @@ def produce_pack_result(
 
 
 __all__ = [
+    "CheckRule",
+    "CheckRuleFn",
     "CheckSpec",
     "CrossStatement",
     "DISPLAY_ONLY_LIMITATION",
@@ -1454,6 +2024,8 @@ __all__ = [
     "Presence",
     "Reconcile",
     "Rollforward",
+    "RuleOperand",
+    "RuleOutcome",
     "SCHEMA",
     "SpecialistPackError",
     "SumIdentity",

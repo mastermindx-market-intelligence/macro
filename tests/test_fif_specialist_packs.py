@@ -1,4 +1,4 @@
-"""Specialist pack producer framework + PK06/PK01 producers over the AAPL 10-K fixture.
+"""Specialist pack producer framework + PK06/PK01/PK02 producers over the AAPL 10-K fixture.
 
 Every count asserted here was verified against the fixture's facts through
 the raw ledger (never by reading the filing HTML): the fixture tags the split
@@ -11,7 +11,13 @@ carrying amounts, the level-2 fair value, the debt split, cash, marketable
 securities (current), current assets and current liabilities; commercial
 paper (us-gaap:CommercialPaper) is not a core short_term_debt alias, so
 short_term_debt is a typed absence, and the revolver-capacity and combined-
-debt concepts are absent standard facts.
+debt concepts are absent standard facts. For PK02 the fixture tags the
+allocated SBC expense, both weighted-average share counts and EPS figures
+(each twice, identically), the dei cover share count at 2025-10-17, the
+balance-sheet shares issued, the repurchase payments, the p20 incremental
+dilutive shares and net income; the income-statement-location SBC breakdown
+is not tagged, the antidilutive table exists only for FY2023, and capitalized
+SBC has no frozen standard alias.
 """
 from __future__ import annotations
 
@@ -410,8 +416,8 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK06")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK06"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -481,6 +487,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/registry.py",
         "engine/fundamental_forensics/specialist_packs/pk06_leases.py",
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
+        "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
         "scripts/fif_specialist_packs.py",
     ],
 )
@@ -794,3 +801,557 @@ def test_pk01_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert len(envelope["fields"]) == 23
     assert envelope["coverage"]["valued_fields"] == 19
+
+
+# 19. PK02: stock-based compensation and dilution -----------------------------
+#
+# Fixture-verified through the raw ledger (FY2025 = 2024-09-29..2025-09-27):
+# the values below are the facts' own scale (USD units / whole shares).
+
+from engine.fundamental_forensics.specialist_packs import pk02_sbc  # noqa: E402
+
+PK02_QUERY = {**QUERY, "requested_metrics": ["stock_compensation"]}
+# A.6: sha256 of the canonical JSON bytes of the PK01 envelope recorded at
+# the PK02 lane base; PK02 edits must not move it (PK06 has its own pin above).
+PK01_ENVELOPE_SHA256 = (
+    "235a3ce6e9681e0bd3c3e284bc57cf972809ebe06e24a61bc5dba17a41e40a74"
+)
+
+
+def _pk02_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK02_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk02_result() -> dict:
+    return produce_pack("PK02", _pk02_input())
+
+
+def _pk02_probe(field_mappings: dict | None = None) -> dict:
+    producer = pk02_sbc.PRODUCER
+    if field_mappings:
+        producer = replace(
+            producer,
+            field_mappings={**producer.field_mappings, **field_mappings},
+        )
+    return pack_base.produce_pack_result(producer, _pk02_input())
+
+
+def test_pk02_result_passes_contract_validator(pk02_result: dict) -> None:
+    assert contract.validate_pack_result(pk02_result) == []
+
+
+def test_pk02_result_passes_jsonschema_envelope(pk02_result: dict) -> None:
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:  # pragma: no cover - CI carries referencing
+        pytest.skip("referencing unavailable; validate_pack_result half only")
+    schema = contract.load_envelope_schema()
+    packet = json.loads(
+        (ROOT / "contracts" / "financial_intelligence_packet.schema.json").read_text(
+            "utf-8"
+        )
+    )
+    registry = Registry()
+    for contents in (schema, packet):
+        registry = registry.with_resource(
+            contents["$id"],
+            Resource.from_contents(contents, default_specification=DRAFT202012),
+        )
+    errors = list(
+        Draft202012Validator(schema, registry=registry).iter_errors(pk02_result)
+    )
+    assert errors == []
+
+
+def test_pk02_rows_follow_catalogue_order_with_thirteen_rows(
+    pk02_result: dict,
+) -> None:
+    catalogue = contract.load_pack_schema("PK02")
+    produced = [row["field_id"] for row in pk02_result["fields"]]
+    assert produced == [item["field_id"] for item in catalogue["fields"]]
+    assert len(produced) == 13  # no repeated rows on this single-class issuer
+    assert [row["check_id"] for row in pk02_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+
+
+def test_pk02_sbc_expense_total(pk02_result: dict) -> None:
+    row = _row(pk02_result, "sbc_expense_total")
+    assert row["quality_state"] == "valued"
+    assert row["value"] == "12863000000"
+    assert row["concept"] == "us-gaap:AllocatedShareBasedCompensationExpense"
+    assert row["unit"] == "USD"
+    assert row["evidence_kind"] == "xbrl_fact"
+    assert row["mapping_rule_id"] == "PK02.sbc_expense_total.fact/v1"
+
+
+def test_pk02_sbc_allocated_by_line_is_typed_absence(pk02_result: dict) -> None:
+    row = _row(pk02_result, "sbc_allocated_by_line")
+    assert row["quality_state"] == "missing"
+    assert row["non_value_state"] == "missing"
+    assert row["value"] is None and row["text_value"] is None
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:AllocatedShareBasedCompensationExpense"
+    )
+    assert (
+        "sbc_allocated_by_line: no IncomeStatementLocationAxis members tagged"
+        in pk02_result["limitations"]
+    )
+
+
+def test_pk02_weighted_average_shares(pk02_result: dict, ledger) -> None:
+    basic = _row(pk02_result, "weighted_average_shares_basic")
+    assert basic["value"] == "14948500000"
+    assert basic["unit"] == "shares"
+    # Two identical occurrences are not a conflict; both ids are listed.
+    assert len(basic["source_occurrence_ids"]) == 2
+    diluted = _row(pk02_result, "weighted_average_shares_diluted")
+    assert diluted["value"] == "15004697000"
+    assert len(diluted["source_occurrence_ids"]) == 2
+    for row in (basic, diluted):
+        for occurrence_id in row["source_occurrence_ids"]:
+            assert ledger.by_id(occurrence_id) is not None
+
+
+def test_pk02_eps_rows(pk02_result: dict) -> None:
+    assert _row(pk02_result, "eps_basic")["value"] == "7.49"
+    assert _row(pk02_result, "eps_diluted")["value"] == "7.46"
+    for field_id in ("eps_basic", "eps_diluted"):
+        row = _row(pk02_result, field_id)
+        assert row["unit"] == "USD/shares"
+        assert len(row["source_occurrence_ids"]) == 2
+
+
+def test_pk02_antidilutive_is_typed_absence(pk02_result: dict) -> None:
+    row = _row(pk02_result, "antidilutive_securities_excluded")
+    # The fixture tags this concept only for FY2023, never FY2025.
+    assert row["quality_state"] == "missing"
+    assert row["reason"] == (
+        "missing_standard_fact:us-gaap:AntidilutiveSecuritiesExcludedFrom"
+        "ComputationOfEarningsPerShareAmount"
+    )
+    check = _check(pk02_result, "antidilutive_table_total_vs_rows")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert check["evidence_field_ids"] == ["antidilutive_securities_excluded"]
+
+
+def test_pk02_cover_and_parenthetical(pk02_result: dict) -> None:
+    cover = _row(pk02_result, "shares_outstanding_cover")
+    assert cover["value"] == "14776353000"
+    assert cover["period"] == {"kind": "instant", "end": "2025-10-17"}
+    assert cover["taxonomy"] == "dei"
+    assert cover["concept"] == "dei:EntityCommonStockSharesOutstanding"
+    parenthetical = _row(pk02_result, "shares_issued_parenthetical")
+    assert parenthetical["value"] == "14773260000"
+    assert parenthetical["period"] == {"kind": "instant", "end": "2025-09-27"}
+    assert parenthetical["taxonomy"] == "us-gaap"
+
+
+def test_pk02_share_repurchase_uses_first_alias(pk02_result: dict) -> None:
+    row = _row(pk02_result, "share_repurchase_amount")
+    assert row["value"] == "90711000000"
+    assert row["concept"] == "us-gaap:PaymentsForRepurchaseOfCommonStock"
+
+
+def test_pk02_sbc_capitalized_is_declared_unmapped(pk02_result: dict) -> None:
+    row = _row(pk02_result, "sbc_capitalized")
+    assert row["quality_state"] == "unsupported"
+    assert row["non_value_state"] == "unsupported"
+    assert row["coverage_state"] == "unmapped"
+    assert row["reason"] == "missing_dependency"
+    assert row["evidence_kind"] == "xbrl_fact"
+    assert row["required_evidence_kind"] == "xbrl_fact"
+    assert row["value"] is None
+    assert (
+        "sbc_capitalized: no standard us-gaap alias frozen; issuer extensions"
+        " need a core-catalog ruling" in pk02_result["limitations"]
+    )
+
+
+def test_pk02_dilutive_increment_uses_p20_alias(pk02_result: dict) -> None:
+    row = _row(pk02_result, "dilutive_securities_increment")
+    assert row["value"] == "56197000"
+    assert row["concept"] == (
+        "us-gaap:IncrementalCommonSharesAttributableToShareBasedPayment"
+        "Arrangements"
+    )
+
+
+def test_pk02_net_income_lists_every_identical_occurrence(
+    pk02_result: dict, ledger
+) -> None:
+    row = _row(pk02_result, "net_income_available_to_common")
+    assert row["value"] == "112010000000"
+    assert row["concept"] == "us-gaap:NetIncomeLoss"
+    assert len(row["source_occurrence_ids"]) >= 2
+    for occurrence_id in row["source_occurrence_ids"]:
+        assert ledger.by_id(occurrence_id) is not None
+
+
+def test_pk02_basic_to_diluted_passes_with_tolerance(pk02_result: dict) -> None:
+    check = _check(pk02_result, "basic_to_diluted_reconciliation")
+    assert check["status"] == "pass"
+    # 14,948,500,000 + 56,197,000 = 15,004,697,000 exactly; min decimals -3.
+    assert check["tolerance"] == "1000"
+    assert check["evidence_field_ids"] == [
+        "weighted_average_shares_basic",
+        "dilutive_securities_increment",
+        "weighted_average_shares_diluted",
+    ]
+
+
+def test_pk02_eps_identity_passes_with_tolerance(pk02_result: dict) -> None:
+    check = _check(pk02_result, "eps_identity")
+    assert check["status"] == "pass"
+    assert check["tolerance"] == "0.01"
+    assert check["evidence_field_ids"] == [
+        "net_income_available_to_common",
+        "weighted_average_shares_basic",
+        "eps_basic",
+        "weighted_average_shares_diluted",
+        "eps_diluted",
+    ]
+
+
+def test_pk02_per_class_shares_is_period_mismatch(pk02_result: dict) -> None:
+    check = _check(pk02_result, "per_class_shares_vs_cover")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "unit_mismatch"
+    assert (
+        "per_class_shares_vs_cover: cover date differs from balance-sheet date"
+        in pk02_result["limitations"]
+    )
+
+
+def test_pk02_coverage_counts(pk02_result: dict) -> None:
+    assert pk02_result["coverage"] == {
+        "valued_fields": 10,
+        "missing_fields": 2,
+        "unsupported_fields": 1,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+# 20. PK02 determinism and PK06/PK01 invariance (A.6) -------------------------
+
+
+def test_pk02_production_is_deterministic() -> None:
+    first = produce_pack("PK02", _pk02_input())
+    second = produce_pack("PK02", _pk02_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+def test_pk01_envelope_digest_unchanged_by_pk02_edits() -> None:
+    result = produce_pack("PK01", _pk01_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert sha256(payload.encode("utf-8")).hexdigest() == PK01_ENVELOPE_SHA256
+
+
+# 21. PK02 A.2/A.4/A.5 framework semantics (probes + synthetic operands) ------
+
+
+def test_pk02_a2_emits_consolidated_row_then_members() -> None:
+    probe = _pk02_probe(
+        {
+            "antidilutive_securities_excluded": pack_base.FactMapping(
+                ("us-gaap:NetIncomeLoss",),
+                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
+            )
+        }
+    )
+    rows = _rows(probe, "antidilutive_securities_excluded")
+    assert len(rows) == 2
+    assert rows[0]["dimensions"] == []  # consolidated row first
+    assert rows[0]["value"] == "112010000000"
+    assert len(rows[0]["source_occurrence_ids"]) == 4
+    assert rows[1]["dimensions"][0]["axis"] == (
+        "us-gaap:StatementEquityComponentsAxis"
+    )
+    assert rows[1]["value"] == "112010000000"
+    for row in rows:
+        assert row["field_id"] == "antidilutive_securities_excluded"
+        assert row["mapping_rule_id"] == (
+            "PK02.antidilutive_securities_excluded.fact/v1"
+        )
+    # Repeated rows sit at the catalogue position, adjacent.
+    produced = [row["field_id"] for row in probe["fields"]]
+    position = produced.index("antidilutive_securities_excluded")
+    assert produced[position + 1] == "antidilutive_securities_excluded"
+    assert contract.validate_pack_result(probe) == []
+
+
+def test_pk02_a2_consolidated_row_false_keeps_members_only() -> None:
+    probe = _pk02_probe(
+        {
+            "antidilutive_securities_excluded": pack_base.FactMapping(
+                ("us-gaap:NetIncomeLoss",),
+                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
+                consolidated_row=False,
+            )
+        }
+    )
+    rows = _rows(probe, "antidilutive_securities_excluded")
+    assert len(rows) == 1
+    assert rows[0]["dimensions"]  # the member row, never the consolidated one
+    check = _check(probe, "antidilutive_table_total_vs_rows")
+    # A.4: no consolidated row -> not_evaluable, never a member-only pass.
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(probe) == []
+
+
+def test_pk02_a2_foreign_axis_only_is_disallowed_dimension() -> None:
+    # This concept's FY2025 facts exist only under StatementEquityComponentsAxis,
+    # which the probe does not admit.
+    probe = _pk02_probe(
+        {
+            "antidilutive_securities_excluded": pack_base.FactMapping(
+                (
+                    "us-gaap:AdjustmentsRelatedToTaxWithholdingForShare"
+                    "BasedCompensation",
+                ),
+                optional_axes=("us-gaap:StatementClassOfStockAxis",),
+            )
+        }
+    )
+    rows = _rows(probe, "antidilutive_securities_excluded")
+    assert len(rows) == 1
+    assert rows[0]["quality_state"] == "missing"
+    assert rows[0]["reason"] == "disallowed_dimension"
+
+
+def test_pk02_a4_total_vs_rows_passes_when_members_sum_to_total() -> None:
+    probe = _pk02_probe(
+        {
+            "antidilutive_securities_excluded": pack_base.FactMapping(
+                ("us-gaap:NetIncomeLoss",),
+                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
+            )
+        }
+    )
+    check = _check(probe, "antidilutive_table_total_vs_rows")
+    assert check["status"] == "pass"
+    assert check["tolerance"] == "1000000"  # min decimals -6 across the rows
+
+
+def test_pk02_a4_total_vs_rows_fails_when_members_differ() -> None:
+    probe = _pk02_probe(
+        {
+            "antidilutive_securities_excluded": pack_base.FactMapping(
+                ("us-gaap:StockRepurchasedAndRetiredDuringPeriodValue",),
+                optional_axes=("us-gaap:StatementEquityComponentsAxis",),
+            )
+        }
+    )
+    # Consolidated 89,300,000,000 (dec -8) vs member 90,052,000,000 (dec -6):
+    # the 752,000,000 gap exceeds the 100,000,000 tolerance.
+    check = _check(probe, "antidilutive_table_total_vs_rows")
+    assert check["status"] == "fail"
+    assert check["tolerance"] == "100000000"
+    assert contract.validate_pack_result(probe) == []
+
+
+def _share_operand(field_id: str, value: str, decimals: int, rows: list) -> object:
+    return pack_base.RuleOperand(
+        field_id=field_id,
+        value=Decimal(value),
+        decimals=decimals,
+        unit="shares",
+        period={"kind": "instant", "end": "2025-09-27"},
+        rows=rows,
+    )
+
+
+def _valued_share_row(value: str, dimensions: list | None = None) -> dict:
+    return {
+        "quality_state": "valued",
+        "value": value,
+        "dimensions": dimensions or [],
+    }
+
+
+def test_pk02_per_class_rule_passes_when_instants_and_values_match() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.per_class_shares_vs_cover/v1"]
+    operands = {
+        "shares_outstanding_cover": _share_operand(
+            "shares_outstanding_cover",
+            "1000",
+            3,
+            [_valued_share_row("1000")],
+        ),
+        "shares_issued_parenthetical": _share_operand(
+            "shares_issued_parenthetical",
+            "1000",
+            3,
+            [_valued_share_row("1000")],
+        ),
+    }
+    verdict = rule.fn(operands)
+    assert verdict.status == "pass"
+    assert verdict.tolerance == Decimal("0.001")
+
+
+def test_pk02_per_class_rule_fails_when_values_differ_by_one_share() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.per_class_shares_vs_cover/v1"]
+    operands = {
+        "shares_outstanding_cover": _share_operand(
+            "shares_outstanding_cover",
+            "1001",
+            3,
+            [_valued_share_row("1001")],
+        ),
+        "shares_issued_parenthetical": _share_operand(
+            "shares_issued_parenthetical",
+            "1000",
+            3,
+            [_valued_share_row("1000")],
+        ),
+    }
+    verdict = rule.fn(operands)
+    assert verdict.status == "fail"
+
+
+def test_pk02_per_class_rule_matches_per_class_member() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.per_class_shares_vs_cover/v1"]
+    class_a = [{"axis": "us-gaap:StatementClassOfStockAxis", "member": "ClassA"}]
+    operands = {
+        "shares_outstanding_cover": _share_operand(
+            "shares_outstanding_cover",
+            "2000",
+            3,
+            [
+                _valued_share_row("1000"),
+                _valued_share_row("1000", class_a),
+            ],
+        ),
+        "shares_issued_parenthetical": _share_operand(
+            "shares_issued_parenthetical",
+            "1000",
+            3,
+            [_valued_share_row("1000")],  # no ClassA counterpart
+        ),
+    }
+    verdict = rule.fn(operands)
+    assert verdict.status == "not_evaluable"
+    assert verdict.reason == "missing_dependency"
+
+
+def _eps_operands(
+    income: str, basic: str, eps_basic: str, diluted: str, eps_diluted: str
+) -> dict:
+    return {
+        "net_income_available_to_common": pack_base.RuleOperand(
+            field_id="net_income_available_to_common",
+            value=Decimal(income),
+            decimals=-6,
+            unit="USD",
+            period=None,
+            rows=(),
+        ),
+        "weighted_average_shares_basic": _share_operand(
+            "weighted_average_shares_basic", basic, -3, []
+        ),
+        "eps_basic": pack_base.RuleOperand(
+            field_id="eps_basic",
+            value=Decimal(eps_basic),
+            decimals=2,
+            unit="USD/shares",
+            period=None,
+            rows=(),
+        ),
+        "weighted_average_shares_diluted": _share_operand(
+            "weighted_average_shares_diluted", diluted, -3, []
+        ),
+        "eps_diluted": pack_base.RuleOperand(
+            field_id="eps_diluted",
+            value=Decimal(eps_diluted),
+            decimals=2,
+            unit="USD/shares",
+            period=None,
+            rows=(),
+        ),
+    }
+
+
+def test_pk02_eps_rule_passes_on_matching_quotients() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.eps_identity/v1"]
+    operands = _eps_operands("100", "150", "0.67", "300", "0.33")
+    verdict = rule.fn(operands)
+    assert verdict.status == "pass"
+    assert verdict.tolerance == Decimal("0.01")
+
+
+def test_pk02_eps_rule_fails_when_rounding_goes_the_other_way() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.eps_identity/v1"]
+    # 100 / 150 = 0.666... quantizes to 0.67; a disclosed 0.66 is a fail.
+    verdict = rule.fn(_eps_operands("100", "150", "0.66", "300", "0.33"))
+    assert verdict.status == "fail"
+
+
+def test_pk02_eps_rule_quantizes_half_even_at_the_boundary() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.eps_identity/v1"]
+    # 25 / 200 = 0.125 -> ROUND_HALF_EVEN at 2 decimals -> 0.12, not 0.13.
+    assert rule.fn(_eps_operands("25", "200", "0.13", "300", "0.08")).status == "fail"
+    assert rule.fn(_eps_operands("25", "200", "0.12", "300", "0.08")).status == "pass"
+
+
+def test_pk02_eps_rule_raises_on_zero_denominator() -> None:
+    rule = pk02_sbc.CHECK_RULES["pk02.eps_identity/v1"]
+    with pytest.raises(ZeroDivisionError):
+        rule.fn(_eps_operands("100", "0", "0.67", "300", "0.33"))
+
+
+# 22. PK02 CLI ----------------------------------------------------------------
+
+
+def test_pk02_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk02.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK02_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK02",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert len(envelope["fields"]) == 13
+    assert envelope["coverage"]["valued_fields"] == 10
