@@ -1,5 +1,39 @@
 [
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_open",
     "facts": {
@@ -33,6 +67,40 @@
     "interaction": "drawer_open",
     "locale": "en",
     "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "light",
     "verified": true,
     "viewport": "desktop"
   },
@@ -74,6 +142,40 @@
     "viewport": "desktop"
   },
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_open",
     "facts": {
@@ -107,6 +209,40 @@
     "interaction": "drawer_open",
     "locale": "zh",
     "theme": "dark",
+    "verified": true,
+    "viewport": "desktop"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "light",
     "verified": true,
     "viewport": "desktop"
   },
@@ -148,6 +284,40 @@
     "viewport": "desktop"
   },
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "tablet"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|drawer_open",
     "facts": {
@@ -181,6 +351,40 @@
     "interaction": "drawer_open",
     "locale": "en",
     "theme": "dark",
+    "verified": true,
+    "viewport": "tablet"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "light",
     "verified": true,
     "viewport": "tablet"
   },
@@ -222,6 +426,40 @@
     "viewport": "tablet"
   },
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "tablet"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_open",
     "facts": {
@@ -255,6 +493,40 @@
     "interaction": "drawer_open",
     "locale": "zh",
     "theme": "dark",
+    "verified": true,
+    "viewport": "tablet"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "light",
     "verified": true,
     "viewport": "tablet"
   },
@@ -296,6 +568,40 @@
     "viewport": "tablet"
   },
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|drawer_open",
     "facts": {
@@ -329,6 +635,40 @@
     "interaction": "drawer_open",
     "locale": "en",
     "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "en",
+    "theme": "light",
     "verified": true,
     "viewport": "mobile"
   },
@@ -370,6 +710,40 @@
     "viewport": "mobile"
   },
   {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_open",
     "facts": {
@@ -403,6 +777,40 @@
     "interaction": "drawer_open",
     "locale": "zh",
     "theme": "dark",
+    "verified": true,
+    "viewport": "mobile"
+  },
+  {
+    "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous",
+    "facts": {
+      "controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ]
+    },
+    "force_state": null,
+    "input": "probe: rest-state disabled/unavailable record for #ff-export-btn and #ff-saved-save (real disabled property, per-locale visible text, data-label-en/zh, data-tip-<locale>, aria-disabled)",
+    "interaction": "disabled_controls",
+    "locale": "zh",
+    "theme": "light",
     "verified": true,
     "viewport": "mobile"
   },

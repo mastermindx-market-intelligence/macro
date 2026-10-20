@@ -17,6 +17,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -41,6 +63,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -155,6 +208,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -179,6 +254,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|en|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -293,6 +399,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -317,6 +445,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -431,6 +590,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -455,6 +636,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|desktop|zh|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -569,6 +781,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -593,6 +827,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -707,6 +972,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -731,6 +1018,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|en|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -845,6 +1163,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -869,6 +1209,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -983,6 +1354,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -1007,6 +1400,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|tablet|zh|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -1121,6 +1545,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -1145,6 +1591,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -1259,6 +1736,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -1283,6 +1782,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|en|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "Export unavailable: there are no filing periods to export.",
+          "visible_text": "Export unavailable"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "Save needs a company, a cutoff and a policy that can be queried.",
+          "visible_text": "Save this view"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -1397,6 +1927,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -1421,6 +1973,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|dark|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
@@ -1535,6 +2118,28 @@
           "radar"
         ]
       },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "key": "ArrowRight",
       "walk": {
         "focus": {
@@ -1559,6 +2164,37 @@
     "capture": "viewport: modal open; Chromium's full-page capture drops or under-paints the fixed modal layer, so this cell is the first viewport only",
     "cell_id": "fundamental_forensics.html?symbol=AAPL|mobile|zh|light|anonymous|drawer_trap",
     "facts": {
+      "closed": {
+        "focus_id": null,
+        "focus_matches_trigger": false,
+        "focus_on_finding_button": true,
+        "focus_restored": true,
+        "focus_tag": "button",
+        "modal": false,
+        "open": false
+      },
+      "disabled_controls": [
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Export unavailable",
+          "label_zh": "导出不可用",
+          "present": true,
+          "selector": "#ff-export-btn",
+          "tip": "导出不可用：没有可导出的财报期间。",
+          "visible_text": "导出不可用"
+        },
+        {
+          "aria_disabled": null,
+          "disabled": true,
+          "label_en": "Save this view",
+          "label_zh": "保存当前视图",
+          "present": true,
+          "selector": "#ff-saved-save",
+          "tip": "需要可查询的公司、截止日与策略后才能保存。",
+          "visible_text": "保存当前视图"
+        }
+      ],
       "escaped": 0,
       "focusable": 8,
       "opened": {
