@@ -191,3 +191,178 @@ def _verify_owner_bundle(bundle: dict, spec: dict, registration: dict) -> None:
                 "LP multiplicity disclosure changed")
         require(env.get("authority") == {"research_only": True, "causal": False, "signal": False,
                                        "sizing": False, "execution": False, "publication": False}, "LP native authority changed")
+
+
+
+import copy
+import json
+
+from engine.trial_ledger import _hash, _legacy_record, _strict_row
+
+
+_MAX_LEDGER_BYTES = 64 * 1024 * 1024  # exact read bound on canonical ledger bytes
+_EXPECTED_N = 3  # a research card registers exactly three trials
+
+
+def _canon_text(value):
+    """Strict canonical JSON text for value comparison; never coerces."""
+    try:
+        return json.dumps(value, sort_keys=True, allow_nan=False, separators=(",", ":"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _unchanged(live, expected):
+    """True when ``live`` is the identical JSON value as the receipt's row.
+
+    Canonical-form equality keeps the check tamper-evident without depending
+    on byte-level formatting: key order and whitespace cannot fake a match,
+    while any changed scalar -- ts, source, note, info_cutoff -- or a changed
+    numeric/bool type compares unequal.
+    """
+    live_text, expected_text = _canon_text(live), _canon_text(expected)
+    return live_text is not None and expected_text is not None and live_text == expected_text
+
+
+def _reject_constant(token):
+    raise ValueError(f"non-finite JSON constant {token!r} refused in ledger")
+
+
+def _reject_duplicate_keys(pairs):
+    seen = set()
+    for key, _value in pairs:
+        if key in seen:
+            raise ValueError(f"duplicate JSON key {key!r} refused in ledger")
+        seen.add(key)
+    return dict(pairs)
+
+
+def _parse_record(line, lineno):
+    try:
+        record = json.loads(line, object_pairs_hook=_reject_duplicate_keys,
+                            parse_constant=_reject_constant)
+    except ValueError as exc:
+        raise ValueError(f"malformed ledger JSON at line {lineno}: {exc}") from exc
+    if not isinstance(record, dict):
+        raise ValueError(f"ledger record at line {lineno} is not a JSON object")
+    return record
+
+
+def _split_records(ledger_raw):
+    """Parse bounded ledger bytes into ``(line number, record)`` pairs."""
+    if len(ledger_raw) > _MAX_LEDGER_BYTES:
+        raise ValueError("ledger exceeds the 64 MiB exact read bound")
+    try:
+        text = ledger_raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError("ledger bytes are not valid UTF-8") from exc
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()  # one final newline is the normal form, not a record
+    records = []
+    for lineno, line in enumerate(lines, start=1):
+        if not line.strip():
+            raise ValueError(f"blank ledger row at line {lineno}")
+        records.append((lineno, _parse_record(line, lineno)))
+    return records
+
+
+def verify_registration(receipt: dict, ledger_raw: bytes, *, family: str,
+                        configs: list) -> list:
+    """Verify a pinned registration receipt against canonical ledger bytes.
+
+    Returns a defensive copy of the three receipt rows, in supplied ``configs``
+    order. Raises ``ValueError`` on every failure; inputs are never mutated.
+    """
+    if not isinstance(receipt, dict):
+        raise ValueError("receipt must be a dict")
+    if type(family) is not str or not family:
+        raise ValueError("family must be a non-empty string")
+    if not isinstance(ledger_raw, bytes):
+        raise ValueError("ledger_raw must be exact bytes")
+    if not isinstance(configs, list) or len(configs) != _EXPECTED_N:
+        raise ValueError("configs must be a list of exactly three configs")
+
+    digests = []
+    for index, config in enumerate(configs):
+        if not isinstance(config, dict):
+            raise ValueError(f"configs[{index}] must be a dict")
+        if "cutoff" not in config:
+            raise ValueError(f"configs[{index}] must carry the source 'cutoff' field")
+        try:
+            digests.append(_hash(family, config))
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"configs[{index}] is not canonically hashable: {exc}") from exc
+    if len(set(digests)) != _EXPECTED_N:
+        raise ValueError("configs must be three distinct trial configurations")
+
+    if receipt.get("family") != family:
+        raise ValueError("receipt family does not equal the requested family")
+    effective_n = receipt.get("effective_n")
+    if type(effective_n) is not int or effective_n != _EXPECTED_N:
+        raise ValueError("receipt effective_n must be the literal integer 3")
+    new_rows = receipt.get("new_rows")
+    if not isinstance(new_rows, list) or len(new_rows) != _EXPECTED_N:
+        raise ValueError("receipt new_rows must hold exactly three rows")
+
+    expected_rows = []
+    for index, row in enumerate(new_rows):
+        where = f"receipt new_rows[{index}]"
+        if not isinstance(row, dict):
+            raise ValueError(f"{where} must be a dict")
+        if row.get("family") != family:
+            raise ValueError(f"{where} does not name family {family!r}")
+        if row.get("kind") == "declared_budget":
+            raise ValueError(f"{where} is a declared budget row; "
+                             "registration verifies generated trials only")
+        if _legacy_record(row):
+            raise ValueError(f"{where} is a legacy record, not a generated trial")
+        try:
+            (_row_family, row_digest), _canon_config = _strict_row(row)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{where} fails native strict row law: {exc}") from exc
+        if row_digest != digests[index]:
+            raise ValueError(f"{where} does not correspond to configs[{index}] in order")
+        if row.get("info_cutoff") != configs[index]["cutoff"]:
+            raise ValueError(f"{where} info_cutoff does not equal configs[{index}]['cutoff']")
+        expected_rows.append(row)
+    if len({row["config_hash"] for row in expected_rows}) != _EXPECTED_N:
+        raise ValueError("receipt new_rows must be three distinct rows")
+
+    live = []
+    for lineno, record in _split_records(ledger_raw):
+        if record.get("family") != family:
+            continue  # unrelated appends: other families and family-less legacy records
+        if record.get("kind") == "declared_budget":
+            raise ValueError(f"declared budget row for family {family!r} at ledger line {lineno}")
+        if _legacy_record(record):
+            raise ValueError(f"legacy annotation for family {family!r} at ledger line {lineno}")
+        try:
+            _strict_row(record)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"corrupt row for family {family!r} at ledger line {lineno}: {exc}") from exc
+        live.append((lineno, record))
+
+    if len(live) < _EXPECTED_N:
+        raise ValueError(f"ledger holds only {len(live)} rows for family {family!r}; "
+                         f"registration requires exactly {_EXPECTED_N}")
+    by_digest = {row["config_hash"]: row for row in expected_rows}
+    seen = set()
+    for lineno, row in live:
+        digest = row["config_hash"]
+        if digest not in by_digest:
+            raise ValueError(f"extra same-family row at ledger line {lineno} is not in the receipt")
+        if digest in seen:
+            raise ValueError(f"duplicate same-family config hash at ledger line {lineno}")
+        seen.add(digest)
+        if not _unchanged(row, by_digest[digest]):
+            raise ValueError(
+                f"ledger row at line {lineno} differs from its immutable receipt row "
+                "(ts/source/note/info_cutoff and every other field must match, "
+                "not just the config hash)")
+    missing = len(by_digest) - len(seen)
+    if missing:
+        raise ValueError(f"ledger is missing {missing} registered row(s) for family "
+                         f"{family!r}; registration requires exactly {_EXPECTED_N} unchanged rows")
+
+    return [copy.deepcopy(row) for row in expected_rows]

@@ -1999,3 +1999,28 @@ def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
         f"measurement dark/light frames are not theme-differentiated "
         f"(dark={dark_luma:.1f} light={light_luma:.1f})"
     )
+
+
+def test_lp_projection_uses_monthly_log_change_units_and_discloses_missing_recent_window(contract, real_section):
+    card = next(c for c in contract["cards"] if c["method_family"] == "local_projections")
+    html = _isolate_card(real_section, "local_projections")
+    assert "Method: local projections" in html and "方法：局部投影" in html
+    assert "log payroll / CPI pp" in html and "工资单对数 / CPI 百分点" in html
+    assert "2025" in html and "2026" in html
+    assert "13" in html and "332" in html
+    assert 'data-ric-null-code="effective_n"' in html
+    assert "332 monthly rows are not 332 independent episodes" in html
+    assert 'data-ric-code="effective_n"' not in html
+    assert "Information cutoff" in html and "信息截止时间" in html
+    assert "current-regime validity is unknown" in html
+    assert "当前制度有效性未知" in html
+    if card["ordered_effect_path"]:
+        callout = re.search(r'<div class="ric-path-callout">(.*?)</div>', html, re.S).group(1)
+        assert "monthly observations" in callout and "个月度观测期限" in callout
+        assert "CPI percentage point" in callout and "CPI 百分点" in callout
+        assert "%" not in callout and "events" not in callout and "day horizon" not in callout
+        assert "工资单对数变化 / CPI 百分点" in html
+        assert "横轴为月度观测期限" in html
+    assert 'data-ric-f="fam:local_projections"' in real_section
+    button = real_section.split('data-ric-f="fam:local_projections"', 1)[1].split('</button>', 1)[0]
+    assert "Local Projections" in button and "局部投影" in button
