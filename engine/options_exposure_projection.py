@@ -265,7 +265,7 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
     if context is None:
         return None
     from copy import deepcopy
-    from lib.options_source_receipts import native_acquisitions, massive_reference_terms, ordinary_spy_terms
+    from lib.options_source_receipts import native_acquisitions, massive_reference_terms, ordinary_etf_terms
     out = deepcopy(context)
     if out.get("root", root) != root:
         raise ValueError("Exposure context root mismatch")
@@ -286,10 +286,10 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         out["security_id"] = bound["security_id"]
         out["contract_identity"] = bound
     if observed_identity_inputs is not None:
-        if out.get("kind") != DATED_KIND or root != "SPY":
+        if out.get("kind") != DATED_KIND or root not in {"SPY", "QQQ"}:
             raise ValueError("Observed dated identity cannot authorize this exposure")
-        from engine.intelligence_workspace.options_contract_identity import resolve_observed_spy_contract_identity
-        bound = resolve_observed_spy_contract_identity(greeks_df, oi_df, source_session=asof,
+        from engine.intelligence_workspace.options_contract_identity import resolve_observed_etf_contract_identity
+        bound = resolve_observed_etf_contract_identity(greeks_df, oi_df, root=root, source_session=asof,
             input_sha256=out["input_sha256"], **observed_identity_inputs).receipt
         if out.get("security_id") not in (None, bound["security_id"]):
             raise ValueError("Conflicting owner canonical identity")
@@ -305,8 +305,8 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
         # Feed the same merge path without reinterpreting cursor queries as
         # per-expiry requests. These terms were mapped from the actual page.
         for term in population_terms:
-            if out.get("term_policy") == "occ_standard_spy_etf/v1":
-                term = ordinary_spy_terms(term)
+            if out.get("term_policy") == {"SPY":"occ_standard_spy_etf/v1", "QQQ":"occ_standard_qqq_etf/v1"}.get(root):
+                term = ordinary_etf_terms(term, root=root)
             key = _key(term, root)
             matches = term_indices.get(key, [])
             if len(matches)>1:
@@ -330,8 +330,8 @@ def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
             references.append((observation, None))
     for observation, contract in references:
         term = massive_reference_terms(observation, root, out.get("security_id"), contract=contract)
-        if out.get("term_policy") == "occ_standard_spy_etf/v1":
-            term = ordinary_spy_terms(term)
+        if out.get("term_policy") == {"SPY":"occ_standard_spy_etf/v1", "QQQ":"occ_standard_qqq_etf/v1"}.get(root):
+            term = ordinary_etf_terms(term, root=root)
         term_key = _key(term, root)
         matches = term_indices.get(term_key, [])
         if len(matches) > 1:
