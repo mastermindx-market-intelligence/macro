@@ -5082,8 +5082,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_667),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_671),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5140,6 +5140,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     (index.html and plan_book also +4, both under their ceilings). No new
     entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
     selector, job/pack bound and both other probe ceilings stay unchanged.
+
+    Methodology disclosures + seasonality page claims (2026-10-19, W23-L3/L6)
+    add tests/test_methodology_disclosures.py and
+    tests/test_seasonality_page_claims.py to unrun-builders-render. The local
+    probe on main 55130f60 measures build_free_content 134 jobs / 5,638; on
+    the PR merged into that main, the same 134 job ids / 5,642 (index.html
+    5,767 and plan_book 5,516, both under their ceilings). No new entrant.
+    Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
+    job/pack bound and both other probe ceilings stay unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
@@ -5912,6 +5921,23 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
 
     All remain at ten packs. Only the build probe exceeds its current bound;
     fund exactly 5,638 -> 5,667. Preserve the index/plan-book ceilings, all
+    job-count bounds, scopes, suite commands, import-closure audits, observed
+    duration overrides and ten-pack bound. These are planning weights, not
+    execution times; this does not change any reference-integrity requirement.
+
+    2026-10-20 (original PR #8014, accepted d52827f2 integration):
+    The combined and incoming manifests were measured on the same current
+    source tree f2b2ea007cd9921618d1d50793fa110a0679f3c1. Selected job sets
+    are identical. Retaining the existing chart/readback/rich-answer suites
+    makes unrun-brain-gateway 92 rather than incoming main's 63 weight units:
+    exactly +29 on each probe, with no new or removed selected job.
+
+        templates/index.html          135 jobs, 5,767 -> 5,796 weight
+        scripts/build_free_content.py 134 jobs, 5,642 -> 5,671 weight
+        engine/prophet/plan_book.py    128 jobs, 5,516 -> 5,545 weight
+
+    All remain at ten packs. Only the build probe exceeds its current bound;
+    fund exactly 5,642 -> 5,671. Preserve the index/plan-book ceilings, all
     job-count bounds, scopes, suite commands, import-closure audits, observed
     duration overrides and ten-pack bound. These are planning weights, not
     execution times; this does not change any reference-integrity requirement.
