@@ -5544,6 +5544,7 @@ jobs:
       - "engine/name_score_grader.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_emergence.py"
+      - "engine/narrative_radar_fields.py"
       - "engine/narrative_rotation.py"
       - "engine/short_volume.py"
       - "engine/neuralweb/__init__.py"
@@ -16918,6 +16919,7 @@ jobs:
       - engine/name_score_grader.py
       - engine/narrative_crossmarket.py
       - engine/narrative_emergence.py
+      - engine/narrative_radar_fields.py
       - engine/narrative_regime.py
       - engine/narrative_rotation.py
       - engine/neuralweb/__init__.py
@@ -18359,8 +18361,11 @@ jobs:
     # a synthetic payload; they import only json, re, pathlib and jinja2 and never run the
     # builder. They pin the cycle inputs printed beside each score chip (drawdown from the
     # 1y high, distance from the 200d SMA) and the intro's description of top_members as a
-    # current-membership snapshot rather than entry history. Exclusive so the page's own
-    # suites do not widen any shared job's inferred scope (the packing-probe ceilings).
+    # current-membership snapshot rather than entry history. Two more suites import the pure
+    # helper engine/narrative_radar_fields.py beside jinja2 (W28F-L36) and pin the THS
+    # membership snapshot date and each basket's thesis / 同花顺 board identity on the cards.
+    # Exclusive so the page's own suites do not widen any shared job's inferred scope
+    # (the packing-probe ceilings).
     scope: exclusive
     paths:
       - "templates/china_narrative_radar.html.j2"
@@ -18370,10 +18375,14 @@ jobs:
       - "templates/_site_nav.html.j2"
       - "templates/_state_inks.html.j2"
       - "templates/_vector_polish.html.j2"
+      - "engine/__init__.py"
+      - "engine/narrative_radar_fields.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_narrative_radar_basket_identity.py"
       - "tests/test_narrative_radar_cycle_inputs.py"
       - "tests/test_narrative_radar_member_claim.py"
+      - "tests/test_narrative_radar_membership_vintage.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18383,8 +18392,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jinja2
-      - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
-        run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
+      - name: China narrative radar — cycle inputs, snapshot wording, membership vintage, basket identity
+        run: python -m pytest tests/test_narrative_radar_basket_identity.py tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py tests/test_narrative_radar_membership_vintage.py -q -p no:cacheprovider
 
   commodity-strategies-grid-fields:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -27808,6 +27817,7 @@ jobs:
       - "engine/name_score_grader.py"
       - "engine/narrative_crossmarket.py"
       - "engine/narrative_emergence.py"
+      - "engine/narrative_radar_fields.py"
       - "engine/narrative_regime.py"
       - "engine/narrative_rotation.py"
       - "engine/news_common.py"
