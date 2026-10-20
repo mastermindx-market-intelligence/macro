@@ -2,7 +2,7 @@
 workstream: "WS:FINANCIAL-INTELLIGENCE-FABRIC"
 session: claude/fif-z0-rebase-20261019 (FIF Meta-CEO seat 96dc937a, Fable, fabric lanes for labor)
 model: fable
-ended_because: checkpoint
+ended_because: ci_handoff
 mission: >
   Record the 2026-10-19/20 Z0 closure wave: the landed acceptance-case repairs
   (A14, A18, A20, A21, A43), the step 5/6 catalogue PRs inside the
@@ -16,25 +16,7 @@ state_before: >
   failed its fabric review (F1-F10) and the twelve specialist packs were
   unintegrated; A14/A18/A20/A21/A43 were open implementation or test gaps.
 prs: [9843, 9845, 9853, 9858, 9859, 9863, 9869, 9870, 9794, 9872, 9871, 9879, 9799, 9882, 9884, 9891]
-decisions:
-  - id: R-CP-20261020
-    what: CommercialPaper core-catalogue alias REFUSED; alias additions only through the alias-candidate procedure, never inside a pack.
-  - id: R-FOLD-F1
-    what: The twelve-pack fold carries the PK-FW F1 repair (review findings F1-F10 adjudicated) instead of a second fold PR.
-  - id: R-FOLD-DIGEST
-    what: The fold re-pins the pack digest literals once, under this ruling; later digest changes need a new ruling.
-  - id: R-9794-MERGE
-    what: Step 5 (#9794) merged before the 2026-10-21T00:00Z clock; its golden re-pin is covered by this ruling.
-  - id: R-A21-T8B
-    what: A21 observation state writes new_filing only on a material change of the published generation; unchanged generations record checked_no_change.
-  - id: R-A21-STORE-TRACE
-    what: >
-      The observation record is WITHHELD (no store call, row marked
-      observation_write: withheld:<reason>) where A14/A18 forbid any write:
-      commit-phase fault, admission_refused:* exclusion, unchanged without a
-      prior record. A18 S2 subtracts the A21 key and proves the record is run 2's own.
-  - id: DEC:FIF-A42-A45-A46-ENTITLED-BROWSER-IS-A-HUMAN-GATE
-    what: Entitled production receipts need an existing logged-in browser profile; named once 2026-10-20, never re-asked, the seat never logs in.
+decisions: []
 changed:
   - path: research/financial_intelligence_fabric/FIF_Z0_CLOSURE_MATRIX.json
     what: >
@@ -43,7 +25,9 @@ changed:
       A54 obligations reassigned to the independent labeler / Z1 review lane;
       summary recomputed; as_of 2026-10-20.
   - path: research/financial_intelligence_fabric/FIF_A36_COVERAGE_REMEASURE_2026-10-20.md
-    what: Manifest remeasure at the 10-20 rule clock: deep 32,267/50,000 (0/250), core 63,202/100,000 (0/1,000); blockers and measured tier proposal.
+    what: >
+      Manifest remeasure at the 10-20 rule clock; deep 32,267/50,000 (0/250),
+      core 63,202/100,000 (0/1,000); blockers and measured tier proposal.
   - path: research/financial_intelligence_fabric/FIF_A37_HELD_OUT_QUALIFIED_ABSTAIN_2026-10-20.md
     what: Twelve packs abstain (qualified) because no independent held-out labels exist; the seat does not author Q1.
   - path: agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md
@@ -80,6 +64,12 @@ next_actions:
 do_not_redo:
   - "Do not rebuild the landed A14/A18/A20/A21/A43 repairs, the step 5/6 catalogue PRs, the twelve-pack fold, the desk doctrine stripe removal (#9882) or the coverage-manifest producer wiring (#9884)."
   - "Do not author Q1 labels or reports from the seat or a pack lane."
+danger_areas:
+  - "Never dispatch filing-forensics-sec.yml, daily.yml or research-ingest; the A21 and A36 live proofs are schedule-born only."
+  - "Non-AAPL SEC filing bytes and the remeasured coverage manifest never enter git; the A36 record carries counts and codes only."
+  - "tests/test_fif_z0_closure_matrix.py checks that every cited test NAME exists, not that it proves the row; only the Z1 lane's findings move a verdict, and only downward from the seat side."
+  - "Held-out labels and the Q1 seal come from an independent labeler; the seat and the pack lanes never read tests/fixtures/fundamental_forensics_held_out/."
+  - "z0_update.py APPENDS matrix notes; restore FIF_Z0_CLOSURE_MATRIX.json from origin/main before rerunning it."
 ---
 
 # FIF Z0 closure wave — 2026-10-20
@@ -89,3 +79,13 @@ order: Z0 matrix (as_of 2026-10-20) → A36 remeasure → A37 abstain → the PR
 bodies of #9871 (ruling comment R-A21-STORE-TRACE), #9879 (tablet defect and
 recapture) and #9799 (integration seam: coverage_manifest passes
 source_taxonomy_uris like query_service).
+
+## Seat rulings bound to this wave (seat rulings, not Agent OS decision records)
+
+- **R-CP-20261020** — CommercialPaper core-catalogue alias REFUSED; alias additions only through the alias-candidate procedure, never inside a pack.
+- **R-FOLD-F1** — The twelve-pack fold carries the PK-FW F1 repair (review findings F1-F10 adjudicated) instead of a second fold PR.
+- **R-FOLD-DIGEST** — The fold re-pins the pack digest literals once, under this ruling; later digest changes need a new ruling.
+- **R-9794-MERGE** — Step 5 (#9794) merged before the 2026-10-21T00:00Z clock; its golden re-pin is covered by this ruling.
+- **R-A21-T8B** — A21 observation state writes new_filing only on a material change of the published generation; unchanged generations record checked_no_change.
+- **R-A21-STORE-TRACE** — The observation record is WITHHELD (no store call, row marked observation_write: withheld:<reason>) where A14/A18 forbid any write: commit-phase fault, admission_refused:* exclusion, unchanged without a prior record. A18 S2 subtracts the A21 key and proves the record is run 2's own.
+- **R-A42-A45-A46-ENTITLED-BROWSER-IS-A-HUMAN-GATE** (seat ruling; no decision record minted) — Entitled production receipts need an existing logged-in browser profile; named once 2026-10-20, never re-asked, the seat never logs in.
