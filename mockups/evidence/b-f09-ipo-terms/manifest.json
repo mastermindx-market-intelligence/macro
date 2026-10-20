@@ -25,8 +25,8 @@
           "force_state": null,
           "bytes": 87526,
           "sha256": "41ce8ae31bc38a97de87e3b6d80f2afc4eb3cf714dce75ad6196dcff324827b6",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 1140,
+          "height": 874,
           "captured_at": "2026-10-20T03:55:09.459Z"
         },
         {
@@ -43,8 +43,8 @@
           "force_state": null,
           "bytes": 103142,
           "sha256": "9396c686030f078ef88bfc2a3d1ef165fee377ac210a68fdc15e2817fa5cd588",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 1140,
+          "height": 874,
           "captured_at": "2026-10-20T03:55:23.415Z"
         },
         {
@@ -61,8 +61,8 @@
           "force_state": null,
           "bytes": 93500,
           "sha256": "50447cd1983a0a963c9160f06014d83d2612fac91a290e63614f4eb46129d4c5",
-          "width": 65536,
-          "height": 4293001744,
+          "width": 1140,
+          "height": 810,
           "captured_at": "2026-10-20T03:55:24.441Z"
         },
         {
@@ -79,8 +79,8 @@
           "force_state": null,
           "bytes": 79400,
           "sha256": "875d4c645b506f2c008b0491c2f8ff898ba490947de359cbe107fcb9927167e2",
-          "width": 65536,
-          "height": 4293001744,
+          "width": 1140,
+          "height": 810,
           "captured_at": "2026-10-20T03:55:30.370Z"
         },
         {
@@ -97,8 +97,8 @@
           "force_state": null,
           "bytes": 62455,
           "sha256": "60ebb7cd1d9e5952c1744cda800b2d5c6fcc98c5b5714d070dedc380d25cf295",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 350,
+          "height": 1190,
           "captured_at": "2026-10-20T03:55:30.561Z"
         },
         {
@@ -115,8 +115,8 @@
           "force_state": null,
           "bytes": 74273,
           "sha256": "2f9a2a736a5f3adaf5cd1c66587724a7dac6c792db58748ac6192d2d20d4b220",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 350,
+          "height": 1190,
           "captured_at": "2026-10-20T03:55:31.563Z"
         },
         {
@@ -133,8 +133,8 @@
           "force_state": null,
           "bytes": 87183,
           "sha256": "18eed88e234c55c567d77f81ad4049384d148332e0f085f83e3970f073726e07",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 350,
+          "height": 1343,
           "captured_at": "2026-10-20T03:55:43.739Z"
         },
         {
@@ -151,8 +151,8 @@
           "force_state": null,
           "bytes": 73560,
           "sha256": "ad098b431b0753f1a43fb9602ed022d43fe4473b2bc6634b891a67793ccba5c3",
-          "width": 65536,
-          "height": 4292542531,
+          "width": 350,
+          "height": 1343,
           "captured_at": "2026-10-20T03:55:44.745Z"
         }
       ]
