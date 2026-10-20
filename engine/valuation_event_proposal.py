@@ -539,18 +539,45 @@ def propose_from_guidance_hit(
     phrase = str(hit.get("phrase") or "").strip()
     if not _issuer_matches(ticker, [hit.get("ticker")]):
         reasons.add(R_ISSUER_MISMATCH)
-    metric_qualified = _sales_guidance_direction(phrase) == direction and direction is not None
+    from engine.guidance_source_evidence import QualifiedGuidanceContext, _instant
+    context = hit.get("source_context")
+    context_qualified = False
+    if isinstance(context, QualifiedGuidanceContext):
+        try:
+            context_qualified = (
+                context.get("status") == "QUALIFIED"
+                and context.get("metric") == "total_revenue"
+                and context.get("ticker") == hit.get("ticker")
+                and context.get("hit_id") == hit.get("id")
+                and context.get("direction") == hit.get("direction")
+                and context.get("source_url") == _edgar_document_url(hit.get("cik"), hit.get("id"))
+                and context.get("fiscal_year") == int(base_period_end[:4]) + 1
+                and _instant(context.get("retrieved_at")) <= _instant(as_of)
+                and _instant(context.get("decision_cutoff")) == _instant(as_of)
+            )
+        except (TypeError, ValueError):
+            context_qualified = False
+    metric_qualified = context_qualified or (_sales_guidance_direction(phrase) == direction and direction is not None)
     if not metric_qualified:
         reasons.add(R_GUIDANCE_METRIC_UNQUALIFIED)
     horizon = "full year" if "full-year" in phrase or "full year" in phrase else "the period management guided"
     source_refs = _source_refs_from_guidance(hit)
     if not source_refs:
         reasons.add(R_NO_SOURCE_REF)
+    elif context_qualified:
+        source_refs[0].update({key: context[key] for key in (
+            "quote", "receipt_id", "content_sha256", "retrieved_at", "decision_cutoff"
+        )})
+        horizon = f"fiscal year {context['fiscal_year']}"
 
     if R_ISSUER_MISMATCH in reasons:
         rationale_en = "This guidance record does not identify the selected company, so no input moves."
         rationale_zh = "此指引记录未确认属于当前公司，因此不调整任何输入。"
         change = "A source-linked sales-guidance record for the selected company."
+    elif context_qualified and not reasons:
+        rationale_en = "Management changed total-revenue guidance in the linked filing. Only its direction selects the model's sales-growth scenario."
+        rationale_zh = "管理层在所链接的文件中变更了总收入指引。仅将其方向用于选择模型的销售增长情景。"
+        change = "A later filing withdrawing this change, or a new reported base absorbing the guidance period."
     elif not metric_qualified:
         rationale_en = (
             "The extracted phrase does not establish a change in sales guidance. "
@@ -580,6 +607,12 @@ def propose_from_guidance_hit(
         "The figure shown is the model's own published scenario, not a number "
         "the company gave. The extracted phrase does not include the full source context."
     )
+
+    if context_qualified and not reasons:
+        uncertainty = (
+            "Management's forecast ranges remain source evidence. The proposed figure "
+            "comes only from this model's published preset; it is not company guidance."
+        )
 
     return _build(
         ticker=ticker, base_period_end=base_period_end,
