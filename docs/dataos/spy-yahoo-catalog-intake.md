@@ -251,3 +251,72 @@ This admission is local to the owned delivery branch. Repository acceptance,
 installed-owner activation and the separate closed SPY price consumer remain
 required. It does not qualify adjusted history by itself. No production data
 was changed, and the frozen Returns predictive candidate remains withheld.
+
+
+## Named Terminal consumer and shared validation — 2026-10-20
+
+The admission artifacts are published on this delivery branch at
+`dfe18ee874dc259deb08ec01d86bd43283dd75de`. This is repository-branch
+publication; protected-branch acceptance and installed-owner activation remain
+separate. The original evidence bytes, alias seal and admission clocks above
+are unchanged.
+
+`lib/dataos/_spy_yahoo_catalog.py` now owns the pure retained-catalog grammar,
+canonical evidence encoding and six-file admission preimage checks. The
+builder re-exports its existing constants and preserves its callable wrappers;
+its three ordinary Parquet normalization/read functions are AST-identical.
+Source acquisition and the explicit write-capable admission entry point remain
+in the existing builder. The shared module performs no I/O.
+
+The shared grammar also refuses canonical target timestamps with precision
+finer than a microsecond. Two resealed counterexamples showed that Python's
+normal timestamp parsing could otherwise truncate one nanosecond across the
+original reference-read cutoff or across effective/ingested ordering. Existing
+whole-second and exact microsecond forms remain supported. This does not alter
+the already admitted target or its evidence digest.
+
+The new `bind_terminal_spy_yahoo_materialization` leaf has its own schema,
+`dataos.terminal_spy_yahoo_materialization.v1`. It requires positive retained
+catalog evidence, the real canonical Yahoo alias and seal, and the current
+master/aliases/receipt triplet. It keeps the original six-file admission
+preimage separate from this later consumer read. Its owner source profile adds
+the shared helper's actual hash; the ordinary stock profile remains the
+existing two-file profile and its complete golden output is unchanged.
+
+Price observation and current qualification are independent clocks. The last
+bar must be valid at its original observation in New York session time. The
+current reference read must occur at or after catalog admission. Materialization
+must follow observation, source availability, admission and that current read.
+The catalog date is evaluated in UTC even when a materialization timestamp uses
+a western offset. Unsupported clock precision refuses; it is never rounded
+into availability.
+
+SPY cannot qualify through the stock leaf by forging a store alias or by
+relabelling a request/output symbol, resolved security ID, listing key or
+inception code. A missing or invalid named SPY qualification cannot fall back
+to ordinary stock qualification. The new contract remains CURRENT, with
+historical availability, adjustment vintage and atomic reference generation
+unattested. It supplies no predictive admission.
+
+Actual pytest execution in the owned M2 repository passed **522 tests** across
+`test_dataos_spy_yahoo_catalog.py`, `test_dataos_direct_registrant.py`,
+`test_dataos_prospective_reference.py`, `test_emit_view_contract.py` and the new
+`test_terminal_spy_yahoo_materialization.py` (40.94 seconds, exit 0). This includes
+44 new closed-consumer cases using synthetic facts and the real canonical
+identity reader and seal. Two pytest cleanup warnings concern an unrelated
+retained browser-fixture directory; no assertion failed.
+
+The extracted builder's actual ordinary CLI dry run also passed (exit 0).
+All six canonical file SHA-256 values before and after were identical, including
+the original `2a1570ec...7de` evidence and `efe9aa30...f35` alias seal already
+bound by the receipt. The source builder SHA-256 for this run was
+`4d2fc311ca2beabc6e95dc53f93443aecba114eb4c3169097c5a869f54b3fbac`.
+
+The new catalog suite is enrolled in the existing prospective-reference CI job;
+the named consumer suite is enrolled in the existing C04 identity-seams job.
+The previously documented four broader reference/stock failures remain distinct
+obligations. These focused passing tests do not classify them as waived.
+
+The proposed Terminal adapter and browser/API reader activation are separate
+consumer delivery work. This section does not assert their production use or
+that an adjusted historical series has acquired point-in-time provenance.

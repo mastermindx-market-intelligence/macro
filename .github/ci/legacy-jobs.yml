@@ -30983,6 +30983,7 @@ jobs:
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
       - tests/test_dataos_direct_registrant.py
+      - tests/test_dataos_spy_yahoo_catalog.py
       # Tiingo raw-vintage/read-only research proofs; no live provider calls.
       - .github/workflows/ci.yml
       - collectors/__init__.py
@@ -31025,6 +31026,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
+          tests/test_dataos_spy_yahoo_catalog.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
@@ -31561,8 +31563,10 @@ jobs:
       - engine/price_ladder.py
       - scripts/emit_view_contract.py
       - lib/dataos/terminal_materialization.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - tests/terminal_materialization_golden.json
       - tests/test_emit_view_contract.py
+      - tests/test_terminal_spy_yahoo_materialization.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -31594,6 +31598,10 @@ jobs:
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_emit_view_contract.py -q -rs
+      - name: SPY materialization binds its admitted catalog without changing stock qualification
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_terminal_spy_yahoo_materialization.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
