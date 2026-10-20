@@ -949,3 +949,76 @@ def test_knife_avoid_ruler_suffix_detected():
         "hklab_knife_avoid must produce h21_avoid_accuracy field "
         "(is_avoid not triggered for this book — review book.py ruler-suffix check)"
     )
+
+
+# --------------------------------------------------------------------------- #
+#  SCOREABLE badge + pick price (W28A)                                         #
+# --------------------------------------------------------------------------- #
+# engine/pick_lab/book.py stamps status "SCOREABLE" once a book clears the PL-R4
+# floor (25 fires, 3 calendar months, 6 distinct fire dates). The builder's fire
+# rows (scripts/build_hk_pick_lab.py) carry the pick price as close_at_fire,
+# with no "close" key, so picks_today cards must read that key.
+
+def _hk_scoreable_fixture(random_too: bool = False) -> dict:
+    fx = _hk_prod_fixture()
+    ids = {"hklab_1d_pure", "hklab_random_ctrl"} if random_too else {"hklab_1d_pure"}
+    for r in fx["scoreboard"]:
+        if r["engine_id"] in ids:
+            r.update(status="SCOREABLE", n_fires=130, n_dates=46, months_span=3.22)
+    return fx
+
+
+def test_status_badge_scoreable_is_active_not_accruing():
+    from engine.pick_lab.render_hk import _status_badge
+    assert _status_badge("SCOREABLE") == {
+        "css": "badge-active", "label_en": "SCOREABLE", "label_zh": "可评分"}
+    assert _status_badge("ACCRUING")["label_en"] == "ACCRUING"
+    assert _status_badge(None)["css"] == "badge-accruing"
+    assert _status_badge("active")["label_en"] == "ACTIVE"
+
+
+def test_render_scoreable_row_shows_scoreable_badge():
+    from engine.pick_lab.render_hk import build_vm
+    html = _render_hk_lab(build_vm(_hk_scoreable_fixture()))
+    hits = re.findall(r'<span class="badge-active">\s*<span class="l-en">SCOREABLE</span>\s*'
+                      r'<span class="l-zh">可评分</span>', html)
+    assert hits, "SCOREABLE row must render the badge-active SCOREABLE chip"
+
+
+def test_render_eyebrow_counts_scoreable_books():
+    from engine.pick_lab.render_hk import build_vm
+    html = _render_hk_lab(build_vm(_hk_scoreable_fixture(random_too=True)))
+    assert '<span class="l-en">1 of 19 books SCOREABLE</span>' in html
+    assert '<span class="l-zh">19本书中1本可评分</span>' in html
+    assert "Display-only · ACCRUING" not in html
+    accruing = _render_hk_lab(build_vm(_hk_prod_fixture()))
+    assert "HK Pick Lab · Display-only · ACCRUING" in accruing
+    assert "books SCOREABLE" not in accruing
+
+
+def test_render_guide_defines_scoreable():
+    from engine.pick_lab.render_hk import build_vm
+    html = _render_hk_lab(build_vm(_hk_prod_fixture()))
+    note = html.split('<div class="sb-note">', 1)[1].split("</div>", 1)[0]
+    assert "SCOREABLE = past the sample floor" in note
+    assert "可评分 = 已过样本门槛" in note
+    assert "ACCRUING = fewer than 25 fires across 3 months" not in note
+
+
+def test_hk_pick_close_at_fire_formats_in_hkd():
+    from engine.pick_lab.render_hk import _enrich_pick
+    assert _enrich_pick({"close_at_fire": 11.18})["close_fmt"] == "HK$11.18"
+    assert _enrich_pick({"close": 42.5, "close_at_fire": 1.0})["close_fmt"] == "HK$42.50"
+    assert _enrich_pick({"close_at_fire": None})["close_fmt"] == "—"
+    assert _enrich_pick({})["close_fmt"] == "—"
+
+
+def test_render_velocity_card_prints_close_at_fire_price():
+    from engine.pick_lab.render_hk import build_vm
+    fx = _hk_prod_fixture()
+    fx["books"]["hklab_1d_pure"]["picks_today"] = [{
+        "ticker": "1929.HK", "rank": 1, "close_at_fire": 11.18, "sector": "Consumer Cyclical",
+        "why": ["1D MACD cross ≤2"], "features": {},
+    }]
+    html = _render_hk_lab(build_vm(fx))
+    assert '<span class="pick-close">HK$11.18</span>' in html

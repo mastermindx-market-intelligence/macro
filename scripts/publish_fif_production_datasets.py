@@ -47,6 +47,40 @@ later than the run's ``--recorded-at``, publish hard-fails BEFORE any store
 write with the typed code ``admitted_at_after_recorded_at``, never clamping
 either clock.
 
+OBSERVATION RECORDS (A21): every publish leaves one per-issuer observation
+record at ``{PRODUCTION_DATASET_PREFIX}/issuers/<issuer_id>/observation.json``
+— exactly the dict ``filing_observation_state.observe``/``mark_published``
+returns — so checked-no-change, newly published, commit failure and source
+outage stay distinguishable per issuer after every publish (the pointer
+clock alone is never evidence of a check). Two refusal forms, both binding:
+BEFORE any write, a prior record that exists but cannot be decoded (or
+names the wrong schema) refuses the WHOLE run with the typed
+``observation_prior_unreadable`` — a record this run cannot read is never
+overwritten. AFTER the real-write loop (so never before a commit that could
+still happen), a ``FilingObservationError`` from ``observe``/
+``mark_published`` (clock regression, conflicting duplicate) or an
+unreconciled conditional write is REPORT-ONLY on that issuer's row —
+``"observation_write": "refused:<code>"`` or ``"not_landed"`` — because the
+generation commit already succeeded (or nothing was committed) and the
+observation is a projection, never a reason to re-publish: the run's exit
+code is unchanged. A row carries either ``observation`` (the persisted
+record's projection) or ``observation_write`` (why no record landed), never
+both. Seat ruling R-A21-STORE-TRACE (reconciling A14 #9870 and A18
+#9863): three outcomes WITHHOLD the record entirely and mark the row
+``observation_write: withheld:<reason>`` — ``commit_phase_fault`` (the
+failed row: a store write right after the store faulted is the blind
+retry A18 forbids, and a clean rerun must find the prefix untouched),
+``identity_unproven`` (an ``admission_refused:*`` exclusion: the package
+proved no identity, so A14 allows nothing under that issuer's prefix) and
+``unchanged_without_prior`` (an unchanged generation with no prior record:
+nothing landed in this run and the pointer clock already says so).
+Seat ruling R-A21-T8B: an unchanged check persists nothing — a record
+is written only on a material transition (first creation, a state change,
+or a changed published generation id), never for a check whose record would
+differ from the stored prior only in its clock fields (the creating
+``new_filing`` → first ``checked_no_change`` relabel on an otherwise equal
+record included); the fresh check clocks travel in that run's report row.
+
 Hard-fail shape: every failure exits non-zero and prints one line-start
 ``::error`` on STDERR (``print(..., file=sys.stderr, flush=True)``, never
 through a logger) — this is a publication gate, not the
@@ -104,7 +138,17 @@ from engine.fundamental_forensics.production_lineage import (  # noqa: E402
     mint_production_lineage_evidence,
 )
 from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry  # noqa: E402
+from engine.fundamental_forensics.filing_observation_state import (  # noqa: E402
+    FILING_OBSERVATION_SCHEMA,
+    FilingObservationError,
+    freshness,
+    mark_published,
+    observe,
+)
+from engine.fundamental_forensics.health import FRESHNESS_BUDGET_SECONDS  # noqa: E402
+from engine.fundamental_forensics.raw_ledger import canonical_json  # noqa: E402
 from engine.fundamental_forensics.production_datasets import (  # noqa: E402
+    PRODUCTION_DATASET_PREFIX,
     ProductionDatasetError,
     ProductionDatasetMaterial,
     build_production_dataset_store,
@@ -121,6 +165,11 @@ from collectors.sec_filing_parser import (  # noqa: E402
     SecFilingParseError,
     parse_sec_filing_document,
 )
+
+# FIF A20: both SEC-paced subcommands build their SecRequestPacer from this
+# single default — 0.5 s = the process-wide share of the <= 2 req/s public
+# EDGAR budget. Explicit --min-interval-seconds still overrides it.
+MIN_INTERVAL_SECONDS_DEFAULT = 0.5
 
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
@@ -153,6 +202,87 @@ _STATEMENT_REFUSAL_PIN_PATH = (
 # (accession, income/balance/cash_flow) order, and its detail list is in the
 # same order — never alphabetical by statement type.
 _STATEMENT_TYPE_ORDER = {"income_statement": 0, "balance_sheet": 1, "cash_flow": 2}
+
+# ---------------------------------------------------------------------------
+# A21: per-issuer filing observation records (filing_observation_state)
+# ---------------------------------------------------------------------------
+
+#: S1: one observation record per issuer, beside the CAS pointer. The record
+#: is exactly the dict ``observe``/``mark_published`` returns, serialised
+#: with the engine family's canonical JSON writer (sorted keys, no NaN).
+OBSERVATION_KEY_MAXIMUM_BYTES = 64 * 1024
+
+#: R-A21-STORE-TRACE: ``observation_write`` markers for the outcomes that
+#: withhold the record (no store call at all), one per reason.
+OBSERVATION_WITHHELD_COMMIT_PHASE_FAULT = "withheld:commit_phase_fault"
+OBSERVATION_WITHHELD_IDENTITY_UNPROVEN = "withheld:identity_unproven"
+OBSERVATION_WITHHELD_UNCHANGED_WITHOUT_PRIOR = "withheld:unchanged_without_prior"
+
+EXCLUSION_MEMBER_CAPTURE_FAILED_PREFIX = "member_capture_failed:"
+EXCLUSION_ADMISSION_REFUSED_PREFIX = "admission_refused:"
+EXCLUSION_STATEMENT_REFUSED_PREFIX = f"{EXCLUSION_STATEMENT_RECONSTRUCTION_REFUSED}:"
+
+#: ``member_capture_failed:<code>`` codes that mean the SOURCE did not
+#: answer: the member fetch itself failed at the SEC archive, or the
+#: issuer's Submissions index was not usable. Every other capture code is
+#: our side — bytes arrived and our own parse/integrity rules refused —
+#: which is ``check_failed``, never ``absent_at_source``.
+SOURCE_OUTAGE_MEMBER_CAPTURE_CODES = frozenset(
+    {
+        "member_fetch_failed",
+        "submissions_unavailable",
+    }
+)
+
+#: S3: every exclusion reason string the publisher can emit maps onto an A21
+#: observation state (fail closed in ``exclusion_observation_state``). An
+#: ``identity_not_frozen`` row cannot carry a record at all (no issuer id to
+#: key), and an ``only_event_packages`` issuer writes nothing to the store by
+#: the adjudicated ERRATA-6 rule 5 contract — every other excluded issuer
+#: with a frozen binding gets exactly its mapped record.
+EXCLUSION_OBSERVATION_STATE = {
+    EXCLUSION_IDENTITY_NOT_FROZEN: "check_failed",
+    EXCLUSION_NO_RETAINED_PACKAGE: "check_failed",
+    EXCLUSION_ONLY_EVENT_PACKAGES: "check_failed",
+    EXCLUSION_MEMBER_CAPTURE_FAILED_PREFIX: "check_failed",
+    EXCLUSION_ADMISSION_REFUSED_PREFIX: "check_failed",
+    EXCLUSION_STATEMENT_REFUSED_PREFIX: "check_failed",
+}
+
+
+def observation_key(issuer_id: str) -> str:
+    """S1: the per-issuer observation record key, beside the CAS pointer."""
+    return f"{PRODUCTION_DATASET_PREFIX}/issuers/{issuer_id}/observation.json"
+
+
+def exclusion_observation_state(reason: str) -> str:
+    """Map one typed exclusion reason onto its A21 observation state.
+
+    The ``member_capture_failed:`` family resolves its code against
+    ``SOURCE_OUTAGE_MEMBER_CAPTURE_CODES``; every other reason resolves
+    through ``EXCLUSION_OBSERVATION_STATE`` (exact key, then prefix). An
+    unmapped reason is the typed ``publish_failed`` refusal — never a silent
+    state guess.
+    """
+    if reason.startswith(EXCLUSION_MEMBER_CAPTURE_FAILED_PREFIX):
+        code = reason.split(":", 1)[1]
+        if code in SOURCE_OUTAGE_MEMBER_CAPTURE_CODES:
+            return "source_outage"
+        return EXCLUSION_OBSERVATION_STATE[EXCLUSION_MEMBER_CAPTURE_FAILED_PREFIX]
+    state = EXCLUSION_OBSERVATION_STATE.get(reason)
+    if state is not None:
+        return state
+    for prefix in (
+        EXCLUSION_ADMISSION_REFUSED_PREFIX,
+        EXCLUSION_STATEMENT_REFUSED_PREFIX,
+    ):
+        if reason.startswith(prefix):
+            return EXCLUSION_OBSERVATION_STATE[prefix]
+    _fail(
+        f"exclusion reason is outside the observation vocabulary: {reason}",
+        code="publish_failed",
+    )
+    return ""  # unreachable: _fail raises
 
 
 def _refusal_row_order(row: Mapping[str, Any]) -> tuple[str, int, str]:
@@ -188,6 +318,9 @@ PUBLISHER_ERROR_CODES = frozenset(
         # unreadable, or outside the closed shape — the acquisition state is
         # UNKNOWN, so capture/publish must refuse rather than guess.
         "contract_acquire_result_unreadable",
+        # A21: a prior observation record that exists but cannot be decoded
+        # (or names the wrong schema) refuses the whole run before any write.
+        "observation_prior_unreadable",
         # A0 repair: EVERY staged issuer was excluded as
         # statement_reconstruction_refused — the run published nothing, so it
         # fails loudly after writing its report rather than going green empty.
@@ -1760,12 +1893,324 @@ def _commit_code(exc: BaseException) -> str:
     return "publish_failed"
 
 
+def _read_observation_prior(store: Any, issuer_id: str):
+    """S2: one issuer's prior observation record (versioned bounded read).
+
+    Returns ``(record, version, raw_bytes)`` — ``(None, None, None)`` on
+    authoritative absence. A record that exists but cannot be decoded, or
+    names the wrong schema, is the typed run-level
+    ``observation_prior_unreadable`` refusal: never overwrite a record you
+    cannot read.
+    """
+    key = observation_key(issuer_id)
+    try:
+        observed = store.get_bytes_strict_bounded_versioned(
+            key, OBSERVATION_KEY_MAXIMUM_BYTES
+        )
+    except Exception as exc:  # noqa: BLE001 - fail closed on any read fault
+        raise PublisherError(
+            f"observation record read failed for {issuer_id}: {exc}",
+            code="observation_prior_unreadable",
+        ) from exc
+    data = getattr(observed, "data", None)
+    version = getattr(observed, "version", None)
+    if data is None and version is None:
+        return None, None, None
+    if (
+        not isinstance(data, bytes)
+        or not data
+        or not isinstance(version, str)
+        or not version
+    ):
+        raise PublisherError(
+            f"observation record read for {issuer_id} is malformed",
+            code="observation_prior_unreadable",
+        )
+    try:
+        document = json.loads(data.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise PublisherError(
+            f"observation record for {issuer_id} is undecodable: {exc}",
+            code="observation_prior_unreadable",
+        ) from exc
+    if (
+        not isinstance(document, dict)
+        or document.get("schema") != FILING_OBSERVATION_SCHEMA
+    ):
+        raise PublisherError(
+            f"observation record for {issuer_id} names the wrong schema",
+            code="observation_prior_unreadable",
+        )
+    return document, version, data
+
+
+def _observe_issuer(
+    binding: CanonicalEntityBinding,
+    *,
+    state: str,
+    prior: Mapping[str, Any] | None,
+    checked_at: datetime,
+    publication: Mapping[str, Any] | None,
+) -> tuple[dict[str, Any] | None, str | None]:
+    """S3: build one issuer's observation record from publisher-known facts.
+
+    ``accession`` is None on every record (issuer-level) and the CIK is the
+    staged binding's. A ``FilingObservationError`` (clock regression,
+    conflicting duplicate, malformed prior shape) becomes the row-level
+    ``refused:<code>`` marker; the record is then never written.
+    """
+    try:
+        record = observe(
+            issuer_cik=binding.cik,
+            accession=None,
+            state=state,
+            checked_at=utc_text(checked_at) or "",
+            prior=prior,
+        )
+        if publication is not None:
+            record = mark_published(
+                record,
+                generation_kind="issuer_manifest",
+                generation_id=str(publication["generation_id"]),
+                published_at=str(publication["published_at"]),
+            )
+    except FilingObservationError as exc:
+        return None, f"refused:{exc.code}"
+    return record, None
+
+
+def _observation_landed(store: Any, key: str, payload: bytes) -> bool:
+    """Bounded read-back of the same key: equal bytes prove the write landed."""
+    try:
+        echoed = store.get_bytes_strict_bounded(key, OBSERVATION_KEY_MAXIMUM_BYTES)
+    except Exception:  # noqa: BLE001
+        return False
+    return echoed == payload
+
+
+#: R-A21-T8B: the fields a fresh check advances with no material fact
+#: changing behind them.
+_OBSERVATION_CLOCK_FIELDS = frozenset({"last_checked_at", "last_successful_check_at"})
+
+#: R-A21-T8B: the creating check (``new_filing``) and the first no-change
+#: check after it (``checked_no_change``) name the same fact — a successful
+#: check of the same published generation — so that relabel alone is not a
+#: material transition either.
+_OBSERVATION_UNCHANGED_RELABEL = frozenset({"new_filing", "checked_no_change"})
+
+
+def _observation_change_is_material(
+    prior: Mapping[str, Any], record: Mapping[str, Any]
+) -> bool:
+    """R-A21-T8B: does this candidate record owe the store a write?
+
+    Only a material transition persists: some field other than the check
+    clocks changes (state, publication, identity). A candidate that differs
+    from the stored prior only in the clock fields — or only in the
+    ``new_filing`` → ``checked_no_change`` relabel on an otherwise equal
+    record — persists nothing; the fresh clocks travel in that run's report
+    row instead. First creation is decided by the caller (no prior to
+    compare against) and always writes.
+    """
+    diff = {
+        key
+        for key in set(prior) | set(record)
+        if prior.get(key) != record.get(key)
+    }
+    if diff <= _OBSERVATION_CLOCK_FIELDS:
+        return False
+    if (
+        diff - _OBSERVATION_CLOCK_FIELDS == {"state"}
+        and {prior.get("state"), record.get("state")}
+        == _OBSERVATION_UNCHANGED_RELABEL
+    ):
+        return False
+    return True
+
+
+def _persist_observation(
+    store: Any,
+    issuer_id: str,
+    record: Mapping[str, Any],
+    *,
+    prior_record: Mapping[str, Any] | None,
+    prior_bytes: bytes | None,
+    prior_version: str | None,
+) -> tuple[str | None, bool]:
+    """S4: CAS-write one observation record, never an unconditional put.
+
+    The pattern of ``production_datasets._publish_pointer``: conditional
+    write at the prior read's exact version (None when absent), and a
+    bounded read-back of the SAME key reconciles a ``False`` or exceptional
+    outcome — equal bytes prove the write landed, anything else is the row's
+    ``not_landed`` marker. A record already landed byte-exactly is skipped
+    entirely (S6: a same-clock rerun writes nothing), and per R-A21-T8B so
+    is an unchanged check: a candidate that would differ from the stored
+    prior only in its clock fields (the creating ``new_filing`` → first
+    ``checked_no_change`` relabel included) makes NO store call at all.
+    Returns ``(marker, wrote)`` — ``marker`` is None or the row's
+    ``observation_write`` code, ``wrote`` is whether this run landed a
+    write (the projection's ``persisted``).
+    """
+    payload = canonical_json(dict(record)).encode("utf-8")
+    if prior_bytes == payload:
+        return None, False
+    if prior_record is not None and not _observation_change_is_material(
+        prior_record, record
+    ):
+        return None, False
+    key = observation_key(issuer_id)
+    try:
+        written = store.put_bytes_strict_conditional(
+            key,
+            payload,
+            expected_version=prior_version,
+            content_type="application/json",
+        )
+    except Exception:  # noqa: BLE001 - the CAS may have committed
+        if not _observation_landed(store, key, payload):
+            return "not_landed", False
+        return None, True
+    if written is not True:
+        if not _observation_landed(store, key, payload):
+            return "not_landed", False
+    return None, True
+
+
+def _observation_projection(
+    record: Mapping[str, Any], *, recorded_at: datetime, persisted: bool
+) -> dict[str, Any]:
+    """S5: the report-row projection of one observation record.
+
+    R-A21-T8B: ``persisted`` says whether THIS run wrote the record; the
+    clocks shown are always the fresh check's, so a skipped unchanged check
+    still reports when the issuer was last checked.
+    """
+    return {
+        "state": str(record["state"]),
+        "last_checked_at": record["last_checked_at"],
+        "last_successful_check_at": record["last_successful_check_at"],
+        "freshness": freshness(record, as_of=utc_text(recorded_at)),
+        "persisted": bool(persisted),
+    }
+
+
+def _emit_observations(
+    store: Any,
+    *,
+    published_rows: list[dict[str, Any]],
+    failed_row: dict[str, Any] | None,
+    excluded_rows: list[dict[str, Any]],
+    plan_bindings: Mapping[str, CanonicalEntityBinding],
+    exclusion_bindings: Mapping[str, CanonicalEntityBinding],
+    priors: Mapping[str, tuple[Any, str | None, bytes | None]],
+    recorded_at: datetime,
+) -> None:
+    """S3+S4+S5: build, persist and project every observation record.
+
+    Runs after the real-write loop and before the report write. Mutates rows
+    in place: a row whose record landed gains ``observation``; a refused or
+    not-landed record gains ``observation_write`` instead (never both). Per
+    R-A21-T8B an unchanged check persists nothing yet still gains its
+    ``observation`` projection with the fresh clocks and ``persisted:
+    false``. The run's exit code never changes here — the generation
+    commits have already happened (or nothing was committed) and the
+    observation is a projection.
+    """
+
+    def _emit(
+        binding: CanonicalEntityBinding,
+        *,
+        state: str,
+        publication: Mapping[str, Any] | None,
+        row: dict[str, Any],
+    ) -> None:
+        entity_id = binding.entity_id
+        prior, version, raw = priors.get(entity_id, (None, None, None))
+        record, marker = _observe_issuer(
+            binding,
+            state=state,
+            prior=prior,
+            checked_at=recorded_at,
+            publication=publication,
+        )
+        wrote = False
+        if record is not None:
+            marker, wrote = _persist_observation(
+                store,
+                entity_id,
+                record,
+                prior_record=prior,
+                prior_bytes=raw,
+                prior_version=version,
+            )
+        if marker is not None:
+            row["observation_write"] = marker
+        elif record is not None:
+            row["observation"] = _observation_projection(
+                record, recorded_at=recorded_at, persisted=wrote
+            )
+
+    for row in published_rows:
+        binding = plan_bindings.get(str(row.get("entity_id") or ""))
+        if binding is None:
+            continue
+        if str(row.get("outcome") or "") == "unchanged":
+            if priors.get(binding.entity_id, (None, None, None))[0] is None:
+                # R-A21-STORE-TRACE: no prior record and nothing landed in
+                # this run -> no first write under the issuer prefix (A18 S3).
+                row["observation_write"] = OBSERVATION_WITHHELD_UNCHANGED_WITHOUT_PRIOR
+                continue
+            _emit(binding, state="checked_no_change", publication=None, row=row)
+            continue
+        prior = priors.get(binding.entity_id, (None, None, None))[0]
+        publication = {
+            "generation_id": str(row.get("generation_id") or ""),
+            "published_at": str(row.get("admitted_at") or ""),
+        }
+        _emit(
+            binding,
+            state="new_content" if prior is not None else "new_filing",
+            publication=publication,
+            row=row,
+        )
+    if failed_row is not None:
+        # R-A21-STORE-TRACE: the store just faulted in the commit phase; a
+        # write to the same store now is the blind retry A18 forbids, and the
+        # typed partial report already carries the failure. No record.
+        failed_row["observation_write"] = OBSERVATION_WITHHELD_COMMIT_PHASE_FAULT
+    for row in excluded_rows:
+        binding = exclusion_bindings.get(str(row.get("cik") or ""))
+        if binding is None:
+            # identity_not_frozen: no issuer identity, so no record key exists.
+            continue
+        reason = str(row.get("reason") or "")
+        if reason == EXCLUSION_ONLY_EVENT_PACKAGES:
+            # ERRATA-6 rule 5 (adjudicated): this exclusion writes NOTHING to
+            # the store — the observation record is no exception.
+            continue
+        if reason.startswith(EXCLUSION_ADMISSION_REFUSED_PREFIX):
+            # R-A21-STORE-TRACE / A14: the package proved no identity, so
+            # nothing may land under the issuer prefix it claimed.
+            row["observation_write"] = OBSERVATION_WITHHELD_IDENTITY_UNPROVEN
+            continue
+        _emit(
+            binding,
+            state=exclusion_observation_state(reason),
+            publication=None,
+            row=row,
+        )
+
+
 def _report_base(
     recorded_at: datetime, registry_clocks: Sequence[datetime]
 ) -> dict[str, Any]:
     return {
         "schema": PUBLISH_REPORT_SCHEMA,
         "recorded_at": utc_text(recorded_at) or "",
+        # A21/S5: the freshness SLA the observation projection is judged
+        # against (report only; the record algebra owns the classification).
+        "observation_sla_seconds": FRESHNESS_BUDGET_SECONDS,
         "rule_clocks": {
             "confirmation_rule_available_at": utc_text(CONFIRMATION_RULE_AVAILABLE_AT),
             "confirmation_chain_rule_available_at": utc_text(
@@ -1892,6 +2337,34 @@ def _run_publish(args: argparse.Namespace) -> int:
     if store is None:
         _fail("production dataset store is not configured", code="publish_failed")
 
+    # A21/S2: read every observation prior BEFORE planning — every staged
+    # issuer plus every excluded issuer whose identity is frozen and whose
+    # exclusion can carry a record (the statement-refused join the staged set
+    # here; they are excluded only after the plan loop). A prior that exists
+    # but cannot be decoded is the typed run-level refusal inside the read,
+    # raised before any write: a record this run cannot read is never
+    # overwritten.
+    observation_exclusion_bindings: dict[str, CanonicalEntityBinding] = {}
+    for issuer in contract["issuers"]:
+        binding = _issuer_binding(issuer)
+        if binding is not None:
+            observation_exclusion_bindings[str(issuer["cik"])] = binding
+    observation_plan_bindings = {
+        staged_row.binding.entity_id: staged_row.binding for staged_row in staged
+    }
+    observation_prior_entity_ids = list(observation_plan_bindings)
+    for exclusion in excluded:
+        binding = observation_exclusion_bindings.get(str(exclusion.get("cik") or ""))
+        if binding is None:
+            continue
+        if str(exclusion.get("reason") or "") == EXCLUSION_ONLY_EVENT_PACKAGES:
+            continue
+        observation_prior_entity_ids.append(binding.entity_id)
+    observation_priors: dict[str, tuple[Any, str | None, bytes | None]] = {}
+    for entity_id in observation_prior_entity_ids:
+        if entity_id not in observation_priors:
+            observation_priors[entity_id] = _read_observation_prior(store, entity_id)
+
     # ERRATA-3 1 + 4: PLAN over ALL issuers into a SCRATCH store (a fresh
     # tempdir local store — no engine "pure plan" split; production_datasets
     # stays unowned and untouched). No real write begins until EVERY issuer's
@@ -2016,6 +2489,16 @@ def _run_publish(args: argparse.Namespace) -> int:
     if refused and not plans:
         # Every staged issuer was refused: nothing can publish. Write the
         # report (it names each typed exclusion), then fail typed.
+        _emit_observations(
+            store,
+            published_rows=[],
+            failed_row=None,
+            excluded_rows=excluded,
+            plan_bindings=observation_plan_bindings,
+            exclusion_bindings=observation_exclusion_bindings,
+            priors=observation_priors,
+            recorded_at=recorded_at,
+        )
         report = {
             **_report_base(recorded_at, registry_clocks),
             "published": [],
@@ -2093,6 +2576,21 @@ def _run_publish(args: argparse.Namespace) -> int:
             )
         )
     _emit_publish_timing("total_commit", "-", total_commit_started)
+
+    # A21/S3+S4: build and persist the per-issuer observation records after
+    # the real-write loop and before the report write. The observation is a
+    # projection: a refused or not-landed record is reported on the row and
+    # never changes the run's exit code.
+    _emit_observations(
+        store,
+        published_rows=published,
+        failed_row=failed,
+        excluded_rows=excluded,
+        plan_bindings=observation_plan_bindings,
+        exclusion_bindings=observation_exclusion_bindings,
+        priors=observation_priors,
+        recorded_at=recorded_at,
+    )
 
     if failed is not None:
         # MINOR-5: demote coverage before writing the partial report — the
@@ -2471,7 +2969,9 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--archive-root", type=Path, required=True)
     capture.add_argument("--recorded-at", required=True, help="Explicit UTC capture clock")
     capture.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    capture.add_argument("--min-interval-seconds", type=float, default=0.12)
+    capture.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     capture.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # D12: the run budget's single source is the capture module's constant —
     # the publisher carries no second 256 MiB literal.
@@ -2515,7 +3015,9 @@ def build_parser() -> argparse.ArgumentParser:
     acquire.add_argument("--archive-root", type=Path, required=True)
     acquire.add_argument("--recorded-at", required=True, help="Explicit UTC acquisition clock")
     acquire.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    acquire.add_argument("--min-interval-seconds", type=float, default=0.12)
+    acquire.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     acquire.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # E1-c amendment (B): acquire-contract is its own process with its OWN
     # pre-fetch budget; the single source of the number is the capture

@@ -1,47 +1,47 @@
 {
-  "checked_at": "2026-10-20T03:20:27+00:00",
-  "expected_session": "2026-10-16",
+  "checked_at": "2026-10-20T13:48:08+00:00",
+  "expected_session": "2026-10-20",
   "stores": {
     "cache": {
       "asof": "2026-10-16",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 4,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "bellwether": {
       "asof": "2026-10-16",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 4,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "standouts": {
       "asof": "2026-10-16",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 4,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "regime": {
       "asof": "2026-10-16",
-      "lag_days": 0,
-      "lag_sessions": 0,
-      "state": "fresh",
-      "data_state": "current",
+      "lag_days": 4,
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
       "calendar_verified": true
     },
     "southbound": {
       "asof": "2026-10-15",
-      "lag_days": 1,
-      "lag_sessions": 1,
+      "lag_days": 5,
+      "lag_sessions": 2,
       "state": "slow",
       "data_state": "late",
       "calendar_verified": true,
-      "expected_session": "2026-10-16"
+      "expected_session": "2026-10-20"
     }
   },
   "coherence": {

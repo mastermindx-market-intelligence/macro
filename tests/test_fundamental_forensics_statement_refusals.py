@@ -97,10 +97,10 @@ _PINNED_RAISE_SITES = (
     (1519, "StatementGraphError", None),
     (1524, "StatementGraphError", None),
     (1529, "StatementGraphError", None),
-    (1985, "StatementGraphError", "statement_role_not_consolidated"),
-    (2013, "StatementGraphError", None),
-    (2016, "StatementGraphError", None),
-    (2162, "StatementGraphError", None),
+    (2040, "StatementGraphError", "statement_role_not_consolidated"),
+    (2068, "StatementGraphError", None),
+    (2071, "StatementGraphError", None),
+    (2218, "StatementGraphError", None),
 )
 
 
