@@ -5089,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_655),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_667),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5166,6 +5166,22 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     5,642 -> 5,649. Every suite, selector, job/pack bound and both other
     probe ceilings stay unchanged.
 
+    Spvector gate chips (W23-L11, PR #9819) and the country-cycles panels
+    (W23-L10/L12, PR #9818), 2026-10-20, give
+    tests/test_spvector_gate_chips.py its own step in unrun-vector-baskets
+    (job weight 31 -> 34) and the four tests/test_country_cycles_*.py
+    suites their own step in unrun-macro-panels (69 -> 78). contract-delta
+    on each PR against base 5,642 measures build_free_content 134 jobs /
+    5,645 (#9819, run 39363164849) and 5,651 (#9818, run 39362507998). No
+    new entrant. The two jobs are disjoint and a job's weight is a pure
+    function of its own run text, so on main 6629c268 (5,649) the excess
+    adds: 5,652 with #9819, 5,658 with #9818 and 5,661 with both
+    (index.html 5,786 and plan_book 5,535, both under their ceilings).
+    Both PRs carry this identical note and ceiling, so the second to merge
+    stays clean. Fund only the twelve-unit joint excess: 5,649 -> 5,661.
+    Every suite, selector, job/pack bound and both other probe ceilings
+    stay unchanged.
+
     WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
     to prophet-lab's existing invocation. The unchanged estimator retains eight
     commands and one command-length unit; explicit test paths increase 20 -> 23,
@@ -5188,6 +5204,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     local-projections curation and all earlier measurements remain intact.
     Validate this combined manifest with the unchanged canonical estimator
     and the absolute packing assertion; every other bound stays fixed.
+
+    Accepted f54eeb composition (2026-10-20) preserves the joint 5,661
+    ceiling above and adds only the six required WM/KO units: 5,667.
+    The fixed pin carries the nine-unit country-cycles step; its existing
+    three-unit Spvector allowance is retained without asserting that suite
+    is present. Validate the actual combined manifest; other bounds stay fixed.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
