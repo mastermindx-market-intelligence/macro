@@ -280,6 +280,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -289,10 +290,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -2159,6 +2162,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -2168,10 +2172,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -3025,6 +3031,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -3034,10 +3041,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -9211,6 +9220,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -9220,10 +9230,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -22117,6 +22129,7 @@ jobs:
       - engine/biocatalyst/catalyst_events.py
       - engine/biocatalyst/change_classification.py
       - engine/biocatalyst/change_tape.py
+      - engine/biocatalyst/company_event_adapter.py
       - engine/biocatalyst/discovery.py
       - engine/biocatalyst/endpoint_alignment.py
       - engine/biocatalyst/fixed_cohort.py
@@ -22126,10 +22139,12 @@ jobs:
       - engine/biocatalyst/protocols.py
       - engine/biocatalyst/publication.py
       - engine/biocatalyst/regulatory.py
+      - engine/biocatalyst/research_priority.py
       - engine/biocatalyst/sponsor_identity.py
       - engine/biocatalyst/storage.py
       - engine/biocatalyst/trial_screen.py
       - engine/biocatalyst/trials.py
+      - engine/biocatalyst/what_matters_next.py
       - engine/btc_mtf.py
       - engine/canon.py
       - engine/capital_allocation.py
@@ -30626,6 +30641,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -30635,10 +30651,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"
@@ -33539,6 +33557,7 @@ jobs:
       - "engine/biocatalyst/catalyst_events.py"
       - "engine/biocatalyst/change_classification.py"
       - "engine/biocatalyst/change_tape.py"
+      - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/discovery.py"
       - "engine/biocatalyst/endpoint_alignment.py"
       - "engine/biocatalyst/fixed_cohort.py"
@@ -33548,10 +33567,12 @@ jobs:
       - "engine/biocatalyst/protocols.py"
       - "engine/biocatalyst/publication.py"
       - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/sponsor_identity.py"
       - "engine/biocatalyst/storage.py"
       - "engine/biocatalyst/trial_screen.py"
       - "engine/biocatalyst/trials.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/btc_mtf.py"
       - "engine/canon.py"
       - "engine/capital_allocation.py"

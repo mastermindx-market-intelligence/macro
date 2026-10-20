@@ -1,0 +1,196 @@
+{
+  "schema": "biocatalyst-ci-integration-evidence-v1",
+  "recorded_at": "2026-10-20T11:10:00Z",
+  "carrier": {
+    "pull_request": 6712,
+    "branch": "sol/biocatalyst-v3-r0-fable-principal-20260901",
+    "previous_head": "b08d7fe90203351d8990fdbc5a85f28fa150f6ee",
+    "hold": "Draft/HOLD"
+  },
+  "source_base": {
+    "commit": "f0613dfb5c22d67c48d935f67528395ba73c43c2",
+    "tree": "fec19f3a0209660b848db45029a29a209eb88c85",
+    "parents": [
+      "16f7269bb72a08b65cda3a8075c498a748f1bf90",
+      "b08d7fe90203351d8990fdbc5a85f28fa150f6ee"
+    ],
+    "adoption": "Existing verified descendant Git object; clean owned worktree fast-forward only; no new merge object created"
+  },
+  "changed_source_sha256": {
+    ".github/ci/legacy-jobs.yml": "69e948cfb10bd4817dd8baa905256a47f4ce3b0620c4b16d19f718dbcba89ad5",
+    "tests/test_ci_pack.py": "5356cdcfbba898e594ce8c4977a92358957eae6c98865efdc3b9185e5f9d171f",
+    "tests/test_biocatalyst_security.py": "b0c3a566c241df285f78ba9106a06b87181e2b19d0bb7fec2c68989cf8d6222a",
+    "tests/test_biocatalyst_deploy.py": "9c4595ff0bb408661983777199cb7417f543cea153fcd235a330e3b79194bb5b",
+    "tests/test_biocatalyst_worker.py": "47bd0ed5a9c5dda46c76cb908d63e67fbde5917aa2e3914b44f4e38c5fc07d85"
+  },
+  "closure": {
+    "before": {
+      "phase": "baseline_closure",
+      "elapsed": 103.193,
+      "findings": {
+        "bea-gvc-current-descriptive-consumer": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "c19-wp22-dhi-traversal": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "c19-wp32-integrated-answer-correction-denial-pins": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "crypto-assistant-context": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "fif-kernel-guards": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "research-price-panel": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ],
+        "ticker-news-qbus": [
+          "engine/biocatalyst/company_event_adapter.py",
+          "engine/biocatalyst/research_priority.py",
+          "engine/biocatalyst/what_matters_next.py"
+        ]
+      }
+    },
+    "after": {
+      "phase": "repaired_closure",
+      "elapsed": 109.444,
+      "findings": {}
+    },
+    "all_330_jobs_retained": true,
+    "only_21_exact_paths_added": true,
+    "all_other_fields_steps_commands_preserved": true
+  },
+  "packing": {
+    "before": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 135,
+        "weight": 5830,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5822,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 135/330 jobs (2 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5705,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5697,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/330 jobs (2 unscoped always-on, 132 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5579,
+        "packs": 10,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/330 jobs (2 unscoped always-on, 126 scoped matches)"
+      }
+    ],
+    "after": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 135,
+        "weight": 5830,
+        "packs": 10,
+        "max_jobs": 136,
+        "max_weight": 5830,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 135/330 jobs (2 unscoped always-on, 133 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5705,
+        "packs": 10,
+        "max_jobs": 134,
+        "max_weight": 5705,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/330 jobs (2 unscoped always-on, 132 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 128,
+        "weight": 5579,
+        "packs": 10,
+        "max_jobs": 130,
+        "max_weight": 5600,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 128/330 jobs (2 unscoped always-on, 126 scoped matches)"
+      }
+    ],
+    "exact_job_id_selections_preserved": true,
+    "weight_reason": "Four already-required BioCatalyst suites add eight estimator units to biocatalyst-contracts; no observed runtime claim; only two breached weight ceilings increased by eight"
+  },
+  "tests": [
+    {
+      "process": 50814,
+      "command": "python3.12 -m pytest -q tests/test_biocatalyst_research_priority.py tests/test_biocatalyst_what_matters_next.py tests/test_biocatalyst_wmn_api.py tests/test_biocatalyst_wmn_publication.py tests/test_company_intelligence_catalyst_event.py tests/test_biocatalyst_security.py tests/test_biocatalyst_source_registry.py tests/test_biocatalyst_record_history_enablement.py tests/test_biocatalyst_storage.py tests/test_biocatalyst_protocols.py tests/test_biocatalyst_trials.py tests/test_biocatalyst_sponsor_ticker_map.py tests/test_biocatalyst_deploy.py tests/test_biocatalyst_worker.py",
+      "passed": 418,
+      "failed": 0,
+      "errors": 0,
+      "elapsed_seconds": 293.09,
+      "exit_code": 0
+    },
+    {
+      "process": 38416,
+      "command": "python3.12 -m pytest -q tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+      "passed": 2,
+      "failed": 0,
+      "elapsed_seconds": 234.77,
+      "exit_code": 0
+    }
+  ],
+  "fixtures": {
+    "reason": "Mac temporary fixtures inherited GID 0 while their own declared verifier group was process GID 20; set only newly-created fake fixture nodes to the already-declared process group. Production validators and all assertions unchanged.",
+    "restored_unchanged_git_inputs": {
+      "ref": "f0613dfb5c22d67c48d935f67528395ba73c43c2",
+      "biocatalyst_fixture_files": 35,
+      "biocatalyst_fixture_bytes": 91151,
+      "membership_sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae"
+    }
+  },
+  "review": {
+    "scope": "Bounded independent C3 source adjudication; root owns execution evidence",
+    "accepted_files": 5,
+    "retained_processes": [
+      14986,
+      89891,
+      97822,
+      36419,
+      34576,
+      32157,
+      48005,
+      45183
+    ]
+  },
+  "boundaries": [
+    "Six accepted R9/R9a production modules unchanged.",
+    "Paired JavaScript/CSS unchanged; no fresh R9b browser/UI run claimed.",
+    "Initial hosted run39397016723 failed: closure/packing and exact whitelist now locally repaired; pack10 runner disk-full remains hosted infrastructure evidence, not locally disproved.",
+    "Fresh hosted CI on the published R9b head is still required.",
+    "Historical 38-source-claim baseline is not a new current-main inventory or gate waiver.",
+    "No merge, deploy, live activation, native admission, entitlement, model or trading authority granted.",
+    "R10 correction-admission fence remains subsequent implementation work."
+  ]
+}

@@ -266,3 +266,80 @@ fence: a consumed owner revision must still be current at promotion, and admissi
 of a correction must immediately make stale WMN current-use unavailable without
 erasing historical trial evidence. That implementation and its deterministic
 race proof are not part of this repair.
+
+## R9b — current-main CI integration repair (2026-10-20)
+
+R9/R9a's original #6712 carrier is retained. The owned clean worktree adopted
+existing Git object `f0613dfb5c22d67c48d935f67528395ba73c43c2`, tree
+`fec19f3a0209660b848db45029a29a209eb88c85`, by fast-forward. Its exact parents
+are main `16f7269bb72a08b65cda3a8075c498a748f1bf90` and accepted R9a
+`b08d7fe90203351d8990fdbc5a85f28fa150f6ee`. No merge object was invented.
+The original dirty checkout and its retained patches remain untouched.
+
+Initial hosted run [39397016723](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39397016723)
+demonstrated 21 missing exact import-closure paths, two packing-weight breaches,
+and an out-of-date exact transient-error inventory. Pack 10 also exhausted its
+runner disk; subsequent cancelled, failed or skipped jobs are not passing
+evidence. This repair addresses the reproduced source failures, with fresh hosted
+CI still required after publication.
+
+### Changes and measured preservation
+
+- Add the three required BioCatalyst module paths to seven existing exclusive
+  job scopes. All 330 jobs, other paths, commands, steps and fields are retained.
+  The real closure function reproduces exactly 21 omissions before and zero after.
+- The four already-required BioCatalyst suites increase the contracts job's
+  unchanged estimator from 52 to 60. Fund only the two measured breached ceilings
+  by eight. All job-count bounds, the plan-book bound and ten-pack limit remain.
+  Actual selections before and after are identical: index 135 jobs / 5,830 weight,
+  build-free 134 / 5,705, plan-book 128 / 5,579, each ten packs. These weights are
+  planning estimates, not measured runtimes.
+- Include the already-existing `BIOCATALYST_WMN_OWNER_INPUT_UNAVAILABLE` in the
+  security test's exact transient inventory. Production retry/quarantine behavior
+  and every existing assertion are unchanged.
+- Include the already-enrolled Company catalyst-event suite in the deployment
+  test's exact suite inventory.
+- Make newly-created fake runtime and activation fixture nodes use the process
+  group already declared to their verifier. On the Mac test host these temporary
+  paths inherited GID 0 while the process and verifier expected GID 20. Ownership
+  checks, production code, synthetic evidence bytes, modes, timestamps, skips and
+  assertions are unchanged.
+
+### Execution and review
+
+The final combined run passed **418 tests in 293.09 seconds** (process 50814,
+exit 0). It includes the complete worker suite and the research priority, WMN
+composition/API/publication, Company events, security, source registry, record
+history, storage, protocol, trial, sponsor mapping and deployment files.
+
+The existing CI closure and packing tests both passed: **2 tests in 234.77
+seconds** (process 38416, exit 0). Direct function measurements also preserve the
+exact selected job IDs and report zero closure findings and zero packing
+breaches. No gate was waived.
+
+The sparse checkout initially omitted 35 unchanged BioCatalyst data fixtures and
+the basket-membership input. Their exact integrated-HEAD Git bytes were restored.
+The initial broad failures, remaining fixture-group diagnosis and final passing
+rerun are retained as separate receipts; they are not collapsed into a claim
+that all initial failures had one cause.
+
+Independent C3 review accepted all five changed CI/test files from the exact
+retained source deltas and witnesses. This is source adjudication; root owns the
+execution results. Six accepted R9/R9a production modules and the paired JS/CSS
+remain unchanged. No new browser run or whole-repository passing inventory is
+claimed. The earlier 38-finding source-claim baseline remains historical evidence.
+
+Before publication, bounded source comparison of main
+`a815e54f50e012fd693c9a1ec311f5e814f330bd` against tested main 16f found
+no changes in the relevant Bio production/test/data inputs, CI planner/contract
+checker, test ceilings or loaded laws. The only manifest delta adds two FIF test
+paths and commands to the existing exclusive `fif-kernel-guards` job. That job
+is absent from all three actual packing selections; no competing change touches
+our Bio path additions. This is a source compatibility check, not a claim that
+the newer whole-main tree was executed.
+
+Machine-readable source bindings and exact test commands are in
+[ci_integration_r9b.json](ci_integration_r9b.json). Draft/HOLD and all existing
+merge, deployment, live activation, native-owner qualification, entitlement,
+model and trading boundaries remain. The next implementation is R10's durable
+correction-admission fence; it is not included in R9b.
