@@ -5069,6 +5069,7 @@ jobs:
       - "engine/trial_ledger.py"
       - "engine/validation.py"
       - "scripts/__init__.py"
+      - "scripts/local_projection_alfred_panel.py"
       - "scripts/run_local_projections.py"
       - "tests/__init__.py"
       - "tests/conftest.py"
@@ -13714,6 +13715,19 @@ jobs:
     # they read by name — not templates/** or engine/** wholesale, whose PRs
     # validated-claims-source already grades.
     paths:
+      # Native LP card import/source closure, measured after consumer adoption.
+      - "engine/local_projection_research_card.py"
+      - "engine/local_projections.py"
+      - "engine/seasonality/contracts.py"
+      - "engine/seasonality/event_study.py"
+      - "engine/seasonality/multiplicity.py"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_SOURCE_REFUSAL.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V1_STUDY_SPEC.json"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_APPENDIX.md"
+      - "research/local_projections/ALFRED_CPI_PAYROLL_V2_STUDY_SPEC.json"
+      - "research/local_projections/reproduce_alfred_cpi_payroll_v2.py"
+      - "scripts/local_projection_alfred_panel.py"
+      - "scripts/run_local_projections.py"
       - "lib/us_cash_calendar.py"
       - "lib/cn_calendar.py"
       - "lib/exchange_holidays.py"
