@@ -73,6 +73,7 @@ def test_static_builder_writes_shell_and_exact_companion_assets(tmp_path: Path) 
     isolated_templates.mkdir()
     for name in (
         "capital_structure.html.j2",
+        "_ma_agreement_context.html.j2",
         "capital_structure_boot.js",
         "capital_structure.css",
         "capital_structure.js",

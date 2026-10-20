@@ -1,9 +1,9 @@
 {
-"applied": "2026-10-12T08:02:06.023594+00:00",
-"rows_flagged": 221,
-"tickers_flagged": 65,
+"applied": "2026-10-20T04:40:00.444087+00:00",
+"rows_flagged": 223,
+"tickers_flagged": 66,
 "by_flag": {
-"ni:xsrc_scale": 182,
+"ni:xsrc_scale": 184,
 "cfo:xsrc_scale": 1,
 "ni:xsrc_cohort": 5,
 "ni:flank_scale": 24,
@@ -12,9 +12,9 @@
 "op_income:flank_scale": 2,
 "revenue:flank_scale": 2
 },
-"repaired": 221,
+"repaired": 223,
 "nulled": 0,
-"mirrors": 162,
+"mirrors": 163,
 "rows": [
 {
 "ticker": "AIT",
@@ -788,6 +788,24 @@
 "flag": "xsrc_scale",
 "raw": 825.1,
 "repair": 825100000.0,
+"note": "x1e6 vs statements"
+},
+{
+"ticker": "IBEX",
+"fy": 2024,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 33.66,
+"repair": 33660000.0,
+"note": "x1e6 vs statements"
+},
+{
+"ticker": "IBEX",
+"fy": 2025,
+"col": "ni",
+"flag": "xsrc_scale",
+"raw": 36.86,
+"repair": 36860000.0,
 "note": "x1e6 vs statements"
 },
 {
