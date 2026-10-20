@@ -1947,6 +1947,61 @@ def map_standardized_metric(
     return {"metric_id": None, "mapping_state": "unmapped", "mapping_receipt": None}
 
 
+def _matched_alias_priority(taxonomy: str, concept: str, metric_id: str, registry: Any) -> int | None:
+    contracts = getattr(registry, "contracts", None)
+    if contracts is None:
+        return None
+    iterable = contracts.values() if isinstance(contracts, dict) else contracts
+    priorities = [
+        alias.priority
+        for contract in iterable
+        if getattr(contract, "metric_id", None) == metric_id
+        for alias in getattr(contract, "taxonomy_concept_aliases", ())
+        if alias.concept == concept and alias.taxonomy == taxonomy
+    ]
+    return min(priorities) if priorities else None
+
+
+def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
+    """Keep one governed alias per standardized metric within a statement.
+
+    The kernel resolves a metric through its alias with the lowest priority
+    number. A statement can present two concepts that alias the same metric
+    (``Assets`` at priority 10 and its ``LiabilitiesAndStockholdersEquity``
+    alias at 20 both map to ``total_assets``). Only the rows matched at the
+    lowest priority keep the standardized mapping; every lower-priority row
+    becomes ``unmapped`` with an ``alias_priority`` receipt that names the
+    governing concept. Rows tied at one priority are left unchanged.
+    """
+    by_metric: dict[str, list[tuple[int, dict[str, Any]]]] = {}
+    for row in rows:
+        metric_id = row.get("standardized_metric_id")
+        receipt = row.get("mapping_receipt")
+        if row.get("mapping_state") != "mapped" or not metric_id or not isinstance(receipt, dict):
+            continue
+        priority = _matched_alias_priority(receipt["taxonomy"], receipt["concept"], metric_id, registry)
+        if priority is not None:
+            by_metric.setdefault(metric_id, []).append((priority, row))
+    for metric_id, entries in by_metric.items():
+        best = min(priority for priority, _row in entries)
+        governing = next(row for priority, row in entries if priority == best)
+        for priority, row in entries:
+            if priority == best:
+                continue
+            receipt = row["mapping_receipt"]
+            row["standardized_metric_id"] = None
+            row["mapping_state"] = "unmapped"
+            row["mapping_receipt"] = {
+                "taxonomy": receipt["taxonomy"],
+                "concept": receipt["concept"],
+                "reason": "alias_priority",
+                "metric_id": metric_id,
+                "priority": priority,
+                "governing_concept": governing["mapping_receipt"]["concept"],
+                "governing_priority": best,
+            }
+
+
 def _assign_display_depth(rows: list[dict[str, Any]]) -> None:
     open_header = False
     for row in rows:
@@ -2134,6 +2189,7 @@ def reconstruct_statement(
                 "cells": cells,
             }
         )
+    _apply_alias_priority(out_rows, registry)
     _assign_display_depth(out_rows)
     return {
         "statement_type": statement_type,
