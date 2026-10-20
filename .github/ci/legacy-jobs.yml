@@ -9959,7 +9959,7 @@ jobs:
       - name: FIF G-pack gold and kernel suites (hermetic half)
         run: python -m pytest tests/test_fif_g_pack_gold.py tests/test_fif_g_pack_kernel.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs tests/fundamental_forensics_a24_error_leak.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
