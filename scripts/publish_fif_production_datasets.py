@@ -65,7 +65,16 @@ generation commit already succeeded (or nothing was committed) and the
 observation is a projection, never a reason to re-publish: the run's exit
 code is unchanged. A row carries either ``observation`` (the persisted
 record's projection) or ``observation_write`` (why no record landed), never
-both. Seat ruling R-A21-T8B: an unchanged check persists nothing — a record
+both. Seat ruling R-A21-STORE-TRACE (reconciling A14 #9870 and A18
+#9863): three outcomes WITHHOLD the record entirely and mark the row
+``observation_write: withheld:<reason>`` — ``commit_phase_fault`` (the
+failed row: a store write right after the store faulted is the blind
+retry A18 forbids, and a clean rerun must find the prefix untouched),
+``identity_unproven`` (an ``admission_refused:*`` exclusion: the package
+proved no identity, so A14 allows nothing under that issuer's prefix) and
+``unchanged_without_prior`` (an unchanged generation with no prior record:
+nothing landed in this run and the pointer clock already says so).
+Seat ruling R-A21-T8B: an unchanged check persists nothing — a record
 is written only on a material transition (first creation, a state change,
 or a changed published generation id), never for a check whose record would
 differ from the stored prior only in its clock fields (the creating
@@ -197,6 +206,12 @@ _STATEMENT_TYPE_ORDER = {"income_statement": 0, "balance_sheet": 1, "cash_flow":
 #: is exactly the dict ``observe``/``mark_published`` returns, serialised
 #: with the engine family's canonical JSON writer (sorted keys, no NaN).
 OBSERVATION_KEY_MAXIMUM_BYTES = 64 * 1024
+
+#: R-A21-STORE-TRACE: ``observation_write`` markers for the outcomes that
+#: withhold the record (no store call at all), one per reason.
+OBSERVATION_WITHHELD_COMMIT_PHASE_FAULT = "withheld:commit_phase_fault"
+OBSERVATION_WITHHELD_IDENTITY_UNPROVEN = "withheld:identity_unproven"
+OBSERVATION_WITHHELD_UNCHANGED_WITHOUT_PRIOR = "withheld:unchanged_without_prior"
 
 EXCLUSION_MEMBER_CAPTURE_FAILED_PREFIX = "member_capture_failed:"
 EXCLUSION_ADMISSION_REFUSED_PREFIX = "admission_refused:"
@@ -2136,6 +2151,11 @@ def _emit_observations(
         if binding is None:
             continue
         if str(row.get("outcome") or "") == "unchanged":
+            if priors.get(binding.entity_id, (None, None, None))[0] is None:
+                # R-A21-STORE-TRACE: no prior record and nothing landed in
+                # this run -> no first write under the issuer prefix (A18 S3).
+                row["observation_write"] = OBSERVATION_WITHHELD_UNCHANGED_WITHOUT_PRIOR
+                continue
             _emit(binding, state="checked_no_change", publication=None, row=row)
             continue
         prior = priors.get(binding.entity_id, (None, None, None))[0]
@@ -2150,9 +2170,10 @@ def _emit_observations(
             row=row,
         )
     if failed_row is not None:
-        binding = plan_bindings.get(str(failed_row.get("entity_id") or ""))
-        if binding is not None:
-            _emit(binding, state="check_failed", publication=None, row=failed_row)
+        # R-A21-STORE-TRACE: the store just faulted in the commit phase; a
+        # write to the same store now is the blind retry A18 forbids, and the
+        # typed partial report already carries the failure. No record.
+        failed_row["observation_write"] = OBSERVATION_WITHHELD_COMMIT_PHASE_FAULT
     for row in excluded_rows:
         binding = exclusion_bindings.get(str(row.get("cik") or ""))
         if binding is None:
@@ -2162,6 +2183,11 @@ def _emit_observations(
         if reason == EXCLUSION_ONLY_EVENT_PACKAGES:
             # ERRATA-6 rule 5 (adjudicated): this exclusion writes NOTHING to
             # the store — the observation record is no exception.
+            continue
+        if reason.startswith(EXCLUSION_ADMISSION_REFUSED_PREFIX):
+            # R-A21-STORE-TRACE / A14: the package proved no identity, so
+            # nothing may land under the issuer prefix it claimed.
+            row["observation_write"] = OBSERVATION_WITHHELD_IDENTITY_UNPROVEN
             continue
         _emit(
             binding,

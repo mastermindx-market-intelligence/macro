@@ -279,7 +279,7 @@ def test_t3_changed_material_is_new_content_with_old_record_as_cas_prior(
 # ---------------------------------------------------------------------------
 
 
-def test_t4_commit_failure_observes_check_failed_not_attempted_get_none(
+def test_t4_commit_failure_withholds_the_observation_not_attempted_get_none(
     tmp_path, monkeypatch, offline_collector, capsys
 ) -> None:
     lane, contract, store, report_path = _lane(tmp_path)
@@ -299,20 +299,20 @@ def test_t4_commit_failure_observes_check_failed_not_attempted_get_none(
     assert partial["failed"]["entity_id"] == entity_ids[0]
     assert partial["failed"]["code"]
     assert [row["entity_id"] for row in partial["not_attempted"]] == entity_ids[1:]
-    # First run, no prior successful check: freshness is never_checked.
-    assert partial["failed"]["observation"]["state"] == "check_failed"
-    assert partial["failed"]["observation"]["freshness"] == "never_checked"
-    # Exactly one observation record: the failed issuer. Not-attempted
-    # issuers were never checked, so they carry no record at all.
+    # R-A21-STORE-TRACE: the store faulted in the commit phase, so the
+    # observation is WITHHELD (a write now would be the blind retry A18
+    # forbids); the row says why and no record lands for any issuer.
+    assert (
+        partial["failed"]["observation_write"]
+        == producer.OBSERVATION_WITHHELD_COMMIT_PHASE_FAULT
+    )
+    assert "observation" not in partial["failed"]
     observation_keys = sorted(
         key
         for key in fault.list_prefix("fundamental_forensics/production-datasets/v1/")
         if key.endswith("/observation.json")
     )
-    assert observation_keys == [producer.observation_key(entity_ids[0])]
-    record = _memory_record(fault, entity_ids[0])
-    assert record["state"] == "check_failed"
-    assert record["publication"] is None
+    assert observation_keys == []
     # No second generation: nothing landed in any issuer's generations dir.
     assert [
         key
