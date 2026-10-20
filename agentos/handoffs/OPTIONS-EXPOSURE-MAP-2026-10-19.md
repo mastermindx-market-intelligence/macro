@@ -4,7 +4,7 @@ session: 01a156f1-f450-7793-8951-bddadd4784c2
 model: codex
 ended_because: ci_handoff
 mission: Deliver the Options Exposure Map through Release A, then admitted B/C mechanics and research gates.
-prs: [9815, 9868]
+prs: [9815, 9868, 9874, 9877]
 state_before: The initial Options build was rejected for inadequate product quality and competitor parity; the full handoff remained assigned.
 changed:
   - path: collectors/thetadata.py
@@ -47,109 +47,93 @@ do_not_redo:
   - Keep original Fabric identities, failed operations and the stopped M2 acquisition distinct; no replay or new truth store.
 ---
 
-
 # Current Options source checkpoint — October20,2026
 
 Original root `01a156f1-f450-7793-8951-bddadd4784c2`; source coordinator
-`01a15700-1ae2-7a73-9756-f1546da7ace8`. Root owns Terminal/release acceptance.
-Evidence directory: `/Volumes/Mastermind/evidence/options-exposure-01a156f1`.
+`01a15700-1ae2-7a73-9756-f1546da7ace8`. Root owns Terminal, numerical/domain decisions
+and final acceptance. Evidence: `/Volumes/Mastermind/evidence/options-exposure-01a156f1`.
 
-**Protected source:** Macro9815 merged at `5c2d0a04afd19642d2dab483885d46c73b7baed4`
-after exact CI39408959806 succeeded. Canonical QQQ intake9868 merged at
-`e474e63180871fcb55ccc2660f509f336689b9b3` after parent accepted exact
-`f8d4c37a3294a3f4a242abe649b7072db56145af` and CI39415142541 passed all12packs/gate.
-The inactive pilot authority context is irrelevant to the active main gate.
-QQQ tuple is `SEC:US-XNAS-QQQ` / `US-XNAS-QQQ`, normalized NASDAQ ETF listing,
-effective October20, ingested11:13:21UTC, source known10:26:04.581160UTC. No issuer
-grouping, historical extension, root alias or lost-row fence was invented. CENT/CENTA
-changes apply their existing ratification; CECO/IBOC retain six lost immutable members.
-Parent review: `QQQ-parent-identity-review.md`.
+**Source:**9815 merged `5c2d0a04afd19642d2dab483885d46c73b7baed4`;9868 canonical intake
+merged `e474e63180871fcb55ccc2660f509f336689b9b3`;9874 observed QQQ/archive extension
+merged `ef029bd56030c313bc36906a31f6b508c199410b`. Exact active authority, all12packs,
+contract-delta, semantic gate and fences passed. Owned source/tests/docs landed; main's
+additional China CI job is unrelated. Snapshot follow-up9877 base7634004 retains actual
+regular endpoint/parameters/raw hash/capture clock and exact secondary contract+timestamp
+joins, no numerical capability. Reuses8684 owner87cc03d raw-clock pattern; no duplicate
+history repair or broader8684/CI shard change.337 affected cases passed;25 snapshot negatives.
+Current repair adds explicit-economics/URL/date/OI-parameter defenses,243 affected cases
+plus46 final receipt cases pass. Existing flow-surface closure{}, unwired audit exit0.
+Previous9877 exactCI39427001365/base7634004 has original observer29862/log
+`macro-snapshot-ci-7634004-observer.log`; consume its real return after repair push and
+verify a new exact-head observer. No idle wake or unlaunched observer is claimed.
 
-**Current producer increment:** fresh helper-created branch/worktree
-`options-qqq-observed-producer-20261020-3ae19975dd79ea4c` extends observed identity v2
-to that exact QQQ target, preserving v1 and compact tuple fields. QQQ sessions before
-October20 refuse, actual master/listing/read clocks remain required. Explicit
-`occ_standard_qqq_etf/v1` interprets only verified ordinary100-share American reference
-terms and retains raw omission/citations. Synthetic actual-producer pair
-`synthetic-producer-QQQ-observed-identity-v2-120contracts.json` and
-`synthetic-native-QQQ-observed-identity-v2-envelope.json` has119qualified/1missing,
-120observed/60cells/3expiries, rights null; this is not actual QQQ market capture.
-Fabric test leaf `oem-01a156f1-qqq-observed-test-leaf-v1`, original controller74629,
-settled on its original carrier; exact stdout/artifact were consumed, reviewed, repaired
-and accepted as test assistance.17 cases pass;328 affected source/native/archive cases pass in total. Original fixture date/raw venue and an
-API-missing skip were corrected; this is not independent production review. See
-`qqq-observed-test-leaf-adjudication.md`.
+**Runtime:** original M1 Hub install completed12:58:55UTC at protected5c2d0a04, import
+verified and runtime status preserved. Scoped Theta four-file install completed13:05:57
+under incumbent lock/preimages, baseline wrapper/store symlink preserved, opt-in OFF.
+Theta GitHEAD remains900b5d8d with intentional scoped source overlay. Distinct later Hub
+update installed/import-verified ef029bd. A postflight sparse-absent canonical-file hash
+failed after checkout; same-operation reconciliation completed the receipt after verifying
+HEAD/code/runtime, with no checkout/fetch replay. Receipts:
+`M1-options-hub-5c2d0a04-installed-receipt.json`, `M1-theta-5c2d0a04-install-result.json`,
+`M1-options-hub-ef029bd5-reconciled-receipt.json`. Zero providerGET/service restart/book
+publication. Canonical master is available as protected Git bytes, not materialized at
+runtime path. Native captured-target reader on that blob admits QQQ Oct20 and refuses
+Oct19 at actual Oct20 known-by time; no incumbent canonical-store write.
 
-**Release A accepted evidence:** actual October16 SPY full source acquired October20
-through the incumbent version1 Greek/OI wrapper:13104observed,12212Gamma-qualified,
-892missing (654degenerateIV/238missingOI),33expiries/6552cells/491strikes,
-251fully-qualified strike aggregates. Whole net/gross remain null; covered
-net−20.42010111776526B/gross47.779712252337456B, provisional leader765, dated
-underlying763.25USD. Parent independently verified arithmetic and six EN/ZH responsive
-browser views; fixtures supplied price bars/auth, so this is not authenticated production.
-Native full import/builder witness has3994690JSONbytes; ordinary writer/store/Hub
-composition preserves all rows. See `actual-full-source-native-import-verification.json`
-and `actual-full-source-consumer-pairing.json`.
+**Accepted A evidence:** actual Oct16 SPY full capture acquired Oct20:13104observed,
+12212Gamma-qualified/892missing,33expiries/6552cells/491strikes,251complete strike
+aggregates; whole net/gross null. Covered net−20.42010111776526B/gross47.779712252337456B,
+provisional leader765, dated underlying763.25USD. Native whole envelope3994690B; full
+archive-only dry-run and evidence-copy repair preserve it, no current board replacement.
+Parent arithmetic, TS pairing and six EN/ZH responsive map→main-chart journeys pass with
+fixture auth/prices, not production. Admission repairs preserve exact actual full-book
+metrics/identity/capabilities: `observed-review-actual-positive-witness.json`.
+QQQ exact target is SEC:US-XNAS-QQQ/US-XNAS-QQQ, normalized NASDAQ, first effectiveOct20,
+ingested11:13:21UTC; no Oct16/19 extension. Native synthetic QQQ119/1/120observed,
+3expiries pairs with consumer; actual QQQ source capture remains open. No full-market claim.
 
-**Archive engineering:** existing `repair_gex_history` now accepts an explicit full
-native context/date, preserves projection and covered amounts, rejects selected-window
-substitution/digest mismatch, and applies the whole8MiB event budget. It updates only
-dated archive keys and a LIST-derived index with zero unrelated heal budget. Actual
-SPY dry-run plus isolated evidence-copy application retained12212/892 and6552cells;
-`archive-only-projection-repair-verification.json`. A real repair bug was fixed:
-stringifying expirations before digest validation invalidated the native input identity.
-No production store/archive/current book has been written or published.
+**Independent review:** old selected returns remain unaccepted. Broader MiniMax22838
+settled provider_output_limit with no findings; preserved, not relabeled. Changed-tactic
+GLM/ubuntu2 admission assessment60543 completed and was accepted after discriminating
+repairs: explicit contradictory economics remain unknown, exact mapped URL/hash,
+resolver-level QQQ admission date, unsupported OIversion refusal rather than invented
+Greek version. Actual source mapper already pins chain origin/path; no whole-host attack
+or real historical QQQ mint is claimed. `observed-admission-review-v2-adjudication.md`.
+This is NOT full numerical/model/temporal acceptance. Root owns distinct numerical review
+`oem-01a156f1-gamma-numerical-review-v1`, controller8194/MiniMax/ubuntu0, exact Macroef029/
+Terminal3623 excerpts. No duplicate. call-only observed cells may be partial with missing0;
+unobserved put membership is unknown, never added to the observed denominator.
 
-**Runtime custody:** original protected Hub install remains Python79654→git79656→SSH79657
-on M1. Its original native handle20079 was pruned by tool refresh; no replacement install
-was launched. As of12:14UTC the same fetch has a28.6GB inflight pack, HEAD remains
-201064395fff8e16e958619bf1343eea6d7aca9c and no runtime backup/install receipt exists
-because no checkout write has begun. Retained receipt path is
-`~/optionshub-ops-wt/.git/options-source-install-5c2d0a04-v1/receipt.json`.
-Theta scoped dirty-source composition script is prepared but unexecuted; default-off
-version selection is not enabled. Preserve incumbent dirty baseline-refresh edits,
-wrappers/data/symlinks/writer locks. No service restart or provider GET for installation.
+**Hard source/publication gates:** original Oct19 full Greek GET remains EFFECT_UNKNOWN,
+no return or replay. Distinct Oct16 reference reconciliation charged its repeated settled
+page within original15aggregateGET/14104rows/3226397B; no unknown-effect retry. Retained
+legacy books lacking acquisition version stay unqualified. Theta signed distribution
+terms are unfiled; connected mail found only unsentDRAFT1a13ddd5759e45e7. One exact
+signed-terms location question remains pending with Chris; no provider message. Massive
+stock terms/reference access do not grant option redistribution. Rights stay null and
+publication-only hold remains; never replace newer current books with Oct16 or20-rowcanary.
+Qualified nativeAPI target after lawful publication is `/api/hub/gex/SPY` plus entitled
+Terminal current/archive flow. Code release/install is separate from these data effects.
 
-**Actual source/rights gates:** original October19 full Greek request is EFFECT_UNKNOWN,
-no raw return/settled effect, no replay. October16 reference first-page cap was a known
-local failure; reconciliation reused the same original budget and charged a repeated
-settled first page:15aggregateGET/14104rows/3226397B, not an unknown-effect retry.
-Both old retained-only SPY/QQQ negative books remain unqualified for missing acquisition
-version evidence. QQQ's new October20 canonical identity cannot qualify those October16
-or October19 archives. Next actual QQQ EOD source must be October20 or later and truly
-available; no current-market capture is claimed by the synthetic fixture.
+**B/C:** explicit EOD requested_version1 guard remains: current methodology and EOD endpoint
+docs conflict for omitted-version tenor. Snapshot requested floor is provenance, never
+renamed no-floor; actual serving build unknown. Vanna/Charm units/sign remain unproved.
+Q02 American finite-difference reference remains RESEARCH_ONLY. Economic expiry must be a
+source-bound absolute model horizon, distinct from trading16:15, underlying16:00 mark,
+election and physical delivery; do not adapt ETF delivery through SessionClock.settlement.
+Existing owners are options_american_exercise/intraday_greeks/options_scenario_surface;
+no parallel Greek engine. September21 retrospective price analogue is not exposure-node/PIT
+validation. See `expiry-clock-source-boundary.md`; no B/C acceptance.
 
-Theta signed distribution terms remain unfiled. Exact connected-mail search found only
-unsent DRAFT1a13ddd5759e45e7, no provider agreement/response. Root has asked the one precise
-signed-terms location question; no provider message was sent. Massive provisioned
-reference read succeeds, but its retained stock-scope agreement is not proof of option
-redistribution permission. Rights remain null. Publication-only hold remains; code,
-negative tests and protected installation continue independently. Fresh-read served
-session before any later publication; never replace newer latest boards with Oct16 or
-the20-contract canary. API target after lawful publication is native `/api/hub/gex/SPY`
-and entitled Terminal current/archive flow routes.
+**Terminal root custody:**1083 at9068d579c7a3925c65dd1b2632f990ac55c0b907,
+exact CI39423133774/observer7825/log `terminal-ci-9068d579-observer.log`; prior ffa CI
+ALLPASSED and71462 consumed.1091 now3623e8d645b38418ebb800a0578b8c25c2ace27d,
+CI39428032213/verified1236/log `terminal-1091-ci-3623e8d6-observer.log`;11971 consumed
+exit1 after supersession. Root owns these watchers, protected deploy and authenticated
+proof. Preserve Chrome extension consent boundary. Full product A/B/C is not accepted.
 
-**Release B/C remain open:** dated Gamma never gains instantaneous/next-live/joint/
-repricing/PIT capabilities. Official Theta EOD uses whole-numberDTE/.15expiryday;
-Vanna/Charm output units and elapsed-time sign remain unproved. Existing owners are
-`engine/options_american_exercise.py` (research-only converged/interval American finite
- differences), `engine/intraday_greeks.py`, and `engine/options_scenario_surface.py`;
-no parallel Greek engine. Model-aware bid/ask/IV, complete declared dividends and explicit
-calendar/economic-expiry policy must compose before nonlinear exposure. Current Cboe
-pages distinguish expiring ETF16:15trading from16:00underlying reference close; do not
-invent16:00 economic expiry or backdate current rules. See
-`expiry-clock-source-boundary.md`. Retrospective September21 price-analogue calibration
-is not prespecified exposure-node/PIT validation; its negative proper-interval-score
-result stays scoped to that study.
-
-**Terminal root custody:** PR1083 `ffa78f9cafc65d6632d8f44487ab846e304757d7`,
-CI39415488127 now has verified same-run recovered observer71462/log
-`terminal-ci-ffa78f9-recovered-observer.log`; original51663 was pruned and processclosed.
-Root owns consumption/deploy. Main-chart pin follow-up1091 is draft stacked atff3c14a1b.
-Root QQQ consumer leaf47781 is separate from producer leaf74629. Preserve authenticated
-Chrome extension consent boundary; no alternate carrier. Full source acceptance,
-protected Terminal deploy and authenticated API-to-chart production proof are pending.
-
-Preserve original HOLDs #7327/#8555/#7328, #8684 custody, IW2T03k refusal, Save admission,
-Oct15SPY seal, original source/Fabric effects and their exact retained carriers. No new
-store, collector, engine, watcher or truth registry is authorized by this checkpoint.
+Next: finish9877 protected CI/merge and distinct source installation; consume existing
+numerical review. Publication follows actual rights/admission and served-session freshness,
+not source merge. Preserve #7327/#8555/#7328 HOLD, #8684 custody, IW2T03k refusal, Save
+admission, Oct15SPY seal, original source/Fabric identities and effects. No new store,
+collector, engine, watcher registry or replacement carrier.
