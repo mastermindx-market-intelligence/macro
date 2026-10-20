@@ -1,18 +1,4 @@
-[Reading 15 new lines (total: 15 lines)]
-
-.........................................       [100%]
-=============================== warnings summary ===============================
-../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
-  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-99030809-59ec-4a2a-9c3f-40a69eec428c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
-  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-99030809-59ec-4a2a-9c3f-40a69eec428c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
-    warnings.warn(
-
-../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
-  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-99030809-59ec-4a2a-9c3f-40a69eec428c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
-  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-99030809-59ec-4a2a-9c3f-40a69eec428c/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
-    warnings.warn(
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-41 passed, 2 warnings, 25 subtests passed in 2.65s
-
-✅ Process completed with exit code 0 (runtime: 3.55s)
+Integrated-source test summary
+python3 -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_critical_minerals_display.py tests/test_critical_minerals_panel.py tests/test_commodities_w6_truth.py tests/test_commodities_ignition_copy.py tests/test_commodity_mtf_verdict_honesty.py -q
+187 passed, 25 subtests passed; 2 pre-existing pytest garbage-directory cleanup warnings.
+CI closure/startability/narrow-selection: 3 passed, 198 deselected.

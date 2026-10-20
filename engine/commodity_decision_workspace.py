@@ -702,4 +702,3 @@ def validate_condition(draft: Any, workspace: dict) -> tuple[dict | None, list[s
                                       "operator", "threshold", "expires_on", "snapshot_fingerprint", "hypothesis")}
     out.update(semantics)
     return out, []
-

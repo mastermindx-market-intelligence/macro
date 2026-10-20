@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-10-17",
+  "as_of": "2026-10-20",
   "authority": {
     "allowed_actions": [
       "display",
@@ -672,27 +672,18 @@
   "counts": {
     "edges_by_kind": {
       "governed_by": 10,
-      "member_of_thesis": 13,
+      "member_of_thesis": 8,
       "mirrored_experiment": 27,
       "rf_candidate_of_mechanism": 7
     },
     "rows_by_type": {
-      "entity": 13,
+      "entity": 8,
       "mechanism": 8,
       "species_link": 27,
-      "thesis": 3
+      "thesis": 2
     }
   },
   "edges": [
-    {
-      "dst": "thesis:us_sector_health",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:ABBV"
-    },
     {
       "dst": "thesis:energy",
       "kind": "member_of_thesis",
@@ -712,15 +703,6 @@
       "src": "entity:US:AVGO"
     },
     {
-      "dst": "thesis:us_sector_health",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:CAH"
-    },
-    {
       "dst": "thesis:energy",
       "kind": "member_of_thesis",
       "source": {
@@ -728,15 +710,6 @@
         "path": "site/factordata/reflexivity_overlay.json"
       },
       "src": "entity:US:CME"
-    },
-    {
-      "dst": "thesis:us_sector_health",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:CNC"
     },
     {
       "dst": "thesis:energy",
@@ -782,24 +755,6 @@
         "path": "config/entity_thesis_mechanism_registry.yml"
       },
       "src": "entity:US:VRT"
-    },
-    {
-      "dst": "thesis:us_sector_health",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:WST"
-    },
-    {
-      "dst": "thesis:energy",
-      "kind": "member_of_thesis",
-      "source": {
-        "detail": "same_thesis_groups.members",
-        "path": "site/factordata/reflexivity_overlay.json"
-      },
-      "src": "entity:US:XOM"
     },
     {
       "dst": "gov:1f5c6c494e6c27c6",
@@ -1198,7 +1153,7 @@
       "src": "species:T1-T4@1.0"
     }
   ],
-  "generated_utc": "2026-10-17T18:56:21.790770+00:00",
+  "generated_utc": "2026-10-20T08:10:13.113807+00:00",
   "is_context_only": true,
   "notes": "Crosswalk only; local systems remain authoritative. No invented links; unknowns stay null.",
   "possible_duplicates": [
@@ -1501,22 +1456,9 @@
     }
   ],
   "rows": {
-    "entity:US:ABBV": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
-      "funnel_state": "thesis_candidate_shadow",
-      "market": "US",
-      "registry_id": "entity:US:ABBV",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:us_sector_health"
-      ],
-      "ticker": "ABBV"
-    },
     "entity:US:APA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:APA",
@@ -1529,7 +1471,7 @@
     },
     "entity:US:AVGO": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:AVGO",
@@ -1540,22 +1482,9 @@
       ],
       "ticker": "AVGO"
     },
-    "entity:US:CAH": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
-      "funnel_state": "not_eligible",
-      "market": "US",
-      "registry_id": "entity:US:CAH",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:us_sector_health"
-      ],
-      "ticker": "CAH"
-    },
     "entity:US:CME": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:CME",
@@ -1566,22 +1495,9 @@
       ],
       "ticker": "CME"
     },
-    "entity:US:CNC": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
-      "funnel_state": "not_eligible",
-      "market": "US",
-      "registry_id": "entity:US:CNC",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:us_sector_health"
-      ],
-      "ticker": "CNC"
-    },
     "entity:US:CVX": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:CVX",
@@ -1594,7 +1510,7 @@
     },
     "entity:US:DVN": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "watch_for_thesis",
       "market": "US",
       "registry_id": "entity:US:DVN",
@@ -1607,7 +1523,7 @@
     },
     "entity:US:NVDA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:NVDA",
@@ -1620,7 +1536,7 @@
     },
     "entity:US:TALO": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "watch_for_thesis",
       "market": "US",
       "registry_id": "entity:US:TALO",
@@ -1633,7 +1549,7 @@
     },
     "entity:US:VRT": {
       "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
+      "funnel_as_of": "2026-10-20",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:VRT",
@@ -1643,32 +1559,6 @@
         "thesis:ai_infrastructure_capex_complex"
       ],
       "ticker": "VRT"
-    },
-    "entity:US:WST": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
-      "funnel_state": "thesis_candidate_shadow",
-      "market": "US",
-      "registry_id": "entity:US:WST",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:us_sector_health"
-      ],
-      "ticker": "WST"
-    },
-    "entity:US:XOM": {
-      "authority": "display_only",
-      "funnel_as_of": "2026-10-17",
-      "funnel_state": "not_eligible",
-      "market": "US",
-      "registry_id": "entity:US:XOM",
-      "registry_type": "entity",
-      "source_paths": [],
-      "thesis_ids": [
-        "thesis:energy"
-      ],
-      "ticker": "XOM"
     },
     "mechanism:A15_WASHOUT_OPP_OUT_2NODE": {
       "authority": "display_only",
@@ -3560,30 +3450,11 @@
         "CME",
         "CVX",
         "DVN",
-        "TALO",
-        "XOM"
+        "TALO"
       ],
       "registry_id": "thesis:energy",
       "registry_type": "thesis",
-      "size": 6,
-      "source": "reflexivity_overlay.same_thesis_groups",
-      "source_paths": [
-        "site/factordata/reflexivity_overlay.json"
-      ]
-    },
-    "thesis:us_sector_health": {
-      "authority": "display_only",
-      "basis": "membership-jaccard",
-      "label": "us_sector_health",
-      "members": [
-        "ABBV",
-        "CAH",
-        "CNC",
-        "WST"
-      ],
-      "registry_id": "thesis:us_sector_health",
-      "registry_type": "thesis",
-      "size": 4,
+      "size": 5,
       "source": "reflexivity_overlay.same_thesis_groups",
       "source_paths": [
         "site/factordata/reflexivity_overlay.json"
@@ -3605,7 +3476,7 @@
       "present": true
     },
     "data/neuralweb/governance.jsonl": {
-      "n": 331,
+      "n": 345,
       "present": true
     },
     "data/research/thesis_funnel_states.parquet": {
@@ -3625,11 +3496,11 @@
       "present": true
     },
     "data/trial_ledger.jsonl": {
-      "n": 1775,
+      "n": 1779,
       "present": true
     },
     "site/factordata/reflexivity_overlay.json": {
-      "n": 2,
+      "n": 1,
       "present": true
     }
   },
@@ -3717,6 +3588,12 @@
       "last_ts": "2026-07-02T12:25:07.933833+00:00",
       "n_config_hashes": 2,
       "n_trials": 2
+    },
+    "c19_wp31_incremental_information": {
+      "first_ts": "2026-10-18T05:26:59.406967+00:00",
+      "last_ts": "2026-10-18T05:26:59.406967+00:00",
+      "n_config_hashes": 1,
+      "n_trials": 1
     },
     "c1b_commodity_flip_protective_phase0": {
       "first_ts": "2026-07-03T17:48:13.270840+00:00",
@@ -4023,6 +3900,12 @@
       "last_ts": "2026-07-02T03:11:22.421971+00:00",
       "n_config_hashes": 1,
       "n_trials": 1
+    },
+    "f10_lp_alfred_cpi_payroll_descriptive": {
+      "first_ts": "2026-10-20T03:19:42.249321+00:00",
+      "last_ts": "2026-10-20T03:19:42.249661+00:00",
+      "n_config_hashes": 3,
+      "n_trials": 3
     },
     "grey_deer_pullback_v1": {
       "first_ts": "2026-10-12T05:06:57.615942+00:00",

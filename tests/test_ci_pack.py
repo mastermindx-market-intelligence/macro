@@ -2006,6 +2006,45 @@ def _single_run_step_job(run: str) -> object:
     )
 
 
+def test_named_suite_closure_is_traversed_once_per_command(monkeypatch) -> None:
+    suite = "tests/test_scope_fixture.py"
+    script = "scripts/scope_fixture.py"
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: [suite])
+    monkeypatch.setattr(PACK, "planner_path_is_file", lambda path: str(path) in {suite, script})
+    calls = []
+
+    def closure(path, *, pytest_command=None):
+        calls.append((path, pytest_command))
+        return DEPS.DependencyClosure(
+            (str(path), "engine/scope_fixture.py"),
+            (f"{path}:1: subprocess roots=scripts,tests",),
+        )
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", closure)
+    command = f"python -m pytest {suite} {suite}::test_second -q && python {script}"
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert calls == [(suite, command), (script, None)]
+    assert set(job.paths) == {suite, script, "engine/scope_fixture.py"}
+    assert job.fallback_paths == ("scripts/**",)
+
+    # Reuse is confined to this command, never a stale result across calls.
+    calls.clear()
+    [again], _ = PACK.infer_job_scopes([_single_run_step_job(command)])
+    assert again == job
+    assert calls == [(suite, command), (script, None)]
+
+
+def test_opaque_pytest_target_still_refuses_before_closure_reuse(monkeypatch) -> None:
+    monkeypatch.setattr(AUDIT, "discover_suites", lambda: ["tests/test_scope_fixture.py"])
+
+    def unexpected(*args, **kwargs):
+        pytest.fail("opaque pytest discovery must not infer a narrow closure")
+
+    monkeypatch.setattr(DEPS, "suite_dependency_closure", unexpected)
+    [job], _ = PACK.infer_job_scopes([_single_run_step_job("python -m pytest tests/")])
+    assert not job.is_scoped
+
+
 @pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
 def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
     commented: str, comment_free: str
@@ -2924,6 +2963,31 @@ def test_plan_is_deterministic() -> None:
     assert first.plan_sha256 == second.plan_sha256
     # Not satisfied by two empty plans agreeing about nothing.
     assert any(first.pack_jobs)
+
+
+def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Calibration changes the attested assignment, never the work it proves."""
+    calibrated = _full_plan()
+    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+        monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
+    heuristic = _full_plan()
+
+    assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.pack_count == heuristic.pack_count == 12
+    assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
+    assert calibrated.pack_jobs != heuristic.pack_jobs
+    assert calibrated.plan_sha256 != heuristic.plan_sha256
+    before = {job.logical_job_id: job for job in heuristic.semantic_jobs}
+    for job in calibrated.semantic_jobs:
+        assert job.job_exec_sha256 == before[job.logical_job_id].job_exec_sha256
+        assert job.steps == before[job.logical_job_id].steps
+    flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
+    assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
+    assert set(flattened) == set(calibrated.eligible_job_ids)
+    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
 
 
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
@@ -4284,6 +4348,13 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
+    # Vault code-gate closure from exact tracked-tree analysis; includes runtime
+    # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
+    "research-vault",
+    "market-memory-e0-contract",  # E0 suites own their exact dependency closure.
+    # BEA human/HTTP browser gate: measured literal closure, no opaque fallback smear.
+    "bea-gvc-current-descriptive-consumer",
     # R2 original-intent context producer: the ten Agent OS knowledge suites
     # share their measured 43-file import/read closure plus the Agent OS corpus.
     # Source/fence execution remains in the existing self-mod job.
@@ -4642,6 +4713,12 @@ CURATED_EXCLUSIVE = {
     "international-workspace-foundation",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
+    # template and imports the builder (lib/config, lib/pages, lib/site_assets,
+    # engine/i18n). As an ordinary job its inferred scope would widen the
+    # templates/index.html packing probe past its ceiling. scope: exclusive
+    # pins the measured static closure plus templates and ancestor inits.
+    "china-mechanics-display",
     # 2026-10-05 GMI #8455 (lane gmi_a_packing_r1): regime-outlook-mapping's
     # reader import (world_state -> theme_state_generation_reader ->
     # theme_graph/thematic_state -> scripts/build_thematic_state.py) was an
@@ -4798,6 +4875,11 @@ CURATED_EXCLUSIVE = {
     # As a step in china-native-collectors it moved templates/index.html to
     # 5,816 > 5,800; its own exclusive job keeps the import closure only.
     "grey-deer-pboc-liquidity",
+    # 2026-10-20 W27-L27: the China Alt-Data catalyst-card render tests. As a
+    # step in unrun-template-chips they moved the index-template (5,825 > 5,822)
+    # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
+    # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
+    "china-altdata-catalysts",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
@@ -4821,16 +4903,46 @@ CURATED_EXCLUSIVE = {
     # study harness suites are hermetic (synthetic arrays + tmp git fixtures);
     # scope: exclusive pins the job to its measured suite_dependency_closure.
     "leadership-rotation-science",
+    # 2026-10-20 W27-L26: the China Sector Desk turn-signature gate render tests.
+    # As a step in unrun-template-chips they moved the index-template
+    # (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes; its
+    # own exclusive job keeps the static import closure plus ancestor inits.
+    "china-sector-desk-gate",
     # 2026-10-14 LEADERSHIP-ROTATION T20 (LR-CHAL-T20R): the integrated counter-case suite reads
     #  scripts/build_sector_central.py via ast and the T18 panel template, so inference smeared it onto
     #  scripts/build_free_content.py (135 > 134). Register the reviewed 199-path owner (rates_command_basis.py added after #9317 widened the closure); closure audits and ceilings stay fixed.
     "leadership-rotation-countercases",
+    # Fixed-runtime helpers have a separate source-only CI owner.
+    "research-codegen-runtime-qualification",
     # 2026-10-17 C19 WP22: the DHI traversal suite's app/engine imports made
     # inference select it, at the fallback tier only, on the index-template
     # (137 > 136 jobs) and build_free_content (135 > 134) packing probes;
     # check_contract_delta: 2 introduced. scope: exclusive pins it to its
     # declared static import closure plus ancestor inits; ceilings stay fixed.
     "c19-wp22-dhi-traversal",
+    # 2026-10-17 C19 WP31: the incremental-information evaluator's engine/lib
+    # imports made inference select it on the same index-template (137 > 136)
+    # and build_free_content (135 > 134) packing probes; check_contract_delta:
+    # 2 introduced. scope: exclusive pins it to its declared static import
+    # closure plus ancestor inits; ceilings stay fixed.
+    "c19-wp31-incremental-information",
+    # 2026-10-20 W28-L28: the CN Pick Lab SCOREABLE/close_at_fire render tests.
+    # Appended to pick-lab-liquidity's run line they moved the index-template
+    # packing probe (5,824 > 5,822); its own exclusive job keeps the static
+    # import closure, the engine/pick_lab package imports and ancestor inits.
+    "pick-lab-cn-render",
+    # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
+    # engine/ modules, so inference selected the new job on the
+    # build_free_content (135 > 134) and index-template (137 > 136) packing
+    # probes. scope: exclusive pins it to its declared static import closure
+    # plus ancestor inits; ceilings stay fixed.
+    "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
+    # fixtures, which opaque inference smeared onto build_free_content
+    # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
+    # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
+    # pytest fixture owners. No suite/assertion/packing ceiling is removed.
+    "local-projections",
 }
 
 
@@ -4998,8 +5110,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_822),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_697),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5008,6 +5120,107 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-19 Research Vault full-body/producer composition: the existing
+    code-gated job gains its complete 36-suite invocation (estimated weight
+    43 -> 76). Its exact tracked-tree import/read closure is now exclusive,
+    with Jinja and committed page assets declared explicitly. This removes the
+    template probe's opaque fallback selection while preserving the real
+    scripts.build_free_content dependency reached through press.validators.
+    Hosted contract-delta39234988640 measured build_free_content 5,576 -> 5,609;
+    the scoped local probe independently measured 134 jobs / 5,609 against 5,600.
+    The protected ff1b80af refresh also adds two alert-email suites (+4),
+    producing the current measured 134 jobs / 5,613. The exact local four-case
+    audit passed declaration, complete dependency coverage and opaque-tier-only
+    removal; its sole breach was 5,613 against 5,609. Fund that final measured
+    excess only: 5,600 -> 5,613, no padding. This is retained measurement reuse,
+    not a new selector or suite change. Job counts, other weights and ten packs
+    remain fixed; current-head hosted CI must execute the updated assertion.
+    Dropping the imported validator or understating the suite weight would
+    discard coverage or hide the actual added test load.
+
+    The subsequent protected0ad974a9 integration measures 134 jobs / 5,618
+    for build_free_content; the Python3.12 affected check records that exact
+    five-unit excess over 5,613. Retained weight attribution records the
+    inherited job deltas (including dataos-identity-seams 16 -> 21). Fund
+    only the measured 5,618. Job counts, the other two weight ceilings,
+    all suites and the ten-pack ceiling remain unchanged.
+
+    Guarded dedicated-reader backend composition (2026-10-19) adds six
+    backend suites to research-vault's existing canonical command: exactly
+    twelve estimator units. Fund only the affected build_free_content probe's
+    5,618 -> 5,630 increase. Job counts, other probe ceilings, selectors and
+    the ten-pack bound remain unchanged; ordinary Brain F11 suites remain held.
+
+    Retained SEC13D research composition (2026-10-19, PR9789) adds three
+    explicit SEC suites to dataos-identity-seams: estimator weight21 ->27.
+    Hosted contract-delta39318414980/job118285830478 measured the same134
+    selected jobs and ten packs, base5628 -> head5634, with no new entrant.
+    Fresh canonical-main composition235b8704/6cb3ba9 independently measures
+    exactly134 jobs /5634 weight /10 packs. Fund only the four-unit excess
+    over5630, to5634. Every suite, selector, job/pack bound and both other
+    probe weight ceilings remain unchanged; no coverage is dropped.
+
+    Seasonality style-card suite (2026-10-19, PR9793) adds
+    tests/test_seasonality_now_call_strip.py to unrun-builders-render.
+    The local probe on main 8df5aee4 measures build_free_content 134 jobs
+    / 5,634; on the PR merged into that main, the same 134 job ids / 5,638
+    (index.html and plan_book also +4, both under their ceilings). No new
+    entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
+    selector, job/pack bound and both other probe ceilings stay unchanged.
+
+    Methodology disclosures + seasonality page claims (2026-10-19, W23-L3/L6)
+    add tests/test_methodology_disclosures.py and
+    tests/test_seasonality_page_claims.py to unrun-builders-render. The local
+    probe on main 55130f60 measures build_free_content 134 jobs / 5,638; on
+    the PR merged into that main, the same 134 job ids / 5,642 (index.html
+    5,767 and plan_book 5,516, both under their ceilings). No new entrant.
+    Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
+    job/pack bound and both other probe ceilings stay unchanged.
+
+    SPR page JODI vintage + zh assess badges (2026-10-19, W23-L9) give
+    tests/test_strategic_reserves.py (off the unrun baseline),
+    tests/test_spr_jodi_vintage.py and tests/test_spr_assess_badge_zh.py
+    their own step in unrun-macro-panels. contract-delta on the PR merged
+    into main d52827f2 measures build_free_content 134 jobs / 5,649 (base
+    the same 134 / 5,642; index.html 5,774 and plan_book 5,523, both under
+    their ceilings). No new entrant. Fund only the seven-unit excess:
+    5,642 -> 5,649. Every suite, selector, job/pack bound and both other
+    probe ceilings stay unchanged.
+
+    Spvector gate chips (W23-L11, PR #9819) and the country-cycles panels
+    (W23-L10/L12, PR #9818), 2026-10-20, give
+    tests/test_spvector_gate_chips.py its own step in unrun-vector-baskets
+    (job weight 31 -> 34) and the four tests/test_country_cycles_*.py
+    suites their own step in unrun-macro-panels (69 -> 78). contract-delta
+    on each PR against base 5,642 measures build_free_content 134 jobs /
+    5,645 (#9819, run 39363164849) and 5,651 (#9818, run 39362507998). No
+    new entrant. The two jobs are disjoint and a job's weight is a pure
+    function of its own run text, so on main 6629c268 (5,649) the excess
+    adds: 5,652 with #9819, 5,658 with #9818 and 5,661 with both
+    (index.html 5,786 and plan_book 5,535, both under their ceilings).
+    Both PRs carry this identical note and ceiling, so the second to merge
+    stays clean. Fund only the twelve-unit joint excess: 5,649 -> 5,661.
+    Every suite, selector, job/pack bound and both other probe ceilings
+    stay unchanged.
+
+    The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
+    2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
+    in unrun-vector-baskets right after W23-L11's (job weight 34 -> 37,
+    measured on the merged run text). Same job, same pure run-text
+    weight, no new entrant: build_free_content rises by exactly 3 on any
+    base that already holds #9819, so fund 5,661 -> 5,664. index.html and
+    plan_book stay under their ceilings even if they select this job
+    (5,789 and 5,538 at most). Every other bound stays unchanged.
+
+    SPR JODI trend and gold vintage (W24-L19, PR #9839), 2026-10-20, add
+    tests/test_spr_jodi_trend.py and tests/test_spr_gold_vintage.py to the
+    W23-L9 SPR step in unrun-macro-panels (job weight 78 -> 82, measured
+    on the merged run text). contract-delta on the PR (run 39379143776)
+    measures build_free_content 134 jobs / 5,668 against base 5,664. No
+    new entrant. index.html (5,793) and plan_book (5,542) stay under
+    their ceilings. Fund only the four-unit excess: 5,664 -> 5,668.
+    Every other bound stays unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
@@ -5698,6 +5911,123 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Narrowing either job without a complete closure audit would discard
     coverage, while padding counts beyond the exact measured entrants
     would hide the next change. No selector or runtime source is edited.
+
+    2026-10-18 (PR #8014, joined AI x Terminal and native rich answers):
+    the existing unrun-brain-gateway job retains its selector and every prior
+    suite while adding the registered chart-context/receipt/presentation and
+    native-visual/browser regressions. Its deterministic weight rises 61 -> 90;
+    it is the only job whose weight changes. The selected job sets are unchanged.
+    Hosted contract-delta run 39122785381 / job 117661607889 measured head
+    c4a938afc201df797146bb685cc0c7f1977312fd against base
+    f3fefce7e893755dcec18cbfe06f421c2c4d2db8:
+
+        templates/index.html          136 -> 136 jobs, 5,779 -> 5,808 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,566 -> 5,595 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,528 -> 5,557 weight
+
+    All three remain at ten packs, with no newly selected job. Fund only the
+    five weight-seconds beyond the previous 5,803 index-template ceiling, to
+    the exact observed 5,808. Preserve both other weight limits, every job-count
+    limit, all test coverage, selectors and the ten-pack limit. These are planning
+    weights, not measured execution timings. Narrowing the shared Brain job
+    without its complete dependency audit would discard conservative coverage;
+    no assertion or semantic release rule is weakened to excuse a failing test.
+
+    2026-10-19 (PR #8014, accepted-main issuer-context integration):
+    the normal c3d25f38 + f5b7b273 merge retains every existing Brain and
+    upstream regression. Accepted main registers
+    tests/test_gmi_issuer_economic_context_api.py in prelaunch-hardening.
+    It is the sole selected weight change, 45 -> 47; the existing job sets
+    are unchanged. The other two changed exclusive jobs do not enter any
+    probe. Full-manifest measurements bound to the merged checkout compare
+    the prior and combined manifests on the SAME combined source tree
+    d7ab4bf07968eb6a8db2c107c06c0ca2bdf93c9b (not historical source runs):
+
+        templates/index.html          136 -> 136 jobs, 5,808 -> 5,810 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,595 -> 5,597 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,557 -> 5,559 weight
+
+    All three still require ten packs. Fund only the measured two units
+    beyond the existing index-template ceiling: 5,808 -> 5,810. Keep both
+    other weight limits, all job-count limits, every suite and selector,
+    and the ten-pack limit. These are deterministic planning weights, not
+    execution timings. The initial pytest failure is retained as evidence;
+    no runtime, scope, command, observed-duration override or semantic
+    release gate is changed. In particular, the independent Sector RIG
+    approval requirement remains active.
+
+    2026-10-19 (PR #8014, current hosted/base and Research-mode composition):
+    hosted run 39219648574 tested 0bbef372 against b73dbbd8 and exposed
+    index/build weights 5,814/5,601, above 5,810/5,600. The same original
+    branch now joins accepted main ff1b80af, preserving its Research mode and
+    every chart/rich regression. The prior and combined manifests, measured
+    on the SAME combined source tree bec31d6128b830212570dae2a60f0ce4c9ad072c,
+    select identical jobs; these are not historical source executions:
+
+        templates/index.html          136 -> 136 jobs, 5,810 -> 5,822 weight
+        scripts/build_free_content.py 134 -> 134 jobs, 5,597 -> 5,609 weight
+        engine/prophet/plan_book.py   129 -> 129 jobs, 5,559 -> 5,571 weight
+
+    All three remain at ten packs. Exactly four accepted upstream additions
+    contribute to each probe: prelaunch-hardening +2 (issuer-context parity),
+    support-email-spine +4 (held-material delivery), unrun-brain-gateway +2
+    (Research mode) and unrun-intl-libraries +4 (US/China cohort contract).
+    Other changed jobs are absent from these selected sets. The incoming
+    main manifest alone measures 5,793/5,580/5,542 on this same source.
+    Fund only the necessary exact ceilings: index 5,810 -> 5,822 and build
+    5,600 -> 5,609. Preserve the plan-book ceiling, every job-count limit,
+    all suites, selectors, scope/closure audits, observed-duration overrides
+    and the ten-pack limit. These are planning weights, not execution times.
+    No reference-integrity rule or approval requirement changes here.
+
+    2026-10-20 (original PR #8014, accepted ec836731 integration):
+    The combined and incoming manifests were measured on the same current
+    source tree 52d2c31d7d3f3865975e1f499505e43788e318d5. Selected job sets
+    are identical. Retaining the existing chart/readback/rich-answer suites
+    makes unrun-brain-gateway 92 rather than incoming main's 63 weight units:
+    exactly +29 on each probe, with no new or removed selected job.
+
+        templates/index.html          135 jobs, 5,763 -> 5,792 weight
+        scripts/build_free_content.py 134 jobs, 5,638 -> 5,667 weight
+        engine/prophet/plan_book.py    128 jobs, 5,512 -> 5,541 weight
+
+    All remain at ten packs. Only the build probe exceeds its current bound;
+    fund exactly 5,638 -> 5,667. Preserve the index/plan-book ceilings, all
+    job-count bounds, scopes, suite commands, import-closure audits, observed
+    duration overrides and ten-pack bound. These are planning weights, not
+    execution times; this does not change any reference-integrity requirement.
+
+    2026-10-20 (original PR #8014, accepted d52827f2 integration):
+    The combined and incoming manifests were measured on the same current
+    source tree f2b2ea007cd9921618d1d50793fa110a0679f3c1. Selected job sets
+    are identical. Retaining the existing chart/readback/rich-answer suites
+    makes unrun-brain-gateway 92 rather than incoming main's 63 weight units:
+    exactly +29 on each probe, with no new or removed selected job.
+
+        templates/index.html          135 jobs, 5,767 -> 5,796 weight
+        scripts/build_free_content.py 134 jobs, 5,642 -> 5,671 weight
+        engine/prophet/plan_book.py    128 jobs, 5,516 -> 5,545 weight
+
+    All remain at ten packs. Only the build probe exceeds its current bound;
+    fund exactly 5,642 -> 5,671. Preserve the index/plan-book ceilings, all
+    job-count bounds, scopes, suite commands, import-closure audits, observed
+    duration overrides and ten-pack bound. These are planning weights, not
+    execution times; this does not change any reference-integrity requirement.
+
+    2026-10-20 original PR8014 recovery joins accepted e1ae07b1 after
+    completing the retained d63e59bc+d19e1fb1 merge. On combined source tree
+    6891a298547461200549a463a18a956b7ab4441e, both current-main and combined
+    manifests select identical jobs. Retained chart/readback/rich suites add
+    exactly 29 estimator units on every probe:
+
+        templates/index.html          135 jobs, 5793 -> 5822 weight
+        scripts/build_free_content.py 134 jobs, 5668 -> 5697 weight
+        engine/prophet/plan_book.py    128 jobs, 5542 -> 5571 weight
+
+    Each remains ten packs. Fund only the measured index ceiling 5803 ->
+    5822 and build ceiling 5668 -> 5697; the plan-book ceiling, all job-count
+    ceilings, suites, scopes, commands, assertions and ten-pack limit remain
+    unchanged. These are planning weights, not execution times.
     """
     rows = packing_probe_measurements(
         MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS

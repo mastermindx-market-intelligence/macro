@@ -156,6 +156,27 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .cov-detail ul { margin: 6px 0 0; padding-left: 16px; }
 .cov-detail code { font-size: 11.5px; color: var(--faint); }
 .cov-foot { margin: 0; padding: 12px 18px 14px; color: var(--faint); font-size: 12px; border-top: 1px solid var(--line); }
+/* Annual source context: dark uses a quiet opaque panel and neutral rules;
+   light retains the existing white research panel and its shadow treatment.
+   The new rows have no status color, score or decorative accent rail. */
+.cm-context { margin-top: 22px; padding: 20px; background: var(--panel); color: var(--text); }
+.cm-context h2 { margin: 0; font-size: 18px; }
+.cm-deck, .cm-meta, .cm-period { color: var(--mut); }
+.cm-deck { margin: 8px 0 16px; }
+.cm-meta, .cm-period { font-size: 12px; overflow-wrap: anywhere; }
+.cm-rows { margin: 16px 0; }
+.cm-row { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(0, 4fr); gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); }
+.cm-row dt { font-weight: 600; }
+.cm-row dd { margin: 0; min-width: 0; }
+.cm-row p { margin: 0; }
+.cm-row .cm-period { margin-top: 6px; }
+.cm-source { border-top: 1px solid var(--line); padding-top: 8px; }
+.cm-source summary { cursor: pointer; min-height: 44px; display: list-item; align-content: center; }
+.cm-source summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 600px) {
+  .cm-context { padding: 16px; }
+  .cm-row { grid-template-columns: 1fr; gap: 8px; }
+}
 @media (max-width: 780px) {
   .cov-row { grid-template-columns: 1fr; padding: 13px 14px 12px 13px; }
   .cov-reads { grid-template-columns: 1fr; gap: 8px; }
@@ -1336,6 +1357,8 @@ html[data-theme="light"] :is(
   </div>
 </section>
 {# ── coverage-matrix:end ── #}
+
+{% include "_critical_minerals_context.html.j2" %}
 
 <!-- ========================= UPCOMING CATALYSTS ========================= -->
 <div class="section-title" id="commodity-catalysts">{{ t('Upcoming events', '即将到来的市场事件') }}</div>

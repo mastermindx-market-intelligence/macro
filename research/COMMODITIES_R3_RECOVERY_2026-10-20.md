@@ -204,3 +204,14 @@ Census: original HEAD 654bbd3797ffe36b12410acbd6648184af6a1a9d, original operati
 The three current visual manifests reference 56 captures. Another 56 superseded captures (19,046,467 bytes) were moved, with a hash/path index, to the original workspace's already-ignored local recovery cache. No capture was deleted, shared exclude changed or current manifest rewritten. Current evidence and its source identities remain unchanged.
 
 Next: commit the accepted source; integrate current main while retaining USGS and any landed petroleum flow; regenerate the review from an explicitly pinned main snapshot, verify the affected contracts, push and open the PR. M1 catalog qualification is parked and does not block Git delivery.
+
+
+## Published source and current-main integration — 2026-10-20
+
+The repaired native publisher committed and pushed 0003a455e471b8e559d8789615ec08103843c9c3 with exact remote readback and a clean real index. PR #9878 is open: https://github.com/mastermindx-market-intelligence/macro/pull/9878.
+
+Current-main integration is pinned to ef029bd56030c313bc36906a31f6b508c199410b. The builder conflict now retains both critical_minerals and commodity_workspace arguments; the USGS load/include and accepted generated section survive. The generated page was reconstructed from that exact main page and its accepted published inputs, without collectors, scoring or forecasts. The research price snapshot remains 2026-10-16; integration does not relabel it as today's market. Open petroleum-flow #9862 remains separate.
+
+Integrated validation: 187 Python tests plus 25 subtests; 20 DOM journeys; 22 Chromium checks; all 56 visual cells refreshed; six representative images independently accepted. Added-diff design, runtime-style injection, visual evidence and whitespace gates passed. Two EOF blank-line defects were repaired. New fixture-based Python suites are now registered under the required PR code gate, commodities-research-workspace, with all 104 named closure paths and ancestor initializers. Manifest validation and three closure/startability/narrow-selection tests passed; no packing threshold changed.
+
+Full current identities and proof boundaries are in mockups/evidence/commodities-r3/source/validation-receipt.json and source/review-receipt.json. The earlier accepted-base hash table is historical; the integrated review receipt supersedes it. The local finalization step is the ordinary two-parent merge commit and native push, followed by PR readiness, exact-head CI, review and served verification. M1 Paper remains parked.

@@ -1698,6 +1698,12 @@ def main() -> int:
         coverage = compute_coverage_matrix()
     except Exception as _cve:  # noqa: BLE001 — coverage panel must never crash the build
         log.warning("coverage matrix read failed (%s); panel hidden", _cve)
+    # Consume only the already-produced annual artifact. Source acquisition stays
+    # with daily.collect_tail; it must never run on the rendering critical path.
+    from engine.critical_minerals_display import load_critical_minerals_context
+    critical_minerals = load_critical_minerals_context(
+        config.ROOT / "data" / "neuralweb" / "critical_minerals_supply.json"
+    )
     try:
         html = env.get_template("commodities.html.j2").render(
             C=C, as_of=as_of, built=built, cal_span=cal_span, complex=cx,
@@ -1706,6 +1712,7 @@ def main() -> int:
             catalysts=catalysts_resolved,
             vm=vm, idx_ew_spark=idx_ew_spark, oil_episode=oil_episode,
             conviction_labels=CONVICTION_LABELS, coverage=coverage,
+            critical_minerals=critical_minerals,
             commodity_workspace=_decision_workspace(
                 index_snap, _build_date.isoformat(),
                 next((a.get("supply") for a in assets if a["key"] == "oil"), None)))

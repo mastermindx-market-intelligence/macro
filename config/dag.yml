@@ -248,6 +248,43 @@ lanes:
           discovery→retained→compiled horizon; compiler age remains separate
           generation telemetry. Context-only; unknown terms and issuer-state
           capabilities remain explicitly unavailable.
+      - id: build_capital_structure_state
+        module: scripts.build_capital_structure_state
+        note: >
+          Offline fail-closed state bundle (SPEC_U1_API U1a). Verifies the same
+          telemetry-last generation receipt, the generation-bound health horizon and
+          the served projection.json, then atomically publishes ONE state_bundle.json
+          holding one CapitalState per covered issuer, all bound to those three input
+          generations, or leaves the last good bundle byte-identical. Runs after the
+          projection because it binds the served projection's bytes. Context-only;
+          the private state API refuses a bundle that does not bind the served
+          projection.
+          outputs: [data/capital_structure/state_bundle.json]
+
+      - id: compile_capital_structure_instrument_candidate_terms
+        module: scripts.compile_capital_structure_instrument_candidate_terms
+        note: >
+          Best-effort nightly candidate-term compilation (SPEC_U1B gate 21). Reads
+          document_term_observations.parquet plus the source manifests through the
+          collector-owned source stores and publishes
+          instrument_candidate_terms.parquet under data/capital_structure, or
+          refuses; a refusal is a normal night, so the workflow step is
+          continue-on-error and its outcome is recorded (never a fatal term) in
+          the capital-structure checkpoint gate. Runs after the state bundle and
+          before the capacity-inputs producer that consumes its rows.
+          outputs: [data/capital_structure/instrument_candidate_terms.parquet]
+
+      - id: build_capital_structure_capacity_inputs
+        module: scripts.build_capital_structure_capacity_inputs
+        note: >
+          Offline fail-closed capacity inputs bundle (SPEC_U1B §3). Reads the
+          state bundle published immediately above plus the same verified
+          generation, binds every family tonight's run can lawfully produce
+          (candidate terms, covenant/document commitments, the L0 rule pack)
+          with typed per-family unavailability for the rest, and atomically
+          publishes capacity_inputs.json or nothing. Fatal like the state step;
+          runs before the checkpoint that stages both outputs.
+          outputs: [data/capital_structure/capacity_inputs.json]
 
   # ── daily.yml / collect_tail ─────────────────────────────────────────────
   # 2026-07-14 collect split: the slow post-adapter accrual band (ThetaData
@@ -4939,8 +4976,9 @@ modules:
           excluded from the scheduled path; supersedes the original W-AUTO
           service-key line for CHF).
           Full mode: generator→skeptic→compiler→ingest (ISO-week idempotent,
-          ≤3 cards/week). Writes causal_mechanisms.jsonl, causal_brainstorm_runs.jsonl,
-          causal_llm_lane.json, governance.jsonl. Non-fatal (exit 0 always).
+          ≤3 cards/week). Writes causal_mechanisms.jsonl, causal_filing_budget.jsonl,
+          causal_brainstorm_runs.jsonl, causal_llm_lane.json, governance.jsonl.
+          Non-fatal (exit 0 always).
       - id: run_causal_brainstorm_status
         module: scripts.run_causal_brainstorm
         note: >

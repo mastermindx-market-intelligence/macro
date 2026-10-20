@@ -945,6 +945,308 @@ def _build_ticker_lookup(
     return lookup
 
 
+# --- U4: six-axis company profile (display-only AxisCell labels) -----------
+
+# Added build time on real data is measured in the PR; the size share is
+# asserted in tests. Axes ride inside the U3 blob and its 400 KB budget.
+_AXES_BLOB_BUDGET_BYTES = 120 * 1024
+
+_COUNTRY_NAMES = {
+    "US": ("United States", "美国"),
+    "CN": ("China", "中国"),
+    "HK": ("Hong Kong, China", "中国香港"),
+    "CA": ("Canada", "加拿大"),
+}
+_MIC_NAMES = {
+    "XNAS": ("Nasdaq", "纳斯达克"),
+    "XNYS": ("NYSE", "纽交所"),
+    "ARCX": ("NYSE Arca", "NYSE Arca"),
+    "XASE": ("NYSE American", "NYSE American"),
+    "XSHG": ("Shanghai SE", "上交所"),
+    "XSHE": ("Shenzhen SE", "深交所"),
+    "XHKG": ("HKEX", "港交所"),
+    "XTSE": ("TSX", "多伦多交易所"),
+}
+_VALUE_CHAIN_NAMES = {
+    "upstream": ("Upstream", "上游"),
+    "midstream": ("Midstream", "中游"),
+    "downstream": ("Downstream", "下游"),
+    "enabler": ("Enabler", "支撑环节"),
+}
+
+
+def _country_label(code: object) -> tuple[str, str] | None:
+    text = str(code or "").strip().upper()
+    if not text:
+        return None
+    return _COUNTRY_NAMES.get(text, (text, text))
+
+
+def _axis_label(axis: str, value: object) -> tuple[str, str] | None:
+    """A plain display string for one AVAILABLE cell, or None.
+
+    Only named text fields are read; the raw value, its numbers, source and
+    provenance never reach the blob.
+    """
+    if not isinstance(value, dict):
+        return None
+    if axis == "sic_industry":
+        text = str(value.get("sic_description") or "").strip()
+        # SIC descriptions exist in English only; ZH shows the same text.
+        return (text, text) if text else None
+    if axis == "geography":
+        country = _country_label(value.get("listing_country"))
+        if country is None:
+            return None
+        en, zh = country
+        mic = _MIC_NAMES.get(str(value.get("listing_mic") or "").strip().upper())
+        if mic is not None:
+            en, zh = f"{mic[0]}, {en}", f"{zh}·{mic[1]}"
+        domicile = _country_label(value.get("domicile"))
+        if domicile is not None and domicile != country:
+            en, zh = f"{en} (domiciled in {domicile[0]})", f"{zh}（注册地：{domicile[1]}）"
+        return en, zh
+    if axis == "business_model":
+        groups = [g for g in value.get("groups") or [] if isinstance(g, dict)]
+        en = [str(g.get("label_en") or "").strip() for g in groups]
+        zh = [str(g.get("label_zh") or g.get("label_en") or "").strip() for g in groups]
+        en, zh = [t for t in en if t], [t for t in zh if t]
+        return ("; ".join(en), "；".join(zh)) if en else None
+    if axis == "lifecycle":
+        status = str(value.get("node_status") or "").strip()
+        if not status:
+            return None
+        return ("Active", "存续") if status == "canonical" else ("Tracked", "跟踪中")
+    if axis == "value_chain":
+        return _VALUE_CHAIN_NAMES.get(str(value.get("value_chain_position") or ""))
+    if axis == "macro_sensitivity":
+        # The measured betas live on the stock page; the profile only says
+        # that a measurement exists (no numbers on this page).
+        return ("Measured — see the stock page", "已测算——见个股页")
+    return None
+
+
+def _batched_identity_resolver(as_of: str):
+    """``resolve_graph_node_identity`` with its per-call loads hoisted.
+
+    The public function re-reads the node table and the Data OS master
+    inputs on every call (~0.15 s each). This loads both once and calls the
+    same incumbent ``_resolve_node_row`` in HISTORICAL mode, raising
+    ``UnknownGraphNodeError`` for the same cases. Parity is pinned by
+    tests/test_theme_tree_axes.py.
+    """
+    from engine.theme_graph import identity_resolution as ir  # noqa: PLC0415
+    from engine.theme_graph import store  # noqa: PLC0415
+
+    nodes_df = store.read_nodes()
+    kinds = (
+        dict(zip(nodes_df["node_id"].astype(str), nodes_df["kind"].astype(str)))
+        if not nodes_df.empty else {}
+    )
+    etf_syms = ir._etf_symbols(nodes_df.to_dict("records"))
+    inputs = ir.load_master_inputs()
+    cache: dict[tuple[str, str], dict] = {}
+
+    def resolve(node_id: str, asof: str | None = None) -> dict:
+        nid = str(node_id)
+        kind = kinds.get(nid)
+        if kind is None:
+            raise ir.UnknownGraphNodeError(f"{nid!r} is not a node in the theme graph")
+        if kind != "company":
+            raise ir.UnknownGraphNodeError(f"{nid!r} is kind={kind!r}")
+        asof_str = str(asof if asof is not None else as_of)
+        key = (nid, asof_str)
+        if key not in cache:
+            cache[key] = ir._resolve_node_row(
+                node_id=nid, resolution_asof=asof_str, inputs=inputs,
+                etf_symbols=etf_syms, computed_at=ir._utc_now_stamp(),
+                engine_version=store.ENGINE_VERSION, historical=True,
+            )
+        return cache[key]
+
+    return resolve
+
+
+def _axis_readers(root: Path, as_of: str) -> tuple[dict, object]:
+    """Per-build injected readers: every artifact is opened once.
+
+    Returns ``(static_readers, geography_factory)``; the geography reader is
+    built per subject so it sees only that company's security-master slice
+    (the reader filters by ``security_id`` itself, so the slice changes cost,
+    never the answer).
+    """
+    from functools import partial  # noqa: PLC0415
+
+    from engine.classification_axes import (  # noqa: PLC0415
+        business_model, geography, lifecycle, sic_industry, value_chain,
+    )
+    from engine.theme_graph import store  # noqa: PLC0415
+
+    readers: dict = {}
+    profiles_path = root / sic_industry.SOURCE_ARTIFACT
+    if profiles_path.exists():
+        readers["sic_industry"] = partial(
+            sic_industry.read_sic_industry, profiles=pd.read_parquet(profiles_path)
+        )
+    membership_path = root / business_model.SOURCE_ARTIFACT
+    if membership_path.exists():
+        readers["business_model"] = partial(
+            business_model.read_business_model,
+            membership=json.loads(membership_path.read_text(encoding="utf-8")),
+        )
+    graph_nodes = store.read_nodes(current=False, strict=True)
+    try:
+        node_lifecycle = store.read_node_lifecycle(latest=False, strict=True)
+    except FileNotFoundError:
+        node_lifecycle = None
+    if node_lifecycle is not None:
+        readers["lifecycle"] = partial(
+            lifecycle.read_lifecycle, nodes=graph_nodes, lifecycle=node_lifecycle
+        )
+        readers["value_chain"] = partial(
+            value_chain.read_value_chain, nodes=graph_nodes, lifecycle=node_lifecycle
+        )
+    else:
+        readers["lifecycle"] = partial(lifecycle.read_lifecycle, nodes=graph_nodes)
+        readers["value_chain"] = partial(value_chain.read_value_chain, nodes=graph_nodes)
+
+    master_path = geography._master_path(root)
+    if not master_path.exists():
+        return readers, None
+    master = pd.read_parquet(master_path)
+    empty = master.iloc[0:0]
+    slices = {str(k): g for k, g in master.groupby(master["security_id"].astype(str))}
+    resolve = _batched_identity_resolver(as_of)
+
+    def geography_for(subject_id: str):
+        def _slice() -> pd.DataFrame:
+            try:
+                row = resolve(subject_id, asof=as_of)
+            except Exception:  # noqa: BLE001 — the reader types the failure itself
+                return empty
+            sid = row.get("security_id") if hasattr(row, "get") else None
+            return slices.get(str(sid), empty) if sid is not None else empty
+        return partial(geography.read_geography, resolve=resolve, master=_slice())
+
+    return readers, geography_for
+
+
+def _company_axes(root: Path, keys: list[str], as_of: str) -> dict[str, list[dict]]:
+    """``{lookup key: [axis entries]}`` for the given U3 record keys.
+
+    Each entry is ``{axis, status, reason_code, label_en, label_zh}`` in
+    ``cell.AXES`` order. A row failing ``validate_row`` is dropped and
+    counted in the log. Raises nothing: any setup fault returns ``{}``.
+    """
+    from engine.classification_axes import cell, registry  # noqa: PLC0415
+
+    try:
+        static, geography_for = _axis_readers(root, as_of)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("theme_tree: company profile readers unavailable: %s", exc)
+        return {}
+
+    out: dict[str, list[dict]] = {}
+    dropped = 0
+    for key in keys:
+        market, _, symbol = key.partition(":")
+        subject_id = f"co:{market}:{symbol}"
+        readers = dict(static)
+        if geography_for is not None:
+            readers["geography"] = geography_for(subject_id)
+        try:
+            row = registry.read_axes(subject_id, as_of=as_of, root=root, readers=readers)
+        except Exception:  # noqa: BLE001 — a malformed subject id is a dropped row
+            dropped += 1
+            continue
+        if registry.validate_row(row):
+            dropped += 1
+            continue
+        entries = []
+        for axis in cell.AXES:
+            c = row["cells"].get(axis) or {}
+            status = str(c.get("status") or "unknown")
+            label = _axis_label(axis, c.get("value")) if status == "available" else None
+            if status == "available" and label is None:
+                status, reason = "unknown", "value_missing"
+            else:
+                reason = str(c.get("reason_code") or "") or None
+            entries.append({
+                "axis": axis,
+                "status": status,
+                "reason_code": reason,
+                "label_en": label[0] if label else None,
+                "label_zh": label[1] if label else None,
+            })
+        out[key] = entries
+    if dropped:
+        log.warning("theme_tree: company profile dropped %d invalid row(s)", dropped)
+    return out
+
+
+def _axes_key_findings(payload: object) -> list[str]:
+    """Keys in ``payload`` that carry a ``cell.FORBIDDEN_VALUE_KEY_WORDS`` word."""
+    from engine.classification_axes import cell  # noqa: PLC0415
+
+    found: list[str] = []
+
+    def walk(node: object) -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                low = str(k).lower()
+                if any(w in low for w in cell.FORBIDDEN_VALUE_KEY_WORDS):
+                    found.append(str(k))
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(payload)
+    return found
+
+
+def _attach_axes(root: Path, records: dict[str, dict], as_of: str) -> list[dict] | None:
+    """Add U4 ``axes`` to path-bearing records; return the shared cell table.
+
+    Most cells repeat across companies (every company's value chain is the
+    same ``not_applicable`` cell), so each distinct entry is stored once in
+    the returned table and a record's ``axes`` lists six indices into it, in
+    ``cell.AXES`` order. Returns ``None`` and leaves records untouched (the
+    U3 panel still works) on any forbidden key or when the table plus the
+    indices exceed their 120 KB share; both are logged.
+    """
+    from engine.theme_graph import hierarchy_breadth_display as hb  # noqa: PLC0415
+
+    axes = _company_axes(root, sorted(records), as_of)
+    if not axes:
+        return None
+    if hb.validate_no_forbidden_keys(axes) or _axes_key_findings(axes):
+        log.warning("theme_tree: company profile refused by forbidden-key walk")
+        return None
+    table: list[dict] = []
+    index: dict[str, int] = {}
+    refs: dict[str, list[int]] = {}
+    for key, entries in axes.items():
+        row = []
+        for entry in entries:
+            ident = json.dumps(entry, ensure_ascii=False, sort_keys=True)
+            if ident not in index:
+                index[ident] = len(table)
+                table.append(entry)
+            row.append(index[ident])
+        refs[key] = row
+    size = len(json.dumps([table, refs], ensure_ascii=False, sort_keys=True).encode("utf-8"))
+    if size > _AXES_BLOB_BUDGET_BYTES:
+        log.warning(
+            "theme_tree: company profile %d KB > %d KB share; shipping without it",
+            size // 1024, _AXES_BLOB_BUDGET_BYTES // 1024,
+        )
+        return None
+    for key, row in refs.items():
+        records[key]["axes"] = row
+    return table
+
+
 def _ticker_lookup_json(
     root: Path,
     nodes: pd.DataFrame,
@@ -1009,6 +1311,8 @@ def _ticker_lookup_json(
             pairs.append([a.get("code"), name_index[nk]])
         abstainers[key] = pairs
 
+    axis_cells = _attach_axes(root, records, as_of)
+
     payload = {
         "version": 2,
         "as_of": as_of,
@@ -1016,6 +1320,8 @@ def _ticker_lookup_json(
         "abstainers": abstainers,
         "basket_names": basket_names,
     }
+    if axis_cells is not None:
+        payload["axis_cells"] = axis_cells
     if hb.validate_no_forbidden_keys(payload):
         log.warning("theme_tree: ticker lookup refused by forbidden-key walk")
         return ""
