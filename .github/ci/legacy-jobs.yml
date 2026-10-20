@@ -9054,6 +9054,7 @@ jobs:
       - "site/fif_saved_briefcase.js"
       - "scripts/build_financial_intelligence_packet.py"
       - "collectors/sec_request_pacer.py"
+      - "scripts/capture_fif3a2_aapl_package.py"
       - "tests/fundamental_forensics_*.test.mjs"
       - ".github/workflows/daily.yml"
       - ".github/workflows/deploy-api-secrets.yml"
@@ -10633,6 +10634,44 @@ jobs:
       - name: THS collection receipts — offline source-boundary refusal
         run: python -m pytest tests/test_ths_collection_receipts.py -q
 
+  china-mechanics-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China A-Share Mechanics page display contract (W28C-L29). The suite renders the
+    # real templates/china_mechanics.html.j2 from a synthetic vm and calls the builder's
+    # pure helpers (_phase_panel, _phase_meta, PHASE_CATALOG) on tmp_path parquet; it
+    # never runs main() and never fetches. It pins three facts the page used to hide:
+    # the participation header dates the snapshot row (not the tape tail), the phase-call
+    # ledger prints its unresolved count, and Days-in-phase names its start date and the
+    # previous phase. Exclusive so the page's own suite does not widen any shared job's
+    # inferred scope (the templates/index.html packing-probe ceiling).
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "lib/site_assets.py"
+      - "scripts/__init__.py"
+      - "scripts/build_china_mechanics.py"
+      - "templates/china_mechanics.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_china_mechanics_display.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: China Mechanics — participation snapshot date, unresolved calls, phase start
+        run: python -m pytest tests/test_china_mechanics_display.py -q -p no:cacheprovider
   cycle-consistency:
     if: ${{ false }}
     gate: data
@@ -18238,6 +18277,41 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
         run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
+
+  narrative-radar-display:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    # China narrative radar page display contract (W28F-L30). Both suites render the real
+    # templates/china_narrative_radar.html.j2 (autoescape on, as the builder renders it) from
+    # a synthetic payload; they import only json, re, pathlib and jinja2 and never run the
+    # builder. They pin the cycle inputs printed beside each score chip (drawdown from the
+    # 1y high, distance from the 200d SMA) and the intro's description of top_members as a
+    # current-membership snapshot rather than entry history. Exclusive so the page's own
+    # suites do not widen any shared job's inferred scope (the packing-probe ceilings).
+    scope: exclusive
+    paths:
+      - "templates/china_narrative_radar.html.j2"
+      - "templates/_interfonts.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_narrative_radar_cycle_inputs.py"
+      - "tests/test_narrative_radar_member_claim.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2
+      - name: China narrative radar — cycle inputs beside the score, membership snapshot wording
+        run: python -m pytest tests/test_narrative_radar_cycle_inputs.py tests/test_narrative_radar_member_claim.py -q -p no:cacheprovider
 
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
