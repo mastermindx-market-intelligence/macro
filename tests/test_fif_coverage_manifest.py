@@ -34,6 +34,7 @@ sys.path.insert(0, str(ROOT))
 from engine.fundamental_forensics import coverage_manifest as CM  # noqa: E402
 
 PRODUCER = ROOT / "engine" / "fundamental_forensics" / "coverage_manifest.py"
+QUERY_SERVICE = ROOT / "engine" / "fundamental_forensics" / "query_service.py"
 CLI = ROOT / "scripts" / "fif_coverage_manifest.py"
 FIVE_ISSUER = ROOT / "config" / "fundamental_forensics" / "coverage" / "five_issuer_v1.json"
 
@@ -43,7 +44,7 @@ SYN_NAME = "Synthetic One Inc."
 NINE = "9" * 10
 EIGHT = "8" * 10
 T_ADMITTED = datetime(2026, 10, 14, tzinfo=timezone.utc)
-# After the not-presented policy clock, so qualified formulas are live.
+# After the generation's admission and the tiers cutoff.
 AS_OF = "2026-10-22T00:00:00Z"
 TIERS_CUTOFF = "2026-10-18T00:00:00Z"
 
@@ -60,6 +61,7 @@ EXPECTED_BLOCKERS = {
 # test that builds one skips there (the unit tests below still run).
 THRESHOLDS_ABSENT = "frozen C2 thresholds are not in this tree (they land with the coverage proof)"
 NEEDS_THRESHOLDS = pytest.mark.skipif(not CM.DEFAULT_THRESHOLDS.is_file(), reason=THRESHOLDS_ABSENT)
+BARE_REASON = re.compile(r"[a-z0-9_]+")
 NP_FIELDS = (
     "np_kind",
     "np_rule_id",
@@ -260,6 +262,30 @@ def test_proof_accepts_the_manifest_with_no_mismatch_and_no_orphans(manifest) ->
     assert report["acceptance_eligible"] is False
 
 
+def test_proof_failing_reasons_are_bare_kernel_codes(manifest) -> None:
+    """The proof keys failures by the text after the last ``:`` of a label.
+
+    A verbatim kernel reason (``"<code>: <detail>"``) as ``reason_code``
+    would make every failing key a free-text detail; the keys must be the
+    bare codes the kernel emits.
+    """
+    report = _prove(CM.render_manifest(manifest))
+    reasons: dict[str, int] = {}
+    for tier in report["tiers"].values():
+        for reason, count in tier["failing_reasons"].items():
+            reasons[reason] = reasons.get(reason, 0) + count
+    assert reasons
+    assert all(BARE_REASON.fullmatch(reason) for reason in reasons), sorted(reasons)
+    assert "missing_standard_fact" in reasons
+    assert "slot_not_filed" in reasons
+    for cell in manifest["cells"]:
+        if "reason_code" in cell:
+            assert BARE_REASON.fullmatch(cell["reason_code"]), cell
+        if "kernel_reason" in cell:
+            code = cell["kernel_reason"].split(":", 1)[0].strip()
+            assert cell["reason_code"] in {code, "kernel_reason_unspecified"}, cell
+
+
 def test_manifest_top_level_shape(manifest, served) -> None:
     assert manifest["schema"] == CM.MANIFEST_SCHEMA
     assert manifest["draft"] is True
@@ -277,7 +303,14 @@ def test_manifest_top_level_shape(manifest, served) -> None:
         "metric_formulas",
     }
     assert all(re.fullmatch(r"[0-9a-f]{64}", v) for v in header["inputs_sha256"].values())
-    assert set(header["not_presented_pack"]) == {"pack_id", "pack_version", "content_sha256"}
+    assert set(header["not_presented_pack"]) == {
+        "pack_id",
+        "pack_version",
+        "content_sha256",
+        "applied_by_kernel",
+    }
+    # The kernel is built as query_service builds it: no pack is applied.
+    assert header["not_presented_pack"]["applied_by_kernel"] is False
     assert header["served_set"] == [
         {"cik": served["cik"], "generation_id": served["generation_id"]}
     ]
@@ -342,11 +375,16 @@ def test_served_member_slots_cells_and_counts(manifest, served) -> None:
     cells = _cells_for(manifest, served["cik"])
     assert {c["source_generation_id"] for c in cells} == {served["generation_id"]}
     by_key = {(c["period_id"], c["field_id"]): c for c in cells}
-    # Missing slots are not served, never a fallback.
+    # A served issuer's empty slot is unfiled — never a fallback, and not
+    # confused with an unserved issuer.
     for period in ("A2", "I2"):
         slot_cells = [c for c in cells if c["period_id"] == period]
         assert slot_cells
-        assert {c["reason_code"] for c in slot_cells} == {"not_served"}
+        assert {c["reason_code"] for c in slot_cells} == {"slot_not_filed"}
+    assert not any(c.get("reason_code") == "not_served" for c in cells)
+    # Production serves no not-presented verdicts: none is counted.
+    assert not any(c.get("na_basis") == "not_presented_item" for c in cells)
+    assert not any("qualifier" in c for c in cells)
     # Every stored role of the served annual package is present.
     for role in ("primary", "schema", "presentation", "calculation", "definition", "label"):
         assert by_key[("A1", f"package:{role}")]["status"] == "present"
@@ -366,7 +404,7 @@ def test_served_member_slots_cells_and_counts(manifest, served) -> None:
         assert any(c["status"] == "present" for c in metric_cells)
         for cell in metric_cells:
             if cell["status"] == "absent":
-                assert cell["reason_code"]
+                assert BARE_REASON.fullmatch(cell["reason_code"]), cell
     assert issuer["deep_pass"] is False
     counts = {
         "present": issuer["present_cells"],
@@ -467,6 +505,27 @@ def test_deep_rounds_must_agree(served, tmp_path) -> None:
     assert caught.value.code == "deep_rounds_disagree"
 
 
+def _tiers_doc(deep_r2_ticker: str) -> bytes:
+    return json.dumps(
+        {
+            "schema": CM.TIERS_SCHEMA,
+            "cutoff_at": TIERS_CUTOFF,
+            "core_1000": [{"canonical_cik": NINE, "ticker": "ZZNINE"}],
+            "deep_R1": [{"canonical_cik": NINE, "ticker": "ZZNINE", "mandatory": True}],
+            "deep_R2": [{"canonical_cik": NINE, "ticker": deep_r2_ticker, "mandatory": True}],
+        }
+    ).encode("utf-8")
+
+
+def test_deep_rounds_must_agree_on_tickers() -> None:
+    (member,) = CM.load_tiers(_tiers_doc("ZZNINE")).members
+    assert (member.cik, member.ticker, member.tier_assigned) == (NINE, "ZZNINE", "deep")
+    with pytest.raises(CM.CoverageManifestError) as caught:
+        CM.load_tiers(_tiers_doc("ZZOTHER"))
+    assert caught.value.code == "deep_rounds_disagree"
+    assert "tickers" in caught.value.message
+
+
 @NEEDS_THRESHOLDS
 def test_a_repeated_contract_cik_refuses(served, tmp_path) -> None:
     repeated = {
@@ -544,6 +603,36 @@ def test_slot_selection_rules() -> None:
     assert set(slots) == {("annual", 1), ("annual", 2), ("interim", 1)}
 
 
+def test_a_filing_dated_after_the_cutoff_is_invisible_though_accepted_before() -> None:
+    """Both clocks gate visibility: a filing_date after as_of hides the filing."""
+    as_of = CM.parse_as_of("2026-10-22T00:00:00Z")
+    early = _pkg("0000000001-26-000020", "10-Q", "2026-06-27", "2026-07-31", "2026-07-31T10:00:00Z")
+    late_dated = _pkg(
+        "0000000001-26-000060", "10-Q", "2026-09-26", "2026-10-23", "2026-10-21T10:00:00Z"
+    )
+    slots = CM.select_slots([early, late_dated], as_of)
+    assert set(slots) == {("interim", 1)}
+    assert slots[("interim", 1)].accession == "0000000001-26-000020"
+
+
+@pytest.mark.parametrize(
+    "field, value",
+    [
+        ("period_of_report", "20250927"),
+        ("period_of_report", "2025-09-27T00:00:00"),
+        ("period_of_report", "2025-W39-6"),
+        ("filing_date", "20251031"),
+    ],
+)
+def test_a_non_strict_date_makes_a_filing_invisible(field, value) -> None:
+    as_of = CM.parse_as_of("2026-10-22T00:00:00Z")
+    good = _pkg("0000000001-25-000010", "10-K", "2025-09-27", "2025-10-31", "2025-10-31T10:00:00Z")
+    assert set(CM.select_slots([good], as_of)) == {("annual", 1)}
+    bad = _pkg("0000000001-25-000010", "10-K", "2025-09-27", "2025-10-31", "2025-10-31T10:00:00Z")
+    bad.manifest[field] = value
+    assert CM.select_slots([bad], as_of) == {}
+
+
 def test_duration_choice_longest_annual_shortest_interim() -> None:
     universe = [
         ("2024-09-29", "2025-09-27"),
@@ -557,7 +646,8 @@ def test_duration_choice_longest_annual_shortest_interim() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Kernel cell mapping over the governed not-presented pack
+# Kernel cell mapping (constructed cells only: production serves no
+# not-presented verdicts today, so the mapping is proven on built cells)
 # ---------------------------------------------------------------------------
 
 
@@ -568,52 +658,138 @@ def np_pack():
     return load_not_presented_pack()
 
 
-def test_no_debt_short_term_debt_carries_every_not_presented_field(np_pack) -> None:
-    from tests.test_fundamental_forensics_formula_not_presented import (
-        NO_DEBT_ARCS,
-        NO_DEBT_FACTS,
-        _debt_engine,
-        _query,
+def _np_evidence():
+    from engine.fundamental_forensics.not_presented import (
+        FOOTING_EXACT,
+        NP_KIND_ITEM,
+        NotPresentedEvidence,
     )
 
-    (cell,) = _query(_debt_engine(np_pack, NO_DEBT_FACTS, NO_DEBT_ARCS), "short_term_debt").cells
-    mapped = CM.map_metric_cell(
-        cell, cik=NINE, period_id="A1", source_generation_id="g", np_pack=np_pack
+    return NotPresentedEvidence(
+        np_kind=NP_KIND_ITEM,
+        rule_id="not_presented.synthetic_item",
+        rule_version="1",
+        rules_sha256="a" * 64,
+        parent_concepts=("us-gaap:DebtCurrent",),
+        roles_checked=1,
+        children_n=2,
+        children_with_fact_n=1,
+        footing=FOOTING_EXACT,
+        cal_sha256="b" * 64,
+        pre_sha256="c" * 64,
+        accession="0000000001-25-000010",
     )
-    assert mapped["status"] == "not_applicable"
-    assert mapped["na_basis"] == "not_presented_item"
-    for key in NP_FIELDS:
-        assert key in mapped, key
-    assert mapped["field_id"] == "metric:short_term_debt"
-    assert mapped["source_generation_id"] == "g"
 
 
-def test_qualified_total_debt_carries_a_qualifier_and_policy(np_pack) -> None:
-    from tests.test_fundamental_forensics_formula_not_presented import _debt_engine, _query
-
-    (cell,) = _query(_debt_engine(np_pack), "total_debt").cells
-    mapped = CM.map_metric_cell(
-        cell, cik=NINE, period_id="A1", source_generation_id="g", np_pack=np_pack
-    )
-    assert mapped["status"] == "present"
-    assert mapped["reason_code"] == "present"
-    assert mapped["qualifier"] == "qualified_not_presented: short_term_debt"
-    assert mapped["qualifier_policy"] == f"{np_pack.pack_id}/{np_pack.pack_version}"
-    assert re.fullmatch(r"\S+/\S+", mapped["qualifier_policy"])
-
-
-def _cell(state, *, reason=None, na_basis=None):
+def _cell(state, *, reason=None, na_basis=None, evidence=None, qualified=(), metric_id="revenue"):
     from engine.fundamental_forensics.query import PeriodRequest
 
     return SimpleNamespace(
-        metric_id="revenue",
+        metric_id=metric_id,
         period=PeriodRequest.instant("2025-09-27"),
         state=state,
         reason=reason,
         provenance=SimpleNamespace(
-            na_basis=na_basis, not_presented=None, qualified_not_presented=(), reason=None
+            na_basis=na_basis,
+            not_presented=evidence,
+            qualified_not_presented=qualified,
+            reason=None,
         ),
     )
+
+
+def _map(cell, np_pack, period_id="A1"):
+    return CM.map_metric_cell(
+        cell, cik=NINE, period_id=period_id, source_generation_id="g", np_pack=np_pack
+    )
+
+
+def test_not_presented_cell_carries_every_evidence_field(np_pack) -> None:
+    from engine.fundamental_forensics.query import CellState
+
+    evidence = _np_evidence()
+    kernel_text = "not_presented_item: synthetic parent has no presented child"
+    mapped = _map(
+        _cell(
+            CellState.NOT_APPLICABLE,
+            reason=kernel_text,
+            na_basis="not_presented_item",
+            evidence=evidence,
+            metric_id="short_term_debt",
+        ),
+        np_pack,
+    )
+    assert mapped == {
+        "cik": NINE,
+        "period_id": "A1",
+        "field_id": "metric:short_term_debt",
+        "source_generation_id": "g",
+        "status": "not_applicable",
+        "reason_code": "not_presented_item",
+        "kernel_reason": kernel_text,
+        "na_basis": "not_presented_item",
+        **evidence.to_dict(),
+    }
+    assert set(NP_FIELDS) <= set(mapped)
+
+
+def test_qualified_value_carries_a_qualifier_and_policy(np_pack) -> None:
+    from engine.fundamental_forensics.query import CellState
+
+    mapped = _map(
+        _cell(CellState.VALUE, qualified=("short_term_debt",), metric_id="total_debt"), np_pack
+    )
+    assert mapped == {
+        "cik": NINE,
+        "period_id": "A1",
+        "field_id": "metric:total_debt",
+        "source_generation_id": "g",
+        "status": "present",
+        "reason_code": "present",
+        "qualifier": "qualified_not_presented: short_term_debt",
+        "qualifier_policy": f"{np_pack.pack_id}/{np_pack.pack_version}",
+    }
+    assert re.fullmatch(r"\S+/\S+", mapped["qualifier_policy"])
+    plain = _map(_cell(CellState.VALUE, metric_id="total_debt"), np_pack)
+    assert "qualifier" not in plain and "qualifier_policy" not in plain
+
+
+class _CollidingEvidence:
+    """A not-presented evidence object whose dict names a cell key."""
+
+    def __init__(self, key: str) -> None:
+        self._key = key
+
+    def to_dict(self):
+        return {"np_kind": "item_not_in_composition", self._key: "overwritten"}
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "status",
+        "cik",
+        "field_id",
+        "source_generation_id",
+        "period_id",
+        "reason_code",
+        "kernel_reason",
+        "na_basis",
+    ],
+)
+def test_not_presented_evidence_cannot_overwrite_a_cell_key(np_pack, key) -> None:
+    from engine.fundamental_forensics.query import CellState
+
+    cell = _cell(
+        CellState.NOT_APPLICABLE,
+        reason="not_presented_item: x",
+        na_basis="not_presented_item",
+        evidence=_CollidingEvidence(key),
+    )
+    with pytest.raises(CM.CoverageManifestError) as caught:
+        _map(cell, np_pack)
+    assert caught.value.code == "not_presented_evidence_collision"
+    assert key in caught.value.message
 
 
 def test_class_kernel_and_absent_mapping(np_pack) -> None:
@@ -623,10 +799,21 @@ def test_class_kernel_and_absent_mapping(np_pack) -> None:
     klass = CM.map_metric_cell(
         _cell(CellState.NOT_APPLICABLE, reason="not_applicable_for_issuer_class"), **kwargs
     )
-    assert (klass["na_basis"], klass["reason_code"]) == (
+    assert (klass["na_basis"], klass["reason_code"], klass["kernel_reason"]) == (
+        "class_policy",
+        "not_applicable_for_issuer_class",
+        "not_applicable_for_issuer_class",
+    )
+    # The class rule matches on the bare code, detail or not.
+    detailed = CM.map_metric_cell(
+        _cell(CellState.NOT_APPLICABLE, reason="not_applicable_for_issuer_class: sic 6021"),
+        **kwargs,
+    )
+    assert (detailed["na_basis"], detailed["reason_code"]) == (
         "class_policy",
         "not_applicable_for_issuer_class",
     )
+    assert detailed["kernel_reason"] == "not_applicable_for_issuer_class: sic 6021"
     kernel = CM.map_metric_cell(_cell(CellState.NOT_APPLICABLE, reason="other"), **kwargs)
     assert kernel["na_basis"] == "kernel"
     missing = CM.map_metric_cell(_cell(CellState.MISSING), **kwargs)
@@ -641,6 +828,26 @@ def test_class_kernel_and_absent_mapping(np_pack) -> None:
     }
     evaluable = CM.map_metric_cell(_cell(CellState.NOT_EVALUABLE, reason="why"), **kwargs)
     assert (evaluable["reason_code"], evaluable["kernel_state"]) == ("why", "not_evaluable")
+    assert evaluable["kernel_reason"] == "why"
+
+
+@pytest.mark.parametrize(
+    "kernel_text, code",
+    [
+        ("missing_standard_fact: revenue has no fact for 2025-09-27", "missing_standard_fact"),
+        ("missing_dependency: a: b: c", "missing_dependency"),
+        ("incompatible_revision_basis", "incompatible_revision_basis"),
+        ("Free text without a code", "kernel_reason_unspecified"),
+        (": detail only", "kernel_reason_unspecified"),
+    ],
+)
+def test_reason_code_is_the_bare_kernel_code(np_pack, kernel_text, code) -> None:
+    from engine.fundamental_forensics.query import CellState
+
+    mapped = _map(_cell(CellState.MISSING, reason=kernel_text), np_pack)
+    assert mapped["reason_code"] == code
+    assert ":" not in mapped["reason_code"]
+    assert mapped["kernel_reason"] == kernel_text
 
 
 # ---------------------------------------------------------------------------
@@ -679,6 +886,55 @@ def test_producer_never_imports_the_proof_or_scripts() -> None:
     assert not any(name.split(".")[0] == "scripts" for name in imported)
     assert "yaml.safe_load" in PRODUCER.read_text(encoding="utf-8")
     assert "yaml.load(" not in PRODUCER.read_text(encoding="utf-8")
+
+
+def _kernel_constructions(path: Path) -> list[ast.Call]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    return [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call)
+        and (getattr(node.func, "id", None) or getattr(node.func, "attr", None))
+        == "BitemporalMetricQueryEngine"
+    ]
+
+
+def test_kernel_is_built_with_exactly_the_query_service_keywords() -> None:
+    """The served-only basis: the producer's kernel is the served kernel.
+
+    ``query_service`` passes no not-presented pack and no filing packages, so
+    the producer must not either (production serves no NP verdicts today).
+    """
+    (producer,) = _kernel_constructions(PRODUCER)
+    (service,) = _kernel_constructions(QUERY_SERVICE)
+    for call in (producer, service):
+        assert not call.args
+        assert all(keyword.arg is not None for keyword in call.keywords)  # no **kwargs
+    producer_keys = sorted(keyword.arg for keyword in producer.keywords)
+    service_keys = sorted(keyword.arg for keyword in service.keywords)
+    assert "not_presented_pack" not in producer_keys
+    assert "filing_packages" not in producer_keys
+    assert producer_keys == service_keys
+
+
+def test_the_built_kernel_receives_only_the_query_service_keywords(
+    inputs, manifest, monkeypatch
+) -> None:
+    (service,) = _kernel_constructions(QUERY_SERVICE)
+    service_keys = {keyword.arg for keyword in service.keywords}
+    real = CM.BitemporalMetricQueryEngine
+    seen: list[set[str]] = []
+
+    def recording(*args, **kwargs):
+        assert not args
+        seen.append(set(kwargs))
+        return real(**kwargs)
+
+    monkeypatch.setattr(CM, "BitemporalMetricQueryEngine", recording)
+    again = CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    assert seen
+    assert all(keys == service_keys for keys in seen), seen
+    assert CM.render_manifest(again) == CM.render_manifest(manifest)
 
 
 # ---------------------------------------------------------------------------

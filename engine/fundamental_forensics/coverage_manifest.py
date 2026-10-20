@@ -14,14 +14,21 @@ actually serves at one ``as_of`` cutoff:
   providers over that same generation.  The generation id is pinned once and
   every provider delivery must carry it (``generation_moved`` otherwise).
 * A member that is not served gets every in-window cell ``absent`` with
-  reason ``not_served`` — there is no fallback source.
+  reason ``not_served`` — there is no fallback source.  A served member whose
+  generation has no filing for a slot gets that slot's cells ``absent`` with
+  reason ``slot_not_filed``.
 * Statement slots (A1/A2 annual, I1/I2 interim) come from the served
   generation's statement packages, cut off at ``as_of`` on both the filing
   date and the acceptance clock.
-* Metric cells come from the kernel itself (``BitemporalMetricQueryEngine``
-  built as the query service builds it, with the governed not-presented pack
-  and every generation package as filing packages); the cell state mapping
-  never upgrades a kernel answer.
+* Metric cells come from the kernel itself: ``BitemporalMetricQueryEngine``
+  built with exactly the keywords ``query_service`` passes — no
+  not-presented pack and no filing packages, because production serves no
+  not-presented verdicts today.  The cell state mapping never upgrades a
+  kernel answer.  ``reason_code`` is the bare kernel code (the text before
+  the first ``:``); the full kernel text rides in ``kernel_reason``.  The
+  not-presented / qualified mapping is kept for the day production serves
+  those verdicts; the governed pack identity is recorded in the header with
+  ``applied_by_kernel: false``.
 
 The module never imports the coverage proof or any script: the producer and
 the proof are independent reimplementations of the same rules, and the proof
@@ -105,6 +112,8 @@ _FAMILY_ANNUAL = "annual"
 _FAMILY_INTERIM = "interim"
 _PERIOD_ID = re.compile(r"^([AI])([1-9][0-9]*)$")
 _CIK = re.compile(r"^[0-9]{10}$")
+_ISO_DATE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+_BARE_REASON = re.compile(r"^[a-z0-9_]+$")
 
 # Issuer serve states.
 SERVE_SERVED = "served"
@@ -127,6 +136,7 @@ _CLASS_POLICY_REASON = "not_applicable_for_issuer_class"
 # Reason codes.
 REASON_PRESENT = "present"
 REASON_NOT_SERVED = "not_served"
+REASON_SLOT_NOT_FILED = "slot_not_filed"
 REASON_PERIOD_NOT_IN_LEDGER = "period_not_in_ledger"
 REASON_METRIC_UNSUPPORTED = "metric_unsupported"
 REASON_KERNEL_REFUSED = "kernel_refused"
@@ -378,6 +388,10 @@ def load_tiers(data: bytes) -> TiersInput:
         raise CoverageManifestError(
             "deep_rounds_disagree", "deep_R1 and deep_R2 do not name the same issuers"
         )
+    if dict(deep_r1) != dict(deep_r2):
+        raise CoverageManifestError(
+            "deep_rounds_disagree", "deep_R1 and deep_R2 give an issuer different tickers"
+        )
     deep_ciks = {cik for cik, _ in deep_r1}
     tickers: dict[str, str] = {}
     for cik, ticker in core + deep_r1:
@@ -583,12 +597,19 @@ def _form_family(form: Any) -> tuple[str | None, bool]:
     return None, amendment
 
 
+def _strict_date(value: Any) -> date:
+    """A ``YYYY-MM-DD`` date; ``fromisoformat`` alone also takes ``YYYYMMDD``."""
+    if not isinstance(value, str) or not _ISO_DATE.fullmatch(value):
+        raise ValueError(f"not a YYYY-MM-DD date: {value!r}")
+    return date.fromisoformat(value)
+
+
 def _visible_clock(manifest: Mapping[str, Any], as_of: datetime) -> datetime | None:
     """The acceptance clock when the filing is visible at ``as_of``, else None."""
     try:
-        filed = date.fromisoformat(str(manifest.get("filing_date")))
+        filed = _strict_date(manifest.get("filing_date"))
         accepted = parse_utc(manifest.get("source_accepted_at"), field_name="source_accepted_at")
-        date.fromisoformat(str(manifest.get("period_of_report")))
+        _strict_date(manifest.get("period_of_report"))
     except (TypeError, ValueError):
         return None
     if accepted is None:
@@ -696,6 +717,36 @@ def _cell_state(state: Any) -> CellState:
     return state if isinstance(state, CellState) else CellState(state)
 
 
+def split_kernel_reason(reason: Any) -> tuple[str | None, str | None]:
+    """``(bare code, full kernel text)`` for one kernel reason.
+
+    The kernel writes ``"<code>: <detail>"``; the proof keys failures by the
+    text after the last ``:`` of ``<period>/<field>:<reason_code>``, so the
+    manifest's ``reason_code`` must be the bare code alone.  A code that is
+    not ``[a-z0-9_]+`` becomes ``kernel_reason_unspecified``; the full text is
+    kept either way.
+    """
+    if not isinstance(reason, str) or not reason.strip():
+        return None, None
+    text = reason.strip()
+    code = text.split(":", 1)[0].strip()
+    if not _BARE_REASON.fullmatch(code):
+        code = REASON_KERNEL_UNSPECIFIED
+    return code, text
+
+
+def _evidence_fields(evidence: Any, out: Mapping[str, Any]) -> dict[str, Any]:
+    """The not-presented evidence keys; never a key the cell already carries."""
+    fields = dict(evidence.to_dict())
+    clash = sorted(key for key in fields if key in out or not str(key).startswith("np_"))
+    if clash:
+        raise CoverageManifestError(
+            "not_presented_evidence_collision",
+            f"not-presented evidence may add only new np_* keys; got {', '.join(map(str, clash))}",
+        )
+    return fields
+
+
 def map_metric_cell(
     cell: Any,
     *,
@@ -713,7 +764,9 @@ def map_metric_cell(
     }
     state = _cell_state(cell.state)
     provenance = cell.provenance
-    reason = cell.reason or getattr(provenance, "reason", None)
+    reason, kernel_reason = split_kernel_reason(
+        cell.reason or getattr(provenance, "reason", None)
+    )
     if state is CellState.VALUE:
         out["status"] = STATUS_PRESENT
         out["reason_code"] = REASON_PRESENT
@@ -726,13 +779,14 @@ def map_metric_cell(
         out["status"] = STATUS_NOT_APPLICABLE
         if reason:
             out["reason_code"] = reason
+            out["kernel_reason"] = kernel_reason
         evidence = getattr(provenance, "not_presented", None)
         if (
             getattr(provenance, "na_basis", None) == NA_BASIS_NOT_PRESENTED_ITEM
             and evidence is not None
         ):
+            out.update(_evidence_fields(evidence, out))
             out["na_basis"] = NA_BASIS_NOT_PRESENTED_ITEM
-            out.update(evidence.to_dict())
         elif reason == _CLASS_POLICY_REASON:
             out["na_basis"] = NA_BASIS_CLASS
         else:
@@ -740,6 +794,8 @@ def map_metric_cell(
         return out
     out["status"] = STATUS_ABSENT
     out["reason_code"] = reason or REASON_KERNEL_UNSPECIFIED
+    if kernel_reason:
+        out["kernel_reason"] = kernel_reason
     out["kernel_state"] = state.value
     return out
 
@@ -829,7 +885,7 @@ def _served_metric_cells(
                 duration_request = PeriodRequest.duration(span[0], span[1])
         for metric_id in metric_ids:
             if slot is None:
-                plan[(period.period_id, metric_id)] = ("reason", REASON_NOT_SERVED)
+                plan[(period.period_id, metric_id)] = ("reason", REASON_SLOT_NOT_FILED)
                 continue
             kind = kinds.get(metric_id)
             if kind == "instant":
@@ -849,6 +905,8 @@ def _served_metric_cells(
     refused: set[tuple[str, tuple[Any, ...]]] = set()
     construction_refused = False
     if requests["instant"] or requests["duration"]:
+        # Built with exactly query_service's keywords (no not-presented pack,
+        # no filing packages): the manifest measures what production serves.
         try:
             engine = BitemporalMetricQueryEngine(
                 ledger=dataset.ledger,
@@ -868,8 +926,6 @@ def _served_metric_cells(
                     max_cells=HARD_MAX_METRICS * QUERY_CHUNK_PERIODS,
                 ),
                 lineage_evidence=getattr(dataset, "lineage_evidence", ()) or (),
-                not_presented_pack=np_pack,
-                filing_packages=tuple(served.packages),
             )
         except Exception:  # noqa: BLE001 - the kernel refused the dataset
             construction_refused = True
@@ -961,18 +1017,20 @@ def _deep_component_cells(
     slots: Mapping[tuple[str, int], Slot],
 ) -> list[dict[str, Any]]:
     cells: list[dict[str, Any]] = []
+    # A served issuer's empty slot is unfiled; an unserved issuer has no slots.
+    empty_slot = REASON_NOT_SERVED if served is None else REASON_SLOT_NOT_FILED
     for period in thresholds.deep_periods:
         slot = slots.get((period.family, period.rank)) if served is not None else None
         for role in thresholds.package_roles:
             field_id = f"package:{role}"
-            reason = REASON_NOT_SERVED if slot is None else package_role_reason(slot.package, role)
+            reason = empty_slot if slot is None else package_role_reason(slot.package, role)
             if reason is None:
                 cells.append(_present(cik, period.period_id, field_id, serve_generation))
             else:
                 cells.append(_absent(cik, period.period_id, field_id, reason, serve_generation))
         for kind in thresholds.statements:
             field_id = f"statement:{kind}"
-            reason = REASON_NOT_SERVED if slot is None else statement_reason(slot.package, kind)
+            reason = empty_slot if slot is None else statement_reason(slot.package, kind)
             if reason is None:
                 cells.append(_present(cik, period.period_id, field_id, serve_generation))
             else:
@@ -1002,7 +1060,6 @@ def _metric_scope_pass(
     periods: Sequence[SlotPeriod],
     direct: Sequence[str],
     formula: Sequence[str],
-    thresholds: ManifestThresholds,
 ) -> tuple[bool, float | None]:
     present = applicable = 0
     failed = False
@@ -1037,7 +1094,7 @@ def issuer_rollup(
         counts[cell["status"]] += 1
         index[(cell["period_id"], cell["field_id"])] = cell
     core_failed, core_rate = _metric_scope_pass(
-        index, thresholds.core_periods, direct, formula, thresholds
+        index, thresholds.core_periods, direct, formula
     )
     rollup: dict[str, Any] = {
         "core_pass": (not core_failed)
@@ -1048,7 +1105,7 @@ def issuer_rollup(
     }
     if is_deep:
         deep_failed, deep_rate = _metric_scope_pass(
-            index, thresholds.deep_periods, direct, formula, thresholds
+            index, thresholds.deep_periods, direct, formula
         )
         component_failed = False
         for period in thresholds.deep_periods:
@@ -1243,6 +1300,7 @@ def build_coverage_manifest(
                 "pack_id": pack.pack_id,
                 "pack_version": pack.pack_version,
                 "content_sha256": pack.content_sha256,
+                "applied_by_kernel": False,
             },
             "metric_counts": {
                 "direct": len(direct),
