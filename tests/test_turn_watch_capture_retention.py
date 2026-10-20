@@ -380,6 +380,161 @@ def test_retention_failure_preserves_changed_owned_lock(runners, monkeypatch, ki
     assert (repo / "untracked-owner.txt").read_bytes() == b"untracked owner bytes\n"
 
 
+def _inject_bounded_owned_lock_hook(monkeypatch, hook):
+    """Bound non-regular lock probes, including all descendant shell processes."""
+    import os
+    import signal
+
+    real_run = subprocess.run
+
+    def inject(argv, *args, **kwargs):
+        if not (isinstance(argv, list) and argv[:2] == ["bash", "-c"]
+                and "oip_commit_locked_roots" in argv[2]):
+            return real_run(argv, *args, **kwargs)
+        argv = [*argv[:2], hook + "\n" + argv[2], *argv[3:]]
+        options = dict(kwargs)
+        check = options.pop("check", False)
+        assert options.pop("capture_output", False)
+        with subprocess.Popen(
+            argv, *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            start_new_session=True, **options,
+        ) as process:
+            try:
+                stdout, stderr = process.communicate(timeout=15)
+            except subprocess.TimeoutExpired:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate()
+                pytest.fail("owned-lock transaction hung on a bounded lock probe")
+            result = subprocess.CompletedProcess(argv, process.returncode, stdout, stderr)
+        if check:
+            result.check_returncode()
+        return result
+
+    monkeypatch.setattr(subprocess, "run", inject)
+
+
+@pytest.mark.parametrize("kind", ["modified", "different-inode", "symlink", "fifo"])
+@pytest.mark.parametrize("boundary", ["snapshot", "prepared", "install"])
+def test_successful_transaction_preserves_changed_owned_lock(
+    runners, monkeypatch, kind, boundary,
+):
+    _, _, repo = overlap(runners)
+    write(repo, "untracked-owner.txt", b"untracked owner bytes\n")
+    before = state(repo)
+    if kind == "modified":
+        mutation = "printf 'foreign lock bytes' > .git/index.lock"
+    else:
+        mutation = "mv .git/index.lock .git/index.lock.original\n"
+        mutation += {
+            "different-inode": ": > .git/index.lock",
+            "symlink": "ln -s ../untracked-owner.txt .git/index.lock",
+            "fifo": "mkfifo .git/index.lock",
+        }[kind]
+    hook_name = {
+        "snapshot": "oip_after_locked_tree_snapshot",
+        "prepared": "oip_after_locked_index_prepare",
+        "install": "oip_before_locked_index_install",
+    }[boundary]
+    hook = hook_name + "() {\n" + mutation + "\nreturn 0\n}\n"
+    _inject_bounded_owned_lock_hook(monkeypatch, hook)
+    with pytest.raises(subprocess.CalledProcessError):
+        retention.preserve_retained(repo)
+    assert not (repo / ".git/index").is_symlink()
+    assert state(repo) == before
+    lock = repo / ".git/index.lock"
+    if kind == "modified":
+        assert lock.read_bytes() == b"foreign lock bytes"
+    elif kind == "different-inode":
+        assert lock.is_file() and lock.stat().st_size == 0
+        assert lock.stat().st_ino != (repo / ".git/index.lock.original").stat().st_ino
+    elif kind == "symlink":
+        assert lock.is_symlink()
+    else:
+        assert lock.is_fifo()
+    assert (repo / "untracked-owner.txt").read_bytes() == b"untracked owner bytes\n"
+
+
+def test_install_refusal_never_rolls_back_a_newer_ref(runners, monkeypatch):
+    _, _, repo = overlap(runners)
+    before = state(repo)
+    hook = """oip_before_locked_index_install() {
+  mv .git/index.lock .git/index.lock.original
+  printf 'foreign lock bytes' > .git/index.lock
+  third=$(printf 'independent ref winner\\n' | git commit-tree "$parent_tree" -p "$candidate")
+  git update-ref refs/heads/main "$third" "$candidate"
+  printf '%s' "$third" > .git/ref-race-winner
+  return 0
+}
+"""
+    _inject_bounded_owned_lock_hook(monkeypatch, hook)
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        retention.preserve_retained(repo)
+    assert b"rollback unresolved" in exc.value.stderr
+    assert git(repo, "rev-parse", "HEAD").stdout.strip().decode() == (
+        repo / ".git/ref-race-winner"
+    ).read_text()
+    assert (repo / ".git/index").read_bytes() == before[1]
+    assert (repo / CAPTURE).read_bytes() == before[2]
+    assert (repo / ".git/index.lock").read_bytes() == b"foreign lock bytes"
+
+
+def test_unconfirmed_install_ack_does_not_blindly_roll_back(runners, monkeypatch):
+    _, _, repo = overlap(runners)
+    before = state(repo)
+    hook = """oip_before_locked_index_install() {
+  python3() {
+    if [ "$2" = install ]; then
+      command python3 "$@" || return $?
+      # Lose only the successful helper's completion status, after its rename.
+      return 75
+    fi
+    command python3 "$@"
+  }
+  return 0
+}
+"""
+    _inject_bounded_owned_lock_hook(monkeypatch, hook)
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        retention.preserve_retained(repo)
+    assert b"installation outcome unknown" in exc.value.stderr
+    assert git(repo, "rev-parse", "HEAD").stdout != before[0]
+    assert git(repo, "show", "HEAD:" + CAPTURE).stdout == FIRST
+    assert git(repo, "show", ":" + CAPTURE).stdout == FIRST
+    assert (repo / CAPTURE).read_bytes() == SECOND
+    assert not (repo / ".git/index.lock").exists()
+
+
+@pytest.mark.parametrize("foreign", [False, True], ids=["clean-restore", "foreign-lock"])
+def test_broad_failure_restoration_obeys_owned_content(runners, monkeypatch, foreign):
+    _, _, repo = overlap(runners)
+    write(repo, "data/broad-pending.json", b"pending broad output\n")
+    git(repo, "add", "--", "data/broad-pending.json")
+    before = state(repo)
+    mutation = "printf 'foreign lock bytes' > .git/index.lock\n" if foreign else ""
+    hook = "oip_after_locked_tree_snapshot() {\n" + mutation + "return 74\n}\n"
+    _inject_bounded_owned_lock_hook(monkeypatch, hook)
+    result = subprocess.run(
+        ["bash", "-c",
+         'source "$1"\noip_commit_locked_roots "rejected broad output" true data',
+         "broad-restore-test",
+         str(retention.REPO_ROOT / "scripts/ci/options_signal_nightly.sh")],
+        cwd=repo, check=False, capture_output=True,
+    )
+    assert result.returncode == 74
+    assert git(repo, "rev-parse", "HEAD").stdout == before[0]
+    assert (repo / CAPTURE).read_bytes() == before[2]
+    assert (repo / "data/broad-pending.json").read_bytes() == b"pending broad output\n"
+    if foreign:
+        assert state(repo) == before
+        assert (repo / ".git/index.lock").read_bytes() == b"foreign lock bytes"
+    else:
+        assert not git(repo, "diff", "--cached", "--name-only").stdout
+        assert not (repo / ".git/index.lock").exists()
+
+
 def test_working_writer_after_private_snapshot_survives_success(runners, monkeypatch):
     _, _, repo = overlap(runners)
     hook = "oip_after_locked_tree_snapshot() {\nprintf 'late working writer\\n' > '" + CAPTURE + "'\n}\n"

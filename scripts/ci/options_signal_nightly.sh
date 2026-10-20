@@ -441,22 +441,46 @@ oip_after_locked_tree_snapshot() {
 }
 fi
 
+oip_index_lock_operation() {
+  python3 "$REPO_ROOT/scripts/ci/options_index_lock_identity.py" "$@"
+}
+
+if ! declare -F oip_after_locked_index_prepare >/dev/null 2>&1; then
+oip_after_locked_index_prepare() {
+  # Test-only boundary: prepared content is revalidated before advancing the ref.
+  return 0
+}
+fi
+
+if ! declare -F oip_before_locked_index_install >/dev/null 2>&1; then
+oip_before_locked_index_install() {
+  # Test-only boundary after ref CAS, before the owned-content install check.
+  return 0
+}
+fi
+
 oip_restore_locked_index() {
   local parent="$1" lock_path="$2" index_path="$3" clean_index="$4"
-  [ -n "$clean_index" ] || return 1
+  local identity="$5" expected_content="$6" clean_fingerprint="" outcome="" install_rc=0
+  [ -n "$clean_index" ] && [ -n "$expected_content" ] || return 1
   rm -f -- "$clean_index" "$clean_index.lock"
-  if GIT_INDEX_FILE="$clean_index" git read-tree "$parent" \
-      && cp -- "$clean_index" "$lock_path" \
-      && mv -f -- "$lock_path" "$index_path"; then
+  GIT_INDEX_FILE="$clean_index" git read-tree "$parent" || return 1
+  clean_fingerprint=$(oip_index_lock_operation fingerprint "$clean_index") || return 1
+  outcome=$(oip_index_lock_operation fill "$lock_path" "$identity" \
+    "$expected_content" "$clean_index" "$clean_fingerprint") || return 1
+  [ "$outcome" = PREPARED ] || return 1
+  # A known pre-install failure may restore only this pinned current ref. Never
+  # infer a restoration target after an unconfirmed installation or ownership loss.
+  [ "$parent" = "$(git rev-parse 'refs/heads/main^{commit}')" ] || return 1
+  outcome=$(oip_index_lock_operation install "$lock_path" "$identity" \
+    "$clean_fingerprint" "$index_path") || install_rc=$?
+  if [ "$install_rc" -eq 0 ] && [ "$outcome" = APPLIED ]; then
     rm -f -- "$clean_index" "$clean_index.lock"
     return 0
   fi
-  # Leave the lock in place on failure.  This process owns it; retaining it is
-  # the fail-closed outcome because every later git writer will refuse to run.
-  rm -f -- "$clean_index" "$clean_index.lock"
+  echo "::error title=engine index restoration unresolved::preserve the lock and private evidence; install outcome=$outcome rc=$install_rc" >&2
   return 1
 }
-
 
 # Exclusively create and identify this invocation's empty index lock. No claims lock
 # is acquired while Git's index lock is held. A later rejection may remove only
@@ -515,11 +539,11 @@ oip_retained_overlay_locked() {
   done
 }
 
-# Commit the exact live index snapshot while owning Git's real index lock.
-# The same primitive is used for the broad engine tree and the later render-sync
-# tree with different root allowlists.  No validation-then-commit window exists:
-# the lock is acquired before the index copy and released only after the
-# expected-parent ref update and atomic index installation.
+# Commit the exact live index snapshot under Git's existing index-lock protocol.
+# Broad, render-sync and retained-capture paths share this transaction. Identity
+# and fixed content fingerprints are checked before descriptor writes, ref CAS
+# and installation. Cooperative writers must still respect the final pathname
+# check/rename interval and must not write through the same owned inode.
 oip_commit_locked_roots() {
   local message="$1" reject_narrow="$2"
   shift 2
@@ -534,6 +558,8 @@ oip_commit_locked_roots() {
   local symbolic parent parent_tree index_path lock_path snapshot="" clean_index=""
   local diff_path="" tree="" candidate="" restore_target="" status path root matched rc=0 owned=0
   local qledger_rejected=0 lock_identity="" qledger_baseline=""
+  local lock_phase=empty lock_content=empty snapshot_fingerprint="" lock_outcome=""
+  local install_outcome="" install_rc=0 retain_evidence=0
 
   oip_require_main_branch || return 1
   parent=$(git rev-parse 'refs/heads/main^{commit}') || return 1
@@ -575,6 +601,11 @@ oip_commit_locked_roots() {
   fi
   if [ "$rc" -eq 0 ]; then
     tree=$(GIT_INDEX_FILE="$snapshot" git write-tree --missing-ok) || rc=$?
+  fi
+  if [ "$rc" -eq 0 ]; then
+    # Pin the finalized private bytes once. Later phases may not redefine what
+    # "our prepared index" means by re-reading a changed source expectation.
+    snapshot_fingerprint=$(oip_index_lock_operation fingerprint "$snapshot") || rc=$?
   fi
   oip_after_locked_tree_snapshot || rc=$?
   if [ "$rc" -eq 0 ]; then
@@ -629,47 +660,100 @@ oip_commit_locked_roots() {
   if [ "$rc" -eq 0 ]; then
     candidate=$(printf '%s\n' "$message" | git commit-tree "$tree" -p "$parent") || rc=$?
   fi
-  # Prepare the exact post-commit index in our owned lock before the ref CAS.
+  # Fill through the verified original descriptor, never through a pathname cp.
   if [ "$rc" -eq 0 ]; then
-    cp -- "$snapshot" "$lock_path" || rc=$?
+    lock_outcome=$(oip_index_lock_operation fill "$lock_path" "$lock_identity" \
+      "$lock_content" "$snapshot" "$snapshot_fingerprint") || rc=$?
+    if [ "$rc" -eq 0 ] && [ "$lock_outcome" = PREPARED ]; then
+      lock_phase=prepared
+      lock_content="$snapshot_fingerprint"
+    else
+      [ "$rc" -ne 0 ] || rc=1
+      lock_phase=unconfirmed
+      retain_evidence=1
+      echo "::error title=engine index ownership lost::fill refused or unconfirmed; preserve lock and live preimage" >&2
+    fi
+  fi
+  if [ "$rc" -eq 0 ]; then
+    oip_after_locked_index_prepare || rc=$?
+  fi
+  if [ "$rc" -eq 0 ] && ! oip_index_lock_operation verify \
+      "$lock_path" "$lock_identity" "$lock_content"; then
+    rc=1
+    lock_phase=unconfirmed
+    retain_evidence=1
+    echo "::error title=engine prepared lock changed::ref withheld; foreign lock and live index preserved" >&2
   fi
   if [ "$rc" -eq 0 ]; then
     git update-ref -m "$message" refs/heads/main "$candidate" "$parent" || rc=$?
   fi
   if [ "$rc" -eq 0 ]; then
-    if mv -f -- "$lock_path" "$index_path"; then
-      owned=0
+    lock_phase=ref-advanced
+    if oip_before_locked_index_install; then
+      install_outcome=$(oip_index_lock_operation install "$lock_path" "$lock_identity" \
+        "$lock_content" "$index_path") || install_rc=$?
     else
-      # Normal command failures must leave the ref at its original value.  If
-      # rollback itself fails, retain our lock so no later writer can proceed.
-      git update-ref -m "rollback failed index install" refs/heads/main "$parent" "$candidate" \
-        || true
-      rc=1
+      install_outcome=NOT_APPLIED
+      install_rc=1
     fi
+    if [ "$install_rc" -eq 0 ] && [ "$install_outcome" = APPLIED ]; then
+      owned=0
+      lock_phase=installed
+    elif [ "$install_rc" -eq 1 ] && [ "$install_outcome" = NOT_APPLIED ]; then
+      # A definite pre-install refusal may undo only our own ref transition.
+      # If another ref writer has advanced it, retain that newer ref unchanged.
+      if git update-ref -m "rollback refused index install" \
+          refs/heads/main "$parent" "$candidate"; then
+        lock_phase=ref-rolled-back
+      else
+        lock_phase=rollback-unconfirmed
+        echo "::error title=engine rollback unresolved::expected candidate ref changed; preserve current ref and index" >&2
+      fi
+      retain_evidence=1
+      rc=1
+    else
+      # A lost/malformed acknowledgement or filesystem replacement error cannot
+      # establish non-application. Never roll back or rebuild blindly.
+      lock_phase=install-unconfirmed
+      retain_evidence=1
+      rc=2
+      echo "::error title=engine index installation outcome unknown::preserve current ref/index/lock for same-carrier reconciliation" >&2
+    fi
+  elif [ "$lock_phase" = unconfirmed ]; then
+    # No ownership/content claim remains. This includes partial descriptor writes.
+    # Do not feed a changed lock through either restoration or cleanup.
+    :
   elif [ "$qledger_rejected" -eq 1 ] || [ -n "$capture_target" ]; then
-    # No ref/index installation occurred. A retention failure must also preserve
-    # the live preimage: a failed private-index copy can hide a late staged
-    # writer before the overlay has a chance to validate it. Never rebuild the
-    # real index here. Release only our still-empty lock; a filled/replaced lock
-    # remains a fail-closed recovery marker under the existing identity owner.
+    # Retention/QLedger rejection preserves the real index/worktree preimage.
+    # Only our same still-empty inode can be released by this cleanup path.
     if oip_release_owned_empty_lock "$lock_path" "$lock_identity"; then
       owned=0
     else
+      retain_evidence=1
       echo "::error title=engine rejected candidate lock preserved::the lock is no longer this invocation's empty inode" >&2
     fi
   else
+    # Preserve the incumbent broad-failure restoration contract, but require a
+    # known lock content phase and a pinned current ref; there is no parent fallback.
     restore_target=$(git rev-parse 'refs/heads/main^{commit}' 2>/dev/null || true)
-    [ -n "$restore_target" ] || restore_target="$parent"
-    if oip_restore_locked_index "$restore_target" "$lock_path" "$index_path" "$clean_index"; then
+    if [ -n "$restore_target" ] && \
+        oip_restore_locked_index "$restore_target" "$lock_path" "$index_path" \
+          "$clean_index" "$lock_identity" "$lock_content"; then
       owned=0
+      lock_phase=restored
+    else
+      lock_phase=restore-unconfirmed
+      retain_evidence=1
     fi
   fi
-  [ -z "$snapshot" ] || rm -f -- "$snapshot" "$snapshot.lock"
-  [ -z "$clean_index" ] || rm -f -- "$clean_index" "$clean_index.lock"
-  [ -z "$diff_path" ] || rm -f -- "$diff_path"
-  # owned==1 here means the ref/index transaction could not be restored.  Keep
-  # the lock this invocation created as a fail-closed recovery marker; never
-  # remove a lock merely because the ref still happens to equal the parent.
+  if [ "$retain_evidence" -eq 0 ]; then
+    [ -z "$snapshot" ] || rm -f -- "$snapshot" "$snapshot.lock"
+    [ -z "$clean_index" ] || rm -f -- "$clean_index" "$clean_index.lock"
+    [ -z "$diff_path" ] || rm -f -- "$diff_path"
+  else
+    echo "::error title=engine transaction evidence retained::phase=$lock_phase snapshot=$snapshot clean_index=$clean_index diff=$diff_path" >&2
+  fi
+  # A foreign/uncertain lock is never adopted merely because HEAD matches parent.
   [ "$rc" -eq 0 ] || return "$rc"
   printf '%s\n' "$candidate"
 }
