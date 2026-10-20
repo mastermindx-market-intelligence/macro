@@ -10,10 +10,10 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Mapping
 
-from . import pk06_leases
+from . import pk01_debt, pk06_leases
 from .base import PackInput, PackProducer, SpecialistPackError, produce_pack_result
 
-_PRODUCER_MODULES = (pk06_leases,)
+_PRODUCER_MODULES = (pk01_debt, pk06_leases)
 
 
 def _build() -> Mapping[str, PackProducer]:
