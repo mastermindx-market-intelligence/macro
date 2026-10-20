@@ -1,0 +1,11 @@
+{
+  "recorded_at": "2026-10-20T20:29:14.339349+00:00",
+  "operation_id": "intl-country-cockpit-20261018",
+  "requested_expected_head": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "tool_result": "tool call rejected because the catalog changed after codex_apps/studio_direct_c2_personal.studio_git_commit_current_changes was prepared",
+  "classification": "technical_pre_dispatch_catalog_change",
+  "effect": "NOT_APPLIED",
+  "observed_local_head": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "remote_native_status_head": "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7",
+  "retry_scope": "Same registered native local commit carrier after exact source census; no push replay."
+}

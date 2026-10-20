@@ -1,0 +1,48 @@
+{
+  "source_sha": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "prior_receipt": "final_exit_guards.json",
+  "cause": "Guard environment lacked the declared canonical emitter dependency; visual-evidence invocation lacked its required diff-file argument. No product source changed.",
+  "checks": [
+    {
+      "name": "rjsmin_install",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "rjsmin==1.2.5"
+      ],
+      "started_at": "2026-10-20T15:31:36.848385+00:00",
+      "finished_at": "2026-10-20T15:31:37.652327+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_repair_rjsmin_install.log",
+      "log_sha256": "35e2e632e9d5a115a9418fc79c5ce9e0a7314ee9a2b165b0c9814afbf181ac65"
+    },
+    {
+      "name": "template_site_sync",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_template_site_sync.py"
+      ],
+      "started_at": "2026-10-20T15:31:37.652751+00:00",
+      "finished_at": "2026-10-20T15:31:39.361193+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_repair_template_site_sync.log",
+      "log_sha256": "15b94bc406548bc737e30b451f0eb1b57df476f1de6b0fb603c67fc245e3bbc5"
+    },
+    {
+      "name": "visual_evidence",
+      "argv": [
+        "/private/tmp/intl-country-cockpit-ci-20261020/bin/python",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/intl-country-cockpit-final-design.diff"
+      ],
+      "started_at": "2026-10-20T15:31:39.361578+00:00",
+      "finished_at": "2026-10-20T15:31:42.124867+00:00",
+      "exit_code": 0,
+      "log": "research/reference_integrity/intl-country-intelligence-20261020/final_guard_repair_visual_evidence.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

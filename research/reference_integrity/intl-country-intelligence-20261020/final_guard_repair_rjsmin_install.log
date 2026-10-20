@@ -1,0 +1,7 @@
+Collecting rjsmin==1.2.5
+  Using cached rjsmin-1.2.5-cp312-cp312-macosx_11_0_arm64.whl
+Installing collected packages: rjsmin
+Successfully installed rjsmin-1.2.5
+
+[notice] A new release of pip is available: 26.1.2 -> 26.2.1
+[notice] To update, run: /private/tmp/intl-country-cockpit-ci-20261020/bin/python -m pip install --upgrade pip

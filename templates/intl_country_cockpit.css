@@ -322,3 +322,28 @@ html[data-theme="light"] body.imc-page{--bg:inherit;--panel:inherit;--panel2:inh
 .imc-calculation>summary{cursor:pointer;font-size:var(--fs-label);font-weight:600;line-height:1.6;min-height:24px}
 .imc-calculation[open]>summary{margin-bottom:12px}
 .imc-calculation>summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+/* The shared assistant occupies reserved chrome, clear of country research text. */
+.imc-toolbar-anchor{height:var(--imc-toolbar-height,54px);margin-bottom:28px}
+.imc-toolbar{display:flex;align-items:center;gap:16px;border-block:1px solid var(--line);background:var(--panel);min-height:54px;padding-right:6px}
+.imc-toolbar.is-stuck{position:fixed;top:0;left:var(--imc-toolbar-left);width:var(--imc-toolbar-width);z-index:120}
+.imc-toolbar .imc-nav{flex:1;min-width:0;border:0;margin:0}
+.imc-assistant-slot{flex:0 0 40px;width:40px;height:40px}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch){top:var(--imc-assistant-top);left:var(--imc-assistant-left);right:auto;bottom:auto;width:40px;height:40px;padding:0;gap:0;justify-content:center;border:1px solid var(--line);border-radius:8px;background:var(--panel);box-shadow:none;backdrop-filter:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch):hover{transform:none;background:var(--panel2);box-shadow:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch)::before,
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch)::after,
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch) .lt,
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch) .mmb-orb::after{display:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch) .mmb-orb{width:24px;height:24px;border-radius:0;background:none;box-shadow:none;animation:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch) .mmb-orb svg{width:20px;height:20px;fill:var(--link);filter:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch):focus-visible{outline:2px solid var(--ink-info,var(--info));outline-offset:2px}
+@media(max-width:600px){
+ .imc-toolbar-anchor{height:var(--imc-toolbar-height,94px);margin-bottom:18px}
+ .imc-toolbar{gap:8px;padding-right:4px}
+ .imc-toolbar .imc-nav{column-gap:8px}
+}
+@media print{.imc-toolbar.is-stuck{position:static}}
+
+/* Every retained fragment lands below the measured navigation height. */
+body[data-imc-assistant-dock] :is(.imc [id],#intl-analysis-tools,#intl-analysis-tools [id]){scroll-margin-top:calc(var(--imc-toolbar-height,54px) + 16px)}

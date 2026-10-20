@@ -1,0 +1,484 @@
+{
+  "recorded_at": "2026-10-20T15:29:55.059649+00:00",
+  "source_commit": "0be244ba05355f4260b28da89dac4587f5a772e4",
+  "html_sha256": "22a3f22411c315606cd6e4ad9ad111103711841cea0585f5b5a68e267948de4e",
+  "checks": [
+    {
+      "id": "source-disclosure-JP-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-JP-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "equity-inputs-JP-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-KR-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-KR-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-TW-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "source-disclosure-IN-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "source-disclosure-AU-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-AU-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-GB-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-GB-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-EZ-desktop-en-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-EZ-desktop-en-light",
+      "passed": true
+    },
+    {
+      "id": "no-page-exceptions-desktop-en-light",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "source-disclosure-JP-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-JP-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "equity-inputs-JP-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-KR-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-KR-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-TW-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "source-disclosure-IN-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "source-disclosure-AU-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-AU-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-GB-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-GB-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-EZ-mobile-zh-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-EZ-mobile-zh-dark",
+      "passed": true
+    },
+    {
+      "id": "no-page-exceptions-mobile-zh-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "source-disclosure-JP-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-JP-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "equity-inputs-JP-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-EZ-narrow-en-dark",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "en",
+        "theme": "dark"
+      }
+    },
+    {
+      "id": "GDP-inputs-EZ-narrow-en-dark",
+      "passed": true
+    },
+    {
+      "id": "no-page-exceptions-narrow-en-dark",
+      "passed": true,
+      "actual": []
+    },
+    {
+      "id": "source-disclosure-JP-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-JP-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "equity-inputs-JP-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "source-disclosure-EZ-narrow-zh-light",
+      "passed": true,
+      "actual": {
+        "overflow": false,
+        "lang": "zh",
+        "theme": "light"
+      }
+    },
+    {
+      "id": "GDP-inputs-EZ-narrow-zh-light",
+      "passed": true
+    },
+    {
+      "id": "no-page-exceptions-narrow-zh-light",
+      "passed": true,
+      "actual": []
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-JP-desktop-en-light.png",
+      "sha256": "80fe8296b9a191bbe9d417769d260366fbdc9c76cbac20c61fbebfc173b948cb",
+      "bytes": 149983,
+      "captured_at": "2026-10-20T15:29:28.529811+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-JP-desktop-en-light.png",
+      "sha256": "e843edf452f17da48c77b1f20c5232bc78b5241fa67019a7c0243e4f4a9433fb",
+      "bytes": 129707,
+      "captured_at": "2026-10-20T15:29:28.771593+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/equity-rows-JP-desktop-en-light.png",
+      "sha256": "5c671345ee466e775d27d64082bd5ade3d6e2486df2e5d585882a668b2f7d699",
+      "bytes": 105945,
+      "captured_at": "2026-10-20T15:29:28.987218+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-KR-desktop-en-light.png",
+      "sha256": "717f28da7e0ecbd94f81bd6e2b1bbe34b0ff5e697ded7942f377d07eca8a0f97",
+      "bytes": 157495,
+      "captured_at": "2026-10-20T15:29:30.026603+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-KR-desktop-en-light.png",
+      "sha256": "1b503400b5086db584417dcbfd7e00535d5f04e7a6a19bcb7f9e1f1cdd2fe4e8",
+      "bytes": 133074,
+      "captured_at": "2026-10-20T15:29:30.273025+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-TW-desktop-en-light.png",
+      "sha256": "968c2f16e7a5a63423ce61fd288c095dcabf2b47db80d539bceaa34ec88a46b2",
+      "bytes": 147350,
+      "captured_at": "2026-10-20T15:29:31.292375+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-IN-desktop-en-light.png",
+      "sha256": "56f5b097fbe157acf2c73d512d621ea908bc2c435b8e360a29456072a1ed63bb",
+      "bytes": 148928,
+      "captured_at": "2026-10-20T15:29:32.304689+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-AU-desktop-en-light.png",
+      "sha256": "b97bede4f5276a00839d459dc3d36f14837ea973693b295f591fb894825825eb",
+      "bytes": 154476,
+      "captured_at": "2026-10-20T15:29:33.324381+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-AU-desktop-en-light.png",
+      "sha256": "f4dffbba62c04343ddca12fd03a3a1390aca23f082c7bda307f546f12d3c4d1f",
+      "bytes": 131706,
+      "captured_at": "2026-10-20T15:29:33.526536+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-GB-desktop-en-light.png",
+      "sha256": "73eb64ad34bb5049ded0c6f3e7ab97bbd07cc26409c59561b68673acb14033db",
+      "bytes": 150979,
+      "captured_at": "2026-10-20T15:29:34.542056+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-GB-desktop-en-light.png",
+      "sha256": "7a58e9c448fb1e03b3b92d6a58d094fcf395b925adcdd41fb95562127debf3bc",
+      "bytes": 131532,
+      "captured_at": "2026-10-20T15:29:34.790091+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-EZ-desktop-en-light.png",
+      "sha256": "dc93dc90e347c231cad77c8ee4385493105c3e902931d84fe94d7fac4dcea6a0",
+      "bytes": 154017,
+      "captured_at": "2026-10-20T15:29:35.793118+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-EZ-desktop-en-light.png",
+      "sha256": "42cbcd102f4131b35e9439046e650052eb55d3b3d302efe7b63ed8a56a78a724",
+      "bytes": 132350,
+      "captured_at": "2026-10-20T15:29:36.041312+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-JP-mobile-zh-dark.png",
+      "sha256": "3b5ed61db590f97d19ab5682a0c798cc7deeaceb77553edb7df33fbafe6924c8",
+      "bytes": 91964,
+      "captured_at": "2026-10-20T15:29:37.871000+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-JP-mobile-zh-dark.png",
+      "sha256": "1b3fc5bba850c907ea914632837fa18d6a9af67ec397b598ae9f0bb3dfcc1120",
+      "bytes": 74973,
+      "captured_at": "2026-10-20T15:29:38.148032+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/equity-rows-JP-mobile-zh-dark.png",
+      "sha256": "0f76d0cf6343db2f5f742eb7ea5bf37f99b10435b3f39d7e231f952511e6ce51",
+      "bytes": 83745,
+      "captured_at": "2026-10-20T15:29:38.394990+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-KR-mobile-zh-dark.png",
+      "sha256": "22830b3572514d1460ec98a2debd1e631ffcc99a92a5c2aa14499281cff1af62",
+      "bytes": 96838,
+      "captured_at": "2026-10-20T15:29:39.395789+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-KR-mobile-zh-dark.png",
+      "sha256": "780d8328a73940636706195aea50605f603fe6579b9ba213e25349205e4491be",
+      "bytes": 75784,
+      "captured_at": "2026-10-20T15:29:39.647341+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-TW-mobile-zh-dark.png",
+      "sha256": "b6ea568d99dc7c65961498d2300ca49d1c959488c4247fbac6b6df1be7cc78ce",
+      "bytes": 99777,
+      "captured_at": "2026-10-20T15:29:40.654633+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-IN-mobile-zh-dark.png",
+      "sha256": "483a95ca434422fe0d3844486f9a1fa5b5beb0fa3583e5d1d2a5e11f2585ec14",
+      "bytes": 90481,
+      "captured_at": "2026-10-20T15:29:41.669501+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-AU-mobile-zh-dark.png",
+      "sha256": "443668502a76b332809db83723103e240ccf12a66efc3165443003ffa0a3edb0",
+      "bytes": 92216,
+      "captured_at": "2026-10-20T15:29:42.653087+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-AU-mobile-zh-dark.png",
+      "sha256": "5cfef7d7fdd2c3967aab42b36d7ccdbe8eb09b625e0c4648634de29b5a383e0c",
+      "bytes": 75808,
+      "captured_at": "2026-10-20T15:29:42.867360+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-GB-mobile-zh-dark.png",
+      "sha256": "59798326b9d51cf59f66d6fe2e6ecec61ffa7e9c938484fb0227867c247f9b4a",
+      "bytes": 99538,
+      "captured_at": "2026-10-20T15:29:43.848256+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-GB-mobile-zh-dark.png",
+      "sha256": "d5d11ba6b1a127cff596aced936d9f6f070027b68f3931fb4ef22594036f6774",
+      "bytes": 75662,
+      "captured_at": "2026-10-20T15:29:44.055229+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-EZ-mobile-zh-dark.png",
+      "sha256": "8638e20f17a6cf848763115d0c04f1682945cfee3f22503e37cbbce7a5072b74",
+      "bytes": 92284,
+      "captured_at": "2026-10-20T15:29:45.031164+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-EZ-mobile-zh-dark.png",
+      "sha256": "387f9dfc3f62860cd873889e52acd8f802687c9cf9f779e23935800695491ae4",
+      "bytes": 79496,
+      "captured_at": "2026-10-20T15:29:45.232579+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-JP-narrow-en-dark.png",
+      "sha256": "fbf283d766ca36455d897d669ec3908ecafa55f88b336bb602153b615486827f",
+      "bytes": 83963,
+      "captured_at": "2026-10-20T15:29:46.959212+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-JP-narrow-en-dark.png",
+      "sha256": "b4804dc25f071b929968618371e04bc4ee837dd249eb9e84aa73b97ff593a23f",
+      "bytes": 66185,
+      "captured_at": "2026-10-20T15:29:47.541692+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/equity-rows-JP-narrow-en-dark.png",
+      "sha256": "74278484990f90a3c0a4d3179544b0f809e03b0c760457a204de42cf2019099d",
+      "bytes": 77180,
+      "captured_at": "2026-10-20T15:29:47.791975+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-EZ-narrow-en-dark.png",
+      "sha256": "a4980d0fd83fd107e5f9ac7f0dc76ba72c289a1c7bd5222d69511941df61095d",
+      "bytes": 83898,
+      "captured_at": "2026-10-20T15:29:48.793613+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-EZ-narrow-en-dark.png",
+      "sha256": "72054a87d7d636e2a0382c3ec94dfba736549735328bac8d3753f9a4f2b25eb3",
+      "bytes": 69037,
+      "captured_at": "2026-10-20T15:29:49.042478+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-JP-narrow-zh-light.png",
+      "sha256": "4abd16053bad3e3b4d46f1147a759f8b2302726825b3e17c7ae3ae2a36a398c7",
+      "bytes": 93332,
+      "captured_at": "2026-10-20T15:29:50.747880+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-JP-narrow-zh-light.png",
+      "sha256": "fa184369921e65e7387b9ffa2f6c41460e60a67aa209e85d19271b7d22e65c69",
+      "bytes": 70275,
+      "captured_at": "2026-10-20T15:29:50.991704+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/equity-rows-JP-narrow-zh-light.png",
+      "sha256": "1847c4f8fb7b338c04a7bbc0009258fd3c4751151590be9dd75d0bea802785d3",
+      "bytes": 86569,
+      "captured_at": "2026-10-20T15:29:51.212312+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/sources-EZ-narrow-zh-light.png",
+      "sha256": "57510cb280a596b896b9a28f3f72d84fcbe91af8230b7c1544d4bd0810813e33",
+      "bytes": 93744,
+      "captured_at": "2026-10-20T15:29:52.196447+00:00"
+    },
+    {
+      "path": "mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_final_sources/gdp-EZ-narrow-zh-light.png",
+      "sha256": "92b6d2bc4ae9345ce3711d5dc1885d8c12fd527fbe7b8bf9e7b9e12cf817161c",
+      "bytes": 73951,
+      "captured_at": "2026-10-20T15:29:52.429608+00:00"
+    }
+  ],
+  "passed": 40,
+  "failed": 0,
+  "limits": [
+    "Actual isolated anonymous browser; retained production inputs without reacquisition; external requests blocked."
+  ]
+}

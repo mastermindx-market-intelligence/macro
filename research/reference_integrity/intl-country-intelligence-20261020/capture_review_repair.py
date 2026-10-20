@@ -8,7 +8,7 @@ RIG = Path(__file__).resolve().parent
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--label", required=True, choices=("ui", "final"))
+    parser.add_argument("--label", required=True, choices=("ui", "final", "dock"))
     args = parser.parse_args()
     target = RIG / ("repair_" + args.label)
     assert not target.exists()
@@ -63,12 +63,18 @@ def main():
                     launcher.wait_for(state="visible", timeout=8000)
                     launch_state = launcher.evaluate("""e => {
                       const r=e.getBoundingClientRect(), s=getComputedStyle(e);
+                      const slot=document.querySelector('.imc-assistant-slot');
+                      const box=slot && slot.getBoundingClientRect();
                       return {id:e.id, position:s.position, label:e.getAttribute('aria-label'),
-                        inViewport:r.left>=0 && r.right<=innerWidth && r.top>=0 && r.bottom<=innerHeight};
+                        inViewport:r.left>=0 && r.right<=innerWidth && r.top>=0 && r.bottom<=innerHeight,
+                        withinToolbarSlot:!!box && r.left>=box.left-1 && r.right<=box.right+1 && r.top>=box.top-1 && r.bottom<=box.bottom+1};
                     }""")
                     screenshots.append(module.shot(page, "reading-" + name + ".png", {"actual":launch_state}))
                     checks.append({"id":"persistent-assistant-" + name,
                         "passed":launch_state["position"]=="fixed" and launch_state["inViewport"] and bool(launch_state["label"]),"actual":launch_state})
+                    if args.label == "dock":
+                        checks.append({"id":"assistant-reserved-space-" + name,
+                            "passed":launch_state["withinToolbarSlot"],"actual":launch_state})
                     launcher.focus()
                     page.keyboard.press("Enter")
                     page.locator("#mmb-panel.open").wait_for(state="visible", timeout=10000)

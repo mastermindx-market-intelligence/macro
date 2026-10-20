@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "id": "JP_unemployment_identity_period",
+      "passed": true
+    },
+    {
+      "id": "KR_unemployment_identity_period",
+      "passed": true
+    },
+    {
+      "id": "AU_unemployment_identity_period",
+      "passed": true
+    },
+    {
+      "id": "GB_unemployment_identity_period",
+      "passed": true
+    },
+    {
+      "id": "EA21_unemployment_retains_exact_dimensions",
+      "passed": true
+    },
+    {
+      "id": "reject_dimension_change_EA21",
+      "passed": true
+    },
+    {
+      "id": "reject_dimension_change_s_adj=SA",
+      "passed": true
+    },
+    {
+      "id": "reject_dimension_change_unit=PC_ACT",
+      "passed": true
+    }
+  ],
+  "passed": 8,
+  "failed": 0,
+  "scope": "Exact stored unemployment helper bodies only, no provider retrieval or Parquet decoding."
+}

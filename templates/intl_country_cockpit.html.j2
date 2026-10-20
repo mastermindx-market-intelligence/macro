@@ -12,12 +12,15 @@
     <div class="imc-edition"><span>{{ pair('COUNTRY INTELLIGENCE', '国家与地区研判') }}</span>
       <time datetime="{{ a.evaluated_at|e }}">{{ a.evaluated_at|e }}</time></div>
   </header>
+  <div class="imc-toolbar-anchor"><div class="imc-toolbar">
   <nav class="imc-nav" aria-labelledby="imc-title">
     <a href="#imc-world">{{ pair('World brief', '全球简报') }}</a>
     <a href="#imc-countries">{{ pair('Countries', '国家与地区') }}</a>
     <a href="#imc-connections">{{ pair('Connections', '全球关联') }}</a>
     <a class="imc-tools-link" href="#intl-analysis-tools">{{ pair('Data & tools', '数据与工具') }} <span aria-hidden="true">↗</span></a>
   </nav>
+  <div class="imc-assistant-slot" aria-hidden="true"></div>
+  </div></div>
 
   {% if a.world_brief %}{% set w = a.world_brief %}
   <article class="imc-world" id="imc-world">
