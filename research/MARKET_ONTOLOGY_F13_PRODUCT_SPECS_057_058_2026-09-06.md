@@ -124,6 +124,8 @@ three states, seven-key pure helper, shared builders, pull-only scope and A2/A7 
   new material, colored edge, badge, scheduler, release ledger or notification path.
 - The stale action is “Check the product page for its latest status.” / “请查看产品页面了解最新状态。”
   Unknown states explain the missing clock without promising that waiting fixes it.
+- Clock regressions live in the already-invoked `tests/test_help_directory.py` suite.
+  Every clock case is retained; no new CI job, suite selector or packing ceiling is needed.
 - Acceptance additionally exercises a 48-hour later browser opening, a future clock,
   back/forward restoration and an absent stamp. Whole MO-PAID-057 is not a claim of
   priority-tier refresh, production health, a release notification or programme completion.
@@ -158,7 +160,7 @@ three states, seven-key pure helper, shared builders, pull-only scope and A2/A7 
 | `scripts/build_public_pages.py` | inside the `.render(` call opened at `:121`, add `refresh=refresh_disclosure(config.ROOT, generated)` as a new kwarg alongside the existing two kwargs, which span `:122-123` (`generated_utc=generated,` at `:122`, `**help_vm,` at `:123`; the call closes at `:124`) |
 | `scripts/build_site.py` | same one-line addition at `:3742` |
 | `tests/test_help_directory.py` | extend (A9) |
-| `tests/test_refresh_disclosure.py` | new (A9) |
+| `tests/test_help_directory.py` | extend the existing Help suite with A9 clock regressions |
 
 **Not touched by V1:** `app/mailer.py`, `app/email_segments.py` — the email call site A7 originally proposed is dropped (see A7).
 
@@ -255,7 +257,7 @@ about the one mail path, kept so the next builder does not re-derive them):**
 - Evidence matrix required of the implementing builder (not of this records packet): dark/light × EN/ZH × 1440 / 390, `/help.html`.
 
 ## A9. Acceptance tests
-1. `tests/test_refresh_disclosure.py::test_unparseable_stamp_is_unknown_not_zero` — `refresh_disclosure(root, "")["age_hours"] is None`, `state == "unknown"`, no returned line contains a digit `0` for age.
+1. `tests/test_help_directory.py::test_unparseable_stamp_is_unknown_not_zero` — `refresh_disclosure(root, "")["age_hours"] is None`, `state == "unknown"`, no returned line contains a digit `0` for age.
 2. `…::test_states_are_exhaustive_and_bilingual` — all three states return non-empty `line_en` and `line_zh`, and `line_zh != line_en`.
 3. `…::test_copy_carries_no_machine_words` — none of `{"generated_utc","stale","SLO","tier","pipeline","artifact","refresh_disclosure"}` appears in any EN/ZH line.
 4. `tests/test_help_directory.py::test_help_page_prints_refresh_state` — builds the page via the real builder, asserts `data-refresh-state=` present with one of the three literals, and the raw ISO stamp does NOT appear in the hero text.
