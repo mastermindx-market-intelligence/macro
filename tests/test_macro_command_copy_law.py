@@ -455,6 +455,30 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_keeps_meaning_and_original_in_both_languages() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+    source = {
+        "en": (
+            "US labor-market state cannot be classified: axis coverage is below "
+            "the disclosed floor. No quadrant is asserted rather than defaulting "
+            "to a neutral state."
+        ),
+        "zh": "美国劳动力市场状态无法分类：覆盖率低于披露下限，不默认判为中性。",
+    }
+    reading, original = apply_plain_producer(source)
+    assert reading == {
+        "en": (
+            "US labor-market data coverage is below the disclosed minimum. "
+            "No market state is assigned; missing coverage does not imply "
+            "a neutral state."
+        ),
+        "zh": "美国劳动力市场数据覆盖率低于披露的最低要求。暂不判定市场状态；覆盖不足不代表中性状态。",
+    }
+    assert original == source
+    assert guard.machine_copy_hits(reading["en"]) == []
+    assert guard.machine_copy_hits(reading["zh"]) == []
+
+
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     from lib.macro_suite_labels import machine_text_hits
     assert machine_text_hits("sticky_led in the mix")
