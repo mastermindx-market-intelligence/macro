@@ -9,7 +9,7 @@
     "earnings_call": {
       "count": 4718,
       "dropped_from_source": 0,
-      "gap": "score projection sync: score_store_absent",
+      "gap": null,
       "retracted_by_authority": 0
     },
     "macro_release": {
@@ -49,14 +49,13 @@
     "note": "17157 events across 844 distinct date(s)",
     "start": "2013-03-14"
   },
-  "elapsed_s": 3.308,
+  "elapsed_s": 3.936,
   "gap_notes": [
     "earnings: coverage: 2158/2315 tickers carried reported surprises; 543 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
-    "earnings_call: score projection sync: score_store_absent",
     "macro_release: 35/35 release event(s) joined to a scored actual print",
     "risk_band: 1 event(s) retained after their source row left the current snapshot (union-merge, never deleted)"
   ],
-  "inputs_hash": "sha256:66d1a236aac78dc1cf0e3e96eb3036e5ff59dbda80988c52bd6928661b7a2968",
+  "inputs_hash": "sha256:683839a75e893918eae644e8f4494b4eaf496ce3f38837bbd185f62c2d0e3b0c",
   "ledgers": {
     "earnings_calls": {
       "path": "data/chronicle/earnings_call_events.jsonl",
@@ -77,7 +76,7 @@
       "sha256": "sha256:4d8f23c8b347676b1d1c198526142512d68510667c801e3dd0b78569b7a6e7ee"
     }
   },
-  "produced_at": "2026-10-20T08:11:07Z",
+  "produced_at": "2026-10-20T19:52:52Z",
   "produced_by": "scripts/build_chronicle.py",
   "schema": "chronicle.manifest/v1",
   "schema_version": 1,

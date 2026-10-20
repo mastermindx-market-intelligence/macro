@@ -732,3 +732,60 @@ release gates. The Terminal Shared Brief assessment, held sector work and held
 Tiingo/financial-news cache work are not reassigned. No private draft, research
 bundle or `internal_research` evidence is authorized for automatic publication
 or export to `site/intelligence/briefing.json`.
+
+
+### Private release and bounded heartbeat repair — 20 October 2026, 19:05 UTC
+
+Private Press [#9888](https://github.com/mastermindx-market-intelligence/macro/pull/9888)
+merged at 18:58:31 as `e98d4e53265d2fb6d893c3286ddd6ca55df736d2`.
+Its exact head `f9270eadd1013a1c1cf69dc6bdf3f04e3c46c74e` had both
+independent APPROVE rulings, all 12 hosted packs and ci-gate successful in
+[39471764135](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39471764135),
+and a clean real merge-tree against then-current main. At 19:03:18 the normal
+updater had installed a descendant of the merge and all four qualified source
+hashes matched. The opt-in private CLI is present. No live draft was generated.
+
+A fresh read-only ordinary planner census at 19:03 used the incumbent
+configuration and current UTC date. It returned Brief 0 / Research Desk 1;
+`press-research_desk-2026-10-20-ecbcd172a7b6` has 21 first-party facts and an
+empty ticker list. A real private draft still needs a genuine current-day
+ordinary slot with exactly one explicitly supplied qualified ticker, or its
+complete provenance-preserving original staging record. Do not guess a ticker
+or alter cadence, source identity or held ingress. All three installed grant
+hashes and four audiences remain current; their operational revalidation
+deadline is 19 November 2026 13:41:32 UTC, not an asserted contractual expiry.
+
+The live banner investigation found repeated HTTP/1.1 stream cancellations
+about 15.1–15.6 seconds after API HTTP 200 responses. The app is served through
+Tencent EdgeOne, whose documented default HTTP/1 origin idle deadline is
+15 seconds. The actual site rule was not inspected. The existing 15-second
+heartbeat lacks margin; a narrow 5-second repair is prepared in operation
+`news-stream-heartbeat-20261020-c3`. Its actual-generator regression fails on
+old source and passes on the repair; 132 focused tests pass and independent
+source review is APPROVE. Permission checks, shared reads, polling and all
+data/error semantics are unchanged. This is a strong edge-idle diagnosis;
+sustained authenticated browser proof still requires deployment.
+
+The actual-principal read-only store sampler passed all 180 opens while those
+cancellations occurred, with a maximum 4.465 ms. This is not user/SSE proof.
+Terminal marker, compiled deploymentId and canonical source all identify
+`bbc07037aae3e98597945e23448781a091d15281`, active since 17:56:50.
+Evidence and bounded limitations are retained under
+`artifacts/news-stream-heartbeat-20261020-c3/`.
+
+Next three steps:
+1. Publish the reviewed heartbeat source, bind hosted CI/review, merge and use
+   the normal updater; then verify the real stream across repeated former
+   15-second boundaries.
+2. Accept the generated stock panel only after existing covering render
+   39439974736 publishes and the actual page is checked. Keep observing the
+   licensed publishers' natural acquisition progress and actual API/browser
+   visibility without equating backfill age with delivery latency.
+3. When a genuine eligible original company slot exists, qualify one private
+   draft through current identity/rights admission and the dedicated private
+   destination. The present blocker is the missing original single-ticker input.
+
+The primary activation is already applied; do not replay it. Dashboard #9612,
+Terminal sidebar #1081, sector holds, held Tiingo work and frozen W2C retain
+their separate owners and release conditions. No news draft is authorized for
+automatic public export.
