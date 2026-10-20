@@ -552,6 +552,9 @@ def build_root(
     # the OI parquet for `asof` (which OPRA already reports as end-of-t-1 data).
     oi_t1 = _load_oi_for_date(root, asof, theta_store)
 
+    from engine.options_exposure_projection import compose_native_exposure_context
+    exposure_context = compose_native_exposure_context(greeks_asof, oi_t1, asof, root,
+                                                       context=exposure_context)
     gex_payload = compute_gex(greeks_asof, oi_t1, asof, root,
                              exposure_context=exposure_context)
 

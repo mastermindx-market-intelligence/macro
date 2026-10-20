@@ -240,13 +240,73 @@ def exposure_input_digest(greeks_df, oi_df, asof, root):
                 row[field] = _number(r.get(field))
             # Preserve raw observation identity when the native collector carries
             # it. Naive vendor text is not turned into a timezone/availability.
-            for field in ("timestamp", "underlying_timestamp") if greek else ("timestamp",):
+            for field in ("timestamp", "underlying_timestamp", "_theta_acquisition") if greek else ("timestamp", "_theta_acquisition"):
                 if field in r:
                     value = r[field]
                     row[field] = None if pd.isna(value) else str(value)
             out.append(row)
         return sorted(out, key=lambda row: json.dumps(row, sort_keys=True))
     return _digest([root, asof, records(greeks_df, True), records(oi_df, False)])
+
+
+def compose_native_exposure_context(greeks_df, oi_df, asof, root, *, context):
+    """Compose explicit source evidence; never grants rights or fills model/terms defaults.
+
+    Existing owner input binding remains mandatory. Native receipt times are
+    conservative known-by times for new acquisitions, not original publication.
+    No context means no automatic opt-in or change to the dated reference path.
+    """
+    if context is None:
+        return None
+    from copy import deepcopy
+    from lib.options_source_receipts import native_acquisitions, massive_reference_terms
+    out = deepcopy(context)
+    if out.get("root", root) != root:
+        raise ValueError("Exposure context root mismatch")
+    if out.get("input_sha256") != exposure_input_digest(greeks_df, oi_df, asof, root):
+        return out  # The incumbent qualifier rejects the unchanged mismatched receipt.
+    terms = list(out.get("contract_terms") or [])
+    for observation in out.pop("contract_reference_observations", []):
+        term = massive_reference_terms(observation, root, out.get("security_id"))
+        matches = [i for i, old in enumerate(terms) if _key(old, root) == _key(term, root)]
+        if len(matches) > 1:
+            raise ValueError("Ambiguous owner terms")
+        if matches:
+            old = terms[matches[0]]
+            for key in ("series_id", "exercise_style", "shares_per_contract", "additional_underlyings", "correction"):
+                if key in old and key in term and old[key] != term[key]:
+                    raise ValueError("Conflicting reference terms")
+            merged = {**term, **old}
+            # The combined evidence was not known before both observations.
+            previous = _time(old.get("available_at"))
+            current = _time(term["available_at"])
+            merged["available_at"] = max(previous, current).isoformat() if previous is not None else current.isoformat()
+            merged["reference_observation_ref"] = term["terms_ref"]
+            terms[matches[0]] = merged
+        else:
+            terms.append(term)
+    if terms:
+        out["contract_terms"] = terms
+    acquisitions = {kind: native_acquisitions(frame, root, asof, kind)
+                    for kind, frame in (("greeks", greeks_df), ("oi", oi_df))}
+    clocks = dict(out.get("clocks") or {})
+    for kind, field, session_field in (("greeks", "greeks_available_at", "source_session"),
+                                       ("oi", "oi_available_at", "oi_report_date")):
+        if not acquisitions[kind]:
+            continue
+        clocks.setdefault(session_field, asof)
+        received = max(_time(rec["received_at"]) for rec in acquisitions[kind])
+        old = _time(clocks.get(field))
+        clocks[field] = max(old, received).isoformat() if old is not None else received.isoformat()
+    if clocks:
+        out["clocks"] = clocks
+    if all(acquisitions.values()):
+        # Never move an explicit selection cutoff forward to admit later evidence.
+        evidence_times = [_time(clocks[k]) for k in ("greeks_available_at", "oi_available_at")]
+        evidence_times += [_time(term.get("available_at")) for term in terms]
+        clocks.setdefault("available_at", max(t for t in evidence_times if t is not None).isoformat())
+        out.setdefault("source_snapshot_ref", "capture:sha256:" + _digest([out["input_sha256"], acquisitions]))
+    return out
 
 
 def _summary(rows, metric, expected_known, *, both_sides=False):

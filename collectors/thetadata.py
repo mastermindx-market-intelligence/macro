@@ -152,6 +152,8 @@ from typing import Iterator
 import pandas as pd
 import requests
 
+from lib.options_source_receipts import ACQUISITION_COLUMN, THETA_ENDPOINTS, theta_acquisition
+
 
 class _StreamTruncated(Exception):
     """Raised internally when a mid-stream read fails.
@@ -407,6 +409,8 @@ def _get_csv(session: requests.Session, path: str, params: dict) -> pd.DataFrame
         # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
         df = pd.read_csv(io.BytesIO(raw), low_memory=False,
                          keep_default_na=False, na_values=[""])
+        if path in THETA_ENDPOINTS.values() and not df.empty:
+            df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=_base_url())
         return df
     except Exception as e:  # noqa: BLE001
         log.warning("thetadata: CSV parse error for %s %s — %s", path, params, e)
@@ -946,7 +950,7 @@ def _normalize_oi_df(df: pd.DataFrame) -> pd.DataFrame:
 
     # Retain supplied report-observation text without timezone or availability
     # inference. The legacy analytics view preserves pre-clock row equality.
-    keep = ["root", "expiration", "strike", "right", "date", "open_interest", "timestamp"]
+    keep = ["root", "expiration", "strike", "right", "date", "open_interest", "timestamp", ACQUISITION_COLUMN]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
@@ -1093,7 +1097,7 @@ def _normalize_greeks_df(df: pd.DataFrame, *, order: int = 1) -> pd.DataFrame:
     # Missing columns stay absent. Different observations must not dedup merely
     # because their rounded Greek values happen to match.
     id_cols = ["root", "expiration", "strike", "right", "date", "bid", "ask",
-               "underlying_price", "timestamp", "underlying_timestamp"]
+               "underlying_price", "timestamp", "underlying_timestamp", ACQUISITION_COLUMN]
     keep = id_cols + [c for c in greek_cols if c not in id_cols and c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)

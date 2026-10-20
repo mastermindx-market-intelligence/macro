@@ -215,3 +215,53 @@ report observation rather than first availability, carries no invented timezone,
 and enters the exact input digest when present. Missing columns remain absent.
 Both GEX and VEX apply the same legacy row equality before merging OI, so a
 repeated OI observation cannot multiply contract exposures.
+
+
+## Native evidence composition in the incumbent builder
+
+`compose_native_exposure_context(greeks, oi, asof, root, context=owner_context)`
+is called by `build_root`. No context means no opt-in or change to the dated
+reference path. The existing owner-supplied input digest must still match the
+exact selected rows. The context may include `contract_reference_observations`,
+a list of exact retained successful `options_reference_capability_observation/v1`
+responses from the existing reference probe. No provider request is made by this
+composition. Existing full `contract_terms` can be combined with matching positive
+reference evidence; conflicting economic identifiers or values refuse composition.
+Late observations cannot move an explicit selection cutoff forward.
+
+The reference adapter binds the response path, ticker, underlying, expiration,
+strike and right. It maps supplied exercise style, shares per contract, extra
+deliverables and correction only when actually present. A missing correction is
+not zero. Share quantity is not used as a quotation multiplier. The raw omission
+of additional deliverables remains recorded as omission; any rule-backed
+interpretation must identify the applicable source contract, rather than infer
+standardness from a symbol or absent adjustment memo. Authoritative product rules
+may legitimately supply currency/quotation conventions when their applicability
+is established; those facts need not all be duplicated by the reference provider.
+Such independent evidence can be included in existing owner `contract_terms`.
+
+Prospectively, the existing Theta CSV reader records successful complete history
+Greek/OI responses in `_theta_acquisition`, a repeated JSON column in the same
+normalized rows and Parquet files. Each record contains the actual configured
+origin, endpoint, explicitly sent parameters, response-byte SHA256 and an aware
+UTC receipt time. It records `availability_basis=collector_observed_known_by`
+and `historical_first_availability_established=false`. No missing model version,
+rate/dividend parameter or provider-release time is invented. No old file is
+relabelled as newly collected. Identical evidence is decoded once per selected
+batch; every selected row must carry valid matching root/endpoint/date evidence
+before its acquisition time can be composed. Missing members stay unresolved.
+
+The existing input digest binds this receipt text as well as the consumed data.
+Legacy GEX/VEX/vol row equality ignores the additive provenance column, so a
+second acquisition is not a second contract exposure. The composed known-by
+clocks are conservative times for the actually captured batch, not historical
+first availability or the provider's OI publication time. A content-derived
+snapshot reference is generated only when both selected Greek and OI populations
+carry matching complete acquisition evidence. Observation clocks, economic
+expiry, deliverable, currency, multiplier, rights, Greek units and model/tenor
+semantics are never invented to finish a receipt. The existing qualifier remains
+unchanged and can still refuse incomplete composition.
+
+This helper creates no collector, registry, store, endpoint, entitlement or Greek
+engine. The current-day snapshot wrapper remains under its existing separate
+clock/dedup contract; this history-response change does not silently alter it.

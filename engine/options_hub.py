@@ -79,7 +79,7 @@ def _legacy_option_rows(frame: pd.DataFrame) -> pd.DataFrame:
     the normalizer's previous full-row equality, without selecting a latest
     observation or interpreting an unknown timezone.
     """
-    clocks = [c for c in ("timestamp", "underlying_timestamp") if c in frame.columns]
+    clocks = [c for c in ("timestamp", "underlying_timestamp", "_theta_acquisition") if c in frame.columns]
     if not clocks:
         return frame.copy()
     return frame.drop(columns=clocks).drop_duplicates().copy()
