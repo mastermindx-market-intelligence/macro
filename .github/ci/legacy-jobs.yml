@@ -37,6 +37,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -1876,6 +1880,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -2775,6 +2783,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -6550,6 +6562,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -8825,6 +8840,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "templates/institutional_holding_research.js"
@@ -10759,6 +10778,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -15979,6 +16002,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -17874,6 +17901,40 @@ jobs:
       - name: admin site-gate unit + HTTP tests (admin/site_gate.py)
         run: python -m pytest tests/test_admin_site_gate.py -v
 
+  stock-liquidity-profile:
+    if: ${{ false }}
+    gate: code
+    # Producer-only F08 contract; no holdings, account, collector or live writes.
+    # Exact native import/read closure; temporary parquet fixtures do not own
+    # unrelated product code. Keep the existing packing-probe ceilings intact.
+    scope: exclusive
+    paths:
+      - .github/workflows/daily.yml
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/liquidity_chip.py
+      - engine/liquidity_profile.py
+      - lib/__init__.py
+      - lib/massive_ticker.py
+      - lib/nyse_calendar.py
+      - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+      - scripts/build_stock_library.py
+      - scripts/ci/daily_engine_regime_dashboard.sh
+      - scripts/stock_liquidity_profile.py
+      - tests/test_liquidity_chip.py
+      - tests/test_liquidity_profile.py
+      - tests/test_stock_liquidity_profile.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: raw-source qualification and existing one-record writer
+        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py -q
+
   pick-lab-liquidity:
     if: ${{ false }}
     gate: code
@@ -18950,6 +19011,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
@@ -19723,6 +19787,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -21720,6 +21787,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -23382,6 +23453,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -24169,6 +24242,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -25279,6 +25354,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -26625,6 +26704,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "lib/dataos/sec_filing_identity.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
@@ -29630,6 +29712,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -30123,6 +30207,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -33101,6 +33187,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -34599,6 +34689,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "scripts/compile_capital_structure_covenant_terms.py"
