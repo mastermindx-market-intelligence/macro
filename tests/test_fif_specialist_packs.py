@@ -460,11 +460,12 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12"}
     # PK03 lane: the BASE set plus PK03, sorted (never a removal).
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12"}
+    # PK05 lane: the set above plus PK05, still sorted (never a removal).
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -2052,7 +2053,7 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -4846,7 +4847,7 @@ def test_base_pack_envelopes_unchanged_by_pk03_edits() -> None:
 
 
 def test_registered_pack_ids_is_base_set_plus_pk03() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK06", "PK09", "PK10", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk03_cli_writes_valid_envelope(tmp_path: Path) -> None:
@@ -4895,4 +4896,958 @@ def test_pk03_no_issuer_literals_in_specialist_pack_code() -> None:
     for path in production_files:
         text = path.read_text("utf-8")
         for literal in ("0000320193", "AAPL", "Apple"):
+            assert literal not in text, f"{path.name} carries {literal!r}"
+
+
+# 43. PK05: income tax and uncertain tax positions ------------------------------
+#
+# Fixture-verified through the raw ledger and the calculation linkbase
+# (FY2025 = 2024-09-29..2025-09-27): the filing tags income tax expense
+# 20,719,000,000 three times identically (income statement, tax note, cash
+# flow note); pretax income 132,729,000,000; the disclosed effective rate
+# 0.156 (decimals 3, xbrli:pure) and the statutory federal rate 0.21
+# (decimals INF). The reconciliation role chosen by A.2 is
+# http://www.apple.com/role/IncomeTaxesReconciliationofProvisionforIncome
+# TaxestoAmountComputedbyApplyingtheStatutoryFederalIncomeTaxRatetoIncome
+# BeforeProvisionforIncomeTaxesDetails (5 prefix-matching children; the
+# provision-details role has none): six arcs — federal statutory 27,873
+# (+1), foreign differential −8,120 (+1; the fact itself carries the minus
+# sign), valuation-allowance change 2,091 (+1), research credits 1,049
+# (−1 arc weight), the extension State Aid line −486 (+1, valued under the
+# issuer's own arc alias) and other adjustments 410 (+1). The UTB balances
+# are tagged twice each: 22,038/-6 ×2 plus 22.0e9/-8 at 2024-09-28, and
+# 23,242/-6 plus 23.2e9/-8 at 2025-09-27 — precision-consistent duplicates
+# (A.1), three and two occurrence ids. The Q4-2024 settlements fact 823
+# carries LossContingenciesByNatureOfContingencyAxis and sits outside the
+# period, so the FY2025 settlements row is the undimensioned 2,939 fact.
+
+from engine.fundamental_forensics.specialist_packs import (  # noqa: E402
+    calculation_linkbase,
+    pk05_tax,
+)
+
+PK05_QUERY = {**QUERY, "requested_metrics": ["tax"]}
+# §TESTS 11: sha256 of the canonical JSON bytes of every BASE pack's AAPL
+# envelope under this module's own PK05 query, recorded before this lane's
+# edits; PK05 registration must not move any of them.
+PK05_BASE_PACK_ENVELOPE_SHA256 = {
+    "PK01": "50090d4698837d28ff4aa36c6ecae70fd5e678ea961408e2625689d87313977e",
+    "PK02": "ba9934da34fefea71ad89c0ecb0bb04db7c3e5f4c2c9410431201c194e6d452f",
+    "PK03": "bb9431223a25a22dc1c9998e23d7f84dd86e8c2a48630f6057f01076e11c430a",
+    "PK04": "7c9c2ae43d5b943e1b3ffd6e93afbd3d97bd768dc551c1d458dfa9d71d2fad25",
+    "PK06": "01f3733f0da9af06e1e2b52a9e3e50818042ff489c6601c4fae58f13d36aa5c6",
+    "PK09": "bf04bab38cd4da5c306f2df2165c1f97e069237624c10ca55193b3ed143a95b8",
+    "PK10": "3e81d10e242ee3a104cc7f64dfec823ab6e4946538f719f21e932a488b8b56cd",
+    "PK11": "e547897d93a87c2a9a2b86c8b779ba432470d770982207cf5e8d11ba3b141887",
+    "PK12": "bc30e6a6c25d624e74d30af248cd5a4a8e43ed6a3e184898245a4ba49068866e",
+}
+# B.4: the six reconciliation rows in calculation-arc order (qname, value).
+PK05_RECONCILIATION_ROWS = [
+    (
+        "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+        "FederalStatutoryIncomeTaxRate",
+        "27873000000",
+    ),
+    (
+        "us-gaap:IncomeTaxReconciliationForeignIncomeTaxRateDifferential",
+        "-8120000000",
+    ),
+    (
+        "us-gaap:IncomeTaxReconciliationChangeInDeferredTaxAssets"
+        "ValuationAllowance",
+        "2091000000",
+    ),
+    ("us-gaap:IncomeTaxReconciliationTaxCreditsResearch", "1049000000"),
+    (
+        "aapl:EffectiveIncomeTaxRateReconciliationImpactOfTheStateAid"
+        "DecisionAmount",
+        "-486000000",
+    ),
+    ("us-gaap:IncomeTaxReconciliationOtherAdjustments", "410000000"),
+]
+
+
+def _pk05_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK05_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk05_result() -> dict:
+    return produce_pack("PK05", _pk05_input())
+
+
+def test_pk05_result_passes_contract_validator(pk05_result: dict) -> None:
+    assert contract.validate_pack_result(pk05_result) == []
+
+
+def test_pk05_result_passes_jsonschema_envelope(pk05_result: dict) -> None:
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:  # pragma: no cover - CI carries referencing
+        pytest.skip("referencing unavailable; validate_pack_result half only")
+    schema = contract.load_envelope_schema()
+    packet = json.loads(
+        (ROOT / "contracts" / "financial_intelligence_packet.schema.json").read_text(
+            "utf-8"
+        )
+    )
+    registry = Registry()
+    for contents in (schema, packet):
+        registry = registry.with_resource(
+            contents["$id"],
+            Resource.from_contents(contents, default_specification=DRAFT202012),
+        )
+    errors = list(
+        Draft202012Validator(schema, registry=registry).iter_errors(pk05_result)
+    )
+    assert errors == []
+
+
+def test_pk05_applicability_and_coverage(pk05_result: dict) -> None:
+    applicability = pk05_result["applicability"]
+    assert applicability["state"] == "applicable"
+    assert applicability["reason"] == "applicability_rule_satisfied"
+    assert applicability["rule_id"] == "specialist_pack.pk05.applicability/v1"
+    assert applicability["sic"] == "3571"
+    assert pk05_result["coverage"] == {
+        "valued_fields": 21,
+        "missing_fields": 0,
+        "unsupported_fields": 1,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+def test_pk05_rows_follow_catalogue_order_with_twenty_two_rows(
+    pk05_result: dict,
+) -> None:
+    catalogue_ids = [
+        item["field_id"]
+        for item in contract.load_pack_schema("PK05")["fields"]
+    ]
+    expected = [
+        field_id
+        for field_id in catalogue_ids
+        for _ in range(6 if field_id == "etr_reconciliation_line" else 1)
+    ]
+    assert [row["field_id"] for row in pk05_result["fields"]] == expected
+    assert len(pk05_result["fields"]) == 22  # 17 catalogue fields -> 22 rows
+
+
+def test_pk05_reconciliation_rows_are_adjacent_and_in_arc_order(
+    pk05_result: dict,
+) -> None:
+    rows = _rows(pk05_result, "etr_reconciliation_line")
+    assert len(rows) == 6
+    # Adjacency: the six rows occupy six consecutive envelope positions.
+    indexes = [
+        i for i, row in enumerate(pk05_result["fields"]) if row in rows
+    ]
+    assert indexes == list(range(indexes[0], indexes[0] + 6))
+    assert [(row["concept"], row["value"]) for row in rows] == (
+        PK05_RECONCILIATION_ROWS
+    )
+    extension = rows[4]
+    assert extension["taxonomy"] == "aapl"
+    assert extension["quality_state"] == "valued"
+    for row in rows:
+        assert row["mapping_rule_id"] == (
+            "pk05.etr_reconciliation_line.calculation_children/v1"
+        )
+        assert row["evidence_kind"] == "xbrl_fact"
+        assert row["dimensions"] == []
+        assert row["period"] == {
+            "kind": "duration",
+            "start": "2024-09-29",
+            "end": "2025-09-27",
+        }
+
+
+def test_pk05_core_fields_and_formula(pk05_result: dict) -> None:
+    expense = _row(pk05_result, "income_tax_expense")
+    assert expense["value"] == "20719000000"
+    assert expense["quality_state"] == "valued"
+    assert len(expense["source_occurrence_ids"]) == 3  # tagged three times
+    assert expense["period"]["end"] == "2025-09-27"
+    pretax = _row(pk05_result, "pretax_income")
+    assert pretax["value"] == "132729000000"
+    assert len(pretax["source_occurrence_ids"]) == 1
+    formula = _row(pk05_result, "effective_tax_rate_formula")
+    assert formula["quality_state"] == "valued"
+    assert Decimal(formula["value"]) == Decimal("0.156100")
+    assert formula["unit"] == "ratio"
+    assert formula["evidence_kind"] == "formula"
+    assert formula["dependency_field_ids"] == [
+        "income_tax_expense",
+        "pretax_income",
+    ]
+    disclosed = _row(pk05_result, "effective_tax_rate_disclosed")
+    assert disclosed["value"] == "0.156"
+    assert disclosed["unit"] == "ratio"
+    statutory = _row(pk05_result, "statutory_federal_rate")
+    assert statutory["value"] == "0.21"
+    assert statutory["unit"] == "ratio"
+
+
+def test_pk05_utp_balances_reconcile_precision_consistent_duplicates(
+    pk05_result: dict,
+) -> None:
+    opening = _row(pk05_result, "utp_opening")
+    assert opening["value"] == "22038000000"
+    assert opening["period"] == {"kind": "instant", "end": "2024-09-28"}
+    # Two decimals=-6 occurrences plus one 22.0e9 decimals=-8 occurrence.
+    assert len(opening["source_occurrence_ids"]) == 3
+    closing = _row(pk05_result, "utp_closing")
+    assert closing["value"] == "23242000000"
+    assert closing["period"] == {"kind": "instant", "end": "2025-09-27"}
+    # One decimals=-6 occurrence plus one 23.2e9 decimals=-8 occurrence.
+    assert len(closing["source_occurrence_ids"]) == 2
+
+
+def test_pk05_utp_rollforward_lines(pk05_result: dict) -> None:
+    expected = {
+        "utp_rollforward_increases_prior_period": "1971000000",
+        "utp_rollforward_decreases_prior_period": "71000000",
+        "utp_rollforward_increases_current_period": "3795000000",
+        "utp_rollforward_settlements": "2939000000",
+        "utp_rollforward_lapse_of_statute": "1552000000",
+    }
+    for field_id, value in expected.items():
+        row = _row(pk05_result, field_id)
+        assert row["value"] == value, field_id
+        assert row["quality_state"] == "valued"
+        assert row["period"] == {
+            "kind": "duration",
+            "start": "2024-09-29",
+            "end": "2025-09-27",
+        }
+    # The Q4-2024 dimensioned 823 settlement fact is never selected.
+    settlements = _row(pk05_result, "utp_rollforward_settlements")
+    assert len(settlements["source_occurrence_ids"]) == 1
+
+
+def test_pk05_remaining_fields(pk05_result: dict) -> None:
+    impact = _row(pk05_result, "utp_impact_on_etr")
+    assert impact["value"] == "10600000000"
+    assert impact["period"] == {"kind": "instant", "end": "2025-09-27"}
+    paid = _row(pk05_result, "income_taxes_paid")
+    assert paid["value"] == "43369000000"
+    assert paid["concept"] == "us-gaap:IncomeTaxesPaidNet"  # p10 alias wins
+    gross = _row(pk05_result, "deferred_tax_assets_gross")
+    assert gross["value"] == "38417000000"
+    assert gross["period"] == {"kind": "instant", "end": "2025-09-27"}
+    note = _row(pk05_result, "tax_note_text_block")
+    assert note["quality_state"] == "unsupported"
+    assert note["reason"] == "missing_dependency"
+    assert note["evidence_kind"] == "text_span"
+    assert note["required_evidence_kind"] == "text_span"
+
+
+def test_pk05_checks_pass_with_declared_tolerances(pk05_result: dict) -> None:
+    reconciliation = _check(pk05_result, "etr_reconciliation_sum")
+    assert reconciliation["status"] == "pass"
+    assert reconciliation["tolerance"] == "1000000"
+    assert reconciliation["operands"] == [
+        "etr_reconciliation_line",
+        "income_tax_expense",
+    ]
+    assert reconciliation["evidence_field_ids"] == [
+        "etr_reconciliation_line",
+        "income_tax_expense",
+    ]
+    assert reconciliation["reason"] is None
+    assert (
+        "pk05.etr_reconciliation_sum: negative-weight lines"
+        " us-gaap:IncomeTaxReconciliationTaxCreditsResearch"
+        in pk05_result["limitations"]
+    )
+    rollforward = _check(pk05_result, "utp_rollforward")
+    assert rollforward["status"] == "pass"
+    assert rollforward["tolerance"] == "1000000"
+    assert rollforward["reason"] is None
+    formula = _check(pk05_result, "etr_formula_vs_disclosed")
+    assert formula["status"] == "pass"
+    assert formula["tolerance"] == "0.001"
+    assert formula["reason"] is None
+
+
+# 44. A.1 precision-consistent duplicates on a synthetic ledger -----------------
+
+
+def _duplicate_policy_outcome(
+    occurrences, policy: str
+) -> "pack_base._FieldOutcome":
+    mapping = pack_base.FactMapping(
+        ("us-gaap:UnrecognizedTaxBenefits",),
+        duplicate_policy=policy,
+    )
+    return pack_base._resolve_fact_mapping(
+        pack_id="PK05",
+        catalogue_field=_catalogue_field("PK05", "utp_closing"),
+        mapping=mapping,
+        ledger=RawFactLedger(events=tuple(occurrences)),
+        por=_date(2025, 9, 27),
+        extension_prefixes={},
+    )
+
+
+def test_a1_precision_consistent_duplicates_value_the_precise_occurrence() -> None:
+    outcome = _duplicate_policy_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23242000000",
+                decimals="-6",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23200000000",
+                decimals="-8",
+            ),
+        ],
+        "precision_consistent",
+    )
+    assert outcome.row["quality_state"] == "valued"
+    assert outcome.value == Decimal("23242000000")
+    assert len(outcome.row["source_occurrence_ids"]) == 2
+    assert outcome.decimals == -6  # the selected occurrence's decimals
+
+
+def test_a1_inconsistent_duplicates_stay_not_evaluable() -> None:
+    outcome = _duplicate_policy_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23242000000",
+                decimals="-6",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23300000000",
+                decimals="-8",
+            ),
+        ],
+        "precision_consistent",
+    )
+    assert outcome.row["quality_state"] == "not_evaluable"
+    assert outcome.row["reason"] == "missing_dependency"
+
+
+def test_a1_default_policy_keeps_the_base_conflict_outcome() -> None:
+    outcome = _duplicate_policy_outcome(
+        [
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23242000000",
+                decimals="-6",
+            ),
+            _synthetic_occurrence(
+                "us-gaap:UnrecognizedTaxBenefits",
+                instant=_date(2025, 9, 27),
+                value="23200000000",
+                decimals="-8",
+            ),
+        ],
+        "",
+    )
+    assert outcome.row["quality_state"] == "not_evaluable"
+    assert outcome.row["reason"] == "missing_dependency"
+
+
+# 45. A.2 calculation-children mapping on synthetic linkbases -------------------
+
+_SYNTHETIC_CAL = b"""<?xml version="1.0" encoding="UTF-8"?>
+<link:linkbase xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <link:calculationLink xlink:role="http://example.com/role/ProvisionDetails" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="parent" xlink:href="syn-2026.xsd#us-gaap_IncomeTaxExpenseBenefit"/>
+    <link:loc xlink:type="locator" xlink:label="fed" xlink:href="syn-2026.xsd#us-gaap_FederalIncomeTaxExpenseBenefitContinuingOperations"/>
+    <link:calculationArc xlink:type="arc" xlink:arcrole="http://www.xbrl.org/2003/arcrole/summation-item" xlink:from="parent" xlink:to="fed" weight="1.0" order="1"/>
+  </link:calculationLink>
+  <link:calculationLink xlink:role="http://example.com/role/ReconciliationDetailsA" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="parent" xlink:href="syn-2026.xsd#us-gaap_IncomeTaxExpenseBenefit"/>
+    <link:loc xlink:type="locator" xlink:label="stat" xlink:href="syn-2026.xsd#us-gaap_IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate"/>
+    <link:loc xlink:type="locator" xlink:label="ext" xlink:href="syn-2026.xsd#syn_StateAidReconciliationAmount"/>
+    <link:calculationArc xlink:type="arc" xlink:arcrole="http://www.xbrl.org/2003/arcrole/summation-item" xlink:from="parent" xlink:to="stat" weight="1.0" order="1"/>
+    <link:calculationArc xlink:type="arc" xlink:arcrole="http://www.xbrl.org/2003/arcrole/summation-item" xlink:from="parent" xlink:to="ext" weight="-1.0" order="2"/>
+  </link:calculationLink>
+</link:linkbase>
+"""
+
+
+class _CalPackage:
+    """Duck-compatible package carrying only a calculation linkbase."""
+
+    def __init__(self, cal: bytes | None) -> None:
+        members = {} if cal is None else {"syn-2026_cal.xml": cal}
+        listing = (
+            [] if cal is None else [{"name": "syn-2026_cal.xml", "state": "stored"}]
+        )
+        self.manifest = {"members": listing}
+        self.members = members
+
+
+def test_a2_parse_parent_children_chooses_the_qualifying_role() -> None:
+    children = calculation_linkbase.parse_parent_children(
+        _SYNTHETIC_CAL,
+        "us-gaap:IncomeTaxExpenseBenefit",
+        "us-gaap:IncomeTaxReconciliation",
+    )
+    # ProvisionDetails has children but none prefix-matching; only
+    # ReconciliationDetailsA qualifies, so its full child tuple returns.
+    assert children == (
+        (
+            "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+            "FederalStatutoryIncomeTaxRate",
+            Decimal("1.0"),
+        ),
+        ("syn:StateAidReconciliationAmount", Decimal("-1.0")),
+    )
+
+
+def test_a2_parse_parent_children_without_qualifying_role_is_empty() -> None:
+    for empty in (None, b"", _SYNTHETIC_CAL.replace(b"Reconciliation", b"Other")):
+        assert (
+            calculation_linkbase.parse_parent_children(
+                empty,
+                "us-gaap:IncomeTaxExpenseBenefit",
+                "us-gaap:IncomeTaxReconciliation",
+            )
+            == ()
+        )
+
+
+def test_a2_tie_breaks_on_the_lexically_smallest_role_uri() -> None:
+    # Inject a second qualifying role (…DetailsB) carrying one matching
+    # child of its own; both roles then tie at one matching child, and the
+    # lexically smaller role URI (…DetailsA) must win. B's arcs carry
+    # different weights, so the winning arc set is identifiable.
+    role_b = b"""  <link:calculationLink xlink:role="http://example.com/role/ReconciliationDetailsB" xlink:type="extended">
+    <link:loc xlink:type="locator" xlink:label="parent" xlink:href="syn-2026.xsd#us-gaap_IncomeTaxExpenseBenefit"/>
+    <link:loc xlink:type="locator" xlink:label="stat" xlink:href="syn-2026.xsd#us-gaap_IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate"/>
+    <link:calculationArc xlink:type="arc" xlink:arcrole="http://www.xbrl.org/2003/arcrole/summation-item" xlink:from="parent" xlink:to="stat" weight="1.0" order="1"/>
+  </link:calculationLink>
+"""
+    both = _SYNTHETIC_CAL.replace(b"</link:linkbase>", role_b + b"</link:linkbase>")
+    children = calculation_linkbase.parse_parent_children(
+        both,
+        "us-gaap:IncomeTaxExpenseBenefit",
+        "us-gaap:IncomeTaxReconciliation",
+    )
+    assert children == (
+        (
+            "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+            "FederalStatutoryIncomeTaxRate",
+            Decimal("1.0"),
+        ),
+        ("syn:StateAidReconciliationAmount", Decimal("-1.0")),
+    )
+
+
+def test_a2_child_without_fact_is_a_typed_missing_row_by_prefix() -> None:
+    ledger = RawFactLedger(
+        events=(
+            _synthetic_occurrence(
+                "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+                "FederalStatutoryIncomeTaxRate",
+                start=_date(2024, 9, 29),
+                end=_date(2025, 9, 27),
+                value="27873000000",
+            ),
+        )
+    )
+    outcome = pack_base._resolve_calculation_children_mapping(
+        pack_id="PK05",
+        catalogue_field=_catalogue_field("PK05", "etr_reconciliation_line"),
+        mapping=pk05_tax._FIELD_MAPPINGS["etr_reconciliation_line"],
+        ledger=ledger,
+        por=_date(2025, 9, 27),
+        primary=_CalPackage(_SYNTHETIC_CAL),
+        limitation_sink=None,
+    )
+    rows = [outcome.row, *outcome.extra_rows]
+    assert len(rows) == 2
+    valued, absent = rows
+    assert valued["quality_state"] == "valued"
+    assert valued["value"] == "27873000000"
+    assert absent["quality_state"] == "missing"
+    assert absent["reason"] == "extension_concept_unaliased:syn"
+    assert absent["taxonomy"] == "syn"
+    assert outcome.calculation_weights == (Decimal("1.0"), Decimal("-1.0"))
+
+
+def test_a2_missing_us_gaap_child_cites_missing_standard_fact() -> None:
+    cal = _SYNTHETIC_CAL.replace(b"syn_StateAidReconciliationAmount",
+                                 b"us-gaap_IncomeTaxReconciliationOtherAdjustments")
+    ledger = RawFactLedger(
+        events=(
+            _synthetic_occurrence(
+                "us-gaap:IncomeTaxReconciliationIncomeTaxExpenseBenefitAt"
+                "FederalStatutoryIncomeTaxRate",
+                start=_date(2024, 9, 29),
+                end=_date(2025, 9, 27),
+                value="27873000000",
+            ),
+        )
+    )
+    outcome = pack_base._resolve_calculation_children_mapping(
+        pack_id="PK05",
+        catalogue_field=_catalogue_field("PK05", "etr_reconciliation_line"),
+        mapping=pk05_tax._FIELD_MAPPINGS["etr_reconciliation_line"],
+        ledger=ledger,
+        por=_date(2025, 9, 27),
+        primary=_CalPackage(cal),
+        limitation_sink=None,
+    )
+    absent = outcome.extra_rows[0]
+    assert absent["reason"] == (
+        "missing_standard_fact:us-gaap:IncomeTaxReconciliationOtherAdjustments"
+    )
+    assert absent["taxonomy"] == "us-gaap"
+
+
+def test_a2_no_qualifying_role_emits_one_missing_row_and_limitation() -> None:
+    sink: list[str] = []
+    outcome = pack_base._resolve_calculation_children_mapping(
+        pack_id="PK05",
+        catalogue_field=_catalogue_field("PK05", "etr_reconciliation_line"),
+        mapping=pk05_tax._FIELD_MAPPINGS["etr_reconciliation_line"],
+        ledger=RawFactLedger(events=()),
+        por=_date(2025, 9, 27),
+        primary=_CalPackage(None),
+        limitation_sink=sink,
+    )
+    assert outcome.extra_rows == ()
+    assert outcome.row["quality_state"] == "missing"
+    assert outcome.row["reason"] == (
+        "missing_standard_fact:us-gaap:IncomeTaxExpenseBenefit"
+    )
+    assert sink == [
+        "pk05.etr_reconciliation_line: no calculation role declares"
+        " reconciliation children"
+    ]
+
+
+# 46. A.3 weighted sum identity, synthetic --------------------------------------
+
+
+def _weighted_check(rows_values, total: str, weights) -> dict:
+    addend_rows = []
+    for index, value in enumerate(rows_values):
+        addend_rows.append(
+            {
+                "field_id": "etr_reconciliation_line",
+                "quality_state": "valued" if value is not None else "missing",
+                "value": None if value is None else str(value),
+                "unit": "USD",
+                "concept": f"us-gaap:ReconciliationLine{index}",
+            }
+        )
+    addend = pack_base._FieldOutcome(
+        row=addend_rows[0],
+        value=None,
+        decimals=-6,
+        unit="USD",
+        extra_rows=tuple(addend_rows[1:]),
+    )
+    total_outcome = pack_base._FieldOutcome(
+        row={"field_id": "income_tax_expense", "quality_state": "valued"},
+        value=Decimal(total),
+        decimals=-6,
+        unit="USD",
+    )
+    resolver = pack_base._OperandResolver(
+        {"etr_reconciliation_line": addend, "income_tax_expense": total_outcome},
+        _pk05_input(),
+        foreign_cache={},
+    )
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK05")["checks"]
+        if item["check_id"] == "etr_reconciliation_sum"
+    )
+    spec = pack_base.WeightedSumIdentity(
+        check_id="etr_reconciliation_sum",
+        addends="etr_reconciliation_line",
+        total="income_tax_expense",
+        weights=tuple(weights),
+    )
+    return pack_base._evaluate_check(
+        catalogue_check, [spec], resolver, pack_id="PK05"
+    )
+
+
+def test_a3_weighted_sum_ties_within_tolerance() -> None:
+    row = _weighted_check(["3000000", "1000000"], "2000000", (1, -1))
+    assert row["status"] == "pass"
+    assert row["tolerance"] == "1000000"
+    assert row["reason"] is None
+
+
+def test_a3_weighted_sum_off_by_two_million_fails() -> None:
+    row = _weighted_check(["3000000", "1000000"], "4000000", (1, -1))
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+
+
+def test_a3_weighted_sum_with_missing_addend_row_is_not_evaluable() -> None:
+    row = _weighted_check(["3000000", None], "2000000", (1, -1))
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+
+
+def test_a3_negative_weights_name_their_lines() -> None:
+    sink: list[str] = []
+    addend_rows = [
+        {
+            "field_id": "etr_reconciliation_line",
+            "quality_state": "valued",
+            "value": "3000000",
+            "unit": "USD",
+            "concept": "us-gaap:FirstLine",
+        },
+        {
+            "field_id": "etr_reconciliation_line",
+            "quality_state": "valued",
+            "value": "1000000",
+            "unit": "USD",
+            "concept": "us-gaap:SecondLine",
+        },
+    ]
+    addend = pack_base._FieldOutcome(
+        row=addend_rows[0],
+        value=None,
+        decimals=-6,
+        unit="USD",
+        extra_rows=(addend_rows[1],),
+        calculation_weights=(Decimal(1), Decimal(-1)),
+    )
+    total_outcome = pack_base._FieldOutcome(
+        row={"field_id": "income_tax_expense", "quality_state": "valued"},
+        value=Decimal("2000000"),
+        decimals=-6,
+        unit="USD",
+    )
+    resolver = pack_base._OperandResolver(
+        {"etr_reconciliation_line": addend, "income_tax_expense": total_outcome},
+        _pk05_input(),
+        foreign_cache={},
+    )
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK05")["checks"]
+        if item["check_id"] == "etr_reconciliation_sum"
+    )
+    spec = next(
+        item
+        for item in pk05_tax.PRODUCER.checks
+        if item.check_id == "etr_reconciliation_sum"
+    )
+    row = pack_base._evaluate_check(
+        catalogue_check, [spec], resolver, limitation_sink=sink, pack_id="PK05"
+    )
+    assert row["status"] == "pass"
+    assert sink == [
+        "pk05.etr_reconciliation_sum: negative-weight lines us-gaap:SecondLine"
+    ]
+
+
+# 47. A.4 utp rollforward, synthetic ---------------------------------------------
+
+_ROLLFORWARD_VALUES = {
+    "utp_opening": "22038000000",
+    "utp_rollforward_increases_prior_period": "1971000000",
+    "utp_rollforward_decreases_prior_period": "71000000",
+    "utp_rollforward_increases_current_period": "3795000000",
+    "utp_rollforward_settlements": "2939000000",
+    "utp_rollforward_lapse_of_statute": "1552000000",
+    "utp_closing": "23242000000",
+}
+
+
+def _rollforward_check(values: dict) -> tuple[dict, list[str]]:
+    outcomes = {}
+    for field_id, value in values.items():
+        outcomes[field_id] = pack_base._FieldOutcome(
+            row={
+                "field_id": field_id,
+                "quality_state": "valued" if value is not None else "missing",
+            },
+            value=None if value is None else Decimal(value),
+            decimals=None if value is None else -6,
+            unit=None if value is None else "USD",
+        )
+    resolver = pack_base._OperandResolver(
+        outcomes, _pk05_input(), foreign_cache={}
+    )
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK05")["checks"]
+        if item["check_id"] == "utp_rollforward"
+    )
+    spec = next(
+        item
+        for item in pk05_tax.PRODUCER.checks
+        if item.check_id == "utp_rollforward"
+    )
+    sink: list[str] = []
+    row = pack_base._evaluate_check(
+        catalogue_check, [spec], resolver, limitation_sink=sink, pack_id="PK05"
+    )
+    return row, sink
+
+
+def test_a4_rollforward_closing_off_by_two_million_fails() -> None:
+    row, sink = _rollforward_check(
+        {**_ROLLFORWARD_VALUES, "utp_closing": "25242000000"}
+    )
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+    assert sink == []
+
+
+def test_a4_rollforward_missing_settlements_names_the_refused_value() -> None:
+    values = {**_ROLLFORWARD_VALUES, "utp_rollforward_settlements": None}
+    row, sink = _rollforward_check(values)
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+    assert sink == [
+        "utp_rollforward: refused to imply utp_rollforward_settlements ="
+        " 2939000000 (R-K3: never an implied value)"
+    ]
+
+
+# 48. A.5/A.6 effective-tax-rate formula and cross check, synthetic --------------
+
+
+def _etr_formula_outcome(expense: str, pretax: str) -> "pack_base._FieldOutcome":
+    values = {
+        "income_tax_expense": Decimal(expense),
+        "pretax_income": Decimal(pretax),
+    }
+    return pack_base._resolve_formula(
+        catalogue_field=_catalogue_field("PK05", "effective_tax_rate_formula"),
+        mapping=pk05_tax._FIELD_MAPPINGS["effective_tax_rate_formula"],
+        por=_date(2025, 9, 27),
+        resolve_input=lambda field_id: pack_base._FieldOutcome(
+            row={"field_id": field_id, "quality_state": "valued"},
+            value=values[field_id],
+            decimals=-6,
+            unit="USD",
+        ),
+    )
+
+
+def _etr_check(formula_value, disclosed_value, disclosed_decimals) -> dict:
+    outcomes = {
+        "effective_tax_rate_formula": pack_base._FieldOutcome(
+            row={
+                "field_id": "effective_tax_rate_formula",
+                "quality_state": "valued" if formula_value is not None else "not_evaluable",
+            },
+            value=formula_value,
+            decimals=None,
+            unit="ratio",
+        ),
+        "effective_tax_rate_disclosed": pack_base._FieldOutcome(
+            row={
+                "field_id": "effective_tax_rate_disclosed",
+                "quality_state": "valued" if disclosed_value is not None else "missing",
+            },
+            value=disclosed_value,
+            decimals=disclosed_decimals,
+            unit="ratio",
+        ),
+    }
+    resolver = pack_base._OperandResolver(
+        outcomes, _pk05_input(), foreign_cache={}
+    )
+    catalogue_check = next(
+        item
+        for item in contract.load_pack_schema("PK05")["checks"]
+        if item["check_id"] == "etr_formula_vs_disclosed"
+    )
+    spec = next(
+        item
+        for item in pk05_tax.PRODUCER.checks
+        if item.check_id == "etr_formula_vs_disclosed"
+    )
+    return pack_base._evaluate_check(
+        catalogue_check,
+        [spec],
+        resolver,
+        check_rules=dict(pk05_tax.CHECK_RULES),
+        pack_id="PK05",
+    )
+
+
+def test_a5_zero_pretax_income_is_division_by_zero() -> None:
+    outcome = _etr_formula_outcome("20719000000", "0")
+    assert outcome.row["quality_state"] == "not_evaluable"
+    assert outcome.row["reason"] == "division_by_zero"
+
+
+def test_a6_formula_vs_disclosed_off_by_two_tenths_of_a_basis_point_fails() -> None:
+    row = _etr_check(
+        Decimal("0.156100"), Decimal("0.158"), 3
+    )
+    assert row["status"] == "fail"
+    assert row["reason"] is None
+    assert row["tolerance"] == "0.001"
+
+
+def test_a6_coarser_disclosed_decimals_widen_the_tolerance() -> None:
+    row = _etr_check(Decimal("0.156100"), Decimal("0.16"), 2)
+    assert row["status"] == "pass"
+    assert row["tolerance"] == "0.01"
+
+
+def test_a6_unvalued_disclosed_rate_is_not_evaluable() -> None:
+    row = _etr_check(Decimal("0.156100"), None, 3)
+    assert row["status"] == "not_evaluable"
+    assert row["reason"] == "missing_dependency"
+
+
+# 49. PK05 probes, determinism, invariance, registry, CLI, A33 -------------------
+
+
+def test_pk05_bank_probe_keeps_pack_applicable(pk05_result: dict) -> None:
+    bank = produce_pack("PK05", _pk05_input(issuer_sic="6021", sic_source="dei"))
+    assert bank["applicability"]["state"] == "applicable"
+    assert bank["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert bank["fields"] == pk05_result["fields"]
+    assert bank["checks"] == pk05_result["checks"]
+    assert "issuer_class=bank" in bank["receipts"]
+    assert contract.validate_pack_result(bank) == []
+
+
+def test_pk05_quarterly_form_is_outside_pack_forms() -> None:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    quarterly = replace(
+        package, manifest={**package.manifest, "form": "10-Q"}
+    )
+    result = produce_pack("PK05", _pk05_input(packages=(quarterly,)))
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "form_outside_pack_forms"
+    # The framework's inapplicable shape emits one row per catalogue field
+    # (17) — the calculation-children expansion never runs outside the
+    # applicable branch.
+    assert len(result["fields"]) == 17
+    assert all(
+        row["quality_state"] == "not_applicable"
+        and row["reason"] == "form_outside_pack_forms"
+        for row in result["fields"]
+    )
+    assert all(
+        check["status"] == "not_applicable"
+        and check["reason"] == "form_outside_pack_forms"
+        for check in result["checks"]
+    )
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk05_production_is_deterministic() -> None:
+    first = produce_pack("PK05", _pk05_input())
+    second = produce_pack("PK05", _pk05_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+@pytest.mark.parametrize(
+    "pack_id", sorted(PK05_BASE_PACK_ENVELOPE_SHA256)
+)
+def test_base_pack_envelopes_unchanged_by_pk05_edits(pack_id: str) -> None:
+    # §TESTS 11: every pack registered at BASE keeps its AAPL envelope
+    # byte-identical to BASE after PK05 registers.
+    result = produce_pack(pack_id, _pk05_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert (
+        sha256(payload.encode("utf-8")).hexdigest()
+        == PK05_BASE_PACK_ENVELOPE_SHA256[pack_id]
+    )
+
+
+def test_registered_pack_ids_is_base_set_plus_pk05() -> None:
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    )
+
+
+def test_pk05_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk05.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK05_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK05",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert len(envelope["fields"]) == 22
+    assert envelope["coverage"]["valued_fields"] == 21
+    assert all(check["status"] == "pass" for check in envelope["checks"])
+
+
+def test_pk05_no_issuer_literals_in_specialist_pack_code() -> None:
+    # A33: the specialist-pack production surface (every producer module, the
+    # shared framework and the offline CLI) carries no issuer literal; the
+    # extension prefix itself only ever arrives from filing data.
+    production_files = sorted(
+        (ROOT / "engine" / "fundamental_forensics" / "specialist_packs").glob(
+            "*.py"
+        )
+    ) + [ROOT / "scripts" / "fif_specialist_packs.py"]
+    assert production_files
+    for path in production_files:
+        text = path.read_text("utf-8")
+        for literal in ("0000320193", "AAPL", "Apple", "aapl:"):
             assert literal not in text, f"{path.name} carries {literal!r}"

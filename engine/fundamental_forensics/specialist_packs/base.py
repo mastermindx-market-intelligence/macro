@@ -124,6 +124,12 @@ class FactMapping:
     optional_axes: tuple[str, ...] = ()
     consolidated_row: bool = True
     limitation_when_absent: str | None = None
+    # A.1 (PK05): ``"precision_consistent"`` admits undimensioned duplicates
+    # that differ only by stated precision — the most precise ``decimals``
+    # occurrence governs when every coarser one rounds to it. The default
+    # keeps the BASE behaviour: differing ``parsed_value`` at the same
+    # concept/period stays ``not_evaluable`` (PK-FW A.6).
+    duplicate_policy: str = ""
 
 
 @dataclass(frozen=True)
@@ -534,15 +540,19 @@ def _mapping_digest(mapping: FactMapping) -> str:
         or mapping.optional_axes
         or not mapping.consolidated_row
         or mapping.limitation_when_absent is not None
+        or mapping.duplicate_policy != ""
     ):
-        payload.append(
-            {
-                "period_select": mapping.period_select,
-                "optional_axes": list(mapping.optional_axes),
-                "consolidated_row": mapping.consolidated_row,
-                "limitation_when_absent": mapping.limitation_when_absent,
-            }
-        )
+        hooks: dict[str, Any] = {
+            "period_select": mapping.period_select,
+            "optional_axes": list(mapping.optional_axes),
+            "consolidated_row": mapping.consolidated_row,
+            "limitation_when_absent": mapping.limitation_when_absent,
+        }
+        if mapping.duplicate_policy != "":
+            # A.1 (PK05): enters the digest only when a mapping declares it,
+            # so a BASE mapping's digest (and envelope) cannot move.
+            hooks["duplicate_policy"] = mapping.duplicate_policy
+        payload.append(hooks)
     return sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
@@ -569,6 +579,10 @@ class _FieldOutcome:
     # A.4/A.5 (PK04): per-axis definition-linkbase member groups and each
     # member's row value, consumed only by the grouped sum identity.
     group_breakdown: tuple["_AxisGroupBreakdown", ...] = ()
+    # A.2/A.3 (PK05): the calculation-arc weights of a calculation-children
+    # field's rows, in emission (arc) order, consumed only by the weighted
+    # sum identity when its spec declares no weights of its own.
+    calculation_weights: tuple[Decimal, ...] = ()
 
 
 def _base_row(catalogue_field: Mapping[str, Any], por: date) -> dict[str, Any]:
@@ -703,20 +717,29 @@ def _resolve_fact_mapping(
                 ]
             admitted = selected
         distinct = {str(item.parsed_value) for item in admitted}
+        precision_extra_ids: set[str] = set()
         if len(distinct) > 1:
-            # A.6 conflicting facts: same concept/period, different values.
-            units = {_unit_measure(item.unit) for item in admitted}
-            reason = "unit_mismatch" if len(units) > 1 else "missing_dependency"
-            return _absence_row(
-                catalogue_field,
-                por,
-                "not_evaluable",
-                reason,
-                concept=mapping.concepts[0],
-                occurrence_ids=[item.occurrence_id for item in admitted],
-                mapping=mapping,
-                pack_id=pack_id,
-            )
+            reconciled: tuple[list[Any], set[str]] | None = None
+            if mapping.duplicate_policy == "precision_consistent":
+                # A.1 (PK05): duplicates that differ only by stated precision
+                # reconcile onto the most precise occurrence's value.
+                reconciled = _precision_consistent_selection(admitted)
+            if reconciled is None:
+                # A.6 conflicting facts: same concept/period, different values.
+                units = {_unit_measure(item.unit) for item in admitted}
+                reason = "unit_mismatch" if len(units) > 1 else "missing_dependency"
+                return _absence_row(
+                    catalogue_field,
+                    por,
+                    "not_evaluable",
+                    reason,
+                    concept=mapping.concepts[0],
+                    occurrence_ids=[item.occurrence_id for item in admitted],
+                    mapping=mapping,
+                    pack_id=pack_id,
+                )
+            precise_group, precision_extra_ids = reconciled
+            admitted = precise_group
         if period_kind == "instant":
             if mapping.period_select == "cover_instant":
                 # A.1: the latest admissible cover instant wins.
@@ -741,6 +764,12 @@ def _resolve_fact_mapping(
         row["source_occurrence_ids"] = sorted(
             {item.occurrence_id for item in admitted}
         )
+        if precision_extra_ids:
+            # A.1 (PK05): coarser precision-consistent duplicates share the
+            # evidence row with the precise occurrence that governs it.
+            row["source_occurrence_ids"] = sorted(
+                set(row["source_occurrence_ids"]) | precision_extra_ids
+            )
         row["mapping_rule_id"] = f"{pack_id}.{field_id}.fact/v1"
         row["mapping_rule_digest"] = _mapping_digest(mapping)
         if representative.context.explicit_dimensions:
@@ -1596,6 +1625,79 @@ def _evaluate_check(
                     reasons.append(reason)
                     continue
             identity(names, len(spec.addends))
+        elif isinstance(spec, WeightedSumIdentity):
+            # A.3 (PK05): Σ weight_i × row value_i over EVERY row of the
+            # addend field vs the total row; weights have no row slot.
+            own_operands.extend(
+                name
+                for name in (spec.addends, spec.total)
+                if resolver.own(name)
+            )
+            gate = not_applicable_gate((spec.addends, spec.total))
+            if gate is not None:
+                statuses.append("not_applicable")
+                reasons.append(gate)
+                continue
+            outcome = resolver.outcome(spec.addends)
+            total_value, total_decimals, total_unit = resolver.resolve(
+                spec.total
+            )
+            operand_decimals.append(total_decimals)
+            rows: tuple[Mapping[str, Any], ...] = ()
+            addend_decimals: int | None = None
+            if outcome is not None:
+                rows = (outcome.row, *outcome.extra_rows)
+                addend_decimals = outcome.decimals
+                operand_decimals.append(addend_decimals)
+            weights = tuple(spec.weights) or (
+                outcome.calculation_weights if outcome is not None else ()
+            )
+            if (
+                outcome is None
+                or not rows
+                or len(weights) != len(rows)
+                or any(
+                    row.get("quality_state") != "valued"
+                    or row.get("value") is None
+                    for row in rows
+                )
+                or total_value is None
+            ):
+                statuses.append("not_evaluable")
+                reasons.append("missing_dependency")
+                _weighted_negative_limitation(
+                    spec, rows, weights, limitation_sink, pack_id=pack_id
+                )
+                continue
+            units = {row.get("unit") for row in rows}
+            units.discard(None)
+            if total_unit is not None:
+                units.add(total_unit)
+            if len(units) > 1:
+                statuses.append("not_evaluable")
+                reasons.append("unit_mismatch")
+                continue
+            tolerance = _identity_tolerance(
+                [
+                    item
+                    for item in (addend_decimals, total_decimals)
+                    if item is not None
+                ]
+            )
+            weighted = sum(
+                (
+                    weight * Decimal(str(row["value"]))
+                    for weight, row in zip(weights, rows)
+                ),
+                Decimal("0"),
+            )
+            statuses.append(
+                "pass" if abs(weighted - total_value) <= tolerance else "fail"
+            )
+            reasons.append(None)
+            _weighted_negative_limitation(
+                spec, rows, weights, limitation_sink, pack_id=pack_id
+            )
         elif isinstance(spec, Rollforward):
             if not spec.opening or not spec.closing:
                 raise SpecialistPackError(
@@ -2013,6 +2115,18 @@ def produce_pack_result(
                     "text_span"
                     if isinstance(mapping, TextSpanMapping) or allowed == ["text_span"]
                     else "table_cell",
+                )
+            elif isinstance(mapping, CalculationChildrenMapping):
+                # A.2 (PK05): rows declared by the issuer's own calculation
+                # arcs under the mapping's parent concept.
+                outcomes[field_id] = _resolve_calculation_children_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping,
+                    ledger=ledger,
+                    por=por,
+                    primary=primary,
+                    limitation_sink=mapping_limitations,
                 )
             elif isinstance(mapping, DimensionedFactMapping):
                 if mapping.primary_axes or mapping.member_filter:
@@ -3169,9 +3283,14 @@ def _solve_rollforward_missing(
     if missing == spec.closing:
         return opening + additions - reductions
     if missing in spec.additions:
-        return closing - opening + reductions
+        # ``additions`` excludes the missing operand, so the implied member
+        # is the identity's total addition minus the known ones (PK05: the
+        # first rollforward with several additions; a single-member side
+        # keeps the exact BASE number).
+        return closing - opening + reductions - additions
     if missing in spec.reductions:
-        return opening + additions - closing
+        # Symmetrically for a missing reduction among several known ones.
+        return opening + additions - closing - reductions
     return None  # pragma: no cover - missing is one of the four slots
 
 
@@ -3205,6 +3324,7 @@ def _append_implied_rollforward_limitation(
 
 
 __all__ = [
+    "CalculationChildrenMapping",
     "CheckRule",
     "CheckRuleFn",
     "CheckSpec",
@@ -3235,6 +3355,7 @@ __all__ = [
     "TableMapping",
     "TextSpanMapping",
     "TypedDimensionedFactMapping",
+    "WeightedSumIdentity",
     "evaluate_applicability",
     "formula_difference",
     "formula_ratio",
@@ -3622,3 +3743,351 @@ def _resolve_allowlist_dimensioned_fact_mapping(
         unit=emitted[0]["unit"],
         extra_rows=tuple(emitted[1:]),
     )
+
+
+# ---------------------------------------------------------------------------
+# A.1/A.2/A.3 additions (PK05 lane; strictly additive, appended after the
+# PK03 banner so parallel pack lanes stay mechanically mergeable)
+# ---------------------------------------------------------------------------
+
+from decimal import InvalidOperation, ROUND_HALF_UP  # noqa: E402
+
+
+def _decimals_rank(decimals: str | None) -> tuple[int, int]:
+    """Precision rank of an XBRL ``decimals`` attribute (A.1).
+
+    ``INF`` is the most precise rank; otherwise a larger integer is more
+    precise (``-6`` beats ``-8``). An absent ``decimals`` ranks least — the
+    source plane stated no precision, so the occurrence cannot out-rank one
+    that did. Tuple keys keep the ordering free of floats.
+    """
+    if decimals == "INF":
+        return (1, 0)
+    try:
+        return (0, int(decimals))
+    except (TypeError, ValueError):
+        return (0, -(10**9))
+
+
+def _precision_consistent_selection(
+    occurrences: Sequence[Any],
+) -> tuple[list[Any], set[str]] | None:
+    """A.1: reconcile precision-consistent duplicate undimensioned facts.
+
+    Returns ``(precise_group, extra_ids)`` — the occurrences carrying the
+    most precise ``decimals`` (whose ``parsed_value`` must agree) and the
+    occurrence ids of every coarser duplicate that reconciles onto it — or
+    ``None`` when the duplicates are not precision-consistent (the BASE A.6
+    conflict outcome then governs). A coarser occurrence reconciles when its
+    value equals the precise value rounded (ROUND_HALF_UP, Decimal) to the
+    coarser occurrence's own ``decimals``; a coarser occurrence that stated
+    no ``decimals`` must equal the precise value exactly.
+    """
+    ordered = sorted(
+        occurrences,
+        key=lambda item: (
+            _decimals_rank(item.decimals),
+            item.occurrence_id or "",
+        ),
+    )
+    top = _decimals_rank(ordered[-1].decimals)
+    precise = [
+        item for item in ordered if _decimals_rank(item.decimals) == top
+    ]
+    precise_values = {str(item.parsed_value) for item in precise}
+    if len(precise_values) != 1:
+        return None
+    try:
+        precise_value = Decimal(next(iter(precise_values)))
+    except InvalidOperation:
+        return None  # a non-decimal duplicate is never precision-reconcilable
+    precise_ids = {item.occurrence_id for item in precise}
+    extra_ids: set[str] = set()
+    for item in ordered:
+        if item.occurrence_id in precise_ids:
+            continue
+        try:
+            coarse_value = Decimal(str(item.parsed_value))
+        except InvalidOperation:
+            return None
+        rounded = precise_value
+        if item.decimals is not None and item.decimals != "INF":
+            try:
+                rounded = precise_value.quantize(
+                    Decimal(1).scaleb(-int(item.decimals)),
+                    rounding=ROUND_HALF_UP,
+                )
+            except (InvalidOperation, ValueError):
+                return None
+        if coarse_value != rounded:
+            return None
+        extra_ids.add(item.occurrence_id)
+    return precise, extra_ids
+
+
+@dataclass(frozen=True)
+class CalculationChildrenMapping:
+    """A.2 (PK05): rows declared by the issuer's own calculation arcs.
+
+    One row per child the chosen calculation role declares under
+    ``parent_concept``, in arc order; the child qname is the row ``concept``
+    and its prefix the row ``taxonomy``. Each row resolves an undimensioned
+    fact for the primary duration under the A.1 precision-consistent
+    duplicate policy; a child without one is a typed ``missing`` row —
+    ``missing_standard_fact:<qname>`` for a ``us-gaap:`` child,
+    ``extension_concept_unaliased:<prefix>`` for any other prefix. An
+    extension child WITH a fact is a VALUED row: the issuer's own
+    calculation arc aliases it as a component of the reconciliation (the
+    reading recorded in :mod:`calculation_linkbase`). No qualifying role
+    yields one ``missing`` row for the parent concept plus the mapping's
+    ``no calculation role`` limitation.
+    """
+
+    field_id: str
+    parent_concept: str
+    child_prefix: str
+
+
+def _calculation_children_mapping_digest(
+    mapping: CalculationChildrenMapping,
+) -> str:
+    payload = canonical_json(
+        [mapping.parent_concept, mapping.child_prefix]
+    )
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _calculation_child_row(
+    *,
+    catalogue_field: Mapping[str, Any],
+    por: date,
+    child_qname: str,
+    occurrences: Sequence[Any],
+    representative: Any,
+) -> tuple[dict[str, Any], Decimal, int | None]:
+    """Build one valued calculation-child row from its admitted facts."""
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["concept"] = child_qname
+    row["taxonomy"] = (
+        child_qname.split(":", 1)[0] if ":" in child_qname else child_qname
+    )
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in occurrences}
+    )
+    row["period"] = {
+        "kind": "duration",
+        "start": representative.context.start.isoformat(),
+        "end": representative.context.end.isoformat(),
+    }
+    catalogue_unit = catalogue_field.get("unit")
+    row["unit"] = (
+        catalogue_unit
+        if catalogue_unit is not None
+        else _unit_measure(representative.unit)
+    )
+    row["value"] = decimal_text(Decimal(str(representative.parsed_value)))
+    decimals: int | None = None
+    if (
+        representative.decimals is not None
+        and representative.decimals != "INF"
+    ):
+        decimals = int(representative.decimals)
+    return row, Decimal(str(representative.parsed_value)), decimals
+
+
+def _resolve_calculation_children_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: CalculationChildrenMapping,
+    ledger: RawFactLedger,
+    por: date,
+    primary: Any,
+    limitation_sink: list[str] | None,
+) -> _FieldOutcome:
+    """A.2: emit one row per calculation child of the parent concept.
+
+    The chosen role's arcs fix the row set and order (module docstring of
+    :mod:`calculation_linkbase` records the extension-child reading); the
+    outcome exposes the arc weights in row order for the A.3 weighted sum
+    identity and keeps ``value`` ``None`` — an unweighted member sum is not
+    a meaningful operand for a reconciliation whose arcs carry −1 weights.
+    """
+    from . import calculation_linkbase  # deferred: keeps imports flat
+
+    field_id = catalogue_field["field_id"]
+    period_kind = catalogue_field["period_kind"]
+    rule_id = f"{pack_id.lower()}.{field_id}.calculation_children/v1"
+    digest = _calculation_children_mapping_digest(mapping)
+
+    children = calculation_linkbase.parse_parent_children(
+        calculation_linkbase.calculation_linkbase_bytes(primary),
+        mapping.parent_concept,
+        mapping.child_prefix,
+    )
+    if not children:
+        if limitation_sink is not None:
+            limitation_sink.append(
+                f"{pack_id.lower()}.{field_id}: no calculation role declares"
+                " reconciliation children"
+            )
+        absence = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            f"missing_standard_fact:{mapping.parent_concept}",
+            concept=mapping.parent_concept,
+        )
+        absence.row["mapping_rule_id"] = rule_id
+        absence.row["mapping_rule_digest"] = digest
+        return absence
+
+    emitted: list[dict[str, Any]] = []
+    weights: list[Decimal] = []
+    decimals_seen: list[int] = []
+    for child_qname, weight in children:
+        weights.append(weight)
+        candidates = [
+            occurrence
+            for occurrence in ledger.events
+            if not occurrence.is_nil
+            and _dimension_qname_matches(
+                occurrence.concept_qname, child_qname
+            )
+            and _period_matches(occurrence, period_kind, por)
+            and not (
+                occurrence.context.explicit_dimensions
+                or occurrence.context.typed_dimensions
+            )
+        ]
+        if not candidates:
+            reason = (
+                f"missing_standard_fact:{child_qname}"
+                if child_qname.startswith("us-gaap:")
+                else (
+                    "extension_concept_unaliased:"
+                    + (
+                        child_qname.split(":", 1)[0]
+                        if ":" in child_qname
+                        else child_qname
+                    )
+                )
+            )
+            absence = _absence_row(
+                catalogue_field, por, "missing", reason, concept=child_qname
+            )
+            absence.row["taxonomy"] = (
+                child_qname.split(":", 1)[0]
+                if ":" in child_qname
+                else child_qname
+            )
+            absence.row["mapping_rule_id"] = rule_id
+            absence.row["mapping_rule_digest"] = digest
+            emitted.append(absence.row)
+            continue
+        longest = max(_duration_days(item) for item in candidates)
+        candidates = [
+            item for item in candidates if _duration_days(item) == longest
+        ]
+        distinct = {str(item.parsed_value) for item in candidates}
+        selected_ids: set[str] = set()
+        if len(distinct) > 1:
+            reconciled = _precision_consistent_selection(candidates)
+            if reconciled is None:
+                units = {_unit_measure(item.unit) for item in candidates}
+                conflict = _absence_row(
+                    catalogue_field,
+                    por,
+                    "not_evaluable",
+                    "unit_mismatch" if len(units) > 1 else "missing_dependency",
+                    concept=child_qname,
+                    occurrence_ids=[
+                        item.occurrence_id for item in candidates
+                    ],
+                )
+                conflict.row["taxonomy"] = (
+                    child_qname.split(":", 1)[0]
+                    if ":" in child_qname
+                    else child_qname
+                )
+                conflict.row["mapping_rule_id"] = rule_id
+                conflict.row["mapping_rule_digest"] = digest
+                emitted.append(conflict.row)
+                continue
+            candidates, selected_ids = reconciled[0], reconciled[1]
+        representative = min(
+            candidates, key=lambda item: item.occurrence_id or ""
+        )
+        row, _value, decimals = _calculation_child_row(
+            catalogue_field=catalogue_field,
+            por=por,
+            child_qname=child_qname,
+            occurrences=candidates,
+            representative=representative,
+        )
+        if selected_ids:
+            row["source_occurrence_ids"] = sorted(
+                set(row["source_occurrence_ids"]) | selected_ids
+            )
+        row["mapping_rule_id"] = rule_id
+        row["mapping_rule_digest"] = digest
+        emitted.append(row)
+        if decimals is not None:
+            decimals_seen.append(decimals)
+
+    return _FieldOutcome(
+        row=emitted[0],
+        value=None,
+        decimals=min(decimals_seen) if decimals_seen else None,
+        unit=emitted[0]["unit"],
+        extra_rows=tuple(emitted[1:]),
+        calculation_weights=tuple(weights),
+    )
+
+
+@dataclass(frozen=True)
+class WeightedSumIdentity:
+    """A.3 (PK05): Σ weight_i × row value_i vs the total field's value.
+
+    ``weights`` aligns with the addend field's rows in emission order; an
+    empty tuple takes the weights the addend field's calculation-children
+    outcome exposed (the issuer's own arc weights). Any addend row or the
+    total not valued keeps the check ``not_evaluable`` / ``missing_dependency``
+    (R-K3). A negative weight names its line in the check's limitation —
+    weights have no row slot, so the reader cannot see the sign in the rows.
+    """
+
+    check_id: str
+    addends: str
+    total: str
+    weights: tuple[Decimal, ...] = ()
+
+
+_KIND_BY_SPEC["WeightedSumIdentity"] = "sum_identity"
+
+
+def _weighted_negative_limitation(
+    spec: WeightedSumIdentity,
+    rows: Sequence[Mapping[str, Any]],
+    weights: Sequence[Decimal],
+    limitation_sink: list[str] | None,
+    *,
+    pack_id: str,
+) -> None:
+    """A.3: name the negative-weight lines once the weights are known."""
+    if limitation_sink is None or len(weights) != len(rows):
+        return
+    negative = [
+        str(row.get("concept"))
+        for weight, row in zip(weights, rows)
+        if weight < 0
+    ]
+    if negative:
+        limitation_sink.append(
+            f"{pack_id.lower()}.{spec.check_id}: negative-weight lines"
+            f" {','.join(negative)}"
+        )
