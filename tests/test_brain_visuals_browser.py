@@ -108,9 +108,27 @@ def test_browser_precision_and_zero_baseline(page):
     assert not page.locator('rect[data-bar]').evaluate_all('(items)=>items.some(e=>Number(e.getAttribute("height"))<0)')
 
 
-def test_donut_is_a_ring_and_missing_shares_are_disclosed(page):
+@pytest.mark.parametrize("later_series_style", [False, True])
+def test_donut_is_a_ring_and_missing_shares_are_disclosed(page, later_series_style):
+    if later_series_style:
+        # Series color rules must not fill a ring when styles are composed later.
+        page.add_style_tag(content="#mmb-root .mmb-v-series-0{fill:currentColor}")
     assert mount(page, sample('donut', columns=['Category', 'Value'], rows=[['A', 3], ['B', 2], ['Missing', None]]))
-    assert page.locator('svg circle').evaluate_all('(items)=>items.every(e=>getComputedStyle(e).fill === "none")')
+    # ResizeObserver can replace the SVG between a locator's query and evaluation.
+    # Select connected nodes and read their styles in one synchronous observation.
+    rings = page.wait_for_function(
+        """() => {
+            const items = Array.from(document.querySelectorAll('svg circle'));
+            if (!items.length || items.some(e => !e.isConnected)) return false;
+            return items.map(e => ({
+                classes: e.getAttribute('class'),
+                attributeFill: e.getAttribute('fill'),
+                computedFill: getComputedStyle(e).fill
+            }));
+        }"""
+    ).json_value()
+    assert len(rings) == 2, rings
+    assert all(ring["computedFill"] == "none" for ring in rings), rings
     assert 'known values only' in page.locator('figure').inner_text()
 
 
