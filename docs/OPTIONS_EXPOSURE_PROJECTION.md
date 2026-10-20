@@ -377,3 +377,23 @@ existing native builder can validate the admitted context bundle with explicit
 `--roots SPY --date 2026-10-19 --exposure-context <bundle> --no-publish --out <candidate>`.
 The ordinary `--publish` path remains the only publication effect; this source
 change creates no service, schedule, endpoint, store, automatic probe or activation.
+
+### Explicit full observed-root acquisition
+
+`collectors.thetadata.bounded_observed_root_history(root, day, kind, request_budget=...,
+max_bytes=..., max_rows=..., version=...)` makes a single native history GET for
+SPY or QQQ, with wildcard expiry and both rights. `kind` is `greeks` or `oi`;
+Greeks require explicit version `1`, while OI accepts no model version. The
+caller must supply actual response limits, bounded above by 16 MiB and 100,000
+raw rows. There is no health request, retry, concurrent window or pagination.
+Every successful normalized row retains the acquisition receipt. Refusal,
+truncation or parse/limit failure closes that same request budget. This method
+does not write the incumbent store, qualify terms/identity, grant rights or
+claim full-market completeness. A 14,000-row synthetic multi-expiry acquisition
+tests the larger population independently of the unchanged selected-expiry caps.
+
+The installed daily owner deliberately maintains prior-session Greeks/EOD and
+current-session OI. Its next normal session run advances that source frontier.
+An explicit catch-up remains a separately bounded effect through the incumbent
+writer lock and atomic merge; neither this helper nor a projection context
+waives those controls or permits a selected capture to replace a full book.

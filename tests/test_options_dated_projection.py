@@ -147,6 +147,52 @@ def test_bounded_theta_skips_health_get_and_records_explicit_request_profile(mon
     assert budget.attempts == 2 and oi['open_interest'].tolist() == [100]
 
 
+def test_native_observed_root_capture_retains_realistic_book_without_canary_limits(monkeypatch):
+    from collectors import thetadata as td
+    raw = ('symbol,expiration,strike,right,timestamp,gamma,underlying_price\n' + ''.join(
+        f'SPY,2026-10-{23 + i % 2},{100 + i / 1000},C,2026-10-15T16:00:00,0.01,100\n'
+        for i in range(14000))).encode()
+    s=FakeSession(raw);monkeypatch.setattr(td,'_session',lambda:s)
+    monkeypatch.setattr(td,'reachable',lambda:pytest.fail('extra health GET'))
+    monkeypatch.setattr(td,'_concurrent_windows',lambda *a,**k:pytest.fail('unbounded retry/window path'))
+    budget=BoundedRequestBudget(max_gets=2)
+    frame=td.bounded_observed_root_history('SPY',ASOF,'greeks',request_budget=budget,
+        version='1',max_bytes=2*1024*1024,max_rows=20000)
+    assert len(frame)==14000 and budget.attempts==1 and len(s.calls)==1
+    rec=json.loads(frame.iloc[0][ACQUISITION_COLUMN])
+    assert rec['parameters']['expiration']=='*' and 'strike_range' not in rec['parameters']
+    assert rec['parameters']['version']=='1' and frame.expiration.nunique()==2
+    assert not s.calls[0][1]['allow_redirects'] and not rec['historical_first_availability_established']
+    # The independently bounded original selected-expiry profile remains narrow.
+    with pytest.raises(ValueError):
+        td.bulk_greeks('SPY',EXPIRY,ASOF,ASOF,request_budget=BoundedRequestBudget(),
+            strike_range=5,max_bytes=2*1024*1024,max_rows=20000)
+    assert len(s.calls)==1
+
+
+@pytest.mark.parametrize('kind,status,byte_cap,row_cap',[
+    ('oi',403,10000,10),('greeks',500,10000,10),
+    ('oi',200,1,10),('greeks',200,10000,1)])
+def test_observed_root_failure_closes_same_budget(monkeypatch,kind,status,byte_cap,row_cap):
+    from collectors import thetadata as td
+    s=FakeSession(b'symbol,expiration,strike,right,timestamp,gamma,open_interest\nQQQ,2026-10-23,100,C,2026-10-15,0.01,1\nQQQ,2026-10-23,101,C,2026-10-15,0.01,1\n',status)
+    monkeypatch.setattr(td,'_session',lambda:s);budget=BoundedRequestBudget(max_gets=2)
+    assert td.bounded_observed_root_history('QQQ',ASOF,kind,request_budget=budget,
+        version='1' if kind=='greeks' else None,max_bytes=byte_cap,max_rows=row_cap) is None
+    assert budget.stopped and budget.attempts==1 and len(s.calls)==1
+    with pytest.raises(RuntimeError):budget.begin(s,'http://theta-test')
+
+
+@pytest.mark.parametrize('root,kind,version',[('IWM','greeks','1'),('SPY','eod','1'),
+    ('SPY','greeks',None),('QQQ','oi','1')])
+def test_observed_root_profile_is_explicit_before_effect(root,kind,version):
+    from collectors import thetadata as td
+    budget=BoundedRequestBudget()
+    with pytest.raises(ValueError):td.bounded_observed_root_history(root,ASOF,kind,
+        request_budget=budget,version=version,max_bytes=1000,max_rows=10)
+    assert budget.attempts==0
+
+
 @pytest.mark.parametrize('raw,status,max_bytes,max_rows', [
     (b'x\n1\n', 403, 100, 10), (b'x\n1\n', 500, 100, 10),
     (b'x\n1\n', 200, 1, 10), (b'x\n1\n2\n', 200, 100, 1)])

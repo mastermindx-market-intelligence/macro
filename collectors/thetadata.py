@@ -336,7 +336,7 @@ def list_expirations(symbol: str) -> list[str] | None:
 # --------------------------------------------------------------------------- #
 
 def _get_csv(session: requests.Session, path: str, params: dict, *, request_budget=None,
-             max_bytes=None, max_rows=None) -> pd.DataFrame | None:
+             max_bytes=None, max_rows=None, limit_profile="selected_expiry") -> pd.DataFrame | None:
     """Single streaming CSV GET; returns a parsed DataFrame or None on any error.
 
     v3 returns chunked streaming CSV.  No pagination — one continuous response.
@@ -350,7 +350,11 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
     params = dict(params)
     params.setdefault("format", "csv")
     if request_budget is not None:
-        if type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= 262144 and 0 < max_rows <= 100):
+        profiles = {"selected_expiry": (262144, 100), "observed_root": (16 * 1024 * 1024, 100000)}
+        if limit_profile not in profiles:
+            raise ValueError("Unknown bounded CSV limit profile")
+        byte_cap, row_cap = profiles[limit_profile]
+        if type(max_bytes) is not int or type(max_rows) is not int or not (0 < max_bytes <= byte_cap and 0 < max_rows <= row_cap):
             raise ValueError("Bounded CSV needs explicit byte/row caps")
         request_budget.begin(session, url)
     try:
@@ -886,6 +890,35 @@ def _normalize_eod_df(df: pd.DataFrame, root: str) -> pd.DataFrame:
         )
 
     return df.reset_index(drop=True)
+
+
+def bounded_observed_root_history(root: str, day: date | str | int, kind: str, *,
+                                  request_budget, max_bytes: int, max_rows: int,
+                                  version: str | None = None) -> pd.DataFrame | None:
+    """One explicit full observed-root history GET through the native normalizers.
+
+    This does not assert market completeness, identity, terms, or rights. No
+    health probe, concurrent windows, retry, pagination, store mutation or
+    publication occurs. A failed acquisition closes the supplied budget. Existing
+    selected-expiry bounds and ordinary legacy callers remain unchanged.
+    """
+    if (root not in {"SPY", "QQQ"} or kind not in THETA_ENDPOINTS or request_budget is None
+            or (kind == "greeks" and version != "1") or (kind == "oi" and version is not None)):
+        raise ValueError("Observed-root history requires an explicit supported source profile")
+    session_day = _date_int(day)
+    params = dict(symbol=root, expiration="*", start_date=session_day, end_date=session_day,
+                  right="both", format="csv")
+    if version is not None:
+        params["version"] = version
+    try:
+        frame = _get_csv(_session(), THETA_ENDPOINTS[kind], params, request_budget=request_budget,
+                         max_bytes=max_bytes, max_rows=max_rows, limit_profile="observed_root")
+    except _StreamTruncated:
+        request_budget.stop()
+        return None
+    if frame is None or frame.empty:
+        return frame
+    return _normalize_greeks_df(frame, order=3) if kind == "greeks" else _normalize_oi_df(frame)
 
 
 def bulk_open_interest(root: str, exp: int | str | date, start_date: date | str | int,
