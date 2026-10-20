@@ -450,7 +450,7 @@
         <button class="hkx-hbtn" onclick="hkxTogglePop('hkx-pop-signals',event)">&#x21B1; <span class="l-en">1 of 8 signals positive</span><span class="l-zh">1/8 信号偏多</span> <span class="hkx-hbtn-n">&#x25BE;</span></button>
         
         
-        <button class="hkx-hbtn" style="border-color:rgba(224,100,100,.5)" onclick="hkxTogglePop('hkx-pop-risk',event)">&#9888; <span class="l-en">Drop risk</span><span class="l-zh">回撤风险</span> · <span class="hkx-hbtn-n" style="color:var(--ink-down, var(--down))"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></span> &#x25BE;</button>
+        <button class="hkx-hbtn" style="border-color:rgba(224,100,100,.5)" onclick="hkxTogglePop('hkx-pop-risk',event)">&#9888; <span class="l-en">Drop risk</span><span class="l-zh">回撤风险</span> · <span class="hkx-hbtn-n" style="color:var(--ink-down, var(--down))"><span class="l-en">Calm — no driver elevated</span><span class="l-zh">平静 — 无驱动升高</span></span> &#x25BE;</button>
         
         
         <div class="hkx-pop" id="hkx-pop-signals">
@@ -499,16 +499,16 @@
           
           
           <div class="hkx-pop-big"><span style="color:var(--ink-down, var(--down))">31%</span><span style="font-size:12.5px;color:var(--ink-down, var(--down))"><span class="l-en">21-day chance</span><span class="l-zh">21日概率</span></span></div>
-          <div class="hkx-pop-sub"><span class="l-en">A risk is building — stay normal, just watch it.</span><span class="l-zh">风险在积累 — 保持正常，留意即可。</span></div>
-          
-          <div class="hkx-pop-row">
-            <div class="hkx-pop-rt"><span><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></span><b>caution</b></div>
-            <div class="hkx-pop-bar"><i style="width:72.5%;background:var(--down)"></i></div>
-          </div>
+          <div class="hkx-pop-sub"><span class="l-en">Normal exposure.</span><span class="l-zh">正常仓位。</span></div>
           
           <div class="hkx-pop-row">
             <div class="hkx-pop-rt"><span><span class="l-en">USD / HKD funding</span><span class="l-zh">美元／港元资金</span></span><b>watch</b></div>
             <div class="hkx-pop-bar"><i style="width:61.1%;background:var(--down)"></i></div>
+          </div>
+          
+          <div class="hkx-pop-row">
+            <div class="hkx-pop-rt"><span><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></span><b>calm</b></div>
+            <div class="hkx-pop-bar"><i style="width:53.4%;background:var(--down)"></i></div>
           </div>
           
           
@@ -939,15 +939,15 @@
     
     <div class="hkx-card hkx-cat" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag"><span class="l-en">Gold</span><span class="l-zh">黄金</span></div>
-      <div class="cat-val">4,164</div>
+      <div class="cat-val">4,135</div>
       
-      <div class="cat-chg hkx-tt-up">+3.7 +0.1%</div>
+      <div class="cat-chg hkx-tt-dn">-25.1 -0.6%</div>
       
       
       <div class="cat-mean"><span class="l-en">gold priced in US dollars</span><span class="l-zh">以美元计价的黄金</span></div>
       
       
-      <span class="cat-tone bull"><span class="l-en">Up</span><span class="l-zh">涨</span></span>
+      <span class="cat-tone bear"><span class="l-en">Down</span><span class="l-zh">跌</span></span>
       
     </div>
     
@@ -956,9 +956,9 @@
     
     <div class="hkx-card hkx-cat" role="button" tabindex="0" onclick="hkxOpenDlg('hkx-dlg-policy')">
       <div class="cat-tag"><span class="l-en">US dollar</span><span class="l-zh">美元指数</span></div>
-      <div class="cat-val">101.81</div>
+      <div class="cat-val">101.85</div>
       
-      <div class="cat-chg hkx-tt-dn">-0.17 -0.2%</div>
+      <div class="cat-chg hkx-tt-dn">-0.13 -0.1%</div>
       
       
       <div class="cat-mean"><span class="l-en">against a basket of currencies — higher = a stronger dollar</span><span class="l-zh">相对一篮子货币 — 数值升高 = 美元走强</span></div>
@@ -1951,41 +1951,33 @@
     <div class="hkx-dlg-body rrd">
 
       
-      <div class="rrd-hd tone-muted">
+      <div class="rrd-hd tone-up">
         <div class="rrd-hd-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
         <div class="rrd-hd-txt">
-          <div class="rrd-hd-label"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></div>
+          <div class="rrd-hd-label"><span class="l-en">Calm — no driver elevated</span><span class="l-zh">平静 — 无驱动升高</span></div>
           
-          <div class="rrd-hd-sub"><span class="l-en">A risk is building — stay normal, just watch it.</span><span class="l-zh">风险在积累 — 保持正常，留意即可。</span></div>
+          <div class="rrd-hd-sub"><span class="l-en">Normal exposure.</span><span class="l-zh">正常仓位。</span></div>
           
           
-          <div class="rrd-hd-sub"><span class="l-en">Intensity</span><span class="l-zh">强度</span> <b>67</b>/100</div>
+          <div class="rrd-hd-sub"><span class="l-en">Intensity</span><span class="l-zh">强度</span> <b>46</b>/100</div>
           
         </div>
       </div>
 
-      <div class="rrx rrx-watch" style="--rc:var(--info)">
+      <div class="rrx rrx-calm" style="--rc:var(--ok)">
   
   <div class="rrx-main">
   <div class="rrx-hd">
-    <span class="rrx-ic">🌤️</span>
+    <span class="rrx-ic">✅</span>
     <div class="rrx-id">
       <div class="rrx-ttl"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>
-        <span class="rrx-badge"><span class="l-en">WATCH</span><span class="l-zh">观察</span> · 67/100</span>
+        <span class="rrx-badge"><span class="l-en">CALM</span><span class="l-zh">平静</span> · 46/100</span>
         <span class="help">?<span class="tip"><span class="l-en">Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.</span><span class="l-zh">回撤风险仪表。高读数用于降风险，不用于选股。</span></span></span>
       </div>
-      <div class="rrx-dom"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></div>
-      
-      <div class="rrx-authority is-advisory">
-        <span class="l-en">Advisory — sizes risk; does not override the measured tape.</span><span class="l-zh">提示性信号——仅调整仓位，不覆盖实测盘面。</span>
-      </div>
+      <div class="rrx-dom"><span class="l-en">Calm — no driver elevated</span><span class="l-zh">平静 — 无驱动升高</span></div>
       
       
     </div>
-    
-    
-    <div class="rrx-gross"><span class="gv">×0.97</span><span class="gn"><span class="l-en">gross</span><span class="l-zh">建议仓位</span></span></div>
-    
     
   </div>
 
@@ -2005,7 +1997,7 @@
         <span class="rrx-hl"><span class="l-en">5d</span><span class="l-zh">5日</span></span>
       </div>
       <div class="rrx-col">
-        <span class="rrx-v">2%</span>
+        <span class="rrx-v">1%</span>
         <div class="rrx-tk">
           <div class="rrx-norm" style="height:46%"></div>
           <div class="rrx-fill" style="height:6%"></div>
@@ -2039,7 +2031,7 @@
     <div class="rrx-rec-mid">
       
       <svg class="rrx-rec-spark" viewBox="0 0 96 26" preserveAspectRatio="none" aria-hidden="true">
-        <polyline points="3.0,13.2 6.9,12.5 10.8,9.0 14.7,16.2 18.7,14.6 22.6,19.0 26.5,19.0 30.4,9.6 34.3,7.6 38.2,7.9 42.1,7.9 46.0,5.5 50.0,5.4 53.9,3.3 57.8,3.0 61.7,5.4 65.6,3.0 69.5,4.7 73.4,6.0 77.3,4.8 81.3,8.0 85.2,8.0 89.1,15.2 93.0,23.0" fill="none" stroke="var(--rvc)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="3.0,8.8 6.9,8.4 10.8,6.4 14.7,10.5 18.7,9.6 22.6,12.1 26.5,12.1 30.4,6.8 34.3,5.6 38.2,5.8 42.1,5.8 46.0,4.4 50.0,4.4 53.9,3.2 57.8,3.0 61.7,4.4 65.6,3.0 69.5,4.0 73.4,4.7 77.3,4.0 81.3,5.9 85.2,6.1 89.1,14.4 93.0,23.0" fill="none" stroke="var(--rvc)" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
         <circle class="pk" cx="57.8" cy="3.0" r="1.6"/>
         <circle class="lx" cx="93.0" cy="23.0" r="2.1"/>
       </svg>
@@ -2061,13 +2053,11 @@
   
   
   
-  <div class="rrx-ev"><span class="rrx-ev-k"><span class="l-en">Leading</span><span class="l-zh">领先信号</span></span><span class="l-en">US real yield jump</span><span class="l-zh">美债实际利率跳升</span> <span class="rrx-ev-p"><span class="l-en">82nd</span><span class="l-zh">第82百分位</span></span> · <span class="l-en">US 10-year yield jump</span><span class="l-zh">美债10年利率跳升</span> <span class="rrx-ev-p"><span class="l-en">79th</span><span class="l-zh">第79百分位</span></span></div>
-  
   
 
   
   
-  <div class="rrx-do"><span class="rrx-do-k"><span class="l-en">Do</span><span class="l-zh">应对</span></span><span class="l-en">A risk is building — stay normal, just watch it.</span><span class="l-zh">风险在积累 — 保持正常，留意即可。</span></div>
+  <div class="rrx-do"><span class="rrx-do-k"><span class="l-en">Do</span><span class="l-zh">应对</span></span><span class="l-en">Normal exposure.</span><span class="l-zh">正常仓位。</span></div>
   
 
   
@@ -2117,7 +2107,7 @@
           <div class="rrd-tile-body">
             <div class="rrd-tile-lbl"><span class="l-en">Leading</span><span class="l-zh">领先信号</span></div>
             <div class="rrd-tile-state"><span class="l-en">Hang Seng <b>5%</b> below its 200-day average</span>
-              <span class="l-zh">恒生指数低于200日均线 <b>5%</b></span><span class="rrd-tile-chip"><span class="l-en">US real yield jump</span><span class="l-zh">美债实际利率跳升</span></span>
+              <span class="l-zh">恒生指数低于200日均线 <b>5%</b></span>
             </div>
           </div>
           <span class="rrd-tile-tip">?</span>
@@ -2190,17 +2180,17 @@
       <div class="rrd-sep"></div>
       <div class="rrd-eyebrow"><span class="l-en">Risk ladder — what to watch</span><span class="l-zh">风险梯度 — 需关注的因素</span></div>
       <div class="rrd-ladder">
-        <div class="rrd-lrow tone-down">
-          <span class="rrd-lname"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></span>
-          <span class="rrd-fbar"><i style="width:72%"></i></span>
-          <span class="rrd-lscore">72</span>
-          <span class="rrd-lband"><span class="l-en">Caution</span><span class="l-zh">谨慎</span></span>
-        </div>
         <div class="rrd-lrow tone-warn">
           <span class="rrd-lname"><span class="l-en">USD / HKD funding</span><span class="l-zh">美元／港元资金</span></span>
           <span class="rrd-fbar"><i style="width:61%"></i></span>
           <span class="rrd-lscore">61</span>
           <span class="rrd-lband"><span class="l-en">Watch</span><span class="l-zh">留意</span></span>
+        </div>
+        <div class="rrd-lrow tone-warn">
+          <span class="rrd-lname"><span class="l-en">US rate shock</span><span class="l-zh">美债利率冲击</span></span>
+          <span class="rrd-fbar"><i style="width:53%"></i></span>
+          <span class="rrd-lscore">53</span>
+          <span class="rrd-lband"><span class="l-en">Calm</span><span class="l-zh">平静</span></span>
         </div>
         
       </div>
@@ -2993,7 +2983,7 @@ Hong Kong sits near Reflation, but conviction is weak. Mainland selling is the m
 
 
 <div class="foot">
-  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-20 15:29 UTC<br>
+  <span class="l-en">Built</span><span class="l-zh">生成于</span> 2026-10-20 17:09 UTC<br>
   <span class="made">© 2026 Mastermind Inc</span>
 </div>
 
