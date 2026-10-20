@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 from engine.greeks import SQRT2PI
-from engine.options_hub import MULT, _f  # same contract multiplier + rounding helper
+from engine.options_hub import MULT, _f, _legacy_greek_rows  # same contract multiplier + rounding helper
 
 SCHEMA = "options_hub.vex/v1"
 # Vega is d(option value)/d(IV) per share; VEX_PM scales to a 1 vol-point (1% IV) move,
@@ -106,7 +106,7 @@ def compute_vex(greeks_df: pd.DataFrame, oi_prev_df: pd.DataFrame, asof: str, ro
     """
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
         return _empty_vex(root, asof)
-    g = greeks_df.copy()
+    g = _legacy_greek_rows(greeks_df)
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:

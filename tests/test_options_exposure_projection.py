@@ -451,3 +451,31 @@ def test_full_event_budget_accounts_for_javascript_decimal_expansion():
     payload = {"v": [1e-6, -1e-6, 1e20] * 1000}
     node_equivalent = '{"v":[' + ','.join(['0.000001', '-0.000001', '100000000000000000000'] * 1000) + ']}'
     assert gex_sse_bytes(payload) >= len(('data: ' + node_equivalent + '\n\n').encode())
+
+
+@pytest.mark.parametrize("clock", ["timestamp", "underlying_timestamp"])
+def test_raw_clocks_do_not_multiply_legacy_exposure_or_vol_rows(clock, monkeypatch):
+    from engine import options_hub
+    from engine.vex_engine import compute_vex
+    g, oi, ctx = book()
+    oi.loc[0, "open_interest"] = 200
+    g["delta"] = [.5, -.5]
+    g["vega"] = [.1, .1]
+    g[clock] = ASOF + "T15:00:00.000"
+    repeated = g.iloc[[0]].copy()
+    repeated[clock] = ASOF + "T15:00:00.001"
+    repeated = pd.concat([g, repeated], ignore_index=True)
+    monkeypatch.setattr(options_hub, "_flip_and_profile", lambda *args: (None, None))
+    normal = options_hub.compute_gex(g, oi, ASOF, "SPY")
+    duplicate = options_hub.compute_gex(repeated, oi, ASOF, "SPY")
+    assert normal["by_strike"][0]["gamma_net"] == .01
+    # Every legacy field retains its pre-clock population, including coverage.
+    assert {k: v for k, v in normal.items() if k != "exposure_projection"} == {
+        k: v for k, v in duplicate.items() if k != "exposure_projection"}
+    assert compute_vex(g, oi, ASOF, "SPY") == compute_vex(repeated, oi, ASOF, "SPY")
+    closes = pd.Series(dtype=float)
+    assert options_hub.compute_vol(g, closes, ASOF, "SPY") == options_hub.compute_vol(repeated, closes, ASOF, "SPY")
+    # The source projection still sees and refuses ambiguity before legacy dedup.
+    assert duplicate["exposure_projection"]["population"]["received_rows"] == 3
+    assert duplicate["exposure_projection"]["metrics"]["gamma"]["exclusions"]["duplicate_contract_key"] == 1
+    assert len(repeated) == 3 and clock in repeated.columns

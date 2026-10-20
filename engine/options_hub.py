@@ -70,6 +70,21 @@ def _f(x, n: int = 2):
     return round(v, n) if np.isfinite(v) else None
 
 
+def _legacy_greek_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    """Preserve the pre-clock EOD row population for legacy analytics.
+
+    Native raw clocks are additional provenance, not additional contracts. The
+    qualified projection consumes the original frame before this compatibility
+    view and refuses ambiguous repeated contract keys. Legacy analytics retain
+    the normalizer's previous full-row equality, without selecting a latest
+    observation or interpreting an unknown timezone.
+    """
+    clocks = [c for c in ("timestamp", "underlying_timestamp") if c in frame.columns]
+    if not clocks:
+        return frame.copy()
+    return frame.drop(columns=clocks).drop_duplicates().copy()
+
+
 def _today_str() -> str:
     return str(_date.today())
 
@@ -150,7 +165,7 @@ def compute_vol(
         return _empty_vol(root, asof)
 
     # ── normalise dates ──────────────────────────────────────────────────────
-    df = greeks_df.copy()
+    df = _legacy_greek_rows(greeks_df)
     df["date"] = pd.to_datetime(df["date"]).dt.date.astype(str)
 
     asof_df = df[df["date"] == asof]
@@ -453,7 +468,7 @@ def compute_gex(
     if greeks_df is None or greeks_df.empty or "date" not in greeks_df.columns:
         return empty_with_projection()
 
-    g = greeks_df.copy()
+    g = _legacy_greek_rows(greeks_df)
     g["date"] = pd.to_datetime(g["date"]).dt.date.astype(str)
     g = g[g["date"] == asof]
     if g.empty:
