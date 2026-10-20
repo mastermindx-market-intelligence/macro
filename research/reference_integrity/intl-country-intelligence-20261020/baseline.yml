@@ -1,0 +1,750 @@
+# Actual production baseline; capture timing and access limits are recorded below.
+schema: "mastermind.rig_baseline.v1"
+reference_id: "intl-country-intelligence-20261020"
+captured_at: "2026-10-20"
+production:
+  route: "intl.html"
+  live_url: "https://www.mastermind-x.com/intl.html"
+  source_commit: "a815e54f50e012fd693c9a1ec311f5e814f330bd"
+  source_paths:
+    - "engine/intl_run.py"
+    - "scripts/build_intl.py"
+    - "templates/intl.html.j2"
+    - "templates/intl_library_search.js"
+    - "templates/intl_workspace.css"
+    - "templates/intl_workspace.js"
+    - "templates/intl_workspace_entry.js"
+    - "templates/intl_workspace_history.css"
+    - "templates/intl_workspace_macro.css"
+    - "templates/intl_workspace_risk.css"
+    - "templates/intl_workspace_scenario.js"
+    - "templates/intl_workspace_state.js"
+    - "templates/live.js"
+    - "templates/logo_config.js"
+    - "templates/navigation-refresh.css"
+    - "templates/product-nav-icons.css"
+    - "templates/stock-logos.js"
+    - "templates/tablesort.js"
+    - "templates/theme.css"
+    - "templates/theme.js"
+    - "templates/_seo_head.html.j2"
+    - "templates/_site_nav.html.j2"
+    - "templates/intl_workspace/shell.html.j2"
+    - "templates/_navlinks.html.j2"
+    - "templates/intl_workspace/overview.html.j2"
+    - "templates/intl_workspace/compare.html.j2"
+    - "templates/intl_workspace/macro.html.j2"
+    - "templates/intl_workspace/risk.html.j2"
+    - "templates/intl_workspace/library.html.j2"
+    - "templates/intl_workspace/history.html.j2"
+    - "templates/intl_workspace/inspector.html.j2"
+  shared_surfaces:
+    - "Shared site navigation, stock search, theme and language controls"
+    - "Country-dashboard, international-stock, thematic-basket and sanctions routes linked from shared navigation"
+    - "templates/intl.html.j2 stocks-mode output on intl_stocks.html"
+  captured_html: "research/reference_integrity/intl-country-intelligence-20261020/production/intl.html"
+  captured_html_sha256: "9e73a81c020459c0d1d440987670d10cd137480f7660817a83ed176a2aa1862b"
+  source_snapshot_root: "research/reference_integrity/intl-country-intelligence-20261020/production/source"
+capture_provenance:
+  capture_started_at: "2026-10-20T11:13:55.136830+00:00"
+  finished_at: "2026-10-20T11:15:20.501712+00:00"
+  timing: "Actual production capture after implementation, before release."
+  source_commit_at_capture: "a815e54f50e012fd693c9a1ec311f5e814f330bd"
+  proposed_source_commit_at_capture: "6ad0c377ed80a8ccf07ecbfb6c7b44530b753cf7"
+  public_status: 200
+  public_bytes: 2652235
+  public_matches_read_only_origin_baseline: true
+  source_file_count: 31
+  receipt: "research/reference_integrity/intl-country-intelligence-20261020/production_capture_receipt.json"
+  capture_manifest: "research/reference_integrity/intl-country-intelligence-20261020/production_capture_manifest.json"
+  capture_census: "research/reference_integrity/intl-country-intelligence-20261020/production_capture_census.json"
+  direct_viewport_receipt: "research/reference_integrity/intl-country-intelligence-20261020/production_viewports.json"
+  limitation: "This actual production baseline was captured after implementation and before deployment. It is not represented as a pre-design capture."
+evidence:
+  screenshots:
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/e547b22ad2a1e63c.png"
+      viewport: "desktop"
+      theme: "light"
+      locale: "en"
+      capture_kind: "full-page"
+      width: 1440
+      height: 91860
+      viewport_width: 1440
+      viewport_height: 900
+      sha256: "e547b22ad2a1e63c8ee37c068922ce11488595867ae77c8b457c6b18f8f4d6a1"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/e7ca85951d248841.png"
+      viewport: "desktop"
+      theme: "dark"
+      locale: "en"
+      capture_kind: "full-page"
+      width: 1440
+      height: 91860
+      viewport_width: 1440
+      viewport_height: 900
+      sha256: "e7ca85951d24884177ab386e9b65138c453504f211b09bbd12b606389d636ced"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/f915593f19ca8ac7.png"
+      viewport: "desktop"
+      theme: "light"
+      locale: "zh"
+      capture_kind: "full-page"
+      width: 1440
+      height: 90180
+      viewport_width: 1440
+      viewport_height: 900
+      sha256: "f915593f19ca8ac780367cf4d9484380947edefff943aef5b8e36ea82ad9ab79"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/91155e4f8dfd1bfc.png"
+      viewport: "desktop"
+      theme: "dark"
+      locale: "zh"
+      capture_kind: "full-page"
+      width: 1440
+      height: 90180
+      viewport_width: 1440
+      viewport_height: 900
+      sha256: "91155e4f8dfd1bfca42aad0e5bd9e206bfd6727b74bb11bbf846591766dc72f2"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/91fc3e50bd85faf7.png"
+      viewport: "mobile"
+      theme: "light"
+      locale: "en"
+      capture_kind: "full-page"
+      width: 390
+      height: 112187
+      viewport_width: 390
+      viewport_height: 844
+      sha256: "91fc3e50bd85faf733f977481df745a079daa6a364d64df967d262d0a334e39b"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/ac5f478c96be95fb.png"
+      viewport: "mobile"
+      theme: "dark"
+      locale: "en"
+      capture_kind: "full-page"
+      width: 390
+      height: 112187
+      viewport_width: 390
+      viewport_height: 844
+      sha256: "ac5f478c96be95fbddb6b7856f653c6a78f48851de2200d6882c1444794e92e1"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/6fe6a2b8dde462f0.png"
+      viewport: "mobile"
+      theme: "light"
+      locale: "zh"
+      capture_kind: "full-page"
+      width: 390
+      height: 115065
+      viewport_width: 390
+      viewport_height: 844
+      sha256: "6fe6a2b8dde462f0c38a2803b04f8b96bd1f1f2dcbe878c3d0d176fe71c868c7"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/14749e9f3d8580e0.png"
+      viewport: "mobile"
+      theme: "dark"
+      locale: "zh"
+      capture_kind: "full-page"
+      width: 390
+      height: 115065
+      viewport_width: 390
+      viewport_height: 844
+      sha256: "14749e9f3d8580e0c8e6be56ab91b5fac43253dbf163acbd2367f490dd253c9b"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-desktop-en-light.png"
+      viewport: "desktop"
+      theme: "light"
+      locale: "en"
+      capture_kind: "direct-viewport"
+      width: 1440
+      height: 900
+      sha256: "f9ae41cc0230f0ff47d9d4725fdab855b433d1615c3828042c6bbf5a25ceefc7"
+      captured_at: "2026-10-20T11:17:36.495438+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-desktop-en-dark.png"
+      viewport: "desktop"
+      theme: "dark"
+      locale: "en"
+      capture_kind: "direct-viewport"
+      width: 1440
+      height: 900
+      sha256: "5d6a7dc5e2aa1b15d19d0ae269142abf6a16b3503ae6c41b4142fff7a4094aff"
+      captured_at: "2026-10-20T11:17:38.984248+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-desktop-zh-light.png"
+      viewport: "desktop"
+      theme: "light"
+      locale: "zh"
+      capture_kind: "direct-viewport"
+      width: 1440
+      height: 900
+      sha256: "44c543c22688193c4b224fc9ddd60043491b8f919fea7ad8cb0d33e2494065dc"
+      captured_at: "2026-10-20T11:17:41.540626+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-desktop-zh-dark.png"
+      viewport: "desktop"
+      theme: "dark"
+      locale: "zh"
+      capture_kind: "direct-viewport"
+      width: 1440
+      height: 900
+      sha256: "d8c29be3fef8a11bc57c9d397992e283cfdf182bb8094b4c389c59102069ead7"
+      captured_at: "2026-10-20T11:17:44.141467+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-mobile-en-light.png"
+      viewport: "mobile"
+      theme: "light"
+      locale: "en"
+      capture_kind: "direct-viewport"
+      width: 390
+      height: 844
+      sha256: "ce2844c10917d866198d0541bb33e0519e33f183a76b2585b803b4a62ee14d54"
+      captured_at: "2026-10-20T11:17:46.321863+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-mobile-en-dark.png"
+      viewport: "mobile"
+      theme: "dark"
+      locale: "en"
+      capture_kind: "direct-viewport"
+      width: 390
+      height: 844
+      sha256: "72027b76ae5dd8974eb7eb47222da2982fad73ef8b18eeda7baf2469c565f03f"
+      captured_at: "2026-10-20T11:17:48.566135+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-mobile-zh-light.png"
+      viewport: "mobile"
+      theme: "light"
+      locale: "zh"
+      capture_kind: "direct-viewport"
+      width: 390
+      height: 844
+      sha256: "ead224d5d517262daea90177d8c61457aeb3efbd452932102a74aa0d65df4b27"
+      captured_at: "2026-10-20T11:17:51.370647+00:00"
+      access: "anonymous"
+    -
+      path: "mockups/refs/reference_integrity/intl-country-intelligence-20261020/before/viewport-mobile-zh-dark.png"
+      viewport: "mobile"
+      theme: "dark"
+      locale: "zh"
+      capture_kind: "direct-viewport"
+      width: 390
+      height: 844
+      sha256: "afbbf63a7553a0e69adaf5ef3fd846d8d24b3ad55c2d7b7bbd5591329d618c95"
+      captured_at: "2026-10-20T11:17:53.752185+00:00"
+      access: "anonymous"
+  gaps:
+    -
+      axis: "access"
+      value: "free"
+      reason: "requires authenticated session; not automatable without approved fixtures"
+    -
+      axis: "access"
+      value: "essential"
+      reason: "requires authenticated session; not automatable without approved fixtures"
+    -
+      axis: "access"
+      value: "pro"
+      reason: "requires authenticated session; not automatable without approved fixtures"
+    -
+      axis: "page_state"
+      value: "loading"
+      reason: "state not synthesizable against static output"
+    -
+      axis: "page_state"
+      value: "empty"
+      reason: "state not synthesizable against static output"
+    -
+      axis: "page_state"
+      value: "stale"
+      reason: "state not synthesizable against static output"
+    -
+      axis: "page_state"
+      value: "error"
+      reason: "state not synthesizable against static output"
+  runtime_observations:
+    -
+      evidence: "research/reference_integrity/intl-country-intelligence-20261020/production_capture_manifest.json"
+      observation: "Anonymous capture returned HTTP 401 for intl_library_search.js, intl_workspace_scenario.js, intl_workspace_entry.js, intl_workspace_state.js and intl_workspace.js."
+    -
+      evidence: "research/reference_integrity/intl-country-intelligence-20261020/production_capture_manifest.json"
+      observation: "The browser refused intl_workspace.css, intl_workspace_macro.css, intl_workspace_risk.css and intl_workspace_history.css because responses had JSON MIME type."
+    -
+      evidence: "research/reference_integrity/intl-country-intelligence-20261020/production_viewports.json"
+      observation: "Eight direct browser viewport screenshots record matching requested theme and locale, HTTP 200 for the page, scroll position zero and no page_errors. These observations do not establish successful initialization of the failed workspace scripts."
+  source_qualification: "A listed source capability is not a claim that its data was populated or that its interaction worked in the anonymous live capture. Conditional and already-unavailable states are recorded below; neither implies deletion by the proposal."
+user_job: "Understand countries' current economic, policy and market conditions, their published economic paths and the mechanisms or conditions that could change those paths, using traceable research; use comparison and other research tools as supporting tasks."
+core_interactions:
+  - "Read economic, policy, market and cross-market interpretation with source and date context."
+  - "Open the existing country-dashboard research destinations."
+  - "Inspect source observations, windows, endpoints and qualifications."
+  - "Choose English or Chinese and light or dark theme."
+  - "As supporting tasks, change workspace view/horizon/currency basis, inspect a market, compare markets, search research tools, and inspect historical or manual-scenario evidence."
+information_hierarchy:
+  - "Shared site navigation, stock search, terminal, theme and language controls."
+  - "International markets workspace with context controls and conditional Overview, Compare, Macro, Risk, History, Library and inspector output."
+  - "Initially open Detailed international research and existing tools disclosure."
+  - "Rendered global regime reference and Global Macro Compass."
+  - "World market turns, market lenses, recent changes and USD-performance/relative-rotation sections."
+  - "Full reference tables including country scorecard, rates, liquidity, risk/transmission, credit, dollar, fragility, regimes, correlation and rankings."
+  - "International stock dashboard and other adjacent pages remain separate linked routes."
+design_lineage:
+  rulings:
+    -
+      ref: "User International Markets mission"
+      evidence: "Conversation: user instructions to make country current-state interpretation and projected economy/markets the main feature."
+      implication: "Country interpretation and published paths define the principal user job; comparison, saved research and alerts were described as secondary."
+    -
+      ref: "User rejection of the earlier Paper direction"
+      evidence: "Conversation: user explicitly rejected the previously made Paper design centered on saved research, comparisons and alerts, and requested a new institutional country-analysis direction."
+      implication: "Preserve this rejection as provenance. It does not establish that every later Paper revision or every supporting tool was rejected."
+    -
+      ref: "Retained Paper country-reference lineage"
+      evidence: "research/paper_international_wave1_wave2/paper_r12_receipt.json:3"
+      implication: "R12 receipt records the later editable country reference; file 01M3P1TW5Y3XWQC37ADDS8K5AG, page p-G-0, with desktop/mobile and light/dark boards plus UK and Taiwan boards."
+  rejected_variants:
+    - "The earlier Paper concept described by the user as centered on saved research, country comparison and alerts. The conversation rejection is the provenance; no unavailable historic screenshot is represented as inspected."
+  comments:
+    -
+      path: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:736"
+      note: "Existing source comment describes the market lens as a hover/focus/tap detail surface with a plain-language read."
+    -
+      path: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:780"
+      note: "Existing source comment places pullback-odds details beneath the market tile."
+    -
+      path: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:179"
+      note: "Existing source identifies the five country dashboard links as the registry reused by adaptive and mobile navigation."
+    -
+      path: "research/paper_international_wave1_wave2/paper_r12_receipt.json:10"
+      note: "The later Paper receipt records production_published false. The production capture timing above is separate from this design receipt."
+capabilities:
+  -
+    id: "navigation.site-sections"
+    user_job: "Move between the site's market and research sections."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:36"
+    importance: "supporting"
+  -
+    id: "navigation.stock-search"
+    user_job: "Search for a stock from the shared navigation."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_site_nav.html.j2:18"
+    importance: "supporting"
+  -
+    id: "navigation.theme"
+    user_job: "Read the page in light or dark theme."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_site_nav.html.j2:49"
+    importance: "core"
+  -
+    id: "navigation.language"
+    user_job: "Read the page in English or Chinese."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_site_nav.html.j2:52"
+    importance: "core"
+  -
+    id: "navigation.terminal"
+    user_job: "Open the linked terminal application."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_site_nav.html.j2:48"
+    importance: "peripheral"
+  -
+    id: "navigation.country-dashboards"
+    user_job: "Open the existing Japan, South Korea, Euro Area, United Kingdom or India dashboard."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:184"
+    importance: "core"
+  -
+    id: "navigation.international-stocks"
+    user_job: "Open the international stock dashboard."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:193"
+    importance: "supporting"
+  -
+    id: "navigation.thematic-baskets"
+    user_job: "Open the international thematic baskets page."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:194"
+    importance: "supporting"
+  -
+    id: "navigation.sanctions-map"
+    user_job: "Open the sanctions research map."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:195"
+    importance: "supporting"
+  -
+    id: "workspace.view-selection"
+    user_job: "Choose Overview, Compare, Macro, Risk, History or Library."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/shell.html.j2:17"
+    importance: "supporting"
+  -
+    id: "workspace.return-horizon"
+    user_job: "Choose a return horizon for the workspace."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/shell.html.j2:28"
+    importance: "supporting"
+  -
+    id: "workspace.currency-basis"
+    user_job: "Choose the workspace local-currency or USD basis."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/shell.html.j2:33"
+    importance: "supporting"
+  -
+    id: "workspace.url-context"
+    user_job: "Return to or share a workspace view with market, pins, horizon, currency basis and research group."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace_state.js:508"
+    importance: "supporting"
+  -
+    id: "workspace.snapshot-status"
+    user_job: "Check the workspace snapshot and unavailable-context messages."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/shell.html.j2:6"
+    importance: "supporting"
+  -
+    id: "overview.market-summary"
+    user_job: "Read the available market-return summary and any qualification on differing calculation windows."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/overview.html.j2:53"
+    importance: "supporting"
+  -
+    id: "overview.leaders-laggards"
+    user_job: "Find the strongest and weakest available markets in the selected context."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/overview.html.j2:87"
+    importance: "supporting"
+  -
+    id: "overview.all-markets"
+    user_job: "Expand the market list and inspect each market's index identity and available observations."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/overview.html.j2:110"
+    importance: "supporting"
+  -
+    id: "overview.return-components"
+    user_job: "Read local index, USD and currency return components with their calculation window."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/overview.html.j2:161"
+    importance: "supporting"
+  -
+    id: "compare.market-cohort"
+    user_job: "Select and remove two to four comparison markets."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/compare.html.j2:54"
+    importance: "supporting"
+  -
+    id: "compare.calculation-evidence"
+    user_job: "Inspect comparison metrics, calculation windows and source qualifications."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/compare.html.j2:102"
+    importance: "supporting"
+  -
+    id: "compare.source-charts"
+    user_job: "Inspect source chart series or benchmark comparison when supplied, or read the unavailable state."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/compare.html.j2:111"
+    importance: "supporting"
+  -
+    id: "macro.cycle-coverage"
+    user_job: "Read economic-cycle coverage and economic evidence for available markets."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:119"
+    importance: "core"
+  -
+    id: "macro.growth-inflation"
+    user_job: "Inspect GDP growth and consumer-price observations with their evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:206"
+    importance: "core"
+  -
+    id: "macro.policy-observations"
+    user_job: "Inspect realized policy rates and policy proxies separately."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:142"
+    importance: "core"
+  -
+    id: "macro.yields"
+    user_job: "Inspect the ten-year yield and its change."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:210"
+    importance: "core"
+  -
+    id: "macro.composite-evidence"
+    user_job: "Read the evidence and method of a supplied macro composite."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:163"
+    importance: "supporting"
+  -
+    id: "macro.market-research"
+    user_job: "Select a market and follow its listed research destinations."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/macro.html.j2:182"
+    importance: "supporting"
+  -
+    id: "risk.return-transmission"
+    user_job: "Examine local index, currency and USD return channels for a selected market."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/risk.html.j2:210"
+    importance: "core"
+  -
+    id: "risk.company-exposure"
+    user_job: "Inspect the evidence requirements for company exposure and the available research destination."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/risk.html.j2:242"
+    importance: "supporting"
+  -
+    id: "risk.pressure-resilience"
+    user_job: "Inspect currency pressure, country credit, current-account and breadth/resilience evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/risk.html.j2:264"
+    importance: "core"
+  -
+    id: "risk.research-domains"
+    user_job: "Reach retained research on emerging-market origin, US transmission, connectedness, correlation, directed pressure and structural fragility."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/risk.html.j2:335"
+    importance: "supporting"
+  -
+    id: "history.recomputed-observations"
+    user_job: "Inspect available recomputed historical observations and reconstruction evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:31"
+    importance: "supporting"
+  -
+    id: "history.attached-changes"
+    user_job: "Read changes attached to supplied historical records."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:54"
+    importance: "supporting"
+  -
+    id: "history.original-known-boundary"
+    user_job: "Distinguish reconstructed history from an immutable record of what was known at the time."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:59"
+    importance: "supporting"
+  -
+    id: "history.forward-record"
+    user_job: "Inspect a forward record when supplied and its qualification."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:61"
+    importance: "supporting"
+  -
+    id: "scenario.manual-assumptions"
+    user_job: "Enter local market and currency return assumptions for the selected context."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:77"
+    importance: "supporting"
+  -
+    id: "scenario.usd-illustration"
+    user_job: "Calculate a conditional unhedged USD price return, FX contribution and illustrative currency assumptions."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:97"
+    importance: "supporting"
+  -
+    id: "scenario.confirm-reset"
+    user_job: "Confirm context changes or clear assumptions while preserving the selected research context."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:89"
+    importance: "supporting"
+  -
+    id: "library.question-groups"
+    user_job: "Browse research tools by question across leaders, recovery, policy, backdrop, pressure and challenge groups."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/library.html.j2:19"
+    importance: "supporting"
+  -
+    id: "library.search"
+    user_job: "Search the research tool catalogue, clear a query and return to groups."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/library.html.j2:11"
+    importance: "supporting"
+  -
+    id: "library.destinations"
+    user_job: "Open each available catalogue destination or read its unavailable-destination state."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/library.html.j2:38"
+    importance: "supporting"
+  -
+    id: "inspector.market-read"
+    user_job: "Open an individual market's return interpretation, limits and next research steps."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/inspector.html.j2:39"
+    importance: "supporting"
+  -
+    id: "inspector.evidence-ledger"
+    user_job: "Inspect calculation windows, endpoints, source fields and separate evidence clocks."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/inspector.html.j2:54"
+    importance: "core"
+  -
+    id: "inspector.navigation"
+    user_job: "Move between inspector pages, close the inspector and follow deeper research links."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/inspector.html.j2:80"
+    importance: "supporting"
+  -
+    id: "world.regime-context"
+    user_job: "Read the rendered global regime context and its linked US macro reference."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:495"
+    importance: "core"
+  -
+    id: "world.risk-appetite"
+    user_job: "Read the world risk-appetite gauge, engine interpretation and market breadth."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:557"
+    importance: "core"
+  -
+    id: "world.market-turns"
+    user_job: "Read world market-turn and cycle-stage observations."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:694"
+    importance: "core"
+  -
+    id: "world.market-lens"
+    user_job: "Inspect market stretch, plain-language cycle interpretation and macro backdrop."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:736"
+    importance: "core"
+  -
+    id: "world.pullback-evidence"
+    user_job: "Inspect the pullback observation and its attached provenance."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:780"
+    importance: "supporting"
+  -
+    id: "world.recent-changes"
+    user_job: "Read the reported changes in the world market view."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:850"
+    importance: "core"
+  -
+    id: "markets.usd-performance"
+    user_job: "Change the displayed USD-performance horizon and read the market return board."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:873"
+    importance: "supporting"
+  -
+    id: "markets.relative-rotation"
+    user_job: "Read US-versus-world relative rotation and market leadership."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:895"
+    importance: "supporting"
+  -
+    id: "research.full-tables"
+    user_job: "Open the detailed reference tables."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:935"
+    importance: "supporting"
+  -
+    id: "research.country-scorecard"
+    user_job: "Inspect the cross-country scorecard."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:939"
+    importance: "core"
+  -
+    id: "research.rates-curves"
+    user_job: "Inspect policy, rates, yield curves and carry conditions."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1001"
+    importance: "core"
+  -
+    id: "research.euro-fragmentation"
+    user_job: "Inspect euro-area fragmentation conditions and their source context."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1048"
+    importance: "core"
+  -
+    id: "research.ecb-liquidity"
+    user_job: "Inspect the ECB balance-sheet impulse and liquidity evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1064"
+    importance: "core"
+  -
+    id: "research.risk-desk"
+    user_job: "Read the international risk-desk stage summary and underlying risk context."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1325"
+    importance: "core"
+  -
+    id: "research.us-transmission"
+    user_job: "Inspect the international-to-US contagion and transmission channels."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1422"
+    importance: "core"
+  -
+    id: "research.central-banks"
+    user_job: "Inspect central-bank and liquidity evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1506"
+    importance: "core"
+  -
+    id: "research.credit-bonds"
+    user_job: "Inspect credit and bond-market observations."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1574"
+    importance: "core"
+  -
+    id: "research.dollar-conditions"
+    user_job: "Inspect dollar funding and currency conditions."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1662"
+    importance: "core"
+  -
+    id: "research.structural-fragility"
+    user_job: "Read structural fragility and open the detailed evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1730"
+    importance: "core"
+  -
+    id: "research.directed-pressure"
+    user_job: "Inspect the directed crash-pressure research and its qualifications."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1829"
+    importance: "supporting"
+  -
+    id: "research.growth-inflation"
+    user_job: "Inspect the growth-and-inflation regime table."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1896"
+    importance: "core"
+  -
+    id: "research.cross-market-correlation"
+    user_job: "Inspect daily cross-market correlation evidence."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1917"
+    importance: "supporting"
+  -
+    id: "research.leadership-ranks"
+    user_job: "Inspect twenty-day momentum and market leadership ranks."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1949"
+    importance: "supporting"
+  -
+    id: "research.economic-risk-ranks"
+    user_job: "Inspect economy rankings for recession score, drawdown risk, real yield and ten-year yield."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1959"
+    importance: "supporting"
+  -
+    id: "stocks.sector-rotation"
+    user_job: "Follow the stock-dashboard route to inspect sector relative-strength rankings and show all rows."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1985"
+    importance: "supporting"
+  -
+    id: "stocks.momentum-signals"
+    user_job: "Follow the stock-dashboard route to inspect market-relative stock momentum signals and expand additional cards."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:2009"
+    importance: "supporting"
+  -
+    id: "stocks.stock-detail"
+    user_job: "Follow a stock card to its detailed stock research page."
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:2053"
+    importance: "supporting"
+observed_capability_states:
+  -
+    id: "navigation.country-dashboards"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/_navlinks.html.j2:184"
+    observation: "Five source destinations are explicit. Availability of their separate rendered pages is outside this route capture."
+  -
+    id: "workspace.view-selection"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/shell.html.j2:17"
+    observation: "View controls are initially disabled in source and depend on client initialization; captured anonymous script failures limit proof of operation."
+  -
+    id: "workspace.url-context"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace_state.js:508"
+    observation: "This is URL-encoded context, not evidence of a saved-research account feature."
+  -
+    id: "compare.source-charts"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/compare.html.j2:111"
+    observation: "Captured production contexts display 'Chart series and benchmark comparison are unavailable.' This is an existing state, not a removal."
+  -
+    id: "risk.company-exposure"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/risk.html.j2:242"
+    observation: "The source distinguishes an exposure evidence requirement from a completed company-level exposure estimate."
+  -
+    id: "history.recomputed-observations"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:31"
+    observation: "Captured production's seven market entries report qualified recomputed history unavailable; the template supports supplied records."
+  -
+    id: "history.original-known-boundary"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:59"
+    observation: "The source explicitly reports that immutable original vintages and first-known times have not been supplied."
+  -
+    id: "history.forward-record"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:61"
+    observation: "Conditional source section; inclusion does not establish that a usable forward record exists in the captured production payload."
+  -
+    id: "scenario.usd-illustration"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/history.html.j2:97"
+    observation: "The source labels these outputs as illustrations, not a likely range or forecast."
+  -
+    id: "library.search"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/library.html.j2:11"
+    observation: "The captured anonymous library search script failed with HTTP 401; source presence does not establish successful search operation in this capture."
+  -
+    id: "library.destinations"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl_workspace/library.html.j2:38"
+    observation: "The captured catalogue has 14 linked entries and four pre-existing unlinked entries: recovery quality, participation/concentration, trade/supply links and risk track record."
+  -
+    id: "stocks.sector-rotation"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:1985"
+    observation: "This is the shared template's stocks-mode route, not a sector board embedded on intl.html."
+  -
+    id: "stocks.momentum-signals"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:2009"
+    observation: "The shared template explicitly labels this momentum screen 'Not a forecast.' It is not an old country economic projection capability."
+  -
+    id: "stocks.stock-detail"
+    evidence: "research/reference_integrity/intl-country-intelligence-20261020/production/source/templates/intl.html.j2:2053"
+    observation: "Shared-template stocks-mode destination; the separate target page was not captured in this route inventory."
+inventory_scope:
+  - "The baseline enumerates user capabilities in the captured production route, its referenced workspace components and source-linked adjacent routes."
+  - "Adjacent page links and shared-template stocks mode are identified as destinations; their separate rendered pages are not asserted to have been captured."
+  - "No saved-research account, alert-subscription, export or download workflow was identified in the inspected International workspace source."
+  - "The reduced R2 preview is not used to determine whether the ordinary production-input build supplies Macro, Risk or History payloads."

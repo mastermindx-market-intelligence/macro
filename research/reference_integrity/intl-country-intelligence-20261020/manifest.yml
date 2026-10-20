@@ -1,0 +1,19 @@
+schema: mastermind.rig_manifest.v1
+reference_id: intl-country-intelligence-20261020
+scope: full
+status: draft
+surface:
+  route: intl.html
+  registry_row: macro:intl
+  archetype: regime_dashboard
+author:
+  identity: /root
+  role: designer
+reference_files: []
+files:
+  baseline: baseline.yml
+  proposal: proposal.yml
+  reviews:
+    product_regression: reviews/product_regression.yml
+    visual_taste: reviews/visual_taste.yml
+  verdict: verdict.yml

@@ -1,0 +1,367 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-10-20T11:45:18Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://intl.test/fonts/Inter-600.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/account.js?v=20261015-mm-return-language",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-700.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-400.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "https://cloud.umami.is/script.js",
+          "text": "Failed to load resource: net::ERR_FAILED"
+        },
+        {
+          "source_url": "http://intl.test/favicon.svg",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-800.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        },
+        {
+          "source_url": "http://intl.test/fonts/Inter-500.woff2",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-600.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/account.js?v=20261015-mm-return-language"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-700.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-400.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/favicon.svg"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-800.woff2"
+        },
+        {
+          "status": 404,
+          "url": "http://intl.test/fonts/Inter-500.woff2"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 3415,
+            "elements_wider_than_viewport": 11,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 5087,
+            "elements_wider_than_viewport": 111,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 3415,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 11,
+        "heading_counts": {
+          "h1": 3,
+          "h2": 20,
+          "h3": 64,
+          "h4": 70,
+          "h5": 21,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 43,
+        "payload_bytes_total": 305506,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 27,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": true,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 782
+      },
+      "page_id": "intl.html",
+      "registry_route": "/intl.html",
+      "route": "/intl.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 590930,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/6e6f66d8f4dd124b.png",
+          "force_state": null,
+          "height": 3415,
+          "locale": "en",
+          "sha256": "6e6f66d8f4dd124bacef88cff6780c6f3d1c817e1fad5cd859296c0e56ebcb90",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 561354,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/ff95730bf44950ba.png",
+          "force_state": null,
+          "height": 3415,
+          "locale": "en",
+          "sha256": "ff95730bf44950ba16a3976e5d6789dce5a346e4065b320e1bb92eaada223e9c",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 591277,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/b593e45af00494dc.png",
+          "force_state": null,
+          "height": 3373,
+          "locale": "zh",
+          "sha256": "b593e45af00494dca9e8fa20b6bb2829559d53256f50214539e341bb148f83c6",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 562102,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/88785f02a55fa95b.png",
+          "force_state": null,
+          "height": 3373,
+          "locale": "zh",
+          "sha256": "88785f02a55fa95b9f7e1be23de44d65470d8f63ab80fe99fec46396845a9924",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 457512,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/8269cad1004b37dd.png",
+          "force_state": null,
+          "height": 5087,
+          "locale": "en",
+          "sha256": "8269cad1004b37dd6954b4ec5f36c1649995ac73d6584e3b48ed73f0504fa6c8",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 440544,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/e224011553c44989.png",
+          "force_state": null,
+          "height": 5087,
+          "locale": "en",
+          "sha256": "e224011553c4498912d8e48a4b861db060fb979a0dac49caa4cee00b47de4a36",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 450674,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/204b7ee3bee6e43a.png",
+          "force_state": null,
+          "height": 4709,
+          "locale": "zh",
+          "sha256": "204b7ee3bee6e43a9ad3223414c8f11364a0ca1064d89edbf7b900e9cd56060a",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 433421,
+          "captured": true,
+          "file": "../../../mockups/refs/reference_integrity/intl-country-intelligence-20261020/after_full/e3f7c496f10251cb.png",
+          "force_state": null,
+          "height": 4709,
+          "locale": "zh",
+          "sha256": "e3f7c496f10251cb715674b4c07d2ee50da55ac7e91907ec133de954d44ef215",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/intl.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://intl.test",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}
