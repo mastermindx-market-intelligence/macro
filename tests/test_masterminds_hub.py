@@ -20,6 +20,7 @@ import re
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
+import pandas as pd
 
 from scripts import build_masterminds as bmm
 
@@ -205,3 +206,194 @@ def test_verdict_keeps_the_full_sample_beat_when_true():
                               res["moderate"].get("bench6040"))[0]
     en = bmm._verdict("moderate", res["moderate"]["oos"], sc)[0]
     assert en == _SEED_NONROBUST_EN.format(m="1.7")
+
+# ── W23-L14: detail page names the flat assets, prints the instrument, shows Time invested ──
+
+# The committed Conservative alloc rows (data/regime/masterminds_latest.json mm_conservative
+# at the seed: SPY 16.5, QQQ 16.5, HG=F 16.5, BTC-USD 6.5), inline per the lane rules.
+_CONS_ALLOC = [
+    {"asset": "SPY", "label_en": "S&P 500", "label_zh": "标普500", "weight": 16.5},
+    {"asset": "QQQ", "label_en": "Nasdaq 100", "label_zh": "纳指100", "weight": 16.5},
+    {"asset": "HG=F", "label_en": "Copper", "label_zh": "铜", "weight": 16.5},
+    {"asset": "BTC-USD", "label_en": "Bitcoin", "label_zh": "比特币", "weight": 6.5},
+]
+_FLAT_EN = ("No position at the last rebalance: 7-10y Treasuries (IEF) · 20y+ Treasuries (TLT) "
+            "· IG credit (LQD) · High-yield credit (HYG) · Gold (GC=F)")
+_FLAT_ZH = ("上次再平衡无持仓: 中期国债 (IEF) · 长期国债 (TLT) · 投资级信用 (LQD) "
+            "· 高收益信用 (HYG) · 黄金 (GC=F)")
+
+
+def _detail_res(pk="conservative", alloc=None, tim=97.3):
+    """A res dict shaped for _detail_vm; values copied from the seat probe render_detail.py.
+
+    ``tim="absent"`` omits the time_in_market key entirely; ``tim=None`` sets it to None.
+    """
+    res = _committed_res()[pk]
+    sc = dict(res["scorecard"])
+    sc["avg_leverage"], sc["turnover_annual"] = 0.77, 8.44
+    if tim != "absent":
+        sc["time_in_market"] = tim
+    idx = pd.date_range("2007-01-03", periods=5, freq="365D")
+    sc["eq"] = pd.Series([1.0, 1.1, 1.2, 1.3, 1.4], index=idx)
+    sc["hodl_eq"] = pd.Series([1.0, 1.05, 1.1, 1.15, 1.2], index=idx)
+    sc["gross_lev"] = pd.Series([0.5, 0.8, 1.0, 0.9, res["gross_now"]], index=idx)
+    return {"scorecard": sc, "bench6040": res.get("bench6040"), "oos": res["oos"],
+            "alloc": [dict(a) for a in (alloc if alloc is not None else _CONS_ALLOC)],
+            "gross_now": res["gross_now"], "asof": res["asof"]}
+
+
+def _detail_page(vm):
+    """Render the detail template exactly like build() does (globals td/tr, autoescape)."""
+    env = Environment(loader=FileSystemLoader(str(_ROOT / "templates")), autoescape=True)
+    try:
+        from engine import i18n
+        env.globals.update(td=i18n.td, tr=i18n.tr)
+    except Exception:  # noqa: BLE001
+        env.globals.update(td=lambda en: en, tr=lambda en: en)
+    return env.get_template("mastermind_detail.html.j2").render(**vm, C=bmm.C)
+
+
+def _alloc_card(page):
+    """The live-book card: marker comment up to the scorecard h3."""
+    i = page.index("<!-- ===== Live book + scorecard ===== -->")
+    j = page.index("Backtest scorecard", i)
+    return page[i:page.rindex("<h3>", i, j)]
+
+
+def _score_grid(page):
+    i = page.index('<div class="score"><div class="s">')
+    return page[i:page.index('<div class="note b"', i)]
+
+
+def _en(seg):
+    seg = re.sub(r'<span class="l-zh">.*?</span>', "", seg, flags=re.S)
+    seg = html_mod.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", seg)))
+    return seg.replace(" :", ":").strip()
+
+
+def _zh(seg):
+    seg = re.sub(r'<span class="l-en">.*?</span>', "", seg, flags=re.S)
+    seg = html_mod.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", seg)))
+    return seg.replace(" :", ":").strip()
+
+
+def _flat_line(page):
+    for m in re.findall(r'<div class="sub faint">.*?</div>', _alloc_card(page), re.S):
+        if "No position at the last rebalance" in m:
+            return m
+    return ""
+
+
+def test_detail_names_the_assets_with_no_position():
+    vm = bmm._detail_vm("conservative", _detail_res(), "2026-10-19 21:00 UTC")
+    page = _detail_page(vm)
+    assert _en(_flat_line(page)) == _FLAT_EN
+    assert _alloc_card(page).count('class="allocrow"') == 4
+
+
+def test_flat_alloc_helper_is_a_pure_set_difference():
+    before = [dict(a) for a in _CONS_ALLOC]
+    got = bmm._flat_alloc_vm(_CONS_ALLOC)
+    assert got == [{"asset": "IEF", "label_en": "7-10y Treasuries", "label_zh": "中期国债"},
+                   {"asset": "TLT", "label_en": "20y+ Treasuries", "label_zh": "长期国债"},
+                   {"asset": "LQD", "label_en": "IG credit", "label_zh": "投资级信用"},
+                   {"asset": "HYG", "label_en": "High-yield credit", "label_zh": "高收益信用"},
+                   {"asset": "GC=F", "label_en": "Gold", "label_zh": "黄金"}]
+    assert all("weight" not in d for d in got)
+    assert _CONS_ALLOC == before
+    full = [{"asset": a, "label_en": bmm.M.ASSET_LABEL[a][0], "label_zh": bmm.M.ASSET_LABEL[a][1],
+             "weight": 10.0} for a in bmm.M.ASSETS]
+    assert bmm._flat_alloc_vm(full) == []
+
+
+def test_flat_copy_claims_no_cause():
+    page = _detail_page(bmm._detail_vm("conservative", _detail_res(), "2026-10-19 21:00 UTC"))
+    line = _flat_line(page)
+    en, zh = _en(line).lower(), _zh(line)
+    for w in ("signal", "bearish", "avoid", "sold", "exit", "negative", "because", "0%"):
+        assert w not in en
+    for w in ("信号", "看空", "回避", "卖出", "因为"):
+        assert w not in zh
+
+
+def test_full_book_renders_no_flat_section():
+    alloc = [{"asset": a, "label_en": bmm.M.ASSET_LABEL[a][0], "label_zh": bmm.M.ASSET_LABEL[a][1],
+              "weight": 10.0} for a in bmm.M.ASSETS]
+    vm = bmm._detail_vm("conservative", _detail_res(alloc=alloc), "2026-10-19 21:00 UTC")
+    assert vm["flat_alloc"] == []
+    page = _detail_page(vm)
+    assert "No position at the last rebalance" not in page
+    assert "上次再平衡无持仓" not in page
+    assert _alloc_card(page).count('class="allocrow"') == 9
+
+
+def test_held_rows_print_their_instrument():
+    page = _detail_page(bmm._detail_vm("conservative", _detail_res(), "2026-10-19 21:00 UTC"))
+    rows = re.findall(r'<div class="allocrow">.*?</div>', page, re.S)
+    assert [_en(r) for r in rows] == ["S&P 500 SPY 16.5%", "Nasdaq 100 QQQ 16.5%",
+                                      "Copper HG=F 16.5%", "Bitcoin BTC-USD 6.5%"]
+    for row, tk in zip(rows, ("SPY", "QQQ", "HG=F", "BTC-USD")):
+        assert f'<span class="faint">{tk}</span>' in row
+
+
+def test_empty_book_keeps_the_de_risked_line():
+    vm = bmm._detail_vm("conservative", _detail_res(alloc=[]), "2026-10-19 21:00 UTC")
+    page = _detail_page(vm)
+    card = _alloc_card(page)
+    assert "De-risked — mostly in T-bills." in _en(card)
+    assert "已降险——主要持有短债。" in card
+    assert 'class="allocrow"' not in card
+    assert _flat_line(page) == ""
+    assert "Gross exposure now" not in card
+    assert [d["asset"] for d in vm["flat_alloc"]] == list(bmm.M.ASSETS)
+
+
+def test_flat_line_is_bilingual():
+    page = _detail_page(bmm._detail_vm("conservative", _detail_res(), "2026-10-19 21:00 UTC"))
+    line = _zh(_flat_line(page))
+    assert line == _FLAT_ZH
+    assert "No position" not in line
+
+
+def test_scorecard_prints_time_invested():
+    page = _detail_page(bmm._detail_vm("conservative", _detail_res(), "2026-10-19 21:00 UTC"))
+    grid = _score_grid(page)
+    assert "Avg leverage 0.77x 8.44x turnover/yr Time invested 97.3%" in _en(grid)
+    assert "在场时间 97.3%" in _zh(grid)
+
+
+def test_scorecard_omits_the_cell_when_the_field_is_absent():
+    for tim in ("absent", None):
+        page = _detail_page(bmm._detail_vm(
+            "conservative", _detail_res(tim=tim), "2026-10-19 21:00 UTC"))
+        grid = _score_grid(page)
+        assert "Time invested" not in grid and "在场时间" not in grid
+        assert "None" not in grid
+        assert "Avg leverage 0.77x 8.44x turnover/yr" in _en(grid)
+
+
+def test_scorecard_grid_keeps_four_cells():
+    for tim in (97.3, "absent"):
+        page = _detail_page(bmm._detail_vm(
+            "conservative", _detail_res(tim=tim), "2026-10-19 21:00 UTC"))
+        assert _score_grid(page).count('<div><div class="k">') == 4
+
+
+def test_china_shaped_vm_renders_no_flat_line():
+    from scripts import build_china_masterminds as bcm
+    res = _detail_res("moderate")
+    res["alloc"] = [{"asset": "510300.SS", "label_en": "CSI 300", "label_zh": "沪深300",
+                     "weight": 40.0},
+                    {"asset": "511010.SS", "label_en": "China 5y Govt Bond",
+                     "label_zh": "5年国债", "weight": 35.0}]
+    vm = bcm._detail_vm("moderate", res, "2026-10-19 21:00 UTC")
+    assert "flat_alloc" not in vm
+    page = _detail_page(vm)
+    card = _alloc_card(page)
+    assert "No position at the last rebalance" not in card
+    assert "None" not in card
+    rows = re.findall(r'<div class="allocrow">.*?</div>', card, re.S)
+    assert len(rows) == 2
+    assert '<span class="faint">510300.SS</span>' in rows[0]
+    assert '<span class="faint">511010.SS</span>' in rows[1]
+    assert "Time invested 97.3%" in _en(_score_grid(page))
