@@ -1,0 +1,124 @@
+{
+  "source_parent": "de824d8360b91ff44aca2930ac045d1bc6b14bfb",
+  "source_manifest": "source-hashes.json",
+  "scope": "BUILT_NOT_PROVEN / DRAFT_HOLD",
+  "prior_hosted_ci": {
+    "run_id": 39441884896,
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_observed_at": "2026-10-20T15:41:51Z",
+    "code_packs_passed": 11,
+    "code_packs_failed": 1,
+    "failed_logical_job": "biocatalyst-serving",
+    "cause_record": "ci-regression.json",
+    "base_replay_passed": true,
+    "pilot_authority": "inactive_base_context; main authority passed"
+  },
+  "local_verification": {
+    "full_logical_serving_job": {
+      "passed": 287,
+      "failed": 0,
+      "warnings": 14,
+      "seconds": 227.35,
+      "exit_code": 0,
+      "pid": 37586,
+      "test_files": [
+        "tests/test_biocatalyst_api.py",
+        "tests/test_biocatalyst_peer_api_contract.py",
+        "tests/test_biocatalyst_deploy.py",
+        "tests/test_biocatalyst_page.py",
+        "tests/test_biocatalyst_catalyst_radar.py",
+        "tests/test_biocatalyst_catalyst_radar_api.py",
+        "tests/test_biocatalyst_d0b_ui.py",
+        "tests/test_biocatalyst_hydration.py"
+      ]
+    },
+    "ci_ownership_guard": {
+      "real_manifest": 1,
+      "mutation_witnesses": 8,
+      "passed": 9,
+      "exit_code": 0,
+      "pid": 13798
+    },
+    "ci_import_scope": {
+      "passed": 2,
+      "failed": 0,
+      "seconds": 145.69,
+      "exit_code": 0,
+      "pid": 51959
+    },
+    "page_component_hydration": {
+      "passed": 39,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "component_javascript": {
+      "passed": 89,
+      "failed": 0
+    },
+    "host_javascript": {
+      "passed": 23,
+      "failed": 0
+    },
+    "count_caveat": "pytest wrappers include JavaScript tests and overlap other suites; not additive unique-test counts",
+    "runtime": "local Python3.12 / Node26.5.0; current hosted Node20 remains a separate verdict",
+    "full_repo_suite_executed": false
+  },
+  "environment_repairs": {
+    "clinicaltrials_fixture_count": 14,
+    "fixture_source": "exact current Git HEAD bytes",
+    "safe_temp_parent": "existing user-owned cache with non-group/world-writable ancestors; runtime path guard unchanged",
+    "basket_reference": {
+      "path": "data/baskets/membership.json",
+      "bytes": 312808,
+      "sha256": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
+      "source": "exact HEAD bytes; no issuer-map or admission changes"
+    },
+    "first_unqualified_run": {
+      "passed": 164,
+      "failed": 5,
+      "errors": 118
+    },
+    "intermediate_after_clinical_and_path_repair": {
+      "passed": 286,
+      "failed": 1,
+      "cause": "missing sparse basket membership source; typed sponsor_map_unavailable"
+    },
+    "final_full_logical_job_passed": true,
+    "production_source_or_permissions_mutated": false,
+    "warnings": "14 inherited duplicate OpenAPI operation identifiers; not suppressed"
+  },
+  "browser": {
+    "controlled_receipt": "synthetic-host/verification.json",
+    "behavior_checks": 15,
+    "layouts": 16,
+    "cjk_font_checks": 8,
+    "page_errors": 0,
+    "auth": "explicit synthetic MDXAuth and retained R2 API fixtures; not an actual entitled user",
+    "canonical_receipt": "manifest.json",
+    "canonical_states": 24,
+    "canonical_failed_requests": 0,
+    "canonical_scope": "anonymous actual data-free page; explicit auth/data-state gaps remain"
+  },
+  "guards": {
+    "visual_evidence_exit": 0,
+    "design_system_added_exit": 0,
+    "runtime_style_exit": 0,
+    "source_claims_exit": 0,
+    "diff_exit": 0
+  },
+  "review": {
+    "independent_source_review": "OUTSTANDING",
+    "independent_visual_review": "OUTSTANDING",
+    "principal_screenshot_inspection": true,
+    "existing_reviewer": "mastermindxryan requested; no submitted result observed",
+    "execution_bridge": "backend_unavailable; no reviewer started"
+  },
+  "remaining_gates": [
+    "new exact-head hosted CI",
+    "independent source/visual review",
+    "qualified native Company/DataOS input through original owners",
+    "actual authenticated production WMN/correction journey",
+    "explicit release hold removal"
+  ]
+}

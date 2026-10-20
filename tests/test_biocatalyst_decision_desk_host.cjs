@@ -41,6 +41,35 @@ function rig({url = 'https://example.test/biocatalyst.html?mode=changes&unrelate
   return {adapter, win, doc, calls, history, created, emit, setUser(value) { user = value; },
     auth(value, event = 'SIGNED_OUT') { user = value; emit('mdx-auth', {detail: {user: value, event}}); }};
 }
+test('anonymous access action opens the existing sign-in owner without reading source data', async () => {
+  const r = rig({initialUser: null}); await r.adapter.ready;
+  const requested = []; r.win.MDXAuth.open = mode => requested.push(mode);
+  const action = r.created[0].options.onRequestAccess;
+  assert.equal(typeof action, 'function', 'host must supply a usable access action');
+  action();
+  assert.deepEqual(requested, ['signin']); assert.equal(r.calls.length, 0);
+  assert.equal(r.adapter.getState().page, null); r.adapter.destroy();
+  action(); assert.deepEqual(requested, ['signin'], 'disposed host cannot reopen sign-in');
+});
+test('signed-in access refusal links to existing same-origin plans without exporting the case', async () => {
+  const r = rig({url: 'https://example.test/biocatalyst.html?bci_case=private-ref',
+    fetchJson: () => { throw Object.assign(new Error('paid access required'), {status: 402}); }});
+  await r.adapter.ready;
+  const redirects = []; r.win.location.assign = href => redirects.push(href);
+  const action = r.created[0].options.onRequestAccess;
+  assert.equal(typeof action, 'function'); action();
+  assert.deepEqual(redirects, ['https://example.test/plans.html']);
+  assert.equal(r.calls.length, 1); assert.equal(r.adapter.getState().page, null);
+  r.adapter.destroy();
+});
+test('an unavailable sign-in owner falls back to the existing plans route, not another auth client', async () => {
+  const r = rig({initialUser: null}); await r.adapter.ready;
+  const redirects = []; r.win.location.assign = href => redirects.push(href);
+  const action = r.created[0].options.onRequestAccess;
+  assert.equal(typeof action, 'function'); action();
+  assert.deepEqual(redirects, ['https://example.test/plans.html']);
+  assert.equal(r.calls.length, 0); r.adapter.destroy();
+});
 test('host uses the existing authenticated fetch and omits null owner query fields', async () => {
   const r = rig(); await r.adapter.ready;
   assert.equal(r.adapter.getState().phase, 'loaded');

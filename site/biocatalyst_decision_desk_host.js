@@ -69,11 +69,18 @@
       }
       if (url.href !== win.location.href) win.history[push ? 'pushState' : 'replaceState'](win.history.state, '', url.href);
     }
+    function requestAccess() {
+      if (disposed || suspended || invalidRoute || component?.getState().issue !== 'ACCESS_REQUIRED') return;
+      // Existing owners retain sign-in and subscription management. This action
+      // does not authenticate, fetch source data, or carry private case context.
+      if (!user() && typeof win.MDXAuth?.open === 'function') win.MDXAuth.open('signin');
+      else win.location.assign(new URL('/plans.html', win.location.href).href);
+    }
     function create() {
       let initial;
       try { initial = route(win); invalidRoute = false; } catch (_) { initial = {query: DEFAULT_QUERY}; invalidRoute = true; }
       component = makeDesk({root, locale: doc.documentElement.dataset.lang || 'en', query: initial.query,
-        getContextKey: contextKey,
+        getContextKey: contextKey, onRequestAccess: requestAccess,
         loadPage: ({query, cursor, signal}) => fetchOwner('/api/biocatalyst/v1/what-matters-next', {...query, cursor}, signal),
         loadDetail: ({event_fact_ref, issuer_id, generation_id, signal}) => fetchOwner('/api/biocatalyst/v1/what-matters-next/detail', {event_fact_ref, issuer_id, generation_id}, signal),
         onCaseChange(selection) {

@@ -86,6 +86,14 @@ def run() -> dict:
 
         context.route("**/*", route)
         root = page.locator("#bci-decision-root")
+        # Retain the real public host handle for assertions; no fake host state.
+        page.add_init_script("""Object.defineProperty(window, 'BioCatalystDecisionDeskHost', {
+          configurable:true, set(api) {
+            Object.defineProperty(window, 'BioCatalystDecisionDeskHost', {value: {
+              mount(options) { const result=api.mount(options); window.__hostQaHandle=result; return result; }
+            }, configurable:true});
+          }
+        });""")
 
         def loaded():
             root.locator(".bci-dd-card").first.wait_for(state="visible")
@@ -105,7 +113,16 @@ def run() -> dict:
         try:
             page.goto(ORIGIN + "/biocatalyst.html", wait_until="networkidle")
             assert not calls, "anonymous shell must not read the owner source"
+            access = root.get_by_role("button", name="Check access", exact=True)
+            assert access.count() == 1, "access-required screen needs a reachable existing-owner action"
+            assert page.evaluate("typeof window.MDXAuth?.open") == "function"
+            page.evaluate("() => { window.__accessRequests=[]; window.MDXAuth.open=mode=>window.__accessRequests.push(mode); }")
+            access.click()
+            access_observation = page.evaluate("({requests:window.__accessRequests, issue:window.__hostQaHandle.getState().issue, userPresent:!!window.MDXAuth.user(), openType:typeof window.MDXAuth.open})")
+            assert access_observation["requests"] == ["signin"], access_observation
+            assert not calls, "opening sign-in does not grant or fetch research access"
             assert root.locator(".bci-dd-card").count() == 0
+            checks.append("Access-required screen invokes the existing sign-in owner without exposing or requesting research")
             assert page.locator("#bci-source-research").get_attribute("open") is None
             assert page.locator("#mmb-boot").count() == 1, "shared launcher stub must actually be present"
             page.set_viewport_size({"width": 390, "height": 844})

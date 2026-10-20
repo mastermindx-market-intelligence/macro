@@ -309,6 +309,7 @@
     unavailable: ['This review is temporarily unavailable.', '研究内容暂时不可用。'],
     unavailableBody: ['Refresh to request a current view. Previous cases have been cleared.', '请刷新以获取当前内容。之前显示的研究事项已清除。'],
     access: ['Sign in with access to view these cases.', '请使用拥有访问权限的账户登录。'],
+    accessAction: ['Check access', '查看访问权限'],
     reload: ['The underlying review changed.', '研究依据已发生变化。'],
     reloadBody: ['Refresh to load one consistent version of the cases and their evidence.', '请刷新，载入版本一致的研究事项与证据。'],
     context: ['Your account or research context changed.', '账户或研究范围已更改。'],
@@ -477,6 +478,10 @@
           state.phase === 'idle' ? t('idle') : t('unavailable');
         status.textContent = title; body.append(status);
         if (state.phase === 'unavailable') body.append(el('p', 'bci-dd-muted', t(state.issue === 'RELOAD_REQUIRED' ? 'reloadBody' : 'unavailableBody')));
+        if (state.issue === 'ACCESS_REQUIRED' && typeof options.onRequestAccess === 'function') {
+          const access = button(t('accessAction'), options.onRequestAccess);
+          access.dataset.focus = 'access'; body.append(access);
+        }
       } else {
         const page = state.page;
         const summary = el('div', 'bci-dd-summary');

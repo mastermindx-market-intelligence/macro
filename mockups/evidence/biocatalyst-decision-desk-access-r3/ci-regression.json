@@ -1,0 +1,24 @@
+{
+  "subject_head": "de824d8360b91ff44aca2930ac045d1bc6b14bfb",
+  "run_id": 39441884896,
+  "job_id": 118695764178,
+  "logical_job": "biocatalyst-serving",
+  "tested_merge": "c5e6effd84be522837be9a0223bfe0ef121a0ded",
+  "tested_base": "4b6e6ea52676308d0f239bb8e9c74af230e61039",
+  "failed_test": "tests/test_biocatalyst_deploy.py::test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file",
+  "missing_from_aggregate_ownership": "tests/test_biocatalyst_decision_desk.py",
+  "declared_actual_owner": "biocatalyst-decision-desk",
+  "candidate_result": {
+    "passed": 278,
+    "failed": 1
+  },
+  "base_replay": {
+    "passed": 277,
+    "failed": 0
+  },
+  "classification": "introduced aggregate-lane ownership assertion; dedicated frontend job already declared with Python3.12/Node20/4minutes",
+  "repair": "count the explicit frontend lane once, enforce its real runtime/command/4min cap, retain seven older lane budgets and complete/no-duplicate ownership",
+  "mutation_witnesses": 8,
+  "focused_guard_checks_passed": 9,
+  "no_workflow_or_permission_change": true
+}

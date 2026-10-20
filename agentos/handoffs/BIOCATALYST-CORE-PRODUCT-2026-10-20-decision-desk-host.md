@@ -213,3 +213,82 @@ Next three actions for the authorized Pro successor:
    actual entitled source-change/correction user journey and request lawful
    Draft/HOLD release. No fabricated data, parallel identity plane or trade
    authority.
+
+
+## R3 continuation — access action and the introduced CI ownership regression
+
+This milestone continues the original #9611 carrier; it does not complete or
+release the Catalyst Intelligence program. Source parent is
+`de824d8360b91ff44aca2930ac045d1bc6b14bfb`; the containing commit and
+`mockups/evidence/biocatalyst-decision-desk-access-r3/source-hashes.json` identify
+the exact new candidate. There is no native R10/Codex workspace modification.
+
+**What changed:** the Decision Desk access-required state now offers an actual
+bilingual Check access action. It delegates anonymous sign-in to the existing
+MDXAuth owner, or sends signed-in access-limited users to same-origin plans.
+It does not fetch WMN, grant rights or transport private case context. The
+existing component has an optional host callback, not a second auth client.
+
+The former code CI run **39441884896** on de824d83 completed with **11/12 packs
+passed**, only pack3 failed. Its sole failed logical job was BioCatalyst serving:
+278 passed / 1 failed on the candidate, against 277 passed on the automatic
+base replay. The ownership assertion counted only seven older Bio jobs and
+missed the already-declared Decision Desk wrapper. The repaired assertion now
+counts that dedicated four-minute Python3.12/Node20 job exactly once. It still
+requires every Bio test to have one owner and retains all seven backend limits.
+Eight manifest corruption witnesses reject missing, duplicated, wrong-runtime
+and wrong-timeout cases. No workflow, entitlement or runtime guard was weakened.
+The red merge-queue-pilot authority context explicitly says inactive_base_context;
+this PR targets main, whose authority passed. It is not a #9611 rule to bypass.
+
+**Verification:** the complete real `biocatalyst-serving` test command passed
+**287 tests with 14 inherited warnings**, exit0 in 227.35s (PID37586), after
+repairing only the local test environment. Fourteen excluded ClinicalTrials
+fixtures and the basket membership reference were restored byte-for-byte from
+HEAD. Secure-path tests ran beneath an already safe user-cache ancestor rather
+than altering SSD permissions or the verifier. The earlier unqualified run and
+its sponsor-map diagnostic are retained in the R3 verification record. No data
+source, admission or production permission was fabricated or modified.
+
+The CI ownership proof has nine passes (real manifest plus eight corruptions).
+The existing two curated CI scope/import tests passed, 145.69s (PID51959).
+Focused page/component/hydration has 39 passes, with overlapping 89 component
+and 23 host JavaScript checks. The controlled actual-page browser passed
+15 behaviors, 16 EN/ZH/dark/light/viewport layouts and eight actual CJK font
+checks, zero errors. This still uses synthetic authentication and API inputs.
+The unchanged canonical tool captured **24/24 actual anonymous rest/hover/focus
+states** at 2026-10-20T15:30:37Z, zero console errors or failed responses.
+All PNG hashes and sizes were read back. Visual evidence, design-token,
+runtime-style, source-claims and diff guards passed. Independent review remains
+outstanding; principal screenshot inspection is not that review.
+
+Evidence lives in `mockups/evidence/biocatalyst-decision-desk-access-r3/`:
+`verification.json`, `ci-regression.json`, `source-hashes.json`, `manifest.json`,
+`EVIDENCE.yml`, `anonymous-asset-provenance.json` and the separate synthetic-host
+receipt/screenshots. Rationale and honest test boundaries are in
+`research/catalyst_intelligence/decision_desk_r1/access_and_ci_r3.md`.
+Do not rerun or repackage the previously denied writes to the legacy
+verification-summary.json or IMPLEMENTATION.md.
+
+A read-only Paper census confirms the same ten Decision Desk boards on p-20-0
+in file 01M2WGNCX9475G79JRKJTCM08P (776 nodes), including source-conflict and
+advanced-research boards. Nothing in Paper was edited or refocused. Existing
+saved-condition/alert ideas remain secondary to analytical interpretation.
+
+**Exact remaining boundaries:** independent host source/visual review has no
+submitted result. Existing Session Bridge and Executive reader report
+backend_unavailable; no reviewer was started. The connected Browser tab read
+returns ERR_PROXY_AUTH; restore that connection to an authenticated Mastermind
+tab for actual user-path proof. The native R10/#9662/#6712, Codex receiver
+01a158fd-eaba-7342-8b59-081a483f2fc2 and DataOS/#9617 owners retain all existing
+source/rights/production-staging gates. No competing writer or shadow input was
+introduced while those dependencies were unavailable.
+
+Next three steps: (1) consume the containing candidate's fresh hosted CI and
+independent review, repairing introduced defects on this original carrier;
+(2) consume qualified native Company/DataOS records through those exact owners
+and verify the current public wire against the frontend; (3) prove a real
+entitled current-case/later-correction journey and obtain explicit release
+acceptance before Ready, merge, deployment or activation. All Draft/HOLD and
+no-trade-authority boundaries remain. This is a continuing milestone, not a
+claim of running background work or program completion.
