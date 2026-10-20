@@ -13,17 +13,67 @@ state_before: >
   Company/DataOS admission, entitled serving and release were unproven.
 changed:
   - path: .github/ci/legacy-jobs.yml
-    what: Added 21 exact dependency-path declarations across seven existing exclusive jobs after integrated import-closure verification found missing scopes.
+    what: >
+      Added exact dependency paths found by integrated closure verification.
+      Registered native Bio tests under biocatalyst-contracts with PyArrow;
+      existing job gates, enabled states and capacity controls remain unchanged.
   - path: engine/biocatalyst/company_event_adapter.py
     what: >
       Added a pure owner-cut composition entrypoint using canonical identity
       readers and the existing WMN v2 validator. It neither attests upstream
-      admission nor publishes or creates acceptance clocks.
+      admission nor publishes or creates acceptance clocks. Added a native
+      IdentitySnapshotRead adapter binding snapshot/receipt/artifact digests,
+      owner/read ordering and declared cut clocks. Current issuer rows are bound
+      to security_master.parquet; availability is conservatively rounded upward
+      to the existing WMN whole-second wire, never backward.
+  - path: tests/test_biocatalyst_native_identity.py
+    what: Added actual file-reader/native composition, mismatch, clock, unresolved/resolved issuer and missing-symbol cases.
   - path: tests/test_biocatalyst_what_matters_next.py
     what: Added focused composition, correction, missing-symbol and invalid-cut witnesses.
   - path: tests/test_biocatalyst_wmn_publication.py
     what: Routed synthetic owner fixtures through the composition entrypoint before the existing service/publisher transaction.
 verified:
+  - claim: Final native adapter CI scope and declaration checks pass.
+    command: "python3.12 -m pytest -q tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure"
+    result: "2 passed in 147.61s (0:02:27)"
+  - claim: A real selected Capricor disclosure was consumed under its bounded Company source-purpose adjudication.
+    command: "PYTHONDONTWRITEBYTECODE=1 python3.12 .pytest_cache/qualify_native_case.py"
+    result: >
+      Exact 39001 retained bytes hash 38c274710357c928ecc8be8927b7b6a04963eac80b596c2f65d31a2f5917c347;
+      existing Bio adapter output equals the retained Company-qualified output.
+      Accession 0001104659-26-100071, CIK 0001133869, event
+      evt_source_d0edf3f3da4b14c7ce24bef72a631c1a24b75ffc486218a328f5db400a169891.
+      Original conservative retrieval/observation clocks, excerpt=null,
+      uncorroborated issuer target and empty asset/relationship ports preserved.
+      Source/custody/ruling and replay remain in the portfolio's existing
+      bio-capricor-company-case/HANDOFF.md; this is one selected disclosure,
+      not current comprehensive FDA status or historical byte availability.
+  - claim: Native composition consumed the existing R26 result in an isolated synthetic contract check.
+    command: "PYTHONDONTWRITEBYTECODE=1 python3.12 .pytest_cache/qualify_native_case.py"
+    result: >
+      Used incumbent PR9617 promote_initial_reference_generation source SHA256
+      0e98889d91788a67fac8fa60e54876eefb4c5e2d0d5cd7c3afe3e2035d20b112.
+      All five synthetic artifact files stayed byte-identical. Actual native
+      readback composed successfully with the real Company event; identity
+      remained unresolved. This mixed-input contract check proves no native
+      Capricor security binding, source admission or canonical promotion.
+  - claim: Native snapshot adapter and existing WMN tests pass.
+    command: "python3.12 -m pytest -q tests/test_entry_radar_identity_observation_snapshot.py tests/test_biocatalyst_what_matters_next.py"
+    result: >
+      100 passed after the whole-second precision repair. Two added native
+      witnesses then passed with the complete 51-case native reader suite.
+      Bio cases are now isolated in tests/test_biocatalyst_native_identity.py,
+      leaving the original native owner's suite unchanged. Final native Bio plus
+      WMN run: 60 passed in 7.41s. Compact consumption evidence is retained at
+      research/catalyst_intelligence/company_evidence_r2/native_adoption_verification.json.
+  - claim: Supported-base publication and main authority passed at the published integration head.
+    command: "gh pr view 9662 --repo mastermindx-market-intelligence/macro --json headRefOid,baseRefName,isDraft,autoMergeRequest,statusCheckRollup"
+    result: >
+      3a938fbba9f7d1a1a6efb30073d1119cc3242807 published through original operation,
+      base main, Draft, autoMerge null. Edited-event ci-authority run39415993615
+      and ci-authority/main succeeded. Inactive queue context deliberately failed.
+      Semantic CI was not triggered by the retarget; next actual source publication
+      must obtain its own exact-head checks. No dummy push or forced run occurred.
   - claim: Integrated exclusive CI scopes cover the actual import closure.
     command: >
       python3.12 -m pytest -q tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared
@@ -70,24 +120,27 @@ verified:
       /var/lib/macro-biocatalyst/owner-inputs/what_matters_next_inputs.json is absent locally.
       This is local evidence, not a statement about deployed VPS data.
 unverified:
-  - claim: Actual Company and DataOS native input admission for BioCatalyst.
+  - claim: Actual DataOS native input admission and complete selected composite cut for BioCatalyst.
     what_would_verify: >
-      Existing owners supply a qualified current reference snapshot and an admitted
-      Bio event/document/span cut, with real rights, clocks, revisions and unavailable coverage.
+      A qualified current reference snapshot and independent DataOS admission,
+      bound to the consumed Capricor Company case with real clocks/revisions and
+      explicitly incomplete coverage. R26 exists on held PR9617; production-host
+      and canonical-staging denials still apply.
   - claim: Entitled deployed WMN and Decision Desk acceptance.
     what_would_verify: >
       Separate release authorization, reader-before-writer rollout, actual shared
       admission/pointer/lock state, and authenticated account/route/correction browser proof.
 unresolved:
   - "PR 9662 must remain Draft/HOLD, without auto-merge or merge-on-green; no merge-to-main, deployment or activation is authorized."
-  - "Exact-head hosted CI and final base/description publication must be consumed from the same PR; local tests are not hosted acceptance."
+  - "Native adapter exact-head CI and independent review remain required; local tests and the earlier pure-helper review do not establish them."
   - "Main's native Company disclosure owner is constrained to C01-micron-planned-product-integration and private_company_intelligence_context; its rights are not Bio rights."
   - "Studio fleet status returned FLEET_STATUS_OWNER_RESULT_INVALID; no VPS runtime proof was obtained."
   - "Fabric census bio-native-01a158fd-owner-census was refused before launch with FABRIC_NEW_MACRO_WORKTREE_SCOPE_REFUSED. It was not retried or replaced."
+  - "Native adapter review run bio-native-01a158fd-snapshot-review returned rc78: pool=minimax admission_denied reason=canonical_source_unreadable. No review verdict; preserve same run, no replacement or alternate carrier."
 next_actions:
-  - "Finish same-PR publication/retargeting and consume exact-head CI through the existing carrier; preserve all holds."
-  - "Resolve the native input dependency already sent to portfolio chat 01a14c38-2baf-76c2-9475-b1f0a370ab17, through existing Company/DataOS producers. Do not mint a receipt from this local snapshot."
-  - "Bind the qualified native records to compose_wmn_owner_inputs and the existing fixed handoff/publication transaction; the helper is composition, not independent admission."
+  - "Consume this native-adapter publication's exact-head CI through the existing carrier; preserve all holds. Supported-base retargeting is complete."
+  - "Company case is resolved for this cut. Resolve qualified native DataOS source/release through existing PR9617 and its original operation; retain the observed production-host and canonical-staging denials."
+  - "Bind an actually admitted native read to compose_wmn_snapshot_inputs and the existing fixed handoff/publication transaction after its source gates; pure composition and synthetic promotion are not independent admission."
   - "Adopt existing Decision Desk PR 9611 through qualified source custody, then obtain entitled production proof after release authorization."
 do_not_redo:
   - "Do not repeat accepted R9/R10 work or create a replacement PR, publisher, identity allocator, admission store or source owner."

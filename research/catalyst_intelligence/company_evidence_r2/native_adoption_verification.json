@@ -1,0 +1,36 @@
+{
+  "company_case_consumed": true,
+  "event_id": "evt_source_d0edf3f3da4b14c7ce24bef72a631c1a24b75ffc486218a328f5db400a169891",
+  "source_sha256": "38c274710357c928ecc8be8927b7b6a04963eac80b596c2f65d31a2f5917c347",
+  "dataos_contract": "R26 promotion readback consumed from isolated synthetic directory",
+  "dataos_owner_source_sha256": "0e98889d91788a67fac8fa60e54876eefb4c5e2d0d5cd7c3afe3e2035d20b112",
+  "artifact_bytes_preserved": true,
+  "identity_state": "unresolved",
+  "native_security_binding": false,
+  "production_admission": false,
+  "entitled_acceptance": false,
+  "source_hashes": {
+    "engine/biocatalyst/company_event_adapter.py": "a04978a8e00a4c091d14cc089b2efe49b01249566bb48465390b51e9a9d99051",
+    "tests/test_biocatalyst_native_identity.py": "41692975d5de8611f52117f1d575740c3c75578cca764df06b647062ed1dd07f"
+  },
+  "checks": {
+    "affected_native_and_wmn": "100 passed; final native-reader suite after two additional witnesses: 51 passed",
+    "review_run": "bio-native-01a158fd-snapshot-review",
+    "review_verdict": "UNVERIFIED",
+    "review_failure": "pool=minimax admission_denied reason=canonical_source_unreadable; rc78",
+    "canonical_promotion_invoked": false,
+    "final_bio_native_and_wmn": "60 passed in 7.41s",
+    "final_ci_scope": "2 passed in 147.61s (0:02:27)"
+  },
+  "company_case": "/Volumes/Mastermind/evidence/portfolio-resteer-20261020-01a14c38/bio-capricor-company-case/HANDOFF.md",
+  "native_dependency": {
+    "pr": 9617,
+    "observed_head": "674d8067e0fa094d945ca5ea1d3b689bd9e0f7da",
+    "state": "DRAFT/HOLD",
+    "operation": "rs-pullback-initial-generation-r13-20261013-c1",
+    "preserved_denials": [
+      "R9 production-host",
+      "R13 canonical-staging"
+    ]
+  }
+}

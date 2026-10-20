@@ -37,6 +37,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -1885,6 +1886,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -2792,6 +2794,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -6584,6 +6587,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
       - "engine/exposure_math.py"
@@ -8896,6 +8900,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -19085,6 +19090,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -19811,6 +19817,7 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       # Immutable Press dossier binding reaches the existing page inventory.
       - "lib/__init__.py"
       - "lib/config.py"
@@ -19872,6 +19879,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -20341,7 +20349,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install BioCatalyst test deps
-        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
+        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3 pyarrow
       - name: BioCatalyst schema, authority, and ownership contracts
         run: >
           python -m pytest
@@ -20369,6 +20377,7 @@ jobs:
           tests/test_biocatalyst_theme_rollup_pit.py
           tests/test_biocatalyst_m0a_clock_activation.py
           tests/test_company_intelligence_catalyst_event.py
+          tests/test_biocatalyst_native_identity.py
           tests/test_biocatalyst_dataos_cik_reader.py
           tests/test_biocatalyst_research_priority.py
           tests/test_biocatalyst_what_matters_next.py
@@ -21878,6 +21887,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -24341,6 +24351,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -29817,6 +29828,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -30312,6 +30324,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
@@ -33299,6 +33312,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/entry_radar/replay/identity_observation_snapshot.py
       - "engine/biocatalyst/company_event_adapter.py"
       - "engine/biocatalyst/research_priority.py"
       - "engine/biocatalyst/what_matters_next.py"
