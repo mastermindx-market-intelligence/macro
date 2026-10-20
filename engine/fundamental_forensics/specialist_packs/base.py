@@ -1228,6 +1228,10 @@ def _resolve_formula(
         result = mapping.fn(values)
     except ZeroDivisionError:
         return not_evaluable("division_by_zero")
+    except FormulaAbsence as absence:
+        # Additive hook (module end): a producer formula declares a typed
+        # absence whose reason is a catalogue code of its own pack.
+        return not_evaluable(absence.reason)
     if not isinstance(result, Decimal):
         raise SpecialistPackError(
             f"formula {mapping.rule_id} returned a non-decimal result"
@@ -1740,6 +1744,8 @@ def produce_pack_result(
     branch_limitations: list[str] = []
     # A.5/B.3 conditional limitations emitted when a rule check trips a gate.
     rule_limitations: list[str] = []
+    # Additive hook: limitations minted by a registered producer check fn.
+    extra_check_limitations: list[str] = []
 
     if state != "applicable":
         for catalogue_field in catalogue["fields"]:
@@ -1896,6 +1902,16 @@ def produce_pack_result(
         resolver = _OperandResolver(outcomes, pack_input, foreign_cache={})
         for catalogue_check in catalogue["checks"]:
             check_id = catalogue_check["check_id"]
+            # Additive hook (module end): a registered producer check fn owns
+            # this catalogue check row outright when one exists.
+            produced = _produce_extra_check(
+                pack_id, pack_input, ledger, outcomes, catalogue_check
+            )
+            if produced is not None:
+                row, produced_limitations = produced
+                checks_rows.append(row)
+                extra_check_limitations.extend(produced_limitations)
+                continue
             specs = specs_by_check.get(check_id)
             if not specs:
                 raise SpecialistPackError(
@@ -1959,6 +1975,8 @@ def produce_pack_result(
     )
     receipts.append(f"conversion_fact_count={conversion_fact_count}")
     receipts.append(f"issuer_class={issuer_class}")
+    # Additive hook (module end): producer-declared receipt lines ride last.
+    receipts.extend(_extra_receipts_for(pack_id, pack_input, ledger))
     if minted_basis is not None:
         receipts.append(f"packet_id_basis={minted_basis}")
 
@@ -1969,6 +1987,7 @@ def produce_pack_result(
                 *producer.limitations,
                 *branch_limitations,
                 *rule_limitations,
+                *extra_check_limitations,
             )
         )
     )[:32]
@@ -2016,6 +2035,7 @@ __all__ = [
     "FactMapping",
     "FactOrFormulaMapping",
     "FieldMapping",
+    "FormulaAbsence",
     "FormulaMapping",
     "MAX_DURATION_DAYS",
     "PackInput",
@@ -2035,5 +2055,133 @@ __all__ = [
     "formula_difference",
     "formula_ratio",
     "formula_sum",
+    "primary_period",
+    "probe_core_fact",
     "produce_pack_result",
+    "register_extra_check",
+    "register_extra_receipts",
 ]
+
+
+# ---------------------------------------------------------------------------
+# Additive producer hooks (PK12 lane; later lanes append below this banner)
+#
+# Everything above this banner keeps the BASE frame's behaviour: a producer
+# that registers nothing produces byte-identical envelopes to BASE, so the
+# specialist-pack lanes running in parallel merge mechanically. Each hook is
+# strictly opt-in per pack id and pure (no wall clock, deterministic output).
+# ---------------------------------------------------------------------------
+
+
+class FormulaAbsence(Exception):
+    """A producer formula's typed absence; ``reason`` is a catalogue code."""
+
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+        self.reason = reason
+
+
+ExtraReceiptsFn = Callable[[Any, RawFactLedger | None], Sequence[str]]
+# Returns ``(check_row, limitations)`` for a catalogue check this producer
+# owns, or ``None`` to fall through to the producer's declared CheckSpecs.
+ExtraCheckFn = Callable[
+    [Any, RawFactLedger | None, Mapping[str, Any]],
+    "tuple[dict[str, Any], Sequence[str]] | None",
+]
+
+_EXTRA_RECEIPTS_FNS: dict[str, ExtraReceiptsFn] = {}
+_EXTRA_CHECK_FNS: dict[str, ExtraCheckFn] = {}
+
+
+def register_extra_receipts(pack_id: str, fn: ExtraReceiptsFn) -> None:
+    """Declare extra receipt lines for one pack's envelopes.
+
+    The fn receives ``(pack_input, ledger)``, is evaluated once per produced
+    envelope in both applicability branches, and its lines are appended after
+    the framework's own ``issuer_class`` receipt (deduplicated, receipt order
+    preserved).
+    """
+    if pack_id not in contract.PACK_IDS:
+        raise SpecialistPackError(f"unknown pack id: {pack_id}")
+    _EXTRA_RECEIPTS_FNS[pack_id] = fn
+
+
+def register_extra_check(pack_id: str, fn: ExtraCheckFn) -> None:
+    """Let one producer own its catalogue check rows outright.
+
+    The fn receives ``(pack_input, ledger, outcomes, catalogue_check)`` —
+    ``outcomes`` maps field_id to the framework's resolved field outcome —
+    and returns ``(check_row, limitations)`` or ``None`` to fall through to
+    the declared ``CheckSpec`` shapes. Consulted only in the applicable
+    branch; the returned row must satisfy the same envelope contract the
+    framework's own check rows satisfy (catalogue kind/operands, member
+    reason codes, evidence fields of this result).
+    """
+    if pack_id not in contract.PACK_IDS:
+        raise SpecialistPackError(f"unknown pack id: {pack_id}")
+    _EXTRA_CHECK_FNS[pack_id] = fn
+
+
+def _extra_receipts_for(
+    pack_id: str,
+    pack_input: Any,
+    ledger: RawFactLedger | None,
+) -> list[str]:
+    fn = _EXTRA_RECEIPTS_FNS.get(pack_id)
+    if fn is None:
+        return []
+    return list(dict.fromkeys(fn(pack_input, ledger)))
+
+
+def _produce_extra_check(
+    pack_id: str,
+    pack_input: Any,
+    ledger: RawFactLedger | None,
+    outcomes: Mapping[str, Any],
+    catalogue_check: Mapping[str, Any],
+) -> tuple[dict[str, Any], Sequence[str]] | None:
+    fn = _EXTRA_CHECK_FNS.get(pack_id)
+    if fn is None:
+        return None
+    return fn(pack_input, ledger, outcomes, catalogue_check)
+
+
+def primary_period(pack_input: Any, forms: frozenset[str]) -> date:
+    """Primary filing period of a pack input under the producer's own forms."""
+    primary, _matched = _select_primary(pack_input.packages, forms)
+    por_text = str(primary.manifest.get("period_of_report") or "")
+    if not por_text:
+        raise SpecialistPackError("primary package carries no period_of_report")
+    return date.fromisoformat(por_text[:10])
+
+
+def probe_core_fact(
+    mapping: FactMapping,
+    ledger: RawFactLedger,
+    por: date,
+    *,
+    period_kind: str = "duration",
+) -> Decimal | None:
+    """Resolve one alias list under the field-mapping admission laws, no row.
+
+    For producer-declared extra rules (e.g. a pre-revenue applicability test)
+    that consume a core-catalogue alias without minting a field row. Returns
+    the resolved value, or ``None`` when the aliases do not resolve to a
+    valued admitted fact; the intermediate row is discarded, never emitted.
+    """
+    catalogue_field = {
+        "field_id": "core_probe",
+        "name": "core probe",
+        "type": "decimal",
+        "unit": None,
+        "period_kind": period_kind,
+    }
+    outcome = _resolve_fact_mapping(
+        pack_id="PK00",
+        catalogue_field=catalogue_field,
+        mapping=mapping,
+        ledger=ledger,
+        por=por,
+        extension_prefixes={},
+    )
+    return outcome.value

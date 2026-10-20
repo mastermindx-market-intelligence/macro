@@ -1,4 +1,4 @@
-"""Specialist pack producer framework + PK06/PK01/PK02/PK11 producers over the AAPL 10-K fixture.
+"""Specialist pack producer framework + PK06/PK01/PK02/PK11/PK12 producers over the AAPL 10-K fixture.
 
 Every count asserted here was verified against the fixture's facts through
 the raw ledger (never by reading the filing HTML): the fixture tags the split
@@ -18,6 +18,14 @@ balance-sheet shares issued, the repurchase payments, the p20 incremental
 dilutive shares and net income; the income-statement-location SBC breakdown
 is not tagged, the antidilutive table exists only for FY2023, and capitalized
 SBC has no frozen standard alias.
+
+PK12 (biotech cash/R&D/financing) is a NEGATIVE issuer on this AAPL fixture
+(SIC 3571, revenue valued), so the positive path is proven on a synthetic
+in-test inline-XBRL package admitted by the same strict parser path as the
+golden fixture — never on a hand-built ledger. The two text-span rows stay
+``unsupported`` at this producer version (the framework reserves span
+evidence for a later lane), so ``financing_disclosed_not_forecast`` passes on
+``equity_financing_proceeds`` alone.
 
 PK11 (financial-institution credit, capital and liquidity) is likewise a
 NEGATIVE issuer here; its bank path is proven on a synthetic in-test ledger.
@@ -55,7 +63,10 @@ from engine.fundamental_forensics.synthetic_filing_package import (
     filing as synthetic_filing,
 )
 from engine.fundamental_forensics.synthetic_filing_package import usd_fact
-from engine.fundamental_forensics.statement_graph import load_golden_aapl_package
+from engine.fundamental_forensics.statement_graph import (
+    GoldenFilingPackage,
+    load_golden_aapl_package,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 ACCESSION = "0000320193-25-000079"
@@ -430,8 +441,8 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK11"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK11", "PK12"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -503,6 +514,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
         "engine/fundamental_forensics/specialist_packs/pk11_bank.py",
+        "engine/fundamental_forensics/specialist_packs/pk12_biotech.py",
         "scripts/fif_specialist_packs.py",
     ],
 )
@@ -1830,3 +1842,474 @@ def test_base_pack_envelopes_identical_after_pk11() -> None:
             result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
         )
         assert sha256(payload.encode("utf-8")).hexdigest() == digest
+
+
+# 21. PK12: synthetic in-test biotech package ---------------------------------
+#
+# A minimal inline-XBRL 1.1 10-K admitted by the same strict collector
+# parser path as the golden fixture (never a hand-built ledger), carrying the
+# frozen §TESTS-2 facts: cash 120, sti 80, R&D 60, opCF -100, finCF 150,
+# capex 8, proceeds 150, plus the narrative the span lane would eventually
+# locate ("at-the-market offering", "sufficient to fund operations for the
+# next twelve months").
+
+SYN_BIO_CIK = "0000000003"
+SYN_BIO_DOC = "testbio-20251231.htm"
+SYN_BIO_ENTITY = {
+    "entity_id": SYN_BIO_CIK,
+    "cik": SYN_BIO_CIK,
+    "ticker": "TESTBIO",
+    "name": "TESTBIO CORP",
+    "identity_basis": "golden_filing_package_fixture_v1",
+    "source_entity_id": SYN_BIO_CIK,
+}
+PK12_QUERY = {**QUERY, "requested_metrics": ["cash_runway"]}
+# A.7: sha256 of the canonical JSON bytes of each envelope under this
+# module's own inputs. PK01's digest is the BASE value (PK12 edits must not
+# move it); PK12's digest pins this producer's byte-determinism.
+# (PK01_ENVELOPE_SHA256 is pinned once, in the PK02 section above.)
+PK12_AAPL_ENVELOPE_SHA256 = (
+    "e76d3cbe85619224b81a288b6b368f8b5505086535c6293b0273d4dd2be87a1f"
+)
+
+_SYN_BIO_FACTS = (
+    ("us-gaap:CashAndCashEquivalentsAtCarryingValue", "c-inst", "120", ""),
+    ("us-gaap:ShortTermInvestments", "c-inst", "80", ""),
+    ("us-gaap:ResearchAndDevelopmentExpense", "c-fy", "60", ""),
+    (
+        "us-gaap:NetCashProvidedByUsedInOperatingActivities",
+        "c-fy",
+        "100",
+        ' sign="-"',
+    ),
+    ("us-gaap:NetCashProvidedByUsedInFinancingActivities", "c-fy", "150", ""),
+    ("us-gaap:PaymentsToAcquirePropertyPlantAndEquipment", "c-fy", "8", ""),
+    ("us-gaap:ProceedsFromIssuanceOfCommonStock", "c-fy", "150", ""),
+)
+_SYN_CONTEXT_INST = (
+    '<xbrli:context id="c-inst"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f'{SYN_BIO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>'
+    "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>"
+)
+_SYN_CONTEXT_FY = (
+    '<xbrli:context id="c-fy"><xbrli:entity><xbrli:identifier'
+    ' scheme="http://www.sec.gov/CIK">'
+    f'{SYN_BIO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>'
+    "<xbrli:startDate>2025-01-01</xbrli:startDate>"
+    "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>"
+)
+
+
+def _biotech_document(facts: tuple[tuple[str, str, str, str], ...]) -> bytes:
+    rows = "\n".join(
+        f"<tr><td>item {index}</td><td>"
+        f'<ix:nonFraction id="f-{index}" name="{qname}"'
+        f' contextRef="{context}" unitRef="usd" decimals="0"{sign}>{value}'
+        "</ix:nonFraction></td></tr>"
+        for index, (qname, context, value, sign) in enumerate(facts, start=1)
+    )
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTBIO 10-K</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{_SYN_CONTEXT_INST}\n{_SYN_CONTEXT_FY}\n"
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>\n</ix:resources></ix:header></div>\n"
+        "<p>The registrant maintains an at-the-market offering program and"
+        " believes existing resources are sufficient to fund operations for"
+        " the next twelve months.</p>\n"
+        f"<table>\n{rows}\n</table>\n</body></html>\n"
+    )
+    return template.encode("utf-8")
+
+
+def _biotech_package(
+    facts: tuple[tuple[str, str, str, str], ...] = _SYN_BIO_FACTS,
+    *,
+    form: str = "10-K",
+) -> GoldenFilingPackage:
+    document = _biotech_document(facts)
+    manifest = {
+        "entity_id": SYN_BIO_CIK,
+        "cik": SYN_BIO_CIK,
+        "legal_name": "TESTBIO CORP",
+        "form": form,
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000003-26-000010",
+        "primary_document": SYN_BIO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": SYN_BIO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    return GoldenFilingPackage(
+        manifest=manifest, members={SYN_BIO_DOC: document}
+    )
+
+
+def _pk12_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(_biotech_package(),),
+        entity=SYN_BIO_ENTITY,
+        query=PK12_QUERY,
+        issuer_sic="2836",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _aapl_pk12_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK12_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk12_biotech_result() -> dict:
+    return produce_pack("PK12", _pk12_input())
+
+
+# 20. PK12 on AAPL: the honest negative (B.4) ---------------------------------
+
+
+def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
+    result = produce_pack("PK12", _aapl_pk12_input())
+    assert result["applicability"] == {
+        "state": "not_applicable",
+        "reason": "sic_outside_biotech_codes",
+        "rule_id": "pack.pk12.applicability/v1",
+        "sic": "3571",
+        "sic_source": "sec_submissions",
+    }
+    assert len(result["fields"]) == 9
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["non_value_state"] == "not_applicable"
+        assert row["coverage_state"] == "not_applicable_period"
+        assert row["reason"] == "sic_outside_biotech_codes"
+        assert row["value"] is None and row["text_value"] is None
+    assert len(result["checks"]) == 4
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "sic_outside_biotech_codes"
+    assert result["coverage"] == {
+        "valued_fields": 0,
+        "missing_fields": 0,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 9,
+        "disclosure_coverage_state": "not_supplied",
+    }
+    assert result["limitations"] == [pack_base.DISPLAY_ONLY_LIMITATION]
+    assert "issuer_class=industrial" in result["receipts"]
+    assert "sic_in_biotech_set=false" in result["receipts"]
+    assert "pre_revenue_test=false" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+    # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
+    assert registered_pack_ids() == ("PK01", "PK06", "PK12")
+
+
+def test_pk12_aapl_envelope_digest_is_pinned() -> None:
+    result = produce_pack("PK12", _aapl_pk12_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert sha256(payload.encode("utf-8")).hexdigest() == PK12_AAPL_ENVELOPE_SHA256
+
+
+def test_pk12_biotech_coded_aapl_probe_is_non_positive_burn() -> None:
+    # B.4 parenthetical: the entity SIC is overridable pack input, so the
+    # probe proves that even a biotech-coded AAPL yields non_positive_burn
+    # (opCF 111,482e6 makes the burn basis zero-or-negative).
+    result = produce_pack("PK12", _aapl_pk12_input(issuer_sic="2836"))
+    assert result["applicability"]["state"] == "applicable"
+    assert "sic_in_biotech_set=true" in result["receipts"]
+    assert result["coverage"]["valued_fields"] == 5
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "not_evaluable"
+    assert runway["non_value_state"] == "not_evaluable"
+    assert runway["reason"] == "non_positive_burn"
+    assert runway["value"] is None
+    for check_id in ("cash_runway_quarters", "runway_months_annual_fcf_div_12"):
+        check = _check(result, check_id)
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "non_positive_burn"
+    assert _check(result, "rd_to_cash")["status"] == "pass"
+    assert "pk12.rd_to_cash: 0.961485" in result["limitations"]
+    assert _check(result, "financing_disclosed_not_forecast")["status"] == (
+        "not_evaluable"
+    )
+    assert _row(result, "equity_financing_proceeds")["reason"] == (
+        "missing_standard_fact:us-gaap:ProceedsFromIssuanceOfCommonStock"
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+# 21. PK12 synthetic biotech: the positive path (§TESTS 2) --------------------
+
+
+def test_pk12_biotech_positive_path_validates(pk12_biotech_result: dict) -> None:
+    result = pk12_biotech_result
+    assert contract.validate_pack_result(result) == []
+    assert result["applicability"]["state"] == "applicable"
+    assert result["applicability"]["reason"] == "applicability_rule_satisfied"
+    catalogue = contract.load_pack_schema("PK12")
+    assert [row["field_id"] for row in result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    assert [row["check_id"] for row in result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+    assert "sic_in_biotech_set=true" in result["receipts"]
+
+
+def test_pk12_biotech_valued_rows(pk12_biotech_result: dict) -> None:
+    result = pk12_biotech_result
+    valued = {
+        "cash_and_cash_equivalents": "120",
+        "short_term_investments": "80",
+        "research_and_development_expense": "60",
+        "net_cash_from_operating_activities": "-100",
+        "net_cash_from_financing_activities": "150",
+        "equity_financing_proceeds": "150",
+    }
+    for field_id, value in valued.items():
+        row = _row(result, field_id)
+        assert row["quality_state"] == "valued"
+        assert row["value"] == value
+        assert row["evidence_kind"] == "xbrl_fact"
+        assert row["unit"] == "USD"
+        assert row["source_occurrence_ids"]
+        assert row["mapping_rule_id"] == f"PK12.{field_id}.fact/v1"
+        assert row["mapping_rule_digest"]
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "valued"
+    assert runway["evidence_kind"] == "formula"
+    assert runway["required_evidence_kind"] == "formula"
+    assert runway["formula_rule_id"] == "pk12.cash_runway_quarters/v1"
+    assert runway["dependency_field_ids"] == [
+        "cash_and_cash_equivalents",
+        "short_term_investments",
+        "net_cash_from_operating_activities",
+    ]
+    assert runway["unit"] == "quarters"
+    # (120 + 80) / (100 / 4) quantized 6 dp: Decimal 8.000000; the canonical
+    # row text strips trailing zeros.
+    assert Decimal(runway["value"]) == Decimal("8.000000")
+    assert runway["value"] == "8"
+    for field_id in ("atm_or_shelf_span", "going_concern_or_liquidity_span"):
+        row = _row(result, field_id)
+        assert row["quality_state"] == "unsupported"
+        assert row["non_value_state"] == "unsupported"
+        assert row["evidence_kind"] == "text_span"
+        assert row["required_evidence_kind"] == "text_span"
+        assert row["reason"] == "missing_dependency"
+        assert row["text_value"] is None
+    assert result["coverage"] == {
+        "valued_fields": 7,
+        "missing_fields": 0,
+        "unsupported_fields": 2,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+
+def test_pk12_biotech_checks_and_limitations(pk12_biotech_result: dict) -> None:
+    result = pk12_biotech_result
+    runway_check = _check(result, "cash_runway_quarters")
+    assert runway_check["status"] == "pass"
+    assert runway_check["reason"] is None
+    assert runway_check["operands"] == [
+        "cash_runway_quarters",
+        "cash_and_cash_equivalents",
+        "short_term_investments",
+        "net_cash_from_operating_activities",
+    ]
+    fcf_check = _check(result, "runway_months_annual_fcf_div_12")
+    assert fcf_check["status"] == "pass"
+    assert fcf_check["operands"] == [
+        "cash_runway_quarters",
+        "cash_and_cash_equivalents",
+        "net_cash_from_operating_activities",
+        "core:capital_expenditures",
+    ]
+    rd_check = _check(result, "rd_to_cash")
+    assert rd_check["status"] == "pass"
+    assert rd_check["evidence_field_ids"] == [
+        "research_and_development_expense",
+        "cash_and_cash_equivalents",
+    ]
+    financing_check = _check(result, "financing_disclosed_not_forecast")
+    assert financing_check["status"] == "pass"
+    assert financing_check["kind"] == "qualitative_presence"
+    # 200 / (108 / 12) and 60 / 120, quantized 6 dp, ride the limitations.
+    assert "pk12.runway_months_fcf: 22.222222" in result["limitations"]
+    assert "pk12.rd_to_cash: 0.500000" in result["limitations"]
+    assert any(
+        item.startswith("runway_months_annual_fcf_div_12:")
+        for item in result["limitations"]
+    )
+
+
+def test_pk12_production_is_deterministic() -> None:
+    first = produce_pack("PK12", _pk12_input())
+    second = produce_pack("PK12", _pk12_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+# 22. PK12 pre-revenue applicability (§TESTS 3) --------------------------------
+
+
+def test_pk12_pre_revenue_path_admits_non_biotech_sic() -> None:
+    result = produce_pack("PK12", _pk12_input(issuer_sic="7372"))
+    assert result["applicability"]["state"] == "applicable"
+    assert result["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert "sic_in_biotech_set=false" in result["receipts"]
+    assert "pre_revenue_test=true" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk12_valued_revenue_blocks_pre_revenue_path() -> None:
+    facts = (
+        *_SYN_BIO_FACTS,
+        ("us-gaap:Revenues", "c-fy", "10", ""),
+    )
+    result = produce_pack(
+        "PK12",
+        _pk12_input(packages=(_biotech_package(facts),), issuer_sic="7372"),
+    )
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "sic_outside_biotech_codes"
+    assert "pre_revenue_test=false" in result["receipts"]
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "sic_outside_biotech_codes"
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "sic_outside_biotech_codes"
+    assert contract.validate_pack_result(result) == []
+
+
+# 23. PK12 non-positive burn (§TESTS 4) ----------------------------------------
+
+
+def test_pk12_non_positive_burn_is_typed() -> None:
+    facts = (
+        _SYN_BIO_FACTS[0],
+        _SYN_BIO_FACTS[1],
+        _SYN_BIO_FACTS[2],
+        ("us-gaap:NetCashProvidedByUsedInOperatingActivities", "c-fy", "100", ""),
+        *_SYN_BIO_FACTS[4:],
+    )
+    result = produce_pack("PK12", _pk12_input(packages=(_biotech_package(facts),)))
+    runway = _row(result, "cash_runway_quarters")
+    assert runway["quality_state"] == "not_evaluable"
+    assert runway["non_value_state"] == "not_evaluable"
+    assert runway["reason"] == "non_positive_burn"
+    assert runway["value"] is None
+    assert runway["formula_rule_id"] == "pk12.cash_runway_quarters/v1"
+    for check_id in ("cash_runway_quarters", "runway_months_annual_fcf_div_12"):
+        check = _check(result, check_id)
+        assert check["status"] == "not_evaluable"
+        assert check["reason"] == "non_positive_burn"
+    assert _check(result, "rd_to_cash")["status"] == "pass"
+    assert _check(result, "financing_disclosed_not_forecast")["status"] == "pass"
+    assert result["coverage"]["not_evaluable_fields"] == 1
+    assert result["coverage"]["valued_fields"] == 6
+    assert contract.validate_pack_result(result) == []
+
+
+# 24. PK12 form gate (§TESTS 5) -------------------------------------------------
+
+
+def test_pk12_10q_is_outside_pack_forms() -> None:
+    result = produce_pack(
+        "PK12", _pk12_input(packages=(_biotech_package(form="10-Q"),))
+    )
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "form_outside_pack_forms"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "form_outside_pack_forms"
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "form_outside_pack_forms"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert contract.validate_pack_result(result) == []
+
+
+# 25. BASE-pack invariance (§TESTS 6) -------------------------------------------
+
+
+def test_base_pack_envelopes_unchanged_by_pk12_edits() -> None:
+    pk06 = produce_pack("PK06", _pack_input())
+    pk01 = produce_pack("PK01", _pk01_input())
+    for result, expected in (
+        (pk06, PK06_ENVELOPE_SHA256),
+        (pk01, PK01_ENVELOPE_SHA256),
+    ):
+        payload = json.dumps(
+            result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        )
+        assert sha256(payload.encode("utf-8")).hexdigest() == expected
+
+
+# 26. PK12 CLI -------------------------------------------------------------------
+
+
+def test_pk12_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk12.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK12_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK12",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "not_applicable"
+    assert envelope["applicability"]["reason"] == "sic_outside_biotech_codes"
+    assert len(envelope["fields"]) == 9
+    assert "sic_in_biotech_set=false" in envelope["receipts"]
