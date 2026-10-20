@@ -10418,6 +10418,102 @@ jobs:
       - name: china tushare takeover suites — addons gate + minutes plane + chips (A/B/C)
         run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py -q
 
+  china-altdata-catalysts:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # China Alt-Data event-catalyst cards (W27-L27, 2026-10-20). Inquiry rows carry
+    # secName/secCode, pre-announcement rows pct_change + a Chinese-only type, unlock rows
+    # float_pct; the template read none of them, so names, swings and unlock sizes rendered as
+    # empty spans. Six render tests pin them (jinja2 + engine/i18n; no data/ or site/ read).
+    # tests/test_china_altdata.py leaves config/unrun_test_baseline.json here: its 11 engine
+    # tests ran in no job. Own job, not a step in unrun-template-chips: that step moved the
+    # index-template (5,825 > 5,822) and build_free_content (5,700 > 5,697) packing probes.
+    # scope: exclusive pins it to its static import closure plus ancestor inits; the probe
+    # ceilings stay fixed.
+    paths:
+      - "templates/china_altdata.html.j2"
+      - "tests/test_china_altdata.py"
+      - "collectors/__init__.py"
+      - "collectors/_drip.py"
+      - "collectors/base.py"
+      - "collectors/china_analyst.py"
+      - "collectors/china_news.py"
+      - "collectors/edgar.py"
+      - "collectors/edgar_13f.py"
+      - "collectors/edgar_flow_quality.py"
+      - "collectors/edgar_share_quality.py"
+      - "collectors/edgar_stock_quality.py"
+      - "collectors/fred.py"
+      - "collectors/openfigi.py"
+      - "collectors/yahoo.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/delisted_symbols.yml"
+      - "engine/__init__.py"
+      - "engine/china_altdata.py"
+      - "engine/china_conviction.py"
+      - "engine/china_crowding.py"
+      - "engine/china_event_calendar.py"
+      - "engine/china_extras.py"
+      - "engine/china_news.py"
+      - "engine/china_news_intel.py"
+      - "engine/china_signal_lab.py"
+      - "engine/china_validation.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/entity_resolver.py"
+      - "engine/gdelt_client.py"
+      - "engine/i18n.py"
+      - "engine/macro_surprise.py"
+      - "engine/manager_lag.py"
+      - "engine/manager_quality.py"
+      - "engine/manager_trades.py"
+      - "engine/name_resolver.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_translate.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "engine/smart_money.py"
+      - "engine/trial_ledger.py"
+      - "engine/tushare_freshness.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/closes_panel.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/filing_value_units.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
+        run: python -m pytest tests/test_china_altdata.py -q -p no:cacheprovider
+
   china-board-breadth:
     if: ${{ false }}
     gate: code
@@ -29141,13 +29237,11 @@ jobs:
     if: ${{ false }}
     gate: code
     paths:
-      - "templates/china_altdata.html.j2"
       - "tests/test_act_now_board_assembler.py"
       - "tests/test_action_board_lane_split.py"
       - "tests/test_alert_coverage_recurrence.py"
       - "tests/test_alert_time_contract.py"
       - "tests/test_alert_triage.py"
-      - "tests/test_china_altdata.py"
       - "tests/test_china_special_situations.py"
       - "tests/test_china_special_situations_truth_wave1.py"
       - "tests/test_macro_header_compact.py"
@@ -29207,23 +29301,6 @@ jobs:
         run: python -m pytest tests/test_china_special_situations_truth_wave1.py -q
       - name: China Special Situations CIE-10 — contract/order metadata lifecycle truth
         run: python -m pytest tests/test_china_special_situations.py -q
-      # China Alt-Data event-catalyst cards (W27-L27, 2026-10-20). The three cards read
-      # keys the producer never writes: inquiry rows carry secName/secCode (no `name`),
-      # pre-announcement rows carry pct_change + a Chinese-only `type` (no p_change), and
-      # unlock rows carry float_pct (no pct_float). So both inquiry names, all five
-      # pre-announcement values and every unlock size rendered as empty spans. The six
-      # new tests render the real template with jinja2 + engine/i18n and pin the printed
-      # company, the translated type with its signed swing (an unmapped type paints raw
-      # in both legs), and the unlock size as a % of free float below 100 and as a
-      # multiple at or above it (a bare "1055%" is asserted absent).
-      #
-      # WIRED, NOT JUST ADDED (#5952-class): tests/test_china_altdata.py sat in
-      # config/unrun_test_baseline.json, so its 11 engine tests ran in no job; it leaves
-      # the grandfather list in this PR. Hermetic: no data/ or site/ read, no parquet
-      # store; the engine tests call pure functions and the render side loads templates/
-      # only, so this job's install line is sufficient (17 passed in a code-only export).
-      - name: China Alt-Data — catalyst cards print the inquiry company, pre-announcement type + swing, unlock size
-        run: python -m pytest tests/test_china_altdata.py -q
       - name: US board W9-A producer field + cohort math
         run: python -m pytest tests/test_w4_us_board.py -q
       # Alert Command Center — the TIME CONTRACT and the evidence links (Wave 7,

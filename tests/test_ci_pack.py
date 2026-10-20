@@ -4869,6 +4869,11 @@ CURATED_EXCLUSIVE = {
     # As a step in china-native-collectors it moved templates/index.html to
     # 5,816 > 5,800; its own exclusive job keeps the import closure only.
     "grey-deer-pboc-liquidity",
+    # 2026-10-20 W27-L27: the China Alt-Data catalyst-card render tests. As a
+    # step in unrun-template-chips they moved the index-template (5,825 > 5,822)
+    # and build_free_content (5,700 > 5,697) packing probes; its own exclusive
+    # job keeps the static import closure plus ancestor inits; ceilings stay fixed.
+    "china-altdata-catalysts",
     # 2026-10-13 main packing-probe heal: Node harness subprocesses, a git
     # subprocess and filesystem traversals rooted at templates/, scripts/,
     # engine/, data/ and site/ widened inference for these two lanes to those
