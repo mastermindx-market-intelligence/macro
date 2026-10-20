@@ -37,6 +37,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -1882,6 +1885,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -2786,6 +2792,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -8887,6 +8896,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -21866,6 +21878,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -30297,6 +30312,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -33281,6 +33299,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/biocatalyst/company_event_adapter.py"
+      - "engine/biocatalyst/research_priority.py"
+      - "engine/biocatalyst/what_matters_next.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
