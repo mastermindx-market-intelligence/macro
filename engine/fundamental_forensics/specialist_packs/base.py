@@ -2622,6 +2622,7 @@ def produce_pack_result(
                         mapping=mapping,
                         ledger=ledger,
                         por=por,
+                        limitations=mapping_limitations,
                     )
                 else:
                     outcomes[field_id] = _resolve_dimensioned_fact_mapping(
@@ -3645,6 +3646,7 @@ def _resolve_grouped_dimensioned_fact_mapping(
                             por=por,
                             mapping=mapping,
                             occurrences=by_member[ledger_member],
+                            limitations=limitation_sink,
                         )
                         outcome.row["mapping_rule_id"] = rule_id
                         outcome.row["mapping_rule_digest"] = digest
@@ -3673,6 +3675,7 @@ def _resolve_grouped_dimensioned_fact_mapping(
                         por=por,
                         mapping=mapping,
                         occurrences=by_member[ledger_member],
+                        limitations=limitation_sink,
                     )
                     outcome.row["mapping_rule_id"] = rule_id
                     outcome.row["mapping_rule_digest"] = digest
@@ -4173,6 +4176,7 @@ def _resolve_allowlist_dimensioned_fact_mapping(
     mapping: DimensionedFactMapping,
     ledger: RawFactLedger,
     por: date,
+    limitations: list[str] | None = None,
 ) -> _FieldOutcome:
     """A.1/A.2: concept tuple + primary-axis member allowlist emission.
 
@@ -4216,6 +4220,9 @@ def _resolve_allowlist_dimensioned_fact_mapping(
                 # Same admitted member, different values: the FactMapping
                 # conflict rule, kept row-level.
                 units = {_unit_measure(item.unit) for item in occurrences}
+                if len(units) == 1:
+                    # R-F9: same unit, different values — name the conflict.
+                    _rf9_conflict_limitation(limitations, field_id, occurrences)
                 row = _base_row(catalogue_field, por)
                 row["quality_state"] = "not_evaluable"
                 row["non_value_state"] = "not_evaluable"
