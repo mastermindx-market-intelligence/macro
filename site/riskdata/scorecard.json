@@ -1,14 +1,14 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-19T23:12:41+00:00",
+  "generated_at": "2026-10-20T04:20:02+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-10-16",
+      "asof_last_row": "2026-10-19",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 3,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 18,
+        "awaiting_maturity": 19,
         "backlog_cutoff_bd": 28,
         "graded_n": 51
       },
@@ -34,8 +34,8 @@
           },
           "by_scare": {},
           "recovery": {
-            "n": 6,
-            "ok": 6,
+            "n": 7,
+            "ok": 7,
             "rate": 1.0
           }
         },
@@ -60,8 +60,8 @@
           },
           "by_scare": {},
           "recovery": {
-            "n": 6,
-            "ok": 6,
+            "n": 7,
+            "ok": 7,
             "rate": 1.0
           }
         }
@@ -70,14 +70,14 @@
         "definition": "us_issued_probability_audit.v1",
         "as_of": "2026-10-19",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 69,
+        "input_rows": 70,
         "min_display_n": 5,
         "horizons": {
           "h5": {
             "n": 51,
-            "excluded_n": 18,
+            "excluded_n": 19,
             "excluded": {
-              "ungraded": 18
+              "ungraded": 19
             },
             "from": "2026-06-23",
             "through": "2026-09-17",
@@ -136,9 +136,9 @@
           },
           "h10": {
             "n": 51,
-            "excluded_n": 18,
+            "excluded_n": 19,
             "excluded": {
-              "ungraded": 18
+              "ungraded": 19
             },
             "from": "2026-06-23",
             "through": "2026-09-17",
@@ -197,9 +197,9 @@
           },
           "h21": {
             "n": 51,
-            "excluded_n": 18,
+            "excluded_n": 19,
             "excluded": {
-              "ungraded": 18
+              "ungraded": 19
             },
             "from": "2026-06-23",
             "through": "2026-09-17",
@@ -272,13 +272,13 @@
           "latest_engine_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
           "latest_source_bundle_sha256": "9cb9d626e5887fd4c528f4d5e3c040696c0963512bdb2e2409198b116aaa9d19",
           "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
-          "same_model_issued_n": 2,
+          "same_model_issued_n": 3,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 2,
+          "awaiting_maturity": 3,
           "prior_model_issued_n": 14,
           "model_fingerprints_seen": 4,
           "from": "2026-10-15",
-          "through": "2026-10-16",
+          "through": "2026-10-19",
           "issue_excluded": {
             "missing_issue_receipt": 53
           },
@@ -345,10 +345,10 @@
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 2,
-              "span_days": 1,
+              "issued_n": 3,
+              "span_days": 4,
               "from": "2026-10-15",
-              "through": "2026-10-16"
+              "through": "2026-10-19"
             },
             "thresholds": {
               "min_issued_sessions": 252,

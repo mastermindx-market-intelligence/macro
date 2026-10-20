@@ -87,8 +87,8 @@ def _en(fragment):
 def test_w21g_one_card_per_graded_style():
     html = _render(_seas())
     assert html.count('class="fcard"') == 5
-    assert html.count('class="mos"') == 216
-    assert 'class="mos muted"' not in html
+    assert len(re.findall(r'<td class="mos[" ]', html)) == 216
+    assert 'class="mos muted' not in html
 
 
 def test_w21g_size_headwind_card_prints_its_record():
