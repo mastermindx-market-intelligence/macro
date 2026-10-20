@@ -39,10 +39,10 @@
       "label_zh": "政府举债",
       "more_en": "",
       "more_zh": "",
-      "reason_en": "No dated step is pending right now.",
-      "reason_zh": "目前没有待办的既定日期节点。",
+      "reason_en": "The Treasury auction schedule could not be read right now.",
+      "reason_zh": "目前无法读取国债拍卖日程。",
       "rows": [],
-      "state": "empty",
+      "state": "unavailable",
       "window_id": "treasury_supply"
     },
     {

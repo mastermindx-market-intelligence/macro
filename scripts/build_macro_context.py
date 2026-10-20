@@ -590,6 +590,8 @@ def _build_risk_radar(world_state: dict | None, snapshot: dict | None) -> dict:
         "dd_h10": dp.get("h10"),
         "dd_h21": dp.get("h21"),
         "dd_evidence": dp.get("calibration_evidence"),
+        "dd_lift_note_en": dp.get("lift_note_en"),
+        "dd_lift_note_zh": dp.get("lift_note_zh"),
         "dd_base_h5": dp.get("base_h5"),
         "dd_base_h10": dp.get("base_h10"),
         "dd_base_h21": dp.get("base_h21"),
@@ -1183,7 +1185,8 @@ def _build_contradictions(world_state: dict | None) -> dict:
         "n_note": by_sev.get("note", 0),
         "top_pair_ids": co.get("top_pair_ids", []),
         "note": co.get("note", ""),
-        "cross_asset_verdict": (ws.get("verdict") or {}).get("cross_asset", {}).get("verdict") if isinstance(ws.get("verdict"), dict) else None,
+        "cross_asset_verdict": ({} if not isinstance(_cf := ws.get("cross_asset_flows"), dict) else
+            _cf if isinstance(_cf.get("confirm"), dict) else {}).get("confirm", {}).get("verdict"),
         "n_divergences": (ws.get("intelligence") or {}).get("n_divergences"),
     }
 

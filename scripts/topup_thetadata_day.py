@@ -54,7 +54,7 @@ Exit codes:
         date (or already did); 2 = vendor has no data yet for ANY root;
         1 = partial, OR blocked (backfill running / lock refused).
     --daily mode: 0 = healthy receipt, no-op gate, OR lock refusal (F14);
-        1 = partial or failed receipt.
+        1 = partial/failed source receipt or failed downstream baseline refresh.
 
 Usage:
     python -m scripts.topup_thetadata_day --roots SPY,QQQ --date 2026-07-30
@@ -768,8 +768,40 @@ def _write_daily_receipt(store: Path, receipt: dict) -> None:
     tmp.replace(p)
 
 
+def _refresh_live_flow_baselines(runtime: Path, store: Path, source_session: _date) -> dict:
+    """Refresh the existing consumer's artifact, without running its producer.
+
+    Called only after a healthy natural source update, while its source-store
+    lock still excludes parquet writers. The child uses the consumer's own
+    environment, data directory and universe. Its strict build preserves the
+    last artifact on missing/stale roots; this never starts a flow cycle.
+    """
+    wrapper = runtime / "ops/launchd/run_with_env.sh"
+    env_file = runtime / ".env"
+    if not runtime.is_absolute() or not wrapper.is_file() or not env_file.is_file():
+        log.error("topup daily: baseline consumer runtime is not provisioned")
+        return {"status": "failed", "reason": "consumer_runtime_unavailable"}
+    try:
+        result = subprocess.run(
+            [str(wrapper), str(env_file), sys.executable, "-m",
+             "scripts.build_live_flow_baselines", "--poll-universe", "--chunk-size", "1",
+             "--require-source-session", source_session.isoformat(),
+             "--expected-store", str(store.resolve())],
+            cwd=runtime, timeout=600, check=False,
+        )
+    except subprocess.TimeoutExpired:
+        log.error("topup daily: baseline refresh exceeded its separate 600s bound")
+        return {"status": "failed", "reason": "timeout"}
+    except OSError as exc:
+        log.error("topup daily: baseline refresh could not launch: %s", type(exc).__name__)
+        return {"status": "failed", "reason": "launch_failed"}
+    return {"status": "complete" if result.returncode == 0 else "failed",
+            "returncode": result.returncode, "source_session": source_session.isoformat()}
+
+
 def _daily_main(*, workers: int, deadline_min: float, forced: bool,
-                now_fn: Callable[[], datetime] | None = None) -> int:
+                now_fn: Callable[[], datetime] | None = None,
+                baseline_runtime: Path | None = None) -> int:
     now_fn = now_fn or (lambda: datetime.now(timezone.utc))
     started_at = datetime.now(timezone.utc)
 
@@ -909,12 +941,23 @@ def _daily_main(*, workers: int, deadline_min: float, forced: bool,
         # coverage the roots it DID reach happened to hit. Never let a
         # high-coverage partial pool read as `healthy`.
         status = "partial" if deadline_exceeded else ("healthy" if healthy else "partial")
-        _finish(status, terminal_health="reachable",
-               stale_tmp_swept=stale_tmp_swept,
-               deadline_exceeded=deadline_exceeded, **agg)
+        source_receipt = _finish(status, terminal_health="reachable",
+                                 stale_tmp_swept=stale_tmp_swept,
+                                 deadline_exceeded=deadline_exceeded, **agg)
         log.info("topup daily: S=%s D=%s ad_ready_coverage=%.1f%% status=%s "
                 "deadline_exceeded=%s", ctx.S, ctx.D,
                 agg["ad_ready_coverage_pct"] * 100, status, deadline_exceeded)
+        if status == "healthy" and not forced and baseline_runtime is not None:
+            baseline_started = datetime.now(timezone.utc).isoformat()
+            baseline = _refresh_live_flow_baselines(baseline_runtime, store, ctx.S)
+            # Source health and downstream refresh are separate facts. A child
+            # failure must neither rewrite source health nor claim delivery.
+            baseline.update(started_at=baseline_started,
+                            finished_at=datetime.now(timezone.utc).isoformat())
+            source_receipt["live_flow_baselines"] = baseline
+            _write_daily_receipt(store, source_receipt)
+            if baseline["status"] != "complete":
+                return 1
         return 0 if status == "healthy" else 1
     finally:
         lock_cm.__exit__(None, None, None)
@@ -940,6 +983,8 @@ def _build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--force-run", action="store_true",
                     help="--daily: bypass the session/time gate for diagnostics "
                          "ONLY; stamps forced=true in the receipt")
+    ap.add_argument("--baseline-runtime", type=Path,
+                    help="--daily: refresh this provisioned live-flow runtime's baseline after healthy natural updates")
     return ap
 
 
@@ -952,13 +997,15 @@ def main(argv: list[str] | None = None) -> int:
         ap.error("--daily is mutually exclusive with --roots/--date")
     if not args.daily and args.roots is None:
         ap.error("--roots is required unless --daily is given")
+    if args.baseline_runtime is not None and not args.daily:
+        ap.error("--baseline-runtime requires --daily")
     if args.workers is not None and args.workers > _MAX_WORKERS:
         ap.error(f"--workers must be <= {_MAX_WORKERS} (hard vendor-safety cap)")
 
     if args.daily:
         workers = args.workers if args.workers is not None else _DAILY_WORKERS_DEFAULT
         return _daily_main(workers=workers, deadline_min=args.deadline_min,
-                           forced=args.force_run)
+                           forced=args.force_run, baseline_runtime=args.baseline_runtime)
 
     # ---- legacy / @universe bounded mode ----
     try:
