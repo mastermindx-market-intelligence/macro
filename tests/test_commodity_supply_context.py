@@ -119,3 +119,93 @@ def test_leaf_is_never_wired_into_the_scoring_path():
                              if ln.strip().startswith(("import ", "from ")))
     for forbidden in ("conviction", "commodity_alerts", "commodity_signals", "commodity_mtf"):
         assert forbidden not in import_lines, f"leaf must not import the scoring path ({forbidden})"
+
+
+def test_four_week_change_requires_calendar_endpoints_not_row_count():
+    idx = pd.date_range("2026-08-07", periods=6, freq="7D")
+    values = pd.Series([100, 101, 102, 103, 104, 110], index=idx)
+    assert sc.delta_4w(values.tail(2)) is None
+    assert sc.delta_4w(values.drop(idx[-5])) is None
+    # Intermediate weeks are not needed for a stock endpoint difference.
+    assert sc.delta_4w(values.loc[[idx[-5], idx[-1]]]) == 9
+    duplicate = pd.concat([values, pd.Series([999], index=[idx[-1]])])
+    assert sc.delta_4w(duplicate) is None
+    assert sc.delta_4w(pd.concat([values, values.tail(1)])) == 9
+
+
+def test_cover_requires_all_aligned_weeks_and_excludes_future_demand():
+    idx = pd.date_range("2026-08-07", periods=8, freq="7D")
+    stocks = pd.Series(280_000.0, index=idx)
+    demand = pd.Series(16_000.0, index=idx)
+    assert sc.days_of_supply(stocks, demand.iloc[:-1]) is None
+    assert sc.days_of_supply(stocks, demand.tail(3)) is None
+    assert sc.days_of_supply(stocks, demand.drop(idx[-2])) is None
+    future = pd.concat([demand, pd.Series([80_000.0], index=[idx[-1] + pd.Timedelta(weeks=1)])])
+    assert sc.days_of_supply(stocks, future) == 17.5
+    assert sc.days_of_supply(stocks, demand, weeks=0) is None
+    assert sc.days_of_supply(stocks, demand, weeks=True) is None
+    demand.iloc[-2] = -1
+    assert sc.days_of_supply(stocks, demand) is None
+
+
+def test_seasonal_reference_discloses_actual_history_instead_of_fixed_five_year_claim():
+    s = _seasonal_weekly(years=2)
+    ref = sc.seasonal_reference(s)
+    assert ref["observations"] == 104
+    assert ref["start"] == s.index[0].date().isoformat()
+    assert ref["end"] == s.index[-1].date().isoformat()
+    assert ref["latest_included"] is True
+    assert sc.seasonal_z(s) is not None
+    short = sc.build_physical_context({"crude_stocks": s}, as_of=ref["end"])
+    assert short["evidence"]["crude_z"]["reference"] == ref
+    assert short["point_in_time_verified"] is False
+    assert short["release_at"] is None
+
+
+def test_context_filters_observation_periods_without_claiming_release_vintage():
+    s = _seasonal_weekly()
+    cutoff = s.index[-2].date().isoformat()
+    s.iloc[-1] = 1_000_000
+    context = sc.build_physical_context({"crude_stocks": s}, as_of=cutoff)
+    assert context["crude_stocks_mb"] == round(s.iloc[-2] / 1000, 1)
+    assert context["sources"]["crude_stocks"]["input_latest_observation"] > cutoff
+    assert context["sources"]["crude_stocks"]["observation_at"] == cutoff
+    assert all(r["observation_at"] <= cutoff for r in context["evidence"].values() if r["observation_at"])
+    assert context["hypothesis_confirmation_eligible"] is False
+    assert context["observation_filter_only"] is True
+
+
+def test_context_preserves_missing_demand_and_each_stock_date():
+    s = _seasonal_weekly()
+    context = sc.build_physical_context({
+        "crude_stocks": s, "gasoline_stocks": s.iloc[:-1],
+        "refinery_inputs": pd.Series(10.0, index=s.index[:-1]),
+    }, as_of=s.index[-1].date().isoformat())
+    assert "days_supply" not in context
+    assert context["evidence"]["days_supply"]["state"] == "aligned_demand_weeks_missing"
+    assert context["evidence"]["gasoline_z"]["observation_at"] != context["asof"]
+    assert context["balance_z"] == round(sc.seasonal_z(s), 2)
+    assert context["evidence"]["crude_chg_4w_mb"]["window_start"] == (s.index[-1] - pd.Timedelta(weeks=4)).date().isoformat()
+
+
+def test_impossible_negative_stock_does_not_become_a_tightness_claim():
+    s = _seasonal_weekly()
+    s.iloc[-1] = -1
+    context = sc.build_physical_context({"crude_stocks": s}, as_of=s.index[-1].date().isoformat())
+    assert "crude_stocks_mb" not in context
+    assert context["evidence"]["crude_z"]["value"] is None
+    assert context["sources"]["crude_stocks"]["state"] == "invalid_negative_stock"
+
+
+def test_builder_reader_and_pure_owner_have_identical_context(monkeypatch):
+    from scripts import build_commodities
+    from lib import store
+
+    raw = {name: _seasonal_weekly() for name in sc.SERIES}
+    monkeypatch.setattr(store, "read", lambda group, name: raw[name].to_frame(name))
+    monkeypatch.setattr(build_commodities.config, "load",
+                        lambda: {"eia": {"supply": {"seasonal_years": 5, "dos_window_weeks": 4}}})
+    cutoff = raw["crude_stocks"].index[-1].date().isoformat()
+    expected = sc.build_physical_context(raw, as_of=cutoff)
+    assert build_commodities._oil_supply_read(cutoff) == expected
+    assert build_commodities._oil_supply_read() == expected
