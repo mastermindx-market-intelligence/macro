@@ -553,7 +553,7 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
 
   <!-- ============ AFTERMARKET chart ============ -->
   {% if prospectus_deals %}
-  <div class="sec">{{ t('Inside one IPO','一宗新股的发行细节') }} <span class="sec-hint">{{ t('Filed terms + actual price history','申报条款与实际价格历史') }}</span></div>
+  <div class="sec">{{ t('Inside one IPO','一宗新股的发行细节') }} <span class="sec-hint">{{ t('Filed terms + actual price history','披露条款与实际价格历史') }}</span></div>
   <p class="sec-sub">{{ t('A source-qualified deal example. Broader pricing precedents and allocation data are not covered.','经原始来源核实的个案；尚不涵盖更广泛的定价先例或配售数据。') }}</p>
   {% for deal in prospectus_deals %}
   <article class="card deal-terms" id="deal-{{ deal.ticker }}">
@@ -579,7 +579,7 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
     {% else %}<p>{{ t('Daily price history unavailable.','每日价格历史暂不可用。') }}</p>{% endif %}
     <details><summary>{{ t('Source and timing','原始来源与时间') }}</summary>
       <p><a href="{{ deal.source_url }}" target="_blank" rel="noopener noreferrer">{{ t('SEC final prospectus · 424B4','SEC最终招股书 · 424B4') }}</a> · {{ deal.accession }}</p>
-      <p class="deal-clock">{{ t('Filed','申报时间') }} {{ deal.filed_at }} · {{ t('Retrieved','本系统读取时间') }} {{ deal.retrieved_at }}. {{ t('The later retrieval does not make this a new announcement. Read the prospectus for all exceptions.','较晚的读取时间不代表这是新公告。完整例外请查阅招股书。') }}</p>
+      <p class="deal-clock">{{ t('Filed','披露时间') }} {{ deal.filed_at }} · {{ t('Retrieved','本系统读取时间') }} {{ deal.retrieved_at }}. {{ t('The later retrieval does not make this a new announcement. Read the prospectus for all exceptions.','较晚的读取时间不代表这是新公告。完整例外请查阅招股书。') }}</p>
     </details>
   </article>
   {% endfor %}
