@@ -76,10 +76,10 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-z0-rebase-20261019-bf5ddb325b995a37",
-    "resolved_sha_or_none": "5cd33d34e5ef2b297d0158933f2472c66ff6eafe",
-    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-z0-rebase-20261019-bf5ddb325b995a37 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/fif-z0-rebase-20261019-bf5ddb325b995a37/site"
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-doctrine-r3-20261020-cab14be062902186",
+    "resolved_sha_or_none": "afd98b8d15d393df24ee35ffc0aab94081eecbe2",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/fif-doctrine-r3-20261020-cab14be062902186 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/fif-doctrine-r3-20261020-cab14be062902186/site"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
