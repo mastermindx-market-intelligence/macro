@@ -1,7 +1,7 @@
 {
-  "schema": "medtech.main-integration.v2",
+  "schema": "medtech.main-integration.v3",
   "observed_at": "2026-10-20T17:32:25.428561+00:00",
-  "first_parent": "5d1265f063be09e1193c0698a249eaaf5cd000a4",
+  "first_parent": "a1a141e09ef1c32549b76bd494d8fd89d2ee3754",
   "second_parent": "c4856d476954873cf7a11ce08a94b13da309e897",
   "reason": "Fresh canonical main caused actual content conflicts in CI paths and API restart closure",
   "conflicts": {
@@ -57,5 +57,14 @@
     "shell_syntax": "pass",
     "unresolved_paths": [],
     "hosted_ci": "required on resulting new commit"
+  },
+  "input_composition_head": "5d1265f063be09e1193c0698a249eaaf5cd000a4",
+  "lineage_reconciliation": {
+    "observed_at": "2026-10-20T17:38:56.110944+00:00",
+    "single_parent_index_commit": "a1a141e09ef1c32549b76bd494d8fd89d2ee3754",
+    "actual_index_commit_parent": "5d1265f063be09e1193c0698a249eaaf5cd000a4",
+    "pending_merge_head": "c4856d476954873cf7a11ce08a94b13da309e897",
+    "finding": "Managed commit recorded the reconciled index as one-parent commit and left MERGE_HEAD pending. Immutable readback rejected the earlier two-parent claim.",
+    "repair": "Finalize that same existing merge through ordinary local git commit, without force/rebase, then publish through the existing exact-head owner. Source/test bytes are unchanged; only this receipt is corrected."
   }
 }
