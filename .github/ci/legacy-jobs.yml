@@ -28459,6 +28459,14 @@ jobs:
       # the suite and the builder. The composer itself is governed by regime-outlook-mapping.
       - name: E1c4 regime-outlook publication beside the rates command board
         run: python -m pytest tests/test_build_rates_command_outlook.py -q
+      # W23-L10/L12 (Country cycles, 2026-10-19): scripts/build_country_cycles.py renders four
+      # read-only panels from the model it already holds -- the projection receipt, hazard
+      # availability, the canonical phase read and the currency move. The suites import the
+      # builder's pure helpers (never run main()) and render the template with fixtures. They
+      # ride this data-gated job because the exclusive sanctions-map-page job cannot host the
+      # builder's import closure. Their own step so a wiring regression is named.
+      - name: W23-L10/L12 country cycles - receipt, hazard availability, canonical read, FX move
+        run: python -m pytest tests/test_country_cycles_projection_receipt.py tests/test_country_cycles_hazard_availability.py tests/test_country_cycles_canonical_phase.py tests/test_country_cycles_fx_contribution.py -q
       # RIC B0 (Rates & Inflation Command e2e, 2026-10-14): engine/rates_command_basis.py is the
       # pure basis-aware comparison contract rates_command_basis.v1 (A06: no numerical gap unless
       # basket/index/reference interval/unit/vintage and calculation rule support it). Its first
@@ -28516,6 +28524,12 @@ jobs:
       - "contracts/rates_command_basis.v1.schema.json"
       - "scripts/build_rates_command.py"
       - "tests/test_build_forex_stance.py"
+      - "tests/test_country_cycles_projection_receipt.py"
+      - "tests/test_country_cycles_hazard_availability.py"
+      - "tests/test_country_cycles_canonical_phase.py"
+      - "tests/test_country_cycles_fx_contribution.py"
+      - "scripts/build_country_cycles.py"
+      - "templates/country_cycles.html.j2"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
       - "site/bonds.html"
