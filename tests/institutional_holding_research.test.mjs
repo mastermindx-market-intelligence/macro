@@ -143,3 +143,25 @@ test('hostile source text is emitted as text nodes, never parsed HTML', () => {
   assert.equal(target.hidden, false);
   assert.equal(nodes.find(n => n.tag === 'a').href, 'https://www.sec.gov/Archives/edgar/data/1904423/000190442326000004/0001904423-26-000004-index.html');
 });
+
+test('mounted first-party reader awaits the native asynchronous MDXAuth client', async () => {
+  const client = deferred(), requests = [];
+  function element() { return { firstChild: null, hidden: false, disabled: false,
+    appendChild() {}, removeChild() {}, replaceChildren() {}, setAttribute() {}, addEventListener() {},
+    querySelectorAll() { return []; } }; }
+  const nodes = new Map();
+  const doc = { getElementById(id) { if (!nodes.has(id)) nodes.set(id, element()); return nodes.get(id); }, createElement: element };
+  const controller = api.mount({ document: doc, AbortController, location: { hash: '' }, addEventListener() {},
+    MDXAuth: { client: () => client.promise, onChange() {} },
+    fetch: async (url, options) => { requests.push({url,options}); return new Response('', { status: 503 }); }
+  });
+  const reading = controller.read(selection());
+  await Promise.resolve();
+  assert.equal(requests.length, 0);
+  client.resolve({ auth: { getSession: async () => ({ data: { session: { access_token: 'fixture-token' } }, error: null }) } });
+  await reading;
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].options.headers.Authorization, 'Bearer fixture-token');
+  assert.deepEqual(JSON.parse(requests[0].options.body), selection());
+  assert.equal(nodes.get('ff-holding-read').disabled, false);
+});

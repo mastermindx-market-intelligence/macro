@@ -124,3 +124,123 @@ def test_evidence_gate_signature_holds():
     for c in rep["checks"]:
         if c["type"] == "signature":
             assert c["bottom_pctile"] < c["top_pctile"]
+
+
+# ------------------------------------------------ page render: gate row + cohort label ----
+# Synthetic fixtures shaped like the committed pathway record and the producer's run_gate()
+# return (engine/china_sector_pathway_backtest.py:115-185). The gate is computed at build time
+# and never written to JSON, so these renders are the only place its wording is pinned.
+
+_POOLED = [
+    {"leg": "dist_p", "n_bottom": 40, "n_top": 42, "median_bottom": 0.013, "median_top": 0.844,
+     "gap_ci": [0.2246, 0.4642], "sign_ok": True, "evidence": True},
+    {"leg": "dd_p", "n_bottom": 40, "n_top": 42, "median_bottom": 0.022, "median_top": 0.985,
+     "gap_ci": [0.229, 0.4811], "sign_ok": True, "evidence": True},
+]
+_DRIFT = [
+    {"sector": "banks", "type": "cluster_sign", "leg": "credit_impulse", "hard": False,
+     "ic": -0.086, "expect_sign": 1, "ok": False},
+    {"sector": "real_estate", "type": "cluster_sign", "leg": "credit_impulse", "hard": False,
+     "ic": -0.088, "expect_sign": 1, "ok": False},
+]
+
+
+def _pw_sector(key, en, zh, tercile):
+    h6 = {"h": 6, "base_rate": 0.54, "cond_rate": 0.75, "lift": 0.21, "lift_ci_lo": 0.0427,
+          "lift_ci_hi": 0.389, "n_months": 20, "n_eff": 4.4, "n_base_months": 90,
+          "med_fwd_pct": 6.1, "base_med_pct": 2.0}
+    return {"key": key, "en": en, "zh": zh, "bbg": "GSXACBNK", "level": 1000.0, "span": "2008–",
+            "position": {"score": 40.0, "label": "Neutral", "label_zh": "中性"},
+            "conditional": {"h6": h6}, "setup": {"tercile": tercile, "legs": []},
+            "narrative_en": "N", "narrative_zh": "N", "turns": {}, "caveat_en": "C",
+            "caveat_zh": "C"}
+
+
+def _pathway():
+    return {"sectors": [_pw_sector("banks", "China Banks", "中国银行", "low"),
+                        _pw_sector("real_estate", "China Real Estate", "中国地产", "high")]}
+
+
+def _render_desk(gate, pathway=None):
+    import json
+    from collections import defaultdict
+    from pathlib import Path
+
+    from jinja2 import Environment, FileSystemLoader
+
+    from engine import i18n
+
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
+    env.globals.update(td=i18n.td, tr=i18n.tr)
+    desk = {"as_of": "2026-10-16", "sectors": [], "summary": {}}
+    return env.get_template("china_sector_desk.html.j2").render(
+        C=defaultdict(lambda: "#000"), desk=desk, pathway=pathway or _pathway(), gate=gate,
+        desk_json=json.dumps(desk), built="TEST BUILD")
+
+
+def _gate_row(html):
+    import re
+
+    rows = re.findall(r'<div class="gate[^"]*">.*?</div>', html, re.S)
+    assert len(rows) == 1, rows
+    return rows[0]
+
+
+def _gate(**kw):
+    g = {"available": True, "passed": True, "checks": [], "pooled": _POOLED,
+         "evidence_legs": ["dist_p", "dd_p"], "soft_warnings": [], "note": "ok"}
+    g.update(kw)
+    return g
+
+
+def test_gate_row_prints_pooled_sample_size_and_band():
+    row = _gate_row(_render_desk(_gate()))
+    assert row.startswith('<div class="gate ok">✓')
+    for s in ("n=40/42", "1→84", "2→98", "22–46pp", "23–48pp", '<span class="l-en">evidence</span>',
+              "<span class=\"l-zh\">证据</span>", "pooled bottoms sit below tops"):
+        assert s in row, s
+    assert "signature checks pass" not in row and "Evidence gate" not in row
+
+
+def test_gate_row_names_the_drifted_leg_and_sector():
+    row = _gate_row(_render_desk(_gate(soft_warnings=_DRIFT)))
+    for s in ("China Banks", "中国银行", "China Real Estate", "中国地产",
+              '<span class="l-en">credit impulse</span>', "信贷脉冲", "IC -0.09", "+)"):
+        assert s in row, s
+    assert "credit_impulse" not in row and "sign-drift note" not in row
+    six = [dict(_DRIFT[0], ic=-0.01 * i) for i in range(6)]
+    row6 = _gate_row(_render_desk(_gate(soft_warnings=six)))
+    assert row6.count('<span class="l-en">sign drift</span>') == 4 and " · +2" in row6
+
+
+def test_gate_does_not_claim_evidence_when_ci_includes_zero():
+    weak = [dict(_POOLED[0], gap_ci=[-0.05, 0.3], evidence=False),
+            dict(_POOLED[1], gap_ci=None, evidence=False)]
+    row = _gate_row(_render_desk(_gate(pooled=weak, evidence_legs=[])))
+    assert row.count('<span class="l-en">directional only</span>') == 2
+    assert ">evidence<" not in row and ">证据<" not in row and "-5–30pp" in row
+    flip = [dict(_POOLED[0], median_bottom=0.9, median_top=0.1, sign_ok=False, evidence=False)]
+    frow = _gate_row(_render_desk(_gate(pooled=flip, passed=False, evidence_legs=[])))
+    assert frow.startswith('<div class="gate warn">⚠') and "✓" not in frow
+    assert '<span class="l-en">flipped</span>' in frow and "需复核" in frow and "90→10" in frow
+
+
+def test_gate_unavailable_renders_skipped_not_a_tick():
+    gate = {"available": False, "passed": True, "checks": [], "pooled": [],
+            "note": "china_sectors / benchmark data absent — gate skipped"}
+    row = _gate_row(_render_desk(gate))
+    assert row.startswith('<div class="gate warn">⚠') and "✓" not in row
+    assert "not run" in row and "拐点特征门槛未运行" in row and "pooled bottoms" not in row
+
+
+def test_cohort_label_names_the_top_third_and_flags_when_today_is_outside_it():
+    import re
+
+    ci = r'<div class="ci">((?:(?!</div>).)*?)(?= · )'
+    labels = re.findall(ci, _render_desk(_gate()), re.S)
+    assert len(labels) == 2, labels
+    assert all("when setup is in its top third" in x for x in labels)
+    assert "(<span class=\"l-en\">not today</span>" in labels[0] and "今日不在此区间" in labels[0]
+    assert "not today" not in labels[1]
+    assert "when setup ~ today" not in _render_desk(_gate())

@@ -1,0 +1,251 @@
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path('/workspace/scratch/da452a3ea08d')
+NOTES = ROOT / 'research_notes'
+OUT = ROOT / 'publication_oct20'
+R = 'consumer_comparison_20261017/release_integrity_20261018'
+W = 'w5_natural_issuance_20261018/oct20_lineage/ROOT_OPERATIONAL_ACCEPTANCE_2026-10-20.md'
+A = 'action_snapshot_20261020/DATED_ACTION_MAP_2026-10-16.md'
+C = 'live_delivery_20261017/copilot_failure_trace/current_source_20261020/CURRENT_SOURCE_2026-10-20.md'
+P = 'all_date_census/PRICE_ONLY_B0_B1_R1_ADJUDICATION_2026-10-20.md'
+
+expected = {
+    'GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md': '104f1a4f6383fd03565531177c5f655527d74b5ac81e855a4b41002a4bfd3276',
+    'RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md': 'd05c2bfce5672853137372e4275da52aa78350441cceb45c497c68085a9899e2',
+    'risk_radar_source_consumer_audit_20261017.md': 'd40968899dfc07a20be2c3a3045812d2f6e3b05387a8c5da9c0726be3f7e4efc',
+    'GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md': '1fa0378f16c241f36b01043a4055b4356e0a1a7e010dc70bf0b925d1f8dd294f',
+    'WS-GREY-DEER-RISK-INTELLIGENCE.md': '394c9395ae91cdc2a15854a535da600f46a437b3aa875c45387f904b96cd8c04',
+}
+before = {}
+for name, digest in expected.items():
+    data = (NOTES / name).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == digest, name
+    before[name] = data.decode()
+
+removed = []
+def replace_section(name, text, start, end, replacement):
+    assert text.count(start) == 1 and text.count(end) == 1, (name, start, end)
+    i, j = text.index(start), text.index(end)
+    assert i < j
+    removed.append({'file': name, 'start': start, 'end_exclusive': end, 'prior_text': text[i:j]})
+    return text[:i] + replacement.rstrip() + '\n\n' + text[j:]
+
+master = f'''### Current verified frontier — October 20 UTC
+
+**Useful descriptive intelligence and first natural W5 issuance are accepted within scope. The source repair has passed PR-head CI and entered the protected merge queue. Full programme acceptance remains open.** The [October 16 exposure map]({A}) ranks conditional protection, defensive candidates, hold/watch and recovery work for the existing policy owners. It does not supply October 20 execution prices or a validated allocation rule.
+
+The snapshot uses 36 fixed ETF proxies; 32 have October 16 observations, while DIA, ARKK, BIL and SGOV remain on October 14. It records SPY only 2.03% below its 63-session high alongside SMH 14.85%, SOXX 16.31% and IWM 11.36% below theirs. XLP and XLV gained 5.02% and 3.45% over five sessions. RSP and defensive absolute gains retain contained rotation as a competing explanation; damage across other exposures prevents a simple healthy-broadening claim. Credit/funding transmission, flows and systemic contagion remain unconfirmed. QQQ is Nasdaq-100 exposure, not the literal Nasdaq Composite. The primary issuer check verifies one SPY close, not all series or historical availability. [Independent review](action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md) reconciles all 180 displayed numbers, dates and counts. Its optional systemic-gate wording clarification is separately recorded, with the exact reviewed map preserved.
+
+**Mastermind source #1610:** exact head **7b5ccfffef4e90b89496751dd7bc0f55b711ed25**. The production helper remains SHA256 `1ebfd44db982d73f7f9d507109fa3983ba65cc948e8afe9fe697589d712728a8`; four test files now make the full five-file source scope. Companion-contract semantics and the actual #1586/#642/#124 intersections were qualified without changing their live ownership or HOLDs. Hosted CI **39359674398** and CodeQL **39359671270** succeeded. The native merge request entered the protected queue at **2026-10-20 03:29:26 UTC**, entry `MQE_lQDOTotz3c8AAAABJIEh484ABAiKzgNcukA`. At the last consumed queue change, **03:51:54 UTC**, integrated candidate `a7553e0a18339c910eef9687c730b06605dd710e` was awaiting CI **39364578755**; Mastermind OS **39364578810** succeeded. **Merge and landing readback are not yet observed in this checkpoint.** One Class-T native queue observer, PID **80374**, owns this stage; consume that existing observer, not a duplicate poller.
+
+The [evidence index]({R}/README.md) preserves the failed original hosted CI, companion SDK failure, spaced-venv launch failure, and failed first wrapper-identity regression. V2 owning tests passed 59/59; the final combined native run passed 113 of 114, then the corrected single new regression passed separately. This is **113 unchanged passes plus one separately corrected case**, not an invented fresh 114/114 run. Full hosted CI subsequently passed on 7b. Prior 44-case and 49-case receipts remain tied to their original source pairs.
+
+**Macro evidence #9595:** continue the existing draft carrier, currently **ac08d5bd630d480a97fcbd0d9814946724250011**, without pushing into an armed or closed PR. Its actual CI **39118765804** remains failed only on three reference-integrity findings in ci-pack-1; the other eleven packs and contract-delta passed. The failed integrated base was **b912fd97827cca925a7123aa2012e9765077f3f7**, not current main. All three offending paths are absent from ac08 itself and were subsequently preserved byte-exact under current main's design-draft namespace by #7100. The [exact CI adjudication]({R}/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) therefore calls for no fabricated RIG receipt, guard exception or competing repair. The substantive continuation commit still needs its own actual native integrated checks and separate landing readback. Earlier #9515 and #9573 source landings remain accepted; #9573's 44 artifacts were independently verified, and its old checkout stays closed read-only.
+
+**W5's first natural issuance gate is now closed within operational scope.** The [root acceptance]({W}) binds one naturally scheduled writer invocation, 30 SPY records for October 16 issued on Sunday October 18, approved merge ancestry, exact producer/preregistration blobs, the six-file recipe fingerprint, the full retained job-log scan and all 50 reported check annotations. No relevant Grey Deer error warning is present. Every outcome is immature; this is one batch, not 30 independent warnings. The later nightly failure/cancellation remains failed/cancelled. Friday label-origin returns cannot represent a Sunday-issued executable action; source availability, first user display and execution clocks remain unknown. Let the original natural writer/grader advance; no backfill, manual nightly or early grading.
+
+The [R1 scoring clarification]({P}) is adopted **as proposed design**, making equal-exposure report weights and calibration arithmetic deterministic across all three baselines. The proposed 532 units remain 504 exposure constants, 14 pooled constants and 14 pooled ridge fits. **Estimation is NOT_ADMITTED; zero fits.** Yahoo model-purpose UNKNOWN/not-a-source, missing accepted estimator/runtime and FRED UNKNOWN/HOLD remain unresolved. The T13 matched h21 refusal, original 2,138 unscored records, null independent N, failed Grey Deer claims and unspent T13/T14/T19 budgets remain evidence.
+
+The [current Copilot comparison]({C}) confirms that the original exclusion-only portfolio classifier and caveat-only finalization counterexample still apply to the exact inspected source at active integrated producer **#8014 d63e59bcd4203732fe3b9097002f9451dcf61955**. Earlier #9447 is now at **aed92aaa474ebf3802b6f43ac55138dedfe4c8aa**; #9548 is at **bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc**. Their actual writers remain controlling. The source review is not a fresh failed user turn or a repaired product. Qualify useful answer content before metadata, preserve separately qualified public visuals and existing screening/Stop/persistence boundaries, then require served source and one useful authenticated original-question answer.
+
+**Next release phase:** after source landing, freeze the operation's exact merged archive, reconcile it with the reviewed source closure, qualify actual registered startup effects and rehearse replacement/restoration in an isolated matching runtime. The last VPS/cohort/book observations are **October 18** snapshots of installed `732cf7be…`; they are not current October 20 runtime proof. The optional later startup-read request returned no result and its temporary extract was observed absent; no production uncertainty or successful startup proof is inferred. The full release decision remains reserved under the actual programme constraints. No production deployment or service operation is performed by this continuation. Portfolio/Prophet retain numerical allocation and execution.
+
+The sections below preserve earlier source and experimental history. This current frontier supersedes their immediate next-action/status language where later evidence differs; no accepted capability or failed experiment is erased.'''
+
+name = 'GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md'
+s = replace_section(name, before[name], '### Current verified frontier — October 18 UTC', '### Verified result and acceptance boundary', master)
+s = s.replace('## 0A. Current Meta-CEO continuation — 2026-10-17, advanced October 18 UTC', '## 0A. Current Meta-CEO continuation — 2026-10-17, advanced October 20 UTC')
+s = s.replace('At source pin 3ab3382af89242c7b7fe8c65360bd883a7dd3504, W5\'s forward_log.jsonl is absent. Its refusal artifact contains BACKFILL_ASOF and CLOCK, including the October 15 refusal written October 16. W5 remains merged without the required production proof. Do not backfill issuance or manually rerun the blocked nightly/QLedger route.', f'**Preserved October 17 observation:** at source pin 3ab3382af89242c7b7fe8c65360bd883a7dd3504, W5\'s forward_log.jsonl was absent and BACKFILL_ASOF/CLOCK refusals were present. The later [first natural issuance acceptance]({W}) supersedes absence as the current state; it does not erase those refusals or establish predictive competence. No backfill or manual nightly/QLedger rerun.')
+old = '| 5 — GD-9A comparison then authorized consumer changes | Source-function comparison and #1567 source landing accepted; direct dependencies reviewed; bounded helper\'s final native suite passed 49/49 with independent source/portability reviews. | Complete normal source CI/landing, then qualify the exact complete release, permitted startup effects, recovery and real consumer delivery. | Last dated runtime remains October 9 source. The full-release production decision is reserved; passing helper tests cannot establish book/policy/prompt/ledger parity. Portfolio/Prophet numerical authority stays intact. |'
+new = '| 5 — GD-9A comparison then authorized consumer changes | Source comparison and #1567 source landing accepted. Five-file #1610 successor has passing PR-head CI and is in the native protected queue; earlier native successes and failures retain exact scope. | Verify integrated CI and separately fetched landing blobs; freeze the merged archive, qualify registered startup effects, isolated replacement/restoration and real consumer delivery. | October 18 runtime evidence is dated. Full-release production decision remains reserved; code rollback cannot undo all startup effects. Portfolio/Prophet numerical authority stays intact. |'
+assert old in s; s = s.replace(old,new)
+old = '| 6 — turning-point research | Preserve T13 support refusal; qualify the proposed all-date exposure-B0/pooled-B0/B1 comparison before any executable freeze. | Six frozen artifacts match; proposed features, common support, chronological purge and 532-unit ceiling are explicit. Later evidence must distinguish preemption, recognition, further loss, propagation, stabilization, repair and decision costs. | Yahoo model-purpose UNKNOWN/not a source and absent estimator executable keep estimation NOT_ADMITTED. FRED remains held; no untouched historical holdout or genuine prospective issuance is established. T13/T14/T19 stay drafts. |'
+new = '| 6 — turning-point research | Preserve T13 support refusal and adopted R1 reporting clarification for the proposed exposure-B0/pooled-B0/B1 comparison. Natural W5 production now has one verified immature batch. | Resolve actual source-purpose and executable/runtime admission before any of the proposed 532 fits. Evaluate preemption, recognition, further loss, propagation, stabilization, re-entry and costs separately; bind prospective action clocks. | Estimation NOT_ADMITTED, zero fits; Yahoo and FRED purpose holds remain. One natural batch supplies no independent-N or predictive advantage. T13/T14/T19 stay drafts; no untouched historical holdout is claimed. |'
+assert old in s; s = s.replace(old,new)
+after = {name:s}
+
+findings = f'''## Current continuation — 20 October 2026 UTC
+
+**The most useful new result is the [October 16 ranked exposure/action map]({A}), accepted as a dated descriptive diagnostic.** A relatively healthy S&P proxy coexists with severe semiconductor damage: SPY drawdown is 2.03%, versus 14.85% for SMH and 16.31% for SOXX. XLP and XLV have positive five-session absolute returns of 5.02% and 3.45%. These facts support earlier exposure-specific protection review while retaining contained rotation as a competing pathway. They do not establish flows, systemic contagion, forward loss or a numerical allocation. The 32-current-proxy and eleven-sector counts are overlapping diagnostics, not constituent breadth or independent episodes.
+
+The map declares its price basis, observation date, stale rows, relative/absolute distinction, invalidation and re-entry limits. DIA, ARKK, BIL and SGOV are still October 14; QQQ is Nasdaq-100 exposure, not the literal Composite. It contains no October 19 close or October 20 executable quote. An official issuer cross-check matches one October 16 SPY close at $763.25; it does not authenticate all other series or first-known clocks. An [independent review](action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md) verifies 36 rows and all 180 numerical cells. Its optional systemic-gate clarification is adopted with the exact reviewed version retained. Numerical decisions remain with Portfolio/Prophet.
+
+**First natural W5 issuance is now operationally accepted.** [Exact acceptance]({W}) binds one scheduled SPY batch, all 30 recipe/preregistration matches, approved writer ancestry and both complete-log and reported-annotation warning checks. All outcomes remain immature. Thirty configuration/horizon records are not thirty independent warnings. Sunday October 18 issuance cannot establish a Friday October 16 close execution; input availability, first user display and implementable action price remain unknown. The failed/cancelled remainder of that nightly stays failed/cancelled. This closes an issuance gate, not forecast calibration or policy effectiveness.
+
+**Source delivery has progressed.** Mastermind #1610 now has five owned source/test paths at **7b5ccfffef4e90b89496751dd7bc0f55b711ed25**, with the production helper unchanged. PR-head CI **39359674398** and CodeQL passed. Native queue entry was accepted at **03:29:26 UTC on October 20**; the last consumed update at **03:51:54** had integrated CI **39364578755** pending and Mastermind OS **39364578810** successful. Source merge/landing is not yet observed in this checkpoint. One existing queue observer, PID 80374, owns that stage. The [evidence index]({R}/README.md) preserves the previous red cases and the native 113/114 plus separately corrected one-case pass; it does not invent a combined 114/114 run.
+
+Macro #9595 remains the existing draft evidence carrier at **ac08d5bd630d480a97fcbd0d9814946724250011**. Its current CI failed only the three RIG findings from the integrated base; all eleven other packs and contract-delta passed. Current main retains those exact design bytes in the draft namespace. The [CI adjudication]({R}/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) preserves the red result and requires fresh integrated gates for the substantive continuation commit, with no fabricated approval or guard waiver. Macro #9515/#9573 and their separate landing proofs remain accepted.
+
+The [R1 reporting clarification]({P}) is adopted as proposed design. Equal-exposure weights now apply deterministically to paired Brier and calibration reports for the three frozen comparators. Proposed units remain 532; estimation remains **NOT_ADMITTED, zero fits** under the actual Yahoo source-purpose and executable/runtime gaps. FRED UNKNOWN/HOLD, T13's h21 matched refusal, prior zero-passing predictive studies and null independent N remain evidence.
+
+The [current Copilot source comparison]({C}) preserves the original failed real answer and shows that its exclusion-only portfolio classifier and empty-synthesis/caveat mechanism survive in inspected active #8014 head **d63e59bcd4203732fe3b9097002f9451dcf61955**. #9447 **aed92aaa…** and #9548 **bc96a20f…** remain actual writers; no takeover is inferred. Independent review accepts this narrow compatibility result, not a fresh live failure or repaired delivery. Repair must qualify useful content before metadata, preserve separately admitted public visuals and screening/Stop/persistence semantics, then pass the real authenticated original question.
+
+The last retained VPS observation is **October 18**, installed **732cf7be…**. It is not a current October 20 runtime read. After actual source landing, qualify the exact complete archive, registered startup effects and isolated recovery before the reserved production decision. The original Paper write gate, warning publisher HOLDs, missing forecast qualifiers, current Terminal proof and end-to-end action/recovery experience remain open. Whole programme acceptance remains **NO**.
+
+The sections below retain the original October 17 findings and older intermediate receipts. The current dated map above governs the newer descriptive observation; none of these snapshots proves what a user actually received at a past decision time.'''
+name='RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md'
+s=replace_section(name,before[name],'## Current continuation — 18 October 2026 UTC','## 1. What the dated evidence supports now',findings)
+s=s.replace('## 1. What the dated evidence supports now','## 1. Preserved October 17 reading of the then-available dated evidence',1)
+after[name]=s
+
+audit = f'''### Current continuation — 20 October 2026 UTC
+
+The original pinned audit below is preserved. This addendum records later source and evidence effects; its original read-only scope does not describe every subsequent authorized implementation step.
+
+**Exposure information:** the [October 16 diagnostic]({A}) makes the SPY/semiconductor/defensive divergence explicit using the existing 36-proxy method. All 180 displayed numerical cells and date/count qualifications passed independent review. Thirty-two rows are current to October 16; four are two reference sessions behind. The archive comparison found no revised/removed common close values, but this is still revised-history descriptive input with unknown historical availability. One issuer SPY close is cross-checked. QQQ is not the literal Nasdaq Composite, ETF counts are not constituent breadth, relative returns are not flows, and no source-purpose or action authority is granted.
+
+**Natural publication:** [W5's first natural invocation and committed 30-row batch]({W}) now have verified approved-merge ancestry, producer/wrapper/enrollment blobs, frozen preregistration, exact six-file recipe fingerprint and absence of relevant Grey Deer warnings in the complete retained log plus all 50 reported annotations. The workflow trigger SHA differs from the later pulled producer SHA and both are retained. All outcomes remain immature. Friday source/label origin, Sunday issuance, buffered log emission, Git commit time, first remote publication, first user display and executable action time are distinct clocks. Only the observed clocks are populated. This closes first issuance, not predictive competence or actionability.
+
+**Source repair:** Mastermind #1610's production helper remains `1ebfd44…`; four test files bring the current owned scope to five files at **7b5ccfffef4e90b89496751dd7bc0f55b711ed25**. The original three static-contract failures were semantically repaired after current hunk-custody qualification. PR-head CI **39359674398** and CodeQL passed; the normal protected queue accepted entry at October 20 **03:29:26 UTC**. At the last consumed queue change, **03:51:54**, integrated CI **39364578755** remained in progress. One existing observer, PID 80374, owns this stage. No source merge/landing or production result is claimed in this checkpoint. Native SDK/launcher/identity failures and the final 113 unchanged passes plus separately corrected one-case result remain in the [release index]({R}/README.md).
+
+**Evidence transport:** Macro #9595 ac08 is draft and its actual CI remains red on only the three base-supplied reference-integrity paths. They are absent in ac08 and current main retains their identical design bytes in an unapproved draft namespace. [Adjudication]({R}/ci_oct20/CI_CURRENT_HEAD_ADJUDICATION_2026-10-20.md) requires no new RIG claim, guard exception or ancestor-only rebase; the substantive evidence commit still needs native integrated CI and separate landing readback. Earlier #9515/#9573 verified source acceptance is preserved.
+
+**Loss through explanation:** the [October 20 fixed-source comparison]({C}) confirms the old negative-portfolio intent trigger and disclosure-before-empty-answer decision remain in active integrated **#8014 d63e59bcd4203732fe3b9097002f9451dcf61955**. Current surrounding recovery/visual code may change occurrence frequency; it does not eliminate the demonstrated residual path. Existing #9447 aed92aaa and #9548 bc96a20f effects remain under their actual writers. A separately qualified public visual may count as useful content; raw chart presence, metadata or a caveat cannot certify answer success. Both public entrypoints, persistence, screen/Stop authority and a useful authenticated answer remain acceptance gates. No provider replay or fresh live-failure frequency claim is made.
+
+**Research and release bounds:** the [R1 clarification]({P}) adopts deterministic reporting design, with all 532 proposed fits still NOT_ADMITTED and unexecuted. Yahoo/FRED purpose holds, T13 support refusal and all failed predictive claims remain. The last runtime/book/cohort observations are explicitly October 18 snapshots of installed 732cf7be, not current October 20 proof. A final merged archive, actual startup-effect chain, isolated replacement/restoration and the reserved release decision are still required before backend-to-user acceptance. Source merge and a green health endpoint do not prove that risk guidance reached users with correct clocks and qualifications.'''
+name='risk_radar_source_consumer_audit_20261017.md'
+after[name]=replace_section(name,before[name],'### Current continuation — 18 October 2026 UTC','### Immutable sources',audit)
+
+unresolved = '''unresolved:
+- >-
+  Mastermind 1610 PR-head CI and CodeQL pass at 7b5ccfffef4e90b89496751dd7bc0f55b711ed25.
+  The normal queue accepted entry on October 20 at 03:29:26 UTC. At the last consumed 03:51:54 update,
+  integrated CI 39364578755 at a7553e0a18339c910eef9687c730b06605dd710e was pending; Mastermind OS passed.
+  Source merge and separately fetched landing proof remain unobserved in this checkpoint.
+  One actual Class-T queue observer PID 80374 owns the stage; no duplicate observer or blind rerun.
+- >-
+  Macro 9595 remains the existing draft evidence carrier at ac08d5bd630d480a97fcbd0d9814946724250011.
+  Its CI 39118765804 failed only three RIG paths from tested base b912fd97827cca925a7123aa2012e9765077f3f7.
+  Those paths are absent in ac08; current main247677 retains the same blobs under design_candidates via #7100.
+  No speculative RIG repair is needed. The substantive continuation commit requires its own integrated gates
+  and landing readback. Macro 9515 and 9573 stay merged/verified; do not rearm their closed carriers.
+- >-
+  The October16 action map is accepted as a dated descriptive diagnostic, not an October20 executable call.
+  Four proxies remain October14; the literal Nasdaq Composite/Dow reconstruction, first-known/publication
+  clocks, constituent membership, complete source verification, independent episodes and re-entry policy remain open.
+  Relative outperformance does not establish flows or absolute capital preservation.
+- >-
+  W5 first natural issuance is operationally accepted for one 30-row SPY batch after exact ancestry,
+  preregistration, recipe and complete warning checks. All outcomes are immature. One batch is not30
+  independent warnings; source availability, first user and execution clocks remain unknown. Sunday issuance
+  cannot use Friday-close returns as implementable action performance. No calibration or policy claim is promoted.
+- >-
+  Current integrated gateway writer is Macro8014 d63e59bcd4203732fe3b9097002f9451dcf61955; 9447 is
+  aed92aaa474ebf3802b6f43ac55138dedfe4c8aa and 9548 is bc96a20f3ae20a10fcf85bbf80ddc759d6cbc7cc.
+  The original classifier and caveat-only finalization counterexample remain applicable to inspected source.
+  Qualify a compatible repair under actual custody; no new live failure, provider diagnosis or repaired delivery is claimed.
+- >-
+  R1 reporting is adopted as proposed design; all532 fits remain NOT_ADMITTED and unexecuted under Yahoo
+  purpose UNKNOWN/not a source and missing estimator/runtime acceptance. FRED UNKNOWN/HOLD, T13 h21
+  matched-support refusal, prior failed studies and null independent N remain evidence; budgets are unspent.
+- >-
+  The last runtime/book/cohort snapshots are October18, installed732cf7be, not current October20 proof.
+  Freeze the exact merged release, reconcile source closure, qualify registered startup effects and isolated
+  replacement/restoration before the reserved production decision. Code rollback is not reversal of all startup effects.
+- >-
+  Parent programme incomplete: warning publisher HOLD/expiry semantics, Paper write-catalog qualification,
+  exact forecast qualifiers, current Terminal proof, useful authenticated Copilot delivery and granular recovery
+  decisions remain open. Numerical Portfolio/Prophet authority and Envelope rank/gate/size/execute false remain.
+- >-
+  Three October20 advisory remote-read batches returned no result before interruption. Their pending reads
+  and possible temporary extract are recorded; no provider, production mutation or completed qualification is inferred.
+  Subsequent completed root reads are separate evidence. Historical accepted capabilities and failed experiments persist.
+'''
+next_actions = '''next_actions:
+- >-
+  Consume existing queue observer PID80374 for Mastermind1610; after actual merge, separately fetch master
+  and compare all five owned blobs against candidate and merge. Preserve integrated run/head/queue receipts.
+  Do not use an admin bypass, duplicate watcher, ancestry-only rebase or unchanged-head rerun.
+- >-
+  Publish the substantive evidence update in existing draft Macro9595 after exact-head and unarmed-state checks.
+  Preserve lossless archived source, failed runs, R1, natural W5, October16 map and current Copilot proof.
+  Obtain actual integrated CI; source paths removed from current main do not retroactively make ac08 green.
+  Separately fetch main and compare owned artifacts after normal landing. Never push an armed/closed carrier.
+- >-
+  Use the accepted October16 map as the dated policy-review agenda. Refresh actual market/execution inputs
+  before action. Preserve the separate absolute preservation and relative opportunity tests, contained-rotation
+  alternative, independent sector warning qualification and distinct recovery/re-entry decision problem.
+- >-
+  Preserve first natural W5 operational acceptance; consume only new legitimate issuance and mature outcomes
+  through the original writer/grader. No backfill, early grading, manual nightly or claim of30 independent events.
+  Resolve decision-available and executable clocks before claiming actionable lead or strategy returns.
+- >-
+  Continue the existing integrated Copilot producer after current writer-effect reconciliation. Evaluate useful
+  qualified answer content before coverage metadata; preserve separately admitted public visuals and existing
+  advice/leak/Stop/persistence rules. Fix negative-only private-portfolio intent separately. Require served
+  source and one useful authenticated original-question answer, not merely pure fixtures or a merged PR.
+- >-
+  Resolve actual recorded source-purpose and freeze an accepted executable/runtime before any of the proposed
+  532 B0/B1 units. Keep R1 reporting deterministic, T13 h21 refusal, FRED hold, null independent N and original
+  failed claims. No source substitution, frozen-study rerun or T13/T14/T19 trial spend is authorized by this record.
+- >-
+  After verified helper landing, bind the exact merged archive and current installed comparison. Complete
+  registered-startup effect and isolated-runtime replacement/restoration proof, then make the reserved production
+  decision concrete. Do not call brain/macro_risk.risk_state as a read because its dwell path writes.
+- >-
+  Continue original publisher/consumer/Paper paths under existing holds and actual writers. Update MAS258
+  from the verified canonical source frontier. Parent mission remains active; no autonomous wake or completion is claimed.
+'''
+name='GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md'
+s=replace_section(name,before[name],'unresolved:\n','next_actions:\n',unresolved)
+s=replace_section(name,s,'next_actions:\n','do_not_redo:\n',next_actions)
+handoff=master.replace('### Current verified frontier — October 20 UTC','## Current frontier — October 20 UTC',1)
+for link in (R,W,A,C,P,'action_snapshot_20261020/review/INDEPENDENT_REVIEW_2026-10-20.md'):
+    handoff=handoff.replace(']('+link,'](../../research/grey_deer/'+link)
+s=replace_section(name,s,'## Current frontier — October 18 UTC','## Subsequent completed reviews and owned source repair',handoff)
+s=s.replace('The healthy observed runtime is the October 9 baseline, not the merged clock fix. The 1507 changed repository', 'The last runtime inspected on October 18 had the October 9 baseline, not the merged clock fix; this is not current October 20 proof. The 1507 changed repository')
+after[name]=s
+
+worknext='''next_action: >
+  Continue the existing masterplan section0A and cumulative Meta-CEO handoff at their October20 frontier.
+  Mastermind1610 head7b5ccfffef4e90b89496751dd7bc0f55b711ed25 owns the unchanged helper plus four tests.
+  PR-head CI39359674398 and CodeQL pass. Native queue entry accepted2026-10-20T03:29:26Z;
+  last consumed03:51:54 update has integratedCI39364578755 at a7553e0a pending and MastermindOS successful.
+  Consume only existing Class-T observer PID80374. After actual merge, separately fetch master and compare
+  all five owned blobs; no current source landing or production deployment is claimed in this checkpoint.
+  Keep companion-custody findings and #1586/#642/#124 ownership/HOLDs intact. Preserve every original failed
+  CI/native run. The final native evidence is113 unchanged passes plus one separately corrected case;
+  do not invent a fresh114/114 run. Hosted CI subsequently passed at7b.
+  Publish this substantive evidence continuation through existing draft Macro9595 at ac08d5bd630d480a97fcbd0d9814946724250011.
+  Its old CI39118765804 failed only three base-supplied RIG paths; the paths are absent in the carrier and
+  current main247677 preserves identical drafts under design_candidates through #7100. No invented RIG
+  receipt or competing repair. The next substantive commit needs actual integrated CI and landing readback;
+  never push into an armed/closed PR. Macro9515/9573 and their verified landings remain accepted.
+  Use the accepted October16 action map for dated exposure-policy review: SPY drawdown2.03%, semis14.85%-16.31%,
+  selective defensive absolute gains and wider damage coexist. Four proxies remainOctober14; no October20
+  execution quote, literal Composite reconstruction, flows or systemic-contagion qualification is supplied.
+  W5 now has first natural operational issuance accepted: one30-row SPY batch with exact producer ancestry,
+  preregistration/recipe and complete warning checks. All outcomes are immature; independentN remainsnull.
+  Sunday issuance is not Friday-close executability. Consume only new natural records/mature outcomes under
+  the original writer/grader; no backfill, manual nightly or early grade.
+  R1 reporting clarification is adopted as proposed design. All532 proposed B0/B1 fits remain NOT_ADMITTED,
+  zero executed, pending actual Yahoo purpose and estimator/runtime acceptance. Preserve FRED HOLD,
+  T13 h21 refusal, original2,138 unscored records, prior failed studies and unspent T13/T14/T19 budgets.
+  The current integrated Copilot writer is8014 d63e59bcd4203732fe3b9097002f9451dcf61955; 9447 aed92aaa
+  and9548 bc96a20f remain actual writers. The original classifier and caveat-only finalization counterexample
+  remain applicable to inspected source. Qualify useful prose or separately admitted public visuals before
+  metadata, preserve safety/Stop/persistence, and require served source plus one useful authenticated answer.
+  After helper landing, bind the exact merged archive, current installed comparison, actual startup effects
+  and isolated replacement/restoration. October18 runtime/cohort/book evidence is dated, not currentOct20 proof.
+  The complete-release production decision remains reserved; autonomous deployment is prohibited.
+  Preserve publisher8132/8721 HOLDs,9428 refusal and QLedger/nightly custody; Paper writes need actual catalog
+  qualification. Forecast qualifiers, current Terminal proof and complete action/recovery delivery remain open.
+  Keep Envelope rank/gate/size/execute false and Portfolio/Prophet numerical authority intact.
+  Update MAS258 from verified canonical evidence. Whole programme stays active and not finally accepted.
+'''
+name='WS-GREY-DEER-RISK-INTELLIGENCE.md'
+s=before[name];i=s.index('next_action: >\n');j=s.index('\n---\n',i)
+removed.append({'file':name,'start':'next_action: >','end_exclusive':'frontmatter end','prior_text':s[i:j]})
+after[name]=s[:i]+worknext.rstrip()+'\n'+s[j:]
+
+for name,s in after.items():
+    assert s.endswith('\n')
+    (OUT/'canonical_before').mkdir(exist_ok=True)
+    (OUT/'canonical_before'/name).write_text(before[name])
+    (NOTES/name).write_text(s)
+
+manifest={'classification':'CURRENT_FRONTIER_UPDATE_PRESERVING_PRIOR_HISTORY','source_carrier_original_head':'ac08d5bd630d480a97fcbd0d9814946724250011','programme_complete':False,'removed_current_sections_preserved':removed,'files':[{'filename':name,'before_sha256':expected[name],'after_sha256':hashlib.sha256((NOTES/name).read_bytes()).hexdigest(),'after_bytes':(NOTES/name).stat().st_size} for name in after]}
+(OUT/'CANONICAL_FRONTIER_UPDATE_2026-10-20.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print(json.dumps({'files':manifest['files'],'retained_old_section_count':len(removed)},indent=2))

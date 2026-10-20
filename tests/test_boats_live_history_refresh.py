@@ -55,10 +55,53 @@ def test_real_pipeline_and_empty_response_keep_original_receipts(lake):
     assert len(list((lake.root / "receipts" / "boats-bars").rglob("*.json"))) == 2
 
 
+def test_live_capture_requests_latest_session_without_calendar_date_filter(lake):
+    from urllib.parse import parse_qs, urlsplit
+    calls = []
+    def fetch(route, key, **kwargs):
+        calls.append((route, kwargs))
+        return (json.dumps([{"date": "2026-10-20T00:01:00Z", "open": 10,
+            "high": 12, "low": 9, "close": 11, "volume": 13}]).encode(), "application/json")
+    result, _ = live.capture_snapshot("AMD", "2026-10-20", lake, "fixture-key",
+                                     fetch=fetch, check_mount=False)
+    assert len(calls) == 1
+    url = urlsplit(calls[0][0])
+    assert url.path == "/boats/AMD/prices"
+    assert parse_qs(url.query) == {"resampleFreq": ["1min"],
+        "columns": ["open,high,low,close,volume"], "forceFill": ["false"]}
+    assert calls[0][1]["max_bytes"] == live.MAX_RESPONSE
+    assert result["session_date"] == "2026-10-20"
+    assert len(result["history"]["bars"]) == 1
+
+
 @pytest.mark.parametrize("date", ["2026-10-19T02:00:00Z", "2026-10-20T02:02:00Z", "2026-10-20T08:00:00Z"])
 def test_wrong_session_future_and_closed_bars_refuse(lake, date):
     with pytest.raises((archive_module.TiingoArchiveError, live.SymbolDataInvalid, ValueError)):
         snapshot(lake, rows=[{"date": date, "open": 10, "high": 12, "low": 9, "close": 11, "volume": 13}])
+
+
+@pytest.mark.parametrize("query", [
+    "resampleFreq=1min",
+    "resampleFreq=1min&startDate=2026-10-20&endDate=2026-10-20",
+])
+def test_bridge_accepts_latest_and_retained_dated_receipts(lake, private_root, query):
+    for rows in [None, []]:
+        doc = snapshot(lake, rows=rows)
+        doc["history"]["receipts"][0]["request_path"] = f"/boats/AMD/prices?{query}"
+        assert bridge_module.validate_snapshot(doc)[0] == "AMD"
+
+
+@pytest.mark.parametrize("query", [
+    "startDate=2026-10-20", "endDate=2026-10-20", "startDate=&endDate=",
+    "startDate=2026-10-19&endDate=2026-10-20",
+    "startDate=2026-10-20&startDate=2026-10-20&endDate=2026-10-20",
+])
+def test_bridge_refuses_partial_blank_wrong_or_duplicate_dates(lake, private_root, query):
+    doc = snapshot(lake, rows=[])
+    doc["history"]["receipts"][0]["request_path"] = f"/boats/AMD/prices?resampleFreq=1min&{query}"
+    with pytest.raises(ValueError, match="receipt does not bind"):
+        bridge_module.exchange(private_root, {"operation": "publish", "snapshot": doc})
+    assert list((private_root / "bars").iterdir()) == []
 
 
 def test_private_bridge_reads_only_bounded_regular_interest(private_root, tmp_path):
@@ -393,7 +436,7 @@ def test_bad_ack_is_saved_before_unknown_result(tmp_path,lake):
     lambda d: d["history"]["bars"][0].__setitem__(0, 1792461601),
     lambda d: d["history"]["bar_receipt_ids"][0].__setitem__(0, "a"*64),
     lambda d: d["history"].__setitem__("complete", True),
-    lambda d: d["history"]["receipts"][0].__setitem__("request_path", "/boats/AMD/prices?resampleFreq=1min"),
+    lambda d: d["history"]["receipts"][0].__setitem__("request_path", "/boats/AMD/prices?resampleFreq=1min&startDate=2026-10-20"),
 ])
 def test_bridge_validates_full_snapshot_before_mutation(lake, private_root, change):
     doc = snapshot(lake)
