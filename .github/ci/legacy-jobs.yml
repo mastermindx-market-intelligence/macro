@@ -5225,6 +5225,13 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "tests/test_ipo_prospectus_terms.py"
+      - "data/ipo/lockups.parquet"
+      - "data/ipo/calendar.parquet"
+      - "data/yahoo/CRCL.parquet"
+      - "templates/ipo.html.j2"
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
       - "collectors/sec_document_spine.py"
       - "collectors/sec_request_pacer.py"
       - "engine/fundamental_forensics/sec_document_spine.py"
@@ -6020,6 +6027,8 @@ jobs:
           tests/test_guidance_source_context.py
           tests/test_guidance_source_evidence.py
           tests/test_china_archetype_d_s1.py -q
+      - name: IPO retained-source identity, conditional terms and native price path
+        run: python -m pytest tests/test_ipo_prospectus_terms.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
       # this hermetic subset prevents the calculation or rights gate from
@@ -16011,6 +16020,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -22693,6 +22704,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
@@ -26713,6 +26728,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
