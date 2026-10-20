@@ -35651,6 +35651,8 @@ jobs:
         run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: same suites against the shipped site/ copies
         run: CHARTS_JS=site/charts.js STOCKBRIEF_JS=site/stockbrief.js node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
+      - name: radar_panel.js honesty section (settled theses + calls tile)
+        run: RADAR_PANEL_JS=site/radar_panel.js node --test tests/js/radar_panel_ledger.test.mjs tests/js/radar_panel_claims_tile.test.mjs
 
   sni-s2-event-response:
     if: ${{ false }}

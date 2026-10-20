@@ -1286,10 +1286,13 @@
   // The worked/hasn't claim keys ONLY off ic.verdict — the grader's
   // pre-registered evidence gate (enough independent calls + an overlap-robust
   // test on the radar's actual claims). Everything else here is context.
-  function honestyHTML(ic, track) {
-    ic = ic || {}; track = track || {};
+  function honestyHTML(ic, track, flagIndex) {
+    ic = ic || {}; track = track || {}; flagIndex = flagIndex || {};
     var nSnap = ic.n_snapshots || 0;
     var open = track.open || 0;
+    var scored = track.scored_total || 0;
+    var ov = track.overall || {};
+    var settledOk = scored > 0 && ov.hits != null && ov.misses != null;
     var verdict = ic.verdict || {};
     var status = verdict.status || "insufficient";
     var bh = ic.by_horizon || {};
@@ -1353,12 +1356,70 @@
       return '<div class="rx-tile"><div class="rx-tile-v">' + esc(v) + '</div><div class="rx-tile-l">' + bi(en, zh) + "</div></div>";
     }
 
+    // The calls tile counts the graded CLAIMS cohort, not every matured
+    // episode; the settled-thesis ledger renders only when the track record
+    // carries its counts, and never prints a raw hit/miss outcome word.
+    var callsTile = "";
+    if (epClaims.n != null) {
+      callsTile = tile(epClaims.n.toLocaleString(),
+        "Independent calls graded", "已评分独立解读");
+    }
+    var settledTile = "";
+    if (settledOk) {
+      settledTile = tile(scored.toLocaleString(),
+        "3-month theses settled", "3个月论点已到期");
+    }
+    var settledLine = "";
+    if (settledOk) {
+      settledLine = '<p class="rx-h-split">' + bi(
+        "The ~3-month theses grade at their own deadlines: " +
+          (track.as_of ? "as of " + track.as_of + ", " : "") + scored +
+          " have settled — " + ov.hits + " held and " + ov.misses +
+          " did not hold; " + open + " are still open. “Held”" +
+          " only means the thesis's pre-set break condition did not" +
+          " trigger by its check date — a low bar, not proof the" +
+          " call was right.",
+        "约 3 个月期的观察论点按各自截止日评分：" +
+          (track.as_of ? "截至 " + track.as_of + "，" : "") + "已到期 " +
+          scored + " 条 —— " + ov.hits + " 条成立，" +
+          ov.misses + " 条未成立；另有 " + open + " 条进行中。" +
+          "“成立”仅指论点预设的否定条件在核对日前未被触发 —— " +
+          "门槛较低，并不代表判断正确。") + '</p>';
+    }
+    var recents = (track.recent || []).filter(function (s) {
+      return s.outcome === "hit" || s.outcome === "miss";
+    }).slice(0, 3);
+    var recentEn = "";
+    var recentZh = "";
+    if (settledOk && recents.length) {
+      var rowsEn = [];
+      var rowsZh = [];
+      recents.forEach(function (s) {
+        var fl = flagIndex[s.subject] || {};
+        rowsEn.push((fl.name || s.subject) + " — " +
+          (s.outcome === "hit" ? "held" : "did not hold") +
+          ", checked " + s.check_by);
+        rowsZh.push((fl.name_zh || fl.name || s.subject) + " —— " +
+          (s.outcome === "hit" ? "成立" : "未成立") +
+          "，核对日 " + s.check_by);
+      });
+      recentEn = "Most recently settled" +
+        (track.as_of ? " (ledger as of " + track.as_of + ")" : "") +
+        ": " + rowsEn.join("; ") + ". ";
+      recentZh = "最近到期" +
+        (track.as_of ? "（记录截至 " + track.as_of + "）" : "") +
+        "：" + rowsZh.join("；") + "。";
+    }
+
     // Tier-2 receipt: the technical numbers, signed AND legacy, with validity.
     var icAll = ic.ic_all, icSigned = ic.ic_all_signed;
     var hacC = (h21.ic_daily_hac_claims || {});
     var eras = (ic.era_breaks || []);
-    var receipt = "Independent calls = contiguous flag episodes, graded at entry (n=" + nEp.toLocaleString() +
-      " matured at 21d; " + (ic.n_matured || 0).toLocaleString() + " raw daily rows). " +
+    var receipt = "Graded episodes = contiguous flag episodes at entry (n=" +
+      nEp.toLocaleString() + " matured at 21d" +
+      (epClaims.n != null ? ", of which " + epClaims.n.toLocaleString() +
+        " are divergence calls" : "") +
+      "; " + (ic.n_matured || 0).toLocaleString() + " raw daily rows). " +
       "Signed rank-correlation (score × call direction vs forward return net of SPY): " +
       (icSigned == null ? "—" : icSigned.toFixed(2)) +
       "; unsigned legacy figure: " + (icAll == null ? "—" : icAll.toFixed(2)) +
@@ -1369,9 +1430,13 @@
       ". Verdict gate: ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " matured claim episodes AND |t| ≥ " +
       (((verdict.gates || {}).t_sig) || 2) + " on a non-degenerate window — status: " + status + ". " +
       "The seeded ~3-month theses (" + open + " open) grade separately at their own deadlines. " +
+      recentEn +
       (eras.length ? "Scoring construction changed " + eras[eras.length - 1].date + " (era " + eras[eras.length - 1].era + ") — cross-era pooling carries both constructions. " : "") +
       "Schema radar_ic.v2.";
-    var receiptZh = "独立解读＝连续的标记片段，按入场日评分（21 日窗口已到期 n=" + nEp.toLocaleString() +
+    var receiptZh = "已评分片段＝连续的标记片段，按入场日评分" +
+      "（21 日窗口已到期 n=" + nEp.toLocaleString() +
+      (epClaims.n != null ? "，其中背离判断 " + epClaims.n.toLocaleString() +
+        " 条" : "") +
       "；每日原始行 " + (ic.n_matured || 0).toLocaleString() + "）。" +
       "带方向的秩相关（分数×判断方向 对 相对 SPY 的前瞻收益）：" + (icSigned == null ? "—" : icSigned.toFixed(2)) +
       "；旧口径（不带方向）：" + (icAll == null ? "—" : icAll.toFixed(2)) +
@@ -1382,6 +1447,7 @@
       "。判定门槛：已到期判断片段 ≥" + (((verdict.gates || {}).min_claim_episodes) || 60) + " 且非退化窗口上 |t| ≥ " +
       (((verdict.gates || {}).t_sig) || 2) + " —— 当前状态：" + status + "。" +
       "约 3 个月期的观察论点（" + open + " 条进行中）按各自截止日另行评分。" +
+      recentZh +
       (eras.length ? "评分构造已于 " + eras[eras.length - 1].date + " 调整（第 " + eras[eras.length - 1].era + " 代）—— 跨代合并统计含两种构造。" : "") +
       "架构 radar_ic.v2。";
 
@@ -1393,10 +1459,12 @@
       '<p class="rx-h-para">' + bi(paraEn, paraZh) + "</p>" +
       baseLine +
       splitLine +
+      settledLine +
       '<div class="rx-tiles">' +
         tile(nSnap.toLocaleString(), "Daily readings recorded", "已记录每日读数") +
-        tile(nEp.toLocaleString(), "Independent calls graded", "已评分独立解读") +
+        callsTile +
         tile(open.toLocaleString(), "3-month theses open", "3个月论点进行中") +
+        settledTile +
       "</div>" +
       '<details class="rx-receipt"><summary>' + bi("Show the technical receipt", "查看技术明细") + "</summary>" +
         "<p>" + bi(receipt, receiptZh) + "</p></details>" +
@@ -1973,9 +2041,9 @@
 
       // Honesty + the AI read + footer. The AI read gets a basket→flag index so
       // its theme names can link to the same detail pages the cards link to.
-      h += honestyHTML(ic, track);
       var flagIndex = {};
       radar.flags.forEach(function (f) { if (f.basket) flagIndex[f.basket] = f; });
+      h += honestyHTML(ic, track, flagIndex);
       h += brainRx(brain, flagIndex);
       h += footNote(radar);
 
