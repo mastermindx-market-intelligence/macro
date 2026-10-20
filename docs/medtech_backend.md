@@ -72,6 +72,8 @@ The private and public paths must be disjoint. No source timer is installed or e
 
 Local regression command: `python3 -m pytest tests/test_medtech.py tests/test_medtech_deployment.py -q`. The dedicated MedTech contract workflow includes their complete source and deployment input closure and runs them with the shared conftest guards.
 
+The October 20 composition with protected main `f54eeb09f3473e091ea55416a8dcad9196603e60` passed **85 focused tests and 31 subtests** on M2. This includes MedTech contracts and deployment refusals, repository import precedence, the API restart import closure, cross-worker configuration isolation, and curated CI input closure. The [deployment qualification receipt](evidence/medtech-r14-deployment-qualification-20261020.json) binds the result to exact file hashes and records independent source review. This isolated macOS qualification does not claim a full repository-suite pass, actual Linux mount activation, or a live paid-account request; hosted CI and production readback are separate release gates.
+
 ## Research expansion, tied to user value
 
 1. **Who benefits:** consume the existing issuer registry and filing/disclosure owner. Applicant-name similarity can produce a review candidate; it cannot establish a listed issuer's territorial economic rights. Require explicit subsidiary, acquisition, license or distribution evidence with an accession/document passage and dates. [SEC APIs](https://www.sec.gov/search-filings/edgar-application-programming-interfaces) provide issuer metadata and filings; company facts alone do not prove device-level rights or revenue.
