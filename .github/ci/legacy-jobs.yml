@@ -31324,6 +31324,17 @@ jobs:
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
+      - "config/dataset_registry.yml"
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/entry_radar/replay/rs_pullback_native_identity.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/market_memory_identity_candidate.py"
+      - "lib/dataos/**"
+      - "research/MARKET_MEMORY_INITIAL_REFERENCE_CANDIDATE_2026-10-14.md"
+      - "tests/test_dataos_identity.py"
+      - "tests/test_entry_radar_identity_observation_snapshot.py"
+      - "tests/test_entry_radar_rs_pullback_native_identity.py"
+      - "tests/test_market_memory_identity_candidate.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31331,9 +31342,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install calendar test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pyarrow
       - name: observed calendar, retained minute evidence and actual CLI replay
-        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py -q
+        run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py tests/test_entry_radar_rs_pullback_native_identity.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
