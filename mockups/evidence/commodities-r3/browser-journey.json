@@ -6,7 +6,7 @@
   "available_company_continuations": 24,
   "company_continuation_href": "https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=oil_inflation_duration_derate&mo_channel=long_duration_valuation&mo_asof=2026-10-16&mo_security=SEC%3AUS-XNYS-A",
   "research_as_of": "2026-10-16",
-  "workspace_fingerprint": "7f3e314860a53872b954dacd11a45e913026d679df448773fc8adeb353b3c186",
+  "workspace_fingerprint": "c1cda193c3a61bfe5928d4d9771ec6ee77da6f0464207ba6ed898a7673c7abb5",
   "fresh_document_import": {
     "separate_browser_context": true,
     "exact_export_round_trip": true,

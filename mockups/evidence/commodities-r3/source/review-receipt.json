@@ -1,110 +1,110 @@
 {
   "schema": "mmx.commodities.review_receipt.v1",
-  "accepted_base": "53c380daf74247672d62cca270743555d52fd409",
+  "accepted_base": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
   "research_as_of": "2026-10-16",
-  "workspace_fingerprint": "7f3e314860a53872b954dacd11a45e913026d679df448773fc8adeb353b3c186",
-  "accepted_page_sha256": "f96f6b8042250481831c22a254649a1de44612555e1786d7b8659123a3a5dbe9",
-  "review_page_sha256": "ad92f116804650b3cdb518c53f2decce5e8d5622d941da1c413e5f123e7b0b42",
+  "workspace_fingerprint": "c1cda193c3a61bfe5928d4d9771ec6ee77da6f0464207ba6ed898a7673c7abb5",
+  "accepted_page_sha256": "d1e5fde32c0f5e0c112d54b2276c7444d6d53204ce04eee7a2f6417d9f29b03c",
+  "review_page_sha256": "b06e2f140134dfaf8405268bc0b79713103016fb45fc60e3651cf6946d7498ff",
   "assets": 17,
   "chains": 3,
   "source_files": {
     "commodities": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/commodity/complex_latest.json",
       "file_sha256": "45ba814a68432ec2e38bcbef063526a3c612005759ddfe5a7c255ddba1e25842"
     },
     "rates": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/transmission/latest.json",
       "file_sha256": "009792baf7887564c51f1336f97ecd2e98038a202868db1bde20794509004bf6"
     },
     "fx": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/forex/latest.json",
       "file_sha256": "8279bc08195d8accb0774b7d4232908800e70be6a6fa79aa4a683708ec69b29c"
     },
     "chains": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/transmission/chain_state.json",
       "file_sha256": "380730e0d9446bbc379ff6454597fb2f450ce05fc2f9b210e7c95f2e39716308"
     },
     "ratios": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/commodity/latest.json",
       "file_sha256": "c68f60d3940bc1030952977b9fdd35d835e350b50c0423c159fe196bba5856b5"
     },
     "company_aliases": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "data/reference/vendor_aliases.parquet",
       "file_sha256": "b51b316f55b003649dee80f35ec1e3ee0007c8cc1162d740c9eb1d11404d3415"
     },
     "physical": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "files": {
         "crude_stocks": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/crude_stocks.parquet",
           "file_sha256": "41db9e6c63093360bee7434ab3edc64a26bf2cd632e93ccf825a482c6da938ff"
         },
         "cushing_stocks": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/cushing_stocks.parquet",
           "file_sha256": "00ca99656b24580ad46b5f18d316b19567f48ec7277537f8b5d21fadaabd11d0"
         },
         "gasoline_stocks": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/gasoline_stocks.parquet",
           "file_sha256": "0e03b911c39a423b3a5ada1559bbda57573097172ee781e011f3c99a598fe8d6"
         },
         "distillate_stocks": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/distillate_stocks.parquet",
           "file_sha256": "e9966131001045d562d5fcad48896932fba1a391db996402c83f6dfd07ff80ae"
         },
         "refinery_inputs": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/refinery_inputs.parquet",
           "file_sha256": "3ae0e70164eb7817b44504bbe3a1e3aa9485121a8d0f327041e0f912c4c5f81a"
         },
         "gasoline_supplied": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/gasoline_supplied.parquet",
           "file_sha256": "172c5b981d962c5e087d5995848c78567a92ee8be8204bc36928e4854d2b7724"
         },
         "distillate_supplied": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/distillate_supplied.parquet",
           "file_sha256": "654c170dd615861981acce82fd6c138cf7c5a83d0f7c6dea2bd71f1281e11000"
         },
         "crude_production": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/crude_production.parquet",
           "file_sha256": "d144e45583fe530c05b7bc269ae128363ce05bac1640a7734dd511ab23af2704"
         },
         "refinery_util": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/refinery_util.parquet",
           "file_sha256": "e41c1f5516abb9159562b51c0a0b7a6884eff9ea11e472d42f89f170910d93d2"
         },
         "spr_stocks": {
           "repository": "mastermindx-market-intelligence/macro",
-          "commit": "53c380daf74247672d62cca270743555d52fd409",
+          "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
           "path": "data/eia/spr_stocks.parquet",
           "file_sha256": "b0377dabee9212630dd3ab97c031894e0241b42891737a001992107df9375775"
         }
@@ -119,7 +119,7 @@
     },
     "canonical_theme": {
       "repository": "mastermindx-market-intelligence/macro",
-      "commit": "53c380daf74247672d62cca270743555d52fd409",
+      "commit": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
       "path": "templates/theme.css",
       "file_sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a"
     }
