@@ -8922,6 +8922,9 @@ jobs:
       - "tests/test_fif_a0_production_mode_unit.py"
       - "scripts/fif_coverage_writer.py"
       - "tests/test_fif_coverage_writer.py"
+      # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
+      - "tests/test_fif_z0_closure_matrix.py"
+      - "tests/test_fif_x2_ownership_guards.py"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9727,6 +9730,7 @@ jobs:
           python -m pytest
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_excel_refresh_harness.py
+          tests/test_fif_z0_closure_matrix.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
@@ -9775,6 +9779,7 @@ jobs:
           tests/test_fundamental_forensics_health.py
           tests/test_fundamental_forensics_held_out_isolation.py
           tests/test_fundamental_forensics_ingest.py
+          tests/test_fundamental_forensics_kernel_literal_guard.py
           tests/test_fundamental_forensics_latency.py
           tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
@@ -9833,7 +9838,7 @@ jobs:
       - name: FIF G-pack gold and kernel suites (hermetic half)
         run: python -m pytest tests/test_fif_g_pack_gold.py tests/test_fif_g_pack_kernel.py -q -m "not data_gate"
       - name: FIF desk page health and financial compare Node regressions
-        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/institutional_holding_research.test.mjs
+        run: node --test tests/fundamental_forensics_pf_page.test.mjs tests/fundamental_forensics_pf_health.test.mjs tests/fundamental_forensics_statement_withheld.test.mjs tests/fundamental_forensics_a19_hostile.test.mjs tests/fundamental_forensics_a44_span.test.mjs tests/institutional_holding_research.test.mjs
   collector-registry:
     if: ${{ false }}
     gate: code
@@ -10017,6 +10022,7 @@ jobs:
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
           tests/test_covenant_html.py
+          tests/test_covenant_native_consumer.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
   covenant-headroom:
@@ -10027,6 +10033,7 @@ jobs:
     # fails if a future import is not covered by this declaration.
     scope: exclusive
     paths:
+      - "engine/capital_structure/covenant_html.py"
       - "config/ai_pricing.yml"
       - "config/capability_manifest.yml"
       - "config/metabolism_budget.yml"
@@ -10706,6 +10713,8 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - research/signal_engine/confluence.py
@@ -15910,6 +15919,17 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -18864,6 +18884,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -25181,6 +25204,17 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
@@ -26510,6 +26544,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
@@ -34438,6 +34477,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
