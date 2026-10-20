@@ -1357,14 +1357,14 @@ def test_w20d_median_op_size_nan_is_dash(monkeypatch, tmp_path):
 def test_w20d_cliff_meta_prints_confirmed(monkeypatch, tmp_path):
     html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=3, n=9))
     sec = _w20d_cliff_section(html)
-    assert "3 of 9 tracked un-lock dates are confirmed from the prospectus;" in sec
-    assert "the rest assume the 180-day standard." in sec
-    assert "在跟踪的9个解禁日期中，3个经招股书确认；其余按180天标准推定。" in sec
+    assert "3 of 9 modeled dates use a prospectus-derived day count;" in sec
+    assert "the rest assume 180 days." in sec
+    assert "在跟踪的9个估算日期中，3个采用招股书中的期限；其余假设180天。实际解禁可能附带条件或获豁免。" in sec
 
 
 def test_w20d_cliff_meta_confirmed_zero_is_honest(monkeypatch, tmp_path):
     html = _w20d_render(monkeypatch, tmp_path, lockvm=_w20d_cliff_vm(confirmed=0, n=9))
-    assert "0 of 9 tracked un-lock dates" in _w20d_cliff_section(html)
+    assert "0 of 9 modeled dates" in _w20d_cliff_section(html)
 
 
 def test_w20d_no_false_per_name_return_claim(monkeypatch, tmp_path):
