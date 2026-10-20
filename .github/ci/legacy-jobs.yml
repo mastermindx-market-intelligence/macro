@@ -580,6 +580,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -1938,6 +1939,7 @@ jobs:
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
       - "app/integrated_answer.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "app/forensics.py"
       - "tests/test_integrated_answer_v0.py"
       - "tests/test_company_theme_exposure.py"
@@ -3298,6 +3300,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -8929,6 +8932,9 @@ jobs:
       - "contracts/capital_structure_source_manifest.schema.json"
       - "contracts/fundamental_forensics_cost_ledger.v1.schema.json"
       - "contracts/fundamental_forensics_coverage_proof.v1.schema.json"
+      - "contracts/specialist_pack_catalogue.v1.schema.json"
+      - "contracts/specialist_pack_result.v1.schema.json"
+      - "contracts/specialist_packs/**"
       - "engine/capital_structure/authorized_shares.py"
       - "engine/capital_structure/capacity.py"
       - "engine/capital_structure/capacity_joint.py"
@@ -8962,6 +8968,7 @@ jobs:
       - "scripts/fif_latency_benchmark.py"
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
+      - "scripts/fif_specialist_packs.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -9004,6 +9011,7 @@ jobs:
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
       - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_fif_specialist_packs.py"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9431,6 +9439,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -9808,6 +9817,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_fif_a1_journey_ledger.py
+          tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_gsrc_capture.py
@@ -22336,6 +22346,7 @@ jobs:
       - engine/neuralweb/brain_analogues.py
       - engine/neuralweb/brain_curve.py
       - engine/neuralweb/brain_gateway.py
+      - "engine/neuralweb/brain_visuals.py"
       - engine/neuralweb/brain_market_intel.py
       - engine/neuralweb/brain_native_inputs.py
       - engine/neuralweb/brain_user_memory.py
@@ -28455,9 +28466,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -28476,7 +28487,7 @@ jobs:
       - name: install Brain browser
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -30851,6 +30862,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -33750,6 +33762,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
