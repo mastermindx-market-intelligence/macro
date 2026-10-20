@@ -2,7 +2,7 @@
 
 ## User job and ownership
 
-The first live backend supports finding an official FDA outcome, understanding its exact device/submission scope, opening its source, and reviewing later record changes. It supplies the Watchdesk and Event views in the [R14 Paper design](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1K-0).
+The backend supports finding an official FDA outcome, understanding its exact device/submission scope, opening its source, and reviewing later record changes. It supplies the Watchdesk and Event views in the [R14 Paper design](https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-1K-0).
 
 Macro owns FDA acquisition, evidence, normalization, revision history and the read projection. Terminal owns personal watches and review state in its existing Supabase account database. The existing Macro authentication and subscription boundary remains authoritative. Company/issuer identity and economic rights remain with the existing company-intelligence owners.
 
@@ -53,9 +53,11 @@ Watch subjects are either one exact `event` or a `pma_application` identified by
 
 ## Bounded qualification
 
-The M2 source qualification acquired October 1–5, 2026 decisions: **37 510(k) records and 20 PMA records**, 57 baseline records total. These are not57 newly announced catalysts. Both acquired datasets reported last_updated 2026-10-05.
+The M2 source qualification acquired October 1–5, 2026 decisions: **37 510(k) records and 20 PMA records**, 57 baseline records total. Both acquired datasets reported `last_updated` 2026-10-05. These establish the initial reference baseline; they are not evidence of 57 newly announced catalysts.
 
-The initial acquisition completed at 2026-10-19T01:56:25.002631Z. Raw receipts and the private qualification database stay outside Git in `reports/medtech-r14-runtime/`. Synthetic fixtures are confined to isolated tests and never promoted as real records.
+The initial acquisition completed at 2026-10-19T01:56:25.002631Z. On October 20, the retained raw pages were replayed into a separate schema-2 database using their original observation clocks. All 57 normalized state hashes and observation times remained unchanged. Atomic publication, read-back, list/detail/health responses and stale-generation refusal passed using an explicit local authentication override. The [sanitized receipt](evidence/medtech-r14-retained-source-20261020.json) records the raw-page digests, historical cutoff and exact public generation.
+
+Raw receipts and both private qualification databases stay outside Git in `reports/medtech-r14-runtime/`; the original acquisition remains untouched. Synthetic fixtures are confined to isolated tests and never promoted as real records. Local authentication overrides do not establish production paid-account access.
 
 Run a bounded acquisition using the normal source worker:
 
@@ -68,7 +70,7 @@ python3 scripts/medtech_worker.py \
 
 The private and public paths must be disjoint. No source timer is installed or enabled by this CLI. API deployment alone cannot establish a collector refresh schedule.
 
-Local regression command: `python3 -m pytest tests/test_medtech.py -q`. The dedicated MedTech contract workflow runs these tests with the shared conftest guards.
+Local regression command: `python3 -m pytest tests/test_medtech.py tests/test_medtech_deployment.py -q`. The dedicated MedTech contract workflow includes their complete source and deployment input closure and runs them with the shared conftest guards.
 
 ## Research expansion, tied to user value
 
@@ -78,8 +80,27 @@ Local regression command: `python3 -m pytest tests/test_medtech.py -q`. The dedi
 4. **De Novo:** the [official database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm) exists. Its actual extraction contract still needs qualification. No undocumented openFDA De Novo endpoint is invented here.
 5. **Delivery and saved briefs:** use existing account/outbox ownership when these consumers are implemented. A current event URL is not a preserved historical brief; the saved object must retain an accepted revision/generation or a frozen content projection.
 
+## Deployment and scheduled refresh
+
+The canonical API deployment provisions only the dedicated `macro-medtech` identity and empty `/srv/medtech/private` and `/srv/medtech/public` anchors before reviewing or restarting the API. Existing symlinks, unsafe owners/modes, shared identities and orphaned trees are refused without adopting or recursively repairing them. Existing Market Memory, Company Intelligence, BioCatalyst and Ticker News guards remain in place.
+
+The reviewed API fragment first runs the same fixed provisioning helper through a privileged `ExecStartPre`. Its separate process runs outside the API mount namespace and must succeed before the application starts. This covers first adoption when the canonical updater installs its successor but continues executing its predecessor. The application command keeps its normal sandbox. The fragment sets `MEDTECH_PUBLIC_ROOT=/srv/medtech/public`, mounts that publication root read-only, and makes the private root inaccessible. Both mounts are mandatory. Before each refresh, a fixed root-only inspection checks the running API's exact installed fragment, lack of drop-ins/reload drift, stable process/invocation/mount namespace, actual mount flags and directory identities, and its effective publication-root environment. Unrelated system mount stacks do not affect the MedTech decision.
+
+Acquisition runs as the dedicated nonroot account with no capabilities. The oneshot service uses the existing checkout and Python environment, explicit credential-path exclusions, a 15-minute timeout, 512 MiB memory ceiling and CPU/task/I/O bounds. It has no automatic retry. Its fixed command covers the configured start date through the current UTC day, capped at 10,000 records per endpoint. The example start date is 2026-01-01; this scope is explicit and does not claim all FDA history.
+
+The worker checks for at least **5 GiB available on each storage filesystem before opening the store or acquiring sources**. Low space records a failed attempt and preserves the previous publication. This check does not reserve space or delete retained evidence. The CLI's zero default remains available for isolated qualification.
+
+The existing API update/setup paths do not install or activate this source timer. After the reviewed source is merged and deployed, the release owner uses:
+
+1. `bash /opt/macro/app/deploy/medtech-setup.sh` to validate and install the service/timer without enabling or starting either.
+2. On the first installation, install the reviewed `medtech-environment.example` as root:root mode 0600 at `/etc/macro-medtech.env`. Review an existing file rather than overwriting it. Only `MEDTECH_START_ON` is accepted.
+3. Run `/usr/bin/python3 -I /opt/macro/app/deploy/medtech-api-boundary.py`, then explicitly start `macro-medtech.service` and inspect its exit status and the API's published generation/health.
+4. After the first refresh is accepted, enable `macro-medtech.timer`. Its daily schedule is 06:10 UTC with up to 20 minutes of jitter.
+
+The installer refuses active/enabled units or drop-in adoption. Future source changes continue through the existing Git and deployment owners; an installed timer alone is not proof that a refresh succeeded.
+
 ## Release acceptance
 
 Keep source qualification, authenticated API test overrides, production account proof, SQL catalog proof, and actual scheduled refresh proof distinct. Do not label a design fixture or a local TestClient override as a production paid-user success.
 
-Before source activation, verify production disk capacity, provision disjoint private/public paths, and prove the API's read-only/deny filesystem mounts. The 2026-10-19 deployment preflight observed the VPS root volume at 99% usage with about 1 GB free; resolve the existing retention/capacity issue before introducing a persistent collector or build.
+The fresh read-only VPS check at 2026-10-20T03:40:41Z found **36,907,368,448 bytes available and 56% usage** on the root filesystem. It supersedes the October 19 disk-full observation; no cleanup was required. Capacity, actual API mount readback, the first complete source refresh and paid-account consumer behavior must still be checked at activation.
