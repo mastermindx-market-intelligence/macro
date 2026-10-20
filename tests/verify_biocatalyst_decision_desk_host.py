@@ -19,12 +19,35 @@ sys.path.insert(0, str(ROOT))
 from lib.site_assets import emit_theme_js
 from playwright.sync_api import sync_playwright
 
-FIXTURES = ROOT / "research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r2"
+FIXTURE_HEADS = {
+    "company_evidence_r2": "430234957531693b6b13f026a161e28542086a82",
+    "company_evidence_r10": "902465f702a30abb943b08e792d670827a68650b",
+}
+FIXTURE_NAME = os.environ.get("DECISION_DESK_OWNER_FIXTURES", "company_evidence_r2")
+if FIXTURE_NAME not in FIXTURE_HEADS:
+    raise ValueError("Select one retained, pinned Decision Desk fixture corpus")
+FIXTURES = ROOT / "research/catalyst_intelligence/decision_desk_r1/fixtures" / FIXTURE_NAME
 OUT = Path(os.environ.get("DECISION_DESK_QA_DIR", str(ROOT / ".pytest_cache/decision_host_browser")))
 ORIGIN = "http://catalyst-host.invalid"
 
 
 def run() -> dict:
+    receipt_bytes = (FIXTURES / "capture-receipt.json").read_bytes()
+    receipt = json.loads(receipt_bytes)
+    assert receipt["candidate_head"] == FIXTURE_HEADS[FIXTURE_NAME]
+    assert all(receipt[k] is False for k in (
+        "source_admission", "entitled_runtime_verified", "production_publication_verified"))
+    expected_files = {"company-page.json", "company-detail.json", "page-reconcile-None.json",
+                      "page-history-None.json", *(f"page-upcoming-{n}.json" for n in (7, 30, 90, 180, 365))}
+    assert len(receipt["responses"]) == 9
+    assert {r["file"] for r in receipt["responses"]} == expected_files
+    for response in receipt["responses"]:
+        assert response["status"] == 200
+        assert response["cache_control"] == "private, no-store" and response["vary"] == "Authorization"
+        assert hashlib.sha256((FIXTURES / response["file"]).read_bytes()).hexdigest() == response["sha256"]
+    if FIXTURE_NAME == "company_evidence_r10":
+        assert receipt["native_admission_verified"] is False
+        assert receipt["final_disk_publication_recheck_verified"] is False
     OUT.mkdir(parents=True, exist_ok=True)
     checks, layouts, fonts, calls, errors, missing_assets = [], [], [], [], [], set()
     page_fixture = json.loads((FIXTURES / "company-page.json").read_text())
@@ -229,7 +252,10 @@ def run() -> dict:
                     "layouts": layouts, "cjk_fonts": fonts, "page_errors": errors,
                     "source_requests": calls, "optional_assets_unavailable": sorted(missing_assets),
                     "auth": "synthetic MDXAuth session, not a production entitled account",
-                    "api": "exact retained synthetic R2 owner/API fixtures; no native admission or live data",
+                    "api": "exact retained synthetic owner/API fixture bytes; no native admission or live data",
+                    "fixture_corpus": FIXTURE_NAME, "fixture_owner_head": receipt["candidate_head"],
+                    "fixture_receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+                    "final_disk_publication_recheck_verified": False,
                     "html_sha256": hashlib.sha256((ROOT / "site/biocatalyst.html").read_bytes()).hexdigest(),
                     "theme_sha256": hashlib.sha256(theme_js.encode()).hexdigest()}
         except Exception:

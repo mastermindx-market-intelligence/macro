@@ -1,0 +1,103 @@
+{
+  "candidate_head": "902465f702a30abb943b08e792d670827a68650b",
+  "fixture_kind": "synthetic Company source context through actual owner functions and API",
+  "capture_method": "TestClient; existing test auth override; fixed _wmn_now; synthetic _read_bundle",
+  "source_admission": false,
+  "entitled_runtime_verified": false,
+  "production_publication_verified": false,
+  "evaluation_cutoff": "2026-10-19T00:00:00Z",
+  "source_body_kind": "fictional SEC-location synthetic filing, not an observed issuer disclosure",
+  "responses": [
+    {
+      "file": "company-page.json",
+      "status": 200,
+      "sha256": "8c509821c633634f13be967c6ee984119cf05a3028f0a73aa32cf823c8a77499",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-7.json",
+      "status": 200,
+      "sha256": "ba338e53a685450fb0d2cd467caa6f029a206df377b005170ad891066e59320f",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-30.json",
+      "status": 200,
+      "sha256": "7079a5ea69124acff08c5e068ea570125f7df51e4374085bba0a1b411b6f5b9a",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-90.json",
+      "status": 200,
+      "sha256": "8c509821c633634f13be967c6ee984119cf05a3028f0a73aa32cf823c8a77499",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-180.json",
+      "status": 200,
+      "sha256": "8ceba972eed4b2e7959f3acac7dbd8748258bbf72deedf414e43eeef28abc012",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-upcoming-365.json",
+      "status": 200,
+      "sha256": "b30d4845b39a3992e4aaf81d78f66fca1e7b9891395f6d622a58bb2a55faa46f",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-reconcile-None.json",
+      "status": 200,
+      "sha256": "3f9c4d51957ee3a3bf31fda16828b44a5a7666724d5be47bfcdd395e63cf75b7",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "page-history-None.json",
+      "status": 200,
+      "sha256": "cef9a5f7683f07fa791f862e737e8a5858a442efe3b1911f2dc0f8cceb9ad6b6",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    },
+    {
+      "file": "company-detail.json",
+      "status": 200,
+      "sha256": "05f8dcc442c2a9af9ea22ec2a70654d510acc7a690ea9ca609903e47742d89ed",
+      "cache_control": "private, no-store",
+      "vary": "Authorization"
+    }
+  ],
+  "historical_fixture_head": "430234957531693b6b13f026a161e28542086a82",
+  "owner_checkout_unchanged": true,
+  "bytecode_writes_disabled": true,
+  "native_admission_verified": false,
+  "final_disk_publication_recheck_verified": false,
+  "harness_limit": "Existing owner _app may replace _recheck_wmn_current; this is handler/composer wire proof only.",
+  "source_files": [
+    {
+      "path": "app/biocatalyst.py",
+      "sha256": "e6833f4b73930eac850c8f9a8d5e26f8ffed008ddcf72454450f7f4a5a2f2986"
+    },
+    {
+      "path": "engine/biocatalyst/what_matters_next.py",
+      "sha256": "448fdeab375f6823a7f429da3943d7e156448ad57a4c0a741f6bb97d29efb2be"
+    },
+    {
+      "path": "engine/biocatalyst/company_event_adapter.py",
+      "sha256": "a04978a8e00a4c091d14cc089b2efe49b01249566bb48465390b51e9a9d99051"
+    },
+    {
+      "path": "tests/test_company_catalyst_public_evidence.py",
+      "sha256": "c7430ef4c265c80b4701422aa40b65a4074afa7460fcde1c22c0a7c713b6091c"
+    },
+    {
+      "path": "tests/test_biocatalyst_wmn_api.py",
+      "sha256": "bd34b9194b6b5709c1afa2ad9af38699dd1d08fd0195c9ccf163404405f6547c"
+    }
+  ]
+}

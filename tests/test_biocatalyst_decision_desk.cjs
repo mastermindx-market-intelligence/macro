@@ -283,3 +283,71 @@ test('a source context link never removes correction or stale-record restriction
     assert.notEqual(v.risk, desk.presentation(sourcePage.rows[0], sourcePage).risk);
   }
 });
+
+
+// This is current R10 owner wire produced by its actual handlers from synthetic
+// inputs. Disk admission/final publication checks and real entitlement are NOT
+// asserted by this capture; those stay with the native owner and release gates.
+const currentOwnerFolder = path.join(fixtures, 'company_evidence_r10');
+const currentOwnerRead = name => JSON.parse(fs.readFileSync(path.join(currentOwnerFolder, name), 'utf8'));
+const currentOwnerPage = currentOwnerRead('company-page.json');
+const currentOwnerDetail = currentOwnerRead('company-detail.json');
+function currentOwnerController(overrides = {}) {
+  return desk.createController({loadPage: async () => copy(currentOwnerPage),
+    loadDetail: async () => copy(currentOwnerDetail), getContextKey: () => 'synthetic-r10-account', ...overrides});
+}
+test('current R10 owner capture retains exact source identity, headers and all nine response bodies', () => {
+  const receipt = currentOwnerRead('capture-receipt.json');
+  assert.equal(receipt.candidate_head, '902465f702a30abb943b08e792d670827a68650b');
+  assert.equal(receipt.historical_fixture_head, '430234957531693b6b13f026a161e28542086a82');
+  for (const field of ['source_admission', 'entitled_runtime_verified', 'production_publication_verified',
+    'native_admission_verified', 'final_disk_publication_recheck_verified']) assert.equal(receipt[field], false);
+  assert.equal(receipt.owner_checkout_unchanged, true);
+  assert.equal(receipt.bytecode_writes_disabled, true);
+  assert.match(receipt.harness_limit, /handler\/composer wire proof only/);
+  assert.equal(receipt.responses.length, 9);
+  assert.equal(new Set(receipt.responses.map(r => r.file)).size, 9);
+  for (const r of receipt.responses) {
+    const bytes = fs.readFileSync(path.join(currentOwnerFolder, r.file));
+    assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), r.sha256);
+    assert.equal(r.status, 200); assert.equal(r.cache_control, 'private, no-store');
+    assert.equal(r.vary, 'Authorization');
+    if (r.file !== 'company-detail.json') {
+      const page = JSON.parse(bytes);
+      assert.equal(desk.validatePage(page, page.query), page);
+    }
+  }
+  assert.equal(desk.checkDetail(currentOwnerDetail, currentOwnerPage, currentOwnerPage.rows[0]), currentOwnerDetail);
+});
+test('current owner alias-cut member survives consumption without inventing admission or forecast values', async () => {
+  const c = currentOwnerController(); await c.refresh();
+  await c.open(desk.rowKey(currentOwnerPage.rows[0]));
+  assert.equal(c.getState().phase, 'loaded');
+  assert.equal(c.getState().detail.phase, 'loaded');
+  assert.deepEqual(c.getState().page.input_cut.members.map(m => m.contract_id), [
+    'company_catalyst_event.v1', 'dataos_issuer_master.current', 'dataos_vendor_aliases.current']);
+  assert.equal(c.getState().page.input_cut.members[2].sha256,
+    '3bb2ce8202897aba57fcb3c599c7a0c240732ac32fb135b1c9b247d245269df5');
+  for (const k of ['probability', 'materiality', 'historical_response', 'incorporation']) {
+    assert.equal(c.getState().detail.payload.event[k].state, 'NOT_ESTIMABLE');
+    assert.equal(c.getState().detail.payload.event[k].value, null);
+  }
+  assert.equal(c.getState().detail.payload.event.evidence[0].excerpt, null);
+  assert.equal(desk.evidenceLinks(currentOwnerPage.rows[0])[0].role, 'source_context');
+  c.destroy();
+});
+test('current owner wrong-generation detail clears the selected case rather than blending revisions', async () => {
+  const altered = copy(currentOwnerDetail); altered.generation_id += '_later';
+  const c = currentOwnerController({loadDetail: async () => altered});
+  await c.refresh(); await c.open(desk.rowKey(currentOwnerPage.rows[0]));
+  assert.equal(c.getState().page, null); assert.equal(c.getState().detail, null);
+  assert.equal(c.getState().issue, 'RELOAD_REQUIRED'); c.destroy();
+});
+test('current owner source revision mismatch clears the selected case within the same generation', async () => {
+  const altered = copy(currentOwnerDetail); altered.event.event_revision_ref += ':changed';
+  altered.event.revision_summary.revision_ref = altered.event.event_revision_ref;
+  const c = currentOwnerController({loadDetail: async () => altered});
+  await c.refresh(); await c.open(desk.rowKey(currentOwnerPage.rows[0]));
+  assert.equal(c.getState().phase, 'unavailable');
+  assert.equal(c.getState().page, null); assert.equal(c.getState().detail, null); c.destroy();
+});

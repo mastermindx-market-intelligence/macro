@@ -292,3 +292,73 @@ entitled current-case/later-correction journey and obtain explicit release
 acceptance before Ready, merge, deployment or activation. All Draft/HOLD and
 no-trade-authority boundaries remain. This is a continuing milestone, not a
 claim of running background work or program completion.
+
+
+## R4 continuation — current owner/consumer compatibility, not native admission
+
+Current source parent: `32fdf32aeca4607c5fee1b51e26ef42d8c633ce4`.
+Original #9611 branch/worktree/operation and all Draft/HOLD boundaries remain.
+The containing commit identifies this test/evidence increment; no production
+frontend, server, native publication, identity, entitlement or CI configuration
+is modified by it.
+
+The current #9662 source at `902465f702a30abb943b08e792d670827a68650b`
+was read through its existing synthetic Company fixture and TestClient harness.
+Nine exact current-owner HTTP bodies were retained separately under
+`research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r10/`.
+All eight list/query bodies and the selected detail pass the actual frontend
+consumer. The current input cut includes the third DataOS vendor-alias member;
+the nine raw hashes differ from the old R2 capture, which remains unchanged.
+The native checkout's HEAD and clean tracked/untracked state were checked
+before and after; Python bytecode writes were disabled. No native source,
+input, account or publication was modified.
+
+The generator now has exact-source and fresh-output fencing. Eleven new
+boundary/cleanup cases cover the immutable clean pin, moving/wrong refs, dirty
+and untracked source, owner-contained or symlinked output, historical/existing
+targets, the legacy-default owner boundary, and Python-context cleanup after
+failed fixture import. Initial missing-behavior and default-path defects were
+observed red before repair. Existing JavaScript consumer checks increased to
+93, with 23 retained host checks; the final focused pytest selection has
+50 passes. Counts overlap through wrappers and are not additive.
+
+The actual browser harness now selects only the retained pinned R2/R10 corpus,
+validates response hashes/headers and false admission claims before launch,
+and records the exact owner and capture-receipt hash. Both corpora passed
+15 behaviors, 16 layouts and eight actual CJK font checks, zero page errors.
+An invalid corpus name refuses before creating output. Root inspected the
+current-source dark English desktop and light Chinese mobile screenshots;
+that inspection is not independent visual acceptance.
+
+**Critical boundary:** the existing owner TestClient overrides authentication,
+read_bundle and the final current-publication recheck for this pure handler
+exercise. Thus disk admission, live DataOS identity, the real correction fence,
+production publication and actual paid entitlement remain UNPROVEN here.
+The capture and browser receipts explicitly say so. All source/identity inputs
+are synthetic; no real filing, quote or trade decision was originated.
+
+Rationale and the consumer acceptance matrix:
+`research/catalyst_intelligence/decision_desk_r1/current_owner_compatibility_r4.md`.
+Exact completed broad tests, hashes and separate current/historical browser
+receipts: `research/catalyst_intelligence/decision_desk_r1/current_owner_r4/`.
+These are the continuation evidence paths; do not repurpose the previously
+denied legacy verification-summary.json or IMPLEMENTATION.md writes.
+
+The original exact-head CI39496562287 was allowed to continue while this work
+was tested; at21:46UTC it had11/12packs passed and onlypack0 still executing,
+no failure. Read the original PR checkpoint for its subsequently consumed final
+verdict and the containing candidate's new CI identity. Independent R2/R3/R4
+source/visual review remains unreturned (GitHub request to mastermindxryan has
+zero submitted reviews). Session Bridge reply/targets and Executive Fabric
+read reported unavailable; no worker was fabricated or launched by shell.
+Browser was checked in this turn and requires the originating connected
+extension context; use an authenticated Mastermind tab after that connection
+is restored, not a substituted credential or a synthetic paid-session claim.
+
+Next three actions: consume exact-head CI and independent source/visual review;
+obtain independently admitted native Company/DataOS and correction evidence
+through the existing #9662/#6712/Codex/#9617 owners; prove a real entitled
+source-change/correction journey and obtain explicit release acceptance.
+R10 and Codex keep their exact operations and prior denials. This continuation
+is not a competing native writer, deployment, live qualification or an active
+daemon. The overall Catalyst Intelligence mission remains incomplete.
