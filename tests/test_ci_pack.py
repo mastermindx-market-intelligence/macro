@@ -5115,9 +5115,21 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # not 4 s of observed runner elapsed time. Rebase ONLY this one weight ceiling
 # to the exact head 5,602; preserve all job, pack, and other weight ceilings.
 # A further increase from this head remains a blocking packing regression.
+# 2026-10-20 #7193: hosted contract-delta run 39388089928, job 118512724186,
+# tested merge 9a59df093490 (base 13e098071ab2, subject 6115d75e3c33).
+# Exact-tree inventories measured the same selected work on both sides:
+#   templates/index.html          135 jobs / 5793 -> 5797, 10 packs
+#   scripts/build_free_content.py 134 jobs / 5668 -> 5672, 10 packs
+#   engine/prophet/plan_book.py    128 jobs / 5542 -> 5546, 10 packs
+# No newly selected job: the existing china-board-breadth owner costs 8 -> 12
+# estimator units because its two heatmap suites each add one test reference.
+# Retain both suites and their broad dependency closure. Rebase only the free
+# content weight ceiling by that measured +4, with no forward padding; preserve
+# every job/pack ceiling and the other two weight ceilings. These are estimator
+# units, not measured elapsed seconds. Further increases remain blocking.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_668),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_672),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
