@@ -4915,6 +4915,12 @@ CURATED_EXCLUSIVE = {
     # probes. scope: exclusive pins it to its declared static import closure
     # plus ancestor inits; ceilings stay fixed.
     "c19-wp32-integrated-answer-correction-denial-pins",
+    # 2026-10-20 F10 native CSV runner: its CLI test enumerates tmp_path
+    # fixtures, which opaque inference smeared onto build_free_content
+    # (135 > 134 jobs, 5,646 > 5,642 weight; contract-delta run39355888732).
+    # Pin the full measured eight-file static closure plus ancestor inits and
+    # pytest fixture owners. No suite/assertion/packing ceiling is removed.
+    "local-projections",
 }
 
 
@@ -5083,7 +5089,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_648),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_655),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5150,6 +5156,16 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
     job/pack bound and both other probe ceilings stay unchanged.
 
+    SPR page JODI vintage + zh assess badges (2026-10-19, W23-L9) give
+    tests/test_strategic_reserves.py (off the unrun baseline),
+    tests/test_spr_jodi_vintage.py and tests/test_spr_assess_badge_zh.py
+    their own step in unrun-macro-panels. contract-delta on the PR merged
+    into main d52827f2 measures build_free_content 134 jobs / 5,649 (base
+    the same 134 / 5,642; index.html 5,774 and plan_book 5,523, both under
+    their ceilings). No new entrant. Fund only the seven-unit excess:
+    5,642 -> 5,649. Every suite, selector, job/pack bound and both other
+    probe ceilings stay unchanged.
+
     WM/KO Prophet coverage (2026-10-20, PR9610) adds three required suites
     to prophet-lab's existing invocation. The unchanged estimator retains eight
     commands and one command-length unit; explicit test paths increase 20 -> 23,
@@ -5166,6 +5182,12 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Both historical measurements above remain evidence for their original
     source trees. Validate this combined manifest with the canonical probe and
     the absolute packing assertion before publishing; all other bounds stay fixed.
+
+    Accepted 6629 composition (2026-10-20) retains the seven SPR units
+    and the six WM/KO units: 5,642 + 7 + 6 = 5,655. The prior accepted
+    local-projections curation and all earlier measurements remain intact.
+    Validate this combined manifest with the unchanged canonical estimator
+    and the absolute packing assertion; every other bound stays fixed.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
