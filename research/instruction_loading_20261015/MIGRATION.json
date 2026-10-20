@@ -1,0 +1,140 @@
+{
+  "source_base": "9df20a3ac37d1f33d616d871abfd9857f8cd5d26",
+  "kind": "one-time byte-preserving instruction relocation evidence",
+  "not_a_permanent_prose_hash_gate": true,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "before_bytes": 81968,
+      "after_bytes": 26061,
+      "before_sha256": "a5e38d8a6ae5f7f03ba49bdc1e6bceb6e1e80d232a0ce5cf2dfd0af25376b071",
+      "after_sha256": "275ff641af43605a5e49f4d89f6cd9e7c33d2213d415ec678df912bb38598c41"
+    },
+    {
+      "path": "CLAUDE.md",
+      "before_bytes": 89280,
+      "after_bytes": 21018,
+      "before_sha256": "2a13fa855b26dcc14c66451d227b4b494c92ff0337ba96a0a30bd9e1002bee75",
+      "after_sha256": "4d985d05a8d0209be23c55eaf395b461d25ad2229526cd7527c57e92ae227b92"
+    }
+  ],
+  "relocations": [
+    {
+      "source": "AGENTS.md",
+      "heading": "## Workspace and git",
+      "destination": "docs/agent_guides/CODEX_WORKSPACE.md",
+      "bytes": 17435,
+      "sha256": "fbc041c8157b8843a9b03eedb78bb3b90923c3192ccf1e8591e1c9b3f797063c",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 17991,
+      "destination_sha256": "57c6864652d1b23589d40d9ecd16f256f4fc68b00c55e9af5af809550311be98",
+      "original_prefix_still_identical": false,
+      "post_relocation_amendment": "Replace unconditional primary fast-forward/STOP with exact-workspace recovery while preserving real custody/effect restrictions."
+    },
+    {
+      "source": "AGENTS.md",
+      "heading": "## Agent OS knowledge plane",
+      "destination": "docs/agent_guides/CODEX_AGENT_OS.md",
+      "bytes": 3508,
+      "sha256": "8740ca06cda6954dec5eb560811eb7762c06d5ce95ef2cf3034b87286c0976c9",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 3590,
+      "destination_sha256": "a6cc79ba07fdd0e6038e349d89e8aa9b51660a3ae7f214a9aa2b997bdf47467e",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "AGENTS.md",
+      "heading": "## Model routing",
+      "destination": "docs/agent_guides/CODEX_MODEL_ROUTING.md",
+      "bytes": 3754,
+      "sha256": "b244bd8a5c0fc1276fc0f92b3eefdbcf8cf247df8a6d792b9119d21bf529d0ff",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 3836,
+      "destination_sha256": "1065eff0414cbfa6217066a448fbcee6d5e49f5edbb56f89a8aac78c3c7da1c2",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "AGENTS.md",
+      "heading": "## Definition of done",
+      "destination": "docs/agent_guides/CODEX_DELIVERY.md",
+      "bytes": 35662,
+      "sha256": "a4259cfea10cf82130e58c91d49d9368274a3629a727bba22a234cd8ef5d90e4",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 35744,
+      "destination_sha256": "cc7190a9f95f8e76f7a17ff2b9b736e4cce125c3191e752eacae8611ed2026b8",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "heading": "## Shared workspace + completion (STANDING)",
+      "destination": "docs/agent_guides/CLAUDE_WORKSPACE_COMPLETION.md",
+      "bytes": 25237,
+      "sha256": "d72568a9a869fe20519fd81e00c830aba212d6147b63fde8d15a302e883ed300",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 25792,
+      "destination_sha256": "e517a9aae06ed25b6190a9aab1cc948e8f8704f6831a4172e2b1697e8c26b269",
+      "original_prefix_still_identical": false,
+      "post_relocation_amendment": "Replace unconditional primary fast-forward/STOP with exact-workspace recovery while preserving real custody/effect restrictions."
+    },
+    {
+      "source": "CLAUDE.md",
+      "heading": "## Model routing (STANDING \u2014 token economy)",
+      "destination": "docs/agent_guides/CLAUDE_MODEL_ROUTING.md",
+      "bytes": 7164,
+      "sha256": "22be665c80fe3f2d61c3697b229420245a1d9a75070d51ca19d46b241044c63f",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 7246,
+      "destination_sha256": "6d4667387ae544d59048d039027916dbaadfe481539d467de8d90ea6b5c5b383",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "heading": "## Spawn-handoff law (STANDING \u2014 quality does not travel by pointer; onboarding postmortem 2026-07-23)",
+      "destination": "docs/agent_guides/CLAUDE_SPAWN_HANDOFF.md",
+      "bytes": 2313,
+      "sha256": "beaaa450b674f8fd525d9965aae592493ebab50c585e850bd3af042bbb67da0d",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 2395,
+      "destination_sha256": "f57f60cf9c2696c91f3bbb76eb9ec6549ce985a771425f6e2dd412d83f675b68",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "heading": "## Agent OS \u2014 the company knowledge plane (STANDING)",
+      "destination": "docs/agent_guides/CLAUDE_AGENT_OS.md",
+      "bytes": 2961,
+      "sha256": "8d73433deafdaa8cbf78e15658499e7c8281f344f82bf9695b37ee0c4472eec5",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 3043,
+      "destination_sha256": "da68cfbfadb1f317d3436a6492842d14e226d6b51feaa7a48443d25a7ddf7537",
+      "original_prefix_still_identical": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "heading": "## House laws (short list; details in research/ masterplans)",
+      "destination": "docs/agent_guides/CLAUDE_HOUSE_LAWS.md",
+      "bytes": 35690,
+      "sha256": "22fcd6ce3b4b51b2fbc055f3da88f0133b97fc6bcaf6588c075516fd2c94fcdf",
+      "byte_identical_at_migration": true,
+      "hash_scope": "original_section_bytes_at_destination_start",
+      "destination_bytes": 35772,
+      "destination_sha256": "cc5485d0edb84b4343bcb27b21950d12ff73dcb5f89e56525aa84eb3259eedfd",
+      "original_prefix_still_identical": true
+    }
+  ],
+  "entrypoint_changes": [
+    "Required effect-guide links; original section bytes retained at each target start",
+    "Task-relevant Codex reads instead of importing all CLAUDE.md",
+    "Architectural owner distinguished from an addressable session",
+    "Current-client compaction discovery replaces obsolete blanket capability denial",
+    "Account-local memory becomes optional task context instead of redundant mandatory delivery bootstrap"
+  ]
+}

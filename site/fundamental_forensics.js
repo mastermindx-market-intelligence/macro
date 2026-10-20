@@ -67,7 +67,28 @@
       detail: null,
       detailPhase: 'idle',
       lastFocus: null
-    }
+    },
+    // X2-s saved views: the id of the restored view (kept until the user
+    // navigates away), a T1 refusal reason when a listed view will not load,
+    // and the stored request of a pinned restore, re-POSTed verbatim while
+    // the desk still matches the view's subject, policy and cutoff.
+    savedActiveId: '',
+    savedRefusal: '',
+    savedStoreError: false,
+    pinnedRequest: null,
+    // FIF PF-3/PF-4: the dataset mode the health header named ('golden',
+    // 'production' or '' when the answer never arrived), and the entity the
+    // current health request was issued for (race guard + no duplicate
+    // fetches for one selection).
+    datasetMode: '',
+    healthRequestedFor: '',
+    // FIF PF r1 (R1): every health request ISSUED increments healthSeq and
+    // remembers its own seq; healthAnswer holds the accepted answer — the one
+    // whose seq is still current AND whose entity is the selected company —
+    // so the compare chain waits for the SELECTED issuer's answer even after
+    // a company switch, and an older answer can never overwrite a newer one.
+    healthSeq: 0,
+    healthAnswer: null
   };
 
   var ui = {};
@@ -1162,11 +1183,22 @@
     closeSearch();
     closeEvidence(false);
     if (updateUrl) {
+      // A manual company switch ends the restored view's context — the badge
+      // and the pinned-bytes override must not describe another issuer.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
       writeUrl(true);
       state.unknownRequestedSymbol = '';
     }
     renderCompany();
     if (state.sourceMode === 'receipt') ensureReceiptForCompany();
+    // PF-3: the per-issuer generation rides the health answer, so a company
+    // change re-fetches health for the new selection (the X2-s one-fetch rule
+    // still holds per view; loadHealth drops a redundant request for the
+    // issuer it already covers).
+    loadHealth();
     ensureFinancialData();
   }
 
@@ -1187,12 +1219,29 @@
     state.health = health && typeof health === 'object' ? health : { status: 'unavailable', clocks: {} };
     renderRunMeta();
     setAsofControlsFromState();
+    // PF-3: a compare chain that parked waiting for the first health answer
+    // (no clock can be built without it) is re-driven here with the real
+    // clocks and generation — never from empty values.
+    if (state.tab === 'compare' && state.financial && state.financial.awaitingHealth) {
+      ensureFinancialData();
+    }
   }
 
   function loadHealth() {
+    var target = company();
+    var entityId = target && target.entity_id ? String(target.entity_id) : '';
+    // One health answer per selected issuer: a request already in flight for
+    // exactly this entity is not repeated (X2-s — one fetch carries both the
+    // clocks and the generation).
+    if (entityId && state.healthRequestedFor === entityId) return Promise.resolve();
+    state.healthRequestedFor = entityId;
+    // PF r1 (R1): this request's sequence token — only an answer whose seq is
+    // still the newest ISSUED one may touch the desk.
+    var seq = state.healthSeq + 1;
+    state.healthSeq = seq;
     return withAuth({ Accept: 'application/json' })
       .then(function (headers) {
-        return fetch(HEALTH_URL, {
+        return fetch(entityId ? HEALTH_URL + '?entity_id=' + encodeURIComponent(entityId) : HEALTH_URL, {
           headers: headers,
           credentials: 'same-origin',
           cache: 'no-store'
@@ -1200,10 +1249,71 @@
       })
       .then(function (response) {
         if (!response.ok) throw response;
-        return response.json();
+        // X2-s: the newer-generation signal rides the SAME health fetch —
+        // names/ids only (app/forensics.py health headers), never a second
+        // request. Annotated onto the client-side copy, not the wire contract.
+        // PF-3: the generation is stored with the entity it belongs to, and
+        // the dataset mode header rides the same answer into state.
+        // PF r1 (R2): the names-only dataset pointer rides the same answer.
+        var generation = {
+          id: String(response.headers.get('X-FIF-Dataset-Generation-Id') || ''),
+          admitted_at: String(response.headers.get('X-FIF-Dataset-Admitted-At') || ''),
+          entity_id: entityId
+        };
+        var mode = String(response.headers.get('X-FIF-Financial-Dataset-Mode') || '');
+        var pointer = String(response.headers.get('X-FIF-Dataset-Pointer') || '');
+        return response.json().then(function (payload) {
+          if (generation.id) payload.generation = generation;
+          return { payload: payload, mode: mode, entityId: entityId, pointer: pointer };
+        });
       })
-      .then(applyHealth)
-      .catch(function () {
+      .then(function (answer) {
+        // PF r1 (R1) race guard: an answer is current only when its seq is
+        // still the newest issued one AND its entity is the selected company.
+        // PFM r1 (item 1): the entity comparison is strict — an empty entity
+        // id on either side is never a match, so an answer issued before any
+        // company was selected cannot land once a company is.
+        // Anything older is dropped whole — it must not become the desk's
+        // clocks, generation or pointer, even when its entity matches.
+        var current = company();
+        var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
+        if (String(currentId || '') !== String(answer.entityId || '')) return;
+        state.healthAnswer = { entity_id: answer.entityId, seq: seq, ok: true, pointer: answer.pointer };
+        state.datasetMode = answer.mode;
+        applyHealth(answer.payload);
+      })
+      .catch(function (error) {
+        var current = company();
+        var currentId = current && current.entity_id ? String(current.entity_id) : '';
+        if (seq !== state.healthSeq) return;
+        // PFM r1 (item 1): the same strict comparison — an empty entity id
+        // is no match. An answer issued before any company was selected
+        // cannot be recorded once a company is.
+        if (String(currentId || '') !== String(entityId || '')) return;
+        // PF r1 (R2/R5): a failed health fetch is an availability fact, never
+        // "not published": record the failed answer for the current seq only,
+        // reset the mode and clear the fetch lock so the same issuer can be
+        // retried; the honest 503 copy follows from the failed answer.
+        // PFM r1 (item 3): a 401 or 403 is an access answer, not an outage —
+        // route the desk through the SAME access handling the financial
+        // chain already uses for those statuses (showLoadError) and record
+        // the status on the failed answer; every other failure (no status,
+        // 5xx, network) keeps the 503 copy and Retry unchanged.
+        var access = error && (error.status === 401 || error.status === 403);
+        state.healthAnswer = {
+          entity_id: entityId,
+          seq: seq,
+          ok: false,
+          status: error && error.status,
+          pointer: ''
+        };
+        state.datasetMode = '';
+        state.healthRequestedFor = '';
+        if (access) {
+          showLoadError(error);
+          return;
+        }
         applyHealth({ status: 'unavailable', clocks: {} });
       });
   }
@@ -1237,6 +1347,7 @@
     }
     setAsofControlsFromState();
     refreshExportState();
+    renderSavedUI();
   }
 
   function renderCompany() {
@@ -1772,13 +1883,89 @@
 
   // ── Cutoff + revisions panel (§3, R4) ───────────────────────────────────
   // One as-of line drives both PIT clocks; a picked day expands to
-  // {date}T23:59:59Z on both, and Latest passes the health clocks through.
+  // {date}T23:59:59Z on both, and Latest resolves a real cutoff below.
+
+  // The health generation for the company currently selected — null when the
+  // answer named no generation or belongs to another issuer (PF-3: pointers
+  // are per issuer, so a foreign generation is never this desk's cutoff).
+  function selectedGeneration() {
+    var health = state.health || {};
+    var generation = objectValue(health.generation);
+    var target = company();
+    if (!generation || !generation.id) return null;
+    // PF r2 (m2): an absent identifier on either side is no match — two
+    // empty strings never make another issuer's generation this desk's.
+    if (!target || !target.entity_id || !generation.entity_id) return null;
+    if (String(generation.entity_id) !== String(target.entity_id)) return null;
+    return generation;
+  }
+
+  // PF-3 — the Latest cutoff. recorded_at is the LATEST instant among the
+  // present values of {clocks.composed_state_at, the selected issuer's
+  // generation admitted_at (production mode only), clocks.broad_source_at};
+  // instants are compared parsed and the winner's ORIGINAL string is emitted.
+  // source_snapshot_at is broad_source_at when present, else recorded_at. An
+  // empty result means no lawful cutoff exists and the honest no-clocks copy
+  // shows. Shared by policyClocks (Latest branch) and reResolveSavedView.
+  // PF r1 (R6): an UNPARSEABLE value counts as absent — including
+  // broad_source_at in the source_snapshot_at seat, which then falls back to
+  // recorded_at. Instants compare at FULL precision (fractional seconds are
+  // parsed here beyond Date.parse's milliseconds); on an exact tie the
+  // preference order is the generation admitted_at, then
+  // composed_state_at, then broad_source_at.
+  function parseInstantParts(value) {
+    if (typeof value !== 'string') return null;
+    var match = /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(Z|[+-]\d{2}:?\d{2})?$/.exec(value);
+    if (!match) return null;
+    var base = Date.parse(
+      match[1] + '-' + match[2] + '-' + match[3] + 'T' +
+      match[4] + ':' + match[5] + ':' + match[6] + (match[8] || 'Z')
+    );
+    if (!Number.isFinite(base)) return null;
+    var fraction = match[7] || '';
+    while (fraction.length < 9) fraction += '0';
+    return { ms: base, fraction: fraction };
+  }
+
+  function instantAfter(candidate, winner) {
+    if (candidate.ms !== winner.ms) return candidate.ms > winner.ms;
+    return candidate.fraction > winner.fraction;
+  }
+
+  function latestCutoffs() {
+    var clocks = (state.health && state.health.clocks) || {};
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    // Tie preference (R6) is the iteration order: admitted_at first, then
+    // composed_state_at, then broad_source_at; only a strictly later instant
+    // replaces the winner.
+    var candidates = [
+      generation && generation.admitted_at ? String(generation.admitted_at) : '',
+      clocks.composed_state_at ? String(clocks.composed_state_at) : '',
+      clocks.broad_source_at ? String(clocks.broad_source_at) : ''
+    ];
+    var winner = '';
+    var winnerParts = null;
+    candidates.forEach(function (value) {
+      if (!value) return;
+      var parts = parseInstantParts(value);
+      if (!parts) return;
+      if (winnerParts && !instantAfter(parts, winnerParts)) return;
+      winner = value;
+      winnerParts = parts;
+    });
+    if (!winner) return { source_snapshot_at: '', recorded_at: '' };
+    var broadParts = clocks.broad_source_at ? parseInstantParts(String(clocks.broad_source_at)) : null;
+    return {
+      source_snapshot_at: broadParts ? String(clocks.broad_source_at) : winner,
+      recorded_at: winner
+    };
+  }
+
   function policyClocks() {
     if (state.asOfDate) {
       return { source_snapshot_at: state.asOfDate + 'T23:59:59Z', recorded_at: state.asOfDate + 'T23:59:59Z' };
     }
-    var clocks = (state.health && state.health.clocks) || {};
-    return { source_snapshot_at: clocks.broad_source_at || '', recorded_at: clocks.composed_state_at || '' };
+    return latestCutoffs();
   }
 
   function queryMetricIds() {
@@ -1789,6 +1976,15 @@
       if (METRIC_ID_BY_KEY[metric.key]) ids.push(METRIC_ID_BY_KEY[metric.key]);
     });
     return ids;
+  }
+
+  // PF-1: the period identity the server's admission uses — a mirror of
+  // period_semantic_key (financial_intelligence_packet.py) for the
+  // {kind: 'duration', start, end, label} objects this page sends: the fiscal
+  // fields ride at their wire defaults (none/unknown), so the key is exactly
+  // kind|start|end. Two columns with this same key are ONE period to the API.
+  function statementPeriodKey(column) {
+    return ['duration', String(column.start), String(column.end), 0, 0, 'unknown', 0, 0].join('|');
   }
 
   // Periods on the wire carry exactly {kind, start, end, label}. A state
@@ -1830,7 +2026,7 @@
     return body;
   }
 
-  function financialPost(url, body) {
+  function financialPost(url, body, meta) {
     return withAuth({ 'Content-Type': 'application/json', Accept: 'application/json' })
       .then(function (headers) {
         return fetch(url, {
@@ -1845,12 +2041,25 @@
         if (!response.ok) {
           var failure = new Error('Financial request failed');
           failure.status = response.status;
-          throw failure;
+          // PF-2: attach the server's parsed JSON detail string so the panel
+          // can tell admission refusals apart — best-effort: a body that is
+          // not JSON leaves detail empty, and parsing never throws a second
+          // error. The detail drives copy choice only; it is never rendered.
+          return response.text().then(function (text) {
+            try {
+              var parsed = JSON.parse(text);
+              if (parsed && typeof parsed.detail === 'string') failure.detail = parsed.detail;
+            } catch (_parseError) { /* a non-JSON body carries no detail */ }
+            throw failure;
+          }, function () { throw failure; });
         }
         // A38: the adapter-byte equality header is verified against the raw
         // body before anything parses; a missing or mismatched digest is
         // treated as a 503 and no number renders.
         var claimed = String(response.headers.get('X-FIF-Response-SHA256') || '').toLowerCase();
+        // X2-s: hand the verified digest to the caller (saved_against) without
+        // touching the envelope — meta is an optional sink, never read back.
+        if (meta) meta.responseSha256 = claimed;
         return response.arrayBuffer().then(function (buffer) {
           return sha256Hex(buffer).then(function (actual) {
             if (!claimed || !actual || actual !== claimed) {
@@ -1898,11 +2107,90 @@
     if (state.tab !== 'compare') return;
     var target = company();
     if (!target) return;
-    var latestBody = buildQueryBody('latest_known_as_of');
+    // PF r2 (M1): every re-evaluation supersedes any compare chain still in
+    // flight, so an early answer below (earlier day, no records, health
+    // failure, …) is never overwritten by the reply to a request the desk no
+    // longer stands behind.
+    var token = state.financialToken + 1;
+    state.financialToken = token;
+    // X2-s: a restored PINNED view re-POSTs its stored request bytes verbatim
+    // on every leg — the latest-known leg too is the STORED bytes with only
+    // policy.selection switched to latest_known_as_of, so a pinned view saved
+    // under as_reported still compares like against like; without a pinned
+    // view the desk builds each leg exactly as before.
+    var pinnedBody = activePinnedRequest();
+    var latestBody = pinnedBody ? pinnedVariant('latest_known_as_of') : buildQueryBody('latest_known_as_of');
     if (!latestBody.entity_id) {
       state.financial = { phase: 'no-entity' };
       renderRevisions();
       return;
+    }
+    // PF-3 / PF r1 (R1): the cutoff policy reads the health answer FOR THE
+    // SELECTED ISSUER, and only the answer that is still CURRENT — its seq is
+    // the newest issued one, exactly the acceptance rule that recorded it. A
+    // compare chain that arrives before that answer — including right after
+    // a company switch, or a re-select that re-issued health after a failure,
+    // while the previous answer is still on the desk — parks in loading and
+    // is re-driven by applyHealth; a cutoff is never built from another
+    // issuer's clocks or a superseded answer.
+    var answer = state.healthAnswer;
+    if (!answer ||
+        String(answer.entity_id || '') !== String(target.entity_id || '') ||
+        answer.seq !== state.healthSeq) {
+      state.financial = { phase: 'loading', awaitingHealth: true };
+      renderRevisions();
+      return;
+    }
+    // PF r1 (R2): a failed health fetch is an availability fact in ANY mode —
+    // the honest 503 copy with its Retry button, never a guess and never a
+    // query.
+    if (!answer.ok) {
+      // PFM r1 (item 3): an access failure (401/403) is NOT an outage — the
+      // desk was already routed through showLoadError in the health catch,
+      // so the revisions panel must not show either 503 copy and no
+      // financial query may be issued for an unauthenticated or unentitled
+      // reader. The financial chain's 401/403 catch above already follows
+      // this same shape.
+      if (answer.status === 401 || answer.status === 403) {
+        return;
+      }
+      state.financial = { phase: 'error', healthRetry: true };
+      renderRevisions();
+      return;
+    }
+    // PF-4 / PF r1 (R2): in production mode the names-only pointer header
+    // tells the three cases apart. 'none': the store was built and this
+    // issuer genuinely has no published records — no query can be honest.
+    // 'admitted' with a generation for this issuer: proceed as before.
+    // Anything else — a missing pointer header, 'unavailable' (the store is
+    // down or damaged), or 'admitted' without a generation — is a temporary
+    // availability failure, not "not published": the 503 copy with Retry.
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    if (state.datasetMode === 'production') {
+      if (answer.pointer === 'none') {
+        state.financial = { phase: 'no-records' };
+        renderRevisions();
+        return;
+      }
+      if (answer.pointer !== 'admitted' || !generation) {
+        state.financial = { phase: 'error', healthRetry: true };
+        renderRevisions();
+        return;
+      }
+    }
+    // PF-4: a picked day whose end-of-day cutoff precedes the generation's
+    // admission cannot be served by this store (the API's own floor answers
+    // 503); the page says so instead of sending a query that cannot succeed.
+    // This fact is knowable from the day alone, so it precedes the period
+    // check — a state without period starts must not mask it.
+    if (state.asOfDate && generation) {
+      var dayEnd = Date.parse(state.asOfDate + 'T23:59:59Z');
+      var admitted = Date.parse(generation.admitted_at);
+      if (Number.isFinite(dayEnd) && Number.isFinite(admitted) && dayEnd < admitted) {
+        state.financial = { phase: 'earlier', admittedAt: String(generation.admitted_at) };
+        renderRevisions();
+        return;
+      }
     }
     if (!latestBody.periods.length) {
       state.financial = { phase: 'no-periods' };
@@ -1914,17 +2202,20 @@
       renderRevisions();
       return;
     }
-    var token = state.financialToken + 1;
-    state.financialToken = token;
-    state.financial = { phase: 'loading', queryBody: buildQueryBody() };
+    // X2-s r1: the exported body is the pinned bytes while the pinned view is
+    // active, otherwise the DESK's own selection (buildQueryBody() with no
+    // argument) — never the forced latest_known_as_of leg above.
+    state.financial = { phase: 'loading', queryBody: pinnedBody || buildQueryBody() };
     renderRevisions();
+    var latestMeta = {};
     Promise.all([
-      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('as_reported')),
-      financialPost(FINANCIAL_QUERY_URL, latestBody),
-      financialPost(FINANCIAL_QUERY_URL, buildQueryBody('latest_restated')),
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('as_reported') : buildQueryBody('as_reported')),
+      financialPost(FINANCIAL_QUERY_URL, latestBody, latestMeta),
+      financialPost(FINANCIAL_QUERY_URL, pinnedBody ? pinnedVariant('latest_restated') : buildQueryBody('latest_restated')),
       financialPost(FINANCIAL_REVISIONS_URL, revisionsRequestBody(latestBody))
     ]).then(function (answers) {
       if (token !== state.financialToken) return;
+      var delivery = objectValue(answers[1] && answers[1].delivery) || {};
       state.financial = {
         phase: 'ready',
         asReported: queryNodesFrom(answers[0]),
@@ -1932,17 +2223,33 @@
         restated: queryNodesFrom(answers[2]),
         revisions: revisionsRowsFrom(answers[3]),
         receiptPolicy: objectValue(objectValue(answers[1] && answers[1].receipt) && objectValue(answers[1].receipt).policy) || {},
-        queryBody: buildQueryBody()
+        queryBody: pinnedBody || buildQueryBody(),
+        // X2-s: the verified digest and the dataset generation the answer was
+        // served from — refs for saved_against, never values.
+        responseSha256: latestMeta.responseSha256 || '',
+        generationId: String(delivery.dataset_generation_id || '')
       };
       state.queryNodes = state.financial.latest;
       renderRevisions();
+      // X2-b+c r3 R3-3b: reconcile FIRST — a view another tab unpinned,
+      // changed or deleted while this tab's pinned fetch was in flight must
+      // be refused before the backfill can write anything against it.
+      reconcileSavedActive();
+      backfillSavedAgainst();
+      renderSavedUI();
     }).catch(function (error) {
       if (token !== state.financialToken) return;
       if (error && (error.status === 401 || error.status === 403)) {
         showLoadError(error);
         return;
       }
-      state.financial = { phase: 'error', errorStatus: error && error.status };
+      state.financial = {
+        phase: 'error',
+        errorStatus: error && error.status,
+        // PF-2: the server's detail string (when the body was JSON) drives
+        // the copy choice; it is never rendered.
+        errorDetail: (error && typeof error.detail === 'string') ? error.detail : ''
+      };
       renderRevisions();
     });
   }
@@ -1992,12 +2299,51 @@
         pair('Loading revisions…', '正在载入重述对照…') + '</div>';
       return;
     }
-    if (financial.phase === 'no-entity' || financial.phase === 'no-clocks' ||
-        (financial.phase === 'error' && financial.errorStatus === 400)) {
+    if (financial.phase === 'no-entity' ||
+        (financial.phase === 'error' && financial.errorStatus === 400 &&
+         financial.errorDetail === 'unknown entity')) {
       host.innerHTML = emptyState(
         'Issuer identity unavailable', '发行人标识不可用',
         'The desk cannot query this issuer yet, so no vintage is shown. Nothing is guessed from the ticker.',
         '暂无法查询该发行人，因此不显示任何版本；不会从股票代码推测发行人标识。', '—'
+      );
+      return;
+    }
+    // PF-2: any other 400 is a refusal for this company and date, not an
+    // identity failure — the copy says what happened and nothing raw leaks.
+    if (financial.phase === 'error' && financial.errorStatus === 400) {
+      host.innerHTML = emptyState(
+        'This view could not be evaluated', '无法评估此视图',
+        'The request for this company and date was refused, so nothing is shown. Nothing is guessed.',
+        '该公司与日期的请求被拒绝，因此不显示任何内容。我们不做猜测。', '—'
+      );
+      return;
+    }
+    // PF-2: no recorded cutoff is a build-time fact, not an identity failure.
+    if (financial.phase === 'no-clocks') {
+      host.innerHTML = emptyState(
+        'No recorded cutoff yet', '尚无记录截止时点',
+        'The desk has no recorded build time to read from yet, so no vintage is shown. Check back after the next build.',
+        '本页尚无可读取的记录构建时间，因此不显示任何版本。请在下次构建后再查看。', '—'
+      );
+      return;
+    }
+    // PF-4: production mode with no published generation for this issuer.
+    if (financial.phase === 'no-records') {
+      host.innerHTML = emptyState(
+        'No filing records published yet', '尚未发布申报记录',
+        'We have not published filing records for this company yet, so no vintage is shown.',
+        '我们尚未发布该公司的申报记录，因此不显示任何版本。', '—'
+      );
+      return;
+    }
+    // PF-4: a picked day earlier than the issuer's last publication.
+    if (financial.phase === 'earlier') {
+      var publishedDay = formatDate(financial.admittedAt || '');
+      host.innerHTML = emptyState(
+        'Earlier dates not available', '无更早日期',
+        'This company\'s filing records were last published on ' + publishedDay + '. Pick that day or later, or use Latest.',
+        '该公司的申报记录最近一次发布于' + publishedDay + '。请选择该日或之后的日期，或使用“最新”。', '—'
       );
       return;
     }
@@ -2007,6 +2353,16 @@
         'The state does not carry a period start date for this issuer, so no cutoff query can be built.',
         '状态数据中没有该发行人的期间起始日，因此无法构建截止日查询。', '—'
       );
+      return;
+    }
+    // PF r2 (m3): a failed health check is not the revisions service, so its
+    // copy names no service; a failed compare chain keeps the revisions copy.
+    if (financial.phase === 'error' && financial.healthRetry) {
+      host.innerHTML = emptyState(
+        'Data temporarily unavailable', '数据暂不可用',
+        'The desk could not confirm which filing records are available right now. Try again in a moment.',
+        '本页暂时无法确认可用的申报记录，请稍后再试。', '↺'
+      ) + '<div class="ff-revisions-retry"><button type="button" data-financial-retry="1">' + pair('Retry', '重试') + '</button></div>';
       return;
     }
     if (financial.phase === 'error') {
@@ -2058,6 +2414,20 @@
     var disabled = !state.asOfDate && !clocksKnown;
     ui.asofLatest.disabled = disabled;
     ui.asofInput.disabled = disabled;
+    // PF-4: in production mode with a known generation for the selected
+    // issuer, no day before the last publication can be served, so the
+    // picker's min is that day. It clears when the company changes or the
+    // generation is unknown (or the mode is golden/absent).
+    var generation = state.datasetMode === 'production' ? selectedGeneration() : null;
+    // PF r2 (n1): the minimum is the admission's UTC day, the same day the
+    // 'earlier' check measures against ({day}T23:59:59Z), whatever offset the
+    // header carried.
+    var admittedMs = generation && generation.admitted_at ? Date.parse(generation.admitted_at) : NaN;
+    if (Number.isFinite(admittedMs)) {
+      ui.asofInput.setAttribute('min', new Date(admittedMs).toISOString().slice(0, 10));
+    } else {
+      ui.asofInput.removeAttribute('min');
+    }
   }
 
   // ── Statement tree (§3.5 statements POST, spec row 6) ───────────────────
@@ -2112,9 +2482,21 @@
       state.statements = { phase: statements.length ? 'ready' : 'empty', statements: statements };
       state.statementCells = [];
       var columns = [];
+      // PF-1: every statement repeats its comparative periods, so columns are
+      // de-duplicated by the server's own period identity before they are
+      // stored — exactly the semantic key the query admission uses
+      // (period_semantic_key: for the {kind, start, end, label} objects this
+      // page sends, kind/start/end with the fiscal fields at their wire
+      // defaults). The FIRST column seen for a key wins, label included, and
+      // first-seen order is kept; without this the revisions request repeats
+      // a period and the API refuses it as a duplicate.
+      var seenPeriods = {};
       statements.forEach(function (statement) {
         (Array.isArray(statement.columns) ? statement.columns : []).forEach(function (column) {
           if (objectValue(column) && column.start && column.end) {
+            var key = statementPeriodKey(column);
+            if (seenPeriods[key]) return;
+            seenPeriods[key] = true;
             columns.push({ label: column.label, start: column.start, end: column.end });
           }
         });
@@ -2155,6 +2537,29 @@
     return sourceControlHtml(control);
   }
 
+  var STATEMENT_WITHHELD_COPY = pair(
+    'We couldn\'t rebuild this statement line by line from this filing yet, so it isn\'t shown here.',
+    '我们暂时无法从该财报逐行重建此报表，因此此处未显示。'
+  );
+  var ACCESSION_ALL_REFUSED_COPY = pair(
+    'We couldn\'t rebuild this filing\'s statements line by line yet. The normalized table below still covers its figures.',
+    '我们暂时无法逐行重建该财报的报表。下方的标准化表格仍涵盖其数据。'
+  );
+
+  function statementTypeHeading(statement) {
+    var kind = String(statement.statement_type || '');
+    if (kind === 'income_statement') return pair('Income statement', '利润表');
+    if (kind === 'balance_sheet') return pair('Balance sheet', '资产负债表');
+    if (kind === 'cash_flow') return pair('Cash flow statement', '现金流量表');
+    return pair(statement.title || 'Statement', statement.title || '报表');
+  }
+
+  function withheldStatementBlock(statement) {
+    return '<section class="ff-statement-block ff-statement-block--withheld"><h3>' +
+      statementTypeHeading(statement) + '</h3><p class="ff-statement-withheld-copy">' +
+      STATEMENT_WITHHELD_COPY + '</p></section>';
+  }
+
   // S0 as-reported labels lead; spans come from each cell's source_receipt.
   function renderStatementTree() {
     if (!ui.statements) return;
@@ -2183,7 +2588,21 @@
       return;
     }
     state.statementCells = [];
-    var blocks = statements.statements.map(function (statement) {
+    var payloadStatements = statements.statements.filter(objectValue);
+    var allRefused = payloadStatements.length === 3 &&
+      payloadStatements.every(function (statement) { return objectValue(statement.refusal); });
+    if (allRefused) {
+      var target = company() || {};
+      renderStatements(target);
+      ui.statements.insertAdjacentHTML('afterbegin',
+        '<section class="ff-statement-block ff-statement-block--withheld ff-statement-block--notice">' +
+        '<p class="ff-statement-withheld-copy">' + ACCESSION_ALL_REFUSED_COPY + '</p></section>');
+      return;
+    }
+    var blocks = payloadStatements.map(function (statement) {
+      if (objectValue(statement.refusal)) {
+        return withheldStatementBlock(statement);
+      }
       var columns = Array.isArray(statement.columns) ? statement.columns.filter(objectValue) : [];
       var rows = Array.isArray(statement.rows) ? statement.rows.filter(objectValue) : [];
       var header = '<th>' + pair('Line item / 报表项目', 'Line item / 报表项目') + '</th>' + columns.map(function (column) {
@@ -2214,9 +2633,21 @@
     'A35-I1': ['Same company, another share class', '同一公司的另一类股份'],
     'A35-X1': ['No observation in this package', '本数据包中无观察值'],
     'A35-B1': ['This metric does not apply', '该指标不适用'],
+    'A35-W1': ['Statement not rebuilt from this filing', '未能从该财报重建此报表'],
     'A35-P1': ['Reporting period does not line up', '报告期未对齐'],
-    'A35-P2': ['Shifted period', '期间已平移']
+    'A35-P2': ['Shifted period', '期间已平移'],
+    'A35-R1': ['No comparable reference for this company', '本公司无可比基准'],
+    'A35-K1': ['Period type differs from the reference', '期间类型与基准不同'],
+    'A35-U1': ['Unit differs from the reference', '单位与基准不同'],
+    'A35-D1': ['Period length differs from the reference', '期间长度与基准不同'],
+    'A35-V1': ['Metric definition version differs', '指标定义版本不同']
   };
+
+  function peerExclusionCopy(code) {
+    var known = PEER_EXCLUSIONS[code];
+    if (!known) return { en: 'Excluded', zh: '已排除' };
+    return { en: known[0], zh: known[1] };
+  }
 
   function peerCohort() {
     var cohort = objectValue(state.payload && state.payload.peer_cohort);
@@ -2298,6 +2729,12 @@
         'The qualifying group is smaller than the minimum, so no rank or average is computed.',
         '符合条件的公司数量低于最小值，因此不计算排名或平均值。', '▦'
       );
+    } else if (String(emission.emission_state || '') === 'anchor_unavailable') {
+      includedNode.innerHTML = selector + emptyState(
+        'No comparable reference for this company', '本公司无可比基准',
+        'This company has no usable value for this metric, so peers are not ranked against it.',
+        '本公司在此指标上没有可用数值，因此不对同业排名。', '▦'
+      );
     } else {
       var anchorId = anchorIssuerId(cohort);
       var rows = Array.isArray(emission.rows) ? emission.rows.filter(objectValue) : [];
@@ -2348,6 +2785,498 @@
     }
   }
 
+  // ── Saved views (X2-s) ──────────────────────────────────────────────────
+  // Device-local briefcase (templates/fif_saved_briefcase.js, GovRev
+  // discipline: never fetches) + P2's URL writer as the permalink. The saved
+  // object binds to X0's request contract via its request_contract field; a
+  // drift refuses the load with the plain "saved view unavailable" state —
+  // never a repair, never a crash. Composed only from existing classes.
+  var SAVED_COPY = {
+    listLabel: ['Saved views', '已存视图'],
+    empty: ['No saved views yet', '暂无已存视图'],
+    choose: ['Choose a saved view', '选择已存视图'],
+    save: ['Save this view', '保存当前视图'],
+    rename: ['Rename', '重命名'],
+    remove: ['Delete', '删除'],
+    unavailable: ['unavailable', '不可用'],
+    unavailableTitle: ['Saved view unavailable', '已存视图不可用'],
+    unavailableContractCopy: [
+      'This view was saved against an older contract and cannot be opened here. You can still delete it.',
+      '此视图基于较早的契约保存，无法在此打开。你仍可将其删除。'
+    ],
+    unavailableIssuerCopy: [
+      'This view\'s company is not covered by the current run, so it cannot be opened.',
+      '当前更新未覆盖此视图的公司，因此无法打开。'
+    ],
+    unavailableMissingCopy: [
+      'This saved view is no longer on this device — it may have been deleted in another tab.',
+      '此已存视图已不在本设备上——可能已在其他标签页中删除。'
+    ],
+    // X2-b+c r2 MAJOR-1: an edit in another tab (unpinned, re-cut request)
+    // refuses the active view. Never re-derived here — the user reopens it.
+    unavailableChangedCopy: [
+      'This saved view was changed in another tab. Reopen it to continue.',
+      '此已保存视图已在另一个标签页中更改。请重新打开以继续。'
+    ],
+    unavailableStoreCopy: [
+      'Saved views on this device could not be read, so they are left untouched. Saving is paused here.',
+      '无法读取本设备上的已存视图，因此保持原样不作改动。此处暂停保存。'
+    ],
+    writeFailedCopy: [
+      'Your browser did not save this change. Nothing else was changed.',
+      '浏览器未保存此更改，其他内容未变。'
+    ],
+    pinnedTo: ['Pinned to', '固定于'],
+    latest: ['latest', '最新'],
+    asOf: ['As of', '截止'],
+    newerGeneration: [
+      'A newer filing generation exists — this view stays pinned to its cutoff.',
+      '已有更新的财报数据版本——本视图仍固定于其截止日。'
+    ],
+    reResolve: ['Re-resolve at latest', '按最新重新解析'],
+    peerSave: ['Save this peer view', '保存同业视图']
+  };
+  var POLICY_PLAIN = {
+    as_reported: ['As reported', '按披露原样'],
+    // The badge reads "Pinned to <date> · <phrase>", so the phrase must
+    // stand on its own after the date (X2-s r1: no dangling "as of").
+    latest_known_as_of: ['Latest known on that date', '该日已知最新'],
+    latest_restated: ['Latest restated', '最新重述']
+  };
+
+  var savedBriefcase = null;
+
+  function initSavedBriefcase() {
+    if (!(window.FifSavedBriefcase && typeof window.FifSavedBriefcase.create === 'function')) return;
+    savedBriefcase = window.FifSavedBriefcase.create();
+    var controls = byId('ff-saved-controls');
+    if (controls) controls.hidden = false;
+    var peerRow = byId('ff-peer-save-row');
+    if (peerRow) peerRow.hidden = false;
+  }
+
+  function savedPlainPolicy(selection) {
+    var entry = POLICY_PLAIN[String(selection || '')];
+    return entry || POLICY_PLAIN.latest_known_as_of;
+  }
+
+  function savedStampDate() {
+    var clocks = (state.health && state.health.clocks) || {};
+    var payload = state.payload || {};
+    return clocks.broad_source_at || clocks.composed_state_at || payload.generated_at || '';
+  }
+
+  function savedSavePhase() {
+    if (state.access === 'signin' || state.access === 'pending') return 'signin';
+    if (state.access === 'upgrade') return 'upgrade';
+    var target = company() || {};
+    var body = buildQueryBody();
+    var legal = !!target.entity_id && !!body.periods.length &&
+      !!body.policy.source_snapshot_at && !!body.policy.recorded_at;
+    return legal ? 'ready' : 'unavailable';
+  }
+
+  function buildSavedViewInput(name) {
+    var target = company() || {};
+    var body = buildQueryBody();
+    var evidenceRefs = [];
+    // A ref is stored only for an open cell evidence view with a REAL span —
+    // a span is never invented (AM1); ids and spans only, never values.
+    if (state.evidenceKind === 'cell' && state.cellEvidence) {
+      var evidence = state.cellEvidence;
+      var spanStart = numberValue(evidence.spanStart);
+      var spanEnd = numberValue(evidence.spanEnd);
+      if ((evidence.occurrenceId || evidence.accession) && spanStart != null && spanEnd != null) {
+        evidenceRefs.push({
+          accession: String(evidence.accession || ''),
+          occurrence_id: String(evidence.occurrenceId || ''),
+          source_span: [Math.trunc(spanStart), Math.trunc(spanEnd)]
+        });
+      }
+    }
+    return {
+      name: name,
+      issuer: {
+        entity_id: String(target.entity_id || ''),
+        cik: String(target.cik || ''),
+        ticker: String(target.symbol || state.symbol || '')
+      },
+      request: body,
+      peers: {
+        cohort: state.cohortId || null,
+        peer_metric: state.peerMetric || null,
+        align: state.peerAlign === 'shift_labeled' ? 'shift_labeled' : 'exclude',
+        peer_n: state.peerN,
+        peer_tol: state.peerTol
+      },
+      view: {
+        tab: state.tab,
+        finding: state.tab === 'radar' ? (state.findingId || null) : null
+      },
+      pinned: !!state.asOfDate,
+      saved_against: {
+        generation_id: ((state.health && state.health.generation) || {}).id ||
+          String(state.financial && state.financial.generationId || '') || null,
+        admitted_at: ((state.health && state.health.generation) || {}).admitted_at || null,
+        response_sha256: state.financial && state.financial.responseSha256 || null
+      },
+      evidence_refs: evidenceRefs,
+      watch: { issuer: false }
+    };
+  }
+
+  function performSavedSave(name) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    var result = savedBriefcase.save(buildSavedViewInput(name));
+    if (result.ok) {
+      state.savedActiveId = result.view.id;
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = result.view.pinned ? result.view.request : null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
+  }
+
+  // A pinned restore re-POSTs the stored request bytes VERBATIM — but only
+  // while the desk still matches the view's subject, policy and cutoff day.
+  // Any manual navigation away makes the override inert by itself.
+  function activePinnedRequest() {
+    if (state.pinnedRequest) reconcileSavedActive();
+    var request = state.pinnedRequest;
+    if (!request || typeof request !== 'object') return null;
+    var target = company() || {};
+    if (!target.entity_id || String(target.entity_id) !== String(request.entity_id)) return null;
+    var selection = String((request.policy || {}).selection || '');
+    if (String(state.policy || 'latest_known_as_of') !== selection) return null;
+    if (state.asOfDate !== String((request.policy || {}).source_snapshot_at || '').slice(0, 10)) return null;
+    return request;
+  }
+
+  function pinnedVariant(selection) {
+    var request = activePinnedRequest();
+    if (!request) return null;
+    return Object.assign({}, request, {
+      policy: Object.assign({}, request.policy, { selection: selection })
+    });
+  }
+
+  // X2-b r2 MINOR-1 + X2-b+c r2 MAJOR-1, r3 R3-3/R3-4: another tab can
+  // delete or break the active view, CHANGE it (unpin it, re-cut its
+  // request), or break the whole store. The next read notices every one: the
+  // view turns into its own refusal ('store' for a read-only store, 'changed'
+  // for an edit), so the notice shows, no badge renders, no stale pinned
+  // bytes are served, Export returns no body while the refusal is active
+  // (exportQueryBody), and the resolve-path backfill writes nothing against a
+  // capture the store no longer matches.
+  function reconcileSavedActive() {
+    if (!savedBriefcase || !state.savedActiveId || state.savedRefusal) return;
+    if (savedBriefcase.readOnly()) {
+      state.savedRefusal = 'store';
+      state.pinnedRequest = null;
+      return;
+    }
+    var result = savedBriefcase.load(state.savedActiveId);
+    if (!result.ok) {
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      return;
+    }
+    // MAJOR-1 + r3 R3-4: compare what this tab is serving against what the
+    // store now holds — the loaded view's pinned flag, and its canonical
+    // request bytes measured with the briefcase's own canonicalJson (the
+    // same sorted-key, key-order-blind notion of equality the store and the
+    // manifest use; JSON.stringify would let a same-content request with
+    // reordered keys refuse). Any mismatch — pinned->latest, latest->pinned,
+    // a changed request — refuses as 'changed'; never silently re-derived.
+    var view = result.view;
+    var servingPinned = !!state.pinnedRequest;
+    var storedBytes = window.FifSavedBriefcase.canonicalJson(view.request);
+    var servingBytes = window.FifSavedBriefcase.canonicalJson(state.pinnedRequest);
+    if (view.pinned !== servingPinned ||
+      (servingPinned && storedBytes !== servingBytes)) {
+      state.savedRefusal = 'changed';
+      state.pinnedRequest = null;
+    }
+  }
+
+  function savedActiveView() {
+    // A refused restore (issuer or any load refusal) is never the active view:
+    // no pinned badge, no newer-generation chip, no saved_against backfill from
+    // a desk it does not describe. Any refusal keeps the view inactive; a
+    // write failure is tracked separately in state.savedStoreError. Delete
+    // stays reachable through savedActiveId.
+    if (!savedBriefcase || !state.savedActiveId) return null;
+    if (state.savedRefusal) return null;
+    var result = savedBriefcase.load(state.savedActiveId);
+    return result.ok ? result.view : null;
+  }
+
+  function backfillSavedAgainst() {
+    // X2-b+c r3 R3-3b: reconcile before any write (the fetch-resolve path
+    // reconciles first too; this seam stays safe when driven directly), then
+    // write only when no refusal is active. MINOR-3 (repair): the polarity is
+    // main's — only a LATEST view (a fresh save or a re-resolve, which clears
+    // the digest) is backfilled; a pinned view keeps the digest it was saved
+    // with. The reconcile is what makes that safe: a view another tab pinned,
+    // unpinned, re-cut or deleted while this tab's fetch was in flight is
+    // refused first, so a digest from a fetch this desk no longer serves
+    // never lands in it.
+    reconcileSavedActive();
+    var view = savedActiveView();
+    if (!view || view.pinned || state.pinnedRequest) return;
+    var digest = state.financial && state.financial.responseSha256 || '';
+    if (!digest || view.saved_against.response_sha256 === digest) return;
+    savedBriefcase.update(view.id, {
+      saved_against: {
+        generation_id: view.saved_against.generation_id,
+        admitted_at: view.saved_against.admitted_at,
+        response_sha256: digest
+      }
+    });
+  }
+
+  function savedNoticeHtml(kind) {
+    var copy = kind === 'issuer' ? SAVED_COPY.unavailableIssuerCopy
+      : kind === 'missing' ? SAVED_COPY.unavailableMissingCopy
+      : kind === 'changed' ? SAVED_COPY.unavailableChangedCopy
+      : kind === 'store' ? SAVED_COPY.unavailableStoreCopy
+      : SAVED_COPY.unavailableContractCopy;
+    // Existing classes only: the notice is an icon span plus a title element
+    // and a copy element inside one container div (X2-s r1, MINOR-5).
+    return '<span class="ff-notice-icon" aria-hidden="true">i</span><div><strong>' +
+      pair(SAVED_COPY.unavailableTitle[0], SAVED_COPY.unavailableTitle[1]) +
+      '</strong><div>' + pair(copy[0], copy[1]) + '</div></div>';
+  }
+
+  function renderSavedUI() {
+    var select = byId('ff-saved-select');
+    if (!select || !savedBriefcase) return;
+    var saveBtn = byId('ff-saved-save');
+    var nameInput = byId('ff-saved-name');
+    var renameBtn = byId('ff-saved-rename');
+    var deleteBtn = byId('ff-saved-delete');
+    var badge = byId('ff-saved-badge');
+    var notice = byId('ff-saved-notice');
+    var peerSave = byId('ff-peer-save');
+    var listing = savedBriefcase.list();
+    var current = lang();
+    // X2-s r1: a populated list offers a choice; only a truly empty list says
+    // "No saved views yet".
+    var placeholder = listing.length ? SAVED_COPY.choose : SAVED_COPY.empty;
+
+    var options = '<option value="">' + (current === 'zh' ? placeholder[1] : placeholder[0]) + '</option>';
+    listing.forEach(function (entry) {
+      var label = entry.name;
+      if (!entry.available) label += ' · ' + (current === 'zh' ? SAVED_COPY.unavailable[1] : SAVED_COPY.unavailable[0]);
+      options += '<option value="' + esc(entry.id) + '">' + esc(label) + '</option>';
+    });
+    select.innerHTML = options;
+    select.value = state.savedActiveId || '';
+
+    // X2-s r1 (MAJOR-3): an unreadable store is read-only — Save/peer-save
+    // stay disabled and Rename/Delete stay hidden through attributes only,
+    // and the notice names the paused store instead of a contract drift.
+    var storeReadOnly = savedBriefcase.readOnly();
+    reconcileSavedActive();
+    var phase = savedSavePhase();
+    var name = nameInput && nameInput.value ? String(nameInput.value).trim() : '';
+    if (saveBtn) {
+      saveBtn.disabled = storeReadOnly || phase !== 'ready' || !name;
+      saveBtn.setAttribute('data-label-en', SAVED_COPY.save[0]);
+      saveBtn.setAttribute('data-label-zh', SAVED_COPY.save[1]);
+      saveBtn.setAttribute('aria-label', current === 'zh' ? SAVED_COPY.save[1] : SAVED_COPY.save[0]);
+    }
+    if (peerSave) {
+      peerSave.disabled = storeReadOnly || phase !== 'ready';
+      peerSave.innerHTML = pair(SAVED_COPY.peerSave[0], SAVED_COPY.peerSave[1]);
+    }
+    var active = storeReadOnly ? null : savedActiveView();
+    var renameable = !!active;
+    if (renameBtn) renameBtn.hidden = !renameable;
+    if (deleteBtn) deleteBtn.hidden = !state.savedActiveId || storeReadOnly;
+
+    if (badge) {
+      if (active && active.pinned) {
+        var pinnedDate = formatDate(String((active.request.policy || {}).source_snapshot_at || ''));
+        var policyCopy = savedPlainPolicy((active.request.policy || {}).selection);
+        badge.innerHTML = pair(SAVED_COPY.pinnedTo[0] + ' ' + pinnedDate + ' · ' + policyCopy[0],
+          SAVED_COPY.pinnedTo[1] + ' ' + pinnedDate + ' · ' + policyCopy[1]);
+        badge.hidden = false;
+      } else if (active) {
+        var latestDate = formatDate(savedStampDate());
+        badge.innerHTML = pair(SAVED_COPY.asOf[0] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[0],
+          SAVED_COPY.asOf[1] + ' ' + latestDate + ' · ' + SAVED_COPY.latest[1]);
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+      }
+    }
+
+    if (notice) {
+      // X2-s r2 (R2-4) precedence, exactly: an unreadable store (read
+      // failure) -> a failed write (state.savedStoreError) -> a stale
+      // newer-generation chip -> a refused view -> hidden.
+      var action = '';
+      var stale = savedGenerationStale();
+      if (storeReadOnly) {
+        notice.innerHTML = savedNoticeHtml('store');
+        notice.hidden = false;
+      } else if (state.savedStoreError) {
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.writeFailedCopy[0], SAVED_COPY.writeFailedCopy[1]) + '</div>';
+        notice.hidden = false;
+      } else if (stale) {
+        action = ' <button type="button" class="ff-retry" data-saved-reresolve="1">' +
+          pair(SAVED_COPY.reResolve[0], SAVED_COPY.reResolve[1]) + '</button>';
+        notice.innerHTML = '<span class="ff-notice-icon" aria-hidden="true">i</span><div>' +
+          pair(SAVED_COPY.newerGeneration[0], SAVED_COPY.newerGeneration[1]) + action + '</div>';
+        notice.hidden = false;
+      } else if (state.savedRefusal) {
+        notice.innerHTML = savedNoticeHtml(state.savedRefusal);
+        notice.hidden = false;
+      } else {
+        notice.hidden = true;
+        notice.innerHTML = '';
+      }
+    }
+    // X2-b+c r4 (MINOR-4): every path that sets or clears a saved-view
+    // refusal ends here — a refused restore, the resolve path, another tab's
+    // edit noticed on render — so Export re-reads the refusal on each of
+    // them instead of only on the next run-meta render.
+    refreshExportState();
+  }
+
+  // The newer-generation signal: the view was saved against one production
+  // dataset generation and health now names a different one (headers read on
+  // the SAME health fetch P2 already makes; never ffprods_… at glance).
+  // PF-3: generations are per issuer — a health generation that belongs to
+  // another issuer never marks this view stale.
+  function savedGenerationStale() {
+    var view = savedActiveView();
+    if (!view || !view.pinned) return null;
+    var against = view.saved_against || {};
+    var generation = (state.health && state.health.generation) || {};
+    if (!against.generation_id || !generation.id) return null;
+    if (generation.entity_id && String(generation.entity_id) !== String(view.request.entity_id || '')) return null;
+    if (against.generation_id === generation.id) return null;
+    return { view: view, generation: generation };
+  }
+
+  function reResolveSavedView() {
+    var stale = savedGenerationStale();
+    if (!stale || !savedBriefcase) return { ok: false, reason: 'stale' };
+    // PF-3: the re-resolved cutoff comes from the SAME helper the Latest
+    // policy uses — recorded_at is the latest of the present values, so a
+    // desk whose composed_state_at is absent but whose generation and
+    // broad_source_at are known re-resolves instead of refusing as 'clocks'.
+    var cutoffs = latestCutoffs();
+    if (!cutoffs.recorded_at || !cutoffs.source_snapshot_at) return { ok: false, reason: 'clocks' };
+    var request = JSON.parse(JSON.stringify(stale.view.request));
+    request.policy.source_snapshot_at = cutoffs.source_snapshot_at;
+    request.policy.recorded_at = cutoffs.recorded_at;
+    var result = savedBriefcase.update(stale.view.id, {
+      request: request,
+      pinned: false,
+      saved_against: {
+        generation_id: stale.generation.id,
+        admitted_at: stale.generation.admitted_at || '',
+        response_sha256: ''
+      }
+    });
+    if (result.ok) restoreSavedView(stale.view.id);
+    else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+      renderSavedUI();
+    }
+    return result;
+  }
+
+  function restoreSavedView(id) {
+    if (!savedBriefcase) return { ok: false, reason: 'module' };
+    state.savedStoreError = false;
+    var result = savedBriefcase.load(id);
+    state.savedActiveId = String(id || '');
+    if (!result.ok) {
+      // 'missing' keeps its own kind (its own notice copy): the view was on
+      // this device and is gone now; everything else keeps its refusal reason.
+      state.savedRefusal = result.reason;
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return result;
+    }
+    state.savedRefusal = '';
+    var view = result.view;
+    // issuer is display/index metadata; the query identity stays
+    // request.entity_id and is never inferred from the ticker. The ticker
+    // must resolve AND the resolved issuer must still carry the stored
+    // entity_id — a ticker that resolves to a different entity refuses as
+    // 'issuer' BEFORE any desk-state mutation.
+    var resolved = view.issuer && view.issuer.ticker ? resolveSymbol(view.issuer.ticker) : '';
+    var resolvedCompany = resolved ? companies()[resolved] : null;
+    if (!resolvedCompany || String(resolvedCompany.entity_id) !== String(view.request.entity_id)) {
+      state.savedRefusal = 'issuer';
+      state.pinnedRequest = null;
+      renderSavedUI();
+      return { ok: false, reason: 'issuer' };
+    }
+    // Desk state first, then setCompany: the financial query it triggers must
+    // see the restored policy, cutoff and pinned bytes, not the defaults.
+    // checkView guarantees every field read below exists in canonical form —
+    // no defaults are applied here; an un-appliable value refuses at load as
+    // a contract refusal, never silently coerces.
+    state.policy = view.request.policy.selection;
+    state.asOfDate = view.pinned ? view.request.policy.source_snapshot_at.slice(0, 10) : '';
+    state.cohortId = view.peers.cohort == null ? '' : view.peers.cohort;
+    state.peerMetric = view.peers.peer_metric == null ? '' : view.peers.peer_metric;
+    state.peerAlign = view.peers.align === 'shift_labeled' ? 'shift_labeled' : 'exclude';
+    state.peerN = view.peers.peer_n;
+    state.peerTol = view.peers.peer_tol;
+    state.pinnedRequest = view.pinned ? view.request : null;
+    setCompany(resolved, false);
+    setTab(view.view.tab, false);
+    if (view.view.finding && state.tab === 'radar') {
+      state.findingId = String(view.view.finding);
+      state.evidenceKind = 'finding';
+      renderFindings();
+      renderCurrentEvidence();
+    }
+    // The permalink is P2's own writer — never a second URL builder.
+    writeUrl(true);
+    updateViewStatus();
+    // X2-s r1: the as-of controls and the desk stamp follow the restored
+    // cutoff (a pinned view shows its date, never "Latest" plus an empty
+    // field); renderRunMeta re-syncs both and then renders the saved UI.
+    renderRunMeta();
+    return { ok: true, view: view };
+  }
+
+  function savedRenameActive(name) {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.update(state.savedActiveId, { name: name });
+    if (result.ok) state.savedStoreError = false;
+    else if (result.reason === 'storage') state.savedStoreError = true;
+    renderSavedUI();
+    return result;
+  }
+
+  function savedDeleteActive() {
+    if (!savedBriefcase || !state.savedActiveId) return { ok: false, reason: 'missing' };
+    var result = savedBriefcase.remove(state.savedActiveId);
+    if (result.ok) {
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
+    } else if (result.reason === 'storage') {
+      state.savedStoreError = true;
+    }
+    renderSavedUI();
+    return result;
+  }
+
   // ── Export entry (§5, R6) ───────────────────────────────────────────────
   // One Export control in the desk header. It POSTs the byte-identical query
   // body for the current issuer, cutoff and policy; reload remains the only
@@ -2356,6 +3285,13 @@
   var XLSX_MEDIA_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
   function exportQueryBody() {
+    // X2-b+c r3 R3-3a: while a saved-view refusal is active the desk still
+    // holds the stale pinned query body; Export must not re-POST it. The
+    // refusal copy already tells the reader to reopen the view, so Export
+    // gets no body at all, whatever the phase. The reconcile-on-read makes
+    // the guard hold even when the edit in the other tab is not yet noticed.
+    reconcileSavedActive();
+    if (state.savedRefusal) return null;
     if (state.financial && state.financial.queryBody && state.financial.phase === 'ready') {
       return state.financial.queryBody;
     }
@@ -2366,6 +3302,11 @@
     if (state.access === 'signin' || state.access === 'pending') return 'signin';
     if (state.access === 'upgrade') return 'upgrade';
     if (state.exportUnavailable) return 'unavailable';
+    // X2-b+c r3 MINOR-4 (repair): the button agrees with exportQueryBody — a
+    // saved-view refusal leaves Export with no body, so the control reads
+    // unavailable instead of offering a click that does nothing.
+    reconcileSavedActive();
+    if (state.savedRefusal) return 'unavailable';
     var target = company() || {};
     var body = buildQueryBody();
     var legal = !!target.entity_id && !!body.periods.length &&
@@ -2383,6 +3324,8 @@
         ? ['Export unavailable: this server does not offer workbook downloads yet.', '导出不可用：此服务器尚未提供工作簿下载。']
         : ['Export unavailable: the last download request failed. Reload to try again.', '导出不可用：上次下载请求失败，请重新载入后再试。'];
     }
+    // MINOR-4: the saved-view notice already names the cause and the action.
+    if (state.savedRefusal) return ['Export unavailable for this view.', '此视图暂不支持导出。'];
     var target = company() || {};
     var body = buildQueryBody();
     var en = [];
@@ -2429,6 +3372,8 @@
   function runExport() {
     if (!ui.exportBtn || ui.exportBtn.disabled) return;
     var body = exportQueryBody();
+    // X2-b+c r3: a saved-view refusal yields no body — never POST "null".
+    if (!body) return;
     withAuth({ 'Content-Type': 'application/json', Accept: XLSX_MEDIA_TYPE })
       .then(function (headers) {
         return fetch(FINANCIAL_QUERY_XLSX_URL, {
@@ -4428,6 +5373,8 @@
   function updateLocalizedAttributes() {
     var current = lang();
     if (ui.search) ui.search.placeholder = ui.search.getAttribute('data-placeholder-' + current) || '';
+    var savedNameNode = byId('ff-saved-name');
+    if (savedNameNode) savedNameNode.placeholder = savedNameNode.getAttribute('data-placeholder-' + current) || '';
     Array.prototype.forEach.call(document.querySelectorAll('[data-label-en][data-label-zh]'), function (node) {
       var label = node.getAttribute('data-label-' + current);
       if (label) node.setAttribute('aria-label', label);
@@ -4447,6 +5394,7 @@
       renderReceipt();
       renderReceiptInspector();
     }
+    renderSavedUI();
   }
 
   function bindEvents() {
@@ -4635,6 +5583,10 @@
     if (ui.asofLatest) {
       ui.asofLatest.addEventListener('click', function () {
         state.asOfDate = '';
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
         renderRunMeta();
@@ -4646,6 +5598,10 @@
         var value = String(ui.asofInput.value || '');
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return;
         state.asOfDate = value;
+        state.savedActiveId = '';
+        state.savedRefusal = '';
+        state.savedStoreError = false;
+        state.pinnedRequest = null;
         setAsofControlsFromState();
         writeUrl(true);
         renderRunMeta();
@@ -4655,10 +5611,88 @@
     if (ui.exportBtn) {
       ui.exportBtn.addEventListener('click', runExport);
     }
+
+    // X2-s saved views: restore via the list, save/rename/delete in the desk
+    // band, one save entry on the peers panel, one action on the notice chip.
+    var savedSelect = byId('ff-saved-select');
+    if (savedSelect) {
+      savedSelect.addEventListener('change', function () {
+        if (!savedSelect.value) {
+          state.savedActiveId = '';
+          state.savedRefusal = '';
+          state.savedStoreError = false;
+          state.pinnedRequest = null;
+          renderSavedUI();
+          return;
+        }
+        restoreSavedView(savedSelect.value);
+      });
+    }
+    var savedName = byId('ff-saved-name');
+    var savedSaveBtn = byId('ff-saved-save');
+    function savedNameValue() {
+      return savedName ? String(savedName.value || '').trim() : '';
+    }
+    if (savedSaveBtn) {
+      savedSaveBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (!name) return;
+        performSavedSave(name);
+      });
+    }
+    if (savedName) {
+      savedName.addEventListener('input', renderSavedUI);
+      savedName.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedRenameBtn = byId('ff-saved-rename');
+    if (savedRenameBtn) {
+      savedRenameBtn.addEventListener('click', function () {
+        var name = savedNameValue();
+        if (name) savedRenameActive(name);
+      });
+    }
+    var savedDeleteBtn = byId('ff-saved-delete');
+    if (savedDeleteBtn) {
+      savedDeleteBtn.addEventListener('click', savedDeleteActive);
+    }
+    var peerSaveBtn = byId('ff-peer-save');
+    if (peerSaveBtn) {
+      peerSaveBtn.addEventListener('click', function () {
+        if (!savedName) return;
+        if (!savedNameValue()) {
+          // A generated, editable default — the user's text stays verbatim
+          // once they touch it; nothing here is bilingual storage.
+          savedName.value = String(state.symbol || '') + ' peers';
+        }
+        var name = savedNameValue();
+        if (name) performSavedSave(name);
+      });
+    }
+    var savedNotice = byId('ff-saved-notice');
+    if (savedNotice) {
+      savedNotice.addEventListener('click', function (event) {
+        if (event.target.closest('[data-saved-reresolve]')) reResolveSavedView();
+      });
+    }
     ui.workspace.addEventListener('click', function (event) {
       if (!event.target.closest('[data-financial-retry]')) return;
-      state.financial = { phase: 'idle' };
-      ensureFinancialData();
+      // PF r1 (R2): the 503 copy shown because of HEALTH retries the health
+      // fetch itself — the chain resumes from applyHealth once the answer
+      // lands. PFM r1 (item 4): the compare-chain Retry does the same —
+      // refreshing health first — so a failure caused by a superseded
+      // generation can recover when the store now serves a newer one.
+      // Both branches keep their original copy; only the click handler
+      // changes.
+      state.healthRequestedFor = '';
+      state.healthAnswer = null;
+      state.financial = { phase: 'loading', awaitingHealth: true };
+      renderRevisions();
+      loadHealth();
     });
 
     ui.currentPeriod.addEventListener('change', function () {
@@ -4735,6 +5769,12 @@
       if (!url.drawer && ui.evidence.classList.contains('is-open')) {
         closeEvidence(true);
       }
+      // A history move re-addresses the desk from the URL alone: the restored
+      // saved view (and its pinned bytes) no longer describes this frame.
+      state.savedActiveId = '';
+      state.savedRefusal = '';
+      state.savedStoreError = false;
+      state.pinnedRequest = null;
       if (url.symbol) {
         var next = resolveSymbol(url.symbol);
         if (next && next !== state.symbol) setCompany(next, false);
@@ -4752,12 +5792,14 @@
       if (url.redline) state.redlineId = url.redline;
       setTab(url.peers ? 'peers' : url.tab, false);
       if (url.drawer) openDrawerFromUrl(url);
+      renderSavedUI();
     });
   }
 
   function init() {
     cacheUi();
     bindEvents();
+    initSavedBriefcase();
     updateLocalizedAttributes();
     // tier_preview.js resolves the visitor's tier from the session cookie before
     // any network call and stamps it on <html>; both scripts are deferred, so it
@@ -4807,10 +5849,42 @@
       writeUrl: writeUrl,
       readUrlParams: readUrlParams,
       applyUrlState: applyUrlState,
+      setTab: setTab,
       closeDrawerAndSync: closeDrawerAndSync,
       renderCellEvidence: renderCellEvidence,
       cellEvidenceFromControl: cellEvidenceFromControl,
-      bindEvents: bindEvents
+      bindEvents: bindEvents,
+      // X2-s saved-views seams (same opt-in contract as above).
+      initSavedBriefcase: initSavedBriefcase,
+      renderSavedUI: renderSavedUI,
+      restoreSavedView: restoreSavedView,
+      performSavedSave: performSavedSave,
+      savedRenameActive: savedRenameActive,
+      savedDeleteActive: savedDeleteActive,
+      reResolveSavedView: reResolveSavedView,
+      buildSavedViewInput: buildSavedViewInput,
+      backfillSavedAgainst: backfillSavedAgainst,
+      activePinnedRequest: activePinnedRequest,
+      reconcileSavedActive: reconcileSavedActive,
+      savedSavePhase: savedSavePhase,
+      savedGenerationStale: savedGenerationStale,
+      exportQueryBody: exportQueryBody,
+      runExport: runExport,
+      // PF-1..PF-4 seams (same opt-in contract as above): the cutoff helper,
+      // the health fetch and the financial chain, for the dependency-free
+      // Node contract suite. Production never sets this sentinel.
+      policyClocks: policyClocks,
+      latestCutoffs: latestCutoffs,
+      selectedGeneration: selectedGeneration,
+      setCompany: setCompany,
+      loadHealth: loadHealth,
+      ensureFinancialData: ensureFinancialData,
+      ensureStatements: ensureStatements,
+      renderStatementTree: renderStatementTree,
+      peerExclusionCopy: peerExclusionCopy,
+      financialPost: financialPost,
+      renderRevisions: renderRevisions,
+      setAsofControlsFromState: setAsofControlsFromState
     };
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init, { once: true });

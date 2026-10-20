@@ -97,7 +97,9 @@ def check(ledger: Path, pre_rows: int | None = None) -> tuple[int, dict]:
         return EXIT_NO_LEDGER, info
     try:
         import pandas as pd  # noqa: PLC0415
-        df = pd.read_parquet(ledger)
+        # pyarrow readahead worker teardown abort after the exit code is decided
+        # (SKEWFLAKE): single-threaded read so the decided exit code survives.
+        df = pd.read_parquet(ledger, use_threads=False)
     except Exception as exc:  # noqa: BLE001
         info["reason"] = f"parquet read failed: {exc}"
         return EXIT_NO_LEDGER, info

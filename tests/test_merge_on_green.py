@@ -3591,17 +3591,14 @@ INCIDENT_4607_FILES = [
 ]
 PROVEN_AT_0742 = "2026-08-05T07:42:00Z"
 MAIN_MOVED_AT_1026 = "2026-08-05T10:26:00Z"
-#: The #7958 footprint as a records-only pull request. As filed (2026-09-24) it
-#: also carried two `mockups/evidence/` captures; since #8287 (2026-10-02) ci.yml
-#: owns `mockups/evidence/**` ON PURPOSE — an evidence-only diff must run the
-#: receipt-corpus gate (#8278 landed a malformed receipt through that gap) — so
-#: those captures no longer model "owned by no path-filtered gate". The exemplar
-#: keeps only the handoff records, which no workflow path filter owns;
-#: `test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green`
-#: asserts exactly that and is what demanded this change.
+#: #7958 originally changed only records, without owning a tested surface.
+#: Both historical locations are now intentionally gated: mockups/evidence/**
+#: since #8287, and agentos/** with the R2 knowledge contracts. Preserve the
+#: incident's unowned-record shape with notes/ instead of exempting Agent OS.
+#: The end-to-end test checks this exemplar against the actual workflow gates.
 INCIDENT_7958_FILES = [
-    "agentos/handoffs/WS-F04-X1-2026-09-24.md",
-    "agentos/handoffs/WS-F04-X1-2026-09-24-R2.md",
+    "notes/WS-F04-X1-2026-09-24.md",
+    "notes/WS-F04-X1-2026-09-24-R2.md",
 ]
 
 
@@ -4198,8 +4195,8 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
 ):
     """#7958 (2026-09-24), against the REAL workflow gates.
 
-    Files only under `agentos/handoffs/` (the `mockups/evidence/` captures the
-    real #7958 carried are a gated surface since #8287, 2026-10-02 — see
+    An unowned records-only exemplar under `notes/` (both historical
+    `agentos/handoffs/` and `mockups/evidence/` are now gated — see
     INCIDENT_7958_FILES); main takes product commits inside `engine/**` and
     `scripts/` after the head's proof concluded green. The sweeper refreshed
     this shape three times
@@ -4228,7 +4225,7 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     freshness = MOG.ProofFreshness.build("acme/widgets", "read")
     assert freshness.surface_of(4242) == set(), (
         "the #7958 shape must own no entry of any real path-filtered gate; if a "
-        "workflow now owns agentos/ or mockups/evidence/, this incident shape has "
+        "workflow now owns notes/, this incident shape has "
         "changed and the test — not the sweeper — needs a new exemplar"
     )
 
@@ -4245,6 +4242,18 @@ def test_incident_7958_a_records_only_pull_request_merges_on_its_concluded_green
     assert any(call[0] == "PUT" and call[1].endswith("/merge") for call in calls)
     out = capsys.readouterr().out
     assert "own no path-filtered gate entry" in out, out
+
+
+def test_agentos_records_have_a_real_workflow_gate(monkeypatch):
+    """R2 handoffs can no longer use the historical unowned-record shortcut."""
+    _fake_api(
+        monkeypatch,
+        check_pages={1: {"total_count": 0, "check_runs": []}},
+        main_commits=[],
+        pr_files=["agentos/handoffs/WS-F04-X1-2026-09-24.md"],
+    )
+    freshness = MOG.ProofFreshness.build("acme/widgets", "read")
+    assert "agentos/**" in freshness.surface_of(4242)
 
 
 def test_incident_7958_shape_with_unreadable_files_still_re_proves(monkeypatch):
@@ -6492,6 +6501,55 @@ def test_the_rotation_reaches_every_pull_request_so_none_can_be_starved():
         f"{len(armed) - len(reached)} pull request(s) were starved across "
         f"{buckets} rotations"
     )
+
+
+@pytest.mark.parametrize("span,cap", [(80, 100), (100, 100), (100, 25), (72, 100), (93, 25)])
+def test_rotation_reaches_every_first_position_despite_smaller_refresh_budget(span, cap):
+    """Evaluation coverage is insufficient when only one refresh slot is free.
+
+    With span=100/cap=100 the old order never moves; span=80/cap=100
+    visits only four first positions. Every ordinary PR must get a turn at
+    the front even when all prior update attempts prove conflicted.
+    """
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(span):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        assert {pull["number"] for pull in ordered} == set(range(1, span + 1))
+        assert len(ordered) == span
+        reached.add(ordered[0]["number"])
+    assert reached == set(range(1, span + 1))
+
+
+@pytest.mark.parametrize("span,cap,buckets", [(80, 100, 12), (100, 100, 15), (100, 25, 16)])
+def test_refresh_attempt_window_reaches_whole_backlog_without_larger_budget(span, cap, buckets):
+    armed = [_pull(number) for number in range(1, span + 1)]
+    reached = set()
+    for bucket in range(buckets):
+        ordered = MOG.sweep_order(
+            armed, cap=cap, now=bucket * MOG.ROTATION_BUCKET_SECONDS
+        )
+        reached.update(pull["number"] for pull in ordered[:MOG.MAX_REFRESHES_PER_SWEEP])
+    assert reached == set(range(1, span + 1))
+    assert MOG.MAX_REFRESHES_PER_SWEEP == 8
+    assert MOG.MAX_IN_FLIGHT_PR_PROOFS == 8
+
+
+def test_rotation_phase_preserves_repair_lease_and_trigger_priority():
+    ordinary = [_pull(number) for number in range(1, 78)]
+    repair = _pull(500, labels=("merge-on-green", "main-red-repair"))
+    lease = _pull(600)
+    hot = _pull(700)
+    hot["head"]["sha"] = "f" * 40
+    for bucket in (0, 4, 8, 79, 500):
+        ordered = MOG.sweep_order(
+            ordinary + [repair, lease, hot], cap=100,
+            refresh_lease_number=600, trigger_head_sha="F" * 40,
+            now=bucket * MOG.ROTATION_BUCKET_SECONDS,
+        )
+        assert [pull["number"] for pull in ordered[:3]] == [500, 600, 700]
 
 
 def test_a_main_red_repair_pull_request_is_never_deferred_by_the_cap():

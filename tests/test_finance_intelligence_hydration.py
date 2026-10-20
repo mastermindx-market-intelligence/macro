@@ -1292,6 +1292,155 @@ def test_a_phone_card_names_its_identity_state(lang) -> None:
     assert seen == set(words), seen
 
 
+def _case_document() -> dict:
+    fixture = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "finance_case_signal"
+        / "synthesis_v0.json"
+    )
+    return json.loads(fixture.read_text(encoding="utf-8"))
+
+
+def _unmeasured_case_row() -> dict:
+    document = _case_document()
+    return next(
+        row
+        for row in document["cases"]
+        if row["descriptive_evidence_state"] == "MARKET_AND_VALUATION_MEASURED"
+    )
+
+
+@needs_node
+def test_unmeasured_case_paints_not_yet_evaluable_falsifier() -> None:
+    """Admitted projector output on the harness slice paints NOT_YET_EVALUABLE.
+
+    Placement goes through apply_page_signal — the only public placement path.
+    The page carries every slice_id the fixture rows name (card_networks and
+    exchanges_trading_venues), and the painted first-vertical slice is
+    card_networks, the row's own slice. A document that never calls the
+    projector keeps the falsifier list blank (the painter clears it when
+    falsifiers is empty).
+    """
+    from engine.sector_intelligence.finance_page_signal import apply_page_signal
+
+    row = _unmeasured_case_row()
+    assert row["slice_id"] == "card_networks"
+    doc = copy.deepcopy(VALID_DOC)
+    base = doc["slices"][0]
+    painted_ids = ["card_networks", "exchanges_trading_venues"]
+    doc["slices"] = [base] + [
+        dict(copy.deepcopy(base), slice_id=sid, name_en=f"Finance {sid}",
+             name_zh=f"金融 {sid}", falsifiers=[], rerating=dict(base["rerating"], falsifier_ids=[]))
+        for sid in painted_ids
+    ]
+    doc["coverage"]["first_vertical"]["slice_ids"] = painted_ids
+    apply_page_signal(_case_document(), doc)
+    snap = _run({"routes": _route(doc)})
+    markup = snap["first"]["dom"]
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in markup
+    assert row["primary_limit"] in markup
+    item = _dom(snap["first"]).one("li", "fi-falsifier")
+    assert item.attrs.get("data-state-falsifier") == "NOT_YET_EVALUABLE"
+    assert item.one("span", "fi-falsifier-statement").text() == row["primary_limit"]
+
+
+@needs_node
+def test_page_signal_paints_not_yet_evaluable_on_card_networks() -> None:
+    """Admission places the alpha falsifier on card_networks, the painted slice.
+
+    The composer's slices[0] is not card_networks. The page paints
+    coverage.first_vertical.slice_ids[0], which is card_networks. This test
+    calls apply_page_signal rather than the module-private placement helper.
+    """
+    from engine.sector_intelligence.finance_page_signal import apply_page_signal
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs,
+        _knowledge_cutoff,
+        _today,
+    )
+
+    case_path = (
+        Path(__file__).resolve().parent
+        / "fixtures"
+        / "finance_case_signal"
+        / "synthesis_v0.json"
+    )
+    case = json.loads(case_path.read_text(encoding="utf-8"))
+    alpha = next(
+        row for row in case["cases"] if row["canonical_case_id"] == "syn-fin-case-alpha"
+    )
+    doc = compose_finance_projection(
+        _default_8slice_inputs(),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    assert doc["coverage"]["first_vertical"]["slice_ids"][0] == "card_networks"
+    assert doc["slices"][0]["slice_id"] != "card_networks"
+    apply_page_signal(case, doc)
+    assert doc["slices"][0]["falsifiers"] == []
+    card = next(sl for sl in doc["slices"] if sl["slice_id"] == "card_networks")
+    assert card["falsifiers"][0]["state"] == "NOT_YET_EVALUABLE"
+    assert card["falsifiers"][0]["statement"] == alpha["primary_limit"]
+    snap = _run({"routes": _route(doc)})
+    markup = snap["first"]["dom"]
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in markup
+    assert alpha["primary_limit"] in markup
+
+
+@needs_node
+def test_roster_hint_paints_unvalidated_chip_without_a_route() -> None:
+    """Roster symbol V paints an unvalidated identity chip and no stock route.
+
+    The row is built the way the witness-hint compose test builds it:
+    hint_binding("V") is the identity binding. record_id stays on that
+    binding. The company-row identity keeps the four schema keys.
+    """
+    from engine.sector_intelligence.finance_projection import compose_finance_projection
+    from engine.sector_intelligence.finance_witness_hints import hint_binding
+    from tests.test_finance_intelligence_projection import (
+        _default_8slice_inputs,
+        _default_operating_record,
+        _knowledge_cutoff,
+        _today,
+    )
+
+    binding = hint_binding("V")
+    assert binding["record_id"] == "fin-research-v-2025"
+    assert binding["state"] == "RESEARCH_HINT_UNVALIDATED"
+    record = _default_operating_record(
+        slice_id="card_networks",
+        ticker="V",
+        identity_state="IDENTITY_VALIDATED",
+    )
+    document = compose_finance_projection(
+        _default_8slice_inputs(
+            identity_bindings={"V": binding},
+            source_records=[record],
+        ),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    rows = [row for row in document["company_exposures"] if row["ticker_hint"] == "V"]
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["company_route"]["href"] is None
+    assert "record_id" not in row["identity"]
+    assert set(row["identity"]) == {
+        "state",
+        "company_node_id",
+        "security_ref",
+        "listing_note",
+    }
+    assert row["identity"]["state"] == "RESEARCH_HINT_UNVALIDATED"
+    section = _dom(_run({"routes": _route(document)})["first"]).one(
+        "section", id="company-exposure"
+    )
+    painted = section.one("tr", data_row_id=row["row_id"])
+    assert painted.attrs.get("data-state-identity") == "RESEARCH_HINT_UNVALIDATED"
+
+
 @needs_node
 def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     """The card took the first six cells of any vertical: a company with a cell
@@ -1307,3 +1456,79 @@ def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     lines = [p.one("strong").text().rstrip(":") for p in card.find("p") if p.find("strong")]
     assert len(tr.find("span", "fi-exposure-chip")) == len(heads) == 8
     assert lines == heads
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# W20-A Spec 1 — the not-connected shell keeps the committed, data-free lists.
+# ──────────────────────────────────────────────────────────────────────────
+
+def _w20a_scene(lang: str, read_url: "str | None", routes: dict | None = None) -> dict:
+    scene: dict = {
+        "lang": lang,
+        "sectionHtml": {
+            "rerating-map": (
+                '<ul class="fi-falsifiers" data-fi-mount="falsifiers-static">'
+                '<li class="fi-falsifier" data-falsifier-id="syn-fin-case-alpha">'
+                'Not yet evaluable · syn-fin-case-alpha</li></ul>'),
+            "company-exposure": (
+                '<ul class="fi-hint-roster">'
+                '<li class="fi-hint-row" data-record-id="fin-research-v-2025">'
+                'fin-research-v-2025</li></ul>'),
+        },
+    }
+    if read_url is not None:
+        scene["readUrl"] = read_url
+    if routes is not None:
+        scene["routes"] = routes
+    return scene
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_w20a_not_connected_keeps_committed_hint_and_watching_visible(lang: str) -> None:
+    snap = _run(_w20a_scene(lang, ""))["first"]
+    assert snap["fetchCalls"] == []  # empty URL must never reach fetchJson
+    assert snap["noticeEn"] == "Not yet connected to the evidence service."
+    assert snap["noticeZh"] == "尚未接入证据服务。"
+    hidden_ids = [h["id"] for h in snap["displayNone"]]
+    for sid in ("what-changed", "system-map", "subtheme-atlas",
+                "macro-matrix", "constraint-map"):
+        assert sid in hidden_ids, f"{sid} must stay hidden"
+    for sid in ("rerating-map", "company-exposure"):
+        assert sid not in hidden_ids, f"{sid} keeps its own display"
+    hidden_classes = [h["className"] for h in snap["displayNone"]]
+    for cls in ("fi-falsifiers", "fi-hint-roster", "fi-section-head"):
+        assert cls not in hidden_classes, f"{cls} must not be hidden"
+    hidden_mounts = {h["mount"] for h in snap["displayNone"]}
+    for mount in ("slice-select", "rerating-steps", "rerating-bridge", "falsifiers",
+                  "conflict-list", "exposure-thead", "exposure-thead-more",
+                  "exposure-rows", "exposure-rows-more", "exposure-more",
+                  "exposure-cards", "exposure-cards-more"):
+        assert mount in hidden_mounts, f"empty mount {mount} must be hidden"
+    dom = _dom(snap)
+    assert dom.one("li", "fi-falsifier", data_falsifier_id="syn-fin-case-alpha")
+    assert dom.one("li", "fi-hint-row", data_record_id="fin-research-v-2025")
+
+
+@needs_node
+def test_w20a_other_notice_kinds_still_hide_everything() -> None:
+    routes_503 = {"__default__": {"status": 503, "body": '{"detail":"down"}',
+                                  "contentType": "application/json"}}
+    routes_401 = {"__default__": {"status": 401, "body": '{"detail":"auth"}',
+                                  "contentType": "application/json"}}
+    for routes in (routes_503, routes_401):
+        snap = _run(_w20a_scene("en", None, routes))["first"]
+        hidden_ids = [h["id"] for h in snap["displayNone"]]
+        assert "rerating-map" in hidden_ids and "company-exposure" in hidden_ids
+        hidden_classes = [h["className"] for h in snap["displayNone"]]
+        assert "fi-falsifiers" not in hidden_classes  # hidden with its parent section
+        assert "fi-hint-roster" not in hidden_classes
+
+
+@needs_node
+def test_w20a_stub_url_default_is_unchanged() -> None:
+    # A scenario without readUrl still fetches the stub exactly once, as before.
+    snap = _run(_w20a_scene("en", None, {"__default__": {"status": 503,
+                                                          "body": '{"detail":"down"}',
+                                                          "contentType": "application/json"}}))
+    assert snap["first"]["fetchCalls"] == ["/__fi_stub__"]

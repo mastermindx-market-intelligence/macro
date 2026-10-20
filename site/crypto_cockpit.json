@@ -2,19 +2,28 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-10",
-  "generated_at": "2026-10-13T01:45:44+00:00",
+  "as_of": "2026-10-17",
+  "generated_at": "2026-10-20T05:28:38+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 82482.12,
-    "change_24h_pct": 0.47,
-    "stance_en": "STRONG RISK-ON",
-    "stance_zh": "强烈偏多",
-    "summary_en": "The big picture reads strongly risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向明显偏多。支撑来自基本面与动量；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 36,
-    "exposure_pct": 100,
+    "price": 81495.85,
+    "change_24h_pct": -0.55,
+    "stance_en": "RISK-ON",
+    "stance_zh": "偏多",
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the macro backdrop and public attention. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自宏观环境与大众关注度。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 24,
+    "exposure_pct": 41,
     "gate_active": false
+  },
+  "decision": {
+    "schema": "btc.decision/v1",
+    "status": "ok",
+    "as_of": "2026-10-17",
+    "integrity_ok": true,
+    "final_exposure_pct": 41,
+    "errors": [],
+    "authority_source": "btc.decision/v1.final.exposure_pct"
   },
   "axes": [
     {
@@ -38,9 +47,9 @@
           "label_en": "Structure",
           "label_zh": "结构",
           "source": "master.board.structure",
-          "state_en": "Constructive",
-          "state_zh": "偏多",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "DIRECTIONAL"
         },
         {
@@ -48,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -69,7 +78,7 @@
         "tone": "neutral",
         "grade": "EXTREMES"
       },
-      "spark_source": "signals.mvrv_z",
+      "spark_source": "signals.cycle_position",
       "receipt_members": [
         {
           "key": "cycle",
@@ -117,7 +126,7 @@
         "tone": "neutral",
         "grade": null
       },
-      "spark_source": "signals.etf_flow_z",
+      "spark_source": "signals.stbl_growth",
       "receipt_members": [
         {
           "key": "stbl",
@@ -153,9 +162,9 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-10"
+        "as_of": "2026-10-17"
       },
-      "spark_source": "signals.oi_mcap_ratio",
+      "spark_source": "signals.leverage_stress",
       "receipt_members": [
         {
           "key": "funding",
@@ -200,9 +209,9 @@
           "label_en": "Miner economics",
           "label_zh": "矿工经济",
           "source": "master.board.miner",
-          "state_en": "Capitulation (bottoming)",
-          "state_zh": "投降（筑底）",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "NEW"
         },
         {
@@ -241,28 +250,29 @@
         "tone": "bear",
         "grade": "CONFIRMED"
       },
-      "spark_source": "signals.macro_score",
+      "spark_source": "signals.global_m2_yoy",
       "receipt_members": [
         {
           "key": "beta",
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Limited downside",
+          "state_zh": "下行受限",
+          "tone": "bull",
           "grade": "CONFIRMED"
         }
       ]
     }
   ],
   "authority": {
-    "sizing_source": "signals.alloc_optimal",
+    "sizing_source": "btc.decision/v1.final.exposure_pct",
     "stance_source": "btc_master.synthesize",
     "axis_contract": "COCKPIT_AXIS_PRESENTATION",
     "no_new_arithmetic": true
   },
   "future_consumers": [
+    "crypto.html:H5",
     "crypto.html:H6",
     "index.html:crypto-product-card",
     "neural-web:crypto-lens"
