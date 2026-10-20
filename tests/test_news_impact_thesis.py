@@ -602,9 +602,12 @@ def test_case3_correction_supersedes() -> None:
     assert "source_correction" in view["material_delta_triggers"]
     assert "changed_numeric_terms" in view["material_delta_triggers"]
     armed = {w["code"]: w["armed"] for w in view["weakening_conditions"]}
-    assert armed.get("source_correction_reduces_magnitude") is True
-    assert "restated" in view["display"]["plain_status"]
-    assert "28 September" in view["display"]["what_we_are_watching"] or "earlier" in view["display"]["what_we_are_watching"]
+    # Legacy scalar-only leaves do not establish compatible quantity terms.
+    assert armed.get("source_correction_reduces_magnitude") is False
+    assert "source correction" in view["display"]["plain_status"].lower()
+    assert "28 September" not in json.dumps(view["display"])
+    assert "remaining authorization" not in view["display"]["plain_status"]
+    assert "Review the corrected terms" in view["display"]["what_we_are_watching"]
 
 
 def test_case4_contradiction_absence() -> None:
