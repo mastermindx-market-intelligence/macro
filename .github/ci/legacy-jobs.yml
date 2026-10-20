@@ -18429,8 +18429,11 @@ jobs:
     # like the committed site/factordata/cn_reversal_sleeve.json; it imports only copy,
     # pathlib and jinja2 and never runs the builder. It pins the graded-window block (date
     # span, registered-but-ungraded count, horizon, median excess, overlapping-window note)
-    # and the sizing chip's bilingual dominant driver. Exclusive so the page's own suite does
-    # not widen any shared job's inferred scope (the packing-probe ceilings).
+    # and the sizing chip's bilingual dominant driver. A second suite (W30-L37) pins the
+    # forward-ledger rows table (newest first, capped at 12) and the CSI300-relative and
+    # pre-2024 basis cells, each degrading to a dash on a missing or non-numeric value.
+    # Exclusive so the page's own suites do not widen any shared job's inferred scope (the
+    # packing-probe ceilings).
     scope: exclusive
     paths:
       - "templates/cn_reversal_sleeve.html.j2"
@@ -18440,6 +18443,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_cn_reversal_sleeve_ledger_display.py"
+      - "tests/test_cn_reversal_sleeve_rows_basis.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -18449,8 +18453,10 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jinja2
-      - name: China reversal sleeve — graded window, overlap note, sizing-chip driver
-        run: python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py -q -p no:cacheprovider
+      - name: China reversal sleeve — graded window, sizing-chip driver, ledger rows, basis cells
+        run: >-
+          python -m pytest tests/test_cn_reversal_sleeve_ledger_display.py
+          tests/test_cn_reversal_sleeve_rows_basis.py -q -p no:cacheprovider
 
   regional-baskets-scorecard:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
