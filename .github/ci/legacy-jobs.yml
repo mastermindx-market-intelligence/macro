@@ -32952,6 +32952,10 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - engine/options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms.py
+      - tests/test_options_occ_contract_terms_native.py
+      - docs/runbooks/OPTIONS_OCC_CONTRACT_TERMS.md
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -32966,7 +32970,9 @@ jobs:
           python -m pytest
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
-          tests/test_options_alpha_exact_option_outcome.py -q -rs
+          tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_occ_contract_terms.py
+          tests/test_options_occ_contract_terms_native.py -q -rs
 
   product-experience-registry:
     if: ${{ false }}
@@ -37729,3 +37735,133 @@ jobs:
         run: |
           python tests/test_options_pilot_study_adapter.py
           python tests/test_options_pilot_chronology.py
+
+  commodities-research-workspace:
+    if: ${{ false }}  # Executed by the required PR pack runner.
+    gate: code
+    scope: exclusive
+    # R3 uses inline fixtures and temporary files; no collector or scoring run.
+    # Retain the complete named import/read closure and ancestor initializers.
+    # This scope adds no packing exception or global-selection threshold.
+    paths:
+      - "collectors/__init__.py"
+      - "collectors/base.py"
+      - "collectors/commodity_carry.py"
+      - "collectors/fred.py"
+      - "collectors/yahoo.py"
+      - "config.yml"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/dataset_registry.yml"
+      - "config/delisted_symbols.yml"
+      - "config/metabolism_budget.yml"
+      - "config/usgs_mcs_sources.yml"
+      - "engine/__init__.py"
+      - "engine/basket_index.py"
+      - "engine/canon.py"
+      - "engine/china_gold_premium.py"
+      - "engine/codex_lane/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/commodity_alerts.py"
+      - "engine/commodity_carry_context.py"
+      - "engine/commodity_confluence.py"
+      - "engine/commodity_conviction.py"
+      - "engine/commodity_coverage_matrix.py"
+      - "engine/commodity_cycle_state.py"
+      - "engine/commodity_decision_workspace.py"
+      - "engine/commodity_index.py"
+      - "engine/commodity_inputs.py"
+      - "engine/commodity_mtf.py"
+      - "engine/commodity_news.py"
+      - "engine/commodity_signals.py"
+      - "engine/commodity_supply_context.py"
+      - "engine/commodity_workspace_adapter.py"
+      - "engine/conditions.py"
+      - "engine/critical_minerals_display.py"
+      - "engine/critical_minerals_supply.py"
+      - "engine/cycle_ontology.py"
+      - "engine/cycle_proxies.py"
+      - "engine/cycles.py"
+      - "engine/event_calendar.py"
+      - "engine/gdelt_client.py"
+      - "engine/hazard_score.py"
+      - "engine/i18n.py"
+      - "engine/indicators.py"
+      - "engine/inputs.py"
+      - "engine/intelligence_workspace/__init__.py"
+      - "engine/intelligence_workspace/contracts.py"
+      - "engine/intelligence_workspace/entity.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/ollama_provider.py"
+      - "engine/pit.py"
+      - "engine/pit_lag_recorder.py"
+      - "engine/provider_health.py"
+      - "engine/rates_command_basis.py"
+      - "engine/sector_cycles.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "engine/transmission_company_continuation.py"
+      - "engine/transmission_publish.py"
+      - "engine/trend_episode.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "engine/yield_momentum.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/cn_calendar.py"
+      - "lib/config.py"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/identity.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/forex_link.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/stooq.py"
+      - "lib/store.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "scripts/__init__.py"
+      - "scripts/build_commodities.py"
+      - "scripts/render_commodity_workspace_review.py"
+      - "site/basketdata/critical_minerals_supply.json"
+      - "templates/_commodity_decision_workspace.html.j2"
+      - "templates/commodities.html.j2"
+      - "templates/commodity-workspace.css"
+      - "templates/commodity-workspace.js"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_commodity_supply_context.py"
+      - "tests/test_commodity_workspace_contracts.js"
+    timeout-minutes: 7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+      - name: commodity research projection and physical-balance contracts
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py -q -p no:cacheprovider
+      - name: workspace state, import and company-return contracts
+        run: node tests/test_commodity_workspace_contracts.js
