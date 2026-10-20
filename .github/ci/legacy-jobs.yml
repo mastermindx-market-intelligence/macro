@@ -17997,6 +17997,50 @@ jobs:
       - name: pick lab liquidity gate regression tests
         run: python -m pytest tests/test_pick_lab_liquidity.py tests/test_pick_lab_core.py tests/test_pick_lab_hk_runner.py tests/test_pick_lab_hk_render.py -q
 
+  pick-lab-cn-render:
+    if: ${{ false }}  # executed inside ci-pack, not a disabled gate
+    gate: code
+    scope: exclusive
+    # CN Pick Lab renderer (W28-L28, 2026-10-20). engine/pick_lab/book.py stamps SCOREABLE once
+    # a book clears the PL-R4 sample floor, but the CN/HK status badge had no SCOREABLE entry,
+    # and picks_today cards read a "close" key the builder never writes (its fire rows carry
+    # close_at_fire), so no pick price printed. tests/test_pick_lab_cn_render.py leaves
+    # config/unrun_test_baseline.json here: it ran in no job. Its HK twin stays in
+    # pick-lab-liquidity. Own job, not a path on pick-lab-liquidity's run line: that append
+    # moved the index-template packing probe past its ceiling (5,824 > 5,822). scope: exclusive
+    # pins it to its static import closure, the modules engine/pick_lab/__init__.py imports and
+    # ancestor inits; the probe ceilings stay fixed.
+    paths:
+      - "engine/pick_lab/render_cn.py"
+      - "templates/china_stocks_lab.html.j2"
+      - "tests/test_pick_lab_cn_render.py"
+      - "engine/__init__.py"
+      - "engine/pick_lab/__init__.py"
+      - "engine/pick_lab/candidates.py"
+      - "engine/pick_lab/registry.py"
+      - "engine/pick_lab/signals_1d.py"
+      - "engine/pick_lab/snapshot.py"
+      - "engine/session_anchor.py"
+      - "engine/technicals.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "templates/china.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: CN Pick Lab — SCOREABLE badge + eyebrow, close_at_fire pick price
+        run: python -m pytest tests/test_pick_lab_cn_render.py -q -p no:cacheprovider
+
   global-liquidity-transmission:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
