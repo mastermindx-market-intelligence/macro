@@ -223,10 +223,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     from app import ticker_news
 
     db = _make_db(tmp_path)
-    decisions = [
-        store_mod.NewsReadRights.all_internal(),
-        None,
-    ]
+    current_rights = [store_mod.NewsReadRights.all_internal()]
     monkeypatch.setattr(
         ticker_news,
         "_news_db_path",
@@ -240,7 +237,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     monkeypatch.setattr(
         ticker_news,
         "_rights_for_user",
-        lambda user: decisions.pop(0),
+        lambda user: current_rights[0],
     )
 
     async def collect():
@@ -253,6 +250,8 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
             max_cycles=2,
         ):
             out.append(chunk)
+            if chunk.startswith("event: upsert"):
+                current_rights[0] = None
         return out
 
     chunks = asyncio.run(collect())
@@ -261,7 +260,7 @@ def test_sse_cycle_rechecks_rights_and_emits_removal_before_stopping(monkeypatch
     assert "event: upsert" in joined
     assert "Nvidia launches accelerator" in joined
     assert "event: restricted" in joined
-    assert "ticker news rights unavailable" in joined
+    assert "ticker news rights" in joined
 
 
 def test_rate_limit_is_bounded_per_authenticated_user(monkeypatch, tmp_path):
@@ -346,3 +345,25 @@ def test_snapshot_default_initial_page_is_twenty(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert seen == [20]
+
+
+def test_sse_revalidates_access_after_cached_read_before_delivery(monkeypatch, tmp_path):
+    from app import ticker_news
+    db = _make_db(tmp_path)
+    current_rights = [store_mod.NewsReadRights.all_internal()]
+    monkeypatch.setattr(ticker_news, "_news_db_path", lambda: db)
+    monkeypatch.setattr(ticker_news, "_security_for_ticker", lambda ticker, now: "SEC:US-XNAS-NVDA")
+    monkeypatch.setattr(ticker_news, "_rights_for_user", lambda user: current_rights[0])
+    class DelayedRead:
+        async def read(self, key, read):
+            page = read()
+            current_rights[0] = None  # policy expires while the read was in flight
+            return page
+    monkeypatch.setattr(ticker_news, "_STREAM_CHANGE_READER", DelayedRead())
+    async def collect():
+        return [chunk async for chunk in ticker_news._sse_events(
+            ticker="NVDA", user={"id": "fixture"}, after_sequence=0, poll_seconds=0, max_cycles=1)]
+    output = "".join(asyncio.run(collect()))
+    assert "event: restricted" in output
+    assert "event: upsert" not in output
+    assert "Nvidia launches accelerator" not in output

@@ -37,6 +37,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -693,6 +695,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -1884,6 +1887,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -2531,6 +2536,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -2790,6 +2796,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -3417,6 +3425,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -5579,6 +5588,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/rate_inflation_transmission.py"
@@ -6585,6 +6595,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/qbus_news_quality.py
       # Qualified joint exposure and the existing Hub publisher share this lane.
       - "engine/etf_flows.py"
       - "engine/exposure_math.py"
@@ -6817,6 +6828,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -8901,6 +8913,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -9579,6 +9593,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -19552,6 +19567,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -19926,6 +19942,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -20328,6 +20345,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -20485,6 +20503,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -22328,6 +22347,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -22957,6 +22978,7 @@ jobs:
       - engine/qbus_news_contract.py
       - engine/qbus_news_receipts.py
       - engine/qbus_news_reducer.py
+      - engine/qbus_news_retrieval.py
       - engine/qbus_news_store.py
       - engine/qbus_news_universe.py
       - engine/qbus_news_velocity.py
@@ -24794,6 +24816,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -24953,6 +24976,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -30276,6 +30300,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -30433,6 +30458,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -30771,6 +30797,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - app/ticker_news_stream.py
+      - engine/qbus_news_quality.py
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
@@ -31497,6 +31525,7 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_velocity.py"
@@ -33757,6 +33786,16 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - app/ticker_news_stream.py
+      - engine/massive_news.py
+      - engine/qbus_news_intake.py
+      - engine/qbus_news_quality.py
+      - engine/qbus_news_context.py
+      - scripts/benchmark_ticker_news.py
+      - scripts/verify_ticker_news_ui.py
+      - tests/test_massive_news.py
+      - tests/test_qbus_news_intake.py
+      - tests/test_shared_news_intelligence.py
       - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
       - "engine/liquidity_profile.py"
       - "scripts/stock_liquidity_profile.py"
@@ -34379,6 +34418,10 @@ jobs:
       - "engine/qbus_news_contract.py"
       - "engine/qbus_news_receipts.py"
       - "engine/qbus_news_reducer.py"
+      - "engine/qbus_news_retrieval.py"
+      - "tests/test_qbus_news_retrieval.py"
+      - "scripts/benchmark_qbus_news_retrieval.py"
+      - "scripts/verify_ticker_news_stream_ui.py"
       - "engine/qbus_news_store.py"
       - "engine/qbus_news_universe.py"
       - "engine/qbus_news_universe_snapshot.py"
@@ -34680,6 +34723,10 @@ jobs:
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_qbus_news_retrieval.py
+          tests/test_massive_news.py
+          tests/test_qbus_news_intake.py
+          tests/test_shared_news_intelligence.py
           tests/test_alpaca_news.py
           tests/test_benzinga_news.py
           tests/test_build_qbus_news_universe.py
