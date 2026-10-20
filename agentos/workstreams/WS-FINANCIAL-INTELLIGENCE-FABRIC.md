@@ -152,8 +152,12 @@ next_action: >
   A14/A18/A20/A43 CLOSED; A21/A36 PENDING_LIVE; A42/A45/A46 HUMAN_GATE (entitled
   browser profile, named once). Next: second A36 remeasure after the 2026-10-21T00:00Z
   core-catalogue clock (the manifest now runs the production pack and packet
-  producers); Z1 independent review of the A54 export ruling and of the whole
-  closure matrix (never the seat's own review); Q1 held-out labels from an
+  producers); Z1 r1 (fabric lane fif-z1rev-20261020-r1) CONSUMED 2026-10-20 —
+  FAIL: A43/A22 lowered to PARTIAL (test gaps), A54 RATIFIED, F3/F5 rebutted
+  (legacy-pack convention), record research/financial_intelligence_fabric/
+  FIF_Z1_INDEPENDENT_REVIEW_2026-10-20.md; next a fabric build lane adds the
+  tablet REQUIRED_CELLS cell + focus-restore assertion (A43) and a caplog
+  no-leak test (A22), then re-review only that diff; Q1 held-out labels from an
   independent labeler (A37 is a qualified abstain until then).
   Merge by hand with --match-head-commit on concluded green; never arm; never
   dispatch filing-forensics-sec, daily.yml or research-ingest.

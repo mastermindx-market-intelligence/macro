@@ -28,8 +28,8 @@
     "records"
   ],
   "summary": {
-    "CLOSED": 31,
-    "PARTIAL": 16,
+    "CLOSED": 30,
+    "PARTIAL": 17,
     "OPEN": 0,
     "PENDING_LIVE": 3,
     "HUMAN_GATE": 4
@@ -37,6 +37,9 @@
   "final_acceptance": {
     "claimable": false,
     "independent_acceptance": "Z1 pending",
+    "independent_acceptance_history": [
+      "Z1 r1 2026-10-20 (fif-z1rev-20261020-r1, base 830adc10): FAIL — F1 A43 and F2 A22 lowered to PARTIAL; F3/F5 rebutted (legacy-pack convention, run 39461860948); F4 A03 evidence amended; A54 RATIFIED. Re-review only the A43/A22 repairs."
+    ],
     "rule": "No phase, report, PR or green CI is a final claim while any case is not CLOSED; Z1 independent acceptance follows a fully CLOSED matrix."
   },
   "cases": [
@@ -81,9 +84,11 @@
       "evidence": [
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_disagreeing_same_report_duplicates_are_kept_and_break_the_chain",
         "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_rounded_link_classifies_rounded_consistent_and_mints_nothing",
-        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_repeated_chain_classifies_repeated_with_exact_edges"
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_repeated_chain_classifies_repeated_with_exact_edges",
+        "tests/test_fundamental_forensics_multi_filing_lineage.py::test_a_changed_tail_is_contradictory_and_never_mints"
       ],
-      "obligations": []
+      "obligations": [],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F4: the inconsistent leg was asserted only by an uncited test; evidence amended, stays CLOSED."
     },
     {
       "id": "A04",
@@ -390,7 +395,7 @@
         "tests/fundamental_forensics_a19_hostile.test.mjs::revisions table: hostile vintages, ids and policy echo render as text"
       ],
       "obligations": [],
-      "note": "Workbench: static sink and href guards plus hostile-payload renders of the statement tree, normalized table, evidence drawer and revisions table; mutation-checked (dropping an esc() call or binding a raw href fails the suite)."
+      "note": "Workbench: static sink and href guards plus hostile-payload renders of the statement tree, normalized table, evidence drawer and revisions table; mutation-checked (dropping an esc() call or binding a raw href fails the suite). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F3 (fundamental_forensics_a19_hostile.test.mjs \"executed only by a disabled job\") REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success). A19 stays CLOSED."
     },
     {
       "id": "A20",
@@ -452,12 +457,22 @@
       ],
       "condition": "Signed-out, unauthorized or wrong-entitlement request",
       "required_behavior": "Deny before opening private provider; no secret/source body in error or logging.",
-      "verdict": "CLOSED",
+      "verdict": "PARTIAL",
       "evidence": [
         "tests/test_fundamental_forensics_financial_query_api.py::test_provider_not_constructed_before_auth_or_admission",
-        "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers"
+        "tests/test_fundamental_forensics_financial_query_api.py::test_free_user_returns_403_with_private_headers",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_misbound_provider_returns_503",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_malformed_json_returns_400",
+        "tests/test_fundamental_forensics_financial_query_api.py::test_wrong_method_returns_405_with_private_headers"
       ],
-      "obligations": []
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add a caplog test proving the 401/403/503 paths log no secret, path, traceback or source body (the body scan already lives in _assert_error, tests/test_fundamental_forensics_financial_query_api.py:391-400; no test captures logs)."
+        }
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F2: lowered CLOSED->PARTIAL; the two cited tests check headers only; the response-body leak scan is _assert_error (forbidden /Users/, /opt/, traceback, R2, paid-user) exercised by the added evidence; log capture is unproven."
     },
     {
       "id": "A23",
@@ -726,7 +741,7 @@
           "next_action": "Remeasure by manifest after the 2026-10-21T00:00Z core-catalogue clock and PR #9799 land: the 2026-10-20 remeasure (research/financial_intelligence_fabric/FIF_A36_COVERAGE_REMEASURE_2026-10-20.md) reads 32,267/50,000 deep (0/250) and 63,202/100,000 core (0/1,000) with blockers census_identity_mismatch, legacy_field_id_alias, manifest_draft, manifest_unattested."
         }
       ],
-      "note": " 2026-10-20: measured tier proposal is emitted when the frozen target is not met (implementation gap met); the 250/1,000 target is not worker-editable."
+      "note": "2026-10-20: measured tier proposal is emitted when the frozen target is not met (implementation gap met); the 250/1,000 target is not worker-editable. 2026-10-20: PR #9884 (cov-wire) wires the coverage manifest's specialist and packet cells to the production pack producers and the frozen packet request (DEC:FIF-MANIFEST-PACKET-REQUEST-FROZEN-2026-10-20); sic_source follows the contract resolver (sec_submissions / unbound)."
     },
     {
       "id": "A37",
@@ -740,11 +755,12 @@
       "evidence": [],
       "obligations": [
         {
-          "kind": "implementation_gap",
+          "kind": "dependency_admission",
           "owner": "independent Q1 labeler (never the FIF seat or a pack lane)",
           "next_action": "Run the Q1 held-out evaluation per pack from an independently produced label set and commit the false-positive/abstention reports; research/financial_intelligence_fabric/FIF_A37_HELD_OUT_QUALIFIED_ABSTAIN_2026-10-20.md records that no labels exist yet, so all 12 packs abstain (qualified, not a pass)."
         }
-      ]
+      ],
+      "note": "Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) NOTE: obligation kind relabelled implementation_gap->dependency_admission (an external-labeler dependency, not a code gap)."
     },
     {
       "id": "A38",
@@ -857,13 +873,19 @@
       ],
       "condition": "EN/ZH desktop/tablet/mobile and keyboard use",
       "required_behavior": "Readable responsive layout, focus restore, no clipping and correct disabled/unavailable text.",
-      "verdict": "CLOSED",
+      "verdict": "PARTIAL",
       "evidence": [
         "tests/test_check_ui_visual_evidence.py::test_committed_evidence_corpus_has_zero_findings",
         "tests/test_fif_p2_evidence_capture.py::test_manifest_postprocess_populated"
       ],
-      "obligations": [],
-      "note": " 2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36)."
+      "obligations": [
+        {
+          "kind": "test_gap",
+          "owner": "FIF seat (fabric build lane)",
+          "next_action": "Add the tablet cell to REQUIRED_CELLS in tests/test_check_ui_visual_evidence.py (today desktop/mobile x en/zh x dark/light only) so the recaptured tablet corpus is guarded, and assert focus restore / disabled-control text on the keyboard set (tab_keys, drawer_trap); cite the P0 view contract RECEIPT_REST_CELLS_PER_VIEWPORT tablet receipt (tests/test_fundamental_forensics_p0_view_contract.py:299-302)."
+        }
+      ],
+      "note": "2026-10-20: PR #9879 fixes the tablet desk header (820px band) and recaptures mockups/evidence/fundamental_forensics_p2/populated and keyboard at desktop/tablet/mobile x en/zh x dark/light (keyboard tab_keys + drawer_trap force states); 0 wide, overflow false. r3 (2d23934a630b) repaired the first-viewport drift main's 10-12 receipt hid (saved-views row #9068 + holding reader #9771) with one closed Desk tools disclosure; en desktop tabs_px pin amended [633,694]->[647,708] (partial-coverage stat wrap), recorded in the contract note. PR #9882 removes the desk's colored left-edge accents under the 2026-10-18 Chairman rule (even neutral borders, design-ratchet tokens) with all five P2 sets recaptured on the r3 shell (8/8/8/48/36). Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F1: lowered CLOSED->PARTIAL; the cited tests prove corpus hygiene only, REQUIRED_CELLS has no tablet cell, and no cited test asserts focus restore, disabled text or readability."
     },
     {
       "id": "A44",
@@ -1032,7 +1054,7 @@
         "tests/test_fif_z0_closure_matrix.py::test_no_final_claim_while_any_row_is_open"
       ],
       "obligations": [],
-      "note": "This matrix plus its guard test; Z1 independent acceptance is still required before any final claim."
+      "note": "This matrix plus its guard test; Z1 independent acceptance is still required before any final claim. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10) F5 (all CLOSED rows CI-dark because their suites live only in .github/ci/legacy-jobs.yml) REBUTTED by the seat: legacy-pack jobs MUST declare `if: ${{ false }}` (scripts/run_ci_pack.py:83 DISABLED_IF, :1580-1583) so GitHub allocates no duplicate runner; ci-pack-0 (\"validate and run legacy CI pack\") still executes them, scoped by gate/scope/paths; fif-kernel-guards (.github/ci/legacy-jobs.yml:8902, gate code, scope exclusive, explicit paths) ran on ci.yml run 39461860948 (cov-wire @59eb8978, \"Selected jobs: fif-kernel-guards\", success); 36/39 cited suites are legacy-pack suites selected by that job when a PR touches FIF paths, 3 run in ci.yml. Z1 r1 verdict FAIL applied: F1/F2 lowered, F3/F5 rebutted, F4 amended, A54 ratified."
     },
     {
       "id": "A52",
@@ -1085,21 +1107,15 @@
       ],
       "condition": "Async export resumes after entitlement/cancellation or source change",
       "required_behavior": "Use existing job/export owner; immutable input refs and reauthorization; no second lifecycle.",
-      "verdict": "PARTIAL",
+      "verdict": "CLOSED",
       "evidence": [
         "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_csv_posts_are_byte_identical",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_identical_parquet_posts_are_byte_identical",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_without_auth_is_401_and_skips_provider",
         "tests/test_fundamental_forensics_query_exports.py::test_a54_reissue_after_a_new_generation_binds_the_new_receipt"
       ],
-      "obligations": [
-        {
-          "kind": "design_ruling",
-          "owner": "independent review lane (Z1), ratifying the FIF seat ruling",
-          "next_action": "Z1: an independent fabric review lane ratifies or rejects the seat ruling that export is a synchronous stateless re-issue (no export job owner, no second lifecycle, no cancellation state); the seat never calls its own review independent."
-        }
-      ],
-      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id. 2026-10-20: PR #9884 (cov-wire) wires the coverage manifest's specialist and packet cells to the production pack producers and the frozen packet request (DEC:FIF-MANIFEST-PACKET-REQUEST-FROZEN-2026-10-20); sic_source follows the contract resolver (sec_submissions / unbound)."
+      "obligations": [],
+      "note": "Re-issue re-authorizes (401 without auth, provider untouched) and, after a new generation publishes, binds the new receipt: X-FIF-Receipt-SHA256 names the JSON receipt that carries dataset_generation_id. Z1 r1 (fif-z1rev-20261020-r1, 2026-10-20, base 830adc10): RATIFY — export is a synchronous stateless re-issue (no export job owner, no second lifecycle, no cancellation state); the design_ruling obligation is discharged by that ratification."
     }
   ]
 }
