@@ -123,3 +123,93 @@ source review boundary, not an assertion that the overall program ended.
 Native coordination was posted on original PR #9662 comment `6291265578`. That
 carrier was observed at `902465f702a30abb943b08e792d670827a68650b`, now targeting
 main, with independent CI and admission work. No native source was modified here.
+
+
+## 2026-10-20 Extra High recovery: current-main integration and exact continuation
+
+The Chairman requested an exact recovery after an interrupted Pro turn and a
+return to Pro after this stabilized turn. The previous Studio screenshot capture
+was already fully reconciled and published under original #9611 at
+`fc38baaad091fc6af8410c8be43d23e261f435d7`. The retained original
+24/24-state manifest, zero failed requests, synthetic 14-behavior user-path
+proof, source hashes and no-live-admission limitations remain valid for that
+reviewed source. DO_NOT_REDO the resolved capture or create a new publisher.
+
+The original #9611 registered SSD worktree retained a pending non-force merge
+with Macro main `d59b99b9afbe99ef528ce80db0ff66f0d9846abc`.
+Its single generated HTML conflict had been resolved and staged, with no
+active matching capture/worker process or dirty unstaged files. The typed
+publisher committed the staged tree as local `bb81391d10152ea2bb54519ac19b3fc692cd9e89`,
+but left `MERGE_HEAD` and did not record main as a second parent. On the SAME
+original worktree/carrier, ordinary `GIT_EDITOR=true git merge --continue`
+then completed a proper two-parent merge
+`f2af107ec55a06e70660e12610b159341c2138a9` (parents bb81391d and
+d59b99b9). No ref was reset, rewritten, rehomed or force-pushed. The caller
+must not represent bb81391d alone as latest-base admission.
+
+A fresh remote main read found `3b49d6a5c8a6330652a926a8e5061e0dbb3d0387`
+after a preceding `444140f2446ef2025da07ce1b591e0c0ce4393d4`
+observation. Latest incremental main changed one commit/four files and did not
+overlap owned Bio pages. After a conflict-free merge-tree preflight, a second
+normal parent-preserving `git merge --no-ff --no-edit` produced local
+`c6f69b520fdfeb89fa1f23b9b6b9fadccb2126b9` (parents f2af107e,
+3b49d6a5). This was deliberately a merge rather than a destructive rebase of
+the already-pushed original carrier; it is not a claim that moving main cannot
+advance again.
+
+Fresh integrated-source proof: the broader six-file UI/contract suite produced
+**108 passed, one inherited shared-theme failure**, exit 1, PID 96325. The
+single failure remains
+`tests/test_chat_launcher_stub.py::test_no_dynamic_child_asset_is_document_relative`
+flagging `stock.html#` in the shared theme client; that file/test are not this
+increment's authored source. Twelve missing D0a test results on the first
+post-merge run were strictly absent sparse-checkout fixtures; all three frozen
+JSON files were restored byte-identically from current HEAD and the same suite
+then reduced to this one known test failure. No guard was softened.
+
+The integrated exact-source browser harness passed **14 behaviors, 16
+EN/ZH × dark/light × viewport combinations and eight real CJK font checks**,
+zero page errors (PID 93153, Chromium 129.0.6668.29), with strictly synthetic
+auth/API seams. Its actual generated HTML digest was
+`77ddc0babc3dafb79ae6b8c80b81eb1859b687e45541e9595b8242e4846427a2`
+and canonical emitted theme digest
+`831dd24140f792c41a159b72ff8b92bba9f20085cb11c4434408f53c887a832f`.
+Two existing curated CI import/packing scopes passed (2/2, 146.40s,
+PID 91446). The runtime-style guard passed (240 JS files, 44 injection
+owners/88 retained hits); source-claims scope passed. This is *local* proof
+and does not make the former immutable anonymous manifest a new current-head
+entitlement or production source witness.
+
+**Original scope and current authority remain unchanged.** PR #9611 is
+Draft/HOLD; R10/#9662/#6712 is owned by the separate BioCatalyst Correction
+Admission chat; Codex native-adoption receiver is
+`01a158fd-eaba-7342-8b59-081a483f2fc2`; DataOS qualification remains
+separate through #9617. No native writer, release hold, provider job or
+production source was modified by this frontend integration. The earlier
+read-only independent-review attempt returned `backend_unavailable`; the
+existing GitHub reviewer request is not a completed independent review.
+The old explicit platform denial on updating the legacy
+`verification-summary.json` and `IMPLEMENTATION.md` must not be retried
+or reframed; these existing published handoff/evidence paths carry the
+continuation instead.
+
+**The containing commit of this new addendum is the canonical current
+frontend checkpoint**, and the updated original PR #9611 conversation comment
+6291000963 is its GitHub readback. The source integration commits are exact
+immutable references. No merge into default main, deployment, actual
+authenticated session or product acceptance is claimed.
+
+Next three actions for the authorized Pro successor:
+
+1. Read #9611's current exact HEAD and hosted CI/check/review state. Reconcile
+   that HEAD with the existing Agent OS handoff and source manifest; repair
+   genuine introduced CI defects only on the original carrier. Keep the
+   inherited shared-theme failure with its responsible owner if still relevant.
+2. Obtain an independent source/visual review of the integrated Decision Desk
+   host. The previous R1 component review did not cover host R2; neither a
+   GitHub reviewer request nor synthetic browser screenshots count as acceptance.
+3. Consume the separately admitted native Company/DataOS input and publication
+   proof through #9662/#6712/#9617 and existing Codex carrier, then test an
+   actual entitled source-change/correction user journey and request lawful
+   Draft/HOLD release. No fabricated data, parallel identity plane or trade
+   authority.
