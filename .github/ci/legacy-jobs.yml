@@ -9091,6 +9091,11 @@ jobs:
       - "tests/test_fif_a21_publish_observation.py"
       - "tests/test_fif_x2_ownership_guards.py"
       - "tests/test_fif_specialist_packs.py"
+      # FIF Z0 A47 (2026-10-20): the recovery-drill receipts replay suite and
+      # the research driver + committed receipt it pins.
+      - "tests/test_fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/fif_a47_recovery_drill_receipts.py"
+      - "research/financial_intelligence_fabric/FIF_A47_RECOVERY_DRILL_RECEIPTS_2026-10-20.json"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9904,6 +9909,7 @@ jobs:
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
           tests/test_fif_z0_gap_a23_a38.py
+          tests/test_fif_a47_recovery_drill_receipts.py
           tests/test_fif_a21_publish_observation.py
           tests/test_fif_gsrc_capture.py
           tests/test_fif_source_rights.py
