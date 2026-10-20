@@ -2170,3 +2170,176 @@ def test_track_line_accrual_copy_still_renders_without_graded_rows(w23_render):
     f = _w23_frag(w23_render(rr={"track": _w23_track(graded=0)}), "trk")
     assert "Graded calls accruing — check back once alerts mature" in f
     assert "评分记录积累中" in f and "past readings graded" not in f
+
+# ── W23-L15: rates panel prints the producer's scored-leg gate + state labels ──
+
+_L15_GATE_EN = ("Display-only. Scored-leg gate: NO rate/inflation leg passed the "
+                "forward-drawdown bar with purged-CV robustness (see "
+                "reports/rate-inflation-transmission-calibration.md).")
+_L15_GATE_ZH = ("仅供展示。可计分腿检验：没有任何利率/通胀腿通过前瞻回撤门槛"
+                "并满足清洗交叉验证稳健性（详见校准报告）。")
+
+
+def _l15_lobe(state=True, gate=True):
+    """Fixture copy of the committed rates_transmission lobe (seat-quoted values)."""
+    lobe = {
+        "asof": "2026-10-16",
+        "headwinds": [
+            {"asset": "SPY", "net": -0.446, "verdict": "headwind"},
+            {"asset": "XLB", "net": -0.408, "verdict": "headwind"},
+        ],
+        "tailwinds": [{"asset": "TLT", "net": 0.313, "verdict": "tailwind"}],
+    }
+    if state:
+        lobe["state"] = {
+            "rates": {
+                "label": {"en": "Real 10y 2.88% (restrictive, rising — at a 5y extreme)",
+                          "zh": "实际10年期 2.88%（偏紧，处于5年极值）"},
+                "real_10y_pctile": 0.99,
+                "turn_watch": "extreme_watch",
+            },
+            "inflation": {
+                "label": {"en": "Core PCE 3.0% (above target, cooling)",
+                          "zh": "核心PCE 3.0%（高于目标）"},
+            },
+            "expectations": {
+                "label": {"en": "5y5y breakeven 2.34% vs model 2.77% (drifting down)",
+                          "zh": "5年5年盈亏平衡 2.34% vs 模型 2.77%（下行）"},
+            },
+        }
+    if gate:
+        lobe["scored_status"] = {"en": _L15_GATE_EN, "zh": _L15_GATE_ZH}
+    return lobe
+
+
+@pytest.fixture
+def l15_panel(tmp_path, monkeypatch):
+    """Real builder + real template; returns the rates-panel fragment for one lobe."""
+    import socket
+    from jinja2 import Environment, FileSystemLoader
+    from engine.i18n import tr, td
+    from scripts import build_macro_context as bmc
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("W23-L15 rendering permits no network I/O")
+
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    env = Environment(autoescape=True, loader=FileSystemLoader(
+        str(Path(bmc.__file__).resolve().parents[1] / "templates")))
+    env.globals.update(tr=tr, td=td, ASSET_NAMES=bmc.ASSET_NAMES)
+
+    def render(lobe):
+        ws = _r25_world_state()
+        if lobe is not None:
+            ws["rates_transmission"] = lobe
+        vm = bmc._build_view_model(_r25_snapshot(), ws, [], "2026-10-02",
+                                   tmp_path, regime_data=_r25_regime_data())
+        html = env.get_template("macro_context.html.j2").render(
+            vm=vm, built="2026-10-02 12:00 UTC", today="2026-10-02")
+        i = html.find("<!-- Rates Transmission -->")
+        j = html.find("<!-- FX / Dollar -->", i + 1)
+        assert i >= 0 and j > i, "rates panel markers missing from rendered page"
+        return html[i:j]
+
+    return render
+
+
+def _l15_legs(frag):
+    """(en, zh) flattened text legs of a fragment, one language visible at a time."""
+    flat = lambda s: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s)).strip()  # noqa: E731
+    en = re.sub(r'<span class="l-zh">.*?</span>', "", frag, flags=re.S)
+    zh = re.sub(r'<span class="l-en">.*?</span>', "", frag, flags=re.S)
+    return flat(en), flat(zh)
+
+
+def test_headwind_tailwind_carries_the_producer_scored_leg_gate():
+    from scripts import build_macro_context as bmc
+    out = bmc._build_headwind_tailwind({"rates_transmission": _l15_lobe()}, {})
+    assert out["rates"]["scored_status_en"] == _L15_GATE_EN
+    assert out["rates"]["scored_status_zh"] == _L15_GATE_ZH
+
+
+@pytest.mark.parametrize("bad", ["absent", None, "x", []],
+                         ids=["absent", "none", "str", "list"])
+def test_headwind_tailwind_gate_keys_are_none_when_the_gate_is_not_a_mapping(bad):
+    from scripts import build_macro_context as bmc
+    lobe = _l15_lobe()
+    if bad == "absent":
+        lobe.pop("scored_status")
+    else:
+        lobe["scored_status"] = bad
+    out = bmc._build_headwind_tailwind({"rates_transmission": lobe}, {})
+    assert out["rates"]["scored_status_en"] is None
+    assert out["rates"]["scored_status_zh"] is None
+
+
+def test_rates_panel_renders_the_three_producer_state_labels(l15_panel):
+    en, zh = _l15_legs(l15_panel(_l15_lobe()))
+    assert "Rates Real 10y 2.88% (restrictive, rising — at a 5y extreme)" in en
+    assert "Inflation Core PCE 3.0% (above target, cooling)" in en
+    assert "Expectations 5y5y breakeven 2.34% vs model 2.77% (drifting down)" in en
+    assert "利率 实际10年期 2.88%（偏紧，处于5年极值）" in zh
+    assert "通胀 核心PCE 3.0%（高于目标）" in zh
+    assert "通胀预期 5年5年盈亏平衡 2.34% vs 模型 2.77%（下行）" in zh
+    assert "S&amp;P 500 headwind -0.45" in en
+    assert "As of 2026-10-16" in en
+
+
+def test_rates_panel_renders_the_scored_leg_gate_bilingually(l15_panel):
+    en, zh = _l15_legs(l15_panel(_l15_lobe()))
+    assert _L15_GATE_EN in en
+    assert _L15_GATE_ZH in zh
+    assert _L15_GATE_ZH not in en and _L15_GATE_EN not in zh
+
+
+def test_rates_panel_never_prints_a_percentile_rank_word(l15_panel):
+    f = l15_panel(_l15_lobe())
+    low = f.lower()
+    for banned in ("percentile", "z-score", "falsifier", "refuted", "证伪",
+                   "extreme_watch", "extreme watch", "0.99"):
+        assert banned not in low, banned
+    en, _zh = _l15_legs(f)
+    assert "5y extreme" in en
+
+
+@pytest.mark.parametrize("st", [{}, None, {"rates": {}}, {"rates": {"label": {}}},
+                                {"rates": {"label": None}}, {"rates": {"label": "x"}}],
+                         ids=["empty", "none", "rates-empty", "label-empty",
+                              "label-none", "label-str"])
+def test_rates_panel_silent_when_state_and_gate_absent(l15_panel, st):
+    lobe = _l15_lobe(gate=False)
+    lobe["state"] = st
+    f = l15_panel(lobe)
+    en, _zh = _l15_legs(f)
+    assert "liq-row" not in f
+    assert "Scored-leg" not in f
+    assert "S&amp;P 500 headwind -0.45" in en
+    assert "As of 2026-10-16" in en
+
+
+def test_rates_panel_rows_follow_the_headwind_list_in_producer_order(l15_panel):
+    en, _zh = _l15_legs(l15_panel(_l15_lobe()))
+    order = ["S&amp;P 500 headwind", "Real 10y 2.88%", "Core PCE 3.0%",
+             "5y5y breakeven 2.34%", "Scored-leg gate", "As of 2026-10-16"]
+    pos = [en.find(x) for x in order]
+    assert all(p >= 0 for p in pos), pos
+    assert pos == sorted(pos) and len(set(pos)) == len(pos)
+
+
+def test_rates_panel_missing_inflation_lobe_omits_only_that_row(l15_panel):
+    lobe = _l15_lobe()
+    del lobe["state"]["inflation"]
+    f = l15_panel(lobe)
+    en, _zh = _l15_legs(f)
+    assert "Core PCE" not in en
+    assert "Real 10y 2.88%" in en and "5y5y breakeven" in en
+    assert "Scored-leg gate" in en
+    assert f.count("liq-row") == 3
+
+
+def test_rates_panel_without_a_lobe_keeps_the_empty_state(l15_panel):
+    f = l15_panel(None)
+    assert "No rates transmission data." in f
+    assert "暂无利率传导数据。" in f
+    assert "liq-row" not in f
