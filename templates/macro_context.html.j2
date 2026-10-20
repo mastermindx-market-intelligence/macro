@@ -1328,6 +1328,18 @@ html[data-theme="light"] {
         {% else %}
         <div class="empty-state" style="padding:14px;font-size:13px">{{ t('No rates transmission data.', '暂无利率传导数据。') }}</div>
         {% endif %}
+        {%- set _st = rt.state if rt.state is mapping else {} %}
+        {%- for _k, _en, _zh in (('rates', 'Rates', '利率'), ('inflation', 'Inflation', '通胀'),
+           ('expectations', 'Expectations', '通胀预期')) %}
+          {%- set _lb = _st.get(_k).label if _st.get(_k) is mapping else none %}
+          {%- if _lb is mapping and _lb.en %}
+          <div class="liq-row"><span class="stat-key">{{ t(_en, _zh) }}</span>
+          <span>{{ t(_lb.en, _lb.zh) }}</span></div>
+          {%- endif %}
+        {%- endfor %}
+        {%- if rt.scored_status_en %}
+        <div class="liq-row c-muted">{{ t(rt.scored_status_en, rt.scored_status_zh) }}</div>
+        {%- endif %}
         {% if rt.asof %}<div class="meta-foot">{{ t('As of', '截至') }} {{ rt.asof }}</div>{% endif %}
       </div>
 
