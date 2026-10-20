@@ -18,7 +18,8 @@ levels, fill, cover and change, never a buy/sell.
 HONEST DATA BOUNDARIES (surfaced verbatim on the page):
   * Only the US (EIA, weekly) and Japan (METI) break out GOVERNMENT strategic stocks.
   * JODI = TOTAL national stocks (govt + industry + commercial), not strategic-only,
-    and lags ~1-2 months. China reports nothing to JODI → curated estimate only.
+    and is published with a ~2-3 month lag. China reports nothing to JODI →
+    curated estimate only.
 
 Units: helpers are unit-agnostic; callers pass kbbl series and convert to MMbbl
 (÷1000) for display. `days_of_cover` mirrors commodity_supply_context.days_of_supply.
@@ -34,11 +35,13 @@ SPR_CAVEAT = {
            "and refills are coincident supply/demand events with weak, regime-dependent "
            "forward-return content — so this is context, not a buy/sell. Only the US (EIA, "
            "weekly) and Japan break out government strategic stocks; JODI figures are TOTAL "
-           "national crude stocks (government + industry + commercial), lag ~1-2 months, and "
+           "national crude stocks (government + industry + commercial), published with a "
+           "~2-3 month lag, and "
            "China does not report to JODI (curated estimate shown)."),
     "zh": ("战略储备是政治性的供给杠杆，而非价格信号。释放与回补属于同步发生的供需事件，其对未来"
            "收益的预测力较弱且依赖于市场环境——故此为背景参考，而非买卖建议。仅美国（EIA，每周）"
-           "与日本单独披露政府战略储备；JODI 数据为各国原油总库存（政府+行业+商业），滞后约1-2个月，"
+           "与日本单独披露政府战略储备；JODI 数据为各国原油总库存"
+           "（政府+行业+商业），发布滞后约2-3个月，"
            "且中国不向 JODI 报送（此处显示估算值）。"),
 }
 
