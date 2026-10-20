@@ -246,10 +246,17 @@ def exposure_input_digest(greeks_df, oi_df, asof, root):
                 row[field] = _number(r.get(field))
             # Preserve raw observation identity when the native collector carries
             # it. Naive vendor text is not turned into a timezone/availability.
-            for field in ("timestamp", "underlying_timestamp", "_theta_acquisition") if greek else ("timestamp", "_theta_acquisition"):
+            for field in (("timestamp", "underlying_timestamp", "snapshot_ts", "_theta_acquisition",
+                           "second_order_timestamp", "second_order_underlying_timestamp", "_theta_second_acquisition")
+                          if greek else ("timestamp", "snapshot_ts", "_theta_acquisition")):
                 if field in r:
                     value = r[field]
                     row[field] = None if pd.isna(value) else str(value)
+            if greek:
+                for field in ("second_order_underlying_price", "second_order_implied_vol", "second_order_iv_error",
+                              "second_order_bid", "second_order_ask"):
+                    if field in r:
+                        row[field] = _number(r[field])
             out.append(row)
         return sorted(out, key=lambda row: json.dumps(row, sort_keys=True))
     return _digest([root, asof, records(greeks_df, True), records(oi_df, False)])
