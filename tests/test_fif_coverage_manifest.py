@@ -542,6 +542,29 @@ def test_an_unresolved_sic_flows_through_as_none(unclassed, served) -> None:
     )
 
 
+def test_the_sic_source_label_follows_the_resolver(inputs, monkeypatch) -> None:
+    """The envelope's closed sic_source enum names where the SIC came from: a
+    SIC the shipped coverage contracts resolve is their SEC-submissions
+    capture; a CIK they do not bind is unbound."""
+    seen: list[tuple[str | None, str | None]] = []
+
+    def recording(pack_id, pack_input):
+        seen.append((pack_input.issuer_sic, pack_input.sic_source))
+        return _canned_envelope(pack_id)
+
+    monkeypatch.setattr(CM, "produce_pack", recording)
+    monkeypatch.setattr(
+        CM, "build_financial_intelligence_packet_from_repo", lambda **_kw: _no_valued_packet()
+    )
+    CM.build_coverage_manifest(as_of=AS_OF, **inputs)
+    assert seen and all(sic is not None for sic, _ in seen)
+    assert {source for _, source in seen} == {"sec_submissions"}
+    seen.clear()
+    CM.build_coverage_manifest(as_of=AS_OF, sic_resolver=lambda _entity_id: None, **inputs)
+    assert seen and {sic for sic, _ in seen} == {None}
+    assert {source for _, source in seen} == {"unbound"}
+
+
 def test_a_non_valued_required_pack_field_is_absent(inputs, served, monkeypatch) -> None:
     from engine.fundamental_forensics.specialist_pack_contract import load_pack_schema
 

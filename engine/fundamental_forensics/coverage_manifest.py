@@ -194,13 +194,17 @@ _NO_APPLICABLE_FIELDS_BAND = "no_applicable_fields"
 # The packet contract admits exactly two evaluation modes; the seat ruling's
 # ``production_manifest`` label is not among them (EVALUATION_MODES and the
 # packet schema enum both refuse it), so the frozen request carries the
-# contract's default label — recorded as a lane deviation.  The SIC resolver
-# exposes no source label of its own, and the pack envelope contract's closed
-# ``sic_source`` enum admits only sec_submissions/dei/unbound/null, so the
-# coverage-contract resolver's answer rides as ``unbound``.
+# contract's default label — recorded as a lane deviation.  The pack envelope
+# contract's closed ``sic_source`` enum admits only
+# sec_submissions/dei/unbound/null.  The shipped coverage contracts record each
+# member's SIC with its capture provenance (the issuer's SEC submissions
+# document, ``sic_source.capture_path``), so a SIC the contract resolver
+# returns is labelled ``sec_submissions``; a CIK the contracts do not bind
+# rides as ``unbound`` and the pack keeps its issuer_class_unknown path.
 _PACKET_EVALUATION_MODE = "historical_replay"
 _IDENTITY_BASIS = "production_generation_binding_v1"
-_SIC_SOURCE_LABEL = "unbound"
+_SIC_SOURCE_RESOLVED = "sec_submissions"
+_SIC_SOURCE_UNBOUND = "unbound"
 _APPLICABILITY_APPLICABLE = "applicable"
 _APPLICABILITY_NOT_APPLICABLE = "not_applicable"
 _APPLICABILITY_NOT_EVALUABLE = "not_evaluable"
@@ -1207,7 +1211,7 @@ def _specialist_cell(
             ),
             query=dict(query),
             issuer_sic=issuer_sic,
-            sic_source=_SIC_SOURCE_LABEL,
+            sic_source=_SIC_SOURCE_RESOLVED if issuer_sic is not None else _SIC_SOURCE_UNBOUND,
             packet_id=None,
         )
         envelope = produce_pack(pack, pack_input)
