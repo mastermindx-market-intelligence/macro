@@ -11063,3 +11063,11 @@
 {"id":"ob-2026-10-20-763c0a2bf2","from":"approved","to":"posting","at":"2026-10-20T18:15:04Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-10-20-763c0a2bf2","from":"posting","to":"posted","at":"2026-10-20T18:15:05Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad7afa904c37bdd053c6f89","external_url":null,"at":"2026-10-20T18:14:59Z","booked_at":"2026-10-20T18:14:59Z"}}
 {"id":"ob-2026-10-20-9482732cb4","from":"approved","to":"quarantined","at":"2026-10-20T18:15:06Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-20-000667ce50","from":"queued","to":"approved","at":"2026-10-20T18:20:22Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-20-1added667e","from":"queued","to":"approved","at":"2026-10-20T18:20:22Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-20-bf3e293372","from":"queued","to":"approved","at":"2026-10-20T18:20:22Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-10-20-000667ce50","from":"approved","to":"quarantined","at":"2026-10-20T18:20:23Z","actor":"publisher","note":"clock: yesterday_word_off_session:yesterday","receipt":null}
+{"id":"ob-2026-10-20-1added667e","from":"approved","to":"posting","at":"2026-10-20T18:20:25Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-20-1added667e","from":"posting","to":"posted","at":"2026-10-20T18:20:26Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad7b0ea25c4beedd138ac1c","external_url":null,"at":"2026-10-20T18:20:20Z","booked_at":"2026-10-20T18:20:20Z"}}
+{"id":"ob-2026-10-20-bf3e293372","from":"approved","to":"posting","at":"2026-10-20T18:20:26Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-10-20-bf3e293372","from":"posting","to":"posted","at":"2026-10-20T18:20:27Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ad7b0eb53a36a527e47eea6","external_url":null,"at":"2026-10-20T18:20:20Z","booked_at":"2026-10-20T18:20:20Z"}}
