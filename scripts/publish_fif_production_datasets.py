@@ -59,6 +59,7 @@ import json
 import shutil
 import sys
 import tempfile
+import time
 import traceback
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
@@ -120,6 +121,11 @@ from collectors.sec_filing_parser import (  # noqa: E402
     SecFilingParseError,
     parse_sec_filing_document,
 )
+
+# FIF A20: both SEC-paced subcommands build their SecRequestPacer from this
+# single default — 0.5 s = the process-wide share of the <= 2 req/s public
+# EDGAR budget. Explicit --min-interval-seconds still overrides it.
+MIN_INTERVAL_SECONDS_DEFAULT = 0.5
 
 COVERAGE_CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
 PUBLISH_REPORT_SCHEMA = "fundamental_forensics.fif_production_publish_report/v1"
@@ -487,6 +493,22 @@ def _error_annotation(title: str, message: str) -> None:
     # stderr is the one every caller leaves visible. Still a bare print with a
     # line-start ``::error``, never a logger.
     print(f"::error title={title}::{message}", file=sys.stderr, flush=True)
+
+
+def _emit_publish_timing(phase: str, ticker: str, started: float) -> None:
+    """One publish-phase duration as a GitHub Actions ``::notice`` (observation
+    only). Same D8 rule as the error annotations: stderr, never stdout —
+    stdout carries this script's JSON report, so a timing line there would
+    corrupt every ``$(...)``-capturing caller. Durations come exclusively from
+    a monotonic ``time.perf_counter()`` delta (never a wall-clock read), and
+    emitting changes no return value, report key, exit code, or store order.
+    """
+    print(
+        f"::notice title=fif_publish_timing::{phase} {ticker} "
+        f"{time.perf_counter() - started:.1f}s",
+        file=sys.stderr,
+        flush=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1498,9 +1520,11 @@ def _build_material(
     admitted_at: datetime,
 ) -> ProductionDatasetMaterial:
     """Build one issuer's material at the GIVEN clock (never now())."""
+    convert_started = time.perf_counter()
     ledger, filing_metadata, _report = _convert_admitted_packages(
         staged.admitted_packages
     )
+    _emit_publish_timing("plan_convert", staged.binding.ticker, convert_started)
     floor = min(staged.capture_clocks)
     # The S2-p seam, DIRECT (spec §3): the module-level import above names
     # ``mint_production_lineage_evidence`` and nothing else — never a mint
@@ -1508,9 +1532,11 @@ def _build_material(
     # the material's admission clock, return landing UNCHANGED. D11: the seam
     # call rides the wrapper so a LineageEvidenceError is typed
     # lineage_mint_failed instead of generic publish_failed.
+    lineage_started = time.perf_counter()
     lineage_evidence = _mint_lineage_evidence(
         ledger, staged.admitted_packages, system_available_at=admitted_at
     )
+    _emit_publish_timing("plan_lineage", staged.binding.ticker, lineage_started)
     binding = staged.binding
     issuer = staged.issuer
     return ProductionDatasetMaterial(
@@ -1620,6 +1646,7 @@ def _plan_issuer(
             code="latest_pointer_unreadable",
         ) from exc
     if latest is not None and floor <= latest.admitted_at:
+        compare_started = time.perf_counter()
         try:
             comparison_material = _build_material(
                 staged,
@@ -1630,7 +1657,11 @@ def _plan_issuer(
             comparison = publish_production_dataset(scratch_store, comparison_material)
         except Exception:  # noqa: BLE001 - treat as CHANGED; the plan below re-raises
             comparison = None
+            _emit_publish_timing("plan_compare_build", binding.ticker, compare_started)
         else:
+            # Emitted before the unchanged early-return so BOTH outcomes of the
+            # comparison pair are timed (an UNCHANGED issuer still paid for it).
+            _emit_publish_timing("plan_compare_build", binding.ticker, compare_started)
             if comparison.generation_id == latest.generation_id:
                 return _IssuerPlan(
                     staged=staged,
@@ -1661,6 +1692,7 @@ def _plan_issuer(
             "re-stamped to force agreement",
             code="admission_clock_not_after_latest",
         )
+    build_started = time.perf_counter()
     material = _build_material(
         staged,
         registry_payload=registry_payload,
@@ -1668,6 +1700,7 @@ def _plan_issuer(
         admitted_at=chosen,
     )
     scratch_publication = publish_production_dataset(scratch_store, material)
+    _emit_publish_timing("plan_build", binding.ticker, build_started)
     return _IssuerPlan(
         staged=staged,
         outcome="published",
@@ -1881,7 +1914,9 @@ def _run_publish(args: argparse.Namespace) -> int:
     scratch_dir = tempfile.mkdtemp(prefix="fif-production-plan-")
     try:
         scratch_store = build_production_dataset_store(local_dir=Path(scratch_dir))
+        total_plan_started = time.perf_counter()
         for staged_row in sorted(staged, key=lambda item: item.binding.entity_id):
+            plan_started = time.perf_counter()
             try:
                 plans.append(
                     _plan_issuer(
@@ -1895,8 +1930,11 @@ def _run_publish(args: argparse.Namespace) -> int:
                 )
             except StatementGraphError:
                 raise
+            _emit_publish_timing("plan", staged_row.binding.ticker, plan_started)
+        _emit_publish_timing("total_plan", "-", total_plan_started)
         surviving_plans: list[_IssuerPlan] = []
         for plan in plans:
+            refusal_started = time.perf_counter()
             binding = plan.staged.binding
             try:
                 latest = load_latest_generation(store, binding.entity_id)
@@ -1950,6 +1988,7 @@ def _run_publish(args: argparse.Namespace) -> int:
                     file=sys.stderr,
                     flush=True,
                 )
+                _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
                 continue
             issuer_rows = _readback_issuer_refusals(scratch_store, plan, registry=registry)
             seen_triples = {
@@ -1974,6 +2013,7 @@ def _run_publish(args: argparse.Namespace) -> int:
             for accession in _accessions_all_refused(scratch_store, plan):
                 accession_all_refused[accession] = True
             surviving_plans.append(plan)
+            _emit_publish_timing("refusal_check", binding.ticker, refusal_started)
         plans = surviving_plans
     finally:
         shutil.rmtree(scratch_dir, ignore_errors=True)
@@ -2006,6 +2046,7 @@ def _run_publish(args: argparse.Namespace) -> int:
     published: list[dict[str, Any]] = []
     failed: dict[str, Any] | None = None
     not_attempted: list[dict[str, Any]] = []
+    total_commit_started = time.perf_counter()
     for plan in plans:
         # M3: an UNCHANGED plan needs no real-store write, so it is reported
         # as its unchanged row in ``published`` (same row shape) whether it
@@ -2026,6 +2067,7 @@ def _run_publish(args: argparse.Namespace) -> int:
         if failed is not None:
             not_attempted.append(_issuer_summary(plan))
             continue
+        commit_started = time.perf_counter()
         try:
             publication = publish_production_dataset(store, plan.material)
             # Read-back self-check: the POINTER must NAME the generation just
@@ -2044,6 +2086,9 @@ def _run_publish(args: argparse.Namespace) -> int:
                 "error": f"{type(exc).__name__}: {exc}",
             }
             continue
+        # Emitted ONLY for plans that actually committed (publish + read-back
+        # succeeded); unchanged, skipped and failed plans stay untimed.
+        _emit_publish_timing("commit", plan.staged.binding.ticker, commit_started)
         published.append(
             _report_row(
                 plan,
@@ -2052,6 +2097,7 @@ def _run_publish(args: argparse.Namespace) -> int:
                 admitted_at=publication.admitted_at,
             )
         )
+    _emit_publish_timing("total_commit", "-", total_commit_started)
 
     if failed is not None:
         # MINOR-5: demote coverage before writing the partial report — the
@@ -2430,7 +2476,9 @@ def build_parser() -> argparse.ArgumentParser:
     capture.add_argument("--archive-root", type=Path, required=True)
     capture.add_argument("--recorded-at", required=True, help="Explicit UTC capture clock")
     capture.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    capture.add_argument("--min-interval-seconds", type=float, default=0.12)
+    capture.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     capture.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # D12: the run budget's single source is the capture module's constant —
     # the publisher carries no second 256 MiB literal.
@@ -2474,7 +2522,9 @@ def build_parser() -> argparse.ArgumentParser:
     acquire.add_argument("--archive-root", type=Path, required=True)
     acquire.add_argument("--recorded-at", required=True, help="Explicit UTC acquisition clock")
     acquire.add_argument("--user-agent", default=None, help="SEC user agent override (tests inject one)")
-    acquire.add_argument("--min-interval-seconds", type=float, default=0.12)
+    acquire.add_argument(
+        "--min-interval-seconds", type=float, default=MIN_INTERVAL_SECONDS_DEFAULT
+    )
     acquire.add_argument("--max-document-bytes", type=int, default=32 * 1024 * 1024)
     # E1-c amendment (B): acquire-contract is its own process with its OWN
     # pre-fetch budget; the single source of the number is the capture
