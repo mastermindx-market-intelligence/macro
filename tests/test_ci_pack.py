@@ -4925,6 +4925,11 @@ CURATED_EXCLUSIVE = {
     # packing probe (5,824 > 5,822); its own exclusive job keeps the static
     # import closure, the engine/pick_lab package imports and ancestor inits.
     "pick-lab-cn-render",
+    # 2026-10-20 W28F-L30: the China narrative radar display suites render the page
+    # template and its six includes with jinja2 alone. As an ordinary job their
+    # inferred scope would ride the shared template packing probes; scope:
+    # exclusive pins the template closure, both suites and the tests inits.
+    "narrative-radar-display",
     # 2026-10-18 C19 WP32: the P5/P6 integrated-answer pins import app/ and
     # engine/ modules, so inference selected the new job on the
     # build_free_content (135 > 134) and index-template (137 > 136) packing
