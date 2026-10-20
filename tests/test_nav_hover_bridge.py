@@ -1,5 +1,6 @@
 import hashlib
 import re
+from rjsmin import jsmin
 from pathlib import Path
 
 
@@ -20,8 +21,8 @@ MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
 # The cache-buster the theme.js -> account.js -> nav_market.js chain is pinned
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
-NAV_RELEASE_KEY = "20260814-sf-inter-font-upgrade"
-NAV_PAYLOAD_DIGEST = "972a3c53"
+NAV_RELEASE_KEY = "20261015-mm-return-language"
+NAV_PAYLOAD_DIGEST = "58cf11c8"
 
 
 def _payload_digest() -> str:
@@ -184,6 +185,8 @@ def test_hover_gap_release_uses_fresh_immutable_asset_chain() -> None:
         "20260808-zh-natural",
         "20260809-market-memory",
         "20260812-ui-audit-ink-grades",
+        "20260913-account-actions",
+    "20261010-account-continuity",
     ):
         assert stale not in TEMPLATE_THEME_JS
         assert stale not in SITE_THEME_JS
@@ -341,13 +344,14 @@ def test_panel_choreography_is_killed_by_name_under_reduced_motion() -> None:
 def test_nested_pages_resolve_market_nav_from_theme_asset_root() -> None:
     """Every nested estate must load the one shared market-menu runtime."""
     for source in (TEMPLATE_THEME_JS, SITE_THEME_JS):
+        source = jsmin(source, keep_bang_comments=True)
         assert "document.currentScript" in source
         assert 'script[src$="theme.js"],script[src*="theme.js?"]' in source
-        assert "var _mmSharedAssetRoot" in source
-        assert "new URL('.', _mmThemeScript" in source
-        assert source.count("var pfx = _mmSharedAssetRoot;") == 3
+        assert jsmin("var _mmSharedAssetRoot") in source
+        assert jsmin("new URL('.', _mmThemeScript") in source
+        assert source.count(jsmin("var pfx = _mmSharedAssetRoot;")) == 3
         assert "location.pathname.indexOf('/sectors/')" not in source
-        assert f"s.src = pfx + 'account.js?v={NAV_RELEASE_KEY}'" in source
+        assert jsmin(f"s.src = pfx + 'account.js?v={NAV_RELEASE_KEY}'") in source
 
 
 def test_research_icon_bridge_never_stomps_an_unknown_card() -> None:

@@ -90,21 +90,26 @@
       "present": false,
       "zh": null
     },
-    "coverage_ratio": 1.0,
-    "degraded": [],
-    "reasons": [],
+    "coverage_ratio": 0.5,
+    "degraded": [
+      "claims_momentum",
+      "claims_recession_subscore"
+    ],
+    "reasons": [
+      "worst_required_source_freshness=SOURCE_FAILED"
+    ],
     "required": [
       {
         "component_id": "claims_momentum",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "label": {
           "en": "Initial-claims momentum",
           "zh": "初请失业金动能"
         },
-        "null_reason": null,
+        "null_reason": "SOURCE_FAILED",
         "required": true,
-        "source_asof": "2026-09-16",
-        "status": "PRESENT"
+        "source_asof": "2026-10-19",
+        "status": "ABSENT"
       },
       {
         "component_id": "job_postings_momentum",
@@ -115,7 +120,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-16",
+        "source_asof": "2026-10-19",
         "status": "PRESENT"
       },
       {
@@ -127,24 +132,24 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-16",
+        "source_asof": "2026-10-19",
         "status": "PRESENT"
       },
       {
         "component_id": "claims_recession_subscore",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "label": {
           "en": "Claims-based recession subscore",
           "zh": "基于初请的衰退子评分"
         },
-        "null_reason": null,
+        "null_reason": "SOURCE_FAILED",
         "required": true,
-        "source_asof": "2026-09-16",
-        "status": "PRESENT"
+        "source_asof": "2026-10-19",
+        "status": "ABSENT"
       }
     ],
-    "state": "CURRENT",
-    "worst_freshness": "CURRENT"
+    "state": "SOURCE_FAILED",
+    "worst_freshness": "SOURCE_FAILED"
   },
   "axes": {
     "items": [
@@ -154,24 +159,24 @@
         "components": [
           {
             "component_id": "claims_momentum",
-            "contribution": 11.32,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "contribution": null,
+            "coverage_state": "ABSENT",
+            "freshness": "SOURCE_FAILED",
             "label": {
               "en": "Initial-claims momentum",
               "zh": "初请失业金动能"
             },
-            "null_reason": null,
+            "null_reason": "SOURCE_FAILED",
             "owner_field": "labor_nowcast.claims_z",
             "owner_ref": "engine.regime.labor_nowcast",
-            "raw_value": -1.4147094873142996,
+            "raw_value": null,
             "sign": 1,
-            "standardized_value": 78.29,
+            "standardized_value": null,
             "weight": 0.4
           },
           {
             "component_id": "job_postings_momentum",
-            "contribution": 3.48,
+            "contribution": 3.33,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -181,14 +186,14 @@
             "null_reason": null,
             "owner_field": "labor_nowcast.indeed_chg_3m_pct",
             "owner_ref": "engine.regime.labor_nowcast",
-            "raw_value": 1.9873442752620152,
+            "raw_value": 1.9017633708617199,
             "sign": 1,
-            "standardized_value": 59.94,
+            "standardized_value": 59.51,
             "weight": 0.35
           },
           {
             "component_id": "income_growth_proxy",
-            "contribution": 2.49,
+            "contribution": 10.04,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -198,19 +203,19 @@
             "null_reason": null,
             "owner_field": "labor_nowcast.withheld_tax_yoy_pct",
             "owner_ref": "engine.regime.labor_nowcast",
-            "raw_value": 1.5904325331304259,
+            "raw_value": 6.424586312369773,
             "sign": 1,
-            "standardized_value": 59.94,
+            "standardized_value": 90.15,
             "weight": 0.25
           }
         ],
-        "components_available": 3,
+        "components_available": 2,
         "coverage_floor": 0.5,
         "data_version": null,
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
         "frequency_alignment": "mixed: initial-claims 4-week average is weekly (Thu, DOL/FRED); Indeed job-postings index refreshes weekly (Indeed Hiring Lab); withheld-tax YoY is a daily-accrual Treasury proxy; each carried against the same shared calculation_as_of because the current owner artifact (data/regime/latest.json#labor_nowcast) does not yet publish a per-field vintage the way conditions.vintages does for nfci/ofr_fsi/hy_oas -- a disclosed limitation, not a silent one",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "label": {
           "en": "Labor demand",
           "zh": "劳动力需求"
@@ -231,8 +236,8 @@
           }
         },
         "transformation": "claims z-score inverted and mapped 50-clamp(z/2.5,-1,1)*50 (elevated claims = weaker demand); Indeed 3m change and withheld-tax YoY mapped 50+clamp(pct/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
-        "value": 67.28,
-        "value_status": "PRESENT",
+        "value": 72.28,
+        "value_status": "PARTIAL",
         "weights_law": "weighted mean of standardized components, weights renormalized over present components; initial-claims momentum 0.40, Indeed job-postings momentum 0.35, withheld-tax income-growth proxy 0.25"
       },
       {
@@ -241,7 +246,7 @@
         "components": [
           {
             "component_id": "sahm_rule_level",
-            "contribution": 3.85,
+            "contribution": 0.0,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -251,42 +256,42 @@
             "null_reason": null,
             "owner_field": "recession.sahm",
             "owner_ref": "engine.regime.recession",
-            "raw_value": -0.07,
+            "raw_value": 0.0,
             "sign": 1,
-            "standardized_value": 57.0,
+            "standardized_value": 50.0,
             "weight": 0.55
           },
           {
             "component_id": "claims_recession_subscore",
-            "contribution": 22.5,
-            "coverage_state": "PRESENT",
-            "freshness": "CURRENT",
+            "contribution": null,
+            "coverage_state": "ABSENT",
+            "freshness": "SOURCE_FAILED",
             "label": {
               "en": "Claims-based recession subscore",
               "zh": "基于初请的衰退子评分"
             },
-            "null_reason": null,
+            "null_reason": "SOURCE_FAILED",
             "owner_field": "recession.components.claims",
             "owner_ref": "engine.regime.recession",
-            "raw_value": 0.0,
+            "raw_value": null,
             "sign": 1,
-            "standardized_value": 100.0,
+            "standardized_value": null,
             "weight": 0.45
           }
         ],
-        "components_available": 2,
+        "components_available": 1,
         "coverage_floor": 0.5,
         "data_version": null,
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter",
         "frequency_alignment": "Sahm rule is derived from the monthly BLS unemployment rate (first Friday, Employment Situation); the claims-based recession subscore shares the weekly claims cadence used on the demand axis -- two different native cadences carried under one axis, each with its own owner_ref",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "label": {
           "en": "Labor supply / tightness",
           "zh": "劳动力供给 / 紧张度"
         },
         "min_components": 2,
-        "null_reason": null,
+        "null_reason": "COMPUTATION_REFUSED",
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
         "thresholds": {
           "boundary": 50.0,
@@ -301,8 +306,8 @@
           }
         },
         "transformation": "Sahm rule inverted and mapped 50-clamp(sahm/0.5,-1,1)*50 against the canonical 0.5-point NBER/Sahm recession-trigger scale (lower sahm = tighter); claims-recession subscore inverted 100-clamp(score,0,1)*100",
-        "value": 76.35,
-        "value_status": "PRESENT",
+        "value": null,
+        "value_status": "ABSENT",
         "weights_law": "weighted mean of standardized components, weights renormalized over present; Sahm rule level 0.55, claims-based recession subscore 0.45"
       }
     ]
@@ -311,23 +316,23 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 67.28,
-        "delta": -3.0,
+        "current_value": 72.28,
+        "delta": -7.75,
         "metric_id": "labor_demand",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 70.28
+        "prior_value": 80.03
       },
       {
-        "current_value": 76.35,
-        "delta": 0.0,
+        "current_value": null,
+        "delta": null,
         "metric_id": "labor_supply_tightness",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 76.35
+        "prior_value": 72.5
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-09-15",
-    "prior_generation_id": "labor_markets-US-55cfee2cf578e09b",
+    "prior_effective_date": "2026-10-16",
+    "prior_generation_id": "labor_markets-US-b1a9a29d11aa2de1",
     "prior_method_version": "labor_markets.compose.v1",
     "status": "PRESENT"
   },
@@ -335,137 +340,139 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "labor_markets-US-55cfee2cf578e09b"
+    "predecessor_generation_id": "labor_markets-US-b1a9a29d11aa2de1"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "sahm_rule_level",
-        "impact_magnitude": 3.85,
-        "impact_sign": 1,
+        "impact_magnitude": 0.0,
+        "impact_sign": 0,
         "label": {
           "en": "Sahm rule level",
           "zh": "萨姆规则水平"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=57.0, weight=0.55",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=50.0, weight=0.55",
         "owner_field": "recession.sahm",
         "unit": "ratio",
-        "value": -0.07
+        "value": 0.0
       },
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "ABSENT",
         "driver_id": "claims_recession_subscore",
-        "impact_magnitude": 22.5,
-        "impact_sign": 1,
+        "impact_magnitude": null,
+        "impact_sign": 0,
         "label": {
           "en": "Claims-based recession subscore",
           "zh": "基于初请的衰退子评分"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=100.0, weight=0.45",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=None, weight=0.45",
         "owner_field": "recession.components.claims",
         "unit": "ratio",
-        "value": 0.0
+        "value": null
       }
     ],
     "rate_side": [
       {
-        "coverage_state": "PRESENT",
+        "coverage_state": "ABSENT",
         "driver_id": "claims_momentum",
-        "impact_magnitude": 11.32,
-        "impact_sign": 1,
+        "impact_magnitude": null,
+        "impact_sign": 0,
         "label": {
           "en": "Initial-claims momentum",
           "zh": "初请失业金动能"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=78.29, weight=0.4",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=None, weight=0.4",
         "owner_field": "labor_nowcast.claims_z",
         "unit": "z_score",
-        "value": -1.4147094873142996
+        "value": null
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "job_postings_momentum",
-        "impact_magnitude": 3.48,
+        "impact_magnitude": 3.33,
         "impact_sign": 1,
         "label": {
           "en": "Job-postings momentum (Indeed)",
           "zh": "职位发布动能（Indeed）"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=59.94, weight=0.35",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=59.51, weight=0.35",
         "owner_field": "labor_nowcast.indeed_chg_3m_pct",
         "unit": "percent",
-        "value": 1.9873442752620152
+        "value": 1.9017633708617199
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "income_growth_proxy",
-        "impact_magnitude": 2.49,
+        "impact_magnitude": 10.04,
         "impact_sign": 1,
         "label": {
           "en": "Withheld-tax income growth (proxy)",
           "zh": "预扣税收入增长（代理指标）"
         },
-        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=59.94, weight=0.25",
+        "note": "signed push = (standardized-50)*weight toward the axis high side; standardized=90.15, weight=0.25",
         "owner_field": "labor_nowcast.withheld_tax_yoy_pct",
         "unit": "percent",
-        "value": 1.5904325331304259
+        "value": 6.424586312369773
       }
     ]
   },
   "generation": {
-    "built_at": "2026-09-17T05:36:03Z",
-    "calculation_as_of": "2026-09-16",
-    "code_version": "100968c016a7d3e40b6adb3fee4eb4becb72f3d4",
-    "content_sha256": "f7d3e77491b1e20ede7ca28089140d7d1899e52781a6a68465ee1c5bff5b3c12",
-    "generation_id": "labor_markets-US-f7d3e77491b1e20e",
+    "built_at": "2026-10-20T04:33:10Z",
+    "calculation_as_of": "2026-10-19",
+    "code_version": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+    "content_sha256": "e3f01d8155c0d91b4f2dd66e0dd16163290262f08effc516a24fbcff599bf7e2",
+    "generation_id": "labor_markets-US-e3f01d8155c0d91b",
     "producer": "engine.market_os.macro_workspaces.labor",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-09-16",
+    "effective_date": "2026-10-19",
     "hysteresis": {
-      "applied": true,
+      "applied": false,
       "band": 5.0,
       "held_prior": false,
-      "note": "raw classification already matches the prior print; no boundary crossing, hysteresis not engaged"
+      "note": "no comparable prior print; raw threshold classification, hysteresis not applied"
     },
     "method_version": "labor_markets.compose.v1",
     "movement_state": null,
     "nearest_boundary": {
-      "axis": "labor_demand",
-      "distance": 17.28,
-      "null_reason": null
+      "axis": null,
+      "distance": null,
+      "null_reason": "COMPUTATION_REFUSED"
     },
-    "null_reason": null,
+    "null_reason": "COMPUTATION_REFUSED",
     "one_month_vector": {
-      "dx": -3.0,
-      "dy": 0.0,
-      "null_reason": null,
-      "status": "PRESENT"
+      "dx": null,
+      "dy": null,
+      "null_reason": "INSUFFICIENT_HISTORY",
+      "status": "ABSENT",
+      "x_axis_id": "labor_demand",
+      "y_axis_id": "labor_supply_tightness"
     },
     "prior_state": {
-      "effective_date": "2026-09-15",
+      "effective_date": "2026-10-16",
       "method_version": "labor_markets.compose.v1",
       "state_id": "B"
     },
     "quadrant": {
-      "x": 67.28,
-      "x_status": "PRESENT",
-      "y": 76.35,
-      "y_status": "PRESENT"
+      "x": 72.28,
+      "x_status": "PARTIAL",
+      "y": null,
+      "y_status": "ABSENT"
     },
-    "state_id": "B",
+    "state_id": null,
     "state_label": {
-      "en": "Strong hiring / Tight market",
-      "zh": "招聘强劲 / 市场偏紧"
+      "en": null,
+      "zh": null
     },
-    "status": "PRESENT",
+    "status": "ABSENT",
     "subtitle": {
       "en": "Labor demand / supply-tightness regime",
       "zh": "劳动力需求 / 供给紧张度状态"
     },
-    "transition_distance": 3.0
+    "transition_distance": null
   },
   "implications": {
     "items": [
@@ -477,19 +484,19 @@
         ],
         "confidence": {
           "contradiction_state": "ABSENT",
-          "data_coverage": "HIGH",
+          "data_coverage": "MEDIUM",
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
+          "source_health": "LOW"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
-        "implication_id": "state_descriptive",
+        "implication_id": "state_unavailable",
         "text": {
-          "en": "US labor market reads B - Strong hiring / Tight market (labor demand x=67.28, labor supply/tightness y=76.35, boundary 50).",
-          "zh": "美国劳动力市场读数为 B - 招聘强劲 / 市场偏紧（劳动力需求 x=67.28，劳动力供给/紧张度 y=76.35，分界 50）。"
+          "en": "US labor-market state cannot be classified: axis coverage is below the disclosed floor. No quadrant is asserted rather than defaulting to a neutral state.",
+          "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。"
         },
         "trace_ref": "data/regime/latest.json#labor_nowcast"
       }
@@ -513,21 +520,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.labor_demand",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_stronger",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "market_session": null,
         "metric_id": "labor_demand",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.market_os.macro_workspaces.labor",
         "reference_id": "mastermind.market_reference/v1#labor_demand",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -542,28 +549,28 @@
           "value": null
         },
         "unit": "score",
-        "value": 67.28,
+        "value": 72.28,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "axes.labor_supply_tightness",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_tighter",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "market_session": null,
         "metric_id": "labor_supply_tightness",
         "model_version": "labor_markets.compose.v1",
-        "null_reason": null,
-        "observed_at": "2026-09-16",
+        "null_reason": "SOURCE_FAILED",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.market_os.macro_workspaces.labor",
         "reference_id": "mastermind.market_reference/v1#labor_supply_tightness",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -571,21 +578,21 @@
         "source_refs": [
           "engine.market_os.macro_workspaces.labor"
         ],
-        "status": "PRESENT",
+        "status": "ABSENT",
         "transformation": "weighted-mean composite; see axes[labor_supply_tightness]",
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "score",
-        "value": 76.35,
+        "value": null,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "four_week_moving_average",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.initial_claims_4wk",
@@ -596,10 +603,10 @@
         "metric_id": "initial_claims_4wk",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#initial_claims_4wk",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -614,14 +621,14 @@
           "value": null
         },
         "unit": "persons",
-        "value": 206000.0,
+        "value": 198000.0,
         "value_type": "count"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.continued_claims",
@@ -632,10 +639,10 @@
         "metric_id": "continued_claims",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#continued_claims",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -650,28 +657,28 @@
           "value": null
         },
         "unit": "persons",
-        "value": 1774000.0,
+        "value": 1716000.0,
         "value_type": "count"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "year_over_year",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.claims_yoy_pct",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_weaker",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "market_session": null,
         "metric_id": "claims_yoy_pct",
         "model_version": "labor_markets.compose.v1",
-        "null_reason": null,
-        "observed_at": "2026-09-16",
+        "null_reason": "SOURCE_FAILED",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#claims_yoy_pct",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -679,35 +686,35 @@
         "source_refs": [
           "engine.regime.labor_nowcast"
         ],
-        "status": "PRESENT",
+        "status": "ABSENT",
         "transformation": null,
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "pct",
-        "value": -11.965811965811968,
+        "value": null,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.claims_z",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_weaker",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "market_session": null,
         "metric_id": "claims_z",
         "model_version": "labor_markets.compose.v1",
-        "null_reason": null,
-        "observed_at": "2026-09-16",
+        "null_reason": "SOURCE_FAILED",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#claims_z",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -715,21 +722,21 @@
         "source_refs": [
           "engine.regime.labor_nowcast"
         ],
-        "status": "PRESENT",
+        "status": "ABSENT",
         "transformation": null,
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "stddev",
-        "value": -1.4147094873142996,
+        "value": null,
         "value_type": "z_score"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.indeed_postings",
@@ -740,10 +747,10 @@
         "metric_id": "indeed_postings_index",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#indeed_postings_index",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -758,14 +765,14 @@
           "value": null
         },
         "unit": "index",
-        "value": 103.15,
+        "value": 103.8443465423,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "three_month_change",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.indeed_chg_3m_pct",
@@ -776,10 +783,10 @@
         "metric_id": "indeed_chg_3m_pct",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#indeed_chg_3m_pct",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -794,14 +801,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 1.9873442752620152,
+        "value": 1.9017633708617199,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "year_over_year",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "labor_nowcast.withheld_tax_yoy_pct",
@@ -812,10 +819,10 @@
         "metric_id": "withheld_tax_yoy_pct",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.labor_nowcast",
         "reference_id": "mastermind.market_reference/v1#withheld_tax_yoy_pct",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -830,14 +837,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 1.5904325331304259,
+        "value": 6.424586312369773,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "recession.sahm",
@@ -848,10 +855,10 @@
         "metric_id": "sahm_rule_value",
         "model_version": "labor_markets.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.recession",
         "reference_id": "mastermind.market_reference/v1#sahm_rule_value",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -866,28 +873,28 @@
           "value": null
         },
         "unit": "pp",
-        "value": -0.07,
+        "value": 0.0,
         "value_type": "ratio"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-10-19",
         "collected_at": null,
         "coverage": null,
         "definition_id": "recession.components.claims",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_weaker",
-        "freshness": "CURRENT",
+        "freshness": "SOURCE_FAILED",
         "market_session": null,
         "metric_id": "recession_claims_subscore",
         "model_version": "labor_markets.compose.v1",
-        "null_reason": null,
-        "observed_at": "2026-09-16",
+        "null_reason": "SOURCE_FAILED",
+        "observed_at": "2026-10-19",
         "owner_ref": "engine.regime.recession",
         "reference_id": "mastermind.market_reference/v1#recession_claims_subscore",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -895,14 +902,14 @@
         "source_refs": [
           "engine.regime.recession"
         ],
-        "status": "PRESENT",
+        "status": "ABSENT",
         "transformation": null,
         "uncertainty": {
           "kind": null,
           "value": null
         },
         "unit": "score_0_1",
-        "value": 0.0,
+        "value": null,
         "value_type": "ratio"
       },
       {
@@ -1161,10 +1168,10 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "labor_markets-US-55cfee2cf578e09b"
+      "generation_id": "labor_markets-US-b1a9a29d11aa2de1"
     },
     "headline": {
-      "effective_date": "2026-09-15",
+      "effective_date": "2026-10-16",
       "hysteresis": {
         "applied": true,
         "band": 5.0,
@@ -1174,26 +1181,28 @@
       "method_version": "labor_markets.compose.v1",
       "movement_state": null,
       "nearest_boundary": {
-        "axis": "labor_demand",
-        "distance": 20.28,
+        "axis": "labor_supply_tightness",
+        "distance": 22.5,
         "null_reason": null
       },
       "null_reason": null,
       "one_month_vector": {
-        "dx": 0.43,
+        "dx": -0.22,
         "dy": 0.0,
         "null_reason": null,
-        "status": "PRESENT"
+        "status": "PRESENT",
+        "x_axis_id": "labor_demand",
+        "y_axis_id": "labor_supply_tightness"
       },
       "prior_state": {
-        "effective_date": "2026-09-11",
+        "effective_date": "2026-10-15",
         "method_version": "labor_markets.compose.v1",
         "state_id": "B"
       },
       "quadrant": {
-        "x": 70.28,
+        "x": 80.03,
         "x_status": "PRESENT",
-        "y": 76.35,
+        "y": 72.5,
         "y_status": "PRESENT"
       },
       "state_id": "B",
@@ -1206,7 +1215,7 @@
         "en": "Labor demand / supply-tightness regime",
         "zh": "劳动力需求 / 供给紧张度状态"
       },
-      "transition_distance": 0.43
+      "transition_distance": 0.22
     },
     "metrics": {
       "items": [
@@ -1214,7 +1223,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.labor_demand",
@@ -1225,10 +1234,10 @@
           "metric_id": "labor_demand",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.market_os.macro_workspaces.labor",
           "reference_id": "mastermind.market_reference/v1#labor_demand",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1243,14 +1252,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 70.28,
+          "value": 80.03,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "axes.labor_supply_tightness",
@@ -1261,10 +1270,10 @@
           "metric_id": "labor_supply_tightness",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.market_os.macro_workspaces.labor",
           "reference_id": "mastermind.market_reference/v1#labor_supply_tightness",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1279,14 +1288,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 76.35,
+          "value": 72.5,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "four_week_moving_average",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.initial_claims_4wk",
@@ -1297,10 +1306,10 @@
           "metric_id": "initial_claims_4wk",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#initial_claims_4wk",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1315,14 +1324,14 @@
             "value": null
           },
           "unit": "persons",
-          "value": 206000.0,
+          "value": 198000.0,
           "value_type": "count"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.continued_claims",
@@ -1333,10 +1342,10 @@
           "metric_id": "continued_claims",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#continued_claims",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1351,14 +1360,14 @@
             "value": null
           },
           "unit": "persons",
-          "value": 1774000.0,
+          "value": 1716000.0,
           "value_type": "count"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "year_over_year",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.claims_yoy_pct",
@@ -1369,10 +1378,10 @@
           "metric_id": "claims_yoy_pct",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#claims_yoy_pct",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1387,14 +1396,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": -12.988384371700102,
+          "value": -12.679162072767369,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.claims_z",
@@ -1405,10 +1414,10 @@
           "metric_id": "claims_z",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#claims_z",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1423,14 +1432,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": -1.4161305730547582,
+          "value": -2.059487437849804,
           "value_type": "z_score"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.indeed_postings",
@@ -1441,10 +1450,10 @@
           "metric_id": "indeed_postings_index",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#indeed_postings_index",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1459,14 +1468,14 @@
             "value": null
           },
           "unit": "index",
-          "value": 103.15,
+          "value": 103.8443465423,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "three_month_change",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.indeed_chg_3m_pct",
@@ -1477,10 +1486,10 @@
           "metric_id": "indeed_chg_3m_pct",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#indeed_chg_3m_pct",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1495,14 +1504,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 2.2907576358587978,
+          "value": 2.0099163603723547,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "year_over_year",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "labor_nowcast.withheld_tax_yoy_pct",
@@ -1513,10 +1522,10 @@
           "metric_id": "withheld_tax_yoy_pct",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.labor_nowcast",
           "reference_id": "mastermind.market_reference/v1#withheld_tax_yoy_pct",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1531,14 +1540,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 3.164654685776469,
+          "value": 6.424586312369773,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "recession.sahm",
@@ -1549,10 +1558,10 @@
           "metric_id": "sahm_rule_value",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.recession",
           "reference_id": "mastermind.market_reference/v1#sahm_rule_value",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1567,14 +1576,14 @@
             "value": null
           },
           "unit": "pp",
-          "value": -0.07,
+          "value": 0.0,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-10-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "recession.components.claims",
@@ -1585,10 +1594,10 @@
           "metric_id": "recession_claims_subscore",
           "model_version": "labor_markets.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-10-16",
           "owner_ref": "engine.regime.recession",
           "reference_id": "mastermind.market_reference/v1#recession_claims_subscore",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-10-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1947,7 +1956,7 @@
         },
         "owner_ref": "engine.regime.labor_nowcast",
         "provider": "U.S. Department of Labor / FRED",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1968,7 +1977,7 @@
         },
         "owner_ref": "engine.regime.labor_nowcast",
         "provider": "Indeed Hiring Lab",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1989,7 +1998,7 @@
         },
         "owner_ref": "engine.regime.labor_nowcast",
         "provider": "U.S. Treasury Daily Statement",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2010,7 +2019,7 @@
         },
         "owner_ref": "engine.regime.recession",
         "provider": "FRED / Federal Reserve (Sahm)",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2031,7 +2040,7 @@
         },
         "owner_ref": "engine.regime.recession",
         "provider": "Mastermind recession composite",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-10-19",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

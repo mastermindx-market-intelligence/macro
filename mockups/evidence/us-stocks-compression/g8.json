@@ -1,0 +1,52 @@
+{
+  "390": {
+    "width": 390,
+    "page_scroll": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "chip_wrap": true,
+    "tbl_scroll": {
+      "overflowX": "auto",
+      "clientWidth": 316,
+      "scrollWidth": 553
+    },
+    "focus_ring": true,
+    "lens_tap": true,
+    "reduced_motion": {
+      "ok": true,
+      "animationName": "none",
+      "w": 316,
+      "h": 30
+    }
+  },
+  "768": {
+    "width": 768,
+    "page_scroll": false,
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "chip_wrap": true,
+    "tbl_scroll": {
+      "overflowX": "auto",
+      "clientWidth": 694,
+      "scrollWidth": 694
+    },
+    "focus_ring": true,
+    "lens_tap": null,
+    "reduced_motion": null
+  },
+  "1440": {
+    "width": 1440,
+    "page_scroll": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "chip_wrap": true,
+    "tbl_scroll": {
+      "overflowX": "auto",
+      "clientWidth": 1322,
+      "scrollWidth": 1322
+    },
+    "focus_ring": true,
+    "lens_tap": null,
+    "reduced_motion": null
+  }
+}

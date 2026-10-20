@@ -1,0 +1,24 @@
+.............................................FFF....                     [100%]
+=================================== FAILURES ===================================
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/2026/10/slu\ng/] _
+tests/test_press_external_candidate.py:234: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[\thttps://www.whitehouse.gov/news/2026/10/slug/] _
+tests/test_press_external_candidate.py:234: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+_ test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/2026/10/slug/?] _
+tests/test_press_external_candidate.py:234: in test_malformed_or_encoded_separator_routes_rejected
+    with pytest.raises(ValueError, match='canonical White House document'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE ValueError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/2026/10/slu\ng/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[\thttps://www.whitehouse.gov/news/2026/10/slug/]
+FAILED tests/test_press_external_candidate.py::test_malformed_or_encoded_separator_routes_rejected[https://www.whitehouse.gov/news/2026/10/slug/?]
+3 failed, 49 passed in 6.06s

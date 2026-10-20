@@ -83,6 +83,11 @@ public:
     # rows are omitted server-side and render only counts + the trial CTA, so
     # the public shell contains no premium ticker payload.
     - /confluence_screener.html
+    # Research-priority list (B-F06-4). Anonymous readers see the list and the
+    # exposure null; signed-in readers overlay holdings client-side. No premium
+    # payload and no per-user server path.
+    - /research_screener.html
+    - /research_screener.css
     # Public acquisition dashboards. macro/start expose the broad market read;
     # macro drill-downs still require registration. us_stocks applies the
     # anonymous=1 / Free=3 / paid=full summary preview in tier_preview.js.
@@ -105,6 +110,35 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
+    # WTI Live Trace presentation assets only; every current value is served
+    # by authenticated /api/ontology/explorer/v1, never by these files.
+    - /ontology.css
+    - /ontology.js
+    - /stock-dashboard.css
+    - /hk-stock-v36.js
+    - /canada-stock-v36.js
+    # Finance Intelligence is the same shell/payload split. The HTML and its
+    # paired presentation/client assets carry no read-model payload; the
+    # same-origin read-model route remains behind authenticated, no-store
+    # enforcement at integration time. Per Chairman directive 2026-09-24
+    # relayed from Astra CEO, Finance ships no private store, no publish
+    # lane, and no serving route — only the static shell is public.
+    - /finance_intelligence.html
+    - /finance_intelligence.css
+    - /finance_intelligence.js
+    # Consumer Cyclical PLNT synthetic display card (Wave-10 Build B): one
+    # static shell over the committed synthetic fixture, mounted through
+    # display_packet — no read-model payload, no live data. The route is held
+    # COMMENTED here, not entered, because the boundary guard lands entries in
+    # pairs: test_site_access_boundary.py:80 compares the Caddy @reg_asset
+    # token list byte-for-byte against this parsed exact list, and the same
+    # file's test_public_policy_targets_exist requires every exact entry to
+    # exist committed under site/. Both paired files (app/deploy/Caddyfile,
+    # site/consumer_cyclical_plnt.html) sit outside the Build-B carrier, and
+    # the page already reaches anonymous readers via the Caddyfile's *.html
+    # document wildcard. Uncomment ONLY together with the Caddyfile token and
+    # the render lane's first committed bake of the page.
+    # - /consumer_cyclical_plnt.html
     # Tier-preview shells, promoted from free_registered to ANONYMOUS-public
     # (SEO_SUPERCHARGE_MASTERPLAN §A1/W1a). The pages themselves are preview
     # SHELLS: honest totals + methodology + a small newest-first preview slice +
@@ -238,6 +272,11 @@ public:
     # logic only; every analytical payload remains behind the authenticated API.
     - /market_memory.css
     - /market_memory.js
+    # UI-only OAuth intent and retained workbench assets load before code exchange.
+    # Saved packets, comparison results and source quotes remain API-authenticated.
+    - /market_memory_intent.js
+    - /market_memory_retained.js
+    - /market_memory_retained.css
     # Shared navigation layout + animated ticker search. Presentation only; the
     # protected stock libraries it reads remain behind the registration wall.
     - /navigation-refresh.css
@@ -251,6 +290,8 @@ public:
     # runtime publishable token it renders deterministic local monograms.
     - /stock-logos.js
     - /theme.js
+    # Public Help build-age clock; UI-only, no data requests or account actions.
+    - /help_refresh.js
     # Presentation/runtime code required by the three public dashboard shells.
     # The signal-bearing JSON endpoints these scripts request remain outside
     # this allowlist and therefore keep their existing account/tier gates.
@@ -261,6 +302,10 @@ public:
     - /tablesort.js
     - /charts.js
     - /risk_state_live.js
+    # Public presentation code only. The live/risk_envelope.json payload remains
+    # separately registration/tier-gated; do not open the market-data feed.
+    - /risk_envelope_live.js
+    - /china_risk_state_live.js
     - /release_publications_live.js
     - /heatmap.js
     - /stocktable.js
@@ -380,6 +425,10 @@ public:
     # public byte through them.
     - /fundamental_forensics.css
     - /fundamental_forensics.js
+    # Holding-reader presentation and exact-selection client only; no embedded
+    # holding quantities/results. The POST response retains full-user auth.
+    - /institutional_holding_research.css
+    - /institutional_holding_research.js
     # Stock analyzer (stock.html) presentation + client scripts, promoted for
     # the same reason fundamental_forensics.css/js above were: the 2026-08-04
     # *.html change opened the page shell, but these were never promoted with
@@ -403,6 +452,10 @@ public:
     # plane is the Bearer-authenticated /api/brain/* gateway, which is
     # unchanged; the script itself carries no signals or customer data.
     - /mm_brain.js
+    # Native illustration code/styles only; all private response data remains
+    # inside the existing authenticated Brain transport and thread endpoints.
+    - /mm_brain_visuals.js
+    - /mm_brain_visuals.css
     # ── Estate-wide sweep of the same defect (census:
     # research/SITE_ACCESS_ASSET_CENSUS_2026_08_11.md) ────────────────────────
     #
@@ -679,6 +732,10 @@ premium:
       # scripts/build_china_altdata.py read it off disk), so gating the URL closes
       # a direct-link leak without breaking anything.
       - /chinaspecialdata/special.json
+      # Prophet's full leader-observation roster. The public US page server-renders only
+      # the configured preview; paid rows hydrate through /premiumdata/us_stocks.json.
+      # Locking this raw ticker map prevents a direct-URL bypass of that same product wall.
+      - /anticipationdata/us_leader_pullback.json
     prefixes:
       - /premiumdata/
       # Canonical/public projection twins may be published for controlled

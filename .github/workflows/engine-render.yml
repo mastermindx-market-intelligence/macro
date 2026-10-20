@@ -127,10 +127,10 @@ jobs:
           [ -x "$VENV/bin/python" ] || "$PYBIN" -m venv "$VENV"
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
-      - name: zstd parity for actions/cache (breadth caches are macOS-saved)
+      - name: zstd parity for remaining cache-backed breadth inputs
         run: |
           # actions/cache versions include the compression method: the collect lanes
-          # (macOS) save the breadth close caches with zstd, so a runner WITHOUT zstd
+          # save Russell/China/HK breadth caches with zstd, so a runner WITHOUT zstd
           # computes a different cache version and every restore silently misses —
           # 2026-07-18: render-linux had no zstd, builders saw no close panel, and the
           # HK standout board shipped 0 buys. Heal if passwordless sudo allows; warn
@@ -151,26 +151,11 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs attention || echo "::warning::attention restore failed (non-fatal — attention chip absent/stale this render)"
-      # Restore the gitignored breadth/intraday caches (restore-only; the nightly `collect`
-      # job produces/saves them — we fall back via restore-keys to the most recent daily's).
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-engine-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-engine-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-engine-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # The US S&P 500/600/400 panels are Git-tracked committed inputs and are
+      # read directly from checkout; reader jobs must never overlay them from
+      # Actions cache. Only daily.collect may seed those panels. Russell, China,
+      # HK and intraday stores below are separate gitignored/cache-backed inputs
+      # and keep their existing restores.
       - name: restore Russell 2000 breadth close cache
         uses: actions/cache@v4
         with:
@@ -359,6 +344,28 @@ jobs:
       #    panel (build_options_dislocation)"), for the same headroom reason as flow_desk
       #    above. The `options_dislocation` SLUG — what ORDER matches and what names the log
       #    group — is identical across all lanes.
+      - name: restore options_skew ledger from R2 (W2-2 store-host accrual)
+        # The store host publishes the skew ledger to R2. This step copies it down
+        # before emit. If the copy fails, emit still renders the committed ledger
+        # and reports that ledger's as-of time. The failure is a warning, not a crash.
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs options_skew || echo "::warning title=options-skew-hydrate::options_skew ledger restore from R2 failed - emit renders the committed ledger and reports its ledger_asof"
+      - name: restore options_payoff_lab from R2 (W2-5a store-host producer)
+        # The store host publishes the index-ETF payoff lab to R2 (frozen ACCRUE/EMIT
+        # producer at PR #7759 / scripts/build_options_payoff_lab). This step copies it
+        # down before emit. If the copy fails, emit still renders the committed artifact
+        # and reports its accrual_state. The failure is a warning, never a crash — one
+        # failure must not mask the options_skew hydrate above (separate dirs).
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs options_payoff_lab || echo "::warning title=options-payoff-lab-hydrate::options_payoff_lab restore from R2 failed - emit renders the committed artifact (or its absent state) and reports it"
       - name: re-render pages from the freshly recomputed engine output (resilient)
         # IDENTICAL to render.yml's render step — reads the engine output just recomputed above
         # (regime/latest.json + the MTF leaf, now in the working tree) and re-renders every page.
@@ -489,8 +496,8 @@ jobs:
           # everything around it — same class + heal as flow_leaders / research_vault (#3487).
           # MUST run AFTER spine(): _load_stockdata reads the gitignored site/stockdata/*.json
           # that spine's build_site writes in-lane. Serial post-band, never inside band():
-          # cl_gex's build_options_skew rewrites data/options_skew/snapshots.parquet
-          # non-atomically — a concurrent read drops every call_skew_rich chip. Byte-stable on
+          # cl_gex's build_options_skew upserts data/options_skew/snapshots.parquet
+          # atomically (temp file + rename). Byte-stable on
           # unchanged inputs (built_at carried from the committed artifact off-nightly), so an
           # untouched radar commits nothing and the nightly dead-man reading of built_at stays
           # honest. pick_lab gates radar.json on as_of == tonight's price-through (#3578), so
@@ -533,7 +540,8 @@ jobs:
               brun vol_regime   "index vol-regime (build_vol_regime)"        scripts.build_vol_regime
               brun options_flow "options flow desk (build_options_flow)"     scripts.build_options_flow
               brun flow_desk "flow desk (build_flow_desk)" scripts.build_flow_desk
-              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew
+              brun options_skew "single-name IV skew (build_options_skew)"   scripts.build_options_skew --emit
+              brun options_payoff_lab "index payoff lab (build_options_payoff_lab)" scripts.build_options_payoff_lab --emit
               brun options_ivspread "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               brun options_dislocation "options dislocation" scripts.build_options_dislocation
               # OIP E8 (note above): AFTER skew/ivspread, inside cl_gex — not a sibling.
@@ -595,7 +603,7 @@ jobs:
             # research_vault added 2026-07-25 — see the twin note in render.yml: this
             # loop is what surfaces a builder's log + its rc!=0 ::error, so #3487's
             # new brun call was running unwatched in both intraday lanes.
-            local ORDER="china cn_policy hk commodities spr sanctions_map forex bonds crossasset transmission discovery vol_regime options_flow flow_desk options_skew options_ivspread options_dislocation options_screener options_entry baskets news methodology seasonality stock_seasonality_page reports research_vault policy_watch index_changes stage_analysis_page winner_health_page tech_lab impulse"
+            local ORDER="china cn_policy hk commodities spr sanctions_map forex bonds crossasset transmission discovery vol_regime options_flow flow_desk options_skew options_payoff_lab options_ivspread options_dislocation options_screener options_entry baskets news methodology seasonality stock_seasonality_page reports research_vault policy_watch index_changes stage_analysis_page winner_health_page tech_lab impulse"
             echo "### ⏱ parallel band — per-builder wall-time" >> "$GITHUB_STEP_SUMMARY"
             for slug in $ORDER; do
               [ -f "$ART/$slug.log" ] || continue
@@ -663,7 +671,7 @@ jobs:
               run_py "index vol-regime (build_vol_regime)"      scripts.build_vol_regime
               run_py "options flow desk (build_options_flow)"   scripts.build_options_flow
               run_py "flow desk (build_flow_desk)" scripts.build_flow_desk
-              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew
+              run_py "single-name IV skew (build_options_skew)" scripts.build_options_skew --emit
               run_py "single-name IV spread (build_options_ivspread)" scripts.build_options_ivspread
               run_py "options dislocation" scripts.build_options_dislocation
               run_py "US options screener page (build_options_screener)" scripts.build_options_screener

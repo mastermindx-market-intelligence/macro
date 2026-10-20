@@ -90,6 +90,12 @@ HEADLINE_PREFIX = {
     "Mixed": "Mixed / transition —",
     "Risk-off": "Risk-off —",
 }
+# Participation scope is descriptive; these are still formal Risk-on headlines.
+HEADLINE_ALLOWED_PREFIX = {
+    "Risk-on": ("Risk-on —", "Broad risk-on —", "Selective risk-on —"),
+    "Mixed": (HEADLINE_PREFIX["Mixed"],),
+    "Risk-off": (HEADLINE_PREFIX["Risk-off"],),
+}
 # _flip_text(verdict) opening words -> the only verdict that emits them.
 FLIP_PREFIX = {
     "→ Mixed if": "Risk-on",
@@ -106,9 +112,12 @@ NOTE_CAPPED_GENERIC = "capped at mixed"
 
 _SECTION = re.compile(r'<section class="ms-verdict">(.*?)</section>', re.S)
 _WORD = re.compile(r'id="ms-word"><span class="l-en">([^<]*)</span>')
-_SCORE = re.compile(r'id="ms-score">(\d+)<')
+_SCORE = re.compile(r'id="ms-score"[^>]*>(\d+)<')
 _TICK = re.compile(r'id="ms-tick" style="left:\s*([0-9.]+)%')
-_THESIS = re.compile(r'class="v-thesis"><span class="l-en">([^<]*)</span>')
+_THESIS = re.compile(
+    r'class="(?:[^"]*\s)?v-thesis(?:\s[^"]*)?"[^>]*>\s*'
+    r'<span class="l-en">([^<]*)</span>'
+)
 _OVERRIDE = re.compile(
     r'class="v-override">(?:<span class="ic">[^<]*</span>)?<span class="l-en">([^<]*)</span>'
 )
@@ -227,10 +236,11 @@ def check_text(name: str, html: str) -> list[str]:
     thesis_m = _THESIS.search(sec)
     if thesis_m:
         thesis = thesis_m.group(1).strip()
-        if not thesis.startswith(HEADLINE_PREFIX[word]):
+        allowed = HEADLINE_ALLOWED_PREFIX[word]
+        if not thesis.startswith(allowed):
             v.append(
                 f"(c) {name}: verdict {word!r} but thesis reads {thesis[:60]!r}"
-                f" (expected prefix {HEADLINE_PREFIX[word]!r})"
+                f" (expected one of {allowed!r})"
             )
 
     for note in _OVERRIDE.findall(sec):

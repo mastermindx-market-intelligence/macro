@@ -1,0 +1,35 @@
+{
+  "schema": "gmi.pro004_committed_conservation.v1",
+  "at": "2026-10-11T12:13:46.012683+00:00",
+  "head": "c2cdca2f5ac7dec3b718f9b371eb04f5fd07f485",
+  "ordered_parents": [
+    "a9da6e9319d130fa8d2143ea5aee59bedaa40e91",
+    "430198676d96708fd47afd6620348530c1ac6c2a"
+  ],
+  "accepted_observation_commit": "430198676d96708fd47afd6620348530c1ac6c2a",
+  "delivery_files_conserved": 36,
+  "evidence_files_conserved": 179,
+  "accepted_observation_sources_conserved": 53,
+  "file_bytes_and_git_blob_identities_match": true,
+  "main_jobs_preserved": 276,
+  "combined_jobs": 277,
+  "kernel_definition_unchanged": true,
+  "all_main_job_definitions_unchanged": true,
+  "curated_main": 82,
+  "curated_combined": 83,
+  "curated_exact_union": true,
+  "duplicate_yaml_keys": false,
+  "kernel_ci_composition_unchanged_from_prior_integration": true,
+  "clean": true,
+  "merge_original_exit": 130,
+  "normal_merge_quit_rc": 0,
+  "source_custody": "original parent",
+  "legacy_conservation_exec": {
+    "id": 69280,
+    "read_return": "Unknown process id",
+    "retained_output_absent": true,
+    "exit_code": null,
+    "replayed": false
+  },
+  "verification_method": "Read current files, compare frozen SHA256 and length, compute Git blob IDs and compare committed ls-tree; bounded per-object reads for CI composition. No replay of prior bulk cat-file process, native suite or private proof."
+}

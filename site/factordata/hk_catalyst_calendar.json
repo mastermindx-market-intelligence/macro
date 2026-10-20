@@ -1,34 +1,34 @@
 {
-  "as_of": "2026-09-16",
+  "as_of": "2026-10-20",
   "horizon_days": 45,
   "display_only": true,
   "upcoming": [
     {
-      "type": "FTSE_REVIEW",
-      "name_en": "FTSE Russell Index Review \u2014 Sep 2026",
-      "name_zh": "\u5bcc\u65f6\u7f57\u7d20\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7409\u6708",
-      "announce_date": "2026-09-07",
-      "effective_date": "2026-09-21",
-      "scope": "FTSE China 50 / FTSE Emerging Markets",
-      "source_note": "rule-computed: effective = Monday after 3rd Friday of Sep 2026; verify at ftserussell.com",
+      "type": "MSCI_REVIEW",
+      "name_en": "MSCI Index Review \u2014 Nov quarterly 2026",
+      "name_zh": "MSCI\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7411\u6708\uff08quarterly\uff09",
+      "announce_date": "2026-11-02",
+      "effective_date": "2026-11-30",
+      "scope": "MSCI EM / China A-Inclusion / HK indexes",
+      "source_note": "rule-computed: effective = last business day of Nov 2026; verify at msci.com",
       "provisional": true,
       "display_only": true,
-      "date": "2026-09-21",
-      "days_until": 5,
-      "imminent": true,
+      "date": "2026-11-30",
+      "days_until": 41,
+      "imminent": false,
       "dow": "Mon",
       "dow_zh": "\u5468\u4e00",
-      "md": "Sep 21",
-      "md_zh": "9\u670821\u65e5"
+      "md": "Nov 30",
+      "md_zh": "11\u670830\u65e5"
     }
   ],
   "imminent": {
-    "en": "Next catalyst: FTSE Russell Index Review \u2014 Sep 2026 in 5 days (Sep 21) [provisional].",
-    "zh": "\u4e0b\u4e00\u7ed3\u6784\u6027\u50ac\u5316\uff1a\u5bcc\u65f6\u7f57\u7d20\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7409\u67085\u5929\u540e\uff089\u670821\u65e5\uff09 [provisional]\u3002",
-    "type": "FTSE_REVIEW",
-    "date": "2026-09-21",
-    "days_until": 5,
-    "imminent": true,
+    "en": "Next catalyst: MSCI Index Review \u2014 Nov quarterly 2026 in 41 days (Nov 30) [provisional].",
+    "zh": "\u4e0b\u4e00\u7ed3\u6784\u6027\u50ac\u5316\uff1aMSCI\u6307\u6570\u68c0\u8ba8 \u2014 2026\u5e7411\u6708\uff08quarterly\uff0941\u5929\u540e\uff0811\u670830\u65e5\uff09 [provisional]\u3002",
+    "type": "MSCI_REVIEW",
+    "date": "2026-11-30",
+    "days_until": 41,
+    "imminent": false,
     "provisional": true,
     "display_only": true
   }

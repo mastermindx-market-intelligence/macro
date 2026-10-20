@@ -33,7 +33,6 @@ body.mq-page {
   min-width: 320px;
   margin: 0;
   padding: 18px;
-  overflow-x: hidden;
   color: var(--mq-ink);
   background:
     radial-gradient(circle at 8% -12%, color-mix(in srgb, var(--mq-accent) 9%, transparent), transparent 32rem),
@@ -160,8 +159,27 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
   border-radius: var(--mq-radius); background: var(--mq-surface); box-shadow: var(--mq-shadow);
 }
 .mq-ribbon-list { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
-.mq-implication { padding: 14px 16px; border: 1px solid var(--mq-line); border-radius: 12px; background: var(--mq-raised); }
-.mq-implication-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; }
+.mq-ribbon-list { list-style: none; margin: 0; padding: 0; counter-reset: mq-imp; }
+.mq-implication {
+  padding: 14px 16px;
+  border: 1px solid var(--mq-line);
+  border-radius: var(--r-card, 12px);
+  background: var(--mq-raised);
+  counter-increment: mq-imp;
+}
+.mq-implication + .mq-implication {
+  margin-top: 10px;
+  border-top: 1px solid var(--mq-line);
+}
+.mq-implication-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 9px; align-items: baseline; }
+.mq-implication-badges::before {
+  content: counter(mq-imp);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--mq-muted);
+  min-width: 1.25em;
+}
 .mq-implication-text { max-width: 82ch; margin: 0; font-size: 13.5px; line-height: 1.5; }
 .mq-implication-claim { max-width: 78ch; margin: 7px 0 9px; color: var(--mq-muted); font-size: 10.5px; }
 .mq-implication-contra { margin: 8px 0 0; color: var(--ink-warn); font-size: 11px; }
@@ -355,9 +373,15 @@ code { font-family: var(--font-mono); font-size: 10.5px; word-break: break-all; 
 .mq-suitenav-rail {
   display: flex; gap: 6px; margin: 0; padding: 4px 2px;
   list-style: none; overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   /* The rail is the only horizontally scrolling thing here; the page body is not. */
   overscroll-behavior-x: contain;
+}
+.mq-suitenav-rail::-webkit-scrollbar { display: none; }
+.mq-suitenav-analyst { flex: 0 0 auto; list-style: none; }
+.mq-suitenav-analyst .mc-analyst {
+  appearance: none; cursor: pointer;
+  background: transparent;
 }
 .mq-suitenav-pill {
   display: inline-flex; align-items: center;
@@ -628,6 +652,24 @@ html[data-theme="light"] .mq-hub-absent {
   .mq-map { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 768px) {
+  /* Same ≤768 law as the hub: sticky strip, fade mask, page-scoped FAB hide
+     lives on body.mc-page in macro_command.css. */
+  .mq-suitenav {
+    position: sticky; top: 60px; z-index: 4;
+    background: var(--bg);
+    border-bottom: 1px solid var(--mq-line);
+    padding-bottom: 8px;
+  }
+  .mq-suitenav-rail {
+    flex-wrap: nowrap;
+    min-width: 0;
+    margin-right: 24px;
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  }
+  .mq-suitenav-pill { white-space: nowrap; }
+}
 @media (max-width: 760px) {
   body.mq-page { padding: 14px; }
   .mq-shell { margin: 14px auto 56px; }
@@ -638,9 +680,77 @@ html[data-theme="light"] .mq-hub-absent {
   .mq-metric-grid { grid-template-columns: 1fr; }
   .mq-axis-cells { grid-template-columns: 1fr; }
   .mq-method-grid, .mq-confidence-grid { grid-template-columns: 1fr; }
-  /* Wide receipt tables scroll inside themselves rather than the page body. */
-  .mq-table { display: block; overflow-x: auto; white-space: nowrap; }
-  .mq-table th, .mq-table td { white-space: normal; }
+  /* Wide receipt / method tables: definite viewport-based max so nowrap
+     cells cannot inflate the phone canvas (grid min-width:auto trap). */
+  .mq-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+    /* Wide thead/tr must not inflate ancestor scrollWidth (E-B1(4)). */
+    contain: inline-size;
+  }
+  .mq-table th, .mq-table td { white-space: nowrap; }
+  .mq-panel,
+  .mq-workspace,
+  .mq-shell,
+  #mq-shell,
+  #mq-panel-current {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: visible;
+  }
+  /* Page shell must FIT the viewport at 390 — never a document-level
+     horizontal scroller (E-B1(4) / E-M3). Wide children wrap or scroll
+     inside sanctioned rails/tables only. */
+  body.mq-page {
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+  #mq-shell,
+  .mq-shell,
+  .mq-workspace,
+  #mq-panel-current {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  /* Overflow stays VISIBLE so capture content_overflows can see clips;
+     wrapping — not overflow-x:hidden — is what keeps prose inside the box.
+     Cause (E-B2): Weights-law / method prose lives in .mq-method-grid dd,
+     not in p; wrap rules that only hit p left dd line boxes wider than
+     .mq-axis-method and the old overflow-x:hidden silently clipped them. */
+  section.mq-method,
+  section.mq-method details.mc-details,
+  section.mq-method .mq-axis-method,
+  section.mq-method .mc-details-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: visible;
+  }
+  section.mq-method p,
+  section.mq-method .mc-details-body > p,
+  section.mq-method .mq-method-grid dd,
+  section.mq-method .mq-method-grid dt,
+  section.mq-method .mq-axis-method {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    min-width: 0;
+    max-width: 100%;
+  }
+  section.mq-method .mq-method-grid {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  section.mq-method .mq-method-grid > div {
+    min-width: 0;
+    max-width: 100%;
+  }
+  section.mq-method .mq-table {
+    width: 100%;
+    max-width: 100%;
+  }
   .mq-clock { grid-template-columns: 1fr; gap: 2px; }
   /* Nav: the home link keeps its row; the rail takes the full width below it. */
   .mq-suitenav { grid-template-columns: 1fr; gap: 4px; margin-top: 14px; }

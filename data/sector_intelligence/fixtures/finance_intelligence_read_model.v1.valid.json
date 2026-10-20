@@ -1,0 +1,2139 @@
+{
+  "contract_id": "finance_intelligence_read_model.v1",
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-24T00:00:00Z",
+  "knowledge_cutoff": "2026-09-24T00:00:00Z",
+  "common_as_of": "2026-09-24",
+  "sector_ref": "sector:financials",
+  "outer_dossier_ref": {
+    "contract_id": null,
+    "dossier_id": null,
+    "dossier_hash": null,
+    "state": "OUTER_CONTRACT_NOT_ACCEPTED"
+  },
+  "snapshot_identity": {
+    "composer_version": "synthetic-1.0.0",
+    "input_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+    "curation_revision_set": [
+      "synthetic-revision-1"
+    ],
+    "rights_profile": "synthetic_test_profile",
+    "view_scope": "finance_intelligence_synthetic_fixture"
+  },
+  "coverage": {
+    "domains_total": 7,
+    "domains_populated": 3,
+    "slices_total": 52,
+    "slices_populated": 9,
+    "slices_semantic_only": 1,
+    "companies_with_records": 2,
+    "first_vertical": {
+      "name": "Financial Rails & Market Infrastructure",
+      "slice_ids": [
+        "card_networks",
+        "merchant_acquiring_processing",
+        "issuer_processing",
+        "exchanges_trading_venues",
+        "custody_asset_servicing",
+        "market_reference_data",
+        "ratings_credit_information",
+        "indices_benchmarks_etf_plumbing"
+      ],
+      "state": "SYNTHETIC"
+    }
+  },
+  "material_changes": [
+    {
+      "change_id": "change-001",
+      "event_clock": {
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "effective_at": null
+      },
+      "domain_ids": [
+        "payments",
+        "capital_markets"
+      ],
+      "slice_ids": [
+        "card_networks",
+        "exchanges_trading_venues"
+      ],
+      "operating_implication": "Synthetic activity changed in the first vertical.",
+      "evidence_refs": [
+        "src-001",
+        "src-004"
+      ],
+      "conflict_ids": [
+        "conflict-001"
+      ],
+      "freshness_state": "FRESH"
+    }
+  ],
+  "domains": [
+    {
+      "domain_id": "payments",
+      "name_en": "Payments",
+      "name_zh": "支付",
+      "slice_ids": [
+        "card_networks",
+        "merchant_acquiring_processing",
+        "issuer_processing"
+      ],
+      "system_view_ids": [
+        "contractual_flow",
+        "infrastructure_access",
+        "public_equity_economics"
+      ]
+    },
+    {
+      "domain_id": "capital_markets",
+      "name_en": "Capital markets",
+      "name_zh": "资本市场",
+      "slice_ids": [
+        "exchanges_trading_venues",
+        "custody_asset_servicing",
+        "market_reference_data",
+        "ratings_credit_information",
+        "indices_benchmarks_etf_plumbing"
+      ],
+      "system_view_ids": [
+        "contractual_flow",
+        "infrastructure_access",
+        "public_equity_economics"
+      ]
+    },
+    {
+      "domain_id": "software_trust",
+      "name_en": "Software and trust",
+      "name_zh": "软件与信任",
+      "slice_ids": [
+        "regtech_kyc_aml"
+      ],
+      "system_view_ids": [
+        "contractual_flow",
+        "infrastructure_access",
+        "public_equity_economics"
+      ]
+    }
+  ],
+  "slices": [
+    {
+      "slice_id": "card_networks",
+      "domain_id": "payments",
+      "name_en": "Card networks",
+      "name_zh": "卡网络",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "BROAD_CONTEXT_AVAILABLE",
+        "incumbent_basket_ids": [
+          "payments_fintech"
+        ],
+        "membership_state": "CURRENT_MEMBERSHIP_ONLY",
+        "member_count": 8,
+        "weighting_family": null,
+        "price_basis_state": "PRICE_BASIS_UNQUALIFIED"
+      },
+      "economic_job": "Synthetic economic job 1 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 1 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 1 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "REGIME_BREAK",
+          "primary_metric": {
+            "native_metric_name": "synthetic_count",
+            "normalized_metric_family": "synthetic_family",
+            "value": 10.0,
+            "unit": "synthetic_unit",
+            "currency": null,
+            "period_start": null,
+            "period_end": null,
+            "measurement_class": "VOLUME_COUNT",
+            "numerator": null,
+            "denominator": null,
+            "gross_net_basis": "NOT_APPLICABLE",
+            "average_end": "NOT_APPLICABLE",
+            "reported_derived_estimated": "REPORTED"
+          },
+          "clock": {
+            "published_at": "2026-09-18",
+            "published_at_grain": "DAY",
+            "observed_at": "2026-09-20",
+            "effective_at": null
+          },
+          "comparability_state": "REGIME_BREAK_NOT_COMPARABLE",
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 1 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-001"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 1 is a plain sentence.",
+          "direction": "LEADING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-001"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-001",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-001"
+      ]
+    },
+    {
+      "slice_id": "merchant_acquiring_processing",
+      "domain_id": "payments",
+      "name_en": "Merchant acquiring and processing",
+      "name_zh": "商户收单与处理",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "RESEARCH_CANDIDATE",
+        "incumbent_basket_ids": [
+          "xlf:brokers_asset"
+        ],
+        "membership_state": "PIT_MEMBERSHIP_INCOMPLETE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 2 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 2 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 2 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "OBSERVED",
+          "primary_metric": {
+            "native_metric_name": "synthetic_count",
+            "normalized_metric_family": "synthetic_family",
+            "value": 3.0,
+            "unit": "synthetic_unit",
+            "currency": null,
+            "period_start": null,
+            "period_end": null,
+            "measurement_class": "VOLUME_COUNT",
+            "numerator": null,
+            "denominator": null,
+            "gross_net_basis": "NOT_APPLICABLE",
+            "average_end": "NOT_APPLICABLE",
+            "reported_derived_estimated": "REPORTED"
+          },
+          "clock": {
+            "published_at": "2026-09-18",
+            "published_at_grain": "DAY",
+            "observed_at": "2026-09-20",
+            "effective_at": null
+          },
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic evidence supports this state."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-001"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 2 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-002"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 2 is a plain sentence.",
+          "direction": "LAGGING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-002"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-002",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-001"
+      ]
+    },
+    {
+      "slice_id": "issuer_processing",
+      "domain_id": "payments",
+      "name_en": "Issuer processing",
+      "name_zh": "发卡方处理",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "RESEARCH_CANDIDATE",
+        "incumbent_basket_ids": [
+          "payments_fintech"
+        ],
+        "membership_state": "PIT_MEMBERSHIP_INCOMPLETE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 3 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 3 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 3 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "INFERRED",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-002"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-002"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "VALUATION_ANCHOR_UNAVAILABLE",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-002"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-002"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 3 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-003"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 3 is a plain sentence.",
+          "direction": "LEADING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": null,
+        "required_return_context": null,
+        "state": "VALUATION_ANCHOR_UNAVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-003"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-003",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-002"
+      ]
+    },
+    {
+      "slice_id": "exchanges_trading_venues",
+      "domain_id": "capital_markets",
+      "name_en": "Exchanges and trading venues",
+      "name_zh": "交易所与交易场所",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 4 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 4 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 4 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "INFERRED",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-003"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-003"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-003"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "PRICE_BASIS_UNQUALIFIED",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-003"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 4 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-004"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 4 is a plain sentence.",
+          "direction": "LAGGING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-004"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-004",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-003"
+      ]
+    },
+    {
+      "slice_id": "custody_asset_servicing",
+      "domain_id": "capital_markets",
+      "name_en": "Custody and asset servicing",
+      "name_zh": "托管与资产服务",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 5 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 5 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 5 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "OBSERVED",
+          "primary_metric": {
+            "native_metric_name": "synthetic_count",
+            "normalized_metric_family": "synthetic_family",
+            "value": 6.0,
+            "unit": "synthetic_unit",
+            "currency": null,
+            "period_start": null,
+            "period_end": null,
+            "measurement_class": "VOLUME_COUNT",
+            "numerator": null,
+            "denominator": null,
+            "gross_net_basis": "NOT_APPLICABLE",
+            "average_end": "NOT_APPLICABLE",
+            "reported_derived_estimated": "REPORTED"
+          },
+          "clock": {
+            "published_at": "2026-09-18",
+            "published_at_grain": "DAY",
+            "observed_at": "2026-09-20",
+            "effective_at": null
+          },
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-004"
+          ],
+          "note": "Synthetic evidence supports this state."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-004"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-004"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-004"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 5 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-005"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 5 is a plain sentence.",
+          "direction": "LEADING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-001"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-005",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": null,
+        "state": "SOURCE_STALE"
+      },
+      "evidence_refs": [
+        "src-004"
+      ]
+    },
+    {
+      "slice_id": "market_reference_data",
+      "domain_id": "capital_markets",
+      "name_en": "Market reference data",
+      "name_zh": "市场参考数据",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 6 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 6 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 6 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "INFERRED",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-005"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-005"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-005"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-005"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 6 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-006"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 6 is a plain sentence.",
+          "direction": "LAGGING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-002"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-006",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-005"
+      ]
+    },
+    {
+      "slice_id": "ratings_credit_information",
+      "domain_id": "capital_markets",
+      "name_en": "Ratings and credit information",
+      "name_zh": "评级与信用信息",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 7 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 7 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 7 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "INFERRED",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-006"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-006"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-006"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-006"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 7 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-007"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 7 is a plain sentence.",
+          "direction": "LEADING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-003"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-007",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-006"
+      ]
+    },
+    {
+      "slice_id": "indices_benchmarks_etf_plumbing",
+      "domain_id": "capital_markets",
+      "name_en": "Indices benchmarks and ETF plumbing",
+      "name_zh": "指数基准与ETF基础设施",
+      "slice_state": "RESEARCH_EVIDENCE_AVAILABLE",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 8 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 8 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 8 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "OBSERVED",
+          "primary_metric": {
+            "native_metric_name": "synthetic_count",
+            "normalized_metric_family": "synthetic_family",
+            "value": 9.0,
+            "unit": "synthetic_unit",
+            "currency": null,
+            "period_start": null,
+            "period_end": null,
+            "measurement_class": "VOLUME_COUNT",
+            "numerator": null,
+            "denominator": null,
+            "gross_net_basis": "NOT_APPLICABLE",
+            "average_end": "NOT_APPLICABLE",
+            "reported_derived_estimated": "REPORTED"
+          },
+          "clock": {
+            "published_at": "2026-09-18",
+            "published_at_grain": "DAY",
+            "observed_at": "2026-09-20",
+            "effective_at": null
+          },
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-007"
+          ],
+          "note": "Synthetic evidence supports this state."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-007"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-007"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-007"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 8 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-008"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 8 is a plain sentence.",
+          "direction": "LAGGING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "OBSERVED"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": "2026-09-20",
+        "required_return_context": null,
+        "state": "AVAILABLE"
+      },
+      "conflict_ids": [
+        "conflict-004"
+      ],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-008",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "FRESH"
+      },
+      "evidence_refs": [
+        "src-007"
+      ]
+    },
+    {
+      "slice_id": "regtech_kyc_aml",
+      "domain_id": "software_trust",
+      "name_en": "Regtech KYC and AML",
+      "name_zh": "监管科技KYC与反洗钱",
+      "slice_state": "SEMANTIC_ONLY",
+      "basket_state": {
+        "posture": "SEMANTIC_ONLY",
+        "incumbent_basket_ids": [],
+        "membership_state": "NONE",
+        "member_count": null,
+        "weighting_family": null,
+        "price_basis_state": null
+      },
+      "economic_job": "Synthetic economic job 9 is a plain sentence.",
+      "revenue_mechanism": "Synthetic revenue mechanism 9 is a plain sentence.",
+      "retained_risk": "Synthetic retained risk 9 is a plain sentence.",
+      "rerating": {
+        "operating": {
+          "state": "OBSERVED",
+          "primary_metric": {
+            "native_metric_name": "synthetic_count",
+            "normalized_metric_family": "synthetic_family",
+            "value": 10.0,
+            "unit": "synthetic_unit",
+            "currency": null,
+            "period_start": null,
+            "period_end": null,
+            "measurement_class": "VOLUME_COUNT",
+            "numerator": null,
+            "denominator": null,
+            "gross_net_basis": "NOT_APPLICABLE",
+            "average_end": "NOT_APPLICABLE",
+            "reported_derived_estimated": "REPORTED"
+          },
+          "clock": {
+            "published_at": "2026-09-18",
+            "published_at_grain": "DAY",
+            "observed_at": "2026-09-20",
+            "effective_at": null
+          },
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-008"
+          ],
+          "note": "Synthetic evidence supports this state."
+        },
+        "expectations": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-008"
+          ],
+          "note": "Synthetic values are invented for contract testing.",
+          "history": {
+            "state": "NO_HISTORICAL_CONSENSUS",
+            "observations": []
+          }
+        },
+        "valuation": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-008"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "price": {
+          "state": "MISSING",
+          "primary_metric": null,
+          "clock": null,
+          "comparability_state": null,
+          "evidence_refs": [
+            "src-008"
+          ],
+          "note": "Synthetic values are invented for contract testing."
+        },
+        "bridge": "Synthetic transmission 9 moves from workflow through value recognition.",
+        "falsifier_ids": [
+          "fal-009"
+        ]
+      },
+      "indicators": [
+        {
+          "name": "Synthetic indicator 9 is a plain sentence.",
+          "direction": "LEADING",
+          "native_metric": "synthetic_indicator_metric",
+          "state": "MISSING"
+        }
+      ],
+      "valuation_anchor": {
+        "primary_per_share_anchor": "NOT_APPLICABLE",
+        "primary_valuation_anchor": "NOT_APPLICABLE",
+        "denominator": "No synthetic denominator is admitted.",
+        "horizon": "NOT_APPLICABLE",
+        "information_clock": null,
+        "required_return_context": null,
+        "state": "VALUATION_ANCHOR_UNAVAILABLE"
+      },
+      "conflict_ids": [],
+      "falsifiers": [
+        {
+          "falsifier_id": "fal-009",
+          "statement": "This synthetic condition is not evaluatable yet.",
+          "window": "A synthetic future window is stated in plain language.",
+          "state": "NOT_YET_EVALUABLE"
+        }
+      ],
+      "freshness": {
+        "evidence_latest_observed_at": "2026-09-20",
+        "state": "NO_EVIDENCE"
+      },
+      "evidence_refs": [
+        "src-008"
+      ]
+    }
+  ],
+  "company_exposures": [
+    {
+      "row_id": "company-synthetic-001",
+      "issuer_label": "Synthetic Rails Company",
+      "ticker_hint": null,
+      "identity": {
+        "state": "IDENTITY_UNRESOLVED",
+        "company_node_id": null,
+        "security_ref": null,
+        "listing_note": "No synthetic ticker hint is a validated security binding."
+      },
+      "company_route": {
+        "href": null,
+        "state": "IDENTITY_UNRESOLVED"
+      },
+      "cells": [
+        {
+          "slice_id": "card_networks",
+          "role": "DIRECT_PURE_OR_HIGH_EXPOSURE",
+          "exposure": {
+            "basis": "QUALITATIVE",
+            "numerator": null,
+            "denominator": null,
+            "value": null,
+            "unit": null,
+            "state": "QUALITATIVE_ONLY"
+          },
+          "materiality": "UNMEASURED",
+          "retained_risk": "Synthetic retained risk is described.",
+          "evidence_date": "2026-09-20",
+          "evidence_refs": [
+            "src-001"
+          ]
+        },
+        {
+          "slice_id": "merchant_acquiring_processing",
+          "role": "DIRECT_DIVERSIFIED",
+          "exposure": {
+            "basis": "NOT_SEPARATELY_DISCLOSED",
+            "numerator": null,
+            "denominator": null,
+            "value": null,
+            "unit": null,
+            "state": "EXPOSURE_NOT_SEPARATELY_DISCLOSED"
+          },
+          "materiality": "UNMEASURED",
+          "retained_risk": null,
+          "evidence_date": "2026-09-20",
+          "evidence_refs": [
+            "src-002"
+          ]
+        }
+      ]
+    },
+    {
+      "row_id": "company-synthetic-002",
+      "issuer_label": "Synthetic Market Infrastructure Company",
+      "ticker_hint": "EXAMPLE",
+      "identity": {
+        "state": "IDENTITY_VALIDATED",
+        "company_node_id": "company:synthetic-market-infrastructure",
+        "security_ref": "security:synthetic-example",
+        "listing_note": "The synthetic identity is validated for this fixture only."
+      },
+      "company_route": {
+        "href": "https://example.invalid/companies/synthetic-market-infrastructure",
+        "state": "AVAILABLE"
+      },
+      "cells": [
+        {
+          "slice_id": "issuer_processing",
+          "role": "ENABLER_OR_TOLL_COLLECTOR",
+          "exposure": {
+            "basis": "TRANSACTION_VOLUME",
+            "numerator": "Synthetic transactions",
+            "denominator": "All synthetic transactions in the stated period",
+            "value": 0.42,
+            "unit": "synthetic transactions",
+            "state": "MEASURED"
+          },
+          "materiality": "PARTIAL",
+          "retained_risk": "Synthetic processing risk remains with the platform.",
+          "evidence_date": "2026-09-20",
+          "evidence_refs": [
+            "src-003"
+          ]
+        },
+        {
+          "slice_id": "exchanges_trading_venues",
+          "role": "DIRECT_PURE_OR_HIGH_EXPOSURE",
+          "exposure": {
+            "basis": "SEGMENT_REVENUE",
+            "numerator": "Synthetic exchange revenue",
+            "denominator": "Synthetic total company revenue",
+            "value": 0.73,
+            "unit": "ratio of revenues",
+            "state": "MEASURED"
+          },
+          "materiality": "MATERIAL",
+          "retained_risk": "Synthetic volume dependence remains.",
+          "evidence_date": "2026-09-20",
+          "evidence_refs": [
+            "src-004"
+          ]
+        }
+      ]
+    }
+  ],
+  "system_views": [
+    {
+      "view_id": "contractual_flow",
+      "name_en": "Contractual money and risk flow",
+      "name_zh": "合同资金与风险流",
+      "nodes": [
+        {
+          "node_id": "payer",
+          "label_en": "Payer",
+          "label_zh": "付款方",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "card_networks"
+          ],
+          "expandable": true,
+          "children_ids": []
+        },
+        {
+          "node_id": "network",
+          "label_en": "Card network",
+          "label_zh": "卡网络",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "card_networks"
+          ],
+          "expandable": true,
+          "children_ids": []
+        },
+        {
+          "node_id": "settlement",
+          "label_en": "Settlement bank",
+          "label_zh": "结算银行",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "merchant_acquiring_processing"
+          ],
+          "expandable": true,
+          "children_ids": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "payer",
+          "to": "network",
+          "relationship": "PAYS",
+          "evidence_state": "OBSERVED"
+        },
+        {
+          "from": "network",
+          "to": "settlement",
+          "relationship": "SETTLES",
+          "evidence_state": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "view_id": "infrastructure_access",
+      "name_en": "Regulated infrastructure and access",
+      "name_zh": "受监管基础设施与准入",
+      "nodes": [
+        {
+          "node_id": "operator",
+          "label_en": "Market operator",
+          "label_zh": "市场运营方",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "exchanges_trading_venues"
+          ],
+          "expandable": true,
+          "children_ids": []
+        },
+        {
+          "node_id": "member",
+          "label_en": "Clearing member",
+          "label_zh": "清算会员",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "clearing_ccp_csd",
+            "custody_asset_servicing"
+          ],
+          "expandable": true,
+          "children_ids": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "operator",
+          "to": "member",
+          "relationship": "REQUIRES_MEMBERSHIP",
+          "evidence_state": "OBSERVED"
+        },
+        {
+          "from": "operator",
+          "to": "member",
+          "relationship": "SUPERVISES",
+          "evidence_state": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "view_id": "public_equity_economics",
+      "name_en": "Public equity economics",
+      "name_zh": "上市公司经济学",
+      "nodes": [
+        {
+          "node_id": "operator-company",
+          "label_en": "Market operator company",
+          "label_zh": "市场运营公司",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "exchanges_trading_venues"
+          ],
+          "expandable": true,
+          "children_ids": []
+        },
+        {
+          "node_id": "issuer",
+          "label_en": "Listing issuer",
+          "label_zh": "上市发行人",
+          "node_type": "synthetic_node",
+          "slice_ids": [
+            "equity_debt_capital_markets"
+          ],
+          "expandable": true,
+          "children_ids": []
+        }
+      ],
+      "edges": [
+        {
+          "from": "issuer",
+          "to": "operator-company",
+          "relationship": "EARNS_FEE_FROM",
+          "evidence_state": "OBSERVED"
+        },
+        {
+          "from": "issuer",
+          "to": "operator-company",
+          "relationship": "DEPENDS_ON_VOLUME_OF",
+          "evidence_state": "OBSERVED"
+        }
+      ]
+    }
+  ],
+  "macro_matrix": [
+    {
+      "slice_id": "card_networks",
+      "driver": "policy_rates",
+      "mechanism": "Synthetic policy rates could alter funding conditions for card users.",
+      "lag": "TWO_TO_FOUR_QUARTERS",
+      "state": "CAUSAL_EFFECT_UNMEASURED"
+    },
+    {
+      "slice_id": "regtech_kyc_aml",
+      "driver": "regulation_capital",
+      "mechanism": "Synthetic rules can change required controls and system investment.",
+      "lag": "ONE_QUARTER",
+      "state": "DESCRIBED"
+    }
+  ],
+  "constraints": [
+    {
+      "slice_id": "market_reference_data",
+      "constraint": "data_benchmark_control",
+      "economic_effect": "Control over the synthetic benchmark can support a durable fee stream.",
+      "evidence_refs": [
+        "src-006"
+      ]
+    },
+    {
+      "slice_id": "ratings_credit_information",
+      "constraint": "regulatory_permission",
+      "economic_effect": "A synthetic permission is required before the service can earn revenue.",
+      "evidence_refs": [
+        "src-007"
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_id": "conflict-001",
+      "label": "EARNINGS_UP_P_E_DOWN",
+      "slice_ids": [
+        "card_networks"
+      ],
+      "company_row_ids": [
+        "company-synthetic-001"
+      ],
+      "left": {
+        "plane": "operating",
+        "statement": "The synthetic operating evidence rises.",
+        "evidence_refs": [
+          "src-001"
+        ]
+      },
+      "right": {
+        "plane": "price",
+        "statement": "The synthetic valuation evidence falls.",
+        "evidence_refs": [
+          "src-002"
+        ]
+      },
+      "resolution": "UNRESOLVED_BY_DESIGN"
+    },
+    {
+      "conflict_id": "conflict-002",
+      "label": "BOOK_UP_P_B_DOWN",
+      "slice_ids": [
+        "merchant_acquiring_processing"
+      ],
+      "company_row_ids": [
+        "company-synthetic-001"
+      ],
+      "left": {
+        "plane": "operating",
+        "statement": "The synthetic operating evidence rises.",
+        "evidence_refs": [
+          "src-001"
+        ]
+      },
+      "right": {
+        "plane": "price",
+        "statement": "The synthetic valuation evidence falls.",
+        "evidence_refs": [
+          "src-002"
+        ]
+      },
+      "resolution": "UNRESOLVED_BY_DESIGN"
+    },
+    {
+      "conflict_id": "conflict-003",
+      "label": "NII_UP_CREDIT_WORSE",
+      "slice_ids": [
+        "issuer_processing"
+      ],
+      "company_row_ids": [
+        "company-synthetic-002"
+      ],
+      "left": {
+        "plane": "operating",
+        "statement": "The synthetic operating evidence rises.",
+        "evidence_refs": [
+          "src-001"
+        ]
+      },
+      "right": {
+        "plane": "price",
+        "statement": "The synthetic valuation evidence falls.",
+        "evidence_refs": [
+          "src-002"
+        ]
+      },
+      "resolution": "UNRESOLVED_BY_DESIGN"
+    },
+    {
+      "conflict_id": "conflict-004",
+      "label": "PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN",
+      "slice_ids": [
+        "exchanges_trading_venues"
+      ],
+      "company_row_ids": [
+        "company-synthetic-002"
+      ],
+      "left": {
+        "plane": "operating",
+        "statement": "The synthetic operating evidence rises.",
+        "evidence_refs": [
+          "src-001"
+        ]
+      },
+      "right": {
+        "plane": "price",
+        "statement": "The synthetic valuation evidence falls.",
+        "evidence_refs": [
+          "src-002"
+        ]
+      },
+      "resolution": "UNRESOLVED_BY_DESIGN"
+    }
+  ],
+  "source_records": [
+    {
+      "record_id": "src-001",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/card_networks",
+        "locator": "Synthetic section 1",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-1",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 1 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 1.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 1.0,
+        "value_high": 2.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "IDENTITY_UNRESOLVED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-002",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/merchant_acquiring_processing",
+        "locator": "Synthetic section 2",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-2",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 2 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 2.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 2.0,
+        "value_high": 3.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-003",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/issuer_processing",
+        "locator": "Synthetic section 3",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-3",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 3 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 3.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 3.0,
+        "value_high": 4.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-004",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/exchanges_trading_venues",
+        "locator": "Synthetic section 4",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-4",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 4 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 4.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 4.0,
+        "value_high": 5.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-005",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/custody_asset_servicing",
+        "locator": "Synthetic section 5",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-5",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 5 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 5.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 5.0,
+        "value_high": 6.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-006",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/market_reference_data",
+        "locator": "Synthetic section 6",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-6",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 6 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 6.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 6.0,
+        "value_high": 7.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "SOURCE_RIGHTS_HELD",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-007",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/ratings_credit_information",
+        "locator": "Synthetic section 7",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-7",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 7 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 7.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 7.0,
+        "value_high": 8.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "INTERNAL_ONLY",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-008",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/indices_benchmarks_etf_plumbing",
+        "locator": "Synthetic section 8",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-8",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 8 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 8.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 8.0,
+        "value_high": 9.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "REPORTED_FACT",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    },
+    {
+      "record_id": "src-009",
+      "source": {
+        "publisher": "Synthetic Filing Co.",
+        "source_family": "synthetic_test_family",
+        "source_uri": "https://example.invalid/finance/regtech_kyc_aml",
+        "locator": "Synthetic section 9",
+        "published_at": "2026-09-18",
+        "published_at_grain": "DAY",
+        "observed_at": "2026-09-20",
+        "retained_at": "2026-09-20",
+        "retention_ref": "synthetic-retention-9",
+        "native_digest": null
+      },
+      "business_scope": "Synthetic business scope 9 is a plain sentence.",
+      "metric": {
+        "native_metric_name": "synthetic_count",
+        "normalized_metric_family": "synthetic_family",
+        "value": 9.0,
+        "unit": "synthetic_unit",
+        "currency": null,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "measurement_class": "VOLUME_COUNT",
+        "numerator": null,
+        "denominator": null,
+        "gross_net_basis": "NOT_APPLICABLE",
+        "average_end": "NOT_APPLICABLE",
+        "reported_derived_estimated": "REPORTED"
+      },
+      "observation": {
+        "value": 9.0,
+        "value_high": 10.0,
+        "period_start": "2026-01-01",
+        "period_end": "2026-06-30",
+        "reported_derived_estimated": "REPORTED",
+        "precision": "Synthetic precision is stated."
+      },
+      "temporal": {
+        "business_valid_from": "2026-01-01",
+        "business_valid_to": null
+      },
+      "limitations": {
+        "establishes": "This synthetic record establishes only its stated test field.",
+        "does_not_establish": "This synthetic record does not establish any market conclusion.",
+        "coverage": "Synthetic coverage describes one invented subject.",
+        "source_dependence": "The synthetic record depends only on itself.",
+        "expiry_trigger": "The synthetic record expires when this contract test is removed."
+      },
+      "identity_state": "RESEARCH_HINT_UNVALIDATED",
+      "rights_state": "DIRECT_DISPLAY_OK",
+      "statement_mode": "CATALOG_DESCRIPTION",
+      "correction": {
+        "predecessor_record_id": null,
+        "reason": null
+      },
+      "evidence_ref": null,
+      "excerpt": null
+    }
+  ],
+  "freshness": {
+    "evidence_latest_observed_at": "2026-09-20",
+    "state": "SOURCE_STALE",
+    "stale_after_days": 1
+  },
+  "input_receipts": [
+    {
+      "owner": "financial_intelligence",
+      "generation": "synthetic-generation-1",
+      "state": "READ",
+      "note": "The synthetic fixture is self-contained."
+    },
+    {
+      "owner": "theme_graph",
+      "generation": null,
+      "state": "NOT_ACCEPTED",
+      "note": "No synthetic curation assertion is accepted in this fixture."
+    }
+  ],
+  "degraded_sections": [
+    {
+      "section": "what_changed",
+      "state": "AVAILABLE",
+      "reason": null
+    },
+    {
+      "section": "rerating_map",
+      "state": "PARTIAL",
+      "reason": "Synthetic planes deliberately include missing states."
+    },
+    {
+      "section": "system_map",
+      "state": "AVAILABLE",
+      "reason": null
+    },
+    {
+      "section": "subtheme_atlas",
+      "state": "PARTIAL",
+      "reason": "Only nine synthetic slices are populated."
+    },
+    {
+      "section": "company_exposure",
+      "state": "PARTIAL",
+      "reason": "Synthetic identity and disclosure states remain unresolved."
+    },
+    {
+      "section": "macro_matrix",
+      "state": "PARTIAL",
+      "reason": "Most synthetic cells are omitted."
+    },
+    {
+      "section": "constraint_map",
+      "state": "AVAILABLE",
+      "reason": null
+    },
+    {
+      "section": "evidence_drawer",
+      "state": "PARTIAL",
+      "reason": "Synthetic rights and internal-only states limit excerpts."
+    }
+  ],
+  "authority_caps": {
+    "rank": false,
+    "gate": false,
+    "size": false,
+    "trade": false,
+    "create_theme": false,
+    "change_membership": false,
+    "write_graph": false,
+    "admit_source": false
+  }
+}

@@ -1,0 +1,367 @@
+{
+  "canonical_serialization": "json.dumps(sample, sort_keys=True).encode('utf-8'); no trailing newline",
+  "daily_origin_projection_frozen": false,
+  "environment": {
+    "numpy": "2.5.1",
+    "pandas": "3.0.3",
+    "python": "3.12.3"
+  },
+  "execution": {
+    "fits": 0,
+    "hypothesis_outcomes_scored": false,
+    "macro_feature_join": false,
+    "namespace_hydration": false,
+    "original_builder_calls": 1,
+    "original_label_helpers_used": true,
+    "production_file_writes": false,
+    "provider_fetch": false,
+    "pure_source_AST_isolation": true,
+    "sample_label_construction": true,
+    "stage1_study_rerun": false,
+    "trial_writes": 0
+  },
+  "frozen_at_utc": "2026-10-17T13:54:27.876834+00:00",
+  "input_admission": {
+    "basis": "RAW / close_raw",
+    "calendar_basis": "exact frozen normalized bytes, including date column; no substitute calendar or filling",
+    "canonical_reader_source_sha256": "d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0",
+    "expected_normalized_sha256": "c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb",
+    "expected_rows": 1321,
+    "expected_window": [
+      "2021-07-06",
+      "2026-10-07"
+    ],
+    "identity_source_sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714",
+    "mode": "one retained internal R2 object; admission only",
+    "normalized": {
+      "duplicate_dates": 0,
+      "first_date": "2021-07-06",
+      "last_date": "2026-10-07",
+      "missing_cells": {
+        "close": 0,
+        "date": 0,
+        "high": 0,
+        "low": 0,
+        "open": 0,
+        "transactions": 0,
+        "volume": 0
+      },
+      "nonfinite_or_nonpositive_closes": 0,
+      "normalization": "actual frozen stage1 pure AST functions; unchanged cutoff and float.hex encoding",
+      "ratio_discontinuities": 0,
+      "rows": 1321,
+      "sha256": "c686f0bc683f3109c1be5431cab99661734f2481fc98e8479320e285507be6fb"
+    },
+    "object": {
+      "bytes": 63694,
+      "etag": "49b9e7d381dab709f03c361780b251da",
+      "last_modified": "2026-10-16T14:43:23+00:00",
+      "sha256": "e312775c53783206872fb16b5b83163d6302a7718e13198eb136e0db998d34a4",
+      "version_id": null,
+      "whole_object_rows": 1327
+    },
+    "observed_at_utc": "2026-10-17T13:46:51.259495+00:00",
+    "orchestrator_script_sha256": "4432e1033297eb58f65f37e5199ba0e87e114f8572e56db8e6fff496e54ec862",
+    "publication_admitted": false,
+    "schema": "grey_deer.spy_input_identity.v1",
+    "side_effects": {
+      "feature_outcome_join": false,
+      "fit": false,
+      "namespace_hydration": false,
+      "production_file_write": false,
+      "provider_fetch": false,
+      "sample_generation": false,
+      "trial_write": false
+    },
+    "source_key": "massive_stock_day/SPY.parquet",
+    "source_ref": "646cc093b4982eabc736862926fe7f1fc458b8a1",
+    "status": "INPUT_IDENTITY_ADMITTED",
+    "t12_sample_digest": null,
+    "t13_fit_admitted": false
+  },
+  "limitations": [
+    "Retrospective event/control proportions are not a daily base rate or calibrated probability.",
+    "Control shortfalls and immature-tail intersections are retained unchanged.",
+    "No warmup cut is applied by the original T12 builder.",
+    "Cross-horizon overlap is not independent replication.",
+    "No source-purpose or model validation gate is waived by sample identity."
+  ],
+  "method_owner": "Sol / Meta-CEO, current Chairman commission",
+  "orchestrator_script_sha256": "2ff9925896add104f069c5cb200031d75d8c0fb56dee38a215d731174cfaff90",
+  "publication_admitted": false,
+  "sample_bytes": 6359,
+  "sample_identity": {
+    "first": "2021-07-06",
+    "input_sha256": "60f0d81c686fce6e03ace59c9549d9cd28713b10973b2d2711fc465740fd0bc8",
+    "last": "2026-10-07",
+    "n_sessions": 1321,
+    "schema": "grey_deer_episode_samples.v1",
+    "seed": 20261013,
+    "ticker": "SPY"
+  },
+  "sample_sha256": "944e0054b724aef775a5073ee8a1537779b464454a304acf4a4b396cd818a583",
+  "schema": "grey_deer.t12_sample_freeze.v1",
+  "source_pins": {
+    "lib/observed_moves.py": {
+      "blob": "db1b71a3053d3fa294492321b3cfb28b5a209451",
+      "executed_symbols": [
+        "LOSS_THRESHOLD",
+        "_as_series",
+        "forward_max_loss",
+        "loss_event"
+      ],
+      "sha256": "1bc3447e6c57cc4eaf8aafb51a549b86f901d1e1e36056eeff9b332496d7dd5a"
+    },
+    "research/grey_deer/EPISODE_SAMPLE_SPEC_2026-10-13.md": {
+      "blob": "fe68838867982e845297aeb0daf518e0387120f9",
+      "sha256": "2eded5ca933da1eefd689b4e7985986f2bce79d3f9834592224a5b83a1fe0c29"
+    },
+    "scripts/publish_r2.py": {
+      "blob": "240b762a661db6fe1cb087049469acf1cfa9a5f4",
+      "executed_symbols": [
+        "_POOL_FLOOR",
+        "_POOL_HEADROOM",
+        "_TRANSFER_CONCURRENCY",
+        "_client",
+        "_pool_size"
+      ],
+      "sha256": "d6446e1d3d66e5db51b19dde9e2c987a1f5f5d779c06a6c0e1400dbb8b1eaae0"
+    },
+    "scripts/research/grey_deer_episode_samples.py": {
+      "blob": "0a0eecb98e743b780db1ee3b0382e268d592fa67",
+      "executed_symbols": [
+        "DEFAULT_BUFFER_SESSIONS",
+        "DEFAULT_HORIZONS",
+        "DEFAULT_MAX_TRIES",
+        "DEFAULT_PER_EPISODE",
+        "DEFAULT_SEED",
+        "SCHEMA",
+        "_eligible_pools",
+        "_event_origin_indices",
+        "_input_sha256",
+        "_iso_dates",
+        "_propose",
+        "build_sample",
+        "event_episodes",
+        "negative_controls"
+      ],
+      "sha256": "b03462ae9e058939774cb10d4cd6b1782b826ac2cde5f79c5d33d5ef6259307e"
+    },
+    "scripts/research/grey_deer_pullback_stage1.py": {
+      "blob": "76d231d6d12c8693cd07a2540b360c24f6c50b42",
+      "executed_symbols": [
+        "AS_OF",
+        "EPISODE_PRE",
+        "HORIZONS",
+        "IDENTITY_COLUMNS",
+        "THRESHOLD",
+        "_enc",
+        "build_labels",
+        "cluster_window",
+        "event_clusters",
+        "merge_episodes",
+        "normalize_subframe",
+        "subframe_sha256"
+      ],
+      "sha256": "47ec425821c7a075dc4667171d9e75e8af213e0f088154c5fdb1cad419413714"
+    }
+  },
+  "source_ref": "646cc093b4982eabc736862926fe7f1fc458b8a1",
+  "status": "SAMPLE_IDENTITY_FROZEN",
+  "support_by_horizon": {
+    "10": {
+      "control_shortfall": 18,
+      "controls_with_immature_origins": [],
+      "controls_with_pre_warmup_origins": [
+        {
+          "control_id": "h10-e002-c001",
+          "pre_warmup_origin_count": 40
+        }
+      ],
+      "episodes": 7,
+      "event_origins": 99,
+      "independent_episode_count": null,
+      "month_matched_controls": 1,
+      "per_episode": [
+        {
+          "episode_id": "h10-e000",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h10-e001",
+          "placed": 1,
+          "requested": 3,
+          "shortfall": 2
+        },
+        {
+          "episode_id": "h10-e002",
+          "placed": 2,
+          "requested": 3,
+          "shortfall": 1
+        },
+        {
+          "episode_id": "h10-e003",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h10-e004",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h10-e005",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h10-e006",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        }
+      ],
+      "placed_controls": 3,
+      "requested_controls": 21
+    },
+    "21": {
+      "control_shortfall": 23,
+      "controls_with_immature_origins": [
+        {
+          "control_id": "h21-e000-c000",
+          "immature_origin_count": 20,
+          "window": [
+            "2026-08-03",
+            "2026-10-06"
+          ]
+        }
+      ],
+      "controls_with_pre_warmup_origins": [],
+      "episodes": 8,
+      "event_origins": 238,
+      "independent_episode_count": null,
+      "month_matched_controls": 1,
+      "per_episode": [
+        {
+          "episode_id": "h21-e000",
+          "placed": 1,
+          "requested": 3,
+          "shortfall": 2
+        },
+        {
+          "episode_id": "h21-e001",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e002",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e003",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e004",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e005",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e006",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h21-e007",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        }
+      ],
+      "placed_controls": 1,
+      "requested_controls": 24
+    },
+    "5": {
+      "control_shortfall": 8,
+      "controls_with_immature_origins": [
+        {
+          "control_id": "h5-e002-c000",
+          "immature_origin_count": 4,
+          "window": [
+            "2026-07-21",
+            "2026-10-06"
+          ]
+        }
+      ],
+      "controls_with_pre_warmup_origins": [
+        {
+          "control_id": "h5-e003-c000",
+          "pre_warmup_origin_count": 27
+        }
+      ],
+      "episodes": 6,
+      "event_origins": 32,
+      "independent_episode_count": null,
+      "month_matched_controls": 4,
+      "per_episode": [
+        {
+          "episode_id": "h5-e000",
+          "placed": 3,
+          "requested": 3,
+          "shortfall": 0
+        },
+        {
+          "episode_id": "h5-e001",
+          "placed": 3,
+          "requested": 3,
+          "shortfall": 0
+        },
+        {
+          "episode_id": "h5-e002",
+          "placed": 1,
+          "requested": 3,
+          "shortfall": 2
+        },
+        {
+          "episode_id": "h5-e003",
+          "placed": 3,
+          "requested": 3,
+          "shortfall": 0
+        },
+        {
+          "episode_id": "h5-e004",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        },
+        {
+          "episode_id": "h5-e005",
+          "placed": 0,
+          "requested": 3,
+          "shortfall": 3
+        }
+      ],
+      "placed_controls": 10,
+      "requested_controls": 18
+    }
+  },
+  "t13_fit_admitted": false
+}

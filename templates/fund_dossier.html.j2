@@ -201,7 +201,7 @@ table.sm-t th.sorted { color:var(--text); }
   {%- if not v -%}—{%- elif v >= 1e9 -%}${{ "%.1f" | format(v / 1e9) }}B{%- elif v >= 1e6 -%}${{ "%.0f" | format(v / 1e6) }}M{%- else -%}${{ "%.0f" | format(v) }}{%- endif -%}
 {%- endmacro %}
 {% macro tklogo(tk) -%}
-  {%- if tk -%}<img class="tklogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk | upper }}.png" alt="" loading="eager" onerror="this.style.display='none'">{%- endif -%}
+  {%- if tk -%}<img class="tklogo" src="https://cdn.jsdelivr.net/gh/nvstly/icons@main/ticker_icons/{{ tk | upper }}.png" alt="" loading="lazy" decoding="async" fetchpriority="low" onerror="this.style.display='none'">{%- endif -%}
 {%- endmacro %}
 {% macro dv(v) -%}{{ v if v is not none else '' }}{%- endmacro %}
 {#- negative-capable text sparkbar: shift by min so sub-zero excess still renders -#}

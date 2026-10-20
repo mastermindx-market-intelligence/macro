@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-09-15",
+  "asof": "2026-10-14",
   "candidates": {
-    "R": 1,
-    "T": 1,
-    "W": 3
+    "R": 3,
+    "T": 13,
+    "W": 9
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
-    "W": 3
+    "R": 3,
+    "T": 13,
+    "W": 9
   },
   "dry_run": false,
   "feature_source": {
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1491,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-16 22:29:33",
-  "runtime_s": 147.9,
+  "run_utc": "2026-10-20 09:07:04",
+  "runtime_s": 130.4,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-15",
-    "n_members": 69,
+    "asof": "2026-10-14",
+    "n_members": 115,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.862,
+        "emerging_score": 3.343,
         "rank": 1,
-        "theme": "Cybersecurity"
-      },
-      {
-        "emerging_score": 2.059,
-        "rank": 2,
         "theme": "Social Media"
       },
       {
-        "emerging_score": 1.984,
+        "emerging_score": 2.761,
+        "rank": 2,
+        "theme": "Healthy Food & Nutrition"
+      },
+      {
+        "emerging_score": 2.358,
         "rank": 3,
-        "theme": "Biometrics"
+        "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 1.444,
+        "emerging_score": 2.18,
         "rank": 4,
-        "theme": "Wearables"
+        "theme": "E-commerce"
       },
       {
-        "emerging_score": 1.205,
+        "emerging_score": 2.107,
         "rank": 5,
-        "theme": "Mega-Cap"
+        "theme": "Biometrics"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 3,
-    "asof_max": "2026-09-16",
-    "asof_mismatch": 3,
-    "asof_run": "2026-09-15",
-    "evaluated": 713,
-    "fresh": 4,
+    "aligned": 9,
+    "asof_max": "2026-10-14",
+    "asof_mismatch": 0,
+    "asof_run": "2026-10-14",
+    "evaluated": 712,
+    "fresh": 10,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 25.3,
-    "skipped": 4,
+    "runtime_s": 22.0,
+    "skipped": 5,
     "source": "baskets/membership.json",
-    "state_turn": 83,
+    "state_turn": 60,
     "universe_n": 717
   }
 }

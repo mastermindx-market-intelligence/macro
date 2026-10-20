@@ -55,15 +55,40 @@ _WITNESS_SHA = "6449489eef577b096abeb79f5375b7df9c95c23e4765a075222a765a19124d83
 _WITNESS_BYTES = 364
 _FIXTURE_RECORDED_AT = "2026-08-23T00:32:31Z"
 
-_HASH_AS_REPORTED_T1_T2 = "358d44741632d74ff76dd8771bb78b34295a08d62d2a0a8566a6abe5feac1442"
-_HASH_LATEST_KNOWN_T1_T2 = "191c49a37998052f17eec78113b5bd8bf0dcaaa52239c406cdb4c27cda5ad1a7"
-_HASH_LATEST_KNOWN_T3 = "83df03e99f570bacfab94fc9373861f14c1895c9aa9435b7dd7249a13c1e67fa"
-_HASH_LATEST_RESTATED_T3 = "c1095c7994c67f11ed602d15c2956bc24271cdce4d39d7869ed642713a6ed549"
-_HASH_MIXED_T3 = "5513f17260f98d261920d658be25bf319ace90a0580ad8f2e94931c518c5a20b"
-_RICH_PACKET_ID = "fip_49718dcaf4c6855592b6ba0a"
-_RICH_CONTENT_SHA = "49718dcaf4c6855592b6ba0a160851c608b4733b44f8ac9a6cf7d907df7565e5"
-_RICH_RESPONSE_SHA = "310f6579ab0014e6af16a3341f005078eab3fdcc70ebe67ec83cf138b9e6c23a"
-_GOLDEN_FIP1_PACKET_ID = "fip_18e2f725f6ba20678d0612bb"
+# The five FIP1 query hashes were re-captured at the FIF G0-r1p3 re-pin
+# commit with the same hermetic industrial resolver the FIP1 packet-service
+# tests inject — byte-equal to that already-pinned family
+# (tests/test_fundamental_forensics_financial_packet_service.py:78,
+# tests/test_fundamental_forensics_financial_revision_service.py:70) over the
+# same scenario, per the G0-r1p3 seat ruling on same-input families.
+_HASH_AS_REPORTED_T1_T2 = "58d438ec81d287f81e6981cf01ac6d16d57cf50689cc826cad39962742efa821"
+_HASH_LATEST_KNOWN_T1_T2 = "f275a7e02aff6e1119f1275365549e1fa9aa2d3f45dbc3cd0f4ba5fdb76f1d37"
+_HASH_LATEST_KNOWN_T3 = "2f8d30baf2d49aef0cc6936613eca1f9aa980e10ed56da135a75dd4238349915"
+_HASH_LATEST_RESTATED_T3 = "531309e192ac923e466365b05380a197f67d6df01c1d5fd9062a0e93aaf20b9f"
+_HASH_MIXED_T3 = "26a7ed7d95f861d3352c3a7e5fb6a0f52833ccf69947b10ca9da1f9662c44133"
+# The rich packet keeps the production default (no injected resolver): FIP1
+# has no shipped coverage record, so gross_margin (class-restricted under the
+# G0 catalog) reads NOT_EVALUABLE(issuer_class_unknown) — the formula never
+# assembles dependencies, so the gross_profit evidence cell and revision row
+# leave the packet and the body shrinks accordingly; re-captured at the same
+# commit.
+_RICH_PACKET_ID = "fip_5d77c1349de4f829db2c422a"
+_RICH_CONTENT_SHA = "5d77c1349de4f829db2c422a3000049cb12b6f0c16dbcd57686a0c0cd41c0af0"
+_RICH_RESPONSE_SHA = "a9c5a8657e7c5cb7e6789cd6d2ea4f78a1c14100c33a00d959856d7375045ca8"
+_RICH_BODY_BYTES = 15065
+# Golden FIP1 fixture identity re-captured at the FIF G0-r1p3 re-pin commit e94ba62aa89
+# (P2-E G-c: bytes written via canonical_packet_bytes only).
+_GOLDEN_FIP1_PACKET_ID = "fip_efe52d02d4a72a5a19f85a60"
+
+# FIP1 is a synthetic industrial issuer with no shipped coverage record, so
+# the five-hash family injects its SIC hermetically (same shape as the FIP1
+# packet-service tests); the fixture ledger's entity id is its CIK.
+_FIP1_CIK = "0000999999"
+_INDUSTRIAL_SIC = "3571"
+
+
+def _fip1_issuer_sic_resolver(cik: str) -> str | None:
+    return _INDUSTRIAL_SIC if cik == _FIP1_CIK else None
 
 T1_SOURCE = "2024-12-31T23:59:59Z"
 T2_SOURCE = "2025-12-31T23:59:59Z"
@@ -73,11 +98,23 @@ T3_RECORDED = "2026-08-05T12:00:02Z"
 FY2023 = {"kind": "duration", "start": "2023-01-01", "end": "2023-12-31", "label": "FY2023"}
 AR_INSTANT = {"kind": "instant", "start": None, "end": "2023-12-31", "label": "2023-12-31"}
 
+# FIF G0 shared-kernel integrator (seat ruling 2026-10-13, frozen spec
+# e7b0286c) releases this freeze for the authorized G0 change:
+# ``engine/fundamental_forensics/financial_intelligence_packet.py`` (G0 wired
+# the optional issuer-SIC resolver seam through the production entity
+# construction) and the golden fixture
+# ``expected_financial_intelligence_packet_v1.json`` (P2-E G-c re-capture via
+# canonical_packet_bytes) leave ``_FROZEN_FIF1``.  What the freeze protected
+# is still asserted directly: packet schema validity and content addressing
+# plus canonical rebuild equality in
+# tests/test_fundamental_forensics_financial_intelligence_packet.py:540-546,
+# cross-process byte equality in law11 (:444-449), the fixture packet_id
+# regression witness in tests/test_fundamental_forensics_financial_packet_service.py:200,
+# and this file's own ``golden["packet_id"]`` pin below.  The packet schema
+# and the synthetic fixture package remain byte-frozen.
 _FROZEN_FIF1 = (
     "contracts/financial_intelligence_packet.schema.json",
-    "engine/fundamental_forensics/financial_intelligence_packet.py",
     "engine/fundamental_forensics/synthetic_filing_package.py",
-    "tests/fixtures/fundamental_forensics/expected_financial_intelligence_packet_v1.json",
 )
 
 
@@ -113,7 +150,9 @@ def _query_hash(*, selection: str, source: str, recorded: str, metric_ids: list,
         },
         separators=(",", ":"),
     ).encode("utf-8")
-    result = execute_financial_query(body=body, provider=_P())
+    result = execute_financial_query(
+        body=body, provider=_P(), issuer_sic_resolver=_fip1_issuer_sic_resolver
+    )
     return result.envelope["receipt"]["query_hash"]
 
 
@@ -534,7 +573,7 @@ def test_fif2b_and_fif2c_accepted_packet_behavior_unchanged() -> None:
     assert rich.packet["packet_id"] == _RICH_PACKET_ID
     assert rich.packet["content_sha256"] == _RICH_CONTENT_SHA
     assert rich.response_sha256 == _RICH_RESPONSE_SHA
-    assert len(rich.body) == 18270
+    assert len(rich.body) == _RICH_BODY_BYTES
 
 
 def test_frozen_fif1_paths_are_empty_diff() -> None:
@@ -1098,3 +1137,426 @@ def test_canonical_earnings_event_currently_resolves() -> None:
     assert _Q3_ACCESSION not in accessions
     assert workspace.get("event_id") == _Q3_EVENT_ID
     assert payload.get("is_context_only") is True
+
+
+# ---------------------------------------------------------------------------
+# FIF D3: issuer-level production binding (A14) + provider-supplied delivery
+# ---------------------------------------------------------------------------
+
+from engine.fundamental_forensics import production_datasets as PDS  # noqa: E402
+from engine.fundamental_forensics.financial_intelligence_packet import EntityInput  # noqa: E402
+from engine.fundamental_forensics.ixbrl_raw_ledger import (  # noqa: E402
+    GOLDEN_AAPL_QUERY_ACCESSIONS,
+    parse_and_convert_golden_packages,
+)
+from engine.fundamental_forensics.production_provider import (  # noqa: E402
+    ProductionFinancialStatementProvider,
+)
+from engine.fundamental_forensics.query_service import CanonicalEntityBinding  # noqa: E402
+from engine.fundamental_forensics.statement_service import (  # noqa: E402
+    bind_production_issuer_identity,
+)
+from lib.dataos.identity import IdentityError  # noqa: E402
+from engine.fundamental_forensics.query_service import FinancialQueryUnavailableError  # noqa: E402
+
+_D3_ADMITTED = datetime(2026, 10, 1, tzinfo=timezone.utc)
+
+# Two share classes under one ISS id and one registrant CIK (the GOOGL shape).
+_TWO_CLASS_SECURITIES = [
+    {
+        "security_id": "SEC:US-XNAS-AAPL",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "issuer_state": "ACTIVE",
+        "listing_key": "US-XNAS-AAPL",
+        "issuer_cik": "320193",
+    },
+    {
+        "security_id": "SEC:US-XNAS-AAPL-B",
+        "issuer_id": "ISS:US-XNAS-AAPL",
+        "issuer_state": "ACTIVE",
+        "listing_key": "US-XNAS-AAPL-B",
+        "issuer_cik": "320193",
+    },
+]
+_TWO_CLASS_MASTER = IssuerMaster.from_records(_TWO_CLASS_SECURITIES)
+_AAPL_METADATA = {"cik": "0000320193", "legal_name": "Apple Inc."}
+
+
+def _production_statement_provider() -> ProductionFinancialStatementProvider:
+    packages = [
+        load_golden_aapl_package(ROOT, accession=accession)
+        for accession in GOLDEN_AAPL_QUERY_ACCESSIONS
+    ]
+    ledger, filing_metadata, _report = parse_and_convert_golden_packages(packages)
+    material = PDS.ProductionDatasetMaterial(
+        binding=CanonicalEntityBinding(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            source_entity_id="0000320193",
+        ),
+        entity=EntityInput(
+            entity_id="ISS:US-XNAS-AAPL",
+            cik="0000320193",
+            ticker="AAPL",
+            name="Apple Inc.",
+            identity_basis="sec-cik",
+            source_entity_id="0000320193",
+        ),
+        ledger=ledger,
+        filing_metadata=filing_metadata,
+        registry_payload=PDS.snapshot_core_registry_payload(ROOT),
+        admitted_at=_D3_ADMITTED,
+        source_recorded_at_floor=datetime(2026, 8, 1, tzinfo=timezone.utc),
+        packages=tuple(packages),
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+    store = PDS.InMemoryStrictConditionalStore()
+    PDS.publish_production_dataset(store, material)
+    return ProductionFinancialStatementProvider(store)
+
+
+def test_multi_class_issuer_binds_once_via_cik() -> None:
+    # The golden single-security rule refuses the two-class issuer today...
+    with pytest.raises(FinancialQueryAdmissionError) as golden_refusal:
+        bind_canonical_identity(
+            "ISS:US-XNAS-AAPL",
+            issuer_master=_TWO_CLASS_MASTER,
+            issuer_metadata=_AAPL_METADATA,
+        )
+    assert golden_refusal.value.status_code == 400
+
+    # ...while the production binding binds ONCE, through the registrant CIK.
+    binding = bind_production_issuer_identity(
+        "ISS:US-XNAS-AAPL",
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        security_id="SEC:US-XNAS-AAPL",
+        listing_key="US-XNAS-AAPL",
+    )
+    assert binding["cik"] == "0000320193"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["listing_key"] == "US-XNAS-AAPL"
+    assert binding["entity_id"] == "ISS:US-XNAS-AAPL"
+
+    # End to end: exactly one production dataset, one entity block, facts
+    # keyed by the registrant CIK, no double-counted issuer.
+    result = _execute(
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        provider=_production_statement_provider(),
+    )
+    entity = result.envelope["entity"]
+    assert entity["cik"] == "0000320193"
+    assert entity["security_id"] == "SEC:US-XNAS-AAPL"
+    assert entity["entity_id"] == "ISS:US-XNAS-AAPL"
+    stored = next(
+        member
+        for member in result.envelope["package"]["members"]
+        if member["state"] == "stored"
+    )
+    assert stored["content_sha256"]
+
+
+def test_conflicting_cik_observations_refused() -> None:
+    conflicting = IssuerMaster.from_records(
+        _TWO_CLASS_SECURITIES
+        + [
+            {
+                "security_id": "SEC:US-XNAS-AAPL-C",
+                "issuer_id": "ISS:US-XNAS-AAPL",
+                "issuer_state": "ACTIVE",
+                "listing_key": "US-XNAS-AAPL-C",
+                "issuer_cik": "1652044",
+            },
+        ]
+    )
+    # The identity owner refuses to guess; the refusal maps to typed
+    # unavailability, never a picked CIK and never a 400.
+    with pytest.raises(IdentityError):
+        conflicting.cik_of_issuer("ISS:US-XNAS-AAPL")
+    with pytest.raises(FinancialQueryUnavailableError):
+        bind_production_issuer_identity(
+            "ISS:US-XNAS-AAPL",
+            issuer_master=conflicting,
+            issuer_metadata=_AAPL_METADATA,
+            security_id="SEC:US-XNAS-AAPL",
+            listing_key="US-XNAS-AAPL",
+        )
+    provider = _production_statement_provider()
+    # FIF P1 (F5): the request path binds from the generation manifest only —
+    # it never consults a live IssuerMaster, so even an identity owner that
+    # now disagrees with the admitted binding cannot move the served
+    # identity. Reconciling drift is the acquisition lane's job (re-publish).
+    binding = provider.bind_issuer(
+        ROOT,
+        "ISS:US-XNAS-AAPL",
+        issuer_master=conflicting,
+        issuer_metadata=_AAPL_METADATA,
+    )
+    assert binding["cik"] == "0000320193"
+    assert binding["security_id"] == "SEC:US-XNAS-AAPL"
+    assert binding["listing_key"] == "US-XNAS-AAPL"
+
+
+def test_statement_delivery_reflects_provider_not_hardcode() -> None:
+    # Golden AAPL: byte-identical golden statement response (frozen pre-D3
+    # baseline captured on the untouched tree at 5267c66846e).
+    fixture = json.loads(
+        (
+            ROOT
+            / "tests"
+            / "fixtures"
+            / "fundamental_forensics"
+            / "issuer_master_adversarial_duplicate_mint.json"
+        ).read_text(encoding="utf-8")
+    )
+    golden = _execute(
+        issuer_master=IssuerMaster.from_records(fixture["securities"]),
+        issuer_metadata=fixture["issuer_metadata"],
+        provider=GoldenAaplStatementProvider(ROOT),
+    )
+    assert (
+        golden.sha256 == "25e5562e81cb80bd42d0feb544c212c4471e11736601aaee418a60981a457184"
+    )
+    assert golden.envelope["delivery"] == {
+        "kind": "committed_golden_fixture",
+        "attested": False,
+        "production_issuer_service": False,
+    }
+
+    # Production package: the provider-supplied exact production object.
+    production = _execute(
+        issuer_master=_TWO_CLASS_MASTER,
+        issuer_metadata=_AAPL_METADATA,
+        provider=_production_statement_provider(),
+    )
+    assert production.envelope["delivery"]["kind"] == "production_issuer_dataset"
+    assert production.envelope["delivery"]["attested"] is False
+    assert production.envelope["delivery"]["production_issuer_service"] is True
+    assert production.envelope["delivery"]["capture_basis"] == "reconstruction"
+    assert PDS.GENERATION_ID_RE.fullmatch(
+        production.envelope["delivery"]["dataset_generation_id"]
+    )
+    # An unlawful provider-supplied delivery is unavailable, never served.
+    from engine.fundamental_forensics.production_provider import ProductionFilingPackage
+
+    inner = _production_statement_provider()
+
+    class _TamperingProvider:
+        issuer_level_binding = True
+
+        def bind_issuer(self, repo_root, entity_id, *, issuer_master=None, issuer_metadata=None):
+            return inner.bind_issuer(
+                repo_root, entity_id, issuer_master=issuer_master, issuer_metadata=issuer_metadata
+            )
+
+        def resolve(self, entity_id, accession):
+            package = inner.resolve(entity_id, accession)
+            return ProductionFilingPackage(
+                manifest=package.manifest,
+                members=package.members,
+                delivery={"kind": "production_issuer_dataset", "attested": True},
+                statement_trees=package.statement_trees,
+            )
+
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(
+            issuer_master=_TWO_CLASS_MASTER,
+            issuer_metadata=_AAPL_METADATA,
+            provider=_TamperingProvider(),
+        )
+
+
+# ---------------------------------------------------------------------------
+# FIF P1: precomputed statement trees on the production path (F1 remainder)
+# ---------------------------------------------------------------------------
+
+
+def test_precomputed_trees_equal_golden_reconstruction() -> None:
+    """Publication precomputes exactly what the demonstration path reconstructs."""
+    result = _execute(provider=_production_statement_provider())
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    direct = reconstruct_primary_statements(
+        package=package, registry=load_core_registry(ROOT)
+    )
+    assert result.envelope["statements"] == direct["statements"]
+    assert result.envelope["coverage"] == {
+        "parsed_document_kind": direct["parsed_document_kind"],
+        "fact_count": direct["fact_count"],
+        "context_count": direct["context_count"],
+    }
+
+
+def test_production_package_without_trees_never_parses(monkeypatch) -> None:
+    """A production package missing its trees is unavailable — never a parse."""
+    from engine.fundamental_forensics.production_provider import ProductionFilingPackage
+
+    inner = _production_statement_provider()
+    package = inner.resolve(_GOLDEN_ENTITY, _GOLDEN_ACCESSION)
+
+    def _forbidden(*_args, **_kwargs):
+        raise AssertionError("a tree-less production package must never be parsed")
+
+    import collectors.sec_filing_parser as parser_module
+    import engine.fundamental_forensics.statement_graph as statement_graph_module
+
+    monkeypatch.setattr(parser_module, "parse_sec_filing_document", _forbidden)
+    monkeypatch.setattr(statement_graph_module, "parse_sec_filing_document", _forbidden)
+
+    stripped = ProductionFilingPackage(
+        manifest=package.manifest,
+        members=package.members,
+        delivery=package.delivery,
+    )
+    assert stripped.statement_trees is None
+
+    class _TreelessProvider:
+        issuer_level_binding = True
+
+        def bind_issuer(self, repo_root, entity_id, *, issuer_master=None, issuer_metadata=None):
+            return inner.bind_issuer(
+                repo_root, entity_id, issuer_master=issuer_master, issuer_metadata=issuer_metadata
+            )
+
+        def resolve(self, entity_id, accession):
+            return stripped
+
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_TreelessProvider())
+
+
+# ---------------------------------------------------------------------------
+# FIF P1-b (I3): canonical decimal-text cell values — boundary pin, not a
+# conversion. The served value is the parser's canonical text or an explicit
+# null; any other type is the file's typed unavailability with nothing leaked.
+# ---------------------------------------------------------------------------
+
+
+def _all_cells(envelope: dict) -> list:
+    return [
+        cell
+        for statement in envelope["statements"]
+        for row in statement["rows"]
+        for cell in row["cells"]
+    ]
+
+
+def _forged_tree_package(tree: dict) -> GoldenFilingPackage:
+    """The golden package carrying a forged precomputed statement tree."""
+    base = load_golden_aapl_package(ROOT)
+    package = GoldenFilingPackage.__new__(GoldenFilingPackage)
+    object.__setattr__(package, "manifest", base.manifest)
+    object.__setattr__(package, "members", base.members)
+    object.__setattr__(package, "statement_trees", tree)
+    return package
+
+
+class _ForgedTreeProvider(GoldenAaplStatementProvider):
+    def __init__(self, tree: dict) -> None:
+        super().__init__(ROOT)
+        self._tree = tree
+
+    def resolve(self, entity_id: str, accession: str) -> GoldenFilingPackage:
+        super().resolve(entity_id, accession)  # keeps the golden admission gates
+        return _forged_tree_package(self._tree)
+
+
+def test_production_refusal_entry_passes_through_without_message_text() -> None:
+    package = load_golden_aapl_package(ROOT, accession=_GOLDEN_ACCESSION)
+    registry = load_core_registry(ROOT)
+    reconstructed = reconstruct_primary_statements(package=package, registry=registry)
+    statements = [dict(item) for item in reconstructed["statements"]]
+    statements[0] = {
+        "statement_type": "income_statement",
+        "role_uri": None,
+        "title": None,
+        "columns": [],
+        "row_count": 0,
+        "rows": [],
+        "refusal": {"code": "statement_role_not_consolidated"},
+    }
+    tree = {
+        "parsed_document_kind": reconstructed["parsed_document_kind"],
+        "fact_count": reconstructed["fact_count"],
+        "context_count": reconstructed["context_count"],
+        "statements": statements,
+    }
+    provider = _ForgedTreeProvider(tree)
+    result = _execute(provider=provider)
+    served = result.envelope["statements"][0]
+    assert served["refusal"] == {"code": "statement_role_not_consolidated"}
+    assert "message" not in served
+    assert "message" not in result.body.decode("utf-8")
+
+
+def test_statement_cell_values_are_canonical_decimal_text_or_none() -> None:
+    result = _execute()
+    envelope = json.loads(result.body)
+    cells = _all_cells(envelope)
+    assert cells
+    assert all(cell["value"] is None or isinstance(cell["value"], str) for cell in cells)
+    assert any(isinstance(cell["value"], str) for cell in cells)
+
+
+def test_statement_cell_numeric_value_is_refused_as_typed_unavailability() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    cell = _all_cells(forged)[0]
+    cell["value"] = 78000000  # int — a producer contract break, not text to convert
+
+    with pytest.raises(FinancialQueryUnavailableError) as excinfo:
+        _execute(provider=_ForgedTreeProvider(forged))
+    assert excinfo.value.args == ()  # the generic unavailability detail, nothing leakable
+
+    float_forged = copy.deepcopy(tree)
+    _all_cells(float_forged)[0]["value"] = 78000000.0
+    with pytest.raises(FinancialQueryUnavailableError):
+        _execute(provider=_ForgedTreeProvider(float_forged))
+
+
+def test_statement_cell_exponent_text_passes_through_unchanged() -> None:
+    import copy
+
+    tree = reconstruct_primary_statements(
+        package=load_golden_aapl_package(ROOT), registry=load_core_registry(ROOT)
+    )
+    forged = copy.deepcopy(tree)
+    sales = next(
+        cell
+        for cell in _all_cells(forged)
+        if cell["value"] not in (None, "") and isinstance(cell["value"], str)
+    )
+    sales["value"] = "1E+2"  # non-canonical exponent TEXT still passes byte-identically
+
+    result = _execute(provider=_ForgedTreeProvider(forged))
+    envelope = json.loads(result.body)
+    assert any(cell["value"] == "1E+2" for cell in _all_cells(envelope))
+
+
+# ---------------------------------------------------------------------------
+# Golden statement pins run on the committed byte-copy of the 1.0.0 registry.
+# Appended at the end of the module so no pinned line moves. The live-registry
+# statement bytes are pinned in test_fundamental_forensics_financial_statement_api.py,
+# which also proves the 1.0.0 registry re-derives the pins in this module.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True, scope="module")
+def _golden_statement_pins_on_registry_v1_0_0():
+    import engine.fundamental_forensics.statement_service as statement_service
+    from engine.fundamental_forensics.financial_intelligence_packet import load_core_registry
+
+    registry_root = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(
+            statement_service,
+            "load_core_registry",
+            lambda _repo_root: load_core_registry(registry_root),
+        )
+        yield

@@ -1,44 +1,62 @@
 {
-  "checked_at": "2026-09-16T12:30:15+00:00",
-  "expected_session": "2026-09-16",
+  "checked_at": "2026-10-20T09:00:26+00:00",
+  "expected_session": "2026-10-16",
   "stores": {
     "cache": {
-      "asof": "2026-09-16",
+      "asof": "2026-10-16",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-09-16",
+      "asof": "2026-10-16",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "standouts": {
-      "asof": "2026-09-15",
-      "lag_days": 1,
-      "state": "fresh"
+      "asof": "2026-10-16",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-09-16",
+      "asof": "2026-10-16",
       "lag_days": 0,
-      "state": "fresh"
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
+      "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-09-15",
+      "asof": "2026-10-15",
       "lag_days": 1,
-      "state": "fresh"
+      "lag_sessions": 1,
+      "state": "slow",
+      "data_state": "late",
+      "calendar_verified": true,
+      "expected_session": "2026-10-16"
     }
   },
   "coherence": {
     "ok": true,
-    "standouts_asof": "2026-09-15",
-    "regime_date": "2026-09-16",
-    "gap_sessions": 1,
-    "note": "regime read is one session behind the stock scan \u2014 catches up after the next Asia close"
+    "standouts_asof": "2026-10-16",
+    "regime_date": "2026-10-16",
+    "gap_sessions": 0,
+    "calendar_verified": true,
+    "data_state": "current",
+    "note": null
   },
   "regression": {
     "ok": true,
-    "prev_cache_max": "2026-09-15",
-    "curr_cache_max": "2026-09-16",
+    "prev_cache_max": "2026-10-16",
+    "curr_cache_max": "2026-10-16",
     "note": null
   },
   "verdict": "ok",

@@ -1,0 +1,43 @@
+{# Existing Where-next geometry and dual-theme material; no new style system.
+   Primary selection is descriptive heating velocity; recommendation state is shown separately. #}
+{%- set _desk = (sector_heat.get('desk') or {}) if (sector_heat is defined and sector_heat) else {} -%}
+{%- set _leader = _desk.get('leader') -%}
+<a id="macro-sector-desk" class="wnx-card" style="--wnx-c:var(--isle-evidence);"
+   href="{{ (_desk.get('href') or 'sector_central.html') | e }}"
+   data-desk-status="{{ (_desk.get('status') or 'unavailable') | e }}"
+   {% if _leader %}data-desk-id="{{ _leader.id | e }}"
+   data-desk-rating="{{ (_leader.reco or 'unavailable') | e }}"
+   {% endif %}>
+  <div class="wnx-kicker">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 11V7h-4"/></svg>
+    {% if _leader %}<span class="l-en">Hottest desk</span><span class="l-zh">最热板块</span>
+    {% else %}<span class="l-en">Sector desk</span><span class="l-zh">板块桌面</span>{% endif %}
+  </div>
+  <div class="wnx-state">
+    {% if _leader %}<span class="l-en">{{ _leader.name | e }}</span><span class="l-zh">{{ _leader.name_zh | e }}</span>
+    {% else %}<span class="l-en">Sector Central</span><span class="l-zh">行业中枢</span>{% endif %}
+  </div>
+  <div class="wnx-line">
+    {% if _leader %}
+    <span class="l-en">Up {{ _leader.rank_delta_5d }} places over 5 sessions · <time datetime="{{ _desk.as_of | e }}">{{ _desk.as_of_label | e }}</time></span>
+    <span class="l-zh">5个交易日上升{{ _leader.rank_delta_5d }}位 · <time datetime="{{ _desk.as_of | e }}">{{ _desk.as_of[5:7] | int }}月{{ _desk.as_of[8:10] | int }}日</time></span>
+    {% elif _desk.get('status') == 'stale' %}
+    <span class="l-en">Last reading {{ _desk.as_of_label | e }} · update pending</span><span class="l-zh">最近数据：{{ _desk.as_of | e }} · 等待更新</span>
+    {% elif _desk.get('status') == 'tied' %}
+    <span class="l-en">Several desks share the lead · {{ _desk.as_of_label | e }}</span><span class="l-zh">多个板块并列升温 · {{ _desk.as_of | e }}</span>
+    {% else %}
+    <span class="l-en">Compare the latest sector readings</span><span class="l-zh">查看各板块最新表现</span>
+    {% endif %}
+  </div>
+  <span class="wnx-go">
+    {% if _leader %}
+      {% if _leader.rating_label_en == 'Unavailable' %}
+      <span class="l-en">Rating unavailable · Research desk</span><span class="l-zh">评级不可用 · 研究板块</span>
+      {% else %}
+      <span class="l-en">Current rating: {{ _leader.rating_label_en | e }} · Research desk</span><span class="l-zh">当前评级：{{ _leader.rating_label_zh | e }} · 研究板块</span>
+      {% endif %}
+    {% else %}
+      <span class="l-en">Compare desks</span><span class="l-zh">比较板块</span>
+    {% endif %} &rarr;
+  </span>
+</a>

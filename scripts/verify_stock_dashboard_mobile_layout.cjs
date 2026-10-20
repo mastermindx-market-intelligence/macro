@@ -1840,6 +1840,12 @@ async function ownerProjectionMatrix(
       }
 
       if (ownerCase === "watch-only" && mode === "loaded") {
+        // The nav pill's backdrop blur blends the terminal glyph with whatever
+        // is behind it, and that blend is not byte-stable. Layout was already
+        // measured above; this shot-only rule does not change the proof.
+        await page.addStyleTag({
+          content: ".nav-ctrls .ai-brief-link,.nav-ctrls .ai-brief-link::before,.nav-ctrls .ai-brief-link::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation:none!important;transition:none!important;}",
+        });
         const screenshot = await page.screenshot({
           fullPage: true,
           animations: "disabled",
@@ -2014,7 +2020,20 @@ async function main() {
     process.exit(2);
   }
 
-  const launch = {headless: true};
+  // Skia runtime opts shift a few antialiased chrome-icon pixels between
+  // otherwise identical owner-empty captures. The receipt stores exact bytes.
+  const launch = {
+    headless: true,
+    args: [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text",
+    ],
+  };
   if (args.browser) launch.executablePath = realFile(args.browser, "--browser");
   const browser = await chromium.launch(launch);
   const browserVersion = browser.version();

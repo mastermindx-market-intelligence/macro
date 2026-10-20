@@ -220,6 +220,220 @@ def test_summary_mirrors_the_js_arithmetic():
     assert [r["code"] for r in b["gainers"]] == [r["code"] for r in s["gainers"]]
 
 
+def test_ssr_observation_coverage_is_validated_and_bilingual():
+    """The crawler-visible disclosure must use the current-membership denominator
+    and must fail closed when the accounting does not reconcile."""
+    summary = dict(_summary("china"))
+    summary["tf"] = "1D"
+    summary["observation_coverage"] = {
+        "basis": "current_membership",
+        "membership_count": 1706,
+        "current_observation_count": 1700,
+        "timeframes": {
+            "1D": {
+                "denominator": 1706,
+                "valid_count": 1700,
+                "missing_count": 6,
+                "fraction": 1700 / 1706,
+            }
+        },
+    }
+    html = _render("china", summary=summary, gated=False)
+    assert "1700 / 1706 names have observed endpoint pairs · 6 unavailable." in html
+    assert "1700 / 1706 个标的具备有效区间行情 · 6 个不可用。" in html
+
+    broken = dict(summary)
+    broken["observation_coverage"] = {
+        **summary["observation_coverage"],
+        "membership_count": 1705,
+    }
+    bad_html = _render("china", summary=broken, gated=False)
+    assert "Observation coverage unavailable." in bad_html
+    assert "观测覆盖率不可用。" in bad_html
+
+
+def test_publisher_writes_one_coherent_json_and_ssr_page(tmp_path, monkeypatch):
+    """The close-cycle publisher must advance the browser payload and crawler copy together."""
+    pd = pytest.importorskip("pandas")
+    from scripts import build_market_heatmap as publisher
+
+    tickers = ["A.SS", "B.SS", "C.SS", "D.SS"]
+    constituents = pd.DataFrame(
+        {
+            "name": ["Alpha", "Bravo", "Charlie", "Delta"],
+            "sector": ["Technology", "Technology", "Financial Services", "Financial Services"],
+        },
+        index=pd.Index(tickers, name="ticker"),
+    )
+    closes = pd.DataFrame(
+        {
+            "A.SS": [100.0, 102.0],
+            "B.SS": [100.0, 99.0],
+            "C.SS": [100.0, float("nan")],
+            "D.SS": [100.0, 100.0],
+        },
+        index=pd.to_datetime(["2026-09-18", "2026-09-21"]),
+    )
+    caps = {ticker: float(4 - i) * 1e9 for i, ticker in enumerate(tickers)}
+    names_zh = {"A.SS": "甲", "B.SS": "乙", "C.SS": "丙", "D.SS": "丁"}
+    monkeypatch.setitem(
+        publisher._LOADERS,
+        "china",
+        lambda: (constituents, closes, caps, {}, names_zh),
+    )
+    monkeypatch.setattr(publisher, "_board_breadth", lambda market: None)
+
+    payload = publisher.publish(
+        "china", tmp_path, generated_utc="2026-09-21 09:15",
+    )
+    payload_path = tmp_path / "marketdata" / "china_heatmap.json"
+    page_path = tmp_path / "china_heatmap.html"
+    assert json.loads(payload_path.read_text(encoding="utf-8")) == payload
+    html = page_path.read_text(encoding="utf-8")
+    assert payload["asof"] == "2026-09-21"
+    assert payload["observation_coverage"]["timeframes"]["1D"] == {
+        "valid_count": 3,
+        "missing_count": 1,
+        "denominator": 4,
+        "fraction": 0.75,
+    }
+    assert "3 / 4 names have observed endpoint pairs · 1 unavailable." in html
+    assert "3 / 4 个标的具备有效区间行情 · 1 个不可用。" in html
+    assert 'data-hm-gated="1"' in html
+    assert '"url":"marketdata/china_heatmap.json"' in html
+
+    # A failed sibling feed may leave only the last-good JSON. The same owner
+    # must render that exact file rather than inventing a second payload path.
+    page_path.unlink()
+    publisher.render_page("china", None, tmp_path)
+    assert page_path.read_text(encoding="utf-8") == html
+
+    # A page-render failure must leave the prior pair byte-for-byte intact; the
+    # Asia lane may continue, but it must not commit only a newer JSON payload.
+    prior_json = payload_path.read_bytes()
+    prior_page = page_path.read_bytes()
+    publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:15")
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+
+    # Two-file replacement is not natively atomic. If the page replace fails
+    # after the JSON replace, the publisher must roll the JSON back before
+    # returning, rather than leaving the browser and SSR on different sessions.
+    real_replace = publisher.os.replace
+    refused_page = False
+
+    def _replace_with_second_path_refusal(source, target):
+        nonlocal refused_page
+        if Path(target) == page_path and not refused_page:
+            refused_page = True
+            raise OSError("page replace refused")
+        return real_replace(source, target)
+
+    monkeypatch.setattr(publisher.os, "replace", _replace_with_second_path_refusal)
+    with pytest.raises(OSError, match="page replace refused"):
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+    assert refused_page
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+    assert not list(tmp_path.rglob("*.tmp"))
+    assert not list(tmp_path.rglob("*.bak"))
+    monkeypatch.setattr(publisher.os, "replace", real_replace)
+
+    monkeypatch.setattr(
+        publisher,
+        "render_page",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("render refused")),
+    )
+    with pytest.raises(RuntimeError, match="render refused"):
+        publisher.publish("china", tmp_path, generated_utc="2026-09-21 09:16")
+    assert payload_path.read_bytes() == prior_json
+    assert page_path.read_bytes() == prior_page
+    assert not list(tmp_path.rglob("*.tmp"))
+
+
+def test_cli_threads_stable_generation_label_to_publish_retry(monkeypatch):
+    from scripts import build_market_heatmap as publisher
+
+    seen = {}
+
+    def _publish(market, site=None, *, generated_utc=None, env=None):
+        seen.update(market=market, site=site, generated_utc=generated_utc, env=env)
+        return {}
+
+    monkeypatch.setattr(publisher, "publish", _publish)
+    assert publisher.main([
+        "--market", "china", "--render-page",
+        "--generated-utc", "2026-09-22 10:05",
+    ]) == 0
+    assert seen == {
+        "market": "china",
+        "site": None,
+        "generated_utc": "2026-09-22 10:05",
+        "env": None,
+    }
+
+
+def test_asia_close_and_full_site_share_the_same_heatmap_page_owner():
+    build_site = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    asia_close = (ROOT / ".github" / "workflows" / "asia-close.yml").read_text(encoding="utf-8")
+    assert "render_pages as render_market_heatmap_pages" in build_site
+    assert "render_market_heatmap_pages(_hm_payloads, site=site, env=env)" in build_site
+    assert '_hm_tmpl = env.get_template("market_heatmap.html.j2")' not in build_site
+
+    command = "python -m scripts.build_market_heatmap --market china --render-page"
+    assert asia_close.count(command) == 2
+    start = asia_close.index(
+        "- name: publish China heatmap from the settled close (payload + matching SSR shell)"
+    )
+    end = asia_close.index(
+        "- name: CN Prophet Live arming pass (settled-close trigger pack -> R2)"
+    )
+    publish_step = asia_close[start:end]
+    assert asia_close.index(
+        "- name: build china a-share dashboard (spine — serial head, every CN surface reads it)"
+    ) < start < end
+    assert "timeout-minutes: 5" in publish_step
+    assert "continue-on-error: true" in publish_step
+    assert command in publish_step
+    assert "CHINA_HEATMAP_GENERATED_UTC=$(date -u '+%Y-%m-%d %H:%M')" in publish_step
+    assert "printf 'CHINA_HEATMAP_GENERATED_UTC=%s\\n'" in publish_step
+    assert '>> "$GITHUB_ENV"' in publish_step
+    assert '--generated-utc "$CHINA_HEATMAP_GENERATED_UTC"' in publish_step
+    assert publish_step.index("CHINA_HEATMAP_GENERATED_UTC=$(date -u") < publish_step.index(command)
+    assert 'exit "$rc"' in publish_step
+    assert "exit 0" not in publish_step
+
+    commit_step = asia_close[asia_close.index("- name: commit engine outputs"):]
+    fallback = "CHINA_HEATMAP_GENERATED_UTC=\"${CHINA_HEATMAP_GENERATED_UTC:-$(date -u '+%Y-%m-%d %H:%M')}\""
+    assert commit_step.count(fallback) == 1
+    assert commit_step.index(fallback) < commit_step.index("while push_attempt; do")
+    assert 'site/marketdata/china_heatmap.json' not in commit_step[
+        commit_step.index("while push_attempt; do"):commit_step.index("python -m scripts.inject_data_base", commit_step.index("while push_attempt; do"))
+    ]
+
+    pull = asia_close.index("git pull --rebase --autostash -X theirs origin main")
+    repair = asia_close.index(command, end)
+    normalize = asia_close.index("python -m scripts.inject_data_base", repair)
+    push = asia_close.index("if push_do; then echo \"pushed asia engine outputs", repair)
+    repair_block = asia_close[repair:normalize]
+    assert pull < repair < normalize < push
+    assert '--generated-utc "$CHINA_HEATMAP_GENERATED_UTC"' in repair_block
+    assert "post-rebase China heatmap coherence repair failed" in repair_block
+    assert "push_abort_rebase" in repair_block and "push_backoff" in repair_block
+    assert "continue" in repair_block
+
+    cleanup = asia_close.index("find site site/marketdata -maxdepth 1 -type f")
+    stage = asia_close.index("git add data/ site/", cleanup)
+    cleanup_block = asia_close[cleanup:stage]
+    assert cleanup < stage
+    for suffix in (
+        ".china_heatmap.html.*.tmp", ".china_heatmap.html.*.bak",
+        ".china_heatmap.json.*.tmp", ".china_heatmap.json.*.bak",
+    ):
+        assert suffix in cleanup_block
+    assert "-delete" in cleanup_block
+
+
 def test_minus_sign_is_the_typographic_minus_not_a_hyphen():
     """heatmap.js prints U+2212. A hyphen here would make the SSR and the live
     copy differ by one glyph on every negative number on the page."""
@@ -440,9 +654,15 @@ def test_tile_map_carries_the_free_market_facts():
     assert len(with_px) / len(tiles) > 0.95, "most tiles carry no last price"
     assert len(with_p200) / len(tiles) > 0.8, "most tiles carry no 200-day distance"
     assert all(t["px"] > 0 for t in with_px)
-    # The card renders both from the tile, with the per-ticker file only as the
-    # fallback for maps whose tiles do not carry them (the US map).
-    assert re.search(r"var p2 = t\.p200 != null \? t\.p200 : tech\.pct_vs_200dma", HEATMAP_JS)
+    # The card renders both facts directly from the tile. The per-ticker file
+    # remains a fallback for maps whose tiles do not carry them, but an enhanced
+    # China observation snapshot must not mix in an unbound nightly 200-day fact.
+    assert re.search(
+        r'var p2 = t\.p200 != null \? t\.p200 : '
+        r'\(\(data\.market === ["\']china["\'] && t\.observation\) '
+        r'\? null : tech\.pct_vs_200dma\);',
+        HEATMAP_JS,
+    )
     assert re.search(r"var px = t\.px != null", HEATMAP_JS)
     assert "hm-c-meta" not in TEMPLATE_SRC          # built by the card, not the page
 

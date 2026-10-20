@@ -24,6 +24,12 @@ from lib import config
 
 log = logging.getLogger(__name__)
 
+# FINRA publishes days-to-cover 999.99 when average daily volume is ~0: a
+# censored lower bound, not a measurement (same sentinel as
+# scripts/backfill_finra_short_interest.py and engine/short_volume.py
+# DTC_SENTINEL, which engine consumers read so they never import this collector).
+DTC_SENTINEL = 999.0
+
 
 def _cfg() -> dict:
     return config.load()["finra"]
@@ -138,6 +144,37 @@ def _cache_age_days(p) -> float | None:
         return None
 
 
+_SI_KEYS = ["settlement_date", "ticker"]
+
+
+def _witness_si_superseded(prior: pd.DataFrame, new: pd.DataFrame, path) -> int:
+    """C19 WP24 DQ1-2: append to ``path`` every prior history row that the
+    keep="last" dedup is about to displace with DIFFERENT values, keeping that
+    row's original capture_date. Change-only: an identical re-capture appends
+    nothing. Returns the count."""
+    if prior.empty or new.empty:
+        return 0
+    value_cols = [c for c in prior.columns
+                  if c in new.columns and c not in _SI_KEYS and c != "capture_date"]
+    old = prior.drop_duplicates(subset=_SI_KEYS, keep="last")
+    nxt = new.drop_duplicates(subset=_SI_KEYS, keep="last")[_SI_KEYS + value_cols]
+    both = old.merge(nxt, on=_SI_KEYS, how="inner", suffixes=("", "__new"))
+    if both.empty or not value_cols:
+        return 0
+    changed = pd.Series(False, index=both.index)
+    for c in value_cols:
+        a, b = both[c], both[f"{c}__new"]
+        changed |= (a != b) & ~(a.isna() & b.isna())
+    if not changed.any():
+        return 0
+    gone = both.loc[changed, list(old.columns)].copy()
+    gone["superseded_at_utc"] = pd.Timestamp.now("UTC")
+    if path.exists():
+        gone = pd.concat([pd.read_parquet(path), gone], ignore_index=True)
+    gone.reset_index(drop=True).to_parquet(path)
+    return int(changed.sum())
+
+
 def fetch_short_interest(force: bool = False, max_age_days: int = 4) -> pd.DataFrame | None:
     cache = config.data_dir() / "finra" / "short_interest.parquet"
     cache.parent.mkdir(parents=True, exist_ok=True)
@@ -159,6 +196,8 @@ def fetch_short_interest(force: bool = False, max_age_days: int = 4) -> pd.DataF
         snap = snap[snap.index.isin(universe)]
     # embedded fetch-date stamp — the freshness gate reads THIS, never mtime (#2690 class)
     snap["asof"] = date.today().isoformat()
+    # C19 WP24 DQ3: flag the censored 999.99 sentinel so consumers never read it as a value.
+    snap["dtc_capped"] = snap["days_to_cover"].ge(DTC_SENTINEL)
     snap.to_parquet(cache)
     log.info("finra short interest: %d universe names, settlement %s", len(snap), settlement)
 
@@ -170,28 +209,44 @@ def fetch_short_interest(force: bool = False, max_age_days: int = 4) -> pd.DataF
     # vintage is overwritten.  capture_date is stored as a column but cannot be used
     # to reconstruct point-in-time state because prior rows are deleted on restatement.
     #
-    # This design is intentional for the current consumer (engine/equity_factors.py),
-    # which only needs the most-recent best estimate of short interest.  Any future
-    # consumer that requires PIT correctness — e.g. a backtest that must join on what
-    # was knowable on a given date — MUST NOT use short_interest_history.parquet as-is
-    # and must instead build a true vintage matrix keyed on (settlement_date, ticker,
-    # capture_date) where all captures are retained.
+    # This design is intentional for the current consumers (engine/neuralweb/context_api.py
+    # and lib/finra_knowable.py), which only need the most-recent best estimate of short
+    # interest.  Any future consumer that requires PIT correctness — e.g. a backtest that
+    # must join on what was knowable on a given date — MUST NOT use
+    # short_interest_history.parquet as-is and must instead build a true vintage matrix
+    # keyed on (settlement_date, ticker, capture_date) where all captures are retained.
     #
-    # Contrast: collectors/finra_short_volume.py uses (date, ticker) safely because
-    # daily short-volume data is never revised by FINRA.
+    # C19 WP24 DQ1-2: FINRA does restate short interest (Revision Flag), so every row the
+    # dedup below displaces with DIFFERENT values is first appended, with its original
+    # capture_date, to short_interest_superseded.parquet.  Change-only: an identical
+    # re-capture adds nothing.  Retention starts at deployment of this witness — earlier
+    # generations were already overwritten and cannot be recovered.  Internal evidence
+    # only (DQ1-6): no export, redistribution or API surface.
+    #
+    # Contrast: collectors/finra_short_volume.py dedups (date, ticker) the same way;
+    # whether FINRA restates a posted daily short-volume file is UNKNOWN, and a replaced
+    # row there is witnessed by data/finra_short_volume/superseded.parquet.
     hist_p = cache.parent / "short_interest_history.parquet"
-    hist_snap = snap.drop(columns=["asof"]).copy()   # history keeps its own capture_date; no asof stamp
+    # history keeps its own capture_date and its pre-DQ3 schema: no asof stamp, no
+    # derived dtc_capped (a new column would read as a restatement of every old row).
+    hist_snap = snap.drop(columns=["asof", "dtc_capped"]).copy()
     capture_date = pd.Timestamp.now("UTC").normalize().tz_localize(None)
     hist_snap["capture_date"] = capture_date
     hist_snap = hist_snap.reset_index()   # ticker becomes a column
+    superseded = 0
     if hist_p.exists():
-        hist_snap = pd.concat([pd.read_parquet(hist_p), hist_snap], ignore_index=True)
+        prior = pd.read_parquet(hist_p)
+        superseded = _witness_si_superseded(
+            prior, hist_snap, cache.parent / "short_interest_superseded.parquet"
+        )
+        hist_snap = pd.concat([prior, hist_snap], ignore_index=True)
         hist_snap = hist_snap.drop_duplicates(
             subset=["settlement_date", "ticker"], keep="last"
         )
     hist_snap.to_parquet(hist_p)
     log.info(
-        "finra short interest history: %d rows (capture %s)", len(hist_snap), capture_date.date()
+        "finra short interest history: %d rows (capture %s, superseded %d)",
+        len(hist_snap), capture_date.date(), superseded,
     )
 
     return snap

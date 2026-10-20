@@ -192,16 +192,21 @@ def panel(segment: str | None = None, q: str | None = None,
     search = _search_clause(q)
 
     try:
-        counts = _counts(search)
+        reads = users._parallel_reads(
+            counts=lambda: _counts(search),
+            people=lambda: _people(seg.key, search, page, page_size),
+            foot=_foot,
+        )
+        counts = reads["counts"]
         total = counts.get(seg.key, 0)
-        rows = _people(seg.key, search, page, page_size)
+        rows = reads["people"]
         return {
             "ok": True,
             "segment": seg.key,
             "segments": email_segments.options(),
             "people": rows,
             "counts": counts,
-            "foot": _foot(),
+            "foot": reads["foot"],
             "total": total,
             "page": page,
             "page_size": page_size,
@@ -457,17 +462,25 @@ def mail_status(limit: int = 20) -> dict:
         return out
     limit = _clamp(limit, 20, 1, 100)
     try:
-        out["recent"] = users._query(
-            "select to_char(l.created_at,'YYYY-MM-DD HH24:MI') as created_at, "
-            "l.template, l.class, l.status, coalesce(l.detail,'') as detail, l.to_email "
-            f"from public.email_log l order by l.created_at desc limit {limit}") or []
-        summary = users._query(
-            "select status, count(*)::int as n from public.email_log "
-            "where created_at > now() - interval '30 days' group by 1 order by 1") or []
+        reads = users._parallel_reads(
+            recent=lambda: users._query(
+                "select to_char(l.created_at,'YYYY-MM-DD HH24:MI') as created_at, "
+                "l.template, l.class, l.status, coalesce(l.detail,'') as detail, l.to_email "
+                f"from public.email_log l order by l.created_at desc limit {limit}"
+            ),
+            summary=lambda: users._query(
+                "select status, count(*)::int as n from public.email_log "
+                "where created_at > now() - interval '30 days' group by 1 order by 1"
+            ),
+            parked=lambda: users._query(
+                "select count(*)::int as n from public.email_log "
+                "where status = 'queued' and detail = 'suppression_lookup_failed'"
+            ),
+        )
+        out["recent"] = reads["recent"] or []
+        summary = reads["summary"] or []
         out["last_30d"] = {r["status"]: r["n"] for r in summary if r.get("status")}
-        parked = users._query(
-            "select count(*)::int as n from public.email_log "
-            "where status = 'queued' and detail = 'suppression_lookup_failed'")
+        parked = reads["parked"]
         out["parked"] = int((parked or [{}])[0].get("n") or 0)
     except Exception as e:  # noqa: BLE001
         out["recent_error"] = str(e)

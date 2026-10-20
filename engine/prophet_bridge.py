@@ -116,6 +116,7 @@ OPTION RESOLUTION (display-only)
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import math
@@ -160,12 +161,17 @@ TARGET_DELTA = 0.60        # nearest-delta strike for option resolution
 STAGE_TILT_LEASH = 1.25
 STAGE_TILT_DEMOTE_MIN_MATURED = 30   # §4 floor: n_matured_126 needed before diff can demote
 
-# R0-C disclosure: the leash's earnings-call arm reads a local-only EquityDesk backfill
-# parquet that is gitignored and absent on every CI/deploy host, so in production the EC
-# lookup always answers null and the leash is pinned at 1.0. That is a STARVED negative,
-# not an honest one, and the two used to be indistinguishable in the emitted plan. Every
-# stage_tilt block now states which it is. Fail-closed default: with no source record we
-# never claim a source exists. This is disclosure only — it never moves the leash.
+# R0-C disclosure: the leash's earnings-call arm reads EquityDesk's native
+# earnings_call_sent. It used to resolve ONLY a local-only backfill parquet that is
+# gitignored and absent on every CI/deploy host, so in production the EC lookup always
+# answered null and the leash was pinned at 1.0 — a STARVED negative, indistinguishable
+# in the emitted plan from an honest one. engine/prophet_stage_inputs.py now walks the
+# native-store ladder, whose first tier is the R2-transported EquityDesk history that
+# engine/earnings_qual.py already consumes, so the arm can actually be fed; the nightly
+# hydrates it before this module originates (.github/workflows/daily.yml). Every
+# stage_tilt block states the source state AND the tier that answered. Fail-closed
+# default: with no source record we never claim a source exists. This is disclosure
+# only — it never moves the leash.
 STAGE_TILT_EC_SOURCE_UNAVAILABLE = "unavailable"
 
 # ── ANTICIPATION §6.2 A1 — status-class admission (ported to the #5071 base) ──
@@ -896,9 +902,24 @@ def _resolve_origination_clocks(
                 f"{recorded_at!r}"
             )
         try:
-            from lib.nyse_calendar import last_session_on_or_before  # noqa: PLC0415
+            from datetime import datetime as _dt, timezone as _tz  # noqa: PLC0415
+            from lib.nyse_calendar import (  # noqa: PLC0415
+                expected_last_session,
+                last_session_on_or_before,
+            )
 
-            expected = last_session_on_or_before(date.fromisoformat(recorded_at))
+            raw_recorded = str(recorded_asof).strip()
+            try:
+                date_only_observation = date.fromisoformat(raw_recorded)
+            except ValueError:
+                date_only_observation = None
+            if date_only_observation is not None:
+                expected = last_session_on_or_before(date_only_observation)
+            else:
+                observed = _dt.fromisoformat(raw_recorded.replace("Z", "+00:00"))
+                if observed.tzinfo is None:
+                    observed = observed.replace(tzinfo=_tz.utc)
+                expected = expected_last_session(observed)
             if date.fromisoformat(price_basis_date) != expected:
                 errors.append(
                     f"price_basis_date {price_basis_date!r} is not the last completed "
@@ -3916,12 +3937,14 @@ def _load_stage_tilt_inputs(data_root: "Path | None" = None) -> dict:
     governed production module — NOT from ``engine.prophet_stage_fusion``, which is a
     research backtest harness and must never be a live dependency of origination.
 
-    R0-C disclosure: the EC table's backing parquet is a local-only EquityDesk backfill
-    that is absent on every CI/deploy host, so ``load_ec_table`` fails open to an EMPTY
-    frame and every EC lookup answers null. That made "no positive earnings call" and
-    "no earnings-call data at all" the same output. ``ec_source`` records which one it
-    is, and an unavailable source now emits a ``::warning::`` instead of degrading in
-    silence. The leash value is unchanged by this disclosure.
+    R0-C disclosure: the EC table resolves a ladder of NATIVE EquityDesk stores — the
+    R2-transported history the nightly hydrates before this runs, else the local-only
+    backfill. When no tier answers, ``load_ec_table`` fails open to an EMPTY frame and
+    every EC lookup answers null. That made "no positive earnings call" and "no
+    earnings-call data at all" the same output. ``ec_source`` records which one it is —
+    and, when a source exists, WHICH tier answered — while an unavailable source emits a
+    ``::warning::`` instead of degrading in silence. The leash value is unchanged by this
+    disclosure.
     """
     from lib import config  # noqa: PLC0415
     import engine.prophet_stage_inputs as psi  # noqa: PLC0415
@@ -4037,6 +4060,13 @@ def _compute_stage_tilt(ticker: str, entry_date: str, tilt_inputs: dict) -> tupl
         # Disclosure only (R0-C) — never read by the eligibility test above.
         "ec_source_state": str(ec_source.get("state") or STAGE_TILT_EC_SOURCE_UNAVAILABLE),
         "ec_source_path": ec_source.get("path"),
+        # WHICH native EquityDesk store answered: "r2_history" (the R2-transported
+        # migration restored by scripts/fetch_earnings_scores.py) or
+        # "legacy_full_history" (the local-only import). Both carry the same native
+        # ~-10..30 earnings_call_sent; naming the tier is what lets a grader tell a
+        # plan built on the transported generation from one built on a workstation copy.
+        "ec_source_tier": ec_source.get("tier"),
+        "ec_source_generation": ec_source.get("generation"),
         "ec_source_reason": ec_source.get("reason"),
         "bear_gate": bool(bear),             # True = gate forced 1.0
         "provisional": True,
@@ -4049,6 +4079,46 @@ def _compute_stage_tilt(ticker: str, entry_date: str, tilt_inputs: dict) -> tupl
     return horizon_days, stage_tilt
 
 
+def _plan_source_origin(
+    binding: Mapping[str, Any],
+    positions: dict[int, int],
+    row: Any,
+) -> dict[str, Any] | None:
+    """Project the frozen original-producer binding onto ONE originated plan.
+
+    ``positions`` maps the deep-copied buy row OBJECT to its original ``buy[]``
+    index — identity, never a ticker lookup, so duplicate tickers and non-Featured
+    rows keep the exact positions the original producer published.  The returned
+    block carries the whole self-hashed ``source_binding`` unchanged; it is source
+    ORIGIN metadata only, not native authentication: no candidate_key, digest,
+    security_id, episode_id or generation is invented here, and the source's native
+    identity stays unavailable until a future actual native read.
+    """
+    selection_index = positions.get(id(row))
+    if selection_index is None:
+        return None
+    ordered_rows = binding.get("ordered_rows")
+    if not isinstance(ordered_rows, list) or selection_index >= len(ordered_rows):
+        return None
+    referenced = ordered_rows[selection_index]
+    if not isinstance(referenced, Mapping):
+        return None
+    return {
+        "schema": "prophet.plan_source_origin/v1",
+        "owner_ref": "scripts/build_stock_library.py::main",
+        "receipt_kind": "EXACT_DISPLAYED_SOURCE",
+        "source_binding": {
+            **binding,
+            "ordered_rows": [
+                dict(entry) if isinstance(entry, Mapping) else entry
+                for entry in ordered_rows
+            ],
+        },
+        "selection_index": selection_index,
+        "row_receipt": referenced.get("row_receipt"),
+    }
+
+
 def originate_plans(
     standouts_path: str | Path,
     asof: str,
@@ -4056,6 +4126,9 @@ def originate_plans(
     thetadata_store: str | None = None,
     active_keys: set[str] | None = None,
     intake_stats: dict | None = None,
+    standouts_doc: Mapping[str, Any] | None = None,
+    *,
+    source_binding: Mapping[str, Any] | None = None,
 ) -> list[dict]:
     """
     Read us_standouts.json, apply the pick rule, and return new
@@ -4080,6 +4153,22 @@ def originate_plans(
                      status, and per-candidate validation failures so the caller can
                      disclose every disposition in its artifact. Never read, only
                      written.
+    source_binding : optional frozen original-producer binding
+                     (``prophet.today_selection_source_binding/v1``) over the SAME
+                     board bytes ``standouts_doc`` deep-copies.  When supplied, every
+                     new plan is stamped with a ``source_origin`` block naming its
+                     ORIGINAL ``buy[]`` position — resolved by object identity before
+                     selection reorders anything, never by a ticker join, so
+                     duplicate tickers and non-Featured rows keep the positions the
+                     producer published.  A binding that does not cover exactly this
+                     board's buy lane is refused at the boundary.  Origin metadata
+                     only: a whole self-hashed ``source_binding`` is not native
+                     authentication and invents no candidate identity fields.
+
+    standouts_doc  : optional already-frozen board object.  When supplied, origination
+                     deep-copies this object and never re-reads ``standouts_path``.
+                     Production uses this to bind every plan to the exact immutable
+                     source bytes recorded in the Prophet provenance snapshot.
 
     Returns
     -------
@@ -4095,8 +4184,13 @@ def originate_plans(
     from engine.options_structure import validate_trade_plan  # noqa: PLC0415
 
     standouts_path = Path(standouts_path)
-    with standouts_path.open(encoding="utf-8") as f:
-        standouts = json.load(f)
+    if standouts_doc is None:
+        with standouts_path.open(encoding="utf-8") as f:
+            standouts = json.load(f)
+    else:
+        if not isinstance(standouts_doc, Mapping):
+            raise TypeError("standouts_doc must be a mapping when supplied")
+        standouts = copy.deepcopy(dict(standouts_doc))
 
     # Kept only as a legacy formation-anchor fallback.  It is never price authority;
     # `_resolve_origination_clocks` consumes the ranked-price watermark below.
@@ -4115,12 +4209,123 @@ def originate_plans(
     )
     recorded_at, price_basis_date, clock_errors = _resolve_origination_clocks(
         price_through=staleness.get("price_through"),
-        recorded_asof=asof,
+        recorded_asof=staleness.get("observed_at_utc") or asof,
         panel_mixed_vintage=bool(panel_staleness.get("mixed_vintage")),
         source_delayed=staleness.get("delayed"),
         source_unknown=staleness.get("unknown"),
         source_basis=staleness.get("basis"),
     )
+
+    # ── Prospective Plan source_origin positions (pre-B1 prerequisite) ──
+    # When the frozen original-producer binding is supplied, pin every buy row's
+    # ORIGINAL ``buy[]`` position by OBJECT IDENTITY before the priority/admission
+    # loop runs.  Selection reorders and the policy skips suppress; neither may
+    # renumber what the original producer published, and no ticker is looked up
+    # here.  A binding that does not cover exactly this board's buy lane is
+    # refused at the boundary; a row whose position cannot be resolved later
+    # carries NO source_origin at all rather than an invented one.
+    source_origin_positions: dict[int, int] | None = None
+    if source_binding is not None:
+        if not isinstance(source_binding, Mapping):
+            raise TypeError("source_binding must be a mapping when supplied")
+        binding_rows = source_binding.get("ordered_rows")
+        if not isinstance(binding_rows, list):
+            raise TypeError("source_binding.ordered_rows must be a list when supplied")
+        board_rows = standouts.get("buy")
+        if not isinstance(board_rows, list) or len(board_rows) != len(binding_rows):
+            board_count = len(board_rows) if isinstance(board_rows, list) else 0
+            raise ValueError(
+                "source_binding.ordered_rows does not cover this board's buy[] lane "
+                f"({len(binding_rows) if isinstance(binding_rows, list) else 0} "
+                f"receipts vs {board_count} buy rows)"
+            )
+        # Receipt identity is established HERE, before any policy, sorting or
+        # mutation runs: every ordered receipt must re-hash — with the original
+        # producer's canonical bytes, using the neutral evidence codec with its
+        # single document newline removed — to the ACTUAL board
+        # row at the SAME original ordinal, and the scalar pins must match this
+        # document wherever this document can represent them.  A same-count board
+        # whose rows were replaced or reordered is therefore REFUSED at the
+        # boundary instead of being renumbered with positions the original
+        # producer never published; so is a binding whose own metadata is
+        # malformed.  The raw-byte ``source_sha256`` is NOT recomputed from this
+        # (possibly reconstructed) document — exact raw-byte identity remains the
+        # UPSTREAM retained-snapshot check's job, which re-verifies the gzip copy
+        # against the frozen board before any binding can exist.
+        import hashlib  # noqa: PLC0415
+        from lib.evidence_foundation import canonical_json_bytes  # noqa: PLC0415
+
+        def source_receipt_bytes(value: object) -> bytes:
+            # The producer hashes compact JSON without a document terminator.
+            try:
+                return canonical_json_bytes(value).removesuffix(b"\n")
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"value is not canonical JSON: {exc}") from exc
+
+        source_sha256 = source_binding.get("source_sha256")
+        if (not isinstance(source_sha256, str)
+                or not source_sha256.startswith("sha256:")
+                or len(source_sha256) != 71
+                or any(c not in "0123456789abcdef" for c in source_sha256[7:])):
+            raise ValueError(
+                "source_binding.source_sha256 must be 'sha256:<64 lowercase hex>'")
+        doc_session = standouts.get("as_of")
+        if (isinstance(doc_session, str)
+                and source_binding.get("market_session") != doc_session):
+            raise ValueError(
+                "source_binding.market_session "
+                f"{source_binding.get('market_session')!r} is not this board's "
+                f"session {doc_session!r}")
+        doc_emit = standouts.get("emit")
+        if isinstance(doc_emit, Mapping):
+            doc_pair = doc_emit.get("pair_id")
+            if isinstance(doc_pair, str) and source_binding.get("pair_id") != doc_pair:
+                raise ValueError(
+                    "source_binding.pair_id "
+                    f"{source_binding.get('pair_id')!r} is not this board's pair "
+                    f"{doc_pair!r}")
+        for ordinal, receipt_row in enumerate(binding_rows):
+            if not isinstance(receipt_row, Mapping):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}] must be a mapping")
+            if receipt_row.get("selection_index") != ordinal:
+                raise ValueError(
+                    "source_binding.ordered_rows must pin each row's original "
+                    "ordinal contiguously from 0; entry "
+                    f"{ordinal} carries selection_index "
+                    f"{receipt_row.get('selection_index')!r}")
+            row_receipt = receipt_row.get("row_receipt")
+            if (not isinstance(row_receipt, str)
+                    or not row_receipt.startswith("sha256:")
+                    or len(row_receipt) != 71
+                    or any(c not in "0123456789abcdef" for c in row_receipt[7:])):
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt must be "
+                    "'sha256:<64 lowercase hex>'")
+            actual_receipt = "sha256:" + hashlib.sha256(
+                source_receipt_bytes(board_rows[ordinal])).hexdigest()
+            if row_receipt != actual_receipt:
+                raise ValueError(
+                    f"source_binding.ordered_rows[{ordinal}].row_receipt does not "
+                    "hash to the actual board row at that original ordinal — the "
+                    "binding is not over this board's buy lane")
+        expected_selection_receipt = "sha256:" + hashlib.sha256(source_receipt_bytes({
+            "source_sha256": source_sha256,
+            "pair_id": source_binding.get("pair_id"),
+            "market_session": source_binding.get("market_session"),
+            "ordered_rows": [
+                {"selection_index": receipt_row.get("selection_index"),
+                 "row_receipt": receipt_row.get("row_receipt")}
+                for receipt_row in binding_rows
+            ],
+        })).hexdigest()
+        if source_binding.get("selection_receipt") != expected_selection_receipt:
+            raise ValueError(
+                "source_binding.selection_receipt does not match the binding "
+                "material it pins")
+        source_origin_positions = {
+            id(row): index for index, row in enumerate(board_rows)
+        }
 
     # ── Pass 1: full admitted ordering → apply the two policy skips ──
     admission_stats: dict[str, Any] = {}
@@ -4515,6 +4720,8 @@ def originate_plans(
                 "ec_sent": None, "ec_call_date": None,
                 "ec_source_state": STAGE_TILT_EC_SOURCE_UNAVAILABLE,
                 "ec_source_path": None,
+                "ec_source_tier": None,
+                "ec_source_generation": None,
                 "ec_source_reason": "stage-tilt inputs unavailable — no source resolved",
                 "bear_gate": True,
                 "provisional": True, "demoted": False,
@@ -4694,6 +4901,15 @@ def originate_plans(
             "entry_zone": entry_zone,
             "early_turn": early_turn_block,
         }
+
+        # Prospective source_origin: stamped ONLY on this NEW plan dict, BEFORE
+        # the existing validator sees it.  Historical plans never gain the key,
+        # and the binding's own ordered receipt is repeated, never recomputed.
+        if source_origin_positions is not None:
+            source_origin = _plan_source_origin(
+                source_binding, source_origin_positions, b)
+            if source_origin is not None:
+                plan["source_origin"] = source_origin
 
         if government_revenue_ctx:
             plan["government_revenue_context"] = government_revenue_ctx

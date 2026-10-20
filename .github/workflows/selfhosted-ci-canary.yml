@@ -550,7 +550,10 @@ jobs:
 
   contamination-probe:
     name: diagnostic-persistent-workspace-contamination
-    if: inputs.slots == '1'
+    # A matrix dependency can carry skipped-state propagation even when its
+    # aggregate result is success. Evaluate after dependencies settle, but
+    # still refuse unless both required producers actually succeeded.
+    if: ${{ always() && inputs.slots == '1' && needs.plan.result == 'success' && needs.selfhosted-pack.result == 'success' }}
     needs: [plan, selfhosted-pack]
     runs-on: [self-hosted, ci-linux-canary]
     timeout-minutes: 20

@@ -25,7 +25,7 @@ from __future__ import annotations
 import ast
 import csv
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from decimal import (
     Context,
     Decimal,
@@ -45,6 +45,7 @@ from itertools import islice
 import re
 from types import MappingProxyType
 from typing import Any, Iterable, Mapping, Protocol, Sequence
+from zoneinfo import ZoneInfo
 
 from .metric_registry import (
     ConceptAlias,
@@ -53,8 +54,23 @@ from .metric_registry import (
     MappingRule,
     MetricContract,
     MetricRegistry,
+    qualify_metric,
 )
 from .periods import CalendarKind, PeriodKind, TypedPeriod
+from .lineage_evidence import (
+    CONFIRMATION_CHAIN_RULE_VERSION,
+    MAX_LINEAGE_RECEIPTS,
+    REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE,
+    REFUSAL_MISSING_OCCURRENCE,
+    LineageEvidenceError,
+    LineageEvidenceReceipt,
+    _approved_taxonomy_uri,
+    _chain_accepted_by_accession,
+    _freeze_evidence,
+    _positive_evidence_payload,
+    evaluate_confirmation,
+    receipt_envelope_refusal,
+)
 from .raw_ledger import (
     FactEventType,
     FactContext,
@@ -66,12 +82,32 @@ from .raw_ledger import (
     RawFactOccurrence,
     SourceIdentity,
     TemporalClocks,
+    _canonical_duplicate_representative,
     canonical_json,
     decimal_text,
     parse_utc,
     stable_id,
     utc_text,
 )
+from .detectors import issuer_class_for_sic
+
+# An empty projection for the overwhelmingly common no-evidence path, so a
+# FIF-3A3 query allocates nothing new.
+_EMPTY_ROOT_MAP: Mapping[str, str] = MappingProxyType({})
+
+# Per-engine memo ceiling for confirmation-unified roots.
+MAX_EFFECTIVE_ROOT_CACHE_ENTRIES = 4096
+
+# Revalidation refusal reasons for a receipt that is simply not applicable
+# under the query policy's clocks.  Engine-level diagnostics only: they
+# classify why an admitted receipt is not applied under a policy and never
+# enter a response body.  Every other refusal vocabulary used when
+# re-proving a receipt comes from ``lineage_evidence``; in particular any
+# mismatch between the receipt's positive evidence and the current eligible
+# ledger is classified ``REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE``.
+REFUSAL_RECEIPT_NOT_YET_SOURCE_VISIBLE = "receipt_not_yet_source_visible"
+REFUSAL_RECEIPT_NOT_YET_SYSTEM_AVAILABLE = "receipt_not_yet_system_available"
+REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE = "occurrence_not_temporally_eligible"
 
 
 QUERY_SCHEMA = "fundamental_forensics.metric_query/v1"
@@ -173,11 +209,19 @@ MetricQueryPolicy = BitemporalPolicy
 
 
 class CellState(str, Enum):
-    """A cell has a value, lacks evidence, or is unsafe to evaluate."""
+    """A cell has a value, lacks evidence, is unsafe to evaluate, or is refused.
+
+    ``NOT_APPLICABLE`` is the metric-qualification refusal state (S1-b): the
+    issuer class or a declared denominator places this metric outside the
+    governed contract's applicability.  It is unreachable under the
+    constraint-free production catalog, which declares no applicability or
+    denominator constraints.
+    """
 
     VALUE = "value"
     MISSING = "missing"
     NOT_EVALUABLE = "not_evaluable"
+    NOT_APPLICABLE = "not_applicable"
 
 
 MetricCellState = CellState
@@ -236,6 +280,36 @@ def _date_value(value: date | datetime | str | None, *, field_name: str) -> date
 
 def _date_text(value: date | None) -> str | None:
     return value.isoformat() if value is not None else None
+
+
+_EDGAR_TIMEZONE = ZoneInfo("America/New_York")
+_EDGAR_FILING_CUTOFF = time(17, 30)
+_EDGAR_MAX_WEEKDAY_ROLL = 3
+
+
+def _latest_edgar_filed_date(accepted_at: datetime) -> date:
+    """Return the latest SEC filing date consistent with an EDGAR acceptance.
+
+    Regulation S-T Rule 13(a): a submission accepted after 5:30 p.m. Eastern
+    time, or on a non-business day, is deemed filed on the next business day,
+    so its filing date legitimately follows the acceptance date (in UTC and
+    in Eastern time).  Within filing hours the filing date may not follow the
+    Eastern acceptance date.  Federal holidays and unscheduled EDGAR closures
+    are not modelled: an out-of-hours acceptance may roll to at most the third
+    weekday after its Eastern date (the next business day past two intervening
+    weekday closures).  ``filed_at`` never gates availability; this bound only
+    keeps filing metadata consistent with the occurrence it describes.
+    """
+    eastern = accepted_at.astimezone(_EDGAR_TIMEZONE)
+    bound = eastern.date()
+    if bound.weekday() < 5 and eastern.time() < _EDGAR_FILING_CUTOFF:
+        return bound
+    rolled = 0
+    while rolled < _EDGAR_MAX_WEEKDAY_ROLL:
+        bound += timedelta(days=1)
+        if bound.weekday() < 5:
+            rolled += 1
+    return bound
 
 
 def _positive_int(value: int, *, field_name: str, ceiling: int) -> int:
@@ -672,6 +746,11 @@ class QueryEntity:
 
     ticker: str
     entity_id: str
+    # Optional issuer SIC for metric applicability (S1-b).  Normalized to a
+    # digit-string or ``None``; an unparseable spelling passes through
+    # unchanged and E0's classifier maps it to the ``unknown`` issuer class —
+    # this class adds no parsing policy of its own.
+    issuer_sic: str | int | None = None
 
     def __post_init__(self) -> None:
         ticker = _require_text(self.ticker, field_name="ticker").upper()
@@ -679,9 +758,27 @@ class QueryEntity:
             raise QueryValidationError(f"invalid ticker: {self.ticker!r}")
         object.__setattr__(self, "ticker", ticker)
         object.__setattr__(self, "entity_id", _require_text(self.entity_id, field_name="entity_id"))
+        sic = self.issuer_sic
+        if sic is None or isinstance(sic, bool):
+            # bool is an int subclass but is not a SIC spelling; fall through
+            # to the passthrough text below so it classifies as unknown.
+            normalized_sic = None if sic is None else str(sic)
+        elif isinstance(sic, int):
+            normalized_sic = str(sic)
+        elif isinstance(sic, str):
+            text = sic.strip()
+            normalized_sic = text if text else None
+        else:
+            raise QueryValidationError(
+                f"issuer_sic must be a string, integer, or None: {sic!r}"
+            )
+        object.__setattr__(self, "issuer_sic", normalized_sic)
 
     def to_dict(self) -> dict[str, str]:
-        return {"ticker": self.ticker, "entity_id": self.entity_id}
+        payload = {"ticker": self.ticker, "entity_id": self.entity_id}
+        if self.issuer_sic is not None:
+            payload["issuer_sic"] = self.issuer_sic
+        return payload
 
 
 @dataclass(frozen=True)
@@ -920,6 +1017,11 @@ class CellProvenance:
     dependency_cell_ids: tuple[str, ...] = ()
     selected_raw_fact: RawFactOccurrence | None = None
     reason: str | None = None
+    # Issuer-class applicability verdict (S1-b).  Printed only on metric
+    # qualification refusals, where a class was determined; absent from every
+    # other receipt so existing bytes stay identical.
+    issuer_class: str | None = None
+    issuer_class_basis: str | None = None
 
     def __post_init__(self) -> None:
         try:
@@ -1014,6 +1116,8 @@ class CellProvenance:
             "formula_pack_version",
             "confidence",
             "reason",
+            "issuer_class",
+            "issuer_class_basis",
         ):
             object.__setattr__(
                 self,
@@ -1078,10 +1182,11 @@ class CellProvenance:
             if (
                 self.accepted_at is not None
                 and self.filed_at is not None
-                and self.filed_at > self.accepted_at.date()
+                and self.filed_at > _latest_edgar_filed_date(self.accepted_at)
             ):
                 raise QueryValidationError(
-                    "filing metadata provenance filed_at follows source acceptance"
+                    "filing metadata provenance filed_at follows the EDGAR filing date "
+                    "of source acceptance"
                 )
         if self.alias_priority is not None and (
             isinstance(self.alias_priority, bool)
@@ -1226,6 +1331,8 @@ class CellProvenance:
                 self.source_occurrence_ids,
                 self.dependency_cell_ids,
                 self.selected_raw_fact,
+                self.issuer_class,
+                self.issuer_class_basis,
             )
             if any(value not in (None, (), []) for value in excluded):
                 raise QueryValidationError("opaque provenance cannot expose receipt details")
@@ -1322,7 +1429,7 @@ class CellProvenance:
             )
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "kind": self.kind.value,
             "evaluation_policy": (
                 self.evaluation_policy.value if self.evaluation_policy is not None else None
@@ -1382,6 +1489,14 @@ class CellProvenance:
             ),
             "reason": self.reason,
         }
+        # The issuer-class verdict is conditional: absent key <=> None <=>
+        # omitted on re-emit, so every receipt without a verdict keeps its
+        # exact historical bytes.
+        if self.issuer_class is not None:
+            payload["issuer_class"] = self.issuer_class
+        if self.issuer_class_basis is not None:
+            payload["issuer_class_basis"] = self.issuer_class_basis
+        return payload
 
     @classmethod
     def from_dict(cls, value: Mapping[str, Any]) -> "CellProvenance":
@@ -1643,13 +1758,17 @@ def _cell_provenance_from_dict(value: Any) -> CellProvenance:
             "dependency_cell_ids",
             "selected_raw_fact",
             "reason",
+            # Optional issuer-class verdict keys (S1-b): absent <=> None, so
+            # historical receipts replay unchanged and refusals parse back.
+            "issuer_class",
+            "issuer_class_basis",
         }
     )
     raw = _strict_wire_mapping(
         value,
         field_name="cell.provenance",
         allowed=allowed,
-        required=allowed,
+        required=allowed - {"issuer_class", "issuer_class_basis"},
     )
     selected = (
         _raw_fact_from_dict(raw["selected_raw_fact"])
@@ -1779,7 +1898,9 @@ class CellNode:
                 raise QueryValidationError("value cells require a unit")
         else:
             if self.value is not None:
-                raise QueryValidationError("missing/not_evaluable cells cannot contain a value")
+                raise QueryValidationError(
+                    "missing/not_evaluable/not_applicable cells cannot contain a value"
+                )
             parsed_value = None
         metric_id = _require_text(self.metric_id, field_name="metric_id")
         entity_id = _require_text(self.entity_id, field_name="entity_id")
@@ -1788,7 +1909,9 @@ class CellNode:
         if state is CellState.VALUE and reason is not None:
             raise QueryValidationError("value cells cannot carry a reason")
         if state is not CellState.VALUE and reason is None:
-            raise QueryValidationError("missing/not_evaluable cells require a reason")
+            raise QueryValidationError(
+                "missing/not_evaluable/not_applicable cells require a reason"
+            )
         if reason != self.provenance.reason:
             raise QueryValidationError("cell reason must exactly match provenance.reason")
         if state is CellState.VALUE:
@@ -2208,7 +2331,11 @@ def _enforce_matrix_wire_budget(
         "proof_scope": RECEIPT_PROOF_SCOPE,
         "selection_proof": RECEIPT_SELECTION_PROOF,
         "policy": policy.to_dict(),
-        "entities": [item.to_dict() for item in entities],
+        # Mirror the wire form exactly (identity-only entities; see
+        # MetricMatrix._unsigned_dict).
+        "entities": [
+            {"ticker": item.ticker, "entity_id": item.entity_id} for item in entities
+        ],
         "metric_ids": list(metric_ids),
         "periods": [item.to_dict() for item in periods],
         "governance_bundle": governance_bundle.to_dict(),
@@ -2647,12 +2774,92 @@ def _validate_period_rejection_provenance(
         )
 
 
+def _validate_qualification_refusal_provenance(
+    provenance: CellProvenance,
+    *,
+    allow_mapping_inventory: bool,
+) -> None:
+    """A qualification refusal occurs before any source evidence is read.
+
+    Mirrors :func:`_validate_period_rejection_provenance` for the S1-b issuer
+    stage.  ``issuer_class``/``issuer_class_basis`` are the refusal's own
+    printed verdict and are explicitly allowed here; everything source-shaped
+    is forbidden.
+    """
+    forbidden = (
+        provenance.source_entity_id,
+        provenance.source,
+        provenance.accession,
+        provenance.document_id,
+        provenance.source_url,
+        provenance.source_body_sha256,
+        provenance.form,
+        provenance.filed_at,
+        provenance.filing_metadata_available_at,
+        provenance.filing_metadata_content_sha256,
+        provenance.accepted_at,
+        provenance.recorded_at,
+        provenance.mapping_available_at,
+        provenance.computed_at,
+        provenance.published_at,
+        provenance.source_ready_at,
+        provenance.system_ready_at,
+        provenance.concept_qname,
+        provenance.taxonomy,
+        provenance.concept,
+        provenance.unit,
+        provenance.mapping_rule_id,
+        provenance.mapping_rule_version,
+        provenance.mapping_digest,
+        provenance.alias_priority,
+        provenance.source_occurrence_ids,
+        provenance.dependency_cell_ids,
+        provenance.selected_raw_fact,
+    )
+    if any(value not in (None, (), []) for value in forbidden):
+        raise QueryValidationError(
+            "qualification refusal provenance must be governance-only"
+        )
+    if not allow_mapping_inventory and any(
+        value
+        for value in (
+            provenance.mapping_rule_ids,
+            provenance.mapping_rule_versions,
+            provenance.mapping_digests,
+        )
+    ):
+        raise QueryValidationError(
+            "qualification refusal provenance must be governance-only"
+        )
+    # Bind the printed verdict to the refusal reason: a class-based refusal
+    # must name the class it determined; an unknown-class refusal cannot.
+    expected_class_present = provenance.reason == "not_applicable_for_issuer_class"
+    if (provenance.issuer_class is not None) is not expected_class_present:
+        raise QueryValidationError(
+            "qualification refusal issuer-class receipt does not match its reason"
+        )
+
+
 _DIRECT_SOURCELESS_NON_VALUE_OUTCOMES = {
     "no governed concept alias applies to the requested taxonomy period": CellState.MISSING,
     "missing_standard_fact: no governed concept alias supplied an exact eligible source interval": CellState.MISSING,
     "no eligible explicitly typed reported revision vintage": CellState.MISSING,
     "ambiguous governed alias priorities across visible mapping rules": CellState.NOT_EVALUABLE,
     "visible source history exceeds the synchronous per-cell bound": CellState.NOT_EVALUABLE,
+    # Metric-qualification issuer refusals (S1-b) are governance-only verdicts
+    # emitted before any source evidence is read.  The denominator refusal
+    # reasons carry a dynamic ``:<input_id>`` suffix and can only attach to
+    # formula nodes (direct contracts carry no denominator constraints), so
+    # they live in the formula-side recompute, not in these closed tables.
+    "not_applicable_for_issuer_class": CellState.NOT_APPLICABLE,
+    "issuer_class_unknown": CellState.NOT_EVALUABLE,
+}
+# The exact-match table the pre-source qualification branches dispatch on;
+# kept separate from the outcome tables above so the branch can also bind the
+# issuer-class receipt fields to the refusal reason.
+_QUALIFICATION_ISSUER_REFUSAL_OUTCOMES = {
+    "not_applicable_for_issuer_class": CellState.NOT_APPLICABLE,
+    "issuer_class_unknown": CellState.NOT_EVALUABLE,
 }
 _DIRECT_ALIAS_EVIDENCE_NON_VALUE_OUTCOMES = {
     "selected source vintage is withdrawn": CellState.MISSING,
@@ -2882,6 +3089,24 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
         ):
             raise QueryValidationError("direct period rejection does not match governance")
         return
+    qualification_state = _QUALIFICATION_ISSUER_REFUSAL_OUTCOMES.get(node.reason or "")
+    if qualification_state is not None:
+        # S1-b issuer-stage refusal: governance-only verdict emitted before
+        # any alias or source evidence is consulted.
+        _validate_qualification_refusal_provenance(
+            provenance,
+            allow_mapping_inventory=True,
+        )
+        if (
+            node.state is not qualification_state
+            or node.value is not None
+            or node.unit != (contract.units[0] if contract.units else None)
+            or provenance.selected_raw_fact is not None
+        ):
+            raise QueryValidationError(
+                "direct qualification refusal does not match governance"
+            )
+        return
     applicable_aliases = _applicable_direct_alias_identities(contract, node.period)
     has_ambiguous_priorities = _has_ambiguous_direct_alias_priorities(
         applicable_aliases
@@ -2995,10 +3220,52 @@ def _validate_direct_node(node: CellNode, contract: MetricContract) -> None:
         raise QueryValidationError("selected raw fact dimensions violate metric contract")
 
 
+def _expected_denominator_refusal(
+    dependencies: Sequence[CellNode],
+    formula: FormulaRule,
+) -> tuple[CellState, str] | None:
+    """Replay parity for the kernel's pre-triage denominator stage (S1-b).
+
+    Mirrors ``qualify_metric``'s constraint loop over the dependency nodes: a
+    declared denominator that is not a VALUE dependency counts as missing; a
+    non-positive VALUE dependency is an applicability refusal.  The first
+    failing input decides (single ``<input_id>``, no joining).
+    """
+    inputs = {
+        item.metric_id: (item.value if item.state is CellState.VALUE else None)
+        for item in dependencies
+    }
+    for input_id in formula.denominator_constraints:
+        value = inputs[input_id] if input_id in inputs else None
+        if value is None:
+            return CellState.NOT_EVALUABLE, f"denominator_missing:{input_id}"
+        if value <= 0:
+            return CellState.NOT_APPLICABLE, f"denominator_not_positive:{input_id}"
+    return None
+
+
 def _expected_formula_outcome(
     dependencies: Sequence[CellNode],
     formula: FormulaRule,
 ) -> tuple[CellState, Decimal | None, str | None]:
+    # Denominator qualification runs before the dependency triage, exactly as
+    # the kernel's _evaluate_formula stage does, so a constraint-named
+    # denominator that is missing or non-positive wins over the generic
+    # dependency vocabulary below.
+    refusal = _expected_denominator_refusal(dependencies, formula)
+    if refusal is not None:
+        return refusal[0], None, refusal[1]
+    not_applicable = [item for item in dependencies if item.state is CellState.NOT_APPLICABLE]
+    if not_applicable:
+        return (
+            CellState.NOT_APPLICABLE,
+            None,
+            "not_applicable_dependency: "
+            + ", ".join(
+                f"{item.metric_id} ({item.reason or 'not_applicable'})"
+                for item in not_applicable
+            ),
+        )
     not_evaluable = [item for item in dependencies if item.state is CellState.NOT_EVALUABLE]
     if not_evaluable:
         return (
@@ -3074,6 +3341,25 @@ def _validate_formula_node(
             or node.unit != formula.output_unit
         ):
             raise QueryValidationError("formula period rejection does not match governance")
+        return
+    qualification_state = _QUALIFICATION_ISSUER_REFUSAL_OUTCOMES.get(node.reason or "")
+    if qualification_state is not None:
+        # S1-b issuer-stage refusal on a formula metric: the verdict fires in
+        # _evaluate before any dependency is assembled, so the receipt is
+        # governance-only and pre-dependency by construction.
+        _validate_qualification_refusal_provenance(
+            node.provenance,
+            allow_mapping_inventory=False,
+        )
+        if (
+            node.state is not qualification_state
+            or node.value is not None
+            or node.unit != (contract.units[0] if contract.units else None)
+            or node.provenance.dependency_cell_ids
+        ):
+            raise QueryValidationError(
+                "formula qualification refusal does not match governance"
+            )
         return
     provenance = node.provenance
     if provenance.unit != formula.output_unit:
@@ -3413,7 +3699,14 @@ class MetricMatrix:
             "proof_scope": self.proof_scope,
             "selection_proof": self.selection_proof,
             "policy": self.policy.to_dict(),
-            "entities": [item.to_dict() for item in self.entities],
+            # Identity fields only: the matrix hash and its wire form bind
+            # ticker/entity_id membership.  An issuer SIC is an evaluation
+            # input (like the policy clocks), visible through the cells when
+            # it changes an outcome and byte-inert when it does not.
+            "entities": [
+                {"ticker": item.ticker, "entity_id": item.entity_id}
+                for item in self.entities
+            ],
             "metric_ids": list(self.metric_ids),
             "periods": [item.to_dict() for item in self.periods],
             "governance_bundle": self.governance_bundle.to_dict(),
@@ -3632,6 +3925,9 @@ class MetricMatrix:
                 "confidence",
                 "source_occurrence_ids",
                 "dependency_cell_ids",
+                "provenance_kind",
+                "document_id",
+                "filing_metadata_content_sha256",
             )
         )
         for cell in self.cells:
@@ -3679,6 +3975,9 @@ class MetricMatrix:
                 provenance.confidence or "",
                 canonical_json(list(provenance.source_occurrence_ids)),
                 canonical_json(list(provenance.dependency_cell_ids)),
+                provenance.kind.value,
+                provenance.document_id or "",
+                provenance.filing_metadata_content_sha256 or "",
             )
             writer.writerow(
                 tuple(value if index == 15 else _csv_safe(value) for index, value in enumerate(row))
@@ -3990,7 +4289,17 @@ class BitemporalMetricQueryEngine:
         entities: Mapping[str, str] | Iterable[QueryEntity] = (),
         filing_metadata: Mapping[str, FilingMetadata | Mapping[str, Any]] | None = None,
         bounds: QueryBounds | None = None,
+        lineage_evidence: Iterable[LineageEvidenceReceipt] = (),
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None = None,
     ) -> None:
+        # FIF A01/A11: the original Clark namespace per (accession,
+        # source_occurrence_key), read from the source filings by the same
+        # helper the mint path uses.  When supplied, a lineage receipt's
+        # attested taxonomy URI pair must equal the source's, so a forgery
+        # that swaps both URIs to another approved namespace (with a
+        # recomputed receipt_id) fails closed.  Absent keeps the receipt's
+        # policy-gated attestation as the only URI evidence.
+        self._source_taxonomy_uris = self._freeze_source_taxonomy_uris(source_taxonomy_uris)
         if isinstance(ledger, RawFactLedger):
             self.ledger = ledger
         else:
@@ -4064,6 +4373,71 @@ class BitemporalMetricQueryEngine:
         self._parent_by_occurrence_id = MappingProxyType(parent_by_id)
         self._lineage_by_occurrence_id = MappingProxyType(lineage_by_id)
         self._filing_metadata_by_occurrence = self._freeze_filing_metadata(filing_metadata)
+        # FIF-3A4 cross-filing lineage.  Absent/empty is the FIF-3A3 contract
+        # and must stay byte-identical, so nothing below runs for an empty
+        # bundle.  The ledger itself is untouched: receipts point at unchanged
+        # FILED occurrences and never enter ``self.ledger.events``.
+        self._confirmations_by_logical_key = self._admit_lineage_evidence(lineage_evidence)
+        self._effective_root_cache: dict[
+            tuple[str, datetime, datetime], Mapping[str, str]
+        ] = {}
+
+    @staticmethod
+    def _freeze_source_taxonomy_uris(
+        source_taxonomy_uris: Mapping[tuple[str, str], str] | None,
+    ) -> Mapping[tuple[str, str], str] | None:
+        if source_taxonomy_uris is None:
+            return None
+        if not isinstance(source_taxonomy_uris, Mapping):
+            raise LineageEvidenceError("source_taxonomy_uris must be a mapping")
+        frozen: dict[tuple[str, str], str] = {}
+        for key, uri in source_taxonomy_uris.items():
+            if (
+                not isinstance(key, tuple)
+                or len(key) != 2
+                or not all(isinstance(part, str) for part in key)
+                or not isinstance(uri, str)
+            ):
+                raise LineageEvidenceError(
+                    "source_taxonomy_uris maps (accession, source_occurrence_key) to a URI"
+                )
+            frozen[key] = uri
+        return MappingProxyType(frozen)
+
+    def _taxonomy_uris_match_source(
+        self,
+        parent_representative: RawFactOccurrence,
+        child_representative: RawFactOccurrence,
+        evidence: Mapping[str, Any],
+    ) -> bool:
+        """Whether the receipt's URI pair is the source's own namespace pair.
+
+        Without a source map the receipt's policy-gated attestation is the
+        only URI evidence and this is vacuously true.  With one, both
+        representatives must have a source namespace, those must agree (the
+        guard-11 rule the mint applied), and the receipt must carry exactly
+        that namespace on both sides.
+        """
+        if self._source_taxonomy_uris is None:
+            return True
+        parent_uri = self._source_taxonomy_uris.get(
+            (
+                parent_representative.source.accession,
+                parent_representative.source_occurrence_key or "",
+            )
+        )
+        child_uri = self._source_taxonomy_uris.get(
+            (
+                child_representative.source.accession,
+                child_representative.source_occurrence_key or "",
+            )
+        )
+        if not parent_uri or parent_uri != child_uri:
+            return False
+        return (
+            evidence.get("parent_taxonomy_uri") == parent_uri
+            and evidence.get("child_taxonomy_uri") == child_uri
+        )
 
     @staticmethod
     def _normalize_entities(
@@ -4090,11 +4464,20 @@ class BitemporalMetricQueryEngine:
             if isinstance(item, QueryEntity):
                 entity = item
             elif isinstance(item, Mapping):
+                # The optional ``issuer_sic`` wire key widens the allowed set
+                # only when the mapping actually carries it (one keyed probe;
+                # ``Mapping.__contains__`` reads no iterator items).  A
+                # sic-less entity therefore parses against exactly the
+                # historical two-key allowance, hostile-iterator bound
+                # included.
+                entity_allowed = frozenset({"ticker", "entity_id"})
+                if "issuer_sic" in item:
+                    entity_allowed = entity_allowed | {"issuer_sic"}
                 entity = QueryEntity(
                     **_strict_wire_mapping(
                         item,
                         field_name="entity",
-                        allowed=frozenset({"ticker", "entity_id"}),
+                        allowed=entity_allowed,
                         required=frozenset({"ticker", "entity_id"}),
                     )
                 )
@@ -4407,8 +4790,10 @@ class BitemporalMetricQueryEngine:
                         "filing metadata available_at cannot precede source acceptance"
                     )
                 if metadata.filed_at is not None and fact.accepted_at is not None:
-                    if metadata.filed_at > fact.accepted_at.date():
-                        raise QueryValidationError("filing metadata filed_at follows source acceptance")
+                    if metadata.filed_at > _latest_edgar_filed_date(fact.accepted_at):
+                        raise QueryValidationError(
+                            "filing metadata filed_at follows the EDGAR filing date of source acceptance"
+                        )
                 existing = frozen.get(fact.occurrence_id)
                 if existing is not None and existing != metadata:
                     raise QueryValidationError(
@@ -4420,7 +4805,12 @@ class BitemporalMetricQueryEngine:
     def _entity_for(self, ticker: str | QueryEntity) -> QueryEntity:
         if isinstance(ticker, QueryEntity):
             known = self._entities.get(ticker.ticker)
-            if known is not None and known != ticker:
+            # Identity fields only: a caller-supplied entity may carry an
+            # issuer SIC the engine map lacks; identity decides the match and
+            # the caller's (richer) entity wins evaluation.
+            if known is not None and (
+                known.ticker != ticker.ticker or known.entity_id != ticker.entity_id
+            ):
                 raise QueryValidationError(f"ticker maps to a different entity_id: {ticker.ticker}")
             return ticker
         normalized = _require_text(ticker, field_name="ticker").upper()
@@ -4856,6 +5246,60 @@ class BitemporalMetricQueryEngine:
             )
             cache[cache_key] = result
             return result
+        # Issuer qualification stage (S1-b): the pure applicability gate from
+        # the metric registry, fired after contract resolution and before any
+        # cycle guard, dispatch, or source read.  Default-inert by
+        # construction — an empty class policy admits every issuer, and
+        # formula=None keeps the denominator branch out of this stage (the
+        # formula is qualified in _evaluate_formula once its dependency values
+        # exist).  Period-first precedence: the receipt validators weigh a
+        # period-contract rejection above an issuer-class refusal, so when the
+        # requested period violates the contract this stage stands down and
+        # the direct/formula period-rejection paths below emit the cell.
+        issuer_class = (
+            issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
+        )
+        qualification = (
+            None
+            if self._period_contract_error(contract, period) is not None
+            else qualify_metric(contract, None, issuer_class, {})
+        )
+        if qualification is not None and qualification.state != "applicable":
+            reason = qualification.reason
+            provenance_overrides: dict[str, Any] = {}
+            if issuer_class is not None:
+                provenance_overrides["issuer_class"] = issuer_class
+                provenance_overrides[
+                    "issuer_class_basis"
+                ] = contract.applicability.issuer_class_basis
+            result = self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=metric_id,
+                period=period,
+                state=(
+                    CellState.NOT_APPLICABLE
+                    if qualification.state == "not_applicable"
+                    else CellState.NOT_EVALUABLE
+                ),
+                value=None,
+                unit=contract.units[0] if contract.units else None,
+                provenance=self._base_provenance(
+                    projection,
+                    policy,
+                    contract,
+                    kind=(
+                        ProvenanceKind.FORMULA
+                        if metric_id in projection.formulas_by_metric
+                        else ProvenanceKind.DIRECT
+                    ),
+                    reason=reason,
+                    **provenance_overrides,
+                ),
+                reason=reason,
+            )
+            cache[cache_key] = result
+            return result
         if metric_id in stack:
             # Registry construction rejects formula cycles; retain a safe guard
             # here so a hand-built registry cannot recurse forever.
@@ -4999,6 +5443,477 @@ class BitemporalMetricQueryEngine:
         # absence is not a retained negative metadata artifact: emit no digest
         # or availability clock until an explicitly bound witness is visible.
         return None
+
+    def _admit_lineage_evidence(
+        self,
+        lineage_evidence: Iterable[LineageEvidenceReceipt],
+    ) -> Mapping[str, tuple[LineageEvidenceReceipt, ...]]:
+        """Fail-closed admission of a runtime cross-filing lineage bundle.
+
+        Sol amendment 6: runtime evidence carries **only accepted positive
+        immutable relations**.  A refusal row, a non-confirmation relation, a
+        receipt for a fact this ledger does not contain, or a duplicated
+        parent/child edge is a malformed provider, not a smaller answer.
+        """
+        if isinstance(lineage_evidence, (str, bytes, bytearray)):
+            raise LineageEvidenceError("lineage_evidence must be a bounded collection")
+        receipts = _bounded_collection(
+            lineage_evidence,
+            field_name="lineage_evidence",
+            maximum=MAX_LINEAGE_RECEIPTS,
+        )
+        if not receipts:
+            return MappingProxyType({})
+        by_key: dict[str, list[LineageEvidenceReceipt]] = {}
+        seen_edges: set[tuple[str, str]] = set()
+        for receipt in receipts:
+            if not isinstance(receipt, LineageEvidenceReceipt):
+                raise LineageEvidenceError("lineage_evidence must contain receipts")
+            if not receipt.is_positive_confirmation:
+                raise LineageEvidenceError(
+                    "runtime lineage evidence admits accepted positive relations only"
+                )
+            edge = (receipt.parent_occurrence_id, receipt.child_occurrence_id)
+            if edge in seen_edges:
+                raise LineageEvidenceError("duplicate lineage evidence edge")
+            seen_edges.add(edge)
+            parent = self._event_by_occurrence_id.get(receipt.parent_occurrence_id)
+            child = self._event_by_occurrence_id.get(receipt.child_occurrence_id)
+            if parent is None or child is None:
+                raise LineageEvidenceError("lineage evidence references an unknown occurrence")
+            if parent.logical_key != receipt.logical_key or child.logical_key != receipt.logical_key:
+                raise LineageEvidenceError("lineage evidence logical_key does not bind its facts")
+            # The full per-accession groups the mint path groups by — the
+            # same groups the envelope pin and the payload bind re-derive
+            # from below, never a cutoff-filtered subset.
+            parent_group = self._accession_group(parent)
+            child_group = self._accession_group(child)
+            # FIF T1b: pin the receipt ENVELOPE before any payload work.  A
+            # correctly recomputed digest over genuine evidence still says
+            # nothing about the envelope around it: a backdated
+            # ``system_available_at`` (below the mint floor) or a foreign
+            # rule id/version would make the receipt visible under policies
+            # where the honest mint is not, flipping lineage answers.  The
+            # named refusal is an engine-level diagnostic, never a response
+            # body, and admission fail-closes the whole provider bundle.
+            envelope_refusal = receipt_envelope_refusal(receipt, parent_group, child_group)
+            if envelope_refusal is not None:
+                raise LineageEvidenceError(
+                    "lineage evidence envelope is not the one the current rule "
+                    f"mints ({envelope_refusal})"
+                )
+            evidence = receipt.positive_evidence or {}
+            # FIF A01/A11: with a source namespace map, the attested URI
+            # pair must be the source's, keyed exactly as the mint keyed it
+            # (the canonical representative of each full group).
+            if not self._taxonomy_uris_match_source(
+                _canonical_duplicate_representative(parent_group),
+                _canonical_duplicate_representative(child_group),
+                evidence,
+            ):
+                raise LineageEvidenceError(
+                    "lineage evidence taxonomy namespace is not the source's "
+                    f"({REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE})"
+                )
+            # FIF T1: bind the WHOLE payload, not just the edge.  A receipt
+            # digest only proves internal self-consistency, so a forged
+            # bundle with a correctly recomputed receipt_id must still equal
+            # what the canonical builder reconstructs from THIS ledger before
+            # it is ever visible to a selection.  Admission has no policy, so
+            # the groups are the full per-accession groups the constructor
+            # can already resolve here; the cutoff-filtered re-derivation
+            # runs per query in ``_receipt_still_proves_confirmation``.  The
+            # taxonomy URI pair is the mint-time attestation the canonical
+            # ledger cannot re-derive, reconstructed in its canonical equal
+            # form so a one-sided URI edit is an evidence mismatch too.
+            expected = self._expected_positive_evidence(
+                parent_group,
+                child_group,
+                common_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
+            )
+            if _freeze_evidence(expected) != receipt.positive_evidence:
+                raise LineageEvidenceError(
+                    "lineage evidence positive payload does not match the current "
+                    f"ledger ({REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE})"
+                )
+            # Re-prove the edge against the ledger now, not only per query. A
+            # bundle assembled without ``derive_confirmation_receipts`` cannot
+            # smuggle in an edge the v1 rule would never have minted.
+            if evaluate_confirmation(
+                parent_group,
+                child_group,
+                parent_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
+                child_taxonomy_uri=evidence.get("child_taxonomy_uri"),
+                require_taxonomy_uri=True,
+            ) is not None:
+                raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
+            by_key.setdefault(receipt.logical_key, []).append(receipt)
+        for key, values in by_key.items():
+            versions = {receipt.evidence_rule_version for receipt in values}
+            if len(versions) != 1:
+                raise LineageEvidenceError(
+                    "lineage evidence mixes confirmation rule versions for one logical key"
+                )
+            if values[0].evidence_rule_version != CONFIRMATION_CHAIN_RULE_VERSION:
+                accessions: set[str] = set()
+                for receipt in values:
+                    for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                        accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+                if len(accessions) > 2:
+                    # v1 admits exactly one parent and one child per logical key.
+                    # Chained receipts across three filings have no unique parent.
+                    raise LineageEvidenceError(
+                        "lineage evidence spans more than two filings for one logical key"
+                    )
+                continue
+            # FIF S2 (A05): the versioned v2 chain rule admits 3+ filings of one
+            # logical key, but only as ONE strictly ordered adjacent path over
+            # every filing the ledger holds for the key — L is rebuilt from the
+            # dataset's own events via ``_event_by_occurrence_id``.  A skip
+            # edge, a fork, a cycle, or a missing accession is a malformed
+            # provider, not a smaller answer.
+            chain_by_accession: dict[str, list[RawFactOccurrence]] = {}
+            for event in self._event_by_occurrence_id.values():
+                if event.logical_key == key:
+                    chain_by_accession.setdefault(event.source.accession, []).append(event)
+            _times, ordered_accessions = _chain_accepted_by_accession(
+                chain_by_accession
+            )
+            if (
+                len(chain_by_accession) < 3
+                or ordered_accessions is None
+                or len(values) != len(chain_by_accession) - 1
+            ):
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
+                )
+            edge_pairs = sorted(
+                (
+                    self._event_by_occurrence_id[receipt.parent_occurrence_id].source.accession,
+                    self._event_by_occurrence_id[receipt.child_occurrence_id].source.accession,
+                )
+                for receipt in values
+            )
+            expected_pairs = sorted(
+                (ordered_accessions[index], ordered_accessions[index + 1])
+                for index in range(len(ordered_accessions) - 1)
+            )
+            if edge_pairs != expected_pairs:
+                raise LineageEvidenceError(
+                    "chain lineage evidence must form one strictly ordered path "
+                    "across every filing of its logical key"
+                )
+        return MappingProxyType(
+            {
+                key: tuple(sorted(values, key=lambda item: item.receipt_id))
+                for key, values in by_key.items()
+            }
+        )
+
+    def _accession_group(
+        self,
+        fact: RawFactOccurrence,
+    ) -> tuple[RawFactOccurrence, ...]:
+        """Every occurrence of this fact's logical key inside its own filing."""
+        key = (fact.source.entity_id, fact.concept_qname, _fact_period_index_key(fact))
+        return tuple(
+            item
+            for item in self._events_by_entity_qname_period.get(key, ())
+            if item.source.accession == fact.source.accession
+            and item.logical_key == fact.logical_key
+        )
+
+    def applied_lineage_evidence(
+        self,
+        matrix: MetricMatrix,
+    ) -> tuple[LineageEvidenceReceipt, ...]:
+        """Confirmation receipts that actually support this matrix's answers.
+
+        Read-only and idempotent: it re-derives eligibility under the matrix's
+        own policy rather than recording hidden state during evaluation. The
+        result is the honest answer to "which other filing supports this
+        number", and it is deliberately **not** folded into
+        ``source_occurrence_ids`` — that tuple feeds revision-adjacent packet
+        machinery, and a confirmation is lineage, never a reported revision.
+        """
+        if not self._confirmations_by_logical_key:
+            return ()
+        policy = matrix.policy
+        selected: set[str] = set()
+        for cell in matrix.cells:
+            provenance = getattr(cell, "provenance", None)
+            if provenance is None or cell.state is not CellState.VALUE:
+                continue
+            selected.update(provenance.source_occurrence_ids or ())
+        if not selected:
+            return ()
+        applied: dict[str, LineageEvidenceReceipt] = {}
+        for occurrence_id in sorted(selected):
+            fact = self._event_by_occurrence_id.get(occurrence_id)
+            if fact is None:
+                continue
+            for receipt in self._confirmations_by_logical_key.get(fact.logical_key, ()):
+                if occurrence_id not in (
+                    receipt.parent_occurrence_id,
+                    receipt.child_occurrence_id,
+                ):
+                    continue
+                if self._receipt_still_proves_confirmation(receipt, policy) is not None:
+                    continue
+                applied[receipt.receipt_id] = receipt
+        return tuple(applied[key] for key in sorted(applied))
+
+    def _expected_positive_evidence(
+        self,
+        parent_group: Sequence[RawFactOccurrence],
+        child_group: Sequence[RawFactOccurrence],
+        *,
+        common_taxonomy_uri: str | None,
+    ) -> Mapping[str, Any]:
+        """The canonical positive-evidence payload the current groups carry.
+
+        FIF T1: a receipt's internal digest proves only self-consistency,
+        never that its source fields still describe the current eligible
+        ledger.  This rebuilds the expected payload with the canonical
+        builder from ``lineage_evidence`` — the same builder
+        ``derive_confirmation_receipts`` minted the receipt with — so the
+        comparisons in admission and in ``_receipt_still_proves_confirmation``
+        bind all eighteen fields to live facts.
+
+        The two ``*_taxonomy_uri`` fields are the one thing the canonical
+        ledger cannot re-derive (it retains ``us-gaap:Assets``, not the
+        original Clark namespace), so the caller passes the receipt's
+        attested URI, which is only reached after that URI has passed the
+        guard-11 namespace gauntlet.  Guard 11 mints both URI fields from one
+        original namespace and requires them equal, so the canonical expected
+        form carries that one common URI on both sides; a receipt that edited
+        only one of the two fields fails the payload equality instead of
+        merely the namespace check.
+        """
+        return _positive_evidence_payload(
+            parent_group,
+            child_group,
+            parent_taxonomy_uri=common_taxonomy_uri,
+            child_taxonomy_uri=common_taxonomy_uri,
+        )
+
+    def _receipt_still_proves_confirmation(
+        self,
+        receipt: LineageEvidenceReceipt,
+        policy: QueryPolicy,
+    ) -> str | None:
+        """Re-prove a receipt against live facts and both cutoffs.
+
+        A receipt is an assertion about source facts, never a cached answer.
+        Every query re-derives guards 1-10 and 12 from the current ledger and
+        re-checks the receipt's asserted evidence against it, so mutating a
+        confirmed value refuses the relation and restores the unlinked
+        ``NOT_EVALUABLE`` state instead of silently rescuing it.
+
+        Returns ``None`` while the receipt still proves its confirmation, else
+        the refusal reason the receipt is reported unavailable with.  The
+        reason is an engine-level diagnostic only and never enters a response
+        body.  Any mismatch between the receipt's positive evidence and the
+        current eligible ledger — accessions, document ids, source occurrence
+        keys, parsed value, accuracy tokens, dimensional scope, nil state,
+        clocks, concept, or the attested namespace pair — is classified
+        ``evidence_does_not_match_source``.  A receipt whose envelope is not
+        the one the current rule mints — foreign rule id/version, or a system
+        availability backdated below the mint floor — is classified
+        ``receipt_rule_mismatch`` / ``receipt_system_availability_backdated``.
+        """
+        if receipt.source_known_at > policy.source_snapshot_at:
+            return REFUSAL_RECEIPT_NOT_YET_SOURCE_VISIBLE
+        if receipt.system_available_at > policy.recorded_at:
+            return REFUSAL_RECEIPT_NOT_YET_SYSTEM_AVAILABLE
+        parent = self._event_by_occurrence_id.get(receipt.parent_occurrence_id)
+        child = self._event_by_occurrence_id.get(receipt.child_occurrence_id)
+        if parent is None or child is None:
+            return REFUSAL_MISSING_OCCURRENCE
+        # A confirmation cannot make an otherwise invisible fact visible.
+        if not self._event_temporally_eligible(parent, policy):
+            return REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE
+        if not self._event_temporally_eligible(child, policy):
+            return REFUSAL_OCCURRENCE_NOT_TEMPORALLY_ELIGIBLE
+        evidence = receipt.positive_evidence or {}
+        parent_group = self._visible_accession_group(parent, policy)
+        child_group = self._visible_accession_group(child, policy)
+        # FIF T1b: pin the envelope against the SAME full groups the mint
+        # path groups by — never the cutoff-filtered subsets above, whose
+        # floor can only be weaker than the one the receipt was minted
+        # under.  Passing the policy cutoffs merely means the receipt is not
+        # claiming to be newer than the policy; it must additionally not be
+        # OLDER than the lawful floor, or the relation would be visible
+        # under policies the honest mint cannot serve.
+        envelope_refusal = receipt_envelope_refusal(
+            receipt,
+            self._accession_group(parent),
+            self._accession_group(child),
+        )
+        if envelope_refusal is not None:
+            return envelope_refusal
+        refusal = evaluate_confirmation(
+            parent_group,
+            child_group,
+            require_taxonomy_uri=False,
+        )
+        if refusal is not None:
+            return refusal
+        # Guard 11 (original source taxonomy namespace/version) is attested by
+        # the mint-time receipt because the canonical ledger does not retain the
+        # original Clark URI.  Re-prove that the facts the receipt was minted
+        # against are still exactly these facts.
+        representative = _canonical_duplicate_representative(child_group)
+        parent_representative = _canonical_duplicate_representative(parent_group)
+        parent_uri = evidence.get("parent_taxonomy_uri")
+        child_uri = evidence.get("child_taxonomy_uri")
+        if not parent_uri or parent_uri != child_uri:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # An attested URI is only believed when it is a policy-approved standard
+        # namespace whose prefix matches the concept the ledger still carries.
+        # Two matching but invented URIs are not evidence of anything.
+        if not _approved_taxonomy_uri(parent_uri, parent_representative.concept_qname):
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if not _approved_taxonomy_uri(child_uri, representative.concept_qname):
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if parent_representative.occurrence_id != receipt.parent_occurrence_id:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if representative.occurrence_id != receipt.child_occurrence_id:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # FIF A01/A11: a policy-approved URI pair is still only an
+        # attestation; with a source namespace map it must be the source's.
+        if not self._taxonomy_uris_match_source(
+            parent_representative, representative, evidence
+        ):
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("concept_qname") != representative.concept_qname:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("parsed_value") != decimal_text(representative.parsed_value):
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("decimals") != representative.decimals:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("precision") != representative.precision:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("is_nil") is not representative.is_nil:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("parent_accession") != parent_representative.source.accession:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if evidence.get("child_accession") != representative.source.accession:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        if receipt.source_known_at != max(
+            parent_representative.accepted_at, representative.accepted_at
+        ):
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        # FIF T1 full bind: after the identity, namespace and cutoff checks,
+        # the ENTIRE payload must still equal what the canonical builder
+        # reconstructs from the current eligible groups — including the fields
+        # the named checks above never reached (document ids, source
+        # occurrence keys, dimensions_known, the per-filing accepted/recorded
+        # clocks).  A forged payload with a correctly recomputed receipt_id —
+        # a valid digest over invented evidence — fails here.
+        expected = self._expected_positive_evidence(
+            parent_group,
+            child_group,
+            common_taxonomy_uri=parent_uri,
+        )
+        if _freeze_evidence(expected) != receipt.positive_evidence:
+            return REFUSAL_EVIDENCE_DOES_NOT_MATCH_SOURCE
+        return None
+
+    def _visible_accession_group(
+        self,
+        fact: RawFactOccurrence,
+        policy: QueryPolicy,
+    ) -> tuple[RawFactOccurrence, ...]:
+        """Every cutoff-visible occurrence of this fact's logical key in its filing."""
+        key = (fact.source.entity_id, fact.concept_qname, _fact_period_index_key(fact))
+        candidates = self._events_by_entity_qname_period.get(key, ())
+        return tuple(
+            item
+            for item in candidates
+            if item.source.accession == fact.source.accession
+            and item.logical_key == fact.logical_key
+            and self._event_temporally_eligible(item, policy)
+        )
+
+    def _effective_roots(
+        self,
+        logical_key: str,
+        policy: QueryPolicy,
+    ) -> Mapping[str, str]:
+        """Map a root duplicate-group key to its confirmation-unified root.
+
+        Two ``FILED`` groups joined by a cutoff-visible, still-provable
+        confirmation are one vintage family rather than two unlinked roots.
+        This is a general root-unification law keyed on evidence; no issuer,
+        accession, or metric is special-cased.
+        """
+        receipts = self._confirmations_by_logical_key.get(logical_key, ())
+        if not receipts:
+            return _EMPTY_ROOT_MAP
+        # FIF S2: admission proves the receipts of one key are
+        # version-homogeneous, so the first receipt names the rule the whole
+        # union-find below runs under.
+        chain_rule = receipts[0].evidence_rule_version == CONFIRMATION_CHAIN_RULE_VERSION
+        cache_key = (logical_key, policy.source_snapshot_at, policy.recorded_at)
+        cached = self._effective_root_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        parent_of: dict[str, str] = {}
+
+        def find(node: str) -> str:
+            root = node
+            while parent_of.get(root, root) != root:
+                root = parent_of[root]
+            while parent_of.get(node, node) != node:
+                parent_of[node], node = root, parent_of[node]
+            return root
+
+        def union(left: str, right: str) -> None:
+            a, b = find(left), find(right)
+            if a == b:
+                return
+            # Deterministic label: the lexicographically smallest member wins,
+            # so an effective root never depends on receipt ordering.
+            low, high = (a, b) if a < b else (b, a)
+            parent_of[high] = low
+
+        for receipt in receipts:
+            if self._receipt_still_proves_confirmation(receipt, policy) is not None:
+                continue
+            parent_meta = self._lineage_by_occurrence_id.get(receipt.parent_occurrence_id)
+            child_meta = self._lineage_by_occurrence_id.get(receipt.child_occurrence_id)
+            if parent_meta is None or child_meta is None:
+                continue
+            parent_of.setdefault(parent_meta.root_duplicate_group_key, parent_meta.root_duplicate_group_key)
+            parent_of.setdefault(child_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
+            union(parent_meta.root_duplicate_group_key, child_meta.root_duplicate_group_key)
+        resolved = {node: find(node) for node in parent_of}
+        # FIF S2: for a version-2 key keep every component.  Admission already
+        # proved the receipts are one strictly ordered adjacent path over
+        # every filing of the key, so a still-proving cutoff-visible subset is
+        # a union of contiguous sub-paths — no rounded or skip link can join a
+        # component, and unification can never outrun the admitted path.
+        if not chain_rule:
+            # v1 admits exactly one parent and one child. A component that has
+            # transitively accumulated a third filing has an ambiguous parent, so
+            # refuse the whole component rather than chaining across vintages: the
+            # cell then keeps the honest unlinked-vintage refusal. Widening this is
+            # a separately adjudicated v2 question, not an implementation detail.
+            sizes: dict[str, int] = {}
+            for label in resolved.values():
+                sizes[label] = sizes.get(label, 0) + 1
+            resolved = {
+                node: label for node, label in resolved.items() if sizes[label] <= 2
+            }
+        projection = MappingProxyType(resolved)
+        # Bounded even if an engine is pooled and callers vary cutoffs: the
+        # cache is a speed aid, never a correctness input, so evicting is safe.
+        if len(self._effective_root_cache) >= MAX_EFFECTIVE_ROOT_CACHE_ENTRIES:
+            self._effective_root_cache.clear()
+        self._effective_root_cache[cache_key] = projection
+        return projection
 
     def _event_temporally_eligible(
         self,
@@ -5154,10 +6069,23 @@ class BitemporalMetricQueryEngine:
 
         # Two visible roots have no attested revision relationship. Filing
         # time and hashes are not a source-fusion policy, so never infer one.
+        #
+        # FIF-3A4: a cutoff-visible, still-provable ``xbrl_confirmation``
+        # receipt is exactly such an explicit relationship. It unifies the two
+        # FILED roots into one effective root. It does not remint either
+        # occurrence, does not create a revision, and does not change depth, so
+        # AS_REPORTED still resolves to the earliest filed root and
+        # LATEST_RESTATED still finds no reported revision vintage.
+        effective_roots = self._effective_roots(next(iter(logical_keys)), policy)
         root_ids = {
-            self._lineage_by_occurrence_id[
-                item[3][0].occurrence_id
-            ].root_duplicate_group_key
+            effective_roots.get(
+                self._lineage_by_occurrence_id[
+                    item[3][0].occurrence_id
+                ].root_duplicate_group_key,
+                self._lineage_by_occurrence_id[
+                    item[3][0].occurrence_id
+                ].root_duplicate_group_key,
+            )
             for item in ordered
             if item[3]
         }
@@ -5782,6 +6710,65 @@ class BitemporalMetricQueryEngine:
                     cache,
                     stack=stack,
                 )
+            )
+        # Denominator qualification stage (S1-b): runs after the dependency
+        # cells are assembled and before the not_evaluable/missing triage, so
+        # a constraint-named denominator that could not be assembled (or is a
+        # non-positive VALUE) yields the explicit qualification vocabulary
+        # instead of the generic dependency vocabulary.  The issuer branch
+        # here re-passes deterministically: _evaluate already refused
+        # non-applicable issuers for this metric before dispatch.
+        denominator_inputs = {
+            dependency_id: (
+                cell.value if cell.state is CellState.VALUE else None
+            )
+            for dependency_id, cell in zip(formula.dependencies, dependency_cells)
+        }
+        issuer_class = (
+            issuer_class_for_sic(entity.issuer_sic) if entity.issuer_sic is not None else None
+        )
+        qualification = qualify_metric(contract, formula, issuer_class, denominator_inputs)
+        if qualification.state != "applicable":
+            reason = qualification.reason
+            return self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=contract.metric_id,
+                period=period,
+                state=(
+                    CellState.NOT_APPLICABLE
+                    if qualification.state == "not_applicable"
+                    else CellState.NOT_EVALUABLE
+                ),
+                value=None,
+                unit=formula.output_unit,
+                provenance=self._formula_provenance(
+                    projection, policy, contract, formula, dependency_cells, reason=reason
+                ),
+                dependency_cells=dependency_cells,
+                reason=reason,
+            )
+        not_applicable = [
+            item for item in dependency_cells if item.state is CellState.NOT_APPLICABLE
+        ]
+        if not_applicable:
+            reason = "not_applicable_dependency: " + ", ".join(
+                f"{item.metric_id} ({item.reason or 'not_applicable'})"
+                for item in not_applicable
+            )
+            return self._new_cell(
+                entity=entity,
+                governance_bundle=projection.governance_bundle,
+                metric_id=contract.metric_id,
+                period=period,
+                state=CellState.NOT_APPLICABLE,
+                value=None,
+                unit=formula.output_unit,
+                provenance=self._formula_provenance(
+                    projection, policy, contract, formula, dependency_cells, reason=reason
+                ),
+                dependency_cells=dependency_cells,
+                reason=reason,
             )
         not_evaluable = [item for item in dependency_cells if item.state is CellState.NOT_EVALUABLE]
         if not_evaluable:
