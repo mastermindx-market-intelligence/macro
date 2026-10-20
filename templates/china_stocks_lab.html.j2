@@ -179,7 +179,16 @@
 
   <!-- ── Page header ── -->
   <div class="pl-hd">
+    {% set sc_books = (scoreboard or [])|rejectattr('is_random')|list %}
+    {% set n_sc = sc_books|selectattr('status_badge.label_en', 'equalto', 'SCOREABLE')
+                          |list|length %}
+    {% set n_bk = sc_books|length %}
+    {% if n_sc %}
+    <p class="pl-eyebrow">{{ t('CN Pick Lab · Display-only', 'CN选股实验室 · 仅展示') }} · {{
+      t(n_sc ~ ' of ' ~ n_bk ~ ' books SCOREABLE', n_bk ~ '本书中' ~ n_sc ~ '本可评分') }}</p>
+    {% else %}
     <p class="pl-eyebrow">{{ t('CN Pick Lab · Display-only · ACCRUING', 'CN选股实验室 · 仅展示 · 累积中') }}</p>
+    {% endif %}
     <h1 class="pl-title">{{ t('A-Share Candidate Pick Engines', 'A股候选选股引擎') }}</h1>
     <p class="pl-sub">{{ t('20 shadow books running on forward ledgers — measured against a random-control yardstick and the CSI 300. Ruler: 21-session CSI 300 excess (T+1 fill, hl2 proxy). All data is display-only; nothing here drives live selection or gating.', '20个影子书在前向账本上运行 — 与随机控制基准和沪深300对比衡量。标尺：21节沪深300超额（T+1入场，最高最低均价代理）。所有数据仅供展示；这里没有任何内容会影响实时选股。') }}</p>
     {% if as_of %}<p class="pl-asof">{{ t('As of', '截至') }} {{ as_of }} · {{ t('Built', '生成时间') }} {{ built }}</p>{% endif %}
@@ -215,7 +224,7 @@
     {% endif %}
     <div class="sb-note">
       <b>{{ t('How to read this table:', '如何阅读此表：') }}</b>
-      {{ t('All 20 CN entry books measured against the Random Control yardstick (pinned at bottom) and CSI 300. ACCRUING = fewer than 25 fires across 3 months — do not act on these numbers yet. Store-dependent books (Block Discount, LHB Inst) show DATA GAP when the runner-local store is absent. The Chase Avoid book is an INVERSE book — expected negative excess. Do not treat Chase Avoid picks as buy signals.', '所有20本CN入场书均与随机控制基准（固定在底部）和沪深300对比。ACCRUING = 3个月内少于25次触发 — 暂不据此行动。依存数据的书（大宗折价、龙虎榜）在本地数据库缺失时显示数据缺失。追涨规避书是反向书 — 预期负超额。切勿将追涨规避选择视为买入信号。') }}
+      {{ t('All 20 CN entry books measured against the Random Control yardstick (pinned at bottom) and CSI 300. SCOREABLE = past the sample floor (at least 25 fires spanning 3+ calendar months and 6+ distinct fire dates): the numbers are descriptive summaries, not a verdict. ACCRUING = below that floor — do not act on these numbers yet. Store-dependent books (Block Discount, LHB Inst) show DATA GAP when the runner-local store is absent. The Chase Avoid book is an INVERSE book — expected negative excess. Do not treat Chase Avoid picks as buy signals.', '所有20本CN入场书均与随机控制基准（固定在底部）和沪深300对比。可评分 = 已过样本门槛（至少25次触发，跨越3个以上日历月，且有6个以上不同触发日）：数字仅为描述性汇总，并非结论。累积中 = 未达该门槛 — 暂不据此行动。依存数据的书（大宗折价、龙虎榜）在本地数据库缺失时显示数据缺失。追涨规避书是反向书 — 预期负超额。切勿将追涨规避选择视为买入信号。') }}
     </div>
     <div class="tbl-scroll">
       <table class="sb-tbl" aria-label="CN Scoreboard">

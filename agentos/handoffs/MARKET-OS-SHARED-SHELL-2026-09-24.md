@@ -5,10 +5,10 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: Remote e2d remains OPEN/disarmed after its historical green CI; ordinary local AE merge and conflict-free
-  N2 integration are complete. Tested source index39477 has three scope passes, focused packing pass,334deployment
-  passes and actual P0B closure. Proof commit/push/current hosted admission/render/served/public-beta acceptance
-  remain.
+state_before: Remote e2d remains OPEN and unarmed. The interrupted proof commit did not land; exact EOF repair and
+  ordinary N2 merge completed locally as140bd. Incoming main3b49 is now integrated in the original worktree; tested
+  index4e8952 has four actual CI scope/packing passes. New proof commit, same-branch push, hosted admission and
+  existing-owner publication remain.
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -70,6 +70,15 @@ changed:
     body
   what: Extend the same indexed proof pack with exact original receipts, red/green logs, source scripts and scoped
     reviews; retain prior historical bytes and global ownership.
+- path: .github/ci/legacy-jobs.yml; site/etfs.html; site/us_stocks.html; original incoming-main merge
+  what: Compose main3b49 into original140bd writer, preserve336 incoming jobs and both parent intents, resolve only
+    two actual generated conflicts through canonical normalized-parent three-way merge and existing page writer.
+    Add exactly three actual missing dependency paths in two exclusive jobs; no test ceiling, selector, command
+    or authority change.
+- path: research/market_os/evidence/shared-shell-continuation-20261019; existing handoff and workstream
+  what: Preserve all460 earlier indexed files/history, import actual interruption recovery/local commit/current
+    merge/test/host receipts, record browser certificate denial and current production baseline without attributing
+    external changes.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -245,6 +254,29 @@ verified:
     tests/test_deploy_update_self_heal.py with recorded isolated basetemp.
   result: 334PASS123.97s/exit0; six source hashes/index unchanged. Earlier MM_DATA_GUARD exit1 retained; bashsyntax
     and10isolatedheader cases reuse identicalbytes. Updater not executed.
+- claim: Current combined CI scope and packing gates passed on the frozen source index.
+  command: Existing four test_ci_pack.py nodes; actual wrapper macro-140bd-3b49-focused-process.py and observer
+    macro-140bd-3b49-focused-runner.py.
+  result: 4 passed in210.00s, exit0; index4e8952ea930e29d38874eee2c5ef60c5bc9fdaeb and source unchanged. Manifest
+    SHA47a1d4eed734197d066a4760eedc2c61ada5724b47f6be856352d3e11da064f4. No failure rows/weight edits needed. This
+    is local evidence, not hosted CI.
+- claim: Unchanged actual deployment and P0B producing evidence remains applicable.
+  command: macro-140bd-3b49-composition.py/.json compares source inputs and82 actual producing/output raw-SHA plus
+    staged-blob identities.
+  result: Deployment app/config/three test files unchanged from prior334-pass source; all82 P0B identities unchanged.
+    Existing128cases/16screens/closure reused, not regenerated. Public beta acceptance remains separate.
+- claim: Interruption effect reconciled and proof formatting repaired without losing evidence.
+  command: macro-ae3-5c2d-proof-finalize.py/.json and macro-ae3-5c2d-complete-merge.py/.json.
+  result: One new README terminal LF removed; raw reader3677bytes preserved losslessly asgzip; original whitespace
+    exit2 retained. Final tree de860bd0a15f83f9b530bd6c1fe7f932f078d5a6 committed locally as140bd with parents ae3/5c2d.
+    No interrupted finalizer or push had occurred.
+- claim: Current accepted beta and changed production baseline were observed read only.
+  command: macro-3b49-beta-health-20261020T1443.py/.json/.stdout.json and macro-3b49-runtime-baseline-reconciliation.json;
+    bounded independent review.
+  result: At14:42 betaA/accepted pointers/PID2427329/status tuple unchanged, active and no pending/stages. Production
+    now PID2975859/deploymentc1ea4ba; global owner matchesR93. Host Macro4b6 is one earnings-catalogue commit beyond3b49.
+    Current Caddy/updater match incoming source; no host mutation or actor attribution. Strict public TLS exits60;
+    browser acceptance denied on certificate mismatch.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -259,25 +291,21 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Programme OPEN. RemoteH remains disarmed; localAE plus pendingN2 ordinary merge awaits proof commit/push and current-head
-  hosted CI/review.
-- Original R93 betaA recovery/runtime/filesystem acceptance is complete. No bootstrap or Terminal859 repeat. Refresh
-  historical host baseline before Macro arming.
-- Public DNS/TLS/auth/browser/errors/isolation/applicable recovery remain unaccepted. DNSPod sign-in is a human
-  boundary; no credential or TLS workaround.
-- Incumbent hosted MOG, existing covering renderer and macro-update own landing/publication. Do not push while armed
-  or create another owner.
-- Sector six views and sector-to-basket remain; Paper REVISE, C4 SPEC_ONLY/UNAPPLIED/UNRUN, historical About/CSS
-  limitations disclosed.
+- Original PR7949 publication of this merged/proof candidate, exact new-head hosted authority and MOG owner predicate,
+  original render scope=all output and actual macro-update served-tree proof remain.
+- Current production baseline differs from prior history. Before release arm, refresh healthy beta tuple and action-boundary
+  production/owner observations through read-only gates; do not reuse stale production PID/hash assertions.
+- Public beta still resolves through the old EdgeOne CNAME and fails certificate hostname verification. DNSPod sign-in
+  is incomplete; canonical DNS/TLS repair is required for public acceptance. No TLS/browser bypass.
+- Actual public auth/session/history/responsive acceptance and applicable first-install/rollback acceptance remain.
+  Preserve six-view Sector Central while Paper REVISE; C4 overlay suggestions SPEC_ONLY/UNAPPLIED/UNRUN.
 next_actions:
-- Validate existing records/proof and finish ordinary N2 merge; push the same branch while unarmed, then inspect
-  exact-head hosted CI/review and repair only concrete failures.
-- Refresh beta/production health, DNS and current owner hold/admission facts; arm incumbent MOG LAST after concluded
-  exact-head admission.
-- Consume actual landing, covering existing render and generated-main commit, then macro-update installed/generated/served
-  source and header identities.
-- Complete authorized DNSPod login/cutover and public TLS/auth/responsive/history/keyboard/error/isolation/applicable
-  recovery acceptance, persisting actual results in the original checkpoint.
+- Finish original proof/AgentOS/template/P0B/whitespace gates and ordinary3b49 merge commit, push the same branch
+  while unarmed, then attend exact-head hosted CI and fix concrete failures.
+- Use incumbent MOG only after its current clean predicate/hold release/fresh beta gates; attend actual protected
+  landing, existing scope=all render, macro-update and served-source proof.
+- Complete canonical beta DNS/TLS through existing DNSPod owner when authenticated, then actual public browser/auth
+  and applicable rollback acceptance; persist evidence and continue original commission.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
   its completed qualification.'
@@ -298,6 +326,9 @@ do_not_redo:
   bootstrap, cleanup or completed acceptance absent a material invalidator. Application #859/A remains unchanged.'
 - Actual HK/Canada P0B fixture production, closure and82-path continuity are complete at recorded source identities.
   Reuse within those bindings; do not remint as public-beta or Terminal qualification.
+- Do not repeat Terminal859 qualification or acceptedR93 bootstrap. Do not repeat unchanged334deployment suite or
+  actual P0B128case producer solely for3b49 integration; identities remain bound. Do not retry beta browser across
+  certificate denial without proper DNS/TLS repair. No new carrier/renderer/watcher.
 danger_areas:
 - Production identity and disk capacity changed externally between observations; historical PID or free-space values
   cannot serve as a fresh isolation baseline.
@@ -1256,3 +1287,18 @@ Latest retained full host baseline06:05:53 showed healthy betaPID2427329 and unc
 Sector overview/map/moving/money/explore/confluence and sector-to-basket source behavior remain. Paper remains REVISE. C4 comments6255134033–6255716294 remain SPEC_ONLY/UNAPPLIED/UNRUN. Historical CSS/About mobile overflow and blocked request/stream limitations remain. Accepted A1A/A1B matrices and global workstream ownership are not reopened.
 
 Next: validate this existing-record/proof update, complete ordinary N2 commit, and push the same branch while unarmed. Inspect concluded exact-head hosted CI/review, refresh health/DNS/current authority, then arm the incumbent MOG last. Stay attended through actual landing, a covering existing render run and generated-main commit, and exact served-tree/updater proof before remaining public beta acceptance. No duplicate PR, renderer, source carrier or watcher. Programme OPEN.
+
+
+## 2026-10-20 14:49 UTC — interrupted proof recovered; current main source qualified
+
+The original WS:MARKET-OS programme, parent, worktree and PR7949 remain the sole delivery owners. The interrupted finalizer had not run: remote remained e2d and local AE/N2 merge was staged. Exact two-file EOF repair preserved all earlier evidence and the failed check. The raw3677-byte host reader was packed losslessly; only the newly appended README blank line was removed. The460-file proof tree de860 was committed locally as140bd1ee79a44859915595fdf12c958c07a60e2b with parents ae3/5c2d. That was a local commit, not a push or release.
+
+One main-only fetch returned3b49d6a5c8a6330652a926a8e5061e0dbb3d0387. The ordinary merge had exactly two generated conflicts, ETF and US Stocks. Canonical normalized-parent three-way merge, existing Shared Shell injection and lib.pages preserved the incoming content and existing shell adapters. Parsed composition retains all336 jobs/order and both parent path intents; current test AST differs from incoming only by the previously measured two literals and retained history. Actual closure found exactly three missing paths: lib/shared_shell.py in china-mechanics-display; lib/shared_shell.py and lib/site_assets.py in pick-lab-cn-render. Only those paths were added. The resulting frozen index4e8952ea930e29d38874eee2c5ef60c5bc9fdaeb passed all four existing CI-scope/packing tests in210.00s. Source/index remained unchanged; no further ceilings were raised.
+
+All82 actual P0B producing/output identities remain unchanged, and the334-pass deployment source inputs remain identical. Those actual results are reused without another producer, browser or suite run. Two independent bounded consultations found the proof packaging and actual composition/three-path repair NONBLOCKING; their read scopes and limits are retained.
+
+Readonly14:42 host evidence shows accepted betaA e45bde2 still active with identical source/runtime pointers and PID2427329, no pending/stages and exact status tuple. Production externally has a new observed baseline, PID2975859/deploymentc1ea4ba; installed owner bytes matchR93. Live Caddy/updater match incoming source. Host Macro4b6 is one commit beyond3b49 with only earnings route-catalogue content changed. No actor/cause or continuous production stability is inferred. A new action-boundary baseline remains required before arm.
+
+Public beta still fails strict TLS hostname verification through its old EdgeOne CNAME. Connected Chrome reached a Privacy error; automatic approval review denied further access at that unsafe certificate boundary. No bypass, alternate-origin acceptance, authenticated journey or responsive acceptance occurred. DNSPod sign-in remains incomplete. Source/CI/publication work continues independently.
+
+This proof package records source qualification before the new commit/push. Hosted admission, MOG landing, original scope=all rendering, served-tree publication, canonical DNS/TLS, public auth/browser and applicable rollback acceptance are not claimed. Preserve six-view Sector Central/sector-to-basket while Paper REVISE; C4 overlays remain SPEC_ONLY/UNAPPLIED/UNRUN.

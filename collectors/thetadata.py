@@ -152,7 +152,7 @@ from typing import Iterator
 import pandas as pd
 import requests
 
-from lib.options_source_receipts import ACQUISITION_COLUMN, THETA_ENDPOINTS, theta_acquisition
+from lib.options_source_receipts import ACQUISITION_COLUMN, THETA_ENDPOINTS, THETA_SNAPSHOT_ENDPOINTS, theta_acquisition
 
 
 class _StreamTruncated(Exception):
@@ -445,12 +445,13 @@ def _get_csv(session: requests.Session, path: str, params: dict, *, request_budg
         if request_budget is not None and len(df) > max_rows:
             request_budget.stop()
             raise ValueError("bounded CSV row limit exceeded")
-        if path in THETA_ENDPOINTS.values() and not df.empty:
+        if path in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values()) and not df.empty:
             try:
                 df[ACQUISITION_COLUMN] = theta_acquisition(path, params, raw, origin=_base_url())
             except (ValueError, TypeError):
                 # Additive evidence cannot discard otherwise valid legacy rows.
                 # Without this receipt the qualification adapter fails closed.
+                df.drop(columns=[ACQUISITION_COLUMN], inplace=True, errors="ignore")
                 log.warning("thetadata: acquisition provenance unavailable for %s", path)
         return df
     except Exception as e:  # noqa: BLE001
@@ -1254,12 +1255,16 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
     with timestamp while the greeks snapshots lead with symbol (both measured
     verbatim 2026-07-16 — see module docstring).
 
-    snapshot_ts is parsed from the response 'timestamp' column (the terminal's
-    per-contract quote timestamp; the OI snapshot stamp is ~06:30 ET, when OPRA
-    publishes EOD t-1 positions).
+    snapshot_ts is parsed from the response timestamp. Vendor observation and
+    collector known-by clocks do not establish provider first publication or an
+    OI release instant; no missing clock is synthesized.
 
     API DEDUP: the same full-row drop_duplicates law as the history endpoints
     (see _normalize_eod_df docstring) is applied after column selection.
+
+    Keep supplied timestamp and underlying_timestamp verbatim as well as the
+    legacy parsed snapshot_ts. Missing or malformed source clocks must remain
+    distinguishable; retaining them does not certify freshness or availability.
     """
     if df.empty:
         return df
@@ -1291,6 +1296,7 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
         df = df.rename(columns={"symbol": "root"})
 
     keep = ["root", "expiration", "strike", "right", "snapshot_ts"] + keep_cols
+    keep += [c for c in ("timestamp", "underlying_timestamp", ACQUISITION_COLUMN) if c in df.columns]
     available = [c for c in keep if c in df.columns]
     df = df[available].reset_index(drop=True)
 
@@ -1308,8 +1314,9 @@ def _normalize_snapshot_df(df: pd.DataFrame, keep_cols: list[str],
     return df.reset_index(drop=True)
 
 
+
 def _snapshot_get(root: str, path: str, keep_cols: list[str],
-                  label: str) -> pd.DataFrame | None:
+                  label: str, *, version: str | None = None) -> pd.DataFrame | None:
     """Shared fetch+normalize for the snapshot endpoints.
 
     NO reachable() pre-check (deliberate deviation from the bulk_* helpers):
@@ -1320,6 +1327,10 @@ def _snapshot_get(root: str, path: str, keep_cols: list[str],
     probes reachable() once at startup instead.
     """
     params = {"symbol": root.upper(), "expiration": "*", "strike": "*"}
+    if version is not None:
+        if path == THETA_SNAPSHOT_ENDPOINTS["oi"] or version not in ("1", "latest"):
+            raise ValueError("Unsupported explicit snapshot version")
+        params["version"] = version
     session = _session()
     try:
         df = _get_csv(session, path, params)
@@ -1334,7 +1345,7 @@ def _snapshot_get(root: str, path: str, keep_cols: list[str],
     return _normalize_snapshot_df(df, keep_cols=keep_cols, label=label)
 
 
-def snapshot_greeks(root: str, order: str = "first") -> pd.DataFrame | None:
+def snapshot_greeks(root: str, order: str = "first", *, version: str | None = None) -> pd.DataFrame | None:
     """Live full-chain greeks snapshot for one root (U-CHAIN lane).
 
     Endpoint: GET /v3/option/snapshot/greeks/{first,second}_order
@@ -1369,6 +1380,7 @@ def snapshot_greeks(root: str, order: str = "first") -> pd.DataFrame | None:
         endpoint,
         keep_cols=_SNAPSHOT_KEEP_COLS[order],
         label=f"snapshot_greeks/{order}",
+        version=version,
     )
 
 
@@ -1378,7 +1390,7 @@ def snapshot_open_interest(root: str) -> pd.DataFrame | None:
     Endpoint: GET /v3/option/snapshot/open_interest (expiration=*, strike=*).
     Measured 2026-07-16: full SPY chain 13,731 rows in 0.21s.
 
-    OI TIMING LAW: the snapshot is stamped ~06:30 ET, when OPRA publishes OI —
+    OI TIMING LAW: the snapshot is typically stamped ~06:30 ET —
     the value represents END-OF-PREVIOUS-DAY positions and does NOT update
     intraday.  One pull per root per day is sufficient; same-day OI in a day-t
     feature is a data leak (see the module docstring).

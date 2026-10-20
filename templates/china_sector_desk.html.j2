@@ -230,7 +230,12 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
       <div class="cond">
         <div><div class="k">{{ t('Fwd 6m up-rate','未来6月上涨率') }}</div>
           <div class="v">{{ (h6.cond_rate*100)|int }}%<small> / {{ t('base','基准') }} {{ (h6.base_rate*100)|int }}%</small></div>
-          <div class="ci">{{ t('when setup ~ today','当配置类似今日') }} · {% if h6.lift_ci_lo is not none %}{{ t('lift','超额') }} {{ (h6.lift_ci_lo*100)|int }}–{{ (h6.lift_ci_hi*100)|int }}pp · {% endif %}n={{ h6.n_months }}{{ t('mo','月') }}{% if h6.n_eff is not none %} (n_eff≈{{ h6.n_eff }}){% endif %}</div></div>
+          <div class="ci">{{ t('when setup is in its top third','当配置处于自身历史高位三分之一时') }}
+          {%- if s.setup.tercile != 'high' %} ({{ t('not today','今日不在此区间') }}){% endif %}
+          {{- ' · ' }}{% if h6.lift_ci_lo is not none %}{{ t('lift','超额') }}
+          {{- ' ' }}{{ (h6.lift_ci_lo*100)|int }}–{{ (h6.lift_ci_hi*100)|int }}pp · {% endif %}
+          {{- 'n=' }}{{ h6.n_months }}{{ t('mo','月') }}
+          {%- if h6.n_eff is not none %} (n_eff≈{{ h6.n_eff }}){% endif %}</div></div>
         <div><div class="k">{{ t('Median fwd 6m','未来6月中位') }}</div>
           <div class="v">{{ pc(h6.med_fwd_pct) }}</div>
           <div class="ci">{{ t('vs base','对比基准') }} {{ pc(h6.base_med_pct) }}</div></div>
@@ -245,7 +250,40 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
     </div>
     {% endfor %}
   </div>
-  {% if gate %}<div class="gate {{ 'ok' if gate.passed else 'warn' }}">{{ '✓' if gate.passed else '⚠' }} {{ t('Evidence gate','证据门槛') }}: {{ t('signature checks pass','特征检验通过') if gate.passed else 'review' }}{% if gate.soft_warnings %} · {{ gate.soft_warnings|length }} {{ t('sign-drift note(s)','符号漂移提示') }}{% endif %}</div>{% endif %}
+  {% if gate %}
+  {%- set GL = {'dist_p': ('distance from 200d', '距200日线'), 'dd_p': ('drawdown from high', '距高点回撤'),
+     'dist_200d': ('distance from 200d', '距200日线'), 'dd_from_high': ('drawdown from high', '距高点回撤'),
+     'credit_impulse': ('credit impulse', '信贷脉冲'), 'ppi_yoy': ('PPI y/y', 'PPI同比')} %}
+  {%- if gate.available is defined and not gate.available %}
+  <div class="gate warn">⚠ {{ t('Turn-signature gate not run','拐点特征门槛未运行') }}:
+    {{- ' ' }}{{ t('sector or benchmark data absent','行业或基准数据缺失') }}</div>
+  {%- else %}
+  <div class="gate {{ 'ok' if gate.passed else 'warn' }}">{{ '✓' if gate.passed else '⚠' }}
+    {{- ' ' }}{{ t('Turn-signature gate','拐点特征门槛') }}:
+    {{- ' ' }}{% if gate.passed %}{{ t('pooled bottoms sit below tops','汇总底部低于顶部') }}
+    {%- else %}{{ t('pooled bottoms no longer sit below tops — review','汇总底部不再低于顶部，需复核') }}
+    {%- endif %}
+    {%- for p in (gate.pooled or []) %}{% set gl = GL.get(p.leg, (p.leg, p.leg)) %}
+    {{- ' · ' }}{{ t(gl[0], gl[1]) }} n={{ p.n_bottom }}/{{ p.n_top }}
+    {%- if p.median_bottom is not none and p.median_top is not none %}
+    {{- ' · ' }}{{ t('median pctile','中位分位') }} {{ '%.0f'|format(p.median_bottom * 100) }}→
+    {{- '%.0f'|format(p.median_top * 100) }}{% endif %}
+    {%- if p.gap_ci %}{{ ' · ' }}{{ t('separation CI','分离置信区间') }}
+    {{- ' %.0f–%.0fpp'|format(p.gap_ci[0] * 100, p.gap_ci[1] * 100) }}{% endif %}
+    {{- ' · ' }}{% if p.evidence %}{{ t('evidence','证据') }}{% elif p.sign_ok %}
+    {{- t('directional only','仅方向一致') }}{% else %}{{ t('flipped','方向反转') }}{% endif %}
+    {%- endfor %}
+    {%- for w in (gate.soft_warnings or [])[:4] %}{% set gl = GL.get(w.leg, (w.leg, w.leg)) %}
+    {%- set sw = (pathway.sectors or [])|selectattr('key', 'equalto', w.sector)|first %}
+    {{- ' · ' }}{{ t('sign drift','符号漂移') }}:
+    {{- ' ' }}{% if sw %}{{ t(sw.en, sw.zh) }}{% else %}{{ w.sector }}{% endif %}
+    {{- ' ' }}{{ t(gl[0], gl[1]) }} IC {{ '%+.2f'|format(w.ic) }} ({{ t('expected','预期') }}
+    {{- ' +' if w.expect_sign > 0 else ' −' }})
+    {%- endfor %}
+    {%- if (gate.soft_warnings or [])|length > 4 %}
+    {{- ' · +' }}{{ gate.soft_warnings|length - 4 }}{% endif %}</div>
+  {%- endif %}
+  {%- endif %}
   {% endif %}
 
   <div class="foot">

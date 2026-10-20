@@ -5,7 +5,7 @@
   "programme": "WS:MARKET-OS",
   "original_root": "market-os-shared-shell-design-20260924-sol-001",
   "attended_parent": "shared-shell-production-20261018-c1",
-  "macro_source_head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+  "macro_source_head": "140bd1ee79a44859915595fdf12c958c07a60e2b",
   "terminal_application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
   "terminal_repair_candidate_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
   "visual_acceptance": "Actual resolved-worktree P0B128cases/16screenshots and closure accepted; all82 finite producing/loaded/construction/output bindings preserved through source index39477. Historical CSS/About limitations retained. Public beta and canonical production build unaccepted.",
@@ -13,8 +13,8 @@
     {
       "file": "README.md",
       "source": "Attended synthesis; exact observations and limitations are distinguished",
-      "bytes": 55075,
-      "sha256": "99f43865dd37bca1ac036de363db43f1c02c76c8d7ac87121db710b49f53ca18",
+      "bytes": 58241,
+      "sha256": "3892c7ffeb72a653d8fc4481e7beb61aa4fde58bf1add76cefbadf21ac2d42a9",
       "encoding": "identity"
     },
     {
@@ -939,6 +939,365 @@
       "original_sha256": "dd528c9f92b216f874cb5d9094263d24785ac50c7a9db838ea3a3f65478755cf"
     },
     {
+      "file": "macro-140bd-3b49-actual-merge.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-actual-merge.json",
+      "bytes": 1244,
+      "sha256": "f7d1d139262260179737a60f0301e2897ab600afe278ef34f69a366721d7a6d6",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-actual-merge.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-actual-merge.log",
+      "bytes": 364,
+      "sha256": "1ce2696a98a46487ea41e31dad08ff668a8508be1097c92028d264f8b548f469",
+      "encoding": "gzip",
+      "original_bytes": 1043,
+      "original_sha256": "f2aefbde9929a823848ecfd2254fbdb1b9831988e7da7bbd9d476d34a64d31d1"
+    },
+    {
+      "file": "macro-140bd-3b49-closure-before.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-closure-before.json",
+      "bytes": 883,
+      "sha256": "2c5d91c302cab27630312fba42549f7c1b0cbd474b305b979640ebde09334fe1",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-composition.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-composition.json",
+      "bytes": 1555,
+      "sha256": "992553896da37e04bd0fe77304ccadf9c8e2303b5754e1dce63c3486236c01be",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-composition.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-composition.py",
+      "bytes": 2562,
+      "sha256": "62828505f9ab75fe922ef12adf91ac6c0e3d8f9488e71cc36ca740fb4be645c2",
+      "encoding": "gzip",
+      "original_bytes": 5968,
+      "original_sha256": "bcdb5007100c002037d146b18b9fcf58b78ce43c52a944da90c1bcfaacd8380f"
+    },
+    {
+      "file": "macro-140bd-3b49-final-changed-paths.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-final-changed-paths.txt",
+      "bytes": 6864,
+      "sha256": "55d4a4bf2c51ad52b8d0408235fbfca6b76da074cd08ef87e61e3eb6bdc1d6c6",
+      "encoding": "gzip",
+      "original_bytes": 66412,
+      "original_sha256": "ecd7b7e3785c7b03f302e3a902acc55118ece38bced7b44ebf62882261dd153c"
+    },
+    {
+      "file": "macro-140bd-3b49-focused-invocation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused-invocation.json",
+      "bytes": 1481,
+      "sha256": "363ce65110eb471ebdd62d81057addb28f6e13d3967adce3101fb43c255d2bfd",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-focused-process.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused-process.json",
+      "bytes": 310,
+      "sha256": "8174a14862a5192a31003fc2abc36b3839d7e4560049201f5184010768b37c23",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-focused-process.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused-process.py",
+      "bytes": 550,
+      "sha256": "4e116c26c18fe2327f8e7086c8eca3e85219a13720bcefcb673064ccee36d577",
+      "encoding": "gzip",
+      "original_bytes": 919,
+      "original_sha256": "2854ec73068d8510aa0f06bc5a309274750b5533f191d1b2ccaa101e3e9cbe8c"
+    },
+    {
+      "file": "macro-140bd-3b49-focused-runner.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused-runner.py",
+      "bytes": 1790,
+      "sha256": "0e3279ea444c601db8b54b7436a6cfb7aa9c1d3549454b28afa00c4ceffa10dd",
+      "encoding": "gzip",
+      "original_bytes": 4389,
+      "original_sha256": "0f3ab2f5e5bdb7d858d6c12c489a9f75355c957a260ce21a39817c109f6fbf01"
+    },
+    {
+      "file": "macro-140bd-3b49-focused.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused.json",
+      "bytes": 1666,
+      "sha256": "4c48476c3d3a27bdaf9d618a9df4c836e1e4c2ed360afa88e739f6c8900313a9",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-focused.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-focused.log",
+      "bytes": 969,
+      "sha256": "e1f47bab5d00cf7975e040dead7a1ee3c7065354998597da11d9a7c904fd0e89",
+      "encoding": "gzip",
+      "original_bytes": 1776,
+      "original_sha256": "cc273c7ed9aa5a3fec9ad80e1f9b5616d8fd78d55e9dca5f60c9e518550e6717"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--receipt.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/receipt.json",
+      "bytes": 3800,
+      "sha256": "d0a4a4cc297b705118c762b10d923251ba72adf735f7d3dcfa51ce2fdca19bf5",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_etfs.html.B.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.B",
+      "bytes": 24057,
+      "sha256": "53efc234a562d66c1f5a5d42b840ae55463a00106a2a7768d160621391b34465",
+      "encoding": "gzip",
+      "original_bytes": 96880,
+      "original_sha256": "61cf034158b0a786610e7675a43cfbe222f3014e4b0eaea8311d6e7bcbb79522"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_etfs.html.H.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.H",
+      "bytes": 24220,
+      "sha256": "8446a94c6918a7306d9af902613622cc83a37da3ecfabb25da3e6a2773b07ef4",
+      "encoding": "gzip",
+      "original_bytes": 97333,
+      "original_sha256": "46ff1753bd2910e959534bb6f62b757719a7b344777583140d8430f69afe161a"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_etfs.html.M.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.M",
+      "bytes": 24060,
+      "sha256": "12e0aa09526e4650c972298e9ea12ed4996fc4f3901b2b1449837743293d5ba5",
+      "encoding": "gzip",
+      "original_bytes": 96884,
+      "original_sha256": "b742943995977c366048fbfefa076b2772e24a88b0026f729a0b7913ba936f87"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_etfs.html.candidate.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_etfs.html.candidate",
+      "bytes": 24223,
+      "sha256": "e21db67823ff7d05ebd5bcefe2e12636efa2e725a465efbdffd986733058cd96",
+      "encoding": "gzip",
+      "original_bytes": 97337,
+      "original_sha256": "10157cd76547ebb1ee0b3f4ce430617a8b8e0c21f0c98682ad50387fd404d1ec"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_us_stocks.html.B.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.B",
+      "bytes": 157558,
+      "sha256": "f449fb1298975286bfaf5f167cf30dd696bd9b4616e80e96150d5227171a18e6",
+      "encoding": "gzip",
+      "original_bytes": 741806,
+      "original_sha256": "cf3b2d6feb3575ac233f0b51dee8945a0c7caa5a1a005d4f7b004e6278a6af40"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_us_stocks.html.H.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.H",
+      "bytes": 157789,
+      "sha256": "621957b18d6c5d63de633a6aa2f80e88e7da2d89b23caf69421864c2787a8734",
+      "encoding": "gzip",
+      "original_bytes": 742422,
+      "original_sha256": "d03cc1a99d3c4c56ecb88508963a853b747c333927e3207b6b74fd9bb3923fe4"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_us_stocks.html.M.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.M",
+      "bytes": 157548,
+      "sha256": "70bb26e05017945c52a5b70d945c8f765a5645da913e6088cd8d7715605fea79",
+      "encoding": "gzip",
+      "original_bytes": 741806,
+      "original_sha256": "f740652cb4cbb8cd2fce592b0d195126457b80d8a522b87790d73751bc0c3941"
+    },
+    {
+      "file": "macro-140bd-3b49-html-canonical-merge--site_us_stocks.html.candidate.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-html-canonical-merge/site_us_stocks.html.candidate",
+      "bytes": 157779,
+      "sha256": "f05c290178db95bac10c1fec2a83b9427fac6ebbc3e90ca6087578d8dd9d5ebc",
+      "encoding": "gzip",
+      "original_bytes": 742422,
+      "original_sha256": "95837a723a8a5977f7dbbe5929d9f2ea64c337bd246c26b5d74beef609b6a345"
+    },
+    {
+      "file": "macro-140bd-3b49-independent-reviews.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-independent-reviews.md",
+      "bytes": 3039,
+      "sha256": "3b65f1c5f081798035cd19d7ec0f580bc73eb389c6609be7f264f8f4eea57729",
+      "encoding": "gzip",
+      "original_bytes": 5984,
+      "original_sha256": "bdebbc07d420b48c5757274d757a914038cefa4da0160da4ee2126e0b280be77"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-agentos.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-agentos.log",
+      "bytes": 3699,
+      "sha256": "e08e4f0fa2c352af933cce0d7ddb16e41ce3886bce2e0e01c081d7232300b571",
+      "encoding": "gzip",
+      "original_bytes": 30368,
+      "original_sha256": "65a40e15aa180f417e81669c042fa3d5d61753ce671388573d861316583679ad"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-config.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-config.json",
+      "bytes": 8542,
+      "sha256": "c67c0a2a37a4a4d667387956cd9406f2ed226164a78e8b2950a44d148944ae4e",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-import.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-import.py",
+      "bytes": 4406,
+      "sha256": "e9ac01e7b00b90de83739e7b64decf1f5a873262b2013bf8e6935c62c0be2a7a",
+      "encoding": "gzip",
+      "original_bytes": 10858,
+      "original_sha256": "e20d77765e08ef4125281ec859144e989fed5d569b561eade161dc9838472853"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-owned-whitespace.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-owned-whitespace.log",
+      "bytes": 20,
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-p0b-closure.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-p0b-closure.log",
+      "bytes": 20,
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-template-sync.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-template-sync.log",
+      "bytes": 64,
+      "sha256": "1240e77d4369fd1dcb9ad856bdc73a4a37b61c835f8563c20c7254324d0a4e8f",
+      "encoding": "gzip",
+      "original_bytes": 44,
+      "original_sha256": "8978f102ef1207f759ad00b587d8a10ed40d27480ee9a7d3dc0cf1ea10fe9fd2"
+    },
+    {
+      "file": "macro-140bd-3b49-proof-validation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-proof-validation.json",
+      "bytes": 8328,
+      "sha256": "cb066318e6f7c15364b0dd5daa42c5a0c5c96a27b2613922a79433697771ac7d",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-scope-repair.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-scope-repair.json",
+      "bytes": 1315,
+      "sha256": "a5611d22c195ea11e909933e1cc77d07bcb3a71af944a0c16f5634900894211f",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-140bd-3b49-scope-repair.patch.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-scope-repair.patch",
+      "bytes": 270,
+      "sha256": "828f16cf840306a3ce59b6c71168fc7b6b56dc72c202b106d420bf71c5168df6",
+      "encoding": "gzip",
+      "original_bytes": 682,
+      "original_sha256": "df7e8d92f93eebfa78dc7af5e7830a24202d2af340878c82fd0f8a722ce0a9ee"
+    },
+    {
+      "file": "macro-140bd-3b49-scope-repair.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-3b49-scope-repair.py",
+      "bytes": 1704,
+      "sha256": "f96fd6824376fdf76108fbb84edf31b4a5ab573de32361fae73056ca9fdd4f73",
+      "encoding": "gzip",
+      "original_bytes": 3881,
+      "original_sha256": "08f74f8b9e8e893b5e88b1b931a48a8dad6d0c99d2c04e7ad4c31e4c75fabcb8"
+    },
+    {
+      "file": "macro-140bd-main-reconcile-fetch.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile-fetch.log",
+      "bytes": 151,
+      "sha256": "c79119f148e1c0502ad59aa5a83e871c44258a141159c015541a67ae8819da17",
+      "encoding": "gzip",
+      "original_bytes": 179,
+      "original_sha256": "78112378796baab11964126d7bd1f2485d21583603df1dc9ea049cad6f87c683"
+    },
+    {
+      "file": "macro-140bd-main-reconcile-incoming-paths.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile-incoming-paths.txt",
+      "bytes": 22560,
+      "sha256": "079c8cfdf517266eb2a21991092cd1f6e36cbf7303ed5964e9f8027a52d5d572",
+      "encoding": "gzip",
+      "original_bytes": 160784,
+      "original_sha256": "009dcb53b8ea13b2f5e583c3eaef0ddfdb7239a0a6b4701ca5e1c8e9a4667840"
+    },
+    {
+      "file": "macro-140bd-main-reconcile-preview.stderr.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile-preview.stderr",
+      "bytes": 20,
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-140bd-main-reconcile-preview.stdout.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile-preview.stdout",
+      "bytes": 392,
+      "sha256": "228504992d8c34a980f717489d6c7ef714fd959b7aec47fc7859d56618115d12",
+      "encoding": "gzip",
+      "original_bytes": 1126,
+      "original_sha256": "61cd40d278c8eb606174dbf0523156b10fac2dd2a071bfa5119ab5480fb9c9df"
+    },
+    {
+      "file": "macro-140bd-main-reconcile.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-140bd-main-reconcile.json",
+      "bytes": 1630,
+      "sha256": "ee7adf4c2d6968c1d714ff436078b40e6543017547d769c1126ade7070cfe504",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-3b49-beta-health-20261020T1443.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-beta-health-20261020T1443.json",
+      "bytes": 3576,
+      "sha256": "9510230eca0b21d994a0a2c7a6fca9f780b70119a732b5f42878ed9472e949e6",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-3b49-beta-health-20261020T1443.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-beta-health-20261020T1443.py",
+      "bytes": 1399,
+      "sha256": "e401fc0a2fe0a1e527cb98092409ee2da0563e99ee1253c3bedbf4fca63689f4",
+      "encoding": "gzip",
+      "original_bytes": 2978,
+      "original_sha256": "5f70ad575667a4e41347d074f3354d4c2de43531bcc9b0980490df7c46e4c71b"
+    },
+    {
+      "file": "macro-3b49-beta-health-20261020T1443.stderr.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-beta-health-20261020T1443.stderr",
+      "bytes": 20,
+      "sha256": "f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837",
+      "encoding": "gzip",
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "macro-3b49-beta-health-20261020T1443.stdout.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-beta-health-20261020T1443.stdout.json",
+      "bytes": 11833,
+      "sha256": "c9fdc4500a150d6bd44c1b414d24a6ad2009657b9c477899e661905f5532dc69",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-3b49-browser-boundary-20261020.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-browser-boundary-20261020.md",
+      "bytes": 702,
+      "sha256": "500d0731ff74bf0320860755ce06c7d91a1a59a78af64bb96fdfa780fee11da9",
+      "encoding": "gzip",
+      "original_bytes": 1151,
+      "original_sha256": "a4f41c571e27033b091338ab5f4cf6a19008e4dba50271fc8757ecd2be8d7670"
+    },
+    {
+      "file": "macro-3b49-runtime-baseline-reconciliation.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-3b49-runtime-baseline-reconciliation.json",
+      "bytes": 9284,
+      "sha256": "06736f32eca82ee2b8f649333dbf0a2eb2cc7216f81d2e22a9d11731066fffd9",
+      "encoding": "utf-8"
+    },
+    {
       "file": "macro-69-f54-actual-merge.json",
       "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-69-f54-actual-merge.json",
       "bytes": 1553,
@@ -1408,6 +1767,40 @@
       "encoding": "utf-8"
     },
     {
+      "file": "macro-ae3-5c2d-complete-merge-message.txt.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-complete-merge-message.txt",
+      "bytes": 331,
+      "sha256": "996eae76d46de4eb77b905eb739a2e9834102586df96b9a0492f30ba337e67eb",
+      "encoding": "gzip",
+      "original_bytes": 520,
+      "original_sha256": "b5741966d87c4ce54ab90fc03e4566599a14546d87beac9c1eb2ecf34204ff80"
+    },
+    {
+      "file": "macro-ae3-5c2d-complete-merge.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-complete-merge.json",
+      "bytes": 1498,
+      "sha256": "b88b58428d6ee957ab237b787553e7659bcf55cd28b7af3e2a2a124a9b3950c5",
+      "encoding": "utf-8"
+    },
+    {
+      "file": "macro-ae3-5c2d-complete-merge.log.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-complete-merge.log",
+      "bytes": 125,
+      "sha256": "f21646d5bd4d588633de32ca8f8fb53303daaaa007051e1de3ce0430b8b8aaeb",
+      "encoding": "gzip",
+      "original_bytes": 120,
+      "original_sha256": "34ec518834c8d8e73a5f31ccd141703854439710d2d9622e23fa87b175e02674"
+    },
+    {
+      "file": "macro-ae3-5c2d-complete-merge.py.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-complete-merge.py",
+      "bytes": 1729,
+      "sha256": "1772bea7fea050b3b218ceb8ba8107012ddabb40693937e8e35821c587578614",
+      "encoding": "gzip",
+      "original_bytes": 3554,
+      "original_sha256": "845771ff5aee3113871bee554433050aea3186a4b321cbe8a6bda43369319394"
+    },
+    {
       "file": "macro-ae3-5c2d-deploy-validation.json",
       "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-deploy-validation.json",
       "bytes": 2532,
@@ -1609,6 +2002,13 @@
       "encoding": "gzip",
       "original_bytes": 30368,
       "original_sha256": "65a40e15aa180f417e81669c042fa3d5d61753ce671388573d861316583679ad"
+    },
+    {
+      "file": "macro-ae3-5c2d-proof-finalize.json",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-ae3-5c2d-proof-finalize.json",
+      "bytes": 1797,
+      "sha256": "8df8f97739519da15d29109b581cdfc25e9478cc9ce04cb719efab0fdd59ee64",
+      "encoding": "utf-8"
     },
     {
       "file": "macro-ae3-5c2d-proof-finalize.py",
@@ -2809,6 +3209,15 @@
       "original_sha256": "23bf125919d6f2b39e8909045654d041d984db1bd0bed9a33b2dd6a9d083f25c"
     },
     {
+      "file": "macro-full-checkpoint-1422-proof-committed.md.gz",
+      "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-1422-proof-committed.md",
+      "bytes": 21247,
+      "sha256": "12313882e51753ecf735795c55ae5702efc37e8a369751add362de41844c4873",
+      "encoding": "gzip",
+      "original_bytes": 45683,
+      "original_sha256": "fe26ae285ca80a3f2b259d64eba066ab1aea39ca03dd269cf72df4b5f1f92cfb"
+    },
+    {
       "file": "macro-full-checkpoint-N2-source-green.md.gz",
       "source": "/tmp/shared-shell-css-visual-20261019T1107/macro-full-checkpoint-N2-source-green.md",
       "bytes": 19945,
@@ -3594,28 +4003,25 @@
       "encoding": "utf-8"
     }
   ],
-  "indexed_at": "2026-10-20T14:21:11.897265+00:00",
+  "indexed_at": "2026-10-20T14:54:00.806811+00:00",
   "current_terminal_repair_candidate": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
-  "latest_host_observed_at": "2026-10-20T06:05:53.075809Z",
-  "macro_incoming_main": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+  "latest_host_observed_at": "2026-10-20T14:42:38.136969Z",
+  "macro_incoming_main": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
   "latest_confirmed_macro_publication": "e2d10f933587f58be8716505529a37f8839901f7",
-  "publication_of_this_package": "Precommit/prepush ordinary N2 merge. Original PR7949 checkpoint binds eventual source head; this package does not claim hosted, rendered-main or served publication.",
+  "publication_of_this_package": "Precommit/prepush ordinary3b49 merge. The original PR7949 checkpoint binds eventual source head. No hosted, protected landing, rendered-main, served or public-beta acceptance claimed.",
   "browser_connection": "CloudDNSPodtab3 Tencent sign-in; secureWeChat choice submitted but iframeSiteUnavailable. NoDNSedit. Originalextension contextunavailable.",
-  "beta_publication_gate": "Protected R93 originalA bootstrap/runtime/filesystem accepted; no repeat. Historical06:05 health must refresh before arm. Public DNS/TLS/auth/browser/applicable rollback remain separate.",
-  "macro_integrated_index_tree_before_proof": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+  "beta_publication_gate": "Accepted R93 originalA bootstrap/runtime/filesystem unchanged; readonly current health passes. Production baseline externally changed and is recorded without actor attribution; refresh action-boundary predicates before arm. Canonical public DNS/TLS/auth/browser/applicable rollback remain.",
+  "macro_integrated_index_tree_before_proof": "4e8952ea930e29d38874eee2c5ef60c5bc9fdaeb",
   "protected_terminal_repair_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
   "documentation_validation": {
-    "receipt": "macro-ae3-5c2d-proof-whitespace-reconciliation.json",
-    "original_failed_receipt": "macro-ae3-5c2d-proof-validation.json",
-    "all_checks_exit0_after_repair": true,
+    "receipt": "macro-140bd-3b49-proof-validation.json",
+    "all_checks_exit0": true,
+    "record_index": "e9ea4aaa0f8e18ab7dfe4d8457d1896a3c94be32",
     "agentos_exit": 0,
-    "owned_whitespace_exit": 0,
     "template_sync_exit": 0,
     "p0b_closure_exit": 0,
-    "previous_three_checks_reused_on_identical_inputs": true,
-    "record_index": "a707d6d1d044ced4efccdab680772acdba5edb19",
-    "handoff_unchanged_after_validation": true,
-    "workstream_unchanged_after_validation": true
+    "owned_whitespace_exit": 0,
+    "handoff_and_workstream_unchanged_after_validation": true
   },
   "previous_frontier_before_runtime_ci": {
     "indexed_at": "2026-10-20T01:14:59.461992+00:00",
@@ -3674,25 +4080,23 @@
     }
   },
   "focused_current_composition": {
-    "source_index": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
-    "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
-    "scope_passes": 3,
-    "packing_exit": 0,
-    "packing_receipt": "macro-ae3-5c2d-packing-after.json",
-    "deployment_passes": 334,
-    "deployment_exit": 0,
-    "deployment_receipt": "macro-ae3-5c2d-deploy-validation.json",
+    "source_index": "4e8952ea930e29d38874eee2c5ef60c5bc9fdaeb",
+    "incoming": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+    "jobs": 336,
+    "three_measured_dependency_paths_added": true,
+    "scope_and_packing_passes": 4,
+    "pytest_exit": 0,
+    "receipt": "macro-140bd-3b49-focused.json",
+    "deployment_passes_reused": 334,
+    "deployment_input_identity_receipt": "macro-140bd-3b49-composition.json",
     "hosted_admission": false
   },
   "latest_main_read_before_publication": {
-    "sha": "68da9a798428ad425ceda592551719d0c649a1d8",
-    "observed_at": "2026-10-20T11:31:11Z",
-    "ahead_of_composed_main": 1,
-    "changed_paths": 2,
-    "classification": "FIF additional Node test and command argument; existing exclusive paths and1630weight override unchanged; actual hosted test-merge remains required",
-    "receipt": "macro-main-68da-preproof-read.json"
+    "sha": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+    "receipt": "macro-140bd-main-reconcile.json",
+    "read_method": "one main-only ordinary fetch; no later unrelated-main chase"
   },
-  "local_contract_gate_scope": "Historical full d528/e2d-hosted results remain historical. Current N2 three scope nodes plus actual minimal-packing rerun and deployment suite are separate; new-head hosted admission pending.",
+  "local_contract_gate_scope": "Actual four existing CI scope/packing nodes pass on index4e8952; deployment334/P0B producer results reused on unchanged inputs. New-head hosted admission remains separate.",
   "previous_frontier_before_92c51": {
     "indexed_at": "2026-10-20T04:48:48.196421+00:00",
     "macro_source_head": "6c0f54d2a5acabaf3df7a01aa3f604c9edf22e36",
@@ -3805,8 +4209,11 @@
     "binding": "macro-e2d-42c-p0b-bind-stage.json",
     "closure": "macro-e2d-42c-p0b-closure.json",
     "lineage": "macro-ae3-5c2d-p0b-lineage-v2.json",
+    "current_composition_identity_check": "macro-140bd-3b49-composition.json",
     "bound_paths": 82,
     "screenshots": 16,
+    "actual_prior_cases": 128,
+    "rerun_for_3b49": false,
     "production": false
   },
   "generated_publication_boundary": {
@@ -3824,5 +4231,111 @@
     "no_interrupted_finalizer_commit_or_push_observed": true,
     "raw_receipt_script_packed_losslessly": "macro-beta-before-e2d-publication-20261020T0536-remote.py.gz",
     "readme_change": "Remove only the single new terminal blank line; complete prior committed README remains an exact prefix."
+  },
+  "previous_frontier_before_3b49": {
+    "record_type": "attended_source_and_recovery_evidence",
+    "version": 1,
+    "packaged_at": "2026-10-19T08:38:12.633028+00:00",
+    "programme": "WS:MARKET-OS",
+    "original_root": "market-os-shared-shell-design-20260924-sol-001",
+    "attended_parent": "shared-shell-production-20261018-c1",
+    "macro_source_head": "ae3e6bc547361b632223e7e9bde73128b399035e",
+    "terminal_application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+    "terminal_repair_candidate_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "visual_acceptance": "Actual resolved-worktree P0B128cases/16screenshots and closure accepted; all82 finite producing/loaded/construction/output bindings preserved through source index39477. Historical CSS/About limitations retained. Public beta and canonical production build unaccepted.",
+    "indexed_at": "2026-10-20T14:21:11.897265+00:00",
+    "current_terminal_repair_candidate": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "latest_host_observed_at": "2026-10-20T06:05:53.075809Z",
+    "macro_incoming_main": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+    "latest_confirmed_macro_publication": "e2d10f933587f58be8716505529a37f8839901f7",
+    "publication_of_this_package": "Precommit/prepush ordinary N2 merge. Original PR7949 checkpoint binds eventual source head; this package does not claim hosted, rendered-main or served publication.",
+    "browser_connection": "CloudDNSPodtab3 Tencent sign-in; secureWeChat choice submitted but iframeSiteUnavailable. NoDNSedit. Originalextension contextunavailable.",
+    "beta_publication_gate": "Protected R93 originalA bootstrap/runtime/filesystem accepted; no repeat. Historical06:05 health must refresh before arm. Public DNS/TLS/auth/browser/applicable rollback remain separate.",
+    "macro_integrated_index_tree_before_proof": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+    "protected_terminal_repair_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+    "documentation_validation": {
+      "receipt": "macro-ae3-5c2d-proof-whitespace-reconciliation.json",
+      "original_failed_receipt": "macro-ae3-5c2d-proof-validation.json",
+      "all_checks_exit0_after_repair": true,
+      "agentos_exit": 0,
+      "owned_whitespace_exit": 0,
+      "template_sync_exit": 0,
+      "p0b_closure_exit": 0,
+      "previous_three_checks_reused_on_identical_inputs": true,
+      "record_index": "a707d6d1d044ced4efccdab680772acdba5edb19",
+      "handoff_unchanged_after_validation": true,
+      "workstream_unchanged_after_validation": true
+    },
+    "local_contract_gate": {
+      "source_tree": "1996dbf7a6b9f754c67ed5726bcd4d505482b80b",
+      "base": "d52827f26b062f67d594350a65becf406710d4d1",
+      "exit": 0,
+      "introduced": 0,
+      "inherited": 0,
+      "receipt": "macro-d528-contract-delta.json",
+      "hosted_admission": false
+    },
+    "focused_current_composition": {
+      "source_index": "39477d0a200f63fe0d1fcf1eaa4f6d21873c86aa",
+      "incoming": "5c2d0a04afd19642d2dab483885d46c73b7baed4",
+      "scope_passes": 3,
+      "packing_exit": 0,
+      "packing_receipt": "macro-ae3-5c2d-packing-after.json",
+      "deployment_passes": 334,
+      "deployment_exit": 0,
+      "deployment_receipt": "macro-ae3-5c2d-deploy-validation.json",
+      "hosted_admission": false
+    },
+    "latest_main_read_before_publication": {
+      "sha": "68da9a798428ad425ceda592551719d0c649a1d8",
+      "observed_at": "2026-10-20T11:31:11Z",
+      "ahead_of_composed_main": 1,
+      "changed_paths": 2,
+      "classification": "FIF additional Node test and command argument; existing exclusive paths and1630weight override unchanged; actual hosted test-merge remains required",
+      "receipt": "macro-main-68da-preproof-read.json"
+    },
+    "local_contract_gate_scope": "Historical full d528/e2d-hosted results remain historical. Current N2 three scope nodes plus actual minimal-packing rerun and deployment suite are separate; new-head hosted admission pending.",
+    "historical_8cc_hosted_contract": {
+      "run_id": 39371861641,
+      "job_id": 118461289660,
+      "base": "73ca987b5907034653d33cbdae1577a57e67120e",
+      "introduced": 0,
+      "inherited": 0,
+      "head": "8ccfa5ddba6770cef48f2f162c08474d023e094e",
+      "does_not_qualify_92c51": true
+    },
+    "current_p0b": {
+      "receipt": "macro-e2d-42c-p0b-actual.json",
+      "binding": "macro-e2d-42c-p0b-bind-stage.json",
+      "closure": "macro-e2d-42c-p0b-closure.json",
+      "lineage": "macro-ae3-5c2d-p0b-lineage-v2.json",
+      "bound_paths": 82,
+      "screenshots": 16,
+      "production": false
+    },
+    "generated_publication_boundary": {
+      "source_paths_before_proof": 610,
+      "deferred_paths": 13006,
+      "receipt": "macro-e2d-42c-render-owner-scope.json",
+      "existing_contract": "research/market_os/SHARED_SHELL_GENERATED_PUBLICATION_2026-10-18.md",
+      "published": false
+    },
+    "proof_import_recovery": {
+      "original_import_result": "macro-ae3-5c2d-proof-records-v2.json",
+      "disposition": "Partial import journal retained; original validation failed only two proof-file EOF whitespace findings. This finalizer completes packaging without repeating accepted source tests.",
+      "census": "macro-ae3-5c2d-resume-census-20261020T1418.json",
+      "prior_remote_head": "e2d10f933587f58be8716505529a37f8839901f7",
+      "no_interrupted_finalizer_commit_or_push_observed": true,
+      "raw_receipt_script_packed_losslessly": "macro-beta-before-e2d-publication-20261020T0536-remote.py.gz",
+      "readme_change": "Remove only the single new terminal blank line; complete prior committed README remains an exact prefix."
+    }
+  },
+  "current_host_baseline": {
+    "health": "macro-3b49-beta-health-20261020T1443.json",
+    "raw": "macro-3b49-beta-health-20261020T1443.stdout.json",
+    "reconciliation": "macro-3b49-runtime-baseline-reconciliation.json",
+    "production_unchanged_claim": false,
+    "owner_or_installer_invoked": false,
+    "strict_public_tls_exit": 60
   }
 }
