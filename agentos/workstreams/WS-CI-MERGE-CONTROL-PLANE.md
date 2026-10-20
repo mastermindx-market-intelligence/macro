@@ -319,6 +319,17 @@ waves:
       Exact secondary pairs differ in outcome; one artifact-upload failure and one
       AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
       No causal fleet30percent or cost-neutrality claim.
+      Report9850 merged6793c010048996193d3d98876b486910c7982e3c;75selected jobs,
+      active gates and6authored blobs verified. Fixed07:54 parser snapshot57runs:
+      36qualified completions(29success7failure),18pending3cancelled. ScopedN24
+      success p50/p951895/2553sec,wall177.675/253.95min;zero baseline proof matches.
+      Three103job successful treatments share ONE old-parser control. Gate times
+      2066/2581/2553sec versus2007control; summed wall lower, no causal claim.
+      Treated FIF commands1594.096/2151.041/2089.544sec versus1329.857control;
+      treated2681passes versus2680control. Primary command dominates; image and
+      Python labels agree among treatments but physical performance is uncontrolled.
+      Retain12packs/two weights/parser source. Next source slice requires qualified
+      residual profiling and current FIF carrier custody; no speculative shards.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
