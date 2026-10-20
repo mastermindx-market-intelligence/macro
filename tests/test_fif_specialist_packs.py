@@ -1,4 +1,4 @@
-"""Specialist pack producer framework + PK06/PK01/PK02 producers over the AAPL 10-K fixture.
+"""Specialist pack producer framework + PK06/PK01/PK02/PK11 producers over the AAPL 10-K fixture.
 
 Every count asserted here was verified against the fixture's facts through
 the raw ledger (never by reading the filing HTML): the fixture tags the split
@@ -18,10 +18,14 @@ balance-sheet shares issued, the repurchase payments, the p20 incremental
 dilutive shares and net income; the income-statement-location SBC breakdown
 is not tagged, the antidilutive table exists only for FY2023, and capitalized
 SBC has no frozen standard alias.
+
+PK11 (financial-institution credit, capital and liquidity) is likewise a
+NEGATIVE issuer here; its bank path is proven on a synthetic in-test ledger.
 """
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import date, timedelta
 from decimal import Decimal
 from hashlib import sha256
 import json
@@ -41,6 +45,16 @@ from engine.fundamental_forensics.specialist_packs import (
 from engine.fundamental_forensics.specialist_packs import base as pack_base
 from engine.fundamental_forensics.specialist_packs import pk06_leases
 from engine.fundamental_forensics import specialist_pack_contract as contract
+from engine.fundamental_forensics import ixbrl_raw_ledger as ixbrl_module
+from engine.fundamental_forensics.ixbrl_raw_ledger import (
+    ConversionReport,
+    FilingConversionReceipt,
+)
+from engine.fundamental_forensics.raw_ledger import FactContext, RawFactLedger
+from engine.fundamental_forensics.synthetic_filing_package import (
+    filing as synthetic_filing,
+)
+from engine.fundamental_forensics.synthetic_filing_package import usd_fact
 from engine.fundamental_forensics.statement_graph import load_golden_aapl_package
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -416,8 +430,8 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK11"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -488,6 +502,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/pk06_leases.py",
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
+        "engine/fundamental_forensics/specialist_packs/pk11_bank.py",
         "scripts/fif_specialist_packs.py",
     ],
 )
@@ -1355,3 +1370,463 @@ def test_pk02_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert len(envelope["fields"]) == 13
     assert envelope["coverage"]["valued_fields"] == 10
+
+
+# 20. PK11: financial-institution credit, capital and liquidity ---------------
+#
+# The committed AAPL fixture is the NEGATIVE issuer (industrial class); the
+# bank path is proven on the synthetic in-test ledger below (a TESTBANK
+# 10-K/10-Q whose facts live only in this file). The synthetic-ledger helper
+# patches ixbrl_raw_ledger.parse_and_convert_golden_packages — the same
+# call-time import both the framework and the PK11 finalize hook use — so the
+# manifest-only packages never reach the real parser.
+
+
+PK11_QUERY = {**QUERY, "requested_metrics": ["bank"]}
+TESTBANK_CIK = "0000000002"
+TESTBANK_SIC = "6021"
+TESTBANK_ENTITY = {
+    "entity_id": "ISS:US-TESTBANK",
+    "cik": TESTBANK_CIK,
+    "ticker": "TESTBANK",
+    "name": "TESTBANK SYNTHETIC CORP",
+    "identity_basis": "synthetic_in_test_ledger_v1",
+    "source_entity_id": TESTBANK_CIK,
+}
+# (key, concept, placement, value); placements: "prior" = instant one year
+# before por (the rollforward opening), "instant" = at por, "duration" = the
+# annual window ending at por. Alias priority is exercised deliberately:
+# the provision resolves at p20, loans at p30, CET1 at p20.
+_TESTBANK_FACTS = (
+    (
+        "allow_open",
+        "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLoss",
+        "prior",
+        "1000",
+    ),
+    (
+        "allow_close",
+        "us-gaap:FinancingReceivableExcludingAccruedInterestAllowanceForCreditLoss",
+        "instant",
+        "1100",
+    ),
+    ("prov_fin", "us-gaap:ProvisionForLoanLeaseAndOtherLosses", "duration", "400"),
+    (
+        "prov_obs",
+        "us-gaap:OffBalanceSheetCreditLossLiabilityCreditLossExpenseReversal",
+        "duration",
+        "50",
+    ),
+    (
+        "write_offs",
+        "us-gaap:FinancingReceivableAllowanceForCreditLossesWriteOffsNet",
+        "duration",
+        "300",
+    ),
+    (
+        "loans",
+        "us-gaap:LoansAndLeasesReceivableNetReportedAmount",
+        "instant",
+        "50000",
+    ),
+    ("nii", "us-gaap:InterestIncomeExpenseNet", "duration", "2000"),
+    (
+        "cet1",
+        "us-gaap:BankingRegulationCommonEquityTier1Capital",
+        "instant",
+        "5000",
+    ),
+    ("rwa", "us-gaap:RiskWeightedAssets", "instant", "40000"),
+)
+PK11_TABLE_CELL_FIELDS = (
+    "cet1_ratio_disclosed",
+    "regulatory_minimum_disclosed",
+    "lcr_disclosed",
+    "nsfr_disclosed",
+    "liquid_assets_disclosed",
+    "npl_or_npa_disclosed",
+)
+# A.7 pin, computed at this lane's fork point: PK11 registration and the
+# registry finalize hook must not move the BASE packs' AAPL envelopes.
+# (PK01_ENVELOPE_SHA256 is pinned once, in the PK02 section above.)
+
+
+class _SyntheticPackage:
+    """Manifest-only package: the patched converter supplies the facts."""
+
+    def __init__(self, manifest: dict) -> None:
+        self.manifest = manifest
+
+
+def _testbank_packages(form: str = "10-K", por: str = "2025-12-31") -> tuple:
+    return (
+        _SyntheticPackage(
+            {
+                "form": form,
+                "period_of_report": por,
+                "accession": "0000000002-25-000010",
+                "primary_document": "testbank-20251231.htm",
+            }
+        ),
+    )
+
+
+def _testbank_events(
+    *,
+    por: str = "2025-12-31",
+    drop: tuple[str, ...] = (),
+    override: dict[str, str] | None = None,
+    extra: tuple[tuple[str, str, str, str], ...] = (),
+) -> tuple:
+    """The frozen synthetic bank ledger (PK11 §TESTS 3) with per-test edits."""
+    filing_row = synthetic_filing(
+        accession="0000000002-25-000010",
+        document_id="testbank-20251231.htm",
+        accepted_at="2026-02-15T16:00:00Z",
+        recorded_at="2026-02-15T16:05:00Z",
+        filed_at=por,
+        entity_id=TESTBANK_CIK,
+    )
+    end = date.fromisoformat(por)
+    prior = end.replace(year=end.year - 1)
+    start = end - timedelta(days=end.timetuple().tm_yday - 1)
+    contexts = {
+        "duration": FactContext(
+            context_id="c-fy",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTBANK_CIK,
+            start=start.isoformat(),
+            end=por,
+        ),
+        "instant": FactContext(
+            context_id="c-i",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTBANK_CIK,
+            instant=por,
+        ),
+        "prior": FactContext(
+            context_id="c-ip",
+            entity_scheme="http://www.sec.gov/CIK",
+            entity_identifier=TESTBANK_CIK,
+            instant=prior.isoformat(),
+        ),
+    }
+    values = dict(override or {})
+    events = []
+    for key, concept, placement, value in _TESTBANK_FACTS:
+        if key in drop:
+            continue
+        amount = values.get(key, value)
+        events.append(
+            usd_fact(
+                filing_row,
+                concept,
+                contexts[placement],
+                amount,
+                source_span=(0, len(amount)),
+                source_occurrence_key=key,
+            )
+        )
+    for key, concept, placement, value in extra:
+        events.append(
+            usd_fact(
+                filing_row,
+                concept,
+                contexts[placement],
+                value,
+                source_span=(0, len(value)),
+                source_occurrence_key=key,
+            )
+        )
+    return tuple(events)
+
+
+def _patch_testbank_converter(monkeypatch: pytest.MonkeyPatch, events: tuple) -> None:
+    """Stand in for the golden-package parser on the synthetic ledger."""
+
+    def _convert(packages):
+        receipt = FilingConversionReceipt(
+            accession="0000000002-25-000010",
+            parser_numeric_fact_count=len(events),
+            ledger_occurrence_count=len(events),
+            represented_count=len(events),
+            excluded={},
+            source_namespace_families=("us-gaap",),
+        )
+        report = ConversionReport(
+            filings=(receipt,),
+            ledger_sha256="0" * 64,
+            source_namespace_families=("us-gaap",),
+        )
+        return RawFactLedger(events), {}, report
+
+    monkeypatch.setattr(ixbrl_module, "parse_and_convert_golden_packages", _convert)
+
+
+def _pk11_bank_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=_testbank_packages(),
+        entity=TESTBANK_ENTITY,
+        query=PK11_QUERY,
+        issuer_sic=TESTBANK_SIC,
+        sic_source="dei",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _produce_testbank(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    form: str = "10-K",
+    por: str = "2025-12-31",
+    **kwargs,
+) -> dict:
+    events = _testbank_events(por=por, **kwargs)
+    _patch_testbank_converter(monkeypatch, events)
+    return produce_pack(
+        "PK11", _pk11_bank_input(packages=_testbank_packages(form=form, por=por))
+    )
+
+
+def test_pk11_aapl_negative_issuer() -> None:
+    result = produce_pack("PK11", _pack_input(query=PK11_QUERY))
+    assert contract.validate_pack_result(result) == []
+    assert result["applicability"] == {
+        "state": "not_applicable",
+        "reason": "issuer_class_not_bank",
+        "rule_id": "pack.pk11.applicability/v1",
+        "sic": "3571",
+        "sic_source": "sec_submissions",
+    }
+    catalogue = contract.load_pack_schema("PK11")
+    assert [row["field_id"] for row in result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["non_value_state"] == "not_applicable"
+        assert row["coverage_state"] == "not_applicable_period"
+        assert row["reason"] == "issuer_class_not_bank"
+        assert row["value"] is None and row["text_value"] is None
+    assert [row["check_id"] for row in result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "issuer_class_not_bank"
+    assert result["limitations"] == [pack_base.DISPLAY_ONLY_LIMITATION]
+    assert "issuer_class=industrial" in result["receipts"]
+    assert result["coverage"]["not_applicable_fields"] == 16
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+
+
+def test_pk11_unknown_class_is_not_applicable(monkeypatch: pytest.MonkeyPatch) -> None:
+    _patch_testbank_converter(monkeypatch, _testbank_events())
+    result = produce_pack(
+        "PK11", _pk11_bank_input(issuer_sic=None, sic_source=None)
+    )
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "issuer_class_unknown"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "issuer_class_unknown"
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "issuer_class_unknown"
+    assert "issuer_class=unknown" in result["receipts"]
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk11_synthetic_bank_ledger(monkeypatch: pytest.MonkeyPatch) -> None:
+    result = _produce_testbank(monkeypatch)
+    assert contract.validate_pack_result(result) == []
+    assert result["applicability"]["state"] == "applicable"
+    assert result["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert "issuer_class=bank" in result["receipts"]
+
+    total = _row(result, "provision_for_credit_losses_total")
+    assert total["quality_state"] == "valued"
+    assert total["value"] == "450"
+    assert total["evidence_kind"] == "formula"
+    assert total["formula_rule_id"] == "pk11.provision_total/v1"
+    assert total["dependency_field_ids"] == [
+        "credit_loss_expense_financing_receivables",
+        "credit_loss_expense_off_balance_sheet",
+    ]
+    assert _row(result, "credit_loss_expense_financing_receivables")["concept"] == (
+        "us-gaap:ProvisionForLoanLeaseAndOtherLosses"
+    )
+    assert _row(result, "credit_loss_expense_off_balance_sheet")["value"] == "50"
+    assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
+    assert _row(result, "net_write_offs")["value"] == "300"
+    assert _row(result, "loans_held_for_investment")["concept"] == (
+        "us-gaap:LoansAndLeasesReceivableNetReportedAmount"
+    )
+    assert _row(result, "loans_held_for_investment")["value"] == "50000"
+    assert _row(result, "cet1_capital")["concept"] == (
+        "us-gaap:BankingRegulationCommonEquityTier1Capital"
+    )
+    assert _row(result, "risk_weighted_assets")["value"] == "40000"
+    assert _row(result, "net_interest_income")["value"] == "2000"
+    deposits = _row(result, "deposits")
+    assert deposits["quality_state"] == "missing"
+    assert deposits["reason"] == "missing_standard_fact:us-gaap:Deposits"
+    for field_id in PK11_TABLE_CELL_FIELDS:
+        row = _row(result, field_id)
+        assert row["quality_state"] == "unsupported"
+        assert row["evidence_kind"] == "table_cell"
+        assert row["reason"] == "missing_dependency"
+    assert result["coverage"] == {
+        "valued_fields": 9,
+        "missing_fields": 1,
+        "unsupported_fields": 6,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+
+    rollforward = _check(result, "provision_vs_acl_rollforward")
+    assert rollforward["status"] == "pass"
+    assert rollforward["tolerance"] == "1"  # 1x10^-d, closing fact decimals 0
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "pass"
+    assert acl["tolerance"] is None
+    assert acl["evidence_field_ids"] == [
+        "allowance_for_credit_losses",
+        "loans_held_for_investment",
+    ]
+    capital = _check(result, "capital_ratio_arithmetic")
+    assert capital["status"] == "not_evaluable"
+    assert capital["reason"] == "missing_dependency"
+    assert capital["tolerance"] == "0.001"
+    minimum = _check(result, "cet1_vs_minimum")
+    assert minimum["status"] == "not_evaluable"
+    assert minimum["reason"] == "missing_dependency"
+    nii = _check(result, "nii_not_revenue")
+    assert nii["status"] == "pass"
+    assert nii["operands"] == ["net_interest_income", "core:revenue"]
+    assert nii["evidence_field_ids"] == ["net_interest_income"]
+
+    limitations = result["limitations"]
+    assert limitations[0] == pack_base.DISPLAY_ONLY_LIMITATION
+    assert "pk11.acl_coverage: 0.022000" in limitations
+    assert "pk11.table_cell_reserved" in limitations
+    assert any(
+        line.startswith("pk11.industrial_basis_excluded:") for line in limitations
+    )
+
+
+def test_pk11_nii_equals_core_revenue_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    result = _produce_testbank(
+        monkeypatch,
+        extra=(("core_revenue", "us-gaap:Revenues", "duration", "2000"),),
+    )
+    check = _check(result, "nii_not_revenue")
+    assert check["status"] == "fail"
+    # The frozen catalogue carries no bank_interest_not_contract_revenue
+    # reason code, so the row keeps a null reason and the finding rides in
+    # limitations.
+    assert check["reason"] is None
+    line = next(
+        line
+        for line in result["limitations"]
+        if line.startswith("pk11.nii_not_revenue:")
+    )
+    assert "bank_interest_not_contract_revenue" in line
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk11_zero_loans_and_missing_off_balance_sheet(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    result = _produce_testbank(
+        monkeypatch, drop=("prov_obs",), override={"loans": "0"}
+    )
+    acl = _check(result, "acl_coverage")
+    assert acl["status"] == "not_evaluable"
+    assert acl["reason"] == "division_by_zero"
+    assert not any(
+        line.startswith("pk11.acl_coverage:") for line in result["limitations"]
+    )
+    total = _row(result, "provision_for_credit_losses_total")
+    assert total["quality_state"] == "not_evaluable"
+    assert total["reason"] == "missing_dependency"
+    assert (
+        "pk11.provision_total: off-balance-sheet component absent; total not inferred"
+        in result["limitations"]
+    )
+    # Independent of the zeroed/dropped operands, the rollforward still ties.
+    assert _check(result, "provision_vs_acl_rollforward")["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk11_synthetic_10q_bank_is_applicable(monkeypatch: pytest.MonkeyPatch) -> None:
+    result = _produce_testbank(monkeypatch, form="10-Q", por="2025-09-30")
+    assert result["applicability"]["state"] == "applicable"
+    assert result["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert "form=10-Q" in result["receipts"]
+    assert _row(result, "allowance_for_credit_losses")["value"] == "1100"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk11_form_outside_pack_forms(monkeypatch: pytest.MonkeyPatch) -> None:
+    result = _produce_testbank(monkeypatch, form="8-K")
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "form_outside_pack_forms"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "form_outside_pack_forms"
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "form_outside_pack_forms"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk11_bank_production_is_deterministic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    first = _produce_testbank(monkeypatch)
+    second = _produce_testbank(monkeypatch)
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+def test_pk11_a30_limitation_matches_core_catalogue(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    yaml = pytest.importorskip("yaml")
+    result = _produce_testbank(monkeypatch)
+    line = next(
+        line
+        for line in result["limitations"]
+        if line.startswith("pk11.industrial_basis_excluded:")
+    )
+    catalogue = yaml.safe_load(
+        (
+            ROOT
+            / "config"
+            / "fundamental_forensics"
+            / "metrics"
+            / "v1"
+            / "metric_catalog.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    excluded = [
+        row["metric_id"]
+        for row in catalogue["metrics"]
+        if "bank" in ((row.get("applicability") or {}).get("excluded_classes") or [])
+    ]
+    assert line == "pk11.industrial_basis_excluded: " + ",".join(excluded)
+
+
+def test_base_pack_envelopes_identical_after_pk11() -> None:
+    for pack_id, query, digest in (
+        ("PK06", QUERY, PK06_ENVELOPE_SHA256),
+        ("PK01", PK01_QUERY, PK01_ENVELOPE_SHA256),
+    ):
+        result = produce_pack(pack_id, _pack_input(query=query))
+        payload = json.dumps(
+            result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        )
+        assert sha256(payload.encode("utf-8")).hexdigest() == digest
