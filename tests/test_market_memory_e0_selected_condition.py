@@ -2,6 +2,7 @@
 from hashlib import sha256
 import json
 from pathlib import Path
+import tempfile
 
 import pytest
 
@@ -130,17 +131,41 @@ def test_access_and_selection_races_prevent_return(condition_files, change):
         prepare(data, verify=verify)
 
 
-def test_installed_allocator_bytes_are_checked_even_if_commit_check_passes(tmp_path, monkeypatch):
+@pytest.fixture
+def installed_allocator_source():
+    # The real installed-owner guard rejects writable ancestors such as /tmp.
+    # Keep this positive source-byte fixture under the same safe test placement
+    # used by the installed-control owner tests; do not bypass the guard.
+    with tempfile.TemporaryDirectory(prefix="mm-allocator-test-", dir=Path.home()) as base:
+        root = Path(base)
+        path = root / selected_owner._ALLOCATOR
+        path.parent.mkdir(parents=True)
+        path.write_bytes(Path(binding.allocator.__file__).read_bytes())
+        yield root, path
+
+
+def test_installed_allocator_bytes_are_checked_even_if_commit_check_passes(installed_allocator_source, monkeypatch):
+    root, path = installed_allocator_source
     source = Path(binding.allocator.__file__).read_bytes()
-    path = tmp_path / selected_owner._ALLOCATOR
-    path.parent.mkdir(parents=True)
-    path.write_bytes(source)
-    monkeypatch.setattr(owner, "INSTALLED_ROOT", tmp_path)
+    monkeypatch.setattr(owner, "INSTALLED_ROOT", root)
     monkeypatch.setattr(owner, "_verify_source", lambda *a, **kw: None)
     selected_owner._verify_sources(COMMIT)
     path.write_bytes(b"#" + source[1:])
     with pytest.raises(owner.E0InstalledControlError, match="installed_allocator_bytes_mismatch"):
         selected_owner._verify_sources(COMMIT)
+
+
+@pytest.mark.parametrize("unsafe_mode", [0o770, 0o702])
+def test_installed_allocator_writable_ancestor_refuses(installed_allocator_source, monkeypatch, unsafe_mode):
+    root, _path = installed_allocator_source
+    monkeypatch.setattr(owner, "INSTALLED_ROOT", root)
+    monkeypatch.setattr(owner, "_verify_source", lambda *a, **kw: None)
+    root.chmod(unsafe_mode)
+    try:
+        with pytest.raises(owner.E0InstalledControlError, match="unsafe_metadata_ancestor"):
+            selected_owner._verify_sources(COMMIT)
+    finally:
+        root.chmod(0o700)
 
 
 def test_prepared_condition_is_rechecked_before_consumption(condition_files, monkeypatch):
