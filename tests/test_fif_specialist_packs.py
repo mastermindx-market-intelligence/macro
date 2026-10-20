@@ -56,6 +56,14 @@ fixture. The frozen PK07 catalogue carries no narrative reason code, so the
 producer's finalize hook runs the B.2 section search itself and types every
 narrative absence ``missing_dependency`` (the PK10 ruling), carrying the
 intended stock code verbatim in limitations.
+
+PK08 (legal contingencies) is the first nil-ledger pack: the fixture's
+undimensioned nil balance-sheet line resolves through the framework's new
+NilStateMapping (A.1) and the loss-contingency axis through AxisMemberMapping
+(A.2), while the five narrative fields ride the PK07 finalize pattern over
+Note 12's Contingencies subsection and Item 3. The accrual-vs-range
+arithmetic, the C2 prose-only range ruling, the valued axis member and the
+10-Q / 8-K form gates are proven on a synthetic in-test TESTCO filing.
 """
 from __future__ import annotations
 
@@ -472,15 +480,18 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12"}
     # PK03 lane: the BASE set plus PK03, sorted (never a removal).
     # PK05 lane: the set above plus PK05, still sorted (never a removal).
     # PK07 lane: the set above plus PK07, still sorted (never a removal).
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12"}
-    with pytest.raises(SpecialistPackError, match="no producer registered: PK08"):
-        produce_pack("PK08", _pack_input())
+    # PK08 lane: the set above plus PK08 — every catalogue id now has a
+    # producer, so this lane's refusal probe moves to the never-registered
+    # PK00 (the refusal branch is unchanged).
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12"}
+    with pytest.raises(SpecialistPackError, match="no producer registered: PK00"):
+        produce_pack("PK00", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
         produce_pack("PK99", _pack_input())
 
@@ -548,6 +559,7 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/registry.py",
         "engine/fundamental_forensics/specialist_packs/pk06_leases.py",
         "engine/fundamental_forensics/specialist_packs/pk07_mna.py",
+        "engine/fundamental_forensics/specialist_packs/pk08_contingencies.py",
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
         "engine/fundamental_forensics/specialist_packs/narrative.py",
@@ -2068,7 +2080,8 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
     # PK07 lane: the set above plus PK07 (see section 50 for the pin).
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
+    # PK08 lane: the set above plus PK08 (see section 51 for the pin).
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -4862,7 +4875,7 @@ def test_base_pack_envelopes_unchanged_by_pk03_edits() -> None:
 
 
 def test_registered_pack_ids_is_base_set_plus_pk03() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK09", "PK10", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12")
 
 
 def test_pk03_cli_writes_valid_envelope(tmp_path: Path) -> None:
@@ -5809,6 +5822,7 @@ def test_registered_pack_ids_is_base_set_plus_pk05() -> None:
         "PK05",
         "PK06",
         "PK07",
+        "PK08",
         "PK09",
         "PK10",
         "PK11",
@@ -6474,6 +6488,7 @@ def test_registered_pack_ids_is_base_set_plus_pk07() -> None:
         "PK05",
         "PK06",
         "PK07",
+        "PK08",
         "PK09",
         "PK10",
         "PK11",
@@ -6515,3 +6530,704 @@ def test_pk07_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["state"] == "applicable"
     assert envelope["coverage"]["valued_fields"] == 0
     assert len(envelope["fields"]) == 12
+
+
+# 51. PK08: legal contingencies -------------------------------------------------
+#
+# AAPL is the POSITIVE narrative issuer with a nil ledger line: the fixture
+# tags an undimensioned nil us-gaap:CommitmentsAndContingencies at both
+# balance-sheet dates (2025-09-27 and 2024-09-28 — §TESTS 1), no accrual or
+# range facts, and carries us-gaap:LossContingenciesByNatureOfContingencyAxis
+# only on prior-period facts (durations to 2024-09-28 and instants at it), so
+# contingency_nature types missing_standard_fact while the axis demonstrably
+# exists in the ledger. Item 3's body contains both the allegation and the
+# procedural patterns, so both spans value. The positive ledger paths (the
+# accrual-vs-range arithmetic, the prose-only range ruling, the valued axis
+# member and the 10-Q / 8-K form gates) are proven on a synthetic in-test
+# TESTCO inline-XBRL filing admitted by the same strict parser path as the
+# golden fixture.
+#
+# Catalogue note (DEVIATIONS in the lane RETURN): the frozen PK08 catalogue
+# carries no narrative reason code (no narrative_span_not_located, no
+# governing_section_not_supplied), so the stock section-scoped resolver is
+# never entered — the producer's finalize hook runs the exact B.2/B.3 search
+# itself and types every narrative absence missing_dependency, carrying the
+# intended stock code verbatim in limitations (PK07/PK10 precedent). The
+# catalogue's enum lists also lack the packet's `not_material` and `valued`
+# literals: a match on those arms is a non-valued missing_dependency row
+# (A.3), never an invented literal. B.5's "AAPL -> the not_material literal"
+# therefore lands as the A.3 typed absence recorded in DEVIATIONS.
+
+PK08_QUERY = {**QUERY, "requested_metrics": ["contingencies"]}
+# §TESTS 6 pins, captured at this lane's BASE (before PK08 registered) under
+# this section's own input shape: PK08 registration must not move any BASE
+# pack's AAPL envelope.
+PK08_BASE_PACK_ENVELOPE_SHA256 = {
+    "PK01": "73d265817c9189b4bb1168787f77bc5f30291a15636a334515394e0ef64219f5",
+    "PK02": "e83112addae19ecd3e88ca678560d68784513bab263abd958809d76788c0d9e3",
+    "PK03": "29f43103db0179250a149a1cdf5ebe5845d90c63e9d1f72b0197b90d082d66ba",
+    "PK04": "d45c043467eb8b5647f178d70203c3b8c7daee12a61c3409721d868420b3ca1d",
+    "PK05": "8a362986d3d04ee33b8ad47f557fabda6946381b9acb11a960eaebfd3f54c9d0",
+    "PK06": "34aeb2abe3d46412c9a9fa769ebbfdf77b2e3f71cc169106fb5d56e2ceb1780e",
+    "PK07": "05cd306a2d9e98595e70b16181103da05ef438914a97b14ea1be037874ae3fcf",
+    "PK09": "67323b03c3f99dc7935b3a7f46c379568796edfce1b55f3c11711ff7d72514af",
+    "PK10": "e1f41335164cae28c38d78b3b2d566bebb858cb4b2f0992741fbffd17aa7e566",
+    "PK11": "3e22d5cfeb97ac4528577e492aafec44c8ae9e69a4a2e1c2655c9e0ee6b95ae9",
+    "PK12": "440546018a2e63853490d3ef51c20df59d3ed41bf921c66210f1425bc9a38885",
+}
+# This producer's own byte-determinism pin, captured at the lane's fork point.
+PK08_AAPL_ENVELOPE_SHA256 = (
+    "04331be3cbce9029b95d22925b91917ccdba13e844ac13e88ee5400352045fe5"
+)
+# §TESTS 1: the fixture's two nil balance-sheet occurrences (ledger scan).
+PK08_AAPL_NIL_IDS = {
+    "2025-09-27": "rawfact_039d3a6b4da575d1db7036cbfa34d4208cde00151376159c5987ede5157bf50d",
+    "2024-09-28": "rawfact_5fe347cd998b8b9c606b2730508ee7ca4b509bb16fc5d42f45e71f4c608df4ec",
+}
+# §TESTS 2: the Item 3 sentences the fixture's body supplies (§B.5's "report
+# either way" — both patterns hit).
+PK08_AAPL_ALLEGATION = (
+    "District Court for the District of New Jersey against the Company "
+    "alleging monopolization or attempted monopolization in the markets for "
+    "“performance smartphones” and “smartphones” in violation of U.S."
+)
+PK08_AAPL_PROCEDURAL = "The Company has appealed the Commission’s Article 5(4) decision."
+PK08_AAPL_NON_VALUED = {
+    "loss_contingency_accrual": (
+        "missing_standard_fact:us-gaap:LossContingencyAccrualAtCarryingValue"
+    ),
+    "loss_contingency_range_low": (
+        "missing_standard_fact:us-gaap:LossContingencyRangeOfPossibleLossMinimum"
+    ),
+    "loss_contingency_range_high": (
+        "missing_standard_fact:us-gaap:LossContingencyRangeOfPossibleLossMaximum"
+    ),
+    # A.3: the not_material arm matched, but the catalogue's enum list lacks
+    # that literal — a typed absence, never an invented literal.
+    "loss_contingency_range_disclosed": "missing_dependency",
+    "contingency_nature": (
+        "missing_standard_fact:us-gaap:LossContingenciesByNatureOfContingencyAxis"
+    ),
+}
+
+PK08_TESTCO_CIK = "0000000002"
+PK08_TESTCO_DOC = "testco2-20251231.htm"
+PK08_TESTCO_ENTITY = {
+    "entity_id": PK08_TESTCO_CIK,
+    "cik": PK08_TESTCO_CIK,
+    "ticker": "TESTCO",
+    "name": "TESTCO TWO CORP",
+    "identity_basis": "golden_filing_package_fixture_v1",
+    "source_entity_id": PK08_TESTCO_CIK,
+}
+# The synthetic contingencies ledger (§TESTS 3/4/5): (qname, context, value,
+# unit); value None is the nil balance-sheet line. c-i is the closing instant,
+# c-fy the fiscal year, c-ax the year under the loss-contingency axis.
+_PK08_CNC = "us-gaap:CommitmentsAndContingencies"
+_PK08_ACCRUAL = "us-gaap:LossContingencyAccrualAtCarryingValue"
+_PK08_RANGE_LOW = "us-gaap:LossContingencyRangeOfPossibleLossMinimum"
+_PK08_RANGE_HIGH = "us-gaap:LossContingencyRangeOfPossibleLossMaximum"
+_PK08_NATURE_AXIS = "us-gaap:LossContingenciesByNatureOfContingencyAxis"
+_PK08_NIL_FACTS = ((_PK08_CNC, "c-i", None, "usd"),)
+_PK08_TESTCO_CONTEXTS = {
+    "c-i": (
+        '<xbrli:context id="c-i"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{PK08_TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:instant>2025-12-31</xbrli:instant></xbrli:period></xbrli:context>"
+    ),
+    "c-fy": (
+        '<xbrli:context id="c-fy"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{PK08_TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2025-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>"
+    ),
+    "c-ax": (
+        '<xbrli:context id="c-ax"><xbrli:entity><xbrli:identifier'
+        ' scheme="http://www.sec.gov/CIK">'
+        f"{PK08_TESTCO_CIK}</xbrli:identifier></xbrli:entity><xbrli:period>"
+        "<xbrli:startDate>2025-01-01</xbrli:startDate>"
+        "<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period>"
+        '<xbrli:scenario><xbrldi:explicitMember'
+        f' dimension="{_PK08_NATURE_AXIS}">'
+        "test:LitigationMember</xbrldi:explicitMember></xbrli:scenario>"
+        "</xbrli:context>"
+    ),
+}
+_PK08_CONTING_CLEAN = (
+    "Contingencies The Company is subject to various legal proceedings and "
+    "claims that have arisen in the ordinary course of business."
+)
+_PK08_CONTING_RANGE = (
+    "Contingencies The Company is a party to certain pending legal matters. "
+    "For those matters, the Company estimates a range of reasonably possible "
+    "loss of $10 million to $20 million."
+)
+_PK08_ITEM3_BODY = (
+    "Item 3. Legal Proceedings The Company and its subsidiaries are parties "
+    "to litigation and claims in the ordinary course of business. On October "
+    "1, 2025, a putative class action was filed against the Company alleging "
+    "violations of federal antitrust laws. The Company has appealed an "
+    "adverse ruling in one proceeding."
+)
+
+
+def _pk08_testco_document(
+    facts: tuple[tuple[str, str, str | None, str], ...],
+    *,
+    contingencies_prose: str,
+    item3: bool,
+) -> bytes:
+    """A minimal inline-XBRL TESTCO filing with the B.2 contingencies narrative.
+
+    Note 12 – Commitments and Contingencies supplies the note and its
+    Contingencies subsection; Note 13 closes the note; the Item 3 / Item 4
+    pair supplies the legal-proceedings section (omitted on the 10-Q probe).
+    Contexts and units are emitted for exactly the ids the facts cite; a
+    ``None`` value emits the nil balance-sheet line (``xsi:nil="true"``).
+    """
+    rows = []
+    for index, (qname, context, value, unit) in enumerate(facts, start=1):
+        if value is None:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}" xsi:nil="true"/>'
+                "</td></tr>"
+            )
+        else:
+            rows.append(
+                f'<tr><td>item {index}</td><td>'
+                f'<ix:nonFraction id="f-{index}" name="{qname}"'
+                f' contextRef="{context}" unitRef="{unit}"'
+                f' decimals="0">{value}</ix:nonFraction></td></tr>'
+            )
+    contexts = "\n".join(
+        _PK08_TESTCO_CONTEXTS[context_id]
+        for context_id in ("c-i", "c-fy", "c-ax")
+        if any(context == context_id for _q, context, _v, _u in facts)
+    )
+    paragraphs = [
+        "<p>Note 12 – Commitments and Contingencies. The Company has entered "
+        "into certain unconditional purchase obligations.</p>",
+        f"<p>{contingencies_prose}</p>",
+        "<p>Note 13 – Subsequent Events. None.</p>",
+    ]
+    if item3:
+        paragraphs.append(f"<p>{_PK08_ITEM3_BODY}</p>")
+        paragraphs.append("<p>Item 4. Mine Safety Disclosures Not applicable.</p>")
+    template = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml"'
+        ' xmlns:ix="http://www.xbrl.org/2013/inlineXBRL"'
+        ' xmlns:xbrli="http://www.xbrl.org/2003/instance"'
+        ' xmlns:xbrldi="http://xbrl.org/2006/xbrldi"'
+        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        ' xmlns:iso4217="http://www.xbrl.org/2003/iso4217"'
+        ' xmlns:test="http://www.testco.com/2025"'
+        ' xmlns:us-gaap="http://fasb.org/us-gaap/2025">\n'
+        "<head><title>TESTCO filing</title></head>\n<body>\n"
+        '<div style="display:none"><ix:header><ix:resources>\n'
+        f"{contexts}\n"
+        '<xbrli:unit id="usd"><xbrli:measure>iso4217:USD</xbrli:measure>'
+        "</xbrli:unit>\n</ix:resources></ix:header></div>\n"
+        + "\n".join(paragraphs)
+        + f'\n<table>\n{chr(10).join(rows)}\n</table>\n</body></html>\n'
+    )
+    return template.encode("utf-8")
+
+
+def _pk08_testco_input(
+    facts: tuple[tuple[str, str, str | None, str], ...] = _PK08_NIL_FACTS,
+    *,
+    form: str = "10-K",
+    contingencies_prose: str = _PK08_CONTING_CLEAN,
+    item3: bool = True,
+    **overrides,
+) -> PackInput:
+    document = _pk08_testco_document(
+        facts, contingencies_prose=contingencies_prose, item3=item3
+    )
+    manifest = {
+        "entity_id": PK08_TESTCO_CIK,
+        "cik": PK08_TESTCO_CIK,
+        "legal_name": "TESTCO TWO CORP",
+        "form": form,
+        "period_of_report": "2025-12-31",
+        "filing_date": "2026-02-15",
+        "accession": "0000000002-26-000011",
+        "primary_document": PK08_TESTCO_DOC,
+        "source_accepted_at": "2026-02-15T16:00:00Z",
+        "fixture_recorded_at": "2026-02-15T16:05:00Z",
+        "members": [
+            {
+                "name": PK08_TESTCO_DOC,
+                "state": "stored",
+                "content_sha256": sha256(document).hexdigest(),
+            }
+        ],
+    }
+    defaults = dict(
+        packages=(GoldenFilingPackage(manifest=manifest, members={PK08_TESTCO_DOC: document}),),
+        entity=PK08_TESTCO_ENTITY,
+        query=PK08_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+def _pk08_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK08_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk08_result() -> dict:
+    return produce_pack("PK08", _pk08_input())
+
+
+# 51.1 §TESTS 1: nil facts reach the ledger -------------------------------------
+
+
+def test_pk08_nil_facts_reach_the_ledger(ledger) -> None:
+    # The converter keeps nil ix:nonFraction facts as numeric occurrences
+    # with is_nil and no parsed value: no DEVIATION, no skip.
+    occurrences = [
+        occurrence
+        for occurrence in ledger.events
+        if occurrence.concept_qname == _PK08_CNC
+    ]
+    assert len(occurrences) == 2
+    assert all(occurrence.is_nil for occurrence in occurrences)
+    assert all(occurrence.parsed_value is None for occurrence in occurrences)
+    by_instant = {
+        str(occurrence.context.instant): occurrence.occurrence_id
+        for occurrence in occurrences
+    }
+    assert by_instant == PK08_AAPL_NIL_IDS
+
+
+def test_pk08_axis_members_exist_only_outside_the_primary_period(ledger) -> None:
+    # GAPS evidence: the axis is carried in the ledger, but only on facts
+    # whose periods end before the primary period — the A.2 row is therefore
+    # a typed absence on this fixture, not an untested negative.
+    members: dict[str, set[str]] = {}
+    for occurrence in ledger.events:
+        for axis, member in occurrence.context.explicit_dimensions:
+            if axis == _PK08_NATURE_AXIS:
+                period = str(
+                    occurrence.context.instant
+                    or f"{occurrence.context.start}..{occurrence.context.end}"
+                )
+                members.setdefault(period, set()).add(str(member))
+    assert members == {
+        "2024-06-30..2024-09-28": {
+            "{http://www.apple.com/20250927}"
+            "UnfavorableInvestigationOutcomeEUStateAidRulesMember"
+        },
+        "2024-09-28": {
+            "{http://www.apple.com/20250927}"
+            "UnfavorableInvestigationOutcomeEUStateAidRulesMember"
+        },
+    }
+
+
+# 51.2 §TESTS 2: the AAPL envelope ----------------------------------------------
+
+
+def test_pk08_result_passes_contract_validator(pk08_result: dict) -> None:
+    assert contract.validate_pack_result(pk08_result) == []
+
+
+def test_pk08_aapl_rows_follow_catalogue_order(pk08_result: dict) -> None:
+    catalogue = contract.load_pack_schema("PK08")
+    assert [row["field_id"] for row in pk08_result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    assert pk08_result["applicability"] == {
+        "state": "applicable",
+        "reason": "applicability_rule_satisfied",
+        "rule_id": "pack.pk08.applicability/v1",
+        "sic": "3571",
+        "sic_source": "sec_submissions",
+    }
+
+
+def test_pk08_aapl_valued_rows(pk08_result: dict) -> None:
+    bs_state = _row(pk08_result, "commitments_and_contingencies_bs_state")
+    assert bs_state["quality_state"] == "valued"
+    assert bs_state["non_value_state"] is None
+    assert bs_state["text_value"] == "nil_disclosed"
+    assert bs_state["value"] is None
+    assert bs_state["evidence_kind"] == "xbrl_fact"
+    assert bs_state["concept"] == _PK08_CNC
+    assert bs_state["taxonomy"] == "us-gaap"
+    # A.1 cites exactly the 2025-09-27 nil occurrence, never the prior year.
+    assert bs_state["source_occurrence_ids"] == [PK08_AAPL_NIL_IDS["2025-09-27"]]
+    assert bs_state["period"] == {"kind": "instant", "end": "2025-09-27"}
+    assert bs_state["mapping_rule_id"] == (
+        "PK08.commitments_and_contingencies_bs_state.nil_state/v1"
+    )
+
+    block = _row(pk08_result, "commitments_text_block")
+    assert block["quality_state"] == "valued"
+    assert block["evidence_kind"] == "text_span"
+    assert block["text_value"].startswith(
+        "Contingencies The Company is subject to various legal proceedings"
+    )
+    assert block["text_value"].endswith(
+        "concerning loss contingencies for asserted legal and other claims."
+    )
+    assert len(block["text_value"]) == 462  # 512-char cap, sentence-trimmed
+
+    item3 = _row(pk08_result, "legal_proceedings_item3")
+    assert item3["quality_state"] == "valued"
+    assert item3["evidence_kind"] == "text_span"
+    assert item3["text_value"].startswith(
+        "Digital Markets Act Investigations On March 25, 2024"
+    )
+    assert len(item3["text_value"]) == 439  # first 512 after the heading
+
+    allegation = _row(pk08_result, "allegation_span")
+    assert allegation["quality_state"] == "valued"
+    assert allegation["evidence_kind"] == "text_span"
+    assert allegation["text_value"] == PK08_AAPL_ALLEGATION
+
+    procedural = _row(pk08_result, "procedural_status_span")
+    assert procedural["quality_state"] == "valued"
+    assert procedural["evidence_kind"] == "text_span"
+    assert procedural["text_value"] == PK08_AAPL_PROCEDURAL
+
+    for field_id in (
+        "commitments_text_block",
+        "legal_proceedings_item3",
+        "allegation_span",
+        "procedural_status_span",
+    ):
+        span = _row(pk08_result, field_id)["source_span"]
+        assert span["document_id"] == "aapl-20250927.htm"
+        assert span["end_offset"] > span["start_offset"]
+
+
+def test_pk08_aapl_non_valued_rows(pk08_result: dict) -> None:
+    for field_id, reason in PK08_AAPL_NON_VALUED.items():
+        row = _row(pk08_result, field_id)
+        assert row["quality_state"] == "missing", field_id
+        assert row["non_value_state"] == "missing", field_id
+        assert row["coverage_state"] == "unmapped", field_id
+        assert row["reason"] == reason, field_id
+        assert row["value"] is None and row["text_value"] is None, field_id
+    # The fact-driven absences name their first alias; the enum absence is
+    # the A.3 literal refusal (the not_material arm matched).
+    assert (
+        _row(pk08_result, "loss_contingency_accrual")["concept"] == _PK08_ACCRUAL
+    )
+    assert _row(pk08_result, "contingency_nature")["concept"] == _PK08_NATURE_AXIS
+    assert any(
+        "catalogue lacks literal 'not_material'" in line
+        for line in pk08_result["limitations"]
+    )
+
+
+def test_pk08_aapl_checks(pk08_result: dict) -> None:
+    catalogue = contract.load_pack_schema("PK08")
+    assert [check["check_id"] for check in pk08_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+    accrual_vs_range = _check(pk08_result, "accrual_vs_range")
+    assert accrual_vs_range["status"] == "not_evaluable"
+    assert accrual_vs_range["reason"] == "missing_dependency"
+    assert _check(pk08_result, "nil_bs_vs_note") == {
+        "check_id": "nil_bs_vs_note",
+        "kind": "qualitative_presence",
+        "status": "pass",
+        "operands": [
+            "commitments_and_contingencies_bs_state",
+            "commitments_text_block",
+        ],
+        "tolerance": None,
+        "evidence_field_ids": [
+            "commitments_and_contingencies_bs_state",
+            "commitments_text_block",
+        ],
+        "reason": None,
+    }
+    assert _check(pk08_result, "item3_vs_note")["status"] == "pass"
+    assert _check(pk08_result, "item3_vs_note")["reason"] is None
+
+
+def test_pk08_aapl_coverage_receipts_and_limitations(pk08_result: dict) -> None:
+    # B.5: five valued rows — the nil state, both text blocks and both spans.
+    assert pk08_result["coverage"] == {
+        "valued_fields": 5,
+        "missing_fields": 5,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+    assert (
+        f"nil_fact_ids={PK08_AAPL_NIL_IDS['2025-09-27']}"
+        in pk08_result["receipts"]
+    )
+    assert any(
+        line.startswith("pk08.table_cell_reserved:")
+        for line in pk08_result["limitations"]
+    )
+    # One line per non-valued row naming what was searched.
+    for field_id in PK08_AAPL_NON_VALUED:
+        assert any(
+            line.startswith(f"pk08.{field_id}: ") for line in pk08_result["limitations"]
+        ), field_id
+    # No prose range on this fixture: the ruling never fires and its
+    # limitation line stays absent.
+    assert not any(
+        "range_in_prose_only" in line for line in pk08_result["limitations"]
+    )
+
+
+# 51.3 §TESTS 3: the 10-Q probe ---------------------------------------------------
+
+
+def test_pk08_quarterly_form_gates_item3() -> None:
+    result = produce_pack("PK08", _pk08_testco_input(form="10-Q", item3=False))
+    item3 = _row(result, "legal_proceedings_item3")
+    assert item3["quality_state"] == "not_applicable"
+    assert item3["reason"] == "form_outside_pack_forms"
+    check = _check(result, "item3_vs_note")
+    assert check["status"] == "not_applicable"
+    assert check["reason"] == "form_outside_pack_forms"
+    # Every other row still resolves or types its absence (K3K4 ruling).
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert result["applicability"]["state"] == "applicable"
+    assert rows["commitments_and_contingencies_bs_state"]["text_value"] == (
+        "nil_disclosed"
+    )
+    assert rows["commitments_text_block"]["quality_state"] == "valued"
+    assert (
+        rows["loss_contingency_accrual"]["reason"]
+        == "missing_standard_fact:us-gaap:LossContingencyAccrualAtCarryingValue"
+    )
+    assert (
+        rows["contingency_nature"]["reason"]
+        == f"missing_standard_fact:{_PK08_NATURE_AXIS}"
+    )
+    for field_id in ("allegation_span", "procedural_status_span"):
+        assert rows[field_id]["quality_state"] == "not_evaluable", field_id
+        assert rows[field_id]["reason"] == "missing_dependency", field_id
+        assert any(
+            line.startswith(f"pk08.{field_id}: governing_section_not_supplied;")
+            for line in result["limitations"]
+        ), field_id
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_form_outside_pack_forms_types_the_whole_pack() -> None:
+    result = produce_pack("PK08", _pk08_testco_input(form="8-K", item3=False))
+    assert result["applicability"]["state"] == "not_applicable"
+    assert result["applicability"]["reason"] == "form_outside_pack_forms"
+    for row in result["fields"]:
+        assert row["quality_state"] == "not_applicable"
+        assert row["reason"] == "form_outside_pack_forms"
+    for check in result["checks"]:
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "form_outside_pack_forms"
+    assert result["coverage"]["disclosure_coverage_state"] == "not_supplied"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.4 §TESTS 4: the accrual-vs-range arithmetic ----------------------------------
+
+
+def test_pk08_accrual_within_range_passes() -> None:
+    facts = _PK08_NIL_FACTS + (
+        (_PK08_ACCRUAL, "c-i", "150", "usd"),
+        (_PK08_RANGE_LOW, "c-fy", "100", "usd"),
+        (_PK08_RANGE_HIGH, "c-fy", "200", "usd"),
+    )
+    result = produce_pack("PK08", _pk08_testco_input(facts))
+    rows = {row["field_id"]: row for row in result["fields"]}
+    assert rows["loss_contingency_accrual"]["value"] == "150"
+    assert rows["loss_contingency_range_low"]["value"] == "100"
+    assert rows["loss_contingency_range_high"]["value"] == "200"
+    check = _check(result, "accrual_vs_range")
+    assert check["status"] == "pass"
+    assert check["reason"] is None
+    assert _check(result, "nil_bs_vs_note")["status"] == "pass"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_outside_range_fails() -> None:
+    facts = _PK08_NIL_FACTS + (
+        (_PK08_ACCRUAL, "c-i", "250", "usd"),
+        (_PK08_RANGE_LOW, "c-fy", "100", "usd"),
+        (_PK08_RANGE_HIGH, "c-fy", "200", "usd"),
+    )
+    result = produce_pack("PK08", _pk08_testco_input(facts))
+    check = _check(result, "accrual_vs_range")
+    assert check["status"] == "fail"
+    assert check["reason"] is None
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk08_accrual_vs_range_missing_high_is_not_evaluable() -> None:
+    facts = _PK08_NIL_FACTS + (
+        (_PK08_ACCRUAL, "c-i", "150", "usd"),
+        (_PK08_RANGE_LOW, "c-fy", "100", "usd"),
+    )
+    result = produce_pack("PK08", _pk08_testco_input(facts))
+    check = _check(result, "accrual_vs_range")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.5 §TESTS 5: the prose-only range ---------------------------------------------
+
+
+def test_pk08_range_in_prose_only_is_never_valued() -> None:
+    result = produce_pack(
+        "PK08",
+        _pk08_testco_input(contingencies_prose=_PK08_CONTING_RANGE),
+    )
+    rows = {row["field_id"]: row for row in result["fields"]}
+    for field_id in ("loss_contingency_range_low", "loss_contingency_range_high"):
+        row = rows[field_id]
+        assert row["quality_state"] == "missing", field_id
+        assert row["reason"] == "numeric_value_in_narrative_only", field_id
+        assert row["value"] is None, field_id
+    # The disclosed arm's literal IS in the catalogue: the enum values.
+    disclosed = rows["loss_contingency_range_disclosed"]
+    assert disclosed["quality_state"] == "valued"
+    assert disclosed["text_value"] == "disclosed_range"
+    # The accrual is a plain ledger absence — the prose rule never touches it.
+    assert rows["loss_contingency_accrual"]["reason"] == (
+        "missing_standard_fact:us-gaap:LossContingencyAccrualAtCarryingValue"
+    )
+    assert any(
+        line.startswith("pk08.range_in_prose_only:")
+        for line in result["limitations"]
+    )
+    assert _check(result, "accrual_vs_range")["status"] == "not_evaluable"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.6 A.2 positive path: the axis member inside the primary period ---------------
+
+
+def test_pk08_axis_member_inside_primary_period_values_the_row() -> None:
+    facts = _PK08_NIL_FACTS + ((_PK08_ACCRUAL, "c-ax", "40", "usd"),)
+    result = produce_pack("PK08", _pk08_testco_input(facts))
+    row = _row(result, "contingency_nature")
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "{http://www.testco.com/2025}LitigationMember"
+    assert row["value"] is None  # axis_member is a non-numeric row type
+    assert row["dimensions"] == [
+        {
+            "axis": _PK08_NATURE_AXIS,
+            "member": "{http://www.testco.com/2025}LitigationMember",
+        }
+    ]
+    assert row["concept"] == _PK08_NATURE_AXIS
+    assert row["evidence_kind"] == "xbrl_fact"
+    assert row["source_occurrence_ids"]
+    assert row["mapping_rule_id"] == "PK08.contingency_nature.axis_member/v1"
+    # The dimensioned accrual never leaks into the undimensioned accrual row.
+    accrual = _row(result, "loss_contingency_accrual")
+    assert accrual["quality_state"] == "missing"
+    assert contract.validate_pack_result(result) == []
+
+
+# 51.7 §TESTS 6: BASE invariance, registry, determinism, CLI ----------------------
+
+
+@pytest.mark.parametrize("pack_id", sorted(PK08_BASE_PACK_ENVELOPE_SHA256))
+def test_base_pack_envelopes_unchanged_by_pk08_edits(pack_id: str) -> None:
+    # §TESTS 6: every pack registered at BASE keeps its AAPL envelope
+    # byte-identical to BASE after PK08 registers.
+    result = produce_pack(pack_id, _pk08_input())
+    payload = json.dumps(
+        result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert (
+        sha256(payload.encode("utf-8")).hexdigest()
+        == PK08_BASE_PACK_ENVELOPE_SHA256[pack_id]
+    )
+
+
+def test_registered_pack_ids_is_base_set_plus_pk08() -> None:
+    assert registered_pack_ids() == (
+        "PK01",
+        "PK02",
+        "PK03",
+        "PK04",
+        "PK05",
+        "PK06",
+        "PK07",
+        "PK08",
+        "PK09",
+        "PK10",
+        "PK11",
+        "PK12",
+    )
+
+
+def test_pk08_production_is_deterministic() -> None:
+    first = produce_pack("PK08", _pk08_input())
+    second = produce_pack("PK08", _pk08_input())
+    payload_first = json.dumps(
+        first, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    payload_second = json.dumps(
+        second, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    assert payload_first == payload_second
+    assert (
+        sha256(payload_first.encode("utf-8")).hexdigest()
+        == PK08_AAPL_ENVELOPE_SHA256
+    )
+
+
+def test_pk08_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk08.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK08_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK08",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert envelope["coverage"]["valued_fields"] == 5

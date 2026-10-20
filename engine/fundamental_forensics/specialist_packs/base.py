@@ -2167,6 +2167,24 @@ def produce_pack_result(
                     ledger=ledger,
                     por=por,
                 )
+            elif isinstance(mapping, NilStateMapping):
+                # A.1 (PK08): the enum row read from a concept's nil state.
+                outcomes[field_id] = _resolve_nil_state_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping,
+                    ledger=ledger,
+                    por=por,
+                )
+            elif isinstance(mapping, AxisMemberMapping):
+                # A.2 (PK08): the axis_member row over the primary period.
+                outcomes[field_id] = _resolve_axis_member_mapping(
+                    pack_id=pack_id,
+                    catalogue_field=catalogue_field,
+                    mapping=mapping,
+                    ledger=ledger,
+                    por=por,
+                )
             elif isinstance(mapping, FactMapping):
                 if mapping.optional_axes:
                     outcomes[field_id] = _resolve_axes_fact_mapping(
@@ -4091,3 +4109,202 @@ def _weighted_negative_limitation(
             f"{pack_id.lower()}.{spec.check_id}: negative-weight lines"
             f" {','.join(negative)}"
         )
+
+
+# ---------------------------------------------------------------------------
+# A.1/A.2 additions (PK08 lane; strictly additive, appended after the PK05
+# banner so parallel pack lanes stay mechanically mergeable)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class NilStateMapping:
+    """A.1 (PK08): an enum row read from a numeric concept's nil/valued state.
+
+    Resolves the undimensioned occurrence of ``concept`` at the instant
+    ``period_of_report`` — the one admission the plain :class:`FactMapping`
+    laws refuse, because they skip nil occurrences by design. An ``is_nil``
+    occurrence yields ``nil_literal``; an occurrence with a parsed value yields
+    ``valued_literal``; no occurrence is the typed absence
+    ``missing_standard_fact:<qname>``. A literal the catalogue's field name
+    does not declare is never invented (A.4 law): the row degrades to a
+    non-valued ``missing_dependency`` citing the occurrence ids it refused to
+    name (the A.3 ruling for a pack whose catalogue lacks the literal).
+    """
+
+    concept: str
+    nil_literal: str
+    valued_literal: str
+
+
+def _nil_state_mapping_digest(mapping: NilStateMapping) -> str:
+    payload = canonical_json(
+        [mapping.concept, mapping.nil_literal, mapping.valued_literal]
+    )
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _nil_state_stamps(
+    row: dict[str, Any], pack_id: str, field_id: str, mapping: NilStateMapping
+) -> None:
+    row["mapping_rule_id"] = f"{pack_id}.{field_id}.nil_state/v1"
+    row["mapping_rule_digest"] = _nil_state_mapping_digest(mapping)
+
+
+def _resolve_nil_state_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: NilStateMapping,
+    ledger: RawFactLedger,
+    por: date,
+) -> _FieldOutcome:
+    """Resolve one A.1 nil-state enum row against the raw ledger."""
+    field_id = catalogue_field["field_id"]
+    candidates = [
+        occurrence
+        for occurrence in ledger.events
+        if occurrence.concept_qname == mapping.concept
+        and occurrence.context.instant is not None
+        and occurrence.context.instant == por
+        and _dimensions_admitted(occurrence, ())
+    ]
+    if not candidates:
+        outcome = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            f"missing_standard_fact:{mapping.concept}",
+            concept=mapping.concept,
+        )
+        _nil_state_stamps(outcome.row, pack_id, field_id, mapping)
+        return outcome
+    nil_occurrences = [item for item in candidates if item.is_nil]
+    valued_occurrences = [item for item in candidates if not item.is_nil]
+    if nil_occurrences and valued_occurrences:
+        # A.6 conflicting facts: the same instant carries both a nil and a
+        # valued undimensioned occurrence of the line.
+        outcome = _absence_row(
+            catalogue_field,
+            por,
+            "not_evaluable",
+            "missing_dependency",
+            concept=mapping.concept,
+            occurrence_ids=[item.occurrence_id for item in candidates],
+        )
+        _nil_state_stamps(outcome.row, pack_id, field_id, mapping)
+        return outcome
+    literal = (
+        mapping.nil_literal if nil_occurrences else mapping.valued_literal
+    )
+    declared = _catalogue_enum_literals(catalogue_field)
+    if declared is not None and literal not in declared:
+        # A.3: the catalogue does not declare this literal; never invent it.
+        outcome = _absence_row(
+            catalogue_field,
+            por,
+            "missing",
+            "missing_dependency",
+            concept=mapping.concept,
+            occurrence_ids=[item.occurrence_id for item in candidates],
+        )
+        _nil_state_stamps(outcome.row, pack_id, field_id, mapping)
+        return outcome
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["text_value"] = literal
+    row["concept"] = mapping.concept
+    row["taxonomy"] = (
+        "extension"
+        if mapping.concept.startswith("{")
+        else mapping.concept.split(":", 1)[0]
+    )
+    row["source_occurrence_ids"] = sorted(
+        {item.occurrence_id for item in candidates}
+    )
+    _nil_state_stamps(row, pack_id, field_id, mapping)
+    return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
+
+
+@dataclass(frozen=True)
+class AxisMemberMapping:
+    """A.2 (PK08): an ``axis_member`` row listing one axis's primary members.
+
+    The sorted, de-duplicated member qnames carried on ``axis_qname`` by any
+    ledger occurrence whose period lies inside the primary period (an instant
+    at ``period_of_report`` or a duration ending at it). ``text_value`` is the
+    full list joined by ``;`` (the first member leads); ``dimensions`` carries
+    every member on the axis; no member at all is the typed absence
+    ``missing_standard_fact:<axis_qname>``. The envelope's ``value`` slot stays
+    null: ``axis_member`` is a non-numeric row type.
+    """
+
+    axis_qname: str
+
+
+def _axis_member_mapping_digest(mapping: AxisMemberMapping) -> str:
+    payload = canonical_json([mapping.axis_qname])
+    return sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _resolve_axis_member_mapping(
+    *,
+    pack_id: str,
+    catalogue_field: Mapping[str, Any],
+    mapping: AxisMemberMapping,
+    ledger: RawFactLedger,
+    por: date,
+) -> _FieldOutcome:
+    """Resolve one A.2 axis-member row against the raw ledger."""
+    field_id = catalogue_field["field_id"]
+
+    def absence(reason: str) -> _FieldOutcome:
+        outcome = _absence_row(
+            catalogue_field, por, "missing", reason, concept=mapping.axis_qname
+        )
+        outcome.row["mapping_rule_id"] = f"{pack_id}.{field_id}.axis_member/v1"
+        outcome.row["mapping_rule_digest"] = _axis_member_mapping_digest(mapping)
+        return outcome
+
+    members: set[str] = set()
+    occurrence_ids: set[str] = set()
+    for occurrence in ledger.events:
+        context = occurrence.context
+        in_primary_period = (
+            context.instant is not None and context.instant == por
+        ) or (
+            context.start is not None
+            and context.end is not None
+            and context.end == por
+        )
+        if not in_primary_period:
+            continue
+        for axis, member in context.explicit_dimensions:
+            if _dimension_qname_matches(str(axis), mapping.axis_qname):
+                members.add(str(member))
+                occurrence_ids.add(str(occurrence.occurrence_id))
+    if not members:
+        return absence(f"missing_standard_fact:{mapping.axis_qname}")
+    ordered = sorted(members)
+    row = _base_row(catalogue_field, por)
+    row["quality_state"] = "valued"
+    row["non_value_state"] = None
+    row["coverage_state"] = "source_trace_complete"
+    row["reason"] = None
+    row["text_value"] = ";".join(ordered)
+    row["dimensions"] = [
+        {"axis": mapping.axis_qname, "member": member} for member in ordered
+    ]
+    row["concept"] = mapping.axis_qname
+    row["taxonomy"] = (
+        "extension"
+        if mapping.axis_qname.startswith("{")
+        else mapping.axis_qname.split(":", 1)[0]
+    )
+    row["source_occurrence_ids"] = sorted(occurrence_ids)
+    row["mapping_rule_id"] = f"{pack_id}.{field_id}.axis_member/v1"
+    row["mapping_rule_digest"] = _axis_member_mapping_digest(mapping)
+    return _FieldOutcome(row=row, value=None, decimals=None, unit=row["unit"])
