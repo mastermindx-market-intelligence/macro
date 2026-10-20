@@ -109,7 +109,9 @@
   <span>{{ t('sleeve gross','组合仓位') }}</span>
   <span class="prov">· {{ t('CN drawdown radar','A股回撤雷达') }}: {{ d.sizing.radar_state or '—' }}
     · can_force <code>{{ 'yes' if d.sizing.can_force else 'no' }}</code>
-    {% if d.sizing.radar_as_of %}· {{ d.sizing.radar_as_of }}{% endif %}</span>
+    {% if d.sizing.radar_as_of %}· {{ d.sizing.radar_as_of }}{% endif %}
+    {% if d.sizing.dominant_driver_en %}· {{ t('main driver','主要驱动') }}:
+    {{ t(d.sizing.dominant_driver_en, d.sizing.dominant_driver_zh) }}{% endif %}</span>
 </div>
 
 <div class="strip">
@@ -241,6 +243,25 @@
   <span>{{ t('mean excess / rebalance','每次超额均值') }} {{ signed((lg.mean_excess_per_rebalance*100), pct=true) }}</span>
   <span>{{ t('hit vs CSI300','对沪深300胜率') }} <b>{{ (lg.hit_vs_csi300*100)|round(1) }}%</b></span>
 </div>
+{% set gl = d.ledger.graded or {} %}
+{% set pr = gl.get('per_rebalance') or [] %}
+{% set dts = pr|map(attribute='rebalance_date')|list %}
+{% set hz = gl.get('horizon_d') %}
+{% set n_reg = (gl.get('rebalances') or [])|length %}
+<div class="bc-stats" id="ledger-window">
+  {% if pr %}<span>{{ t('graded window','评分区间') }}
+    <b>{{ dts|min }} → {{ dts|max }}</b>
+    </span>{% endif %}
+  {% if n_reg > pr|length %}<span>{{ t('registered, not yet graded','已登记尚未评分') }}
+    <b>{{ n_reg - pr|length }}</b></span>{% endif %}
+  {% if hz is number %}<span>{{ t('horizon','持有期') }} <b>{{ hz }}</b>
+    {{ t('sessions','个交易日') }}</span>{% endif %}
+  {% if lg.median_excess is number %}<span>{{ t('median excess','超额中位数') }}
+    {{ signed(lg.median_excess*100, pct=true) }}</span>{% endif %}
+</div>
+{% if hz is number %}<p class="sub">{{ t('Each row is a ' ~ hz ~ '-session forward window; windows'
+  ~ ' that start within ' ~ hz ~ ' sessions of each other overlap.',
+  '每行是' ~ hz ~ '个交易日的前瞻窗口；起点相距不足' ~ hz ~ '个交易日的窗口相互重叠。') }}</p>{% endif %}
 {% else %}
 <div class="empty">{{ t('Accruing — the sleeve grades once enough rebalances mature (conventions locked in from day 1).','累积中——待足够再平衡成熟后开始评分（评分惯例自第一天锁定）。') }}
   <code>n={{ lg.get('n_rebalances', 0) }}</code></div>
