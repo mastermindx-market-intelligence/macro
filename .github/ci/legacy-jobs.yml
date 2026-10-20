@@ -25231,6 +25231,11 @@ jobs:
       # gate, and the two Fed-put inputs (Sahm recession, 10y breakeven) now print beneath it.
       - name: W23-L11 spvector re-deploy gate chip + Fed-put input legs
         run: python -m pytest tests/test_spvector_gate_chips.py -q
+      # W23-L13 (S&P Vector, 2026-10-20): the scorecard states its basis -- backtest window, the
+      # bootstrap CI definition, the Sharpe>0 share and the drawdown CI -- and the overlay card
+      # tallies its forward log (days, builds, veto days). Pure helper + fixture renders.
+      - name: W23-L13 spvector scorecard basis + overlay forward-log tally
+        run: python -m pytest tests/test_spvector_scorecard_basis.py -q
       - name: basket-turn grading pack + session-stamp heal (forward-ledger audit 2026-08-05)
         run: python -m pytest tests/test_basket_turn_grading.py tests/test_heal_basket_turn_ledger.py -q
       - name: W4 staged re-entry spine + P5 deferred-context BTC chips (dat/netliq/cascade)
