@@ -102,6 +102,7 @@ class TestDayStateLearningWal:
         monkeypatch.setattr(poller, "_resolve_universe", lambda _cfg: ["SPY"])
         monkeypatch.setattr(poller, "_probe_delta_mode", lambda _session: "time_window")
         monkeypatch.setattr(poller, "_load_baselines", lambda: {})
+        monkeypatch.setattr(poller, "_sync_prior_close_inputs", lambda *_args: None)
         monkeypatch.setattr(poller, "_load_unusual_baseline", lambda: {})
         monkeypatch.setattr(poller, "_r2_client", lambda: None)
         monkeypatch.setattr(poller, "_prune_day_states", lambda *_args: None)
@@ -326,6 +327,32 @@ class TestDayStateLearningWal:
         )
         assert poller.main(["--once"]) == 1
         assert order == []
+
+    @pytest.mark.parametrize("argv,expected", [(["--rth-only"], 1), (["--once"], 0), (["--rth-only", "--once"], 0)])
+    def test_price_inputs_only_sync_on_natural_rth_start(self, tmp_path, monkeypatch, argv, expected):
+        poller = self._stub_main_prelude(tmp_path, monkeypatch)
+        calls = []
+        monkeypatch.setattr(poller, "_within_rth", lambda: True)
+        monkeypatch.setattr(poller, "_sync_prior_close_inputs", lambda roots, day: calls.append((roots, day)))
+        class ReachedCycle(BaseException):
+            pass
+        def stop(**_kwargs):
+            raise ReachedCycle
+        monkeypatch.setattr(poller, "run_cycle", stop)
+        with pytest.raises(ReachedCycle):
+            poller.main(argv)
+        assert calls == [(["SPY"], WAL_SESSION_DATE)] * expected
+
+    def test_price_input_sync_failure_keeps_flow_available(self, tmp_path, monkeypatch, caplog):
+        from lib import live_flow_price_inputs
+        import scripts.live_flow_poller as poller
+        def unavailable(*_args, **_kwargs):
+            raise TimeoutError("injected transport deadline")
+        monkeypatch.setattr(live_flow_price_inputs, "sync_prior_closes", unavailable)
+        monkeypatch.setattr(poller.config, "data_dir", lambda: tmp_path)
+        poller._sync_prior_close_inputs(["SPY"], WAL_SESSION_DATE)
+        assert "prior-close inputs unavailable (TimeoutError)" in caplog.text
+        assert not (tmp_path / live_flow_price_inputs.RELATIVE_PATH).exists()
 
     def test_launchd_restarts_only_abnormal_exit(self):
         import plistlib

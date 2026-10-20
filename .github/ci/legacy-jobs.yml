@@ -1050,6 +1050,10 @@ jobs:
       - "lib/closes_panel.py"
       - "lib/config.py"
       - "lib/nyse_calendar.py"
+      - "lib/live_flow_prior_close.py"
+      - "lib/live_flow_price_inputs.py"
+      - "tests/test_live_flow_prior_close.py"
+      - "tests/test_live_flow_price_inputs.py"
       - "lib/procutil.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
@@ -1071,9 +1075,9 @@ jobs:
       - name: install live-flow recovery suite dependencies
         # collectors.thetadata imports requests at module scope; pandas/numpy
         # support the live-flow engine and pyyaml is imported by lib.config.
-        run: pip install pytest pandas numpy pyyaml requests
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: live-flow WAL/cycle-recovery + sibling suites
-        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py -q
+        run: python -m pytest tests/test_live_flow_recovery.py tests/test_live_flow_tiering.py tests/test_flow_archive.py tests/test_live_flow_baselines.py tests/test_live_flow_prior_close.py tests/test_live_flow_price_inputs.py -q
 
   integrated-answer-v0:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -29994,6 +29998,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - lib/live_flow_price_inputs.py
+      - lib/live_flow_prior_close.py
       - "app/institutional_research.py"
       - "contracts/institutional_intelligence/manager_intent_recipe.v1.schema.json"
       - "engine/institutional_census/__init__.py"
