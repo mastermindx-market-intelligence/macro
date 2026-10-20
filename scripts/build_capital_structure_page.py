@@ -2,8 +2,8 @@
 
 The browser receives its issuer rows and filing evidence only through the
 authenticated Capital Structure API. This builder deliberately writes no data
-projection of its own and still copies only `_ASSETS`. Two read-only
-exceptions, both display-only (no score/rank/direction):
+projection of its own and still copies only `_ASSETS`. Read-only public-fact
+exceptions, all display-only (no score/rank/direction):
 
 - B-F09-4: it reads the nightly-written `premium_featured.json` receipt so the
   desk can show one classified deal's dated premium. That receipt is
@@ -15,6 +15,8 @@ exceptions, both display-only (no score/rank/direction):
   dated policy_calendar step.
 - B-F09 covenant terms: a literal, public filing threshold from the native
   immutable ledger. A threshold alone never supplies calculated headroom.
+- B-F09 bond pricing: two historical SEC pricing sheets retained in the native
+  corporate-bond cache, qualified against their archive receipts and filing indexes.
 
 Usage:
     python -m scripts.build_capital_structure_page
@@ -396,12 +398,14 @@ def render(root: Path) -> Path:
     finally:
         _pc.compute_policy_calendar = _orig_cal
     from engine.ma_agreement_context import featured_agreement
+    from engine.bond_issue_terms import native_comparison
     premium = _featured_premium(root)
     html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
         premium=premium,
         agreement=featured_agreement(root, premium or {}),
+        bond_comparison=native_comparison(root),
         covenant_headroom=_covenant_headroom(root),
         policy_watch=watch,
         policy_projection=payload,

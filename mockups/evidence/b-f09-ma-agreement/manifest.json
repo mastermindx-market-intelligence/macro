@@ -9,7 +9,7 @@
     {
       "page_id": "f09-ma-agreement",
       "route": "/capital_structure.html#cs-ma-agreement",
-      "page_tree_sha": "b7a4d7fd22d62048ee65b6173cd750534d7e36d0",
+      "page_tree_sha": "55536ac0ea205bd713990baa32055323b0d856b2",
       "states": [
         {
           "file": "desktop-dark-en.jpg",
@@ -168,5 +168,31 @@
     "engine/ma_agreement_context.py": "7ba6866d5b84d6cc716ba32d0e49d6829b1f5a73ebfa1b402047be78fdcac890",
     "data/special_situations/agreement_sources.parquet": "d5640a3750aecd6f47c69a684448f3e212655167021e9443f7825cacc288e920"
   },
-  "capture_note": "Eight fresh actual CUA crops after correcting pre-termination proposal chronology. Each persisted capture proves locale/theme, page width equal viewport and both keyboard-opened disclosures; final settled mobile-light-EN supersedes the first transient viewport crop. Original per-capture records retained in chronology-captures.json. Local EN/dark natural1780x997 restored; task1925925859 closed; server stopped. No live acceptance."
+  "capture_note": "Eight fresh actual CUA crops after correcting pre-termination proposal chronology. Each persisted capture proves locale/theme, page width equal viewport and both keyboard-opened disclosures; final settled mobile-light-EN supersedes the first transient viewport crop. Original per-capture records retained in chronology-captures.json. Local EN/dark natural1780x997 restored; task1925925859 closed; server stopped. No live acceptance.",
+  "composition": {
+    "at": "2026-10-20T04:54:33.630652+00:00",
+    "capture_source_commit": "55536ac0ea205bd713990baa32055323b0d856b2",
+    "integrated_bond_head": "7cc2e8c0fe37f28ce759ce088c413a132c0e573e",
+    "capture_source_hashes_preserved": true,
+    "agreement_section_dom_byte_equivalent": true,
+    "agreement_section_sha256": "fde814f7b439886afbf4df42ec6cbab9d139ec59dbbe492cd2d2639ce979a6df",
+    "unchanged_component_source": [
+      "templates/_ma_agreement_context.html.j2",
+      "engine/ma_agreement_context.py",
+      "data/special_situations/agreement_sources.parquet"
+    ],
+    "css_change": "Only appended existing bond-scoped selectors; captured agreement rules and global tokens unchanged.",
+    "all_eight_inline_scripts_byte_identical": true,
+    "integrated_file_sha256": {
+      "templates/_ma_agreement_context.html.j2": "591e2a68e5eca7577d4a2fe62acc0181cd0ff43893da88f813ebffff1b424608",
+      "templates/capital_structure.html.j2": "187f5585f4ce43920d1f39eacbb0bfb7b1c1f333668791eccf21b4c6974f7df9",
+      "templates/capital_structure.css": "aadad9182ea91c8704cd91dd9a35410ff04921cc6cd1959aa55e62ff990f6970",
+      "site/capital_structure.html": "81a2e83e8ce1676bf7af642e160dc8d9bfd08c0bd2dc7aa162639e283abbbbcb",
+      "site/capital_structure.css": "aadad9182ea91c8704cd91dd9a35410ff04921cc6cd1959aa55e62ff990f6970",
+      "scripts/build_capital_structure_page.py": "5d6ab92fe8c9068c2c8569f662c5e61a35b157338a8ad91056e5d7e73074a0da",
+      "engine/ma_agreement_context.py": "7ba6866d5b84d6cc716ba32d0e49d6829b1f5a73ebfa1b402047be78fdcac890",
+      "data/special_situations/agreement_sources.parquet": "d5640a3750aecd6f47c69a684448f3e212655167021e9443f7825cacc288e920"
+    },
+    "scope": "Existing8agreement captures reused for unchanged component. Whole-page integrated browser check follows publication; no newcapture represented."
+  }
 }

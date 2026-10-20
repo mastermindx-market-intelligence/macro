@@ -10008,6 +10008,8 @@ jobs:
           tests/test_build_capital_structure_projection.py
           tests/test_capital_structure_page.py
           tests/test_ma_agreement_context.py
+          tests/test_bond_issue_terms.py
+          tests/test_bond_issue_parser.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10756,6 +10758,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
@@ -15962,6 +15965,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -18930,6 +18936,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -25252,6 +25260,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
+      - "lib/dataos/sec_filing_identity.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
@@ -26595,6 +26606,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "lib/dataos/sec_filing_identity.py"
+      - "engine/bond_issue_parser.py"
+      - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       # Native covenant consumer import closure.
