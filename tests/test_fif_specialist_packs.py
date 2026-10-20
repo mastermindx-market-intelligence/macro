@@ -1,4 +1,4 @@
-"""Specialist pack producer framework + PK06/PK01/PK02/PK11/PK12 producers over the AAPL 10-K fixture.
+"""Specialist pack producer framework + PK06/PK01/PK02/PK11/PK12/PK09 producers over the AAPL 10-K fixture.
 
 Every count asserted here was verified against the fixture's facts through
 the raw ledger (never by reading the filing HTML): the fixture tags the split
@@ -29,6 +29,10 @@ evidence for a later lane), so ``financing_disclosed_not_forecast`` passes on
 
 PK11 (financial-institution credit, capital and liquidity) is likewise a
 NEGATIVE issuer here; its bank path is proven on a synthetic in-test ledger.
+
+PK09 (controls, auditor, going concern) is text-span driven: the narrative
+locator over the AAPL 10-K primary document plus synthetic 10-Q/material-
+weakness probes.
 """
 from __future__ import annotations
 
@@ -38,6 +42,7 @@ from decimal import Decimal
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -51,7 +56,9 @@ from engine.fundamental_forensics.specialist_packs import (
     registered_pack_ids,
 )
 from engine.fundamental_forensics.specialist_packs import base as pack_base
+from engine.fundamental_forensics.specialist_packs import narrative as pack_narrative
 from engine.fundamental_forensics.specialist_packs import pk06_leases
+from engine.fundamental_forensics.specialist_packs import pk09_controls
 from engine.fundamental_forensics import specialist_pack_contract as contract
 from engine.fundamental_forensics import ixbrl_raw_ledger as ixbrl_module
 from engine.fundamental_forensics.ixbrl_raw_ledger import (
@@ -441,8 +448,8 @@ def test_formula_over_missing_input_is_not_evaluable() -> None:
 
 
 def test_registry_shape_and_refusal() -> None:
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11", "PK12")
-    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK11", "PK12"}
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
+    assert set(PACK_PRODUCERS) == {"PK01", "PK02", "PK06", "PK09", "PK11", "PK12"}
     with pytest.raises(SpecialistPackError, match="no producer registered: PK07"):
         produce_pack("PK07", _pack_input())
     with pytest.raises(SpecialistPackError, match="no producer registered: PK99"):
@@ -513,6 +520,8 @@ def test_cli_usage_error_exits_two(tmp_path: Path) -> None:
         "engine/fundamental_forensics/specialist_packs/pk06_leases.py",
         "engine/fundamental_forensics/specialist_packs/pk01_debt.py",
         "engine/fundamental_forensics/specialist_packs/pk02_sbc.py",
+        "engine/fundamental_forensics/specialist_packs/narrative.py",
+        "engine/fundamental_forensics/specialist_packs/pk09_controls.py",
         "engine/fundamental_forensics/specialist_packs/pk11_bank.py",
         "engine/fundamental_forensics/specialist_packs/pk12_biotech.py",
         "scripts/fif_specialist_packs.py",
@@ -1988,7 +1997,7 @@ def pk12_biotech_result() -> dict:
     return produce_pack("PK12", _pk12_input())
 
 
-# 20. PK12 on AAPL: the honest negative (B.4) ---------------------------------
+# 22. PK12 on AAPL: the honest negative (B.4) ---------------------------------
 
 
 def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
@@ -2025,7 +2034,7 @@ def test_pk12_aapl_is_not_applicable_outside_biotech_sics() -> None:
     assert "pre_revenue_test=false" in result["receipts"]
     assert contract.validate_pack_result(result) == []
     # §TESTS 1: BASE packs plus PK12, not the full twelve at this BASE.
-    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK11", "PK12")
+    assert registered_pack_ids() == ("PK01", "PK02", "PK06", "PK09", "PK11", "PK12")
 
 
 def test_pk12_aapl_envelope_digest_is_pinned() -> None:
@@ -2064,7 +2073,7 @@ def test_pk12_biotech_coded_aapl_probe_is_non_positive_burn() -> None:
     assert contract.validate_pack_result(result) == []
 
 
-# 21. PK12 synthetic biotech: the positive path (§TESTS 2) --------------------
+# 23. PK12 synthetic biotech: the positive path (§TESTS 2) --------------------
 
 
 def test_pk12_biotech_positive_path_validates(pk12_biotech_result: dict) -> None:
@@ -2178,7 +2187,7 @@ def test_pk12_production_is_deterministic() -> None:
     assert first["pack_content_sha256"] == second["pack_content_sha256"]
 
 
-# 22. PK12 pre-revenue applicability (§TESTS 3) --------------------------------
+# 24. PK12 pre-revenue applicability (§TESTS 3) --------------------------------
 
 
 def test_pk12_pre_revenue_path_admits_non_biotech_sic() -> None:
@@ -2211,7 +2220,7 @@ def test_pk12_valued_revenue_blocks_pre_revenue_path() -> None:
     assert contract.validate_pack_result(result) == []
 
 
-# 23. PK12 non-positive burn (§TESTS 4) ----------------------------------------
+# 25. PK12 non-positive burn (§TESTS 4) ----------------------------------------
 
 
 def test_pk12_non_positive_burn_is_typed() -> None:
@@ -2240,7 +2249,7 @@ def test_pk12_non_positive_burn_is_typed() -> None:
     assert contract.validate_pack_result(result) == []
 
 
-# 24. PK12 form gate (§TESTS 5) -------------------------------------------------
+# 26. PK12 form gate (§TESTS 5) -------------------------------------------------
 
 
 def test_pk12_10q_is_outside_pack_forms() -> None:
@@ -2259,7 +2268,7 @@ def test_pk12_10q_is_outside_pack_forms() -> None:
     assert contract.validate_pack_result(result) == []
 
 
-# 25. BASE-pack invariance (§TESTS 6) -------------------------------------------
+# 27. BASE-pack invariance (§TESTS 6) -------------------------------------------
 
 
 def test_base_pack_envelopes_unchanged_by_pk12_edits() -> None:
@@ -2275,7 +2284,7 @@ def test_base_pack_envelopes_unchanged_by_pk12_edits() -> None:
         assert sha256(payload.encode("utf-8")).hexdigest() == expected
 
 
-# 26. PK12 CLI -------------------------------------------------------------------
+# 28. PK12 CLI -------------------------------------------------------------------
 
 
 def test_pk12_cli_writes_valid_envelope(tmp_path: Path) -> None:
@@ -2313,3 +2322,412 @@ def test_pk12_cli_writes_valid_envelope(tmp_path: Path) -> None:
     assert envelope["applicability"]["reason"] == "sic_outside_biotech_codes"
     assert len(envelope["fields"]) == 9
     assert "sic_in_biotech_set=false" in envelope["receipts"]
+
+
+# 29. PK09 narrative locator (A.1/A.2) ----------------------------------------
+
+
+def test_pk09_primary_document_text_is_deterministic_with_exact_offsets() -> None:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    first = pack_narrative.primary_document_text(package)
+    second = pack_narrative.primary_document_text(package)
+    assert first == second  # same bytes -> same NarrativeText
+    assert first.document_id == package.manifest["primary_document"]
+    assert len(first.offsets) == len(first.text)
+    raw = package.members[first.document_id]
+    step = max(1, len(first.text) // 20)
+    for index in range(0, len(first.text), step):
+        ch = first.text[index]
+        offset = first.offsets[index]
+        seg = raw[offset : offset + len(ch.encode("utf-8"))]
+        assert (
+            seg.decode("utf-8", errors="ignore") == ch
+            or seg.startswith(b"&")  # the entity it came from
+            or seg.startswith(b"<")  # a tag-derived space
+        ), f"offset map broke down at char {index}"
+
+
+def test_pk09_locate_section_skips_toc_and_returns_body() -> None:
+    package = load_golden_aapl_package(ROOT, accession=ACCESSION)
+    nt = pack_narrative.primary_document_text(package)
+    matches = list(
+        re.finditer(pk09_controls.ITEM9A.heading, nt.text, re.IGNORECASE)
+    )
+    assert len(matches) >= 2  # the TOC line and the body heading
+    span = pack_narrative.locate_section(nt, pk09_controls.ITEM9A)
+    assert span is not None
+    assert span[0] != matches[0].start()  # not the TOC occurrence
+    assert span[0] == matches[-1].start()  # the body heading
+    section = nt.text[span[0] : span[1]]
+    assert "disclosure controls and procedures" in section
+    assert "Item 9B" not in section  # ends at the first end heading after it
+
+
+# 30. PK09 envelope over the AAPL fixture (B.7) -------------------------------
+
+PK09_QUERY = {**QUERY, "requested_metrics": ["controls"]}
+# Invariance pins captured at BASE before this lane's edits (test 8): the
+# registry/build changes for PK09 must not move either earlier pack.
+PK01_CONTENT_SHA256 = (
+    "c634be05977eeb1430937bd52ef58ab096c8490dd6cf12ce0820b285c3e8cee8"
+)
+# (PK01_ENVELOPE_SHA256 is pinned once, in the PK02 section above.)
+PK06_CONTENT_SHA256 = (
+    "21b9476039b6a84dc49962d2ac18e2da62e8ce87eabe1c88a56190df2f21fd26"
+)
+PK09_VALUED = {
+    "icfr_management_conclusion": "effective",
+    "disclosure_controls_effective": "effective",
+    "material_weakness_present": "false",
+    "auditor_firm": "Ernst & Young LLP",
+    "auditor_opinion_fs": "unqualified",
+    "auditor_opinion_icfr": "effective",
+    "going_concern_substantial_doubt": "not_disclosed",
+}
+PK09_NON_VALUED = {
+    "going_concern_management_plan": "missing_dependency",
+    "remediation_span": "missing_dependency",
+}
+
+
+def _pk09_input(**overrides) -> PackInput:
+    defaults = dict(
+        packages=(load_golden_aapl_package(ROOT, accession=ACCESSION),),
+        entity=ENTITY,
+        query=PK09_QUERY,
+        issuer_sic="3571",
+        sic_source="sec_submissions",
+    )
+    defaults.update(overrides)
+    return PackInput(**defaults)
+
+
+@pytest.fixture(scope="module")
+def pk09_result() -> dict:
+    return produce_pack("PK09", _pk09_input())
+
+
+def test_pk09_result_passes_contract_validator(pk09_result: dict) -> None:
+    assert contract.validate_pack_result(pk09_result) == []
+
+
+def test_pk09_result_passes_jsonschema_envelope(pk09_result: dict) -> None:
+    try:
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+    except ImportError:  # pragma: no cover - CI carries referencing
+        pytest.skip("referencing unavailable; validate_pack_result half only")
+    schema = contract.load_envelope_schema()
+    packet = json.loads(
+        (ROOT / "contracts" / "financial_intelligence_packet.schema.json").read_text(
+            "utf-8"
+        )
+    )
+    registry = Registry()
+    for contents in (schema, packet):
+        registry = registry.with_resource(
+            contents["$id"],
+            Resource.from_contents(contents, default_specification=DRAFT202012),
+        )
+    errors = list(
+        Draft202012Validator(schema, registry=registry).iter_errors(pk09_result)
+    )
+    assert errors == []
+
+
+def test_pk09_rows_follow_catalogue_order(pk09_result: dict) -> None:
+    catalogue = contract.load_pack_schema("PK09")
+    assert [row["field_id"] for row in pk09_result["fields"]] == [
+        item["field_id"] for item in catalogue["fields"]
+    ]
+    assert [row["check_id"] for row in pk09_result["checks"]] == [
+        item["check_id"] for item in catalogue["checks"]
+    ]
+
+
+def test_pk09_valued_rows_carry_span_evidence(pk09_result: dict) -> None:
+    for field_id, literal in PK09_VALUED.items():
+        row = _row(pk09_result, field_id)
+        assert row["quality_state"] == "valued"
+        assert row["text_value"] == literal
+        assert row["value"] is None  # non-numeric types carry no decimal value
+        assert row["evidence_kind"] == "text_span"
+        assert row["required_evidence_kind"] == "text_span"
+        assert row["coverage_state"] == "source_trace_complete"
+        assert row["reason"] is None
+        assert row["concept"] is None and row["taxonomy"] is None
+        assert row["dimensions"] == []
+        assert row["mapping_rule_id"] == f"PK09.{field_id}.text_span/v1"
+        assert row["mapping_rule_digest"]
+        span = row["source_span"]
+        assert isinstance(span, dict)
+        assert span["document_id"] == MANIFEST["primary_document"]
+        assert span["accession"] == ACCESSION
+        assert isinstance(span["start_offset"], int) and span["start_offset"] >= 0
+        assert span["end_offset"] > span["start_offset"]
+
+
+def test_pk09_sentence_and_window_text_fields(pk09_result: dict) -> None:
+    change = _row(pk09_result, "icfr_change_in_period")
+    assert change["quality_state"] == "valued"
+    assert (
+        "There were no changes in the Company’s internal control over financial"
+        " reporting during the fourth quarter of 2025" in change["text_value"]
+    )
+    assert len(change["text_value"]) <= 1024
+    cam = _row(pk09_result, "critical_audit_matters")
+    assert cam["quality_state"] == "valued"
+    assert cam["text_value"].startswith("The critical audit matter communicated")
+    assert len(cam["text_value"]) <= 512
+    # The valued absence of a material weakness is asserted over Item 9A only.
+    weakness = _row(pk09_result, "material_weakness_present")
+    assert weakness["text_value"] == "false"
+    assert weakness["source_span"]["end_offset"] < len(
+        load_golden_aapl_package(ROOT, accession=ACCESSION)
+        .members[MANIFEST["primary_document"]]
+    )
+
+
+def test_pk09_non_valued_rows_report_typed_reasons(pk09_result: dict) -> None:
+    for field_id, reason in PK09_NON_VALUED.items():
+        row = _row(pk09_result, field_id)
+        assert row["quality_state"] == "not_evaluable"
+        assert row["non_value_state"] == "not_evaluable"
+        assert row["reason"] == reason
+        assert row["value"] is None and row["text_value"] is None
+        assert row["source_span"] is None
+        assert row["coverage_state"] == "unmapped"
+    # Conditional fields name the dependency that gated them.
+    assert _row(pk09_result, "going_concern_management_plan")[
+        "dependency_field_ids"
+    ] == ["going_concern_substantial_doubt"]
+    assert _row(pk09_result, "remediation_span")["dependency_field_ids"] == [
+        "material_weakness_present"
+    ]
+
+
+def test_pk09_checks_pass_and_cam_receipt(pk09_result: dict) -> None:
+    for check_id in (
+        "management_vs_auditor_icfr",
+        "going_concern_vs_opinion",
+        "cam_present_on_10k",
+    ):
+        check = _check(pk09_result, check_id)
+        assert check["status"] == "pass"
+        assert check["reason"] is None
+    assert "cam_count=1" in pk09_result["receipts"]
+    assert any(
+        receipt.startswith("narrative_text_sha256=")
+        for receipt in pk09_result["receipts"]
+    )
+
+
+def test_pk09_coverage_and_limitations(pk09_result: dict) -> None:
+    assert pk09_result["applicability"]["state"] == "applicable"
+    assert pk09_result["applicability"]["reason"] == "applicability_rule_satisfied"
+    assert pk09_result["coverage"] == {
+        "valued_fields": 9,
+        "missing_fields": 0,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 2,
+        "not_applicable_fields": 0,
+        "disclosure_coverage_state": "present",
+    }
+    limitations = pk09_result["limitations"]
+    assert (
+        "pk09.text_span_rows: regex over the primary document narrative; no "
+        "table or footnote resolution" in limitations
+    )
+    for field_id in PK09_NON_VALUED:  # one line per non-valued field
+        assert any(
+            line.startswith(f"pk09.{field_id}:") for line in limitations
+        ), field_id
+
+
+def test_pk09_text_span_rows_never_carry_a_numeric_value(pk09_result: dict) -> None:
+    for row in pk09_result["fields"]:
+        if row["evidence_kind"] == "text_span":
+            assert row["value"] is None or isinstance(row["value"], (bool, str))
+
+
+def test_pk09_production_is_deterministic() -> None:
+    first = produce_pack("PK09", _pk09_input())
+    second = produce_pack("PK09", _pk09_input())
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+    assert first["pack_content_sha256"] == second["pack_content_sha256"]
+
+
+# 31. PK09 synthetic probes (10-Q form gate; material weakness) ---------------
+
+
+_SYNTHETIC_PREFIX = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    '<html xmlns="http://www.w3.org/1999/xhtml" '
+    'xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" '
+    'xmlns:xbrli="http://www.xbrl.org/2003/instance">'
+    "<head><title>Form</title></head><body>"
+    "<ix:header><ix:resources>"
+    '<xbrli:context id="c1"><xbrli:entity><xbrli:identifier '
+    'scheme="http://www.sec.gov/CIK">0000000099</xbrli:identifier>'
+    "</xbrli:entity><xbrli:period><xbrli:instant>2026-06-30</xbrli:instant>"
+    "</xbrli:period></xbrli:context>"
+    "</ix:resources></ix:header>"
+)
+
+
+def _synthetic_package(form: str, body: str) -> GoldenFilingPackage:
+    """A minimal convertible filing package carrying arbitrary body HTML."""
+    html = (_SYNTHETIC_PREFIX + body + "</body></html>").encode("utf-8")
+    digest = sha256(html).hexdigest()
+    manifest = {
+        "entity_id": "ISS:TEST",
+        "cik": "0000000099",
+        "legal_name": "Test Co",
+        "accession": "0000000099-26-000001",
+        "form": form,
+        "primary_document": "doc.htm",
+        "period_of_report": "2026-06-30",
+        "filing_date": "2026-07-10",
+        "source_accepted_at": "2026-07-10T08:00:00.000Z",
+        "fixture_recorded_at": "2026-08-23T00:32:31Z",
+        "members": [
+            {
+                "name": "doc.htm",
+                "state": "stored",
+                "role": "primary",
+                "content_sha256": digest,
+            }
+        ],
+    }
+    return GoldenFilingPackage(manifest=manifest, members={"doc.htm": html})
+
+
+def test_pk09_quarterly_form_gates_auditor_rows_and_checks() -> None:
+    body = (
+        "<div>Item 4. Controls and Procedures</div>"
+        "<div>Based on an evaluation, the Company&#8217;s disclosure controls"
+        " and procedures were effective as of June 30, 2026.</div>"
+        "<div>Management concluded that the Company&#8217;s internal control"
+        " over financial reporting was effective as of June 30, 2026.</div>"
+        "<div>There were no changes in the Company&#8217;s internal control"
+        " over financial reporting during the quarter.</div>"
+    )
+    result = produce_pack(
+        "PK09",
+        _pk09_input(packages=(_synthetic_package("10-Q", body),)),
+    )
+    assert result["applicability"]["state"] == "applicable"  # 10-Q is in forms
+    annual_only = (
+        "auditor_firm",
+        "auditor_opinion_fs",
+        "auditor_opinion_icfr",
+        "critical_audit_matters",
+        "going_concern_substantial_doubt",
+        "going_concern_management_plan",
+    )
+    for field_id in annual_only:
+        row = _row(result, field_id)
+        assert row["quality_state"] == "not_applicable"
+        assert row["non_value_state"] == "not_applicable"
+        assert row["reason"] == "form_outside_pack_forms"
+        assert row["coverage_state"] == "not_applicable_period"
+    # The controls family still resolves through the Item 4 section spec.
+    assert _row(result, "icfr_management_conclusion")["text_value"] == "effective"
+    assert _row(result, "disclosure_controls_effective")["text_value"] == "effective"
+    assert _row(result, "material_weakness_present")["text_value"] == "false"
+    assert _row(result, "icfr_change_in_period")["quality_state"] == "valued"
+    assert _row(result, "remediation_span")["reason"] == "missing_dependency"
+    for check_id in (
+        "management_vs_auditor_icfr",
+        "going_concern_vs_opinion",
+        "cam_present_on_10k",
+    ):
+        check = _check(result, check_id)
+        assert check["status"] == "not_applicable"
+        assert check["reason"] == "form_outside_pack_forms"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_material_weakness_probe() -> None:
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management concluded that a material weakness in the "
+        "Company&#8217;s internal control over financial reporting existed as "
+        "of the period end.</div>"
+        "<div>The Company has begun remediation of the material weakness, "
+        "including hiring additional accounting personnel.</div>"
+    )
+    result = produce_pack(
+        "PK09",
+        _pk09_input(packages=(_synthetic_package("10-K", body),)),
+    )
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    conclusion = _row(result, "icfr_management_conclusion")
+    assert conclusion["quality_state"] == "valued"
+    assert conclusion["text_value"] == "material_weakness"
+    remediation = _row(result, "remediation_span")
+    assert remediation["quality_state"] == "valued"
+    assert remediation["text_value"].startswith("The Company has begun")
+    # A material weakness without an auditor report leaves the cross check
+    # honestly not_evaluable rather than bent into a pass.
+    check = _check(result, "management_vs_auditor_icfr")
+    assert check["status"] == "not_evaluable"
+    assert check["reason"] == "missing_dependency"
+    assert contract.validate_pack_result(result) == []
+
+
+# 32. PK09 invariance and CLI -------------------------------------------------
+
+
+def test_pk09_edits_leave_base_pack_envelopes_byte_identical() -> None:
+    for pack_id, pack_input, content_sha, envelope_sha in (
+        ("PK06", _pack_input(), PK06_CONTENT_SHA256, PK06_ENVELOPE_SHA256),
+        ("PK01", _pk01_input(), PK01_CONTENT_SHA256, PK01_ENVELOPE_SHA256),
+    ):
+        result = produce_pack(pack_id, pack_input)
+        assert result["pack_content_sha256"] == content_sha, pack_id
+        payload = json.dumps(
+            result, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        )
+        assert (
+            sha256(payload.encode("utf-8")).hexdigest() == envelope_sha
+        ), pack_id
+
+
+def test_pk09_cli_writes_valid_envelope(tmp_path: Path) -> None:
+    entity_file = tmp_path / "entity.json"
+    query_file = tmp_path / "query.json"
+    out_file = tmp_path / "pk09.json"
+    entity_file.write_text(json.dumps(ENTITY), encoding="utf-8")
+    query_file.write_text(json.dumps(PK09_QUERY), encoding="utf-8")
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "fif_specialist_packs.py"),
+            "--pack",
+            "PK09",
+            "--package-dir",
+            str(FIXTURE_DIR),
+            "--entity-json",
+            str(entity_file),
+            "--query-json",
+            str(query_file),
+            "--issuer-sic",
+            "3571",
+            "--sic-source",
+            "sec_submissions",
+            "--out",
+            str(out_file),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
+    envelope = json.loads(out_file.read_text("utf-8"))
+    assert contract.validate_pack_result(envelope) == []
+    assert envelope["applicability"]["state"] == "applicable"
+    assert envelope["coverage"]["valued_fields"] == 9
+    assert "cam_count=1" in envelope["receipts"]
