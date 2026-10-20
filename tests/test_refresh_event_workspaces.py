@@ -1758,3 +1758,27 @@ def test_generic_ex99_ambiguity_does_not_grant_release_admission():
     assert _select_exhibit_99_1([("8-K", "main.htm"), ("EX-101.SCH", "x.xsd")]) is None
     assert _select_exhibit_99_1([("EX-99", "image.jpg")]) is None
     assert _select_exhibit_99_1([("EX-99", "other.htm"), ("EX-99.1", "release.htm")]) == "release.htm"
+
+
+@pytest.mark.parametrize("ticker,cik", [("LMT","0000936468"),("RTX","0000101829"),("NOC","0001133421"),("LHX","0000202058"),("GD","0000040533")])
+def test_registered_industrial_prior_is_carried_by_the_real_default_loader(monkeypatch,ticker,cik):
+    # A supported discovery issuer must not disappear during a quiet refresh.
+    base="https://example.test/industrial-prior/"+ticker
+    event_id="evt_cik"+cik+"_2026q2_results"
+    saved={"event_id":event_id,"lifecycle":{"state":"corrected","observed_at":"2026-10-15T04:44:02Z"}}
+    response=_FakeRequestsResponse(status_code=200,payload=saved)
+    manifest={"files":{f"workspaces/{event_id}.json":{"bytes":len(json.dumps(saved).encode()),"sha256":sha256(json.dumps(saved).encode()).hexdigest()}}}
+    def fake_get(url,*,headers=None,timeout=None):
+        if url==base+"/event_workspaces/manifest.json":return _FakeRequestsResponse(status_code=200,payload={"generation_id":"industrial-prior"})
+        if url==base+"/event_workspaces/generations/industrial-prior/manifest.json":return _FakeRequestsResponse(status_code=200,payload=manifest)
+        if url==base+f"/event_workspaces/generations/industrial-prior/workspaces/{event_id}.json":return response
+        raise AssertionError("unexpected fixture read: "+url)
+    monkeypatch.setattr(reader,"_fetch_bytes",_as_fetch_bytes(fake_get))
+    assert load_prior_workspace_for_ticker(ticker,base_url=base)==saved
+
+
+def test_registered_industrial_prior_read_error_is_not_silent_absence(monkeypatch):
+    def fake_get(url,*,headers=None,timeout=None):return _FakeRequestsResponse(status_code=500,payload={})
+    monkeypatch.setattr(reader,"_fetch_bytes",_as_fetch_bytes(fake_get))
+    with pytest.raises(PriorWorkspaceFetchFailed):
+        load_prior_workspace_for_ticker("LMT",base_url="https://example.test/industrial-prior-failure")

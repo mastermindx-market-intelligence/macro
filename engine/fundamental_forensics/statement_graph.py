@@ -70,8 +70,6 @@ _PREFIXES = (
     "dei_",
     "ecd_",
     "country_",
-    "apple_",
-    "aapl_",
     "iso4217_",
 )
 
@@ -111,7 +109,7 @@ _YEAR_CELL_RE = re.compile(r"^\d{4}$")
 _FULL_MONTH_TOKEN = (
     "January|February|March|April|May|June|July|August|September|October|November|December"
 )
-# BAC consolidated headers print the numeric day glued to the year ("June 302025")
+# Some consolidated headers print the numeric day glued to the year ("June 302025")
 # with no space or comma. This is a whole-header-cell grammar only: narrative or
 # body text never passes it, cells at or below the first fact row are never
 # consulted, the day must be valid for that month (February 29 only in a leap
@@ -121,7 +119,7 @@ _GLUED_DATE_CELL_RE = re.compile(
 )
 _GLUED_YEAR_MIN = 1990
 _GLUED_YEAR_MAX = 2100
-# BAC income/cash-flow column groups ("Three Months Ended June 30") each own
+# Banner income/cash-flow column groups ("Three Months Ended June 30") each own
 # their own duration; composing one shared end-date row would erase the 3m/6m
 # distinction, so these never route through _compose_year_row_header.
 _GROUP_BANNER_RE = re.compile(
@@ -164,8 +162,20 @@ _MONTHS = {
 }
 
 
+STATEMENT_REFUSAL_CODES = (
+    "displayed_layout_unsupported",
+    "displayed_table_absent",
+    "displayed_columns_absent",
+    "statement_role_not_consolidated",
+)
+
+
 class StatementGraphError(ValueError):
     """The filing package cannot yield an as-reported statement tree."""
+
+    def __init__(self, message: str, *, refusal_code: str | None = None) -> None:
+        super().__init__(message)
+        self.refusal_code = refusal_code
 
 
 @dataclass(frozen=True)
@@ -596,7 +606,7 @@ def _compose_year_row_header(
 ) -> tuple[list[str], frozenset[int], str] | None:
     """Compose year-only header columns from a month-day banner over a year row.
 
-    Fiscal-year statements (the SNOW shape) print the period as
+    Fiscal-year statements print the period as
     "Fiscal Year Ended January 31," on one header row and bare 4-digit years on
     the next. When no row yields two full dates, the banner's single month-day
     phrase plus the year row's display order compose one ISO date per year
@@ -605,7 +615,7 @@ def _compose_year_row_header(
     not purely years (fewer than two, or any other non-empty cell besides "$")
     returns None so the caller keeps its existing refusal. Returns the composed
     ISO dates, the consumed row indices, and the composition source:
-    ``"composed_title_year_row"`` when the CAT title banner reached its year row
+    ``"composed_title_year_row"`` when a title banner reached its year row
     across one exact unit band, otherwise ``"composed_year_row"``.
     """
     first_fact_row = next(
@@ -628,7 +638,7 @@ def _compose_year_row_header(
         month, day = distinct[0]
         year_row = index + 1
         year_cells = rows[year_row]
-        # CAT annual statements print a factless, unit-only band between the
+        # Some annual statements print a factless, unit-only band between the
         # "at December 31," title and the bare-year comparative row.  This is
         # a narrow, source-observed interstitial, not an invitation to skip any
         # arbitrary narrative or extra header row.
@@ -636,7 +646,7 @@ def _compose_year_row_header(
         skip_units = (
             year_row + 1 < header_limit
             and not any(cell["facts"] for cell in year_cells)
-            # The other observed CAT annual headings use the same one-row
+            # Other observed annual headings use the same one-row
             # position for different, but exact, statement-unit labels.
             and len(units) == 1
             and units[0] in _STATEMENT_UNIT_BANDS
@@ -690,7 +700,7 @@ def _glued_header_cell_date(text: str) -> str | None:
 def _glued_header_columns(
     rows: list[list[dict[str, Any]]],
 ) -> tuple[list[str], frozenset[int]] | None:
-    """Direct glued-date header columns (the BAC consolidated balance-sheet shape).
+    """Direct glued-date header columns (the glued consolidated balance-sheet shape).
 
     A row above the first fact row carrying two or more glued date cells is the
     dated header; a rowspan carry repeats the same texts one row down, so every
@@ -743,7 +753,7 @@ def _compose_grouped_duration_year_row(
 ) -> tuple[list[dict[str, Any]], frozenset[int], list[int]] | None:
     """Composed duration columns from N-months-ended group banners over a year row.
 
-    The BAC consolidated income/cash-flow shape prints one banner per duration
+    The banner consolidated income/cash-flow shape prints one banner per duration
     ("Three Months Ended June 30", "Six Months Ended June 30") with the years
     in a row beneath it; each group owns its own duration and end date, so a
     single composed end-date row would erase the 3m/6m distinction. Fully blank
@@ -827,7 +837,8 @@ def _compose_grouped_duration_year_row(
                 continue
             if low <= column < high and not _YEAR_CELL_RE.match(text):
                 raise _layout_unsupported(
-                    "grouped duration banner does not cover an exact contiguous run of year cells"
+                    "grouped duration banner does not cover an exact contiguous run of year cells",
+                    refusal_code="displayed_layout_unsupported",
                 )
     per_group: list[list[int]] = [[] for _ in groups]
     for start, colspan, year in year_cells:
@@ -838,7 +849,8 @@ def _compose_grouped_duration_year_row(
         ]
         if len(covers) != 1:
             raise _layout_unsupported(
-                "grouped duration banner does not cover an exact contiguous run of year cells"
+                "grouped duration banner does not cover an exact contiguous run of year cells",
+                refusal_code="displayed_layout_unsupported",
             )
         per_group[covers[0]].append(year)
     for years in per_group:
@@ -870,8 +882,11 @@ def _is_ix_numeric(tag: str) -> bool:
 _DISPLAYED_LAYOUT_UNSUPPORTED = "displayed statement layout unsupported:"
 
 
-def _layout_unsupported(detail: str) -> StatementGraphError:
-    return StatementGraphError(f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}")
+def _layout_unsupported(detail: str, *, refusal_code: str | None = None) -> StatementGraphError:
+    return StatementGraphError(
+        f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}",
+        refusal_code=refusal_code,
+    )
 
 
 def _grid_slot(*, text: str, facts: list[dict[str, Any]], colspan: int, rowspan: int, rowspan_carry: bool, colspan_carry: bool) -> dict[str, Any]:
@@ -978,7 +993,7 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         # k is one past this row's highest occupied column. A hole below k (or a
         # row with no occupied slot at all, k is None) is still unsupported;
         # missing slots from k to the table's right edge belong to a banner row
-        # narrower than the body (the GOOGL and SNOW income shape) and are
+        # narrower than the body (an observed income-statement shape) and are
         # padded fact-free so the row expands onto the body's grid. Only a
         # fact-free row is padded: a narrow row carrying a fact would bind it to
         # whichever column its left-packed position happens to land on.
@@ -1074,7 +1089,7 @@ class _StatementTableParser(HTMLParser):
         discard, any single cell whose whole text is the title."""
         if not self._discarded:
             return self._title_hit(" ".join(cell["text"] for cell in cells))
-        # CAT annual balance sheets render the entire title in one cell with a
+        # Some annual balance sheets render the entire title in one cell with a
         # terminal comma ("... December 31,").  After a discarded factless TOC,
         # accept that precise punctuation variant only if the title is the
         # row's sole nonblank text and the row carries no numeric facts.  The
@@ -1248,10 +1263,10 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     ``title`` follows ``_StatementTableParser``: a single string matched exactly
     as written, or a list of candidates tried in order. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
-    banner over a bare-year row (the fiscal-year SNOW shape) composes the
+    banner over a bare-year row (fiscal-year statements) composes the
     columns and the output carries ``"columns_source": "composed_year_row"``;
-    the CAT title banner composed across one exact unit band carries
-    ``"composed_title_year_row"``. The BAC duration groups ("Three Months Ended
+    a title banner composed across one exact unit band carries
+    ``"composed_title_year_row"``. Duration groups ("Three Months Ended
     June 30" over a year row) carry ``"composed_grouped_duration_year_row"``
     plus each column's own period under ``"columns_periods"``; a glued-date
     header row ("June 302025") composes plain dated columns like the full-date
@@ -1265,7 +1280,10 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser.close()
     parser._finalize_grid()
     if not parser.rows:
-        raise StatementGraphError(f"displayed statement table is absent: {title_label}")
+        raise StatementGraphError(
+            f"displayed statement table is absent: {title_label}",
+            refusal_code="displayed_table_absent",
+        )
     composed: tuple[list[str], frozenset[int], str] | None = None
     grouped: tuple[list[dict[str, Any]], frozenset[int], list[int]] | None = None
     glued: tuple[list[str], frozenset[int]] | None = None
@@ -1354,7 +1372,10 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
                 "grouped duration groups do not match the displayed fact columns"
             )
     if len(header_dates) < 2:
-        raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+        raise StatementGraphError(
+            f"displayed statement columns are absent: {title_label}",
+            refusal_code="displayed_columns_absent",
+        )
     # Values bind to columns by position, so a row carrying more values than the
     # table prints dated columns would silently lose its trailing values. The
     # right-edge pad lets a narrow banner row widen onto the body's grid; it must
@@ -1956,6 +1977,15 @@ def reconstruct_statement(
     registry: Any,
 ) -> dict[str, Any]:
     role_uri, title, title_search = _statement_identity(package, statement_type)
+    if (
+        re.match(r"^\d+ - Disclosure - ", title)
+        or "parent company" in title.casefold()
+        or "parentcompany" in role_uri.casefold()
+    ):
+        raise StatementGraphError(
+            f"statement role is not the consolidated statement: {title}",
+            refusal_code="statement_role_not_consolidated",
+        )
     pre = _stored_member(package, "presentation")
     lab = _stored_member(package, "label")
     cal = _stored_member(package, "calculation")
@@ -2129,16 +2159,36 @@ def reconstruct_primary_statements(
             entity_ids.append(str(ident))
     unique_entities = sorted(set(entity_ids))
     if unique_entities != [package.manifest["cik"]]:
-        raise StatementGraphError("XBRL entity identifier is not the source-native AAPL CIK")
-    statements = [
-        reconstruct_statement(
-            statement_type=kind,
-            package=package,
-            parsed_instance=parsed,
-            registry=registry,
-        )
-        for kind in ("income_statement", "balance_sheet", "cash_flow")
-    ]
+        raise StatementGraphError("XBRL entity identifier is not the package manifest CIK")
+    statements: list[dict[str, Any]] = []
+    for kind in ("income_statement", "balance_sheet", "cash_flow"):
+        try:
+            statements.append(
+                reconstruct_statement(
+                    statement_type=kind,
+                    package=package,
+                    parsed_instance=parsed,
+                    registry=registry,
+                )
+            )
+        except StatementGraphError as exc:
+            if exc.refusal_code in STATEMENT_REFUSAL_CODES:
+                role_uri = title = None
+                if exc.refusal_code != "statement_role_not_consolidated":
+                    role_uri, title, _ = _statement_identity(package, kind)
+                statements.append(
+                    {
+                        "statement_type": kind,
+                        "role_uri": role_uri,
+                        "title": title,
+                        "columns": [],
+                        "row_count": 0,
+                        "rows": [],
+                        "refusal": {"code": exc.refusal_code},
+                    }
+                )
+            else:
+                raise
     return {
         "parsed_document_kind": (parsed.get("document") or {}).get("kind"),
         "fact_count": len(parsed.get("facts") or []),
@@ -2153,6 +2203,7 @@ __all__ = [
     "LABEL_PERIOD_END",
     "LABEL_PERIOD_START",
     "PRIMARY_STATEMENT_ROLES",
+    "STATEMENT_REFUSAL_CODES",
     "STATEMENT_TITLES",
     "StatementGraphError",
     "admit_golden_aapl_package",
