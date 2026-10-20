@@ -811,6 +811,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -2643,6 +2644,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -3527,6 +3529,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -6101,6 +6104,7 @@ jobs:
       - "lib/__init__.py"
       - "lib/config.py"
       - "lib/dataos/**"
+      - "config/dataset_registry.yml"
       - "lib/delisted_symbols.py"
       - "lib/ticker_aliases.py"
       - "config/delisted_symbols.yml"
@@ -9641,6 +9645,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -10874,6 +10879,7 @@ jobs:
       - "app/__init__.py"
       - "app/mailer.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -17088,6 +17094,7 @@ jobs:
       - engine/intelligence_workspace/runtime.py
       - engine/quote_resolution.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
       - lib/dataos/price_views.py
@@ -22549,6 +22556,7 @@ jobs:
       - lib/commercial_path.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
@@ -26063,6 +26071,7 @@ jobs:
       - "lib/dataos/price.py"
       # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
@@ -26928,6 +26937,7 @@ jobs:
       - "lib/dataos/price.py"
       # C01 (DATA-OS-COMPLETION): engine.price_ladder now imports the canonical read seam (price_views/read_contract/registry).
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price_views.py"
       - "lib/dataos/quality.py"
@@ -29622,6 +29632,7 @@ jobs:
       - "engine/theme_graph/identity_resolution.py"
       - "engine/theme_graph/probation.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -31078,6 +31089,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -32550,6 +32562,7 @@ jobs:
       - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
       - tests/test_dataos_prospective_reference.py
       - tests/test_dataos_direct_registrant.py
+      - tests/test_dataos_spy_yahoo_catalog.py
       # Tiingo raw-vintage/read-only research proofs; no live provider calls.
       - .github/workflows/ci.yml
       - collectors/__init__.py
@@ -32615,6 +32628,7 @@ jobs:
         run: >-
           python -m pytest tests/test_dataos_prospective_reference.py
           tests/test_dataos_direct_registrant.py
+          tests/test_dataos_spy_yahoo_catalog.py
           tests/test_tiingo_archive.py tests/test_tiingo_views.py
           tests/test_tiingo_reader.py tests/test_tiingo_history.py
           tests/test_tiingo_research_query.py tests/test_tiingo_boats_tape.py
@@ -32655,6 +32669,7 @@ jobs:
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py
@@ -33172,8 +33187,10 @@ jobs:
       - engine/price_ladder.py
       - scripts/emit_view_contract.py
       - lib/dataos/terminal_materialization.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - tests/terminal_materialization_golden.json
       - tests/test_emit_view_contract.py
+      - tests/test_terminal_spy_yahoo_materialization.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33190,26 +33207,17 @@ jobs:
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_sec_filing_identity.py tests/test_dataos_sec_cusip.py
           tests/test_sec_schedule13d.py tests/test_dataos_sec13d_cusip.py tests/test_sec13d_research.py -q -rs
-      - name: basket composition read binds membership, identity and price to one request (U04)
+      - name: basket, identity, market support, universe and materialization contracts
+        # These suites use the same dependencies, environment and pytest flags.
+        # Keep every suite explicit while sharing one interpreter and pytest session.
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_basket_read.py -q -rs
-      - name: identity seams — ADOPT surfaces must agree, divergences must stay declared
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_identity_seam_agreement.py -q -rs
-      - name: market support matrix — record matches the code, every market keeps its read (M01)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_dataos_support_matrix.py -q -rs
-      - name: security master universe admits the S&P 400/600 constituents (hermetic)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_build_security_master_universe.py -q -rs
-      - name: view-contract sidecar emitter writes data/stocks/_view_contract.json (C04, hermetic)
-        run: >-
-          PYTHONDONTWRITEBYTECODE=1 python -m pytest
-          tests/test_emit_view_contract.py -q -rs
+          tests/test_dataos_basket_read.py
+          tests/test_identity_seam_agreement.py
+          tests/test_dataos_support_matrix.py
+          tests/test_build_security_master_universe.py
+          tests/test_emit_view_contract.py
+          tests/test_terminal_spy_yahoo_materialization.py -q -rs
 
   ticker-news-qbus:
     # Package N — Terminal per-ticker news feed correctness kernel (PR #8454).
@@ -33953,6 +33961,7 @@ jobs:
       - "lib/commercial_path.py"
       - "lib/config.py"
       - "lib/dataos/__init__.py"
+      - "lib/dataos/_spy_yahoo_catalog.py"
       - "lib/dataos/identity.py"
       - "lib/dataos/nulls.py"
       - "lib/dataos/price.py"
@@ -35721,6 +35730,7 @@ jobs:
       - lib/__init__.py
       - lib/config.py
       - lib/dataos/__init__.py
+      - lib/dataos/_spy_yahoo_catalog.py
       - lib/dataos/identity.py
       - lib/dataos/nulls.py
       - lib/dataos/price.py

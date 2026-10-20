@@ -92,6 +92,24 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from lib import config, ticker_aliases  # noqa: E402
+from lib.dataos import _spy_yahoo_catalog as _spy_catalog  # noqa: E402
+from lib.dataos._spy_yahoo_catalog import (  # noqa: E402
+    MASTER_COLUMNS,
+    MASTER_NAME,
+    ALIASES_NAME,
+    RECEIPT_NAME,
+    ISSUER_MASTER_NAME,
+    ISSUER_MIGRATIONS_NAME,
+    SECURITY_MIGRATIONS_NAME,
+    _REFERENCE_MAX_BYTES,
+    _SPY_YAHOO_URL,
+    _SPY_ISSUER_URL,
+    _SPY_YAHOO_SCHEMA,
+    _SPY_YAHOO_META,
+    _SPY_YAHOO_SCOPE,
+    _SPY_YAHOO_LIMITS,
+)
+
 from lib.dataos.identity import (  # noqa: E402
     BATS,
     XASE,
@@ -116,14 +134,8 @@ from lib.dataos.identity import (  # noqa: E402
 # developer shell all run from different directories (same reasoning as
 # lib/dataos/registry.REGISTRY_PATH).
 DEFAULT_OUT = ROOT / "data" / "reference"
-MASTER_NAME = "security_master.parquet"
-ALIASES_NAME = "vendor_aliases.parquet"
-RECEIPT_NAME = "_receipt.json"
-ISSUER_MASTER_NAME = "issuer_master.parquet"
-ISSUER_MIGRATIONS_NAME = "issuer_migrations.parquet"
 #: V4-D2B1-R1 — the durable security-axis correction receipt (parallel to
 #: ISSUER_MIGRATIONS_NAME, one axis over).
-SECURITY_MIGRATIONS_NAME = "security_migrations.parquet"
 
 CONSTITUENTS = ROOT / "data" / "breadth" / "constituents.parquet"
 #: ITP A8 (DEC-ITP-ISSUER-UNIVERSE-ADMITS-R1-CONSTITUENTS-2026-10-07): the mid- and
@@ -173,21 +185,6 @@ HK_SHORTS_TURNOVER_PATH = ROOT / "data" / "hk_shorts" / "turnover.parquet"
 #: declared order (they are the newest addition, era-seamed exactly like
 #: ISSUER_AXIS_COLUMNS) — never a re-mint, never a deletion, a CORRECTION recorded
 #: in place on the row it corrects.
-MASTER_COLUMNS = (
-    "security_id",
-    "issuer_id",
-    "issuer_state",
-    "issuer_cik",
-    "issuer_evidence_snapshot",
-    "listing_key",
-    "country",
-    "mic",
-    "inception_code",
-    "effective_at",
-    "ingested_at",
-    "security_state",
-    "superseded_by",
-)
 ALIAS_COLUMNS = (
     "vendor",
     "vendor_symbol",
@@ -3356,7 +3353,6 @@ REFERENCE_PROBES = {
     "SMH": ("NASDAQ", XNAS, "ETF", True),
 }
 REFERENCE_SCHEMA = "mastermind.prospective_reference.v1"
-_REFERENCE_MAX_BYTES = 2 * 1024 * 1024
 
 
 def _reference_digest(value: object) -> str:
@@ -3408,26 +3404,20 @@ def _assert_no_unpreserved_native_generation(out_dir: Path) -> None:
 
 
 def _reference_ns(value: object, name: str) -> int:
-    if type(value) is not int or value <= 0:
-        raise IdentityError(f"invalid reference {name}")
-    return value
+    try:
+        return _spy_catalog.reference_ns(value, name)
+    except _spy_catalog.SpyCatalogError as exc:
+        raise IdentityError(str(exc)) from exc
 
 
 def _reference_clock_ns(value: object) -> int:
     try:
-        clock = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
-        if clock.tzinfo is None or clock.utcoffset() is None:
-            raise ValueError("naive")
-        delta = clock.astimezone(timezone.utc) - datetime(1970, 1, 1, tzinfo=timezone.utc)
-        return ((delta.days * 86400 + delta.seconds) * 1000000 + delta.microseconds) * 1000
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise IdentityError("invalid reference UTC clock") from exc
+        return _spy_catalog.clock_ns(value)
+    except _spy_catalog.SpyCatalogError as exc:
+        raise IdentityError(str(exc)) from exc
 
 
-def _reference_clock_iso(ns: int) -> str:
-    # Ceiling, never float rounding or truncation that advances availability.
-    return (datetime(1970, 1, 1, tzinfo=timezone.utc)
-            + timedelta(microseconds=(ns + 999) // 1000)).isoformat()
+_reference_clock_iso = _spy_catalog.clock_iso
 
 
 _DIRECT_REGISTRANT_KEYS = frozenset({
@@ -4304,10 +4294,413 @@ def _validate_spy_option_root_retention(evidence: dict | None, alias_rows: list[
         raise IdentityError("invalid retained SPY root binding") from exc
 
 
+
+# SPY's current Yahoo catalog relation is a separate, explicit source intake.
+# It cannot mint an identity, supply an issuer, or create a Macro stock-store key.
+
+
+
+
+def _spy_yahoo_json(body: bytes):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate SPY source JSON key")
+            result[key] = value
+        return result
+
+    def finite(value):
+        import math
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError("nonfinite SPY source number")
+        return result
+
+    return json.loads(body.decode("utf-8"), object_pairs_hook=pairs, parse_float=finite,
+                      parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)))
+
+
+def _spy_issuer_listing(body: bytes, on: date) -> dict:
+    """Select one table within its actual dated section; ambiguous markup refuses."""
+    from html.parser import HTMLParser
+
+    class ListingPage(HTMLParser):
+        VOID = frozenset({"area", "base", "br", "col", "embed", "hr", "img",
+                          "input", "link", "meta", "param", "source", "track", "wbr"})
+        HEADINGS = frozenset({"h1", "h2", "h3", "h4", "h5", "h6"})
+
+        def __init__(self):
+            super().__init__()
+            self.stack, self.headings, self.tables = [], [], []
+            self.serial = 0
+            self.heading = self.current_heading = self.table_heading = None
+            self.rows = self.cells = self.cell = None
+
+        def section(self):
+            return next((item[1] for item in reversed(self.stack)
+                         if item[0] == "section"), None)
+
+        def handle_starttag(self, tag, attrs):
+            names = [name for name, _ in attrs]
+            if len(names) != len(set(names)):
+                raise ValueError("ambiguous duplicate issuer attribute")
+            attributes = dict(attrs)
+            style = re.sub(r"\s+", "", attributes.get("style") or "").lower()
+            hidden = (bool(self.stack and self.stack[-1][2])
+                      or tag in {"script", "style", "template"}
+                      or "hidden" in attributes
+                      or (attributes.get("aria-hidden") or "").lower() == "true"
+                      or "display:none" in style or "visibility:hidden" in style)
+            if tag not in self.VOID:
+                self.serial += 1
+                self.stack.append((tag, self.serial, hidden))
+                if len(self.stack) > 512:
+                    raise ValueError("issuer markup exceeds depth bound")
+            if hidden:
+                return
+            if tag in self.HEADINGS:
+                if self.heading is not None or self.rows is not None:
+                    raise ValueError("nested issuer heading")
+                self.current_heading = None  # every intervening heading ends the association
+                self.heading = (tag, [], self.section())
+            if tag == "table":
+                if self.rows is not None:
+                    raise ValueError("nested issuer table")
+                self.rows = []
+                self.table_heading = (
+                    self.current_heading[0] if self.current_heading is not None
+                    and self.current_heading[1] == self.section() else None)
+            if tag == "tr" and self.rows is not None:
+                if self.cells is not None:
+                    raise ValueError("nested issuer row")
+                self.cells = []
+            if tag in {"th", "td"} and self.cells is not None:
+                if self.cell is not None:
+                    raise ValueError("nested issuer cell")
+                self.cell = []
+
+        def handle_startendtag(self, tag, attrs):
+            if tag not in self.VOID and tag != "svg" and not any(
+                    item[0] == "svg" for item in self.stack):
+                raise ValueError("ambiguous self-closing issuer element")
+            self.handle_starttag(tag, attrs)
+            if tag not in self.VOID:
+                self.handle_endtag(tag)
+
+        def handle_data(self, value):
+            if self.stack and self.stack[-1][2]:
+                return
+            if self.heading is not None:
+                self.heading[1].append(value)
+            if self.cell is not None:
+                self.cell.append(value)
+
+        def handle_endtag(self, tag):
+            if tag in self.VOID or not self.stack or self.stack[-1][0] != tag:
+                raise ValueError("inconsistent issuer element closure")
+            _, identity, hidden = self.stack[-1]
+            if not hidden:
+                if self.heading is not None and tag == self.heading[0]:
+                    text = " ".join(" ".join(self.heading[1]).split())
+                    self.headings.append((tag, text))
+                    if tag == "h2" and self.heading[2] is not None:
+                        self.current_heading = (text, self.heading[2])
+                    self.heading = None
+                if tag in {"td", "th"} and self.cell is not None:
+                    self.cells.append(" ".join(" ".join(self.cell).split()))
+                    self.cell = None
+                if tag == "tr" and self.cells is not None:
+                    if self.cell is not None:
+                        raise ValueError("unclosed issuer cell")
+                    self.rows.append(self.cells)
+                    self.cells = None
+                if tag == "table" and self.rows is not None:
+                    if self.cells is not None:
+                        raise ValueError("unclosed issuer row")
+                    self.tables.append((self.table_heading, self.rows))
+                    self.rows = None
+            self.stack.pop()
+            if self.current_heading is not None and self.current_heading[1] == identity:
+                self.current_heading = None
+
+    page = ListingPage()
+    page.feed(body.decode("utf-8"))
+    page.close()
+    if page.heading is not None or page.rows is not None or page.stack:
+        raise ValueError("incomplete issuer page")
+    titles = [" ".join(text.replace("\u00ae", "").split())
+              for tag, text in page.headings if tag == "h1"]
+    if titles != ["SPY " + _SPY_YAHOO_META["longName"]]:
+        raise ValueError("issuer fund name missing or ambiguous")
+    headings = [text for tag, text in page.headings
+                if tag == "h2" and text.startswith("Listing Information")]
+    months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    expected_heading = f"Listing Information as of {months[on.month - 1]} {on.day:02d} {on.year}"
+    if headings != [expected_heading]:
+        raise ValueError("issuer listing date is missing, ambiguous or stale")
+    tables = [rows for heading, rows in page.tables if heading == expected_heading]
+    expected = [
+        ["Exchange", "Listing Date", "Trading Currency", "Ticker", "CUSIP", "ISIN"],
+        ["NYSE ARCA", "Jan 22 1993", "USD", "SPY", "78462F103", "US78462F1030"],
+    ]
+    if tables != [expected]:
+        raise ValueError("issuer SPY listing row missing, ambiguous or conflicting")
+    return {"fund_name": _SPY_YAHOO_META["longName"], "observed_on": on.isoformat(),
+            "exchange": "NYSE ARCA", "currency": "USD", "symbol": "SPY",
+            "listing_date": "1993-01-22", "cusip": "78462F103", "isin": "US78462F1030"}
+
+
+def _validate_spy_yahoo_catalog_evidence(evidence, current_master_rows,
+                                         *, latest_at, require_preimage):
+    validator = (_spy_catalog.validate_evidence if require_preimage
+                 else _spy_catalog._validate_source_evidence)
+    try:
+        validator(evidence, current_master_rows, latest_at=latest_at)
+    except _spy_catalog.SpyCatalogError as exc:
+        raise IdentityError(str(exc)) from exc
+
+
+def admit_spy_yahoo_catalog(sources: dict, master_rows: list[dict], *,
+                            reference_read_completed_at: str, decision_at: str):
+    """Prepare one current relation from retained source bytes, with no publication.
+
+    Capture provenance belongs to the caller. Digests prove byte integrity, not
+    sender authentication. Yahoo supplies no CUSIP/ISIN here: the relation to the
+    issuer/listing record is this closed SPY source-specific inference.
+    """
+    from lib.symbol_directory_receipts import (
+        ReceiptValidationError, validate_symbol_directory_completion_receipt_bytes,
+    )
+    import pandas as pd
+    import pyarrow.parquet as pq
+
+    roles = {"yahoo": _SPY_YAHOO_URL, "issuer": _SPY_ISSUER_URL}
+    if type(sources) is not dict or set(sources) != set(roles) | {"listing_body", "listing_receipt_body"}:
+        raise IdentityError("invalid SPY Yahoo source bundle")
+    decision = _reference_clock_ns(decision_at)
+    reference_read = _reference_clock_ns(reference_read_completed_at)
+    on = date.fromisoformat(_reference_clock_iso(decision)[:10])
+    bodies, captures, completed_clocks = {}, {}, []
+    for role, url in roles.items():
+        source = sources[role]
+        if type(source) is not dict or set(source) != {"body", "capture"}:
+            raise IdentityError("invalid SPY Yahoo source record")
+        body, capture = source["body"], source["capture"]
+        if (type(body) is not bytes or not 0 < len(body) <= _REFERENCE_MAX_BYTES
+                or type(capture) is not dict or set(capture) != {
+                    "url", "final_url", "status", "bytes", "sha256",
+                    "request_started_at", "read_completed_at"}
+                or capture["url"] != url or capture["final_url"] != url
+                or type(capture["status"]) is not int or capture["status"] != 200
+                or type(capture["bytes"]) is not int or capture["bytes"] != len(body)
+                or capture["sha256"] != hashlib.sha256(body).hexdigest()):
+            raise IdentityError("SPY Yahoo capture does not bind the exact source")
+        started = _reference_clock_ns(capture["request_started_at"])
+        completed = _reference_clock_ns(capture["read_completed_at"])
+        if (not 0 < started <= completed <= decision
+                or _reference_clock_iso(started)[:10] != on.isoformat()
+                or _reference_clock_iso(completed)[:10] != on.isoformat()):
+            raise IdentityError("SPY Yahoo intake requires same-day source observations")
+        bodies[role], captures[role] = body, dict(capture)
+        completed_clocks.append(completed)
+    listing_body, receipt_body = sources["listing_body"], sources["listing_receipt_body"]
+    if (type(listing_body) is not bytes or not 0 < len(listing_body) <= 8 * 1024 * 1024
+            or type(receipt_body) is not bytes or not 0 < len(receipt_body) <= 512 * 1024):
+        raise IdentityError("SPY Yahoo listing byte bound")
+    try:
+        value = _spy_yahoo_json(bodies["yahoo"])
+        chart = value["chart"]
+        if (type(value) is not dict or set(value) != {"chart"} or type(chart) is not dict
+                or set(chart) != {"result", "error"} or chart["error"] is not None
+                or type(chart["result"]) is not list or len(chart["result"]) != 1
+                or type(chart["result"][0]) is not dict):
+            raise ValueError("ambiguous Yahoo chart result")
+        meta = chart["result"][0]["meta"]
+        if type(meta) is not dict or any(meta.get(k) != v for k, v in _SPY_YAHOO_META.items()):
+            raise ValueError("Yahoo SPY identity conflicts")
+        first_trade = meta.get("firstTradeDate")
+        if type(first_trade) is not int or not 0 < first_trade <= decision // 1000000000:
+            raise ValueError("invalid provider firstTradeDate field")
+        issuer = _spy_issuer_listing(bodies["issuer"], on)
+        if pq.ParquetFile(io.BytesIO(listing_body)).metadata.num_rows > 200000:
+            raise ValueError("too many listing rows")
+        receipt = validate_symbol_directory_completion_receipt_bytes(
+            _spy_yahoo_json(receipt_body), receipt_body, listing_body,
+            expected_kind="listing_snapshot")
+        if (receipt["observation_date"] != on.isoformat()
+                or receipt["authority"]["listing_identity_observation_eligible"] is not True):
+            raise ValueError("current listing observation ineligible")
+        listing_completed = _reference_clock_ns(receipt["clocks"]["collector_completed_at"])
+        if not 0 < listing_completed <= reference_read <= decision:
+            raise ValueError("listing/reference/decision clocks disagree")
+        frame = pd.read_parquet(io.BytesIO(listing_body))
+        matches = frame.loc[frame["symbol"] == "SPY"]
+        if len(matches) != 1:
+            raise ValueError("SPY listing missing or ambiguous")
+        listing = matches.iloc[0]
+        if (listing["exchange"] != "P" or not bool(listing["etf"])
+                or bool(listing["test_issue"]) or bool(listing["is_preferred"])):
+            raise ValueError("SPY listing flags conflict")
+        resolutions = resolve_universe(
+            {"SPY": {"sources": ["spy_yahoo_catalog"], "first_seen": on}}, {},
+            {"SPY": "P"}, on.isoformat(), reference_probe_keys=frozenset({"SPY"}))
+        if len(resolutions) != 1 or resolutions[0].listing_key.render() != "US-ARCX-SPY":
+            raise ValueError("canonical SPY listing resolution failed")
+    except (KeyError, AttributeError, ValueError, TypeError, RecursionError,
+            UnicodeError, ReceiptValidationError) as exc:
+        raise IdentityError("SPY Yahoo source semantics invalid") from exc
+    if type(master_rows) is not list or any(type(row) is not dict for row in master_rows):
+        raise IdentityError("SPY Yahoo canonical records unavailable")
+    targets = [row for row in master_rows if row.get("security_id") == "SEC:US-ARCX-SPY"
+               or row.get("listing_key") == "US-ARCX-SPY"]
+    if len(targets) != 1:
+        raise IdentityError("SPY Yahoo canonical target missing or ambiguous")
+    master = targets[0]
+    if (master.get("security_id") != "SEC:US-ARCX-SPY"
+            or master.get("security_state") is not None or master.get("superseded_by") is not None
+            or [master.get(k) for k in ("listing_key", "country", "mic", "inception_code")] !=
+               ["US-ARCX-SPY", "US", "ARCX", "SPY"]):
+        raise IdentityError("SPY Yahoo canonical target inactive or conflicting")
+    try:
+        clocks = []
+        for key in ("effective_at", "ingested_at"):
+            clock = datetime.fromisoformat(str(master[key]).replace("Z", "+00:00"))
+            if clock.tzinfo is None:
+                clock = clock.replace(tzinfo=timezone.utc)  # declared UTC Parquet columns
+            clocks.append(_reference_clock_ns(clock.isoformat()))
+        if not 0 < clocks[0] <= clocks[1] <= reference_read:
+            raise ValueError("canonical target clock")
+    except (KeyError, ValueError, TypeError) as exc:
+        raise IdentityError("SPY Yahoo canonical target clocks conflict") from exc
+    known = _reference_clock_iso(decision)
+    evidence = {
+        "schema": _SPY_YAHOO_SCHEMA, "vendor": "yahoo_fetch", "symbol": "SPY",
+        "security_id": "SEC:US-ARCX-SPY", "valid_from": on.isoformat(), "valid_to": None,
+        "known_at": known, "decision_at": known, "admitted_at": known,
+        "source_available_at": _reference_clock_iso(max(*completed_clocks, listing_completed)),
+        "reference_read_completed_at": _reference_clock_iso(reference_read),
+        "sources": captures, "yahoo_identity": dict(_SPY_YAHOO_META),
+        "yahoo_first_trade_date": first_trade, "issuer_listing": issuer,
+        "listing": {"symbol": "SPY", "listing_key": "US-ARCX-SPY", "observed_on": on.isoformat(),
+                    "listing_snapshot_sha256": hashlib.sha256(listing_body).hexdigest(),
+                    "listing_receipt_sha256": hashlib.sha256(receipt_body).hexdigest(),
+                    "collector_completed_at": receipt["clocks"]["collector_completed_at"]},
+        "canonical_target": {key: master.get(key) for key in MASTER_COLUMNS},
+        "scope": _SPY_YAHOO_SCOPE, "limits": list(_SPY_YAHOO_LIMITS),
+    }
+    _validate_spy_yahoo_catalog_evidence(
+        evidence, master_rows, latest_at=known, require_preimage=False)
+    digest = _spy_catalog.evidence_sha256(evidence)
+    seal = alias_binding_sha256("yahoo_fetch", "SPY", "SEC:US-ARCX-SPY", on, None, known, digest)
+    return AliasRow("yahoo_fetch", "SPY", "SEC:US-ARCX-SPY", on, None, known, digest, seal), evidence
+
+
+def read_spy_yahoo_catalog_input(path: Path) -> dict:
+    """Read one explicit local bundle; no fetch, sibling paths only, no symlinks."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+
+    def read(name, limit):
+        if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", name):
+            raise ValueError("SPY source must be a sibling filename")
+        return _read_regular_file(path.parent / name, label="SPY Yahoo source", limit=limit)
+
+    try:
+        manifest = _spy_yahoo_json(_read_regular_file(path, label="SPY Yahoo manifest", limit=512 * 1024))
+        if (type(manifest) is not dict or set(manifest) != {"schema", "sources"}
+                or manifest["schema"] != "mastermind.spy_yahoo_catalog_input.v1"
+                or type(manifest["sources"]) is not dict or set(manifest["sources"]) !=
+                   {"yahoo", "issuer", "listing_body", "listing_receipt_body"}):
+            raise ValueError("invalid SPY Yahoo manifest")
+        sources = manifest["sources"]
+        for role in ("yahoo", "issuer"):
+            if type(sources[role]) is not dict or set(sources[role]) != {"body", "capture"}:
+                raise ValueError("invalid SPY Yahoo source")
+            sources[role]["body"] = read(sources[role]["body"], _REFERENCE_MAX_BYTES)
+        sources["listing_body"] = read(sources["listing_body"], 8 * 1024 * 1024)
+        sources["listing_receipt_body"] = read(sources["listing_receipt_body"], 512 * 1024)
+        return sources
+    except (OSError, ValueError, TypeError, RecursionError, UnicodeError, ReceiptValidationError) as exc:
+        raise IdentityError("invalid SPY Yahoo input files") from exc
+
+
+def _spy_yahoo_reference_preimage(out_dir: Path) -> dict:
+    """Bound the existing five tables and receipt; does not assert a generation."""
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+    files = {}
+    try:
+        for name in (MASTER_NAME, ALIASES_NAME, ISSUER_MASTER_NAME,
+                     ISSUER_MIGRATIONS_NAME, SECURITY_MIGRATIONS_NAME, RECEIPT_NAME):
+            body = _read_regular_file(out_dir / name, label="SPY canonical preimage",
+                                     limit=_REFERENCE_MAX_BYTES if name == RECEIPT_NAME else 64 * 1024 * 1024)
+            files[name] = {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest()}
+    except (OSError, ReceiptValidationError) as exc:
+        raise IdentityError("SPY Yahoo canonical preimage unavailable") from exc
+    return files
+
+
+def _spy_yahoo_catalog_state(out_dir: Path, sources: dict | None, master_rows: list[dict],
+                             *, snapshot_path: Path | None):
+    prior_receipt = (_reference_json(out_dir / RECEIPT_NAME)[0]
+                     if (out_dir / RECEIPT_NAME).exists() else {})
+    previous = prior_receipt.get("spy_yahoo_catalog")
+    if "spy_yahoo_catalog" in prior_receipt and type(previous) is not dict:
+        raise IdentityError("invalid retained SPY Yahoo receipt")
+    if sources is not None and previous is not None:
+        raise IdentityError("SPY Yahoo catalog admission already retained; no replay")
+    if sources is None:
+        return previous, []
+    preimage = _spy_yahoo_reference_preimage(out_dir)
+    existing = _read_existing(out_dir / ALIASES_NAME, ALIAS_COLUMNS, ALIAS_DTYPES,
+                              allow_missing=OPTIONAL_ALIAS_COLUMNS)
+    reread_master = _read_existing(out_dir / MASTER_NAME, MASTER_COLUMNS, MASTER_DTYPES,
+                                  allow_missing=ISSUER_AXIS_COLUMNS | SECURITY_AXIS_COLUMNS)
+    if reread_master != master_rows or _spy_yahoo_reference_preimage(out_dir) != preimage:
+        raise IdentityError("SPY Yahoo canonical preimage changed during read")
+    if any(row["vendor"] == "yahoo_fetch" and (row["vendor_symbol"] == "SPY"
+           or row["security_id"] == "SEC:US-ARCX-SPY") for row in existing):
+        raise IdentityError("SPY Yahoo catalog relation already exists or conflicts")
+    from lib.symbol_directory_receipts import ReceiptValidationError, _read_regular_file
+    try:
+        if (type(sources) is not dict or type(sources.get("listing_body")) is not bytes
+                or snapshot_path is None):
+            raise IdentityError("SPY Yahoo current listing unavailable")
+        current_listing = _read_regular_file(snapshot_path, label="SPY current listing",
+                                             limit=8 * 1024 * 1024)
+        if current_listing != sources["listing_body"]:
+            raise IdentityError("SPY Yahoo source does not bind the current listing bytes")
+    except (OSError, ReceiptValidationError) as exc:
+        raise IdentityError("SPY Yahoo current listing unavailable") from exc
+    read_at = _reference_clock_iso(time.time_ns())
+    decision_at = _reference_clock_iso(time.time_ns())
+    row, evidence = admit_spy_yahoo_catalog(
+        sources, master_rows, reference_read_completed_at=read_at, decision_at=decision_at)
+    evidence["canonical_reference_preimage"] = preimage
+    _validate_spy_yahoo_catalog_evidence(
+        evidence, master_rows, latest_at=evidence["decision_at"], require_preimage=True)
+    digest = _spy_catalog.evidence_sha256(evidence)
+    seal = alias_binding_sha256(row.vendor, row.vendor_symbol, row.security_id,
+                                row.valid_from, row.valid_to, row.known_at, digest)
+    return evidence, [AliasRow(row.vendor, row.vendor_symbol, row.security_id,
+                               row.valid_from, row.valid_to, row.known_at, digest, seal)]
+
+
+def _validate_spy_yahoo_catalog_retention(evidence, alias_rows, master_rows):
+    latest_at = _reference_clock_iso(time.time_ns())
+    try:
+        _spy_catalog.validate_retained(
+            evidence, alias_rows, master_rows,
+            alias_binding_sha256=alias_binding_sha256, latest_at=latest_at)
+    except _spy_catalog.SpyCatalogError as exc:
+        raise IdentityError(str(exc)) from exc
+
+
 def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = False,
           reference_evidence_path: Path | None = None,
           direct_registrant_inputs: tuple[dict, ...] | list[dict] = (),
-          spy_option_root_input: dict | None = None) -> dict:
+          spy_option_root_input: dict | None = None,
+          spy_yahoo_catalog_input: dict | None = None) -> dict:
     """Do the whole build and return the receipt payload (written unless ``dry_run``).
 
     ``allow_missing_evidence`` (V4-D2B1 FIX 2 / B2 manual-path hardening): a missing or
@@ -4327,6 +4720,9 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     _assert_no_unpreserved_native_generation(out_dir)
     if spy_option_root_input is not None and (reference_evidence_path is not None or direct_registrant_inputs):
         raise IdentityError("option-root intake cannot combine with security admission")
+    if spy_yahoo_catalog_input is not None and (
+            reference_evidence_path is not None or direct_registrant_inputs or spy_option_root_input is not None):
+        raise IdentityError("SPY Yahoo intake cannot combine with another reference admission")
     now = _iso_now()
     direct_state, direct_resolutions = _direct_registrant_state(out_dir, direct_registrant_inputs, now)
     direct_keys = frozenset(direct_state["observations"]) if direct_state else frozenset()
@@ -4344,6 +4740,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if row["status"] == "EVIDENCE_READY"
     )
     reference_only_keys = (frozenset({"SPY", "QQQ", "SMH"}) if reference else frozenset()) | direct_keys
+    prior_receipt = (_reference_json(out_dir / RECEIPT_NAME)[0]
+                     if (out_dir / RECEIPT_NAME).exists() else {})
+    if spy_yahoo_catalog_input is not None or "spy_yahoo_catalog" in prior_receipt:
+        reference_only_keys = reference_only_keys | frozenset({"SPY"})
     universe = load_universe()
     delisted = load_delisted()
     directory, directory_flags, snapshot_date, snapshot_path = load_directory()
@@ -4406,6 +4806,16 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     )
     spy_root_evidence, spy_root_aliases = _spy_option_root_state(
         out_dir, spy_option_root_input, existing_master_rows, now)
+    spy_yahoo_evidence, spy_yahoo_aliases = _spy_yahoo_catalog_state(
+        out_dir, spy_yahoo_catalog_input, existing_master_rows, snapshot_path=snapshot_path)
+    if spy_yahoo_evidence is not None:
+        reference_only_keys = reference_only_keys | frozenset({"SPY"})
+    if spy_yahoo_catalog_input is not None:
+        observed = spy_yahoo_evidence["listing"]
+        if (snapshot_date != observed["observed_on"]
+                or _current_direct_resolution("SPY", observed, directory, directory_flags,
+                                              delisted, snapshot_date) is None):
+            raise IdentityError("SPY Yahoo evidence does not bind the current listing rail")
     if spy_option_root_input is not None:
         observed = spy_root_evidence["listing"]
         if (snapshot_date != observed["observed_on"] or snapshot_path is None
@@ -4706,7 +5116,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         direct_state["sha256"] = _reference_digest(direct_state)
     fresh_aliases = build_alias_rows(
         [r for r in resolutions if r.key not in reference_only_keys], ids
-    ) + cn_hk_alias_rows + native_aliases + spy_root_aliases
+    ) + cn_hk_alias_rows + native_aliases + spy_root_aliases + spy_yahoo_aliases
     existing_aliases, alias_prunes = _prune_stale_aliases(
         _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
                        allow_missing=OPTIONAL_ALIAS_COLUMNS),
@@ -5035,7 +5445,11 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
     _validate_spy_option_root_retention(spy_root_evidence, alias_rows, now)
     if spy_root_evidence is not None:
         receipt["spy_option_root"] = spy_root_evidence
-    if reference_evidence_path is not None or direct_registrant_inputs or spy_option_root_input is not None:
+    _validate_spy_yahoo_catalog_retention(spy_yahoo_evidence, alias_rows, master_rows)
+    if spy_yahoo_evidence is not None:
+        receipt["spy_yahoo_catalog"] = spy_yahoo_evidence
+    if (reference_evidence_path is not None or direct_registrant_inputs
+            or spy_option_root_input is not None or spy_yahoo_catalog_input is not None):
         def semantic(rows, columns):
             return sorted(_reference_digest({
                 c: (int(row[c]) if c == "n_securities" and row.get(c) is not None else row.get(c))
@@ -5046,7 +5460,7 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if semantic(projected_existing, MASTER_COLUMNS) != semantic(existing_master_rows, MASTER_COLUMNS):
             raise IdentityError("bounded reference intake would change an existing security row")
         extras = [r for r in master_rows if r["security_id"] not in old_by_id]
-        if (spy_option_root_input is not None and extras) or any(r["inception_code"] not in reference_only_keys for r in extras):
+        if ((spy_option_root_input is not None or spy_yahoo_catalog_input is not None) and extras) or any(r["inception_code"] not in reference_only_keys for r in extras):
             raise IdentityError("bounded reference intake would mint a non-probe security")
         old_aliases = _read_existing(aliases_path, ALIAS_COLUMNS, ALIAS_DTYPES,
                                      allow_missing=OPTIONAL_ALIAS_COLUMNS)
@@ -5057,6 +5471,14 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         if spy_option_root_input is not None and len(alias_rows) != len(old_aliases) + 1:
             raise IdentityError("option-root intake must add exactly one new relation")
         old_legacy = [r for r in old_aliases if r["vendor"] != "polygon"]
+        if spy_yahoo_catalog_input is not None:
+            added = [r for r in alias_rows if r not in old_aliases]
+            if (len(alias_rows) != len(old_aliases) + 1 or len(added) != 1
+                    or added[0]["vendor"] != "yahoo_fetch" or added[0]["vendor_symbol"] != "SPY"
+                    or added[0]["security_id"] != "SEC:US-ARCX-SPY"
+                    or any(r not in alias_rows for r in old_aliases)):
+                raise IdentityError("SPY Yahoo intake must add exactly one relation and preserve prior aliases")
+            new_legacy = [r for r in new_legacy if r is not added[0]]
         if semantic(new_legacy, ALIAS_COLUMNS) != semantic(old_legacy, ALIAS_COLUMNS):
             raise IdentityError("bounded reference intake would change non-native aliases")
         for old_native_row in old_native:
@@ -5075,6 +5497,9 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         # have published history while this legacy builder computed its rows.
         # This is a narrow additional refusal, NOT an atomic writer lock.
         _assert_no_unpreserved_native_generation(out_dir)
+        if (spy_yahoo_catalog_input is not None and _spy_yahoo_reference_preimage(out_dir) !=
+                spy_yahoo_evidence["canonical_reference_preimage"]):
+            raise IdentityError("SPY Yahoo canonical preimage changed before publication")
         out_dir.mkdir(parents=True, exist_ok=True)
         _write_parquet(master_rows, MASTER_COLUMNS, master_path, MASTER_DTYPES)
         _write_parquet(alias_rows, ALIAS_COLUMNS, aliases_path, ALIAS_DTYPES)
@@ -5499,6 +5924,8 @@ def main(argv: list[str] | None = None) -> int:
                         help="new captured SEC/listing observation; no old-input replay or network calls")
     parser.add_argument("--spy-option-root-evidence", type=Path,
                         help="bounded captured SPY option sources; existing canonical target required")
+    parser.add_argument("--spy-yahoo-catalog-evidence", type=Path,
+                        help="captured current SPY Yahoo/issuer/listing sources; no stock-store alias")
     parser.add_argument("--report", action="store_true",
                         help="full census: row counts, rename events, input hashes")
     parser.add_argument(
@@ -5522,7 +5949,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None or args.spy_option_root_evidence is not None):
+    if args.nightly and (args.reference_evidence is not None or args.direct_registrant_evidence is not None or args.spy_option_root_evidence is not None or args.spy_yahoo_catalog_evidence is not None):
         parser.error("evidence intake is explicit, not a nightly fetch")
     if args.nightly:
         return run_nightly_refresh(Path(args.out))
@@ -5539,7 +5966,9 @@ def main(argv: list[str] | None = None) -> int:
                     direct_registrant_inputs=(read_direct_registrant_inputs(args.direct_registrant_evidence)
                                               if args.direct_registrant_evidence is not None else ()),
                     spy_option_root_input=(read_spy_option_root_input(args.spy_option_root_evidence)
-                                           if args.spy_option_root_evidence is not None else None))
+                                           if args.spy_option_root_evidence is not None else None),
+                    spy_yahoo_catalog_input=(read_spy_yahoo_catalog_input(args.spy_yahoo_catalog_evidence)
+                                             if args.spy_yahoo_catalog_evidence is not None else None))
     _report(receipt, verbose=args.report)
     # A NOTE IS A FAILURE, not a warning (adversarial review, 2026-08-13).  `notes`
     # carries exactly two things, and neither may pass: a rename the repo's own maps
