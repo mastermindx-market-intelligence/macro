@@ -223,6 +223,20 @@
     <p class="cs-section-note">{{ t(covenant_headroom.basis_en, covenant_headroom.basis_zh) }}</p>
     <p class="cs-section-note">{{ t(covenant_headroom.disclaimer_en, covenant_headroom.disclaimer_zh) }}</p>
     {% else %}
+    {% if covenant_headroom.issuer.cik %}
+    <p><strong>{{ covenant_headroom.issuer.name or covenant_headroom.issuer.ticker or covenant_headroom.issuer.cik }}</strong>{% if covenant_headroom.issuer.ticker %} · {{ covenant_headroom.issuer.ticker }}{% endif %}</p>
+    {% endif %}
+    {% for term in covenant_headroom.terms %}
+    {% if term.filing_term_raw is defined and term.filing_term_raw %}
+    <div class="cs-latest-grid">
+      <div><span>{{ t('Term stated in the filing', '文件披露的条款') }}</span><strong>{% if term.term_name == 'minimum_fixed_charge_coverage_ratio' %}{{ t('Minimum fixed-charge coverage', '最低固定费用覆盖倍数') }}{% else %}{{ t('Covenant threshold', '契约阈值') }}{% endif %}</strong></div>
+      <div><span>{{ t('Literal filing value', '披露原值') }}</span><strong>{{ term.filing_term_raw }}</strong></div>
+      <div><span>{{ t('Filing date', '披露日期') }}</span><strong>{{ term.receipt.filing_date or '—' }}</strong></div>
+      <div><span>{{ t('Filing type', '披露类型') }}</span><strong>{{ term.receipt.form or '—' }}</strong></div>
+    </div>
+    <p class="cs-section-note"><a href="{{ term.receipt.source_url }}" rel="noopener noreferrer" target="_blank">{{ t('Read the SEC credit agreement', '查看 SEC 信贷协议') }} · {{ term.receipt.accession }}</a></p>
+    {% endif %}
+    {% endfor %}
     <div class="cs-unavailable">
       <span class="cs-unavailable-mark" aria-hidden="true">↳</span>
       <div>

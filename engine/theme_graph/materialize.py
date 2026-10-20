@@ -2120,3 +2120,251 @@ def changed_edges(computed: list[dict], stored: pd.DataFrame) -> list[dict]:
     prior = {str(r["edge_id"]): _material(r) for r in stored.to_dict("records")}
     return [row for row in computed
             if prior.get(str(row["edge_id"])) != _material(row)]
+
+
+# ---------------------------------------------------------------------------------------
+# Native activity membership HISTORY (recovery 2026-10-16 §9 step 3; contract
+# contracts/theme_graph/activity_membership_history.v1.schema.json).
+#
+# A PURE fold over versioned APPEND / CORRECT / REMOVE events for owner-admitted native
+# activity memberships (today only the C01 species, planned_product_integration). It is
+# deliberately NOT called by build(), writes nothing, and feeds nothing into edges.v1:
+# the fold answers "what was believed at this knowledge cutoff" and grants no
+# materialize, publish or rank authority. The same discipline as apply_relation_events
+# holds: absence is never removal. Only a complete, authoritative observation of an
+# exhaustive roster that does not contain the subject removes a belief; a timeout, a
+# partial read, a changed shape or a non-exhaustive roster leaves the belief in place.
+# Knowledge-cutoff filtering runs BEFORE any selection, and no belief is ever deleted:
+# a superseded or removed belief moves to history with its closed knowledge interval.
+# ---------------------------------------------------------------------------------------
+
+ACTIVITY_HISTORY_EVENT_SCHEMA = "gmi.activity_membership_history_event/v1"
+ACTIVITY_HISTORY_STATE_SCHEMA = "gmi.activity_membership_history_state/v1"
+ADMITTED_ACTIVITY_HISTORY_SPECIES = frozenset({"planned_product_integration"})
+ACTIVITY_HISTORY_CONTRACT = "contracts/theme_graph/activity_membership_history.v1.schema.json"
+_ACTIVITY_HISTORY_SOURCE = re.compile(r"^co:[a-z]{2}:[A-Za-z0-9._-]+$")
+_ACTIVITY_HISTORY_TARGET = re.compile(r"^theme:[a-z0-9_]+$")
+_ACTIVITY_HISTORY_REMOVAL_REFUSAL = {
+    "TIMEOUT": "REMOVAL_REFUSED_TIMEOUT",
+    "PARTIAL": "REMOVAL_REFUSED_PARTIAL",
+    "CHANGED_SHAPE": "REMOVAL_REFUSED_CHANGED_SHAPE",
+}
+_ACTIVITY_HISTORY_VALIDATOR: list = []
+
+
+class ActivityHistoryRefusal(ValueError):
+    """A typed refusal of an activity history event or fold; ``code`` is stable."""
+
+    def __init__(self, code: str, detail: str = "") -> None:
+        super().__init__(f"{code}: {detail}" if detail else code)
+        self.code = code
+
+
+def _activity_history_canonical(value) -> bytes:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
+                      allow_nan=False).encode("utf-8")
+
+
+def activity_history_event_digest(event: dict) -> str:
+    """sha256 of the canonical event without ``event_id``/``event_sha256``."""
+    payload = {k: v for k, v in event.items() if k not in {"event_id", "event_sha256"}}
+    return hashlib.sha256(_activity_history_canonical(payload)).hexdigest()
+
+
+def activity_membership_id(*, source_node_id: str, target_node_id: str, species: str,
+                           scope: dict) -> str:
+    """The membership identity: directed endpoints, species and scope, nothing else."""
+    body = {"source_node_id": source_node_id, "target_node_id": target_node_id,
+            "species": species, "scope": scope}
+    return "actmem:" + hashlib.sha256(_activity_history_canonical(body)).hexdigest()[:24]
+
+
+def _activity_history_validator():
+    if not _ACTIVITY_HISTORY_VALIDATOR:
+        import jsonschema
+
+        path = Path(__file__).resolve().parents[2] / ACTIVITY_HISTORY_CONTRACT
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        jsonschema.Draft202012Validator.check_schema(schema)
+        _ACTIVITY_HISTORY_VALIDATOR.append(jsonschema.Draft202012Validator(schema))
+    return _ACTIVITY_HISTORY_VALIDATOR[0]
+
+
+def _activity_history_instant(value, *, code: str) -> datetime:
+    text = value if isinstance(value, str) else ""
+    if "T" not in text:
+        raise ActivityHistoryRefusal(code, repr(value))
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ActivityHistoryRefusal(code, repr(value)) from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ActivityHistoryRefusal(code, f"{value!r} carries no zone")
+    return parsed
+
+
+def validate_activity_history_event(event: dict) -> None:
+    """Refuse an event that is not a closed, honestly digested, admitted history event.
+
+    Semantic refusals are named before the generic schema refusal so a caller learns
+    WHY: a basket / vendor-theme / non co:->theme: endpoint is ENDPOINT_NOT_ADMITTED
+    (the group-to-micro and vendor-family refusal), an unadmitted species is
+    SPECIES_NOT_ADMITTED, and the action rules are CURATION_REQUIRED (APPEND/CORRECT),
+    SUPERSEDES_REQUIRED (CORRECT) and OBSERVATION_REQUIRED (REMOVE).
+    """
+    if not isinstance(event, dict):
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "event is not an object")
+    endpoints = event.get("endpoints")
+    if isinstance(endpoints, dict):
+        source, target = endpoints.get("source_node_id"), endpoints.get("target_node_id")
+        if not (isinstance(source, str) and _ACTIVITY_HISTORY_SOURCE.match(source)
+                and isinstance(target, str) and _ACTIVITY_HISTORY_TARGET.match(target)):
+            raise ActivityHistoryRefusal("ENDPOINT_NOT_ADMITTED", f"{source!r} -> {target!r}")
+    if "species" in event and event.get("species") not in ADMITTED_ACTIVITY_HISTORY_SPECIES:
+        raise ActivityHistoryRefusal("SPECIES_NOT_ADMITTED", repr(event.get("species")))
+    action = event.get("action")
+    if action in {"APPEND", "CORRECT"} and event.get("curation") is None:
+        raise ActivityHistoryRefusal("CURATION_REQUIRED", f"{action} needs a named curation")
+    if action == "CORRECT" and event.get("supersedes_event_sha256") is None:
+        raise ActivityHistoryRefusal("SUPERSEDES_REQUIRED", "CORRECT names the belief it corrects")
+    if action == "APPEND" and event.get("supersedes_event_sha256") is not None:
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", "APPEND supersedes nothing")
+    if action == "REMOVE" and event.get("observation") is None:
+        raise ActivityHistoryRefusal("OBSERVATION_REQUIRED", "REMOVE needs an observation")
+    errors = sorted(_activity_history_validator().iter_errors(event),
+                    key=lambda e: [str(p) for p in e.absolute_path])
+    if errors:
+        first = errors[0]
+        path = "/".join(str(p) for p in first.absolute_path) or "<root>"
+        raise ActivityHistoryRefusal("EVENT_SCHEMA_INVALID", f"{path}: {first.message}")
+    digest = activity_history_event_digest(event)
+    if event["event_sha256"] != digest or event["event_id"] != "actevt:" + digest[:24]:
+        raise ActivityHistoryRefusal("EVENT_DIGEST_MISMATCH", event["event_id"])
+    expected = activity_membership_id(
+        source_node_id=event["endpoints"]["source_node_id"],
+        target_node_id=event["endpoints"]["target_node_id"],
+        species=event["species"], scope=event["scope"])
+    if event["membership_id"] != expected:
+        raise ActivityHistoryRefusal("MEMBERSHIP_ID_MISMATCH", event["membership_id"])
+    _activity_history_instant(event["clocks"]["knowledge_at"], code="EVENT_SCHEMA_INVALID")
+
+
+def _activity_history_belief(event: dict) -> dict:
+    return {
+        "membership_id": event["membership_id"],
+        "endpoints": event["endpoints"],
+        "species": event["species"],
+        "scope": event["scope"],
+        "role": event["role"],
+        "lifecycle": event["lifecycle"],
+        "evidence_lineage": event["evidence_lineage"],
+        "use_qualification": event["use_qualification"],
+        "curation": event["curation"],
+        "event_sha256": event["event_sha256"],
+        "knowledge_from": event["clocks"]["knowledge_at"],
+        "knowledge_to": None,
+    }
+
+
+def _activity_history_outcome(event: dict, reason: str, **extra) -> dict:
+    row = {"event_sha256": event["event_sha256"], "event_id": event["event_id"],
+           "membership_id": event["membership_id"], "action": event["action"],
+           "knowledge_at": event["clocks"]["knowledge_at"], "reason": reason}
+    row.update(extra)
+    return row
+
+
+def apply_activity_membership_events(events: list[dict], *, knowledge_cutoff: str) -> dict:
+    """Fold activity history events into belief as of ``knowledge_cutoff`` (pure).
+
+    1. Every event is validated; one invalid event refuses the whole fold.
+    2. Events known after the cutoff are excluded BEFORE any selection.
+    3. The rest apply in (knowledge instant, event_sha256) order, per membership:
+       APPEND becomes belief only when curated ACCEPT and graph-membership use is
+       GRANTED; CORRECT must supersede the current belief (same rules); REMOVE needs a
+       COMPLETE_AUTHORITATIVE observation of an exhaustive roster without the subject,
+       otherwise the belief is RETAINED with the exact reason.
+    Nothing is deleted: superseded and removed beliefs move to ``history`` with a closed
+    [knowledge_from, knowledge_to) interval. No I/O, no clock reads, no authority.
+    """
+    cutoff = _activity_history_instant(knowledge_cutoff, code="KNOWLEDGE_CUTOFF_INVALID")
+    rows = [json.loads(_activity_history_canonical(e)) if isinstance(e, dict) else e
+            for e in events]
+    for event in rows:
+        validate_activity_history_event(event)
+    unique = {event["event_sha256"]: event for event in rows}
+
+    def known(event: dict) -> datetime:
+        return _activity_history_instant(event["clocks"]["knowledge_at"],
+                                         code="EVENT_SCHEMA_INVALID")
+
+    excluded = sorted(sha for sha, event in unique.items() if known(event) > cutoff)
+    admitted = sorted((event for sha, event in unique.items() if known(event) <= cutoff),
+                      key=lambda event: (known(event), event["event_sha256"]))
+
+    current: dict[str, dict] = {}
+    history: list[dict] = []
+    retained: list[dict] = []
+    refused: list[dict] = []
+    for event in admitted:
+        mid, action = event["membership_id"], event["action"]
+        prior = current.get(mid)
+        accepted = (event.get("curation") or {}).get("decision") == "ACCEPT"
+        granted = event["use_qualification"]["graph_membership_use"] == "GRANTED"
+        if action == "APPEND":
+            if prior is not None:
+                refused.append(_activity_history_outcome(event, "DUPLICATE_APPEND"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "APPEND_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                current[mid] = _activity_history_belief(event)
+        elif action == "CORRECT":
+            if prior is None or prior["event_sha256"] != event["supersedes_event_sha256"]:
+                refused.append(_activity_history_outcome(event, "CORRECTION_TARGET_NOT_CURRENT"))
+            elif not accepted:
+                refused.append(_activity_history_outcome(event, "CORRECTION_NOT_ACCEPTED"))
+            elif not granted:
+                refused.append(_activity_history_outcome(event, "GRAPH_MEMBERSHIP_USE_NOT_GRANTED"))
+            else:
+                closed = dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                              superseded_by_event_sha256=event["event_sha256"])
+                history.append(closed)
+                current[mid] = _activity_history_belief(event)
+        else:  # REMOVE
+            observation = event["observation"]
+            if prior is None:
+                refused.append(_activity_history_outcome(event, "NO_CURRENT_BELIEF"))
+                continue
+            completeness = observation["completeness"]
+            if completeness != "COMPLETE_AUTHORITATIVE":
+                reason = _ACTIVITY_HISTORY_REMOVAL_REFUSAL[completeness]
+            elif not observation["roster_exhaustive"]:
+                reason = "REMOVAL_REFUSED_NON_EXHAUSTIVE_ROSTER"
+            elif observation["subject_present"]:
+                reason = "REMOVAL_CONTRADICTED_SUBJECT_PRESENT"
+            else:
+                reason = None
+            if reason is not None:
+                retained.append(_activity_history_outcome(
+                    event, reason, retained_belief_event_sha256=prior["event_sha256"]))
+                continue
+            history.append(dict(prior, knowledge_to=event["clocks"]["knowledge_at"],
+                                removed_by_event_sha256=event["event_sha256"]))
+            del current[mid]
+
+    def order(row: dict) -> tuple:
+        return (row["membership_id"], row.get("knowledge_from") or row.get("knowledge_at"),
+                row["event_sha256"])
+
+    return {
+        "schema": ACTIVITY_HISTORY_STATE_SCHEMA,
+        "knowledge_cutoff": knowledge_cutoff,
+        "current": sorted(current.values(), key=order),
+        "history": sorted(history, key=order),
+        "retained": sorted(retained, key=order),
+        "refused": sorted(refused, key=order),
+        "excluded_after_cutoff": excluded,
+        "authority": {"may_materialize_edges": False, "may_publish": False, "may_rank": False},
+    }
