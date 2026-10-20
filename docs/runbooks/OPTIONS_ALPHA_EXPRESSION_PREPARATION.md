@@ -115,3 +115,11 @@ against an arbitrary storage administrator forging a complete source history.
 
 This change does not call the daily publisher, activate a policy, query quotes or
 change campaign outcome persistence. The original correction/review boundary remains.
+
+`publish_pair` reports the commitment effect, not positive intent availability.
+Always resolve the private availability result separately: a coarse or inverted
+provider clock is never rounded, clamped, backdated or replaced with a local time.
+An invalid provider history after effects is retained on its original transaction
+for reconciliation; automatic replay, state deletion and a new transaction are not
+recovery. The manifest has a 16 MiB pre-effect bound and retains immutable history;
+retirement would require a separate versioned history contract.

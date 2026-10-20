@@ -526,6 +526,7 @@ def test_expression_commitment_has_real_availability_and_legacy_wire_compatibili
     missing = expressions.resolve_intent_availability(legacy, intent['expression_id'])
     assert missing['available_at'] is None and not missing['capture_eligible']
     assert missing['intent'] is None and missing['public_consumer_available'] is False
+    assert missing['first_receipt_id'] is None
     pair = _read_expression(s, tmp_path)
     available = expressions.resolve_intent_availability(pair, intent['expression_id'])
     assert available['status'] == 'available'
@@ -540,6 +541,10 @@ def test_expression_commitment_has_real_availability_and_legacy_wire_compatibili
     assert unresolved['reason'] == 'ORIGINAL_CONSUMER_EXPRESSION_BYTES_UNRESOLVED'
     assert unresolved['available_at'] is None and unresolved['intent'] is None
     assert unresolved['public_consumer_available'] is False
+    assert unresolved['first_receipt_id'] == pair.receipt['receipt_id']
+    absent = expressions.resolve_intent_availability(pair, 'unpublished-expression')
+    assert absent['reason'] == 'EXPRESSION_NOT_PUBLISHED'
+    assert absent['first_receipt_id'] is None
     assert available['available_at'] != pair.receipt['payload_r2_confirmed_at']
     assert all(value is False for value in available['authority'].values())
     assert not available['capture_eligible'] and not available['training_eligible']
@@ -701,6 +706,98 @@ def test_coherent_foreign_commitment_or_lost_commitment_cannot_replace_retained_
     with pytest.raises(PublicationError, match='lost expression history'):
         _publish_expression(s, tmp_path, rows[1])
     assert len(s.puts) == puts
+
+
+class CoherentLossS3(MetadataS3):
+    """A provider moment that drops both commitments together, not partially.
+
+    The stored bodies stay byte-identical and legacy-valid, so every read sees
+    one perfectly sealed manifest-less pair, exactly as a legacy peer leaves it.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.drop_commitments_on_put = None
+        self.legacy_peer_pair = None
+
+    def put_object(self, **args):
+        key = args['Key']
+        raced = self.race == key
+        try:
+            return super().put_object(**args)
+        finally:
+            if raced and key == PAYLOAD_KEY and self.legacy_peer_pair is not None:
+                # A manifest-less peer stored the identical payload and completed
+                # the pair before our conditional payload write landed.
+                builder = self.legacy_peer_pair
+                self.legacy_peer_pair = None
+                body, etag, _ = self.o[key]
+                self.n += 1
+                self.o[RECEIPT_KEY] = (builder(body, etag), f'"peer{self.n}"', self._time())
+                self.metadata.pop(PAYLOAD_KEY, None)
+                self.metadata.pop(RECEIPT_KEY, None)
+            if key == self.drop_commitments_on_put:
+                self.drop_commitments_on_put = None
+                self.metadata.pop(PAYLOAD_KEY, None)
+                self.metadata.pop(RECEIPT_KEY, None)
+
+
+def _legacy_peer_receipt_bytes(feed, payload_body, etag):
+    """The exact manifest-less receipt a legacy peer would seal for this payload."""
+    composition = datetime.fromisoformat(feed['generated_at'].replace('Z', '+00:00'))
+    return publisher.canonical_bytes(publisher._make_receipt(
+        feed, payload_body, None, etag,
+        (composition + timedelta(seconds=1)).isoformat().replace('+00:00', 'Z'),
+        (composition + timedelta(seconds=2)).isoformat().replace('+00:00', 'Z')))
+
+
+def _assert_first_expression_journal_retained(root, intent):
+    journal = publisher._load(root / 'lock.transaction.json')
+    assert journal['schema'] == publisher.EXPRESSION_JOURNAL_SCHEMA
+    assert (journal['expression_manifest']['expressions']
+            [intent['expression_id']]['intent']) == intent
+    assert not (root / 'lock.sealed.json').exists()
+
+
+@pytest.mark.parametrize('lost_at', ['payload_412', 'receipt_412', 'final_readback'])
+def test_coherent_legacy_pair_cannot_retire_first_expression_journal(tmp_path, monkeypatch, lost_at):
+    # The first expression-bearing transaction races a coherent manifest-less
+    # pair at each seal site. Sealing there would retire the journal and drop
+    # the only retained manifest, so the seal must refuse and keep the
+    # original durable transaction without replaying any provider effect.
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = CoherentLossS3()
+    if lost_at == 'payload_412':
+        s.race = PAYLOAD_KEY
+        s.legacy_peer_pair = lambda body, etag: _legacy_peer_receipt_bytes(
+            rows[0]['feed'], body, etag)
+    else:
+        s.drop_commitments_on_put = RECEIPT_KEY
+        if lost_at == 'receipt_412':
+            s.race = RECEIPT_KEY
+    with pytest.raises(PublicationError, match='durable transaction obligation'):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    _assert_first_expression_journal_retained(tmp_path, intent)
+    puts = len(s.puts)
+    with pytest.raises(PublicationError):
+        _publish_expression(s, tmp_path, rows[0], [intent])
+    assert len(s.puts) == puts  # the refusal and retry replay no provider effect
+
+
+def test_inherited_expression_coherent_loss_keeps_original_journal(tmp_path, monkeypatch):
+    rows = _feeds(tmp_path / 'source', monkeypatch)
+    intent = _expression_intent(rows, tmp_path / 'source')
+    s = CoherentLossS3()
+    assert _publish_expression(s, tmp_path, rows[0], [intent]) == 'published'
+    s.drop_commitments_on_put = RECEIPT_KEY
+    puts = len(s.puts)
+    with pytest.raises(PublicationError, match='lost expression history'):
+        _publish_expression(s, tmp_path, rows[1], [intent])
+    journal = publisher._load(tmp_path / 'lock.transaction.json')
+    assert (journal['expression_manifest']['expressions']
+            [intent['expression_id']]['intent']) == intent
+    assert len(s.puts) == puts + 2  # generation effects landed; the seal still refused
 
 
 def test_pending_manifest_cannot_be_substituted_after_provider_effect(tmp_path, monkeypatch):

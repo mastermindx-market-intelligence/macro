@@ -150,7 +150,8 @@ def resolve_intent_availability(pair: Any, expression_id: str) -> dict:
     manifest = pair.expression_manifest
     result = {"schema": "options.alpha_expression_intent_availability/v1",
               "expression_id": expression_id, "status": "unavailable",
-              "available_at": None, "reason": "RETAINED_EXPRESSION_MANIFEST_REQUIRED",
+              "available_at": None, "first_receipt_id": None,
+              "reason": "RETAINED_EXPRESSION_MANIFEST_REQUIRED",
               "commitment_published_at": None, "intent": None,
               "intent_bytes_sha256": None,
               "consumer": "incumbent_private_publisher_owner",

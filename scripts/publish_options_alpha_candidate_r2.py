@@ -425,7 +425,8 @@ def _make_receipt(
 
 
 def _seal_local(
-    pair: Pair, prior: Pair | None, cache_path: Path, journal_path: Path
+    pair: Pair, prior: Pair | None, cache_path: Path, journal_path: Path, *,
+    expected_manifest: dict[str, Any] | None,
 ) -> None:
     """Commit only an observed, valid successor; retire its durable journal last."""
     validate_publication_receipt_transition(
@@ -452,6 +453,15 @@ def _seal_local(
             prior_receipt_clock=prior.receipt_last_modified if prior else None)
     except ValueError as exc:
         raise PublicationError("expression publication transition invalid") from exc
+    # The original durable transaction owns the expression obligation: both the
+    # sealed commitment and the exact retained manifest must be the pending
+    # journal's own before the cache write may retire that journal.
+    if (pair.expression_manifest_sha256
+            != (None if expected_manifest is None
+                else expressions.digest(expected_manifest))
+            or pair.expression_manifest != expected_manifest):
+        raise PublicationError(
+            "sealed expression differs from durable transaction obligation")
     schema = EXPRESSION_JOURNAL_SCHEMA if pair.expression_manifest is not None else JOURNAL_SCHEMA
     _record(cache_path, {"schema": schema, "sealed": _pack(pair)})
     journal_path.unlink(missing_ok=True)
@@ -525,7 +535,8 @@ def publish_pair(
                         raise PublicationError(
                             "sealed recovery has an unrelated local cache"
                         )
-                    _seal_local(remote, predecessor, cp, jp)
+                    _seal_local(remote, predecessor, cp, jp,
+                                expected_manifest=j.get("expression_manifest"))
                 return "noop"
             prior = remote
         else:
@@ -620,7 +631,8 @@ def publish_pair(
                 sealed = read_pair(client, bucket)
                 if sealed and sealed.payload == payload:
                     sealed = _retain_remote(sealed, prior, j)
-                    _seal_local(sealed, prior, cp, jp)
+                    _seal_local(sealed, prior, cp, jp,
+                                expected_manifest=j.get("expression_manifest"))
                     return "noop"
                 raise
         check, h = _get(client, bucket, PAYLOAD_KEY), _head(client, bucket, PAYLOAD_KEY)
@@ -664,12 +676,14 @@ def publish_pair(
             sealed = read_pair(client, bucket)
             if sealed and sealed.payload == payload and sealed.receipt == receipt:
                 sealed = _retain_remote(sealed, prior, j)
-                _seal_local(sealed, prior, cp, jp)
+                _seal_local(sealed, prior, cp, jp,
+                            expected_manifest=j.get("expression_manifest"))
                 return "healed"
             raise
         sealed = read_pair(client, bucket)
         if sealed is None or sealed.payload != payload or sealed.receipt != receipt:
             raise PublicationError("receipt seal readback failed")
         sealed = _retain_remote(sealed, prior, j)
-        _seal_local(sealed, prior, cp, jp)
+        _seal_local(sealed, prior, cp, jp,
+                    expected_manifest=j.get("expression_manifest"))
         return "published"
