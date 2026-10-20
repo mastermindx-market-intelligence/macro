@@ -4348,6 +4348,7 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    "options-pilot-chronology-code",
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
     # Vault code-gate closure from exact tracked-tree analysis; includes runtime
     # Jinja/page assets. Packing ceilings and suite coverage remain unchanged.
@@ -6997,6 +6998,24 @@ def test_price_ladder_deterministic_contract_is_owned_by_existing_code_gate(tmp_
     assert not selected, reason
 
 
+def test_options_pilot_chronology_runs_on_source_changes_without_unrelated_probes():
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")}
+    job = jobs["options-pilot-chronology-code"]
+    assert job.exclusive
+    for dependency in (
+        "scripts/options_pilot_study_adapter.py",  # ci-trigger-closure: data — selector name only
+        "tests/test_options_pilot_chronology.py",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/pilot-study-spec.v1.json",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/pilot-p3-reference.py",  # ci-trigger-closure: data — selector name only
+        "research/options_intelligence/2026-10-03/gex-published-board-extract.json",  # ci-trigger-closure: data — selector name only
+    ):
+        selected, _ = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], dependency
+    selected, _ = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data — selector name only
+    assert selected == []
+    manifest = _yaml(MANIFEST)["jobs"][job.job_id]
+    assert any("tests/test_options_pilot_chronology.py" in shlex.split(step.get("run", ""))  # ci-trigger-closure: data — command membership only
+               for step in manifest["steps"])
 # ---------------------------------------------------------------------------
 # W15-F-AIC lane — REPORT-ONLY ancestor-init census for curated-exclusive jobs.
 #
