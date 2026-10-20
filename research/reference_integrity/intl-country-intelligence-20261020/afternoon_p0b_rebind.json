@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-20T20:46:38.636852+00:00",
+  "execution": "afternoon_p0b_execution.json",
+  "source_commit": "5b6b88fc16a1b11f2dc394ad17a3ecc996d0cefd",
+  "receipt_identities": [
+    {
+      "market": "hk",
+      "sha256": "e5f4779404515dd2199da662803249c26dbd838a94b5748ada2f0c94ad30edfd",
+      "primary_passed": 48,
+      "degraded_controls_passed": 16
+    },
+    {
+      "market": "ca",
+      "sha256": "c92c85bea09a77c3070d188c0beb0d0be745ae2ed5e5bde314d5c7cf3a0803f9",
+      "primary_passed": 48,
+      "degraded_controls_passed": 16
+    }
+  ],
+  "all_loaded_and_construction_input_digests_match_current_files": true,
+  "canonical_theme_js_sha256": "1c9d7ad51904b385a7e7a698bc6926a8b04bf3b8d656bcb88c3371248f397491",
+  "prior_conflict_resolution": "Retained newer actual branch receipts as historical starting point; reminted both real browser matrices because incoming main changes canonical assistant bundle version."
+}

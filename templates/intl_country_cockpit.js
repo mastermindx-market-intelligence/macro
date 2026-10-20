@@ -103,13 +103,20 @@
       if (event.target.closest('a[href="#intl-analysis-tools"]') && tools) tools.open = true;
     });
     root.addEventListener("toggle", syncRail, true);
-    window.addEventListener("hashchange", function () {
-      reveal(window.location.hash || initialCountryHash);
+    function followHash() {
+      var hash = window.location.hash;
+      var country = reveal(hash || initialCountryHash);
       exposeLegacyAnchor();
-    });
+      // Native fragment scrolling may precede the country disclosure reflow.
+      // Align after that layout, only while this remains the active destination.
+      if (country && hash) window.requestAnimationFrame(function () {
+        if (window.location.hash === hash && country.open)
+          country.scrollIntoView({block: "start"});
+      });
+    }
+    window.addEventListener("hashchange", followHash);
     if (tools && new URLSearchParams(window.location.search).has("view")) tools.open = true;
-    reveal(window.location.hash);
-    exposeLegacyAnchor();
+    followHash();
     syncRail();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount, {once: true});

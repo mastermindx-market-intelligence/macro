@@ -329,7 +329,7 @@ html[data-theme="light"] body.imc-page{--bg:inherit;--panel:inherit;--panel2:inh
 .imc-toolbar.is-stuck{position:fixed;top:0;left:var(--imc-toolbar-left);width:var(--imc-toolbar-width);z-index:120}
 .imc-toolbar .imc-nav{flex:1;min-width:0;border:0;margin:0}
 .imc-assistant-slot{flex:0 0 40px;width:40px;height:40px}
-body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch){top:var(--imc-assistant-top);left:var(--imc-assistant-left);right:auto;bottom:auto;width:40px;height:40px;padding:0;gap:0;justify-content:center;border:1px solid var(--line);border-radius:8px;background:var(--panel);box-shadow:none;backdrop-filter:none}
+body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch){top:var(--imc-assistant-top);left:var(--imc-assistant-left);right:auto;bottom:auto;width:40px;height:40px;padding:0;gap:0;justify-content:center;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);box-shadow:none;backdrop-filter:none}
 body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch):hover{transform:none;background:var(--panel2);box-shadow:none}
 body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch)::before,
 body[data-imc-assistant-dock] :is(#mmb-boot,#mmb-launch)::after,

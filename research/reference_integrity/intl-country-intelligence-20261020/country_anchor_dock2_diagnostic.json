@@ -1,0 +1,362 @@
+[
+  {
+    "trial": 0,
+    "delay": 0,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 0,
+    "delay": 50,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 0,
+    "delay": 200,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 0,
+    "delay": 500,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 1,
+    "delay": 0,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 1,
+    "delay": 50,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 1,
+    "delay": 200,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 1,
+    "delay": 500,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 2,
+    "delay": 0,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 2,
+    "delay": 50,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 2,
+    "delay": 200,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  },
+  {
+    "trial": 2,
+    "delay": 500,
+    "url": "http://intl.test/intl.html#imc-country-JP",
+    "y": 485,
+    "top": 70.015625,
+    "open": [
+      "imc-country-JP"
+    ],
+    "behavior": "auto",
+    "trace": [
+      {
+        "event": "hashchange",
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-KR",
+        "open": false,
+        "y": 485,
+        "top": 70.015625
+      },
+      {
+        "event": "toggle-imc-country-JP",
+        "open": true,
+        "y": 485,
+        "top": 70.015625
+      }
+    ]
+  }
+]

@@ -9,7 +9,7 @@ OUT = Path(__file__).resolve().parent
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-sha", required=True)
-    parser.add_argument("--label", required=True, choices=("ui", "final", "dock"))
+    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3"))
     parser.add_argument("--overlay", action="append", default=[])
     args = parser.parse_args()
     build = Path("/tmp/intl-rig-review-repair-20261020") / args.label / "source"

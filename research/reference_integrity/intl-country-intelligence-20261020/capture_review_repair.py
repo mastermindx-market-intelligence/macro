@@ -8,7 +8,7 @@ RIG = Path(__file__).resolve().parent
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--label", required=True, choices=("ui", "final", "dock"))
+    parser.add_argument("--label", required=True, choices=("ui", "final", "dock", "dock2", "dock3"))
     args = parser.parse_args()
     target = RIG / ("repair_" + args.label)
     assert not target.exists()
@@ -72,7 +72,7 @@ def main():
                     screenshots.append(module.shot(page, "reading-" + name + ".png", {"actual":launch_state}))
                     checks.append({"id":"persistent-assistant-" + name,
                         "passed":launch_state["position"]=="fixed" and launch_state["inViewport"] and bool(launch_state["label"]),"actual":launch_state})
-                    if args.label == "dock":
+                    if args.label in ("dock", "dock2", "dock3"):
                         checks.append({"id":"assistant-reserved-space-" + name,
                             "passed":launch_state["withinToolbarSlot"],"actual":launch_state})
                     launcher.focus()
