@@ -79,7 +79,21 @@ Use the existing private-evidence/public-projection architecture, after separate
 4. Qualify source-race/version mismatches, duplicate title rows, empty links, missing/invalid dates, HTTP-200 API errors, partial responses, bounds and no-results behavior with captured and adversarial fixtures.
 5. Only then design the corresponding bilingual R14 coverage views and supported watch triggers, with the Paper contract and honest unknown/unsupported states. No prospective FDA dates or calendar predictions are introduced by this CMS work.
 
-Still unqualified: general pagination, rate-budget/retry policy, NCA version-consistent joins, arbitrary historical versions, conditional-request semantics, notification delivery, local coverage/coding license endpoints and issuer/product matching. SEC expansion remains a separate source contract.
+CMS coverage evidence is factual policy context. It does not by itself qualify payment economics, adoption, revenue, issuer materiality, equity value or a recommendation. Any later promotion into an issuer-specific case requires the incumbent owners to bind the exact device, applicant, submission, indication, territory, issuer/security and retained economic rights, with separately qualified coverage, commercial and materiality evidence. Capture timestamps establish observation; day-only source dates do not establish when a fact was publicly knowable for a historical case.
+
+### Outstanding source qualifications
+
+- General pagination, rate-budget/retry policy, NCA version-consistent joins, arbitrary historical versions, conditional-request semantics, notification delivery, local coverage/coding license endpoints and issuer/product matching remain unqualified. SEC expansion remains a separate source contract.
+- Retention and commercial-display rights for the proposed national payload and field set, including any embedded third-party content, have not been qualified by these access tests. Successful unauthenticated requests establish observed access, not blanket permission for every retention or display use. Resolve the proposed field set through the existing source owner before production CMS acquisition or publication. This dossier does not assert that the observed national metadata is prohibited.
+- The official [API FAQ](https://api.coverage.cms.gov/docs/) distinguishes keyless access from endpoints requiring a license-agreement token. The [CMS AMA license page](https://www.cms.gov/license/ama) describes restrictions on embedded CPT material. Neither that token flow nor a license acceptance was exercised here. Do not treat successful national-endpoint reads as acceptance of, or exemption from, any separate third-party-content terms.
+
+## Continuity with the existing research proposals
+
+The older [MedTech Catalyst R1 research proposal, Macro #8182](https://github.com/mastermindx-market-intelligence/macro/pull/8182), was observed open, non-draft and unmerged at `8935a09813dc5fb9b34b2206e3b067a0d62e29d1`. Its [current research contract](https://github.com/mastermindx-market-intelligence/macro/blob/8935a09813dc5fb9b34b2206e3b067a0d62e29d1/research/medtech/MEDTECH_CATALYST_R1_RESEARCH_AND_DECISIONS_2026-09-29.md) separates regulatory, identity/rights, commercial, materiality and public-knowledge clocks. Its formal-review condition and no-auto-merge boundary remain with that proposal's owner.
+
+The [Wave 1 commissioning proposal, Macro #8079](https://github.com/mastermindx-market-intelligence/macro/pull/8079), was observed open, draft and unmerged at `72c966f92fbb5bba468c83780ccf6f127145ac06`, with `DRAFT / HOLD-FOR-SOL` and no merge-on-green. Its [source document](https://github.com/mastermindx-market-intelligence/macro/blob/72c966f92fbb5bba468c83780ccf6f127145ac06/agentos/decisions/DEC-CATALYST-WAVE1-WEB-FIRST-FOUR-LANE-COMMISSION.md) remains a proposal until repository acceptance and permits independently ready source-family increments.
+
+This CMS source-discovery increment does not adopt, supersede or complete either proposal. It introduces no R1-derived hold on the separately reviewed factual FDA watchdesk, and it does not qualify an investment cohort or investment-case model. The older proposals' historical checks are not current R14 release evidence.
 
 ## Evidence scope
 
