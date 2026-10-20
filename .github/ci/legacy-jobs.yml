@@ -39,6 +39,10 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -578,6 +582,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -1881,6 +1886,10 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -1935,6 +1944,7 @@ jobs:
       - "tests/test_c19_wp32_denial_cache.py"
       - "tests/test_c19_wp19_integrated_answer_entitlement_pins.py"
       - "app/integrated_answer.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "app/forensics.py"
       - "tests/test_integrated_answer_v0.py"
       - "tests/test_company_theme_exposure.py"
@@ -2783,6 +2793,10 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -3294,6 +3308,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -5222,6 +5237,13 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "tests/test_ipo_prospectus_terms.py"
+      - "data/ipo/lockups.parquet"
+      - "data/ipo/calendar.parquet"
+      - "data/yahoo/CRCL.parquet"
+      - "templates/ipo.html.j2"
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
       - "collectors/sec_document_spine.py"
       - "collectors/sec_request_pacer.py"
       - "engine/fundamental_forensics/sec_document_spine.py"
@@ -6018,6 +6040,8 @@ jobs:
           tests/test_guidance_source_context.py
           tests/test_guidance_source_evidence.py
           tests/test_china_archetype_d_s1.py -q
+      - name: IPO retained-source identity, conditional terms and native price path
+        run: python -m pytest tests/test_ipo_prospectus_terms.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
       # this hermetic subset prevents the calculation or rights gate from
@@ -6561,6 +6585,9 @@ jobs:
     scope: exclusive
     paths:
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -7439,6 +7466,11 @@ jobs:
       # tests/test_capital_need.py (F09 guarded capital-need adapter, contract-delta
       # 2026-09-22) rides this step with the debt/cash contract tests: it exercises
       # engine.capital_need plus the same debt-maturity render boundary. No new job.
+      # W25-L21/L22/L23 (2026-10-20): the Impulse Tracker page suites ride this step.
+      # tests/test_impulse.py was named by no `run:` step in any workflow; the four
+      # new suites render templates/impulse.html.j2 through
+      # scripts/build_impulse._render_html with inline payloads (jinja2/pandas, both
+      # already on this install line). No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -7594,6 +7626,9 @@ jobs:
           tests/test_masterminds_hub.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
+          tests/test_impulse.py tests/test_impulse_regime_chip.py
+          tests/test_impulse_card_evidence.py tests/test_impulse_lane_totals.py
+          tests/test_impulse_freshness_strip.py
           tests/test_research_priority_ordering.py -q
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
@@ -8839,6 +8874,10 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "templates/institutional_holding_research.js"
@@ -8907,6 +8946,9 @@ jobs:
       - "contracts/capital_structure_source_manifest.schema.json"
       - "contracts/fundamental_forensics_cost_ledger.v1.schema.json"
       - "contracts/fundamental_forensics_coverage_proof.v1.schema.json"
+      - "contracts/specialist_pack_catalogue.v1.schema.json"
+      - "contracts/specialist_pack_result.v1.schema.json"
+      - "contracts/specialist_packs/**"
       - "engine/capital_structure/authorized_shares.py"
       - "engine/capital_structure/capacity.py"
       - "engine/capital_structure/capacity_joint.py"
@@ -8940,6 +8982,7 @@ jobs:
       - "scripts/fif_latency_benchmark.py"
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
+      - "scripts/fif_specialist_packs.py"
       - engine/theme_graph/economic_context.py
       - engine/theme_graph/issuer_economic_context.py
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -8982,6 +9025,7 @@ jobs:
       # FIF Z0 (2026-10-19): the closure-matrix guard resolves every cited test file at runtime.
       - "tests/test_fif_z0_closure_matrix.py"
       - "tests/test_fif_x2_ownership_guards.py"
+      - "tests/test_fif_specialist_packs.py"
       - "app/deploy/macro-api.service"
       - "tests/fixtures/fundamental_forensics/**"
       - "tests/fixtures/fundamental_forensics_held_out/**"
@@ -9409,6 +9453,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -9707,10 +9752,12 @@ jobs:
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
       - "tests/test_fif_p2_evidence_capture.py"
+      - "tests/test_fif_source_rights.py"
       - "tests/test_fif_publication_workflow_shape.py"
       - "tests/test_fif_se_receipts.py"
       - "tests/test_fif_g_pack_gold.py"
       - "tests/test_fif_g_pack_kernel.py"
+      - "tests/test_fif_z0_gap_a23_a38.py"
       - "tests/test_filing_forensics_broad_sec_lane.py"
       - "tests/test_filing_forensics_sec_lane.py"
       - "tests/test_forensics_api.py"
@@ -9787,9 +9834,12 @@ jobs:
         run: >
           python -m pytest
           tests/test_fif_a1_journey_ledger.py
+          tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
           tests/test_fif_z0_closure_matrix.py
+          tests/test_fif_z0_gap_a23_a38.py
           tests/test_fif_gsrc_capture.py
+          tests/test_fif_source_rights.py
           tests/test_fif_publication_workflow_shape.py
           tests/test_fif_se_receipts.py
           tests/test_fif_pf_health_entity.py
@@ -9839,6 +9889,7 @@ jobs:
           tests/test_fundamental_forensics_ingest.py
           tests/test_fundamental_forensics_kernel_literal_guard.py
           tests/test_fundamental_forensics_latency.py
+          tests/test_fundamental_forensics_mapping_pack_v1_1.py
           tests/test_fundamental_forensics_member_capture.py
           tests/test_fundamental_forensics_metric_qualification.py
           tests/test_fundamental_forensics_metric_registry.py
@@ -10026,6 +10077,7 @@ jobs:
           tests/test_ma_agreement_context.py
           tests/test_bond_issue_terms.py
           tests/test_bond_issue_parser.py
+          tests/test_capital_structure_lookup_errors.py
           tests/test_special_situations_premium.py
           tests/test_capital_structure_policy_projection.py
           tests/test_capital_policy_projection.py
@@ -10774,6 +10826,10 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "lib/dataos/sec_filing_identity.py"
       # Native covenant consumer import closure.
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -15994,6 +16050,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -17889,6 +17951,40 @@ jobs:
       - name: admin site-gate unit + HTTP tests (admin/site_gate.py)
         run: python -m pytest tests/test_admin_site_gate.py -v
 
+  stock-liquidity-profile:
+    if: ${{ false }}
+    gate: code
+    # Producer-only F08 contract; no holdings, account, collector or live writes.
+    # Exact native import/read closure; temporary parquet fixtures do not own
+    # unrelated product code. Keep the existing packing-probe ceilings intact.
+    scope: exclusive
+    paths:
+      - .github/workflows/daily.yml
+      - config/dataset_registry.yml
+      - engine/__init__.py
+      - engine/liquidity_chip.py
+      - engine/liquidity_profile.py
+      - lib/__init__.py
+      - lib/massive_ticker.py
+      - lib/nyse_calendar.py
+      - research/licenses/MASSIVE_ENTITLEMENT_RECORD.md
+      - scripts/build_stock_library.py
+      - scripts/ci/daily_engine_regime_dashboard.sh
+      - scripts/stock_liquidity_profile.py
+      - tests/test_liquidity_chip.py
+      - tests/test_liquidity_profile.py
+      - tests/test_stock_liquidity_profile.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: raw-source qualification and existing one-record writer
+        run: python -m pytest tests/test_liquidity_profile.py tests/test_stock_liquidity_profile.py tests/test_liquidity_chip.py -q
+
   pick-lab-liquidity:
     if: ${{ false }}
     gate: code
@@ -18966,6 +19062,9 @@ jobs:
     scope: exclusive
     paths:
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "engine/guidance_source_evidence.py"
@@ -19741,6 +19840,9 @@ jobs:
     scope: exclusive
     paths:
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -21741,6 +21843,10 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -22266,6 +22372,7 @@ jobs:
       - engine/neuralweb/brain_analogues.py
       - engine/neuralweb/brain_curve.py
       - engine/neuralweb/brain_gateway.py
+      - "engine/neuralweb/brain_visuals.py"
       - engine/neuralweb/brain_market_intel.py
       - engine/neuralweb/brain_native_inputs.py
       - engine/neuralweb/brain_user_memory.py
@@ -22635,6 +22742,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/fundamental_forensics/sec_document_spine.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       # cx-int engine (2026-10-13): the engine stream's five contract suites and their measured import closure.
@@ -23404,6 +23515,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -24192,6 +24305,8 @@ jobs:
     scope: exclusive
     paths:
       - engine/qbus_news_quality.py
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -25303,6 +25418,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
       - "lib/dataos/sec_filing_identity.py"
@@ -26649,6 +26768,11 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Native IPO terms consumer extends this job's measured import closure.
+      - "engine/ipo_prospectus_terms.py"
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "lib/dataos/sec_filing_identity.py"
       - "engine/bond_issue_parser.py"
       - "engine/bond_issue_terms.py"
@@ -28371,9 +28495,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright
+        run: pip install pytest pandas numpy pyarrow pyyaml jsonschema jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn fastapi httpx playwright rjsmin==1.2.5
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
-        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py -q
+        run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
       - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
         run: >-
           python -m pytest
@@ -28392,7 +28516,7 @@ jobs:
       - name: install Brain browser
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_chart_widget.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -28541,8 +28665,10 @@ jobs:
       # reporters named) and the zh assess-badge words. All three use inline fixtures and need only
       # pandas/jinja2 from the install line above. Its own step so an SPR regression is named rather
       # than masked by the panel step. Paths widened for the suites, builder, engine and template.
+      # W24-L19 (2026-10-20): the JODI twelve-month pair and the per-row World Bank year suites
+      # join the same step (inline fixtures, pandas/jinja2 only).
       - name: W23-L9 SPR page — JODI world-total vintage + zh assess badges
-        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py -q
+        run: python -m pytest tests/test_strategic_reserves.py tests/test_spr_jodi_vintage.py tests/test_spr_assess_badge_zh.py tests/test_spr_jodi_trend.py tests/test_spr_gold_vintage.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
     # Install already covers pandas/numpy/pyarrow/jinja2/plotly. Declared
     # paths must cover every pytest file the commands name (pack validator);
@@ -28597,6 +28723,8 @@ jobs:
       - "tests/test_strategic_reserves.py"
       - "tests/test_spr_jodi_vintage.py"
       - "tests/test_spr_assess_badge_zh.py"
+      - "tests/test_spr_jodi_trend.py"
+      - "tests/test_spr_gold_vintage.py"
       - "engine/strategic_reserves.py"
       - "scripts/build_spr.py"
       - "templates/spr.html.j2"
@@ -29655,6 +29783,8 @@ jobs:
     scope: exclusive
     paths:
       - engine/qbus_news_quality.py
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "engine/institutional_census/__init__.py"
@@ -30151,6 +30281,8 @@ jobs:
     paths:
       - app/ticker_news_stream.py
       - engine/qbus_news_quality.py
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -30763,6 +30895,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -33084,6 +33217,8 @@ jobs:
       # pandas-free dataos-foundation lane (whose tripwire a pandas import would destroy).
       - engine/price_ladder.py
       - scripts/emit_view_contract.py
+      - lib/dataos/terminal_materialization.py
+      - tests/terminal_materialization_golden.json
       - tests/test_emit_view_contract.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
@@ -33140,6 +33275,10 @@ jobs:
       - tests/test_massive_news.py
       - tests/test_qbus_news_intake.py
       - tests/test_shared_news_intelligence.py
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "lib/massive_ticker.py"
       - "engine/guidance_source_evidence.py"
       - "engine/guidance_source_context.py"
       - "app/institutional_research.py"
@@ -33667,6 +33806,7 @@ jobs:
       - "engine/neuralweb/brain_analogues.py"
       - "engine/neuralweb/brain_curve.py"
       - "engine/neuralweb/brain_gateway.py"
+      - "engine/neuralweb/brain_visuals.py"
       - "engine/neuralweb/brain_market_intel.py"
       - "engine/neuralweb/brain_native_inputs.py"
       - "engine/neuralweb/brain_user_memory.py"
@@ -34646,6 +34786,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md"
+      - "engine/liquidity_profile.py"
+      - "scripts/stock_liquidity_profile.py"
       # Native covenant consumer import closure.
       - "contracts/capital_structure_ingestion_health.schema.json"
       - "scripts/compile_capital_structure_covenant_terms.py"
@@ -35000,6 +35143,7 @@ jobs:
       - "config/usgs_mcs_sources.yml"
       - "engine/__init__.py"
       - "engine/critical_minerals_supply.py"
+      - "site/basketdata/critical_minerals_supply.json"
       - "scripts/build_site*.py"
       - "tests/fixtures/usgs_mcs/**"
       - "tests/test_usgs_mcs.py"
