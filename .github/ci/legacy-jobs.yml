@@ -7792,6 +7792,7 @@ jobs:
           tests/test_opex.py
           tests/test_opex_risk.py
           tests/test_strategies_build.py
+          tests/test_masterminds_hub.py
           tests/test_seo_meta_rollout.py
           tests/test_cycles_anchor_invariance.py
           tests/test_research_priority_ordering.py -q
@@ -10337,6 +10338,7 @@ jobs:
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
           tests/test_covenant_html.py
+          tests/test_covenant_native_consumer.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
   covenant-headroom:
@@ -11030,6 +11032,8 @@ jobs:
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
       - "scripts/probe_theme_exposure_axes.py"
       - "scripts/calibrate_rate_inflation.py"
+      # Native covenant consumer import closure.
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - research/signal_engine/confluence.py
@@ -17468,6 +17472,17 @@ jobs:
       - "tests/test_symbol_directory_completion_receipts.py"
       - "tests/test_theme_graph_hierarchy_paths.py"
       - "scripts/calibrate_rate_inflation.py"
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       # Connected Research Factory import closure (PR9463).
       - engine/company_intelligence/issuer_disclosures.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -20491,6 +20506,9 @@ jobs:
       - "engine/ontology_scenario.py"
       - "engine/ontology_scenario_runtime.py"
       - "engine/transmission_company_continuation.py"
+      # Native covenant consumer import closure.
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/institutional_census/__init__.py"
       - "engine/institutional_census/catalog.py"
       - "engine/institutional_census/catalog_scope.py"
@@ -26541,7 +26559,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: page/render builders whose output ships to the site
-        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py -q
+        run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
 
   unrun-nav-chrome:
     # The two-family navigation law and the chrome around it: every product
@@ -26972,6 +26990,17 @@ jobs:
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "lib/quote_native_metadata.py"
       - "scripts/calibrate_rate_inflation.py"
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
@@ -28309,6 +28338,11 @@ jobs:
       - "scripts/probe_theme_exposure_axes.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "scripts/calibrate_rate_inflation.py"
+      # Native covenant consumer import closure.
+      - "engine/capital_structure/covenant_html.py"
+      - "engine/capital_structure/covenant_terms.py"
+      - "engine/covenant_headroom.py"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "engine/company_intelligence/rms_segment_profile.py"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
@@ -36418,6 +36452,9 @@ jobs:
       - "research/theme_graph/W2_EXPOSURE_AXES_PREREG.md"
       - "scripts/probe_theme_exposure_axes.py"
       - "scripts/calibrate_rate_inflation.py"
+      # Native covenant consumer import closure.
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "scripts/compile_capital_structure_covenant_terms.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"

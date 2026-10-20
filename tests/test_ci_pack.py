@@ -5132,7 +5132,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_638),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_642),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5189,6 +5189,15 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     (index.html and plan_book also +4, both under their ceilings). No new
     entrant. Fund only the four-unit excess: 5,634 -> 5,638. Every suite,
     selector, job/pack bound and both other probe ceilings stay unchanged.
+
+    Methodology disclosures + seasonality page claims (2026-10-19, W23-L3/L6)
+    add tests/test_methodology_disclosures.py and
+    tests/test_seasonality_page_claims.py to unrun-builders-render. The local
+    probe on main 55130f60 measures build_free_content 134 jobs / 5,638; on
+    the PR merged into that main, the same 134 job ids / 5,642 (index.html
+    5,767 and plan_book 5,516, both under their ceilings). No new entrant.
+    Fund only the four-unit excess: 5,638 -> 5,642. Every suite, selector,
+    job/pack bound and both other probe ceilings stay unchanged.
 
     Baselines on the pre-curation manifest (PR #5585 planner, 188 jobs):
     templates/index.html 129 jobs / 6,677 weight-seconds; build_free_content.py
