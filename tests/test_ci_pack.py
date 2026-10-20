@@ -5090,7 +5090,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
     ("templates/index.html", 136, 5_803),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 134, 5_664),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 134, 5_674),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5182,6 +5182,17 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     stays clean. Fund only the twelve-unit joint excess: 5,649 -> 5,661.
     Every suite, selector, job/pack bound and both other probe ceilings
     stay unchanged.
+
+    News Intelligence recovered source composition (2026-10-20,
+    PR #9612, head b87b2c97abcf6): hosted contract-delta workflow
+    39384789732 job 118501942835 measured scripts/build_free_content.py
+    134 selected jobs / 5,674 weight-seconds against the accepted-main
+    134 / 5,664. No newly selected job; the source/CI composition adds
+    ten estimator units. Fund only this exact observed increase:
+    5,664 -> 5,674. The 79 imported Marketing closure-file omissions
+    in seven scope:exclusive jobs are separately widened in
+    .github/ci/legacy-jobs.yml; no test, contract, job-count,
+    other probe ceiling, or 10-pack budget is removed.
 
     The S&P Vector scorecard basis (W23-L13, stacked on PR #9819),
     2026-10-20, gives tests/test_spvector_scorecard_basis.py its own step
