@@ -3948,6 +3948,12 @@ jobs:
       - "engine/options_alpha_expression_formation.py"
       - "engine/options_alpha_expression_intent.py"
       - "engine/options_alpha_expression_publication.py"
+      - "engine/options_alpha_expression_outcome.py"
+      - "tests/test_options_alpha_expression_outcome.py"
+      - "tests/test_options_signal_campaign_expression_outcomes.py"
+      - "tests/test_options_alpha_exact_option_outcome.py"
+      - "contracts/options/options.signal_campaign_checkpoint.v3.schema.json"
+      - "docs/runbooks/OPTIONS_ALPHA_EXPRESSION_OUTCOMES.md"
       - "tests/test_options_alpha_expression_intent.py"
       - "engine/options_alpha_expression_identity.py"
       - "engine/options_alpha_exact_option_outcome.py"
@@ -4042,6 +4048,8 @@ jobs:
           tests/test_options_alpha_candidate_feed.py
           tests/test_options_alpha_expression_identity.py
           tests/test_options_alpha_expression_intent.py
+          tests/test_options_alpha_expression_outcome.py
+          tests/test_options_signal_campaign_expression_outcomes.py
           tests/test_publish_options_alpha_candidate_r2.py
           tests/test_build_options_alpha_candidate_feed.py
           tests/test_options_alpha_candidate_outcome_enrichment.py -q
@@ -6250,6 +6258,17 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Transitive expression-outcome contract reached by the campaign owner.
+      - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_alpha_exact_option_outcome.py"
+      - "engine/options_alpha_expression_formation.py"
+      - "engine/options_alpha_expression_identity.py"
+      - "engine/options_alpha_expression_intent.py"
+      - "engine/options_alpha_expression_outcome.py"
+      - "engine/options_alpha_expression_publication.py"
+      - "engine/options_nbbo_cohort.py"
+      - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v3.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
@@ -12084,6 +12103,18 @@ jobs:
     # named file selects this job without inference smear).
     scope: exclusive
     paths:
+      # Transitive expression-outcome contract reached by the campaign owner.
+      - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_alpha_exact_option_outcome.py"
+      - "engine/options_alpha_expression_formation.py"
+      - "engine/options_alpha_expression_identity.py"
+      - "engine/options_alpha_expression_intent.py"
+      - "engine/options_alpha_expression_outcome.py"
+      - "engine/options_alpha_expression_publication.py"
+      - "engine/options_nbbo_cohort.py"
+      - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v3.schema.json"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
       - "lib/exchange_holidays.py"
       - "engine/ledger_lane.py"
       - "engine/options_signal_campaign.py"
@@ -28807,6 +28838,18 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Transitive expression-outcome contract reached by the campaign owner.
+      - "engine/options_alpha_candidate_feed.py"
+      - "engine/options_alpha_exact_option_outcome.py"
+      - "engine/options_alpha_expression_formation.py"
+      - "engine/options_alpha_expression_identity.py"
+      - "engine/options_alpha_expression_intent.py"
+      - "engine/options_alpha_expression_outcome.py"
+      - "engine/options_alpha_expression_publication.py"
+      - "engine/options_nbbo_cohort.py"
+      - "research/options_estate/options_alpha_candidate_formation_policy_v2.json"
+      - "contracts/options/options.signal_campaign_checkpoint.v3.schema.json"
+      - "contracts/options/options.prospective_nbbo_cohort.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/bea_gvc_current.py"
       - lib/dataos/web_history.py

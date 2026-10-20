@@ -168,6 +168,10 @@ def enrich_candidate_outcomes(
     }
     by_key: dict[tuple[str, str], Any] = {}
     for item in verified_view.admitted_rows:
+        if item.value.get("schema") == campaign_engine.EXPRESSION_OUTCOME_SCHEMA:
+            # Expression-specific research results have their own private
+            # consumer. They never replace the stock-horizon v1 option block.
+            continue
         # The effective-view construction checks correction receipt and prefix
         # identity.  Validate the admitted row itself before exposing any of
         # its fields in this downstream, source-only view.

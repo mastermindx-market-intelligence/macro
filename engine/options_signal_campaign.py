@@ -8,10 +8,12 @@ source prefix; a later member may only append a superseding revision.
 Campaign outcomes use the final member's availability clock and one exact,
 receipt-bound episode outcome. Other member outcomes are references used only to
 report coverage. Nothing in this module ranks, scores, gates, sizes, selects,
-originates, publishes, trains, or computes option P&L.
+originates, publishes, or trains. Explicit expression evidence is evaluated only
+by the unchanged OA-3 ruler; its research rows use this same ledger owner.
 """
 from __future__ import annotations
 
+import copy
 import fcntl
 import hashlib
 import json
@@ -67,6 +69,9 @@ CORRECTION_POLICY_SHA256 = (
     "7e6710c8b1ce65f1307f450e50829280548fcd62bd3521c2acf7a5b4ec6ef2ad"
 )
 CAMPAIGN_CHECKPOINT_V2_SCHEMA = "options.signal_campaign_checkpoint/v2"
+CAMPAIGN_CHECKPOINT_V3_SCHEMA = "options.signal_campaign_checkpoint/v3"
+EXPRESSION_OUTCOME_SCHEMA = "options.signal_campaign_expression_outcome/v1"
+OutcomeKey = tuple[str, str] | tuple[str, str, str, str]
 CORRECTION_ACTIVATION_SCHEMA = (
     "options.signal_campaign_correction_activation/v1"
 )
@@ -1128,7 +1133,35 @@ def _campaign_outcome_against_sources(
 
 
 
-def _campaign_outcome_key(row: dict[str, Any]) -> tuple[str, str]:
+def _expression_codec():
+    # The codec depends on the native campaign/candidate contracts. Load only
+    # after this owner is initialized; legacy rows need no optional codec.
+    from engine import options_alpha_expression_outcome
+    return options_alpha_expression_outcome
+
+
+def _expression_outcome_against_campaign(
+    row: dict[str, Any], campaigns: dict[str, dict[str, Any]],
+) -> None:
+    try:
+        _expression_codec().validate_expression_outcome(row)
+        campaign = campaigns.get(row["campaign_revision_id"])
+        if campaign is None or campaign["campaign_id"] != row["campaign_id"]:
+            raise CampaignContractError("expression outcome references a missing revision")
+        from engine.options_alpha_expression_identity import contract_from_group
+        if contract_from_group(campaign["group"]) != row["intent"]["contract"]:
+            raise CampaignContractError("expression outcome differs from original campaign contract")
+        _, observed = _canonical_utc(row["observed_at"], "expression outcome observation")
+        _, formed = _canonical_utc(campaign["formed_at"], "campaign formation")
+        if observed < formed:
+            raise CampaignContractError("expression outcome observation precedes campaign")
+    except (ValueError, KeyError, TypeError) as exc:
+        raise CampaignContractError("expression outcome source binding is invalid") from exc
+
+
+def _campaign_outcome_key(row: dict[str, Any]) -> OutcomeKey:
+    if row.get("schema") == EXPRESSION_OUTCOME_SCHEMA:
+        return _expression_codec().expression_outcome_key(row)
     revision_id = row.get("campaign_revision_id")
     horizon = row.get("horizon")
     if not isinstance(revision_id, str) or not isinstance(horizon, str):
@@ -1300,8 +1333,8 @@ def build_effective_outcome_view(
         *physical_outcomes.rows[:lawful_count],
         *physical_outcomes.rows[incident_count:],
     )
-    occupied: set[tuple[str, str]] = set()
-    admitted_keys: set[tuple[str, str]] = set()
+    occupied: set[OutcomeKey] = set()
+    admitted_keys: set[OutcomeKey] = set()
     computed_at = correction.quarantine["computed_at_exact"]
     for item in quarantined:
         row = item.value
@@ -1336,6 +1369,8 @@ def build_effective_outcome_view(
             )
         occupied.add(key)
     for item in admitted:
+        if item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA:
+            _expression_codec().validate_expression_outcome(item.value)
         key = _campaign_outcome_key(item.value)
         if key in occupied:
             raise CampaignContractError(
@@ -1361,25 +1396,22 @@ def _outcome_history(
     h60_map: dict[str, LedgerRow] | None = None,
     session_map: dict[tuple[str, str], LedgerRow] | None = None,
     prefix_cache: PrefixCache | None = None,
-) -> dict[tuple[str, str], dict[str, Any]]:
+) -> dict[OutcomeKey, dict[str, Any]]:
     if h60_map is None or session_map is None:
         h60_map, session_map = _source_outcome_maps(episodes, h60, session)
     cache = prefix_cache if prefix_cache is not None else {}
-    rows: dict[tuple[str, str], dict[str, Any]] = {}
+    rows: dict[OutcomeKey, dict[str, Any]] = {}
     existing_rows = existing.rows if isinstance(existing, LedgerSnapshot) else existing
     for item in existing_rows:
         row = item.value
-        _campaign_outcome_against_sources(
-            row,
-            campaign_by_revision,
-            episodes,
-            h60,
-            session,
-            h60_map,
-            session_map,
-            cache,
-        )
-        key = (row["campaign_revision_id"], row["horizon"])
+        if row.get("schema") == EXPRESSION_OUTCOME_SCHEMA:
+            _expression_outcome_against_campaign(row, campaign_by_revision)
+        else:
+            _campaign_outcome_against_sources(
+                row, campaign_by_revision, episodes, h60, session,
+                h60_map, session_map, cache,
+            )
+        key = _campaign_outcome_key(row)
         if key in rows:
             raise CampaignContractError("duplicate campaign outcome semantic key")
         rows[key] = row
@@ -1449,14 +1481,14 @@ class EffectiveOutcomeView:
     quarantined_rows: tuple[LedgerRow, ...]
 
     @cached_property
-    def occupied_keys(self) -> frozenset[tuple[str, str]]:
+    def occupied_keys(self) -> frozenset[OutcomeKey]:
         return frozenset(
             _campaign_outcome_key(item.value)
             for item in (*self.admitted_rows, *self.quarantined_rows)
         )
 
     @cached_property
-    def admitted_keys(self) -> frozenset[tuple[str, str]]:
+    def admitted_keys(self) -> frozenset[OutcomeKey]:
         return frozenset(
             _campaign_outcome_key(item.value) for item in self.admitted_rows
         )
@@ -1525,6 +1557,8 @@ def _load_checkpoint(path: Path) -> dict[str, Any] | None:
         schema_file = "options.signal_campaign_checkpoint.v1.schema.json"
     elif schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
         schema_file = "options.signal_campaign_checkpoint.v2.schema.json"
+    elif schema_name == CAMPAIGN_CHECKPOINT_V3_SCHEMA:
+        schema_file = "options.signal_campaign_checkpoint.v3.schema.json"
     else:
         raise CampaignContractError("campaign checkpoint schema is unsupported")
     _validate_schema(value, schema_file)
@@ -1575,9 +1609,13 @@ def validate_checkpoint(row: dict[str, Any]) -> None:
         _validate_schema(row, "options.signal_campaign_checkpoint.v1.schema.json")
     elif schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
         _validate_schema(row, "options.signal_campaign_checkpoint.v2.schema.json")
+    elif schema_name == CAMPAIGN_CHECKPOINT_V3_SCHEMA:
+        _validate_schema(row, "options.signal_campaign_checkpoint.v3.schema.json")
     else:
         raise CampaignContractError("campaign checkpoint schema is unsupported")
-    if schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+    if schema_name == CAMPAIGN_CHECKPOINT_V3_SCHEMA:
+        expected = _expression_checkpoint_id(row)
+    elif schema_name == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
         expected = _effective_checkpoint_id(
             row["sources"], row["outputs"], row["correction"]
         )
@@ -1608,10 +1646,18 @@ def _verify_checkpoint(
     )
     _verify_receipt(checkpoint["outputs"]["campaigns"], campaigns, CAMPAIGNS_PATH)
     _verify_receipt(checkpoint["outputs"]["outcomes"], outcomes, OUTCOMES_PATH)
-    if checkpoint["schema"] == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
-        _verify_effective_checkpoint(
-            checkpoint, campaigns, outcomes, activation_receipt
-        )
+    if checkpoint["schema"] == CAMPAIGN_CHECKPOINT_V3_SCHEMA:
+        _verify_expression_checkpoint(checkpoint, campaigns, outcomes, activation_receipt)
+    elif checkpoint["schema"] == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+        if any(item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA for item in outcomes.rows):
+            recorded = outcomes.prefix(checkpoint["outputs"]["outcomes"]["records"])
+            if any(item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA for item in recorded.rows):
+                raise CampaignContractError("typed expression history requires a v3 checkpoint")
+            _verify_effective_checkpoint(
+                checkpoint, campaigns.prefix(checkpoint["outputs"]["campaigns"]["records"]),
+                recorded, activation_receipt)
+        else:
+            _verify_effective_checkpoint(checkpoint, campaigns, outcomes, activation_receipt)
 
 
 def _checkpoint_policy_receipt(policy: CorrectionPolicy) -> dict[str, Any]:
@@ -1623,12 +1669,18 @@ def _checkpoint_policy_receipt(policy: CorrectionPolicy) -> dict[str, Any]:
     }
 
 
-def _key_digest(keys: Iterable[tuple[str, str]]) -> str:
-    encoded = b"".join(
-        canonical_bytes({"campaign_revision_id": revision, "horizon": horizon}) + b"\n"
-        for revision, horizon in sorted(keys)
-    )
-    return _sha256(encoded)
+def _key_digest(keys: Iterable[OutcomeKey]) -> str:
+    encoded = []
+    for key in sorted(keys):
+        if len(key) == 2:
+            value = {"campaign_revision_id": key[0], "horizon": key[1]}
+        elif len(key) == 4 and key[0] == "exact_option_expression":
+            value = {"namespace": key[0], "expression_id": key[1],
+                     "policy_sha256": key[2], "horizon": key[3]}
+        else:
+            raise CampaignContractError("outcome semantic namespace is malformed")
+        encoded.append(canonical_bytes(value) + b"\n")
+    return _sha256(b"".join(encoded))
 
 
 def _build_effective_checkpoint(
@@ -1877,12 +1929,155 @@ class CampaignPlan:
     # uses its schema to decide whether a v2 continuation requires an
     # activation receipt before any ledger write.
     existing_checkpoint: dict[str, Any] | None
+    expression_rows: tuple[dict[str, Any], ...] = ()
+
+
+def _prepare_expression_outcomes(
+    campaigns: LedgerSnapshot, existing: dict[OutcomeKey, dict[str, Any]],
+    evidence: Iterable[Any], *, reserved_keys: Iterable[OutcomeKey] = (),
+) -> list[dict[str, Any]]:
+    fresh: dict[OutcomeKey, dict[str, Any]] = {}
+    revisions = {item.value["campaign_revision_id"]: item.value for item in campaigns.rows}
+    reserved = frozenset(reserved_keys)
+    for item in evidence:
+        codec = _expression_codec()
+        if not isinstance(item, codec.ExpressionOutcomeEvidence):
+            raise CampaignContractError("native expression outcome evidence is required")
+        try:
+            candidate_id = item.expression.parsed_payload["source_candidate_id"]
+            candidates = [candidate for candidate in item.publication_pair.feed["formed_candidates"]
+                          if candidate["candidate_id"] == candidate_id]
+            if len(candidates) != 1:
+                raise CampaignContractError("expression outcome candidate is ambiguous")
+            revision = candidates[0]["frozen_formation"]["campaign_revision_id"]
+            if revision not in revisions:
+                raise CampaignContractError("expression outcome campaign is absent")
+            row = codec.make_expression_outcome(campaign=revisions[revision], evidence=item)
+            _expression_outcome_against_campaign(row, revisions)
+            key = codec.expression_outcome_key(row)
+        except (ValueError, KeyError, TypeError, AttributeError) as exc:
+            raise CampaignContractError("expression outcome input is invalid") from exc
+        if key in reserved or key in fresh:
+            raise CampaignContractError("expression outcome key is already occupied")
+        if key in existing:
+            if existing[key] != row:
+                raise CampaignContractError("immutable expression outcome changed")
+            continue
+        fresh[key] = row
+    # Serialization order only; no ranking or selection authority.
+    return sorted(fresh.values(), key=lambda row: row["expression_outcome_id"])
+
+
+def _expression_populations(outcomes: LedgerSnapshot, correction: dict | None) -> dict:
+    expressions = [item for item in outcomes.rows
+                   if item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA]
+    legacy = [item for item in outcomes.rows
+              if item.value.get("schema") == CAMPAIGN_OUTCOME_SCHEMA]
+    if len(expressions) + len(legacy) != outcomes.count:
+        raise CampaignContractError("outcome schema namespace is unsupported")
+    keys = [_campaign_outcome_key(item.value) for item in outcomes.rows]
+    if len(set(keys)) != len(keys):
+        raise CampaignContractError("duplicate outcome semantic namespace")
+    quarantined = correction["quarantine"]["count"] if correction is not None else 0
+    if quarantined > len(legacy):
+        raise CampaignContractError("expression outcomes cannot enter quarantine")
+    return {
+        "namespace_policy": "underlying-revision-horizon+exact-expression-policy-h60/v1",
+        "physical_rows": outcomes.count,
+        "underlying_admitted_rows": len(legacy) - quarantined,
+        "quarantined_underlying_rows": quarantined,
+        "expression_rows": len(expressions),
+        "semantic_keys_sha256": _key_digest(keys),
+        "expression_keys_sha256": _key_digest(
+            _campaign_outcome_key(item.value) for item in expressions),
+    }
+
+
+def _expression_checkpoint_id(checkpoint: dict[str, Any]) -> str:
+    return _stable_id("ocp", CAMPAIGN_CHECKPOINT_V3_SCHEMA,
+                      _sha256(canonical_bytes({key: checkpoint[key] for key in
+                          ("policy", "sources", "outputs", "correction", "populations")})))
+
+
+def _build_expression_checkpoint(plan: CampaignPlan, correction: dict | None) -> dict:
+    checkpoint = {
+        "schema": CAMPAIGN_CHECKPOINT_V3_SCHEMA,
+        "checkpoint_id": "",
+        "policy": "checkpoint-last-exact-prefix-with-expression-outcomes/v1",
+        "sources": copy.deepcopy(plan.checkpoint["sources"]),
+        "outputs": copy.deepcopy(plan.checkpoint["outputs"]),
+        "correction": copy.deepcopy(correction),
+        "populations": _expression_populations(plan.outcomes_after, correction),
+        "training_eligible": False,
+        "authority": dict(FALSE_AUTHORITY),
+    }
+    checkpoint["checkpoint_id"] = _expression_checkpoint_id(checkpoint)
+    validate_checkpoint(checkpoint)
+    return checkpoint
+
+
+def _verify_expression_checkpoint(
+    checkpoint: dict, campaigns: LedgerSnapshot, outcomes: LedgerSnapshot,
+    activation_receipt: dict | None,
+) -> None:
+    # Verify the recorded physical prefixes, not a filtered ledger or a tail
+    # appended before a checkpoint-last interruption.
+    campaigns = campaigns.prefix(checkpoint["outputs"]["campaigns"]["records"])
+    outcomes = outcomes.prefix(checkpoint["outputs"]["outcomes"]["records"])
+    correction = checkpoint["correction"]
+    if correction is not None:
+        # Reuse the native correction/receipt/prefix guards; this temporary
+        # validation view is never written or published as a v2 checkpoint.
+        native = {"sources": checkpoint["sources"], "outputs": checkpoint["outputs"],
+                  "correction": correction}
+        native["checkpoint_id"] = _effective_checkpoint_id(
+            native["sources"], native["outputs"], correction)
+        _verify_effective_checkpoint(native, campaigns, outcomes, activation_receipt)
+    if (checkpoint["populations"] != _expression_populations(outcomes, correction)
+            or checkpoint["populations"]["expression_rows"] == 0):
+        raise CampaignContractError("expression checkpoint populations are inconsistent")
+
+
+def read_expression_outcomes(
+    *, effective_outcomes: EffectiveOutcomeView,
+    correction_activation_receipt: dict[str, Any], expression_id: str,
+    observation_at: str,
+) -> tuple[LedgerRow, ...]:
+    """Read retained research results through the incumbent effective-view seal.
+
+    This returns mathematical observations with their original physical row
+    identity. It grants no source, prospective, training or trading admission.
+    The existing correction receipt is still required; a dataclass is not one.
+    """
+    _, consumer_clock = _canonical_utc(observation_at, "expression consumer observation")
+    if not isinstance(effective_outcomes, EffectiveOutcomeView):
+        raise CampaignContractError("native effective outcome view is required")
+    verified = []
+    for snapshot in (effective_outcomes.campaigns, effective_outcomes.outcomes):
+        actual = _snapshot_from_raw(snapshot.path, snapshot.label, snapshot.raw)
+        if actual != snapshot:
+            raise CampaignContractError("expression outcome snapshot bytes disagree")
+        verified.append(actual)
+    view = build_effective_outcome_view(
+        verified[0], verified[1], effective_outcomes.policy,
+        activation_receipt=correction_activation_receipt)
+    campaigns = {item.value["campaign_revision_id"]: item.value for item in view.campaigns.rows}
+    result = []
+    for item in view.admitted_rows:
+        if item.value.get("schema") != EXPRESSION_OUTCOME_SCHEMA:
+            continue
+        _expression_outcome_against_campaign(item.value, campaigns)
+        _, row_clock = _canonical_utc(item.value["observed_at"], "expression outcome observation")
+        if item.value["expression_id"] == expression_id and row_clock <= consumer_clock:
+            result.append(LedgerRow(copy.deepcopy(item.value), item.ordinal, item.raw, item.sha256))
+    return tuple(result)
 
 
 def _plan(
     repo_root: Path,
     *,
     activation_receipt: dict[str, Any] | None = None,
+    expression_evidence: Iterable[Any] = (),
 ) -> CampaignPlan:
     episodes = load_ledger(repo_root / EPISODES_PATH, EPISODES_PATH)
     h60 = load_ledger(repo_root / H60_PATH, H60_PATH)
@@ -1908,7 +2103,9 @@ def _plan(
     # than as a canonical-shape failure inside the view builder.
     if (
         checkpoint is not None
-        and checkpoint.get("schema") == CAMPAIGN_CHECKPOINT_V2_SCHEMA
+        and (checkpoint.get("schema") == CAMPAIGN_CHECKPOINT_V2_SCHEMA
+             or (checkpoint.get("schema") == CAMPAIGN_CHECKPOINT_V3_SCHEMA
+                 and checkpoint["correction"] is not None))
     ):
         if activation_receipt is None:
             raise CampaignContractError(
@@ -1945,7 +2142,7 @@ def _plan(
         reserved_outcome_keys = effective_view.quarantined_keys
     else:
         outcome_source = outcomes.rows
-        reserved_outcome_keys: Iterable[tuple[str, str]] = ()
+        reserved_outcome_keys: Iterable[OutcomeKey] = ()
     existing_outcomes = _outcome_history(
         outcome_source,
         campaign_history,
@@ -1973,7 +2170,11 @@ def _plan(
         session,
         reserved_keys=reserved_outcome_keys,
     )
-    outcomes_after = _append_snapshot(outcomes, new_outcomes)
+    new_expressions = _prepare_expression_outcomes(
+        campaigns_after, existing_outcomes, expression_evidence,
+        reserved_keys=reserved_outcome_keys,
+    )
+    outcomes_after = _append_snapshot(outcomes, [*new_outcomes, *new_expressions])
     next_checkpoint = _build_checkpoint(
         episodes, h60, session, campaigns_after, outcomes_after
     )
@@ -1990,6 +2191,7 @@ def _plan(
         outcome_rows=tuple(new_outcomes),
         pending_outcomes=pending,
         existing_checkpoint=checkpoint,
+        expression_rows=tuple(new_expressions),
     )
 
 
@@ -2011,11 +2213,16 @@ def _summary(
         "campaign_revisions_appended": len(plan.campaign_rows) if wrote else 0,
         "campaign_revision_phases": phases,
         "campaign_outcomes_total": plan.outcomes_after.count,
-        "campaign_outcomes_appended": len(plan.outcome_rows) if wrote else 0,
+        "campaign_outcomes_appended": (len(plan.outcome_rows) + len(plan.expression_rows)) if wrote else 0,
         "campaign_outcomes_pending": plan.pending_outcomes,
         "checkpoint_id": (checkpoint or plan.checkpoint)["checkpoint_id"],
         "wrote": wrote,
     }
+    expression_count = sum(item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA
+                           for item in plan.outcomes_after.rows)
+    if expression_count:
+        summary["expression_outcomes_total"] = expression_count
+        summary["expression_outcomes_appended"] = len(plan.expression_rows) if wrote else 0
     if write_skipped is not None:
         summary["write_skipped"] = write_skipped
     return summary
@@ -2027,16 +2234,19 @@ def run(
     dry_run: bool = False,
     before_checkpoint: Callable[[], None] | None = None,
     correction_activation_receipt_path: Path | None = None,
+    expression_evidence: Iterable[Any] = (),
 ) -> dict[str, Any]:
     """Validate and, only on the nightly lane, append outputs checkpoint-last."""
     repo_root = (root_dir or Path(__file__).resolve().parent.parent).resolve()
+    expression_evidence = tuple(expression_evidence)
     activation_receipt = (
         _load_activation_receipt(correction_activation_receipt_path)
         if correction_activation_receipt_path is not None
         else None
     )
     if dry_run or not nightly_advance_enabled():
-        plan = _plan(repo_root, activation_receipt=activation_receipt)
+        plan = _plan(repo_root, activation_receipt=activation_receipt,
+                     expression_evidence=expression_evidence)
         checkpoint = _effective_checkpoint_for_plan(plan, activation_receipt)
         return _summary(
             plan,
@@ -2049,7 +2259,8 @@ def run(
     lock_path = Path(tempfile.gettempdir()) / f"options-signal-campaign-{lock_name}.lock"
     with lock_path.open("a+b") as lock_handle:
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
-        plan = _plan(repo_root, activation_receipt=activation_receipt)
+        plan = _plan(repo_root, activation_receipt=activation_receipt,
+                     expression_evidence=expression_evidence)
         checkpoint = _effective_checkpoint_for_plan(plan, activation_receipt)
         _atomic_write(repo_root / CAMPAIGNS_PATH, plan.campaigns_after.raw)
         _atomic_write(repo_root / OUTCOMES_PATH, plan.outcomes_after.raw)
@@ -2103,7 +2314,9 @@ def _effective_checkpoint_for_plan(
     # receipt fails BEFORE any ledger / checkpoint write here. The default
     # never-activated v1 path is unchanged: no existing v2 → no receipt
     # required → v1 checkpoint returned as before.
-    if existing_schema == CAMPAIGN_CHECKPOINT_V2_SCHEMA:
+    if (existing_schema == CAMPAIGN_CHECKPOINT_V2_SCHEMA
+            or (existing_schema == CAMPAIGN_CHECKPOINT_V3_SCHEMA
+                and plan.existing_checkpoint["correction"] is not None)):
         if activation_receipt is None:
             raise CampaignContractError(
                 "campaign v2 checkpoint continuation requires an activation receipt"
@@ -2120,8 +2333,11 @@ def _effective_checkpoint_for_plan(
             raise CampaignContractError(
                 "campaign v2 checkpoint activation receipt binding is mismatched"
             )
+    has_expressions = any(item.value.get("schema") == EXPRESSION_OUTCOME_SCHEMA
+                          for item in plan.outcomes_after.rows)
     if activation_receipt is None:
-        return plan.checkpoint
+        return (_build_expression_checkpoint(plan, None)
+                if has_expressions else plan.checkpoint)
     policy = CorrectionPolicy.load_canonical()
     view = build_effective_outcome_view(
         plan.campaigns_after,
@@ -2129,6 +2345,10 @@ def _effective_checkpoint_for_plan(
         policy,
         activation_receipt=activation_receipt,
     )
+    if has_expressions:
+        native = _build_effective_checkpoint(
+            plan.episodes, plan.h60, plan.session, view, activation_receipt)
+        return _build_expression_checkpoint(plan, native["correction"])
     return _build_effective_checkpoint(
         plan.episodes,
         plan.h60,
@@ -2142,6 +2362,9 @@ __all__ = [
     "CAMPAIGN_SCHEMA",
     "CAMPAIGN_OUTCOME_SCHEMA",
     "CAMPAIGN_CHECKPOINT_SCHEMA",
+    "CAMPAIGN_CHECKPOINT_V3_SCHEMA",
+    "EXPRESSION_OUTCOME_SCHEMA",
+    "read_expression_outcomes",
     "CAMPAIGNS_PATH",
     "OUTCOMES_PATH",
     "CHECKPOINT_PATH",
