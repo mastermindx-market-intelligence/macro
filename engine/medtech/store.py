@@ -18,7 +18,7 @@ from engine.medtech.events import MedTechError, changes_between, instant, utc
 from engine.sector_intelligence import canonical_json_bytes, canonical_json_sha256
 
 SCHEMA_VERSION = 2
-PARSER_VERSION = "medtech_openfda_v1"
+PARSER_VERSION = "medtech_openfda_v2"
 
 
 class EventStore:

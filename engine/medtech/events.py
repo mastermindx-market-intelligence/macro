@@ -15,9 +15,17 @@ from typing import Any, Mapping
 SCHEMA = "medtech.event/v1"
 DATASETS = {"510k": "https://api.fda.gov/device/510k.json",
             "pma": "https://api.fda.gov/device/pma.json"}
-EVENT_ID_RE = re.compile(r"fda-(?:510k|pma)-[A-Z][0-9]{6}(?:-S[0-9]{1,6})?\Z")
+SUBMISSION_PATTERNS = {
+    "510k": r"(?:[A-Z][0-9]{6}|DEN[0-9]{6})",
+    "pma": r"(?:[A-Z][0-9]{6}|N[0-9]{5})",
+}
+EVENT_ID_RE = re.compile(
+    rf"(?:fda-510k-{SUBMISSION_PATTERNS['510k']}|"
+    rf"fda-pma-{SUBMISSION_PATTERNS['pma']}(?:-S[0-9]{{1,6}})?)\Z"
+)
 PATHWAYS = {
     "510k": "510(k)",
+    "de_novo": "De Novo",
     "pma_original": "PMA original",
     "pma_panel_track_supplement": "PMA panel-track supplement",
     "pma_supplement": "PMA supplement",
@@ -37,6 +45,9 @@ PMA_DECISIONS = {
 }
 K_DECISIONS = {
     "SESE": ("cleared", "Cleared"),
+}
+DE_NOVO_DECISIONS = {
+    "DENG": ("granted", "Granted"),
 }
 MEANINGFUL_FIELDS = (
     "decision", "received_on", "device", "applicant", "supplement", "pathway",
@@ -107,6 +118,18 @@ class Observation:
         return canonical_json_sha256(self.event)
 
 
+def source_record_url(dataset: str, number: str, supplement: str | None = None) -> str:
+    if dataset not in SUBMISSION_PATTERNS or not re.fullmatch(SUBMISSION_PATTERNS[dataset], number):
+        raise MedTechError("INVALID_SUBMISSION_ID")
+    if supplement and (dataset != "pma" or not re.fullmatch(r"S[0-9]{1,6}", supplement)):
+        raise MedTechError("INVALID_SUPPLEMENT_ID")
+    if dataset == "pma":
+        return f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id={number}{supplement or ''}"
+    if number.startswith("DEN"):
+        return f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm?id={number}"
+    return f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID={number}"
+
+
 def normalize_record(dataset: str, record: Mapping[str, Any], *,
                      observed_at: str, dataset_updated_at: str) -> Observation:
     if dataset not in DATASETS or not isinstance(record, Mapping):
@@ -116,14 +139,16 @@ def normalize_record(dataset: str, record: Mapping[str, Any], *,
     if updated is None:
         raise MedTechError("DATASET_CLOCK_MISSING")
     number = text_field(record.get("k_number" if dataset == "510k" else "pma_number"),
-                        limit=7)
-    if not number or not re.fullmatch(r"[A-Z][0-9]{6}", number):
+                        limit=9 if dataset == "510k" else 7)
+    if not number or not re.fullmatch(SUBMISSION_PATTERNS[dataset], number):
         raise MedTechError("INVALID_SUBMISSION_ID")
     supplement = text_field(record.get("supplement_number"), limit=7) if dataset == "pma" else None
     if supplement and not re.fullmatch(r"S[0-9]{1,6}", supplement):
         raise MedTechError("INVALID_SUPPLEMENT_ID")
     supplement_type = text_field(record.get("supplement_type")) if dataset == "pma" else None
-    if dataset == "510k" and number.startswith("K"):
+    if dataset == "510k" and number.startswith("DEN"):
+        pathway = "de_novo"
+    elif dataset == "510k" and number.startswith("K"):
         pathway = "510k"
     elif dataset == "pma" and number.startswith("H"):
         pathway = "hde"
@@ -137,7 +162,8 @@ def normalize_record(dataset: str, record: Mapping[str, Any], *,
     else:
         pathway = "other_device_submission"
     code = text_field(record.get("decision_code"), limit=16)
-    decision_map = K_DECISIONS if dataset == "510k" else PMA_DECISIONS
+    decision_map = (DE_NOVO_DECISIONS if pathway == "de_novo" else
+                    K_DECISIONS if dataset == "510k" else PMA_DECISIONS)
     status, label = decision_map.get(code, ("unmapped", "Decision recorded"))
     decision_on = source_date(record.get("decision_date"), observed_at=observed_at)
     received_on = source_date(record.get("date_received"), observed_at=observed_at)
@@ -146,11 +172,7 @@ def normalize_record(dataset: str, record: Mapping[str, Any], *,
     suffix = "-" + supplement if supplement else ""
     event_id = f"fda-{dataset}-{number}{suffix}"
     source_id = number + (supplement or "")
-    source_url = (
-        f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID={number}"
-        if dataset == "510k" else
-        f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id={source_id}"
-    )
+    source_url = source_record_url(dataset, number, supplement)
     event = {
         "schema": SCHEMA,
         "event_id": event_id,

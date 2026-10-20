@@ -5,16 +5,18 @@ Live acquisition is exercised separately by the bounded worker qualification.
 """
 from copy import deepcopy
 from datetime import datetime, timezone
+from dataclasses import replace
 from hashlib import sha256
 import json
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 import pytest
 
-from collectors.medtech.openfda import SourceBatch, fetch_batch, request_url
-from engine.medtech.events import MedTechError, normalize_record
+from collectors.medtech.openfda import MAX_PAGE_BYTES, SourceBatch, fetch_batch, request_url
+from engine.medtech.events import EVENT_ID_RE, MedTechError, normalize_record
 from engine.medtech.publication import (
     publish_snapshot, read_snapshot, record_attempt, validate_snapshot,
 )
@@ -51,7 +53,7 @@ def batch(rows=None, *, dataset="510k", when=T1):
         raw = b'{"error":{"code":"NOT_FOUND","message":"No matches found!"}}'
     return SourceBatch(dataset, "2026-10-01", "2026-10-05", when,
                        "2026-10-05" if rows else "", len(rows), (raw,),
-                       (request_url(dataset, "2026-10-01", "2026-10-05", 0),))
+                       (request_url(dataset, "2026-10-01", "2026-10-05", 0, page_size=1000),))
 
 
 def snapshot(tmp_path):
@@ -76,6 +78,64 @@ def test_pma_exact_codes_do_not_infer_approval(code, status):
     assert observed.event["pathway"] == "pma_supplement"
     assert observed.event["next_milestone"] is None
     assert observed.event["company_link"] == {"status": "not_joined"}
+
+
+
+@pytest.mark.parametrize("dataset,changes,event_id,pathway,status,url_suffix", [
+    ("510k", {"k_number": "DEN260001", "decision_code": "DENG"},
+     "fda-510k-DEN260001", "de_novo", "granted", "/cfpmn/denovo.cfm?id=DEN260001"),
+    ("pma", {"pma_number": "N12345", "supplement_number": "S001", "decision_code": "OK30"},
+     "fda-pma-N12345-S001", "other_device_submission", "unmapped", "/cfpma/pma.cfm?id=N12345S001"),
+])
+def test_observed_native_id_shapes_publish_and_resolve_exact_subject(
+        tmp_path, api, dataset, changes, event_id, pathway, status, url_suffix):
+    client, _, root, _ = api
+    with EventStore(tmp_path / "native.sqlite3", create=True) as store:
+        store.ingest(batch([row(dataset, **changes)], dataset=dataset, when=T2))
+        payload = store.snapshot(as_of=T2)
+    generation = publish_snapshot(root, payload)
+    assert read_snapshot(root) == (payload, generation)
+    detail = client.get(f"/api/medtech/events/{event_id}?snapshot_id={generation}")
+    assert detail.status_code == 200
+    event = detail.json()["event"]
+    assert event["event_id"] == event_id
+    assert event["pathway"] == pathway
+    assert event["decision"]["status"] == status
+    assert event["source"]["url"].endswith(url_suffix)
+    subject = client.get(f"/api/medtech/subjects/event/{event_id}?snapshot_id={generation}")
+    assert subject.status_code == 200
+    assert subject.json()["allowed_triggers"] == ["record_changed"]
+    wrong = deepcopy(payload)
+    wrong["events"][0]["source"]["url"] = (
+        "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260001"
+    )
+    with pytest.raises(MedTechError, match="PUBLIC_SCHEMA_INVALID"):
+        validate_snapshot(wrong)
+
+
+@pytest.mark.parametrize("number,code", [("DEN260001", "SESE"), ("K260001", "DENG")])
+def test_de_novo_grant_and_510k_clearance_codes_do_not_cross_pathways(number, code):
+    assert normal(k_number=number, decision_code=code).event["decision"]["status"] == "unmapped"
+
+
+@pytest.mark.parametrize("dataset,changes", [
+    ("510k", {"k_number": "DEN26001"}),
+    ("510k", {"k_number": "N12345"}),
+    ("pma", {"pma_number": "DEN260001"}),
+    ("pma", {"pma_number": "P12345"}),
+    ("pma", {"pma_number": "N1234"}),
+])
+def test_native_id_expansion_keeps_dataset_and_length_constraints(dataset, changes):
+    with pytest.raises(MedTechError):
+        normal(dataset, **changes)
+
+
+@pytest.mark.parametrize("event_id", [
+    "fda-pma-DEN260001", "fda-510k-N12345", "fda-510k-DEN260001-S001",
+    "fda-510k-K260001-S001", "fda-pma-P12345", "fda-pma-N12345-S001\n",
+])
+def test_event_id_grammar_rejects_cross_dataset_or_ambiguous_ids(event_id):
+    assert EVENT_ID_RE.fullmatch(event_id) is None
 
 
 def test_parent_supplement_and_other_application_are_distinct():
@@ -257,11 +317,94 @@ def fetch(session, **kwargs):
                        pause=lambda _: None, **kwargs)
 
 
+
+class PagedSession:
+    def __init__(self, records):
+        self.records, self.calls = records, []
+
+    def get(self, url, **kwargs):
+        self.calls.append((url, kwargs))
+        query = parse_qs(urlsplit(url).query)
+        skip, limit = int(query["skip"][0]), int(query["limit"][0])
+        return Response({
+            "meta": {"last_updated": "2026-10-05",
+                     "results": {"skip": skip, "limit": limit, "total": len(self.records)}},
+            "results": self.records[skip:skip + limit],
+        })
+
+
+def test_bulky_source_records_complete_multiple_bounded_pages(tmp_path):
+    # The former 1,000-record request exceeds 8 MiB for this ordinary source
+    # shape. Smaller requests must retain every row and the final partial page.
+    records = [row(k_number=f"K{260000 + i:06d}", extra_source_detail="x" * 17000)
+               for i in range(501)]
+    session = PagedSession(records)
+    captured = fetch(session)
+    queries = [parse_qs(urlsplit(url).query) for url, _ in session.calls]
+    assert [query["skip"] for query in queries] == [["0"], ["250"], ["500"]]
+    assert all(query["limit"] == ["250"] for query in queries)
+    assert captured.page_size == 250
+    assert captured.total == 501
+    assert all(len(page) <= MAX_PAGE_BYTES for page in captured.pages)
+    assert [record["k_number"] for record in captured.records()] == [
+        record["k_number"] for record in records
+    ]
+    with EventStore(tmp_path / "store.sqlite3", create=True) as store:
+        assert store.ingest(captured)["new_versions"] == 501
+        assert len(store.snapshot(as_of=T1)["events"]) == 501
+
+
+def test_retained_thousand_record_pages_keep_their_original_request_evidence(tmp_path):
+    records = [row(k_number=f"K{260000 + i:06d}") for i in range(1001)]
+    session = PagedSession(records)
+    urls = tuple(request_url("510k", "2026-10-01", "2026-10-05", offset, page_size=1000)
+                 for offset in (0, 1000))
+    pages = tuple(session.get(url).raw for url in urls)
+    captured = SourceBatch("510k", "2026-10-01", "2026-10-05", T1,
+                           "2026-10-05", len(records), pages, urls)
+    assert captured.page_size == 1000
+    with EventStore(tmp_path / "store.sqlite3", create=True) as store:
+        assert store.ingest(captured)["new_versions"] == 1001
+        assert store.db.execute("SELECT count(*) FROM source_pages").fetchone()[0] == 2
+    assert captured.pages == pages and captured.request_urls == urls
+
+
+@pytest.mark.parametrize("fault", ["page_size", "second_offset"])
+def test_retained_page_width_and_offsets_must_match_before_commit(tmp_path, fault):
+    captured = fetch(PagedSession([row(k_number=f"K{260000 + i:06d}") for i in range(251)]))
+    if fault == "page_size":
+        captured = replace(captured, page_size=1000)
+    else:
+        captured = replace(captured, request_urls=(captured.request_urls[0],
+            request_url("510k", "2026-10-01", "2026-10-05", 249)))
+    with EventStore(tmp_path / "store.sqlite3", create=True) as store:
+        with pytest.raises(MedTechError, match="SOURCE_REQUEST_MISMATCH"):
+            store.ingest(captured)
+        assert store.db.execute("SELECT count(*) FROM acquisitions").fetchone()[0] == 0
+
+
+@pytest.mark.parametrize("page_size", [True, 0, 1001])
+def test_retained_page_size_rejects_invalid_bounds(tmp_path, page_size):
+    with EventStore(tmp_path / "store.sqlite3", create=True) as store:
+        with pytest.raises(MedTechError, match="SOURCE_PAGE_SIZE_INVALID"):
+            store.ingest(replace(batch(), page_size=page_size))
+        assert store.db.execute("SELECT count(*) FROM acquisitions").fetchone()[0] == 0
+
+
+def test_one_oversized_source_record_still_fails_without_retry():
+    session = PagedSession([row(extra_source_detail="x" * MAX_PAGE_BYTES)])
+    with pytest.raises(MedTechError, match="SOURCE_RESPONSE_TOO_LARGE"):
+        fetch(session)
+    assert len(session.calls) == 1
+
+
 def test_http_empty_is_explicit_and_has_no_invented_dataset_clock():
     session = Session([Response({"error": {"code": "NOT_FOUND", "message": "No matches found!"}}, 404)])
     captured = fetch(session)
     assert captured.total == 0
     assert captured.dataset_updated_at == ""
+    assert captured.page_size == 250
+    assert parse_qs(urlsplit(captured.request_urls[0]).query)["limit"] == ["250"]
     assert len(session.calls) == 1
     assert session.calls[0][1]["allow_redirects"] is False
 
@@ -361,7 +504,7 @@ def ranged_batch(rows, *, dataset="pma", when=T2, end="2026-10-11"):
         "results": rows,
     }).encode()
     return SourceBatch(dataset, "2026-10-01", end, when, end, len(rows), (raw,),
-                       (request_url(dataset, "2026-10-01", end, 0),))
+                       (request_url(dataset, "2026-10-01", end, 0, page_size=1000),))
 
 
 def test_typed_watch_subject_and_baseline_exclude_initial_indexing(api):
@@ -417,6 +560,7 @@ def test_pma_watch_distinguishes_new_supplements_backfills_and_later_corrections
 
 def test_parser_identity_is_retained_and_normalization_change_is_explicit(tmp_path, monkeypatch):
     from engine.medtech import store as module
+    initial_parser = module.PARSER_VERSION
     with EventStore(tmp_path / "events.sqlite3", create=True) as store:
         store.ingest(batch())
         monkeypatch.setattr(module, "PARSER_VERSION", "fixture_parser_v2")
@@ -424,7 +568,7 @@ def test_parser_identity_is_retained_and_normalization_change_is_explicit(tmp_pa
         payload = store.snapshot(as_of=T2)
         assert payload["events"][0]["history"][-1]["kind"] == "source_and_normalization_changed"
         versions = [r[0] for r in store.db.execute("SELECT parser_version FROM acquisitions ORDER BY observed_at")]
-        assert versions == ["medtech_openfda_v1", "fixture_parser_v2"]
+        assert versions == [initial_parser, "fixture_parser_v2"]
 
 
 def test_mutated_private_state_is_rejected_before_publication(tmp_path):

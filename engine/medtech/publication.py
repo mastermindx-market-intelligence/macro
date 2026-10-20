@@ -10,7 +10,7 @@ import re
 import stat
 import tempfile
 
-from engine.medtech.events import EVENT_ID_RE, MedTechError, PATHWAYS, instant, source_date
+from engine.medtech.events import EVENT_ID_RE, MedTechError, PATHWAYS, instant, source_date, source_record_url
 
 MAX_PUBLIC_BYTES = 32 * 1024 * 1024
 _GENERATION = re.compile(r"[0-9a-f]{64}\Z")
@@ -67,11 +67,7 @@ def validate_snapshot(payload: dict) -> None:
             raise MedTechError("PUBLIC_SCHEMA_INVALID")
         expected_id = f"fda-{dataset}-{number}" + (f"-{supplement}" if supplement else "")
         source_id = number + (supplement or "")
-        expected_url = (
-            f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID={number}"
-            if dataset == "510k" else
-            f"https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpma/pma.cfm?id={source_id}"
-        )
+        expected_url = source_record_url(dataset, number, supplement)
         if (event_id != expected_id or source["record_id"] != source_id
                 or source["publisher"] != "FDA" or source["url"] != expected_url
                 or source["source_published_at"] is not None):

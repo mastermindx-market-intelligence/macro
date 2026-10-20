@@ -12,7 +12,7 @@ No prospective FDA dates, commercial outcomes, issuer assignments, CMS coverage,
 
 | Source | Native identity | Supported meaning |
 | --- | --- | --- |
-| [510(k) API](https://open.fda.gov/apis/device/510k/) | k_number | Explicit substantially-equivalent clearance where code SESE is observed |
+| [510(k) API](https://open.fda.gov/apis/device/510k/) | k_number, including observed DEN identifiers | Explicit substantially-equivalent clearance for SESE; observed De Novo DENG decisions remain separate grants |
 | [PMA API](https://open.fda.gov/apis/device/pma/) | pma_number + supplement_number | The exact original/supplement action, with unknown codes retained |
 | [PMA fields](https://open.fda.gov/apis/device/pma/searchable-fields/) | Supplement remains linked to parent | A supplement is not silently relabeled as a new original-device approval |
 
@@ -74,12 +74,20 @@ Local regression command: `python3 -m pytest tests/test_medtech.py tests/test_me
 
 The October 20 composition with protected main `f54eeb09f3473e091ea55416a8dcad9196603e60` passed **85 focused tests and 31 subtests** on M2. This includes MedTech contracts and deployment refusals, repository import precedence, the API restart import closure, cross-worker configuration isolation, and curated CI input closure. The [deployment qualification receipt](evidence/medtech-r14-deployment-qualification-20261020.json) binds the result to exact file hashes and records independent source review. This isolated macOS qualification does not claim a full repository-suite pass, actual Linux mount activation, or a live paid-account request; hosted CI and production readback are separate release gates.
 
+### Recovered 2026 decision-range qualification
+
+The retained October 20 acquisition covers decision dates January 1–October 20, 2026 and contains **4,323 baseline records**: **2,571 from the 510(k) endpoint and 1,752 from PMA**. Both datasets report `last_updated` October 5, 2026. The 510(k) response includes **26 observed De Novo records**; these are identified by native `DEN` numbers and DENG grants, with links to the official De Novo record. This is complete for the verified bounded queries, not a comprehensive standalone De Novo denominator or a current announcement feed.
+
+The recovery preserves those original observations and reacquires no FDA data. The [local production-scope receipt](evidence/medtech-r14-production-scope-local-qualification-20261020.json) binds the retained generation and current source files, verifies 4,323-record listing, health, exact De Novo/legacy-PMA/supplement detail, history and watch subjects, private cache headers and stale-generation refusal. The recovered candidate passes **94 focused tests and 31 subtests**. A shared CI failure was repaired by declaring `engine/medtech/__init__.py` in the 13 jobs already declaring its modules; the ancestor-dependency ratchet passes with its original ceiling unchanged. Hosted checks remain separate.
+
+The acquisition uses 250-record pages to stay within response-size bounds; retained earlier acquisitions keep their recorded page size and original request evidence. Parser identity advances to `medtech_openfda_v2`. Terminal #1084 aligns gateway, exact watches and SQL validation with the observed native identifiers; application-family watches stay P-number-only.
+
 ## Research expansion, tied to user value
 
 1. **Who benefits:** consume the existing issuer registry and filing/disclosure owner. Applicant-name similarity can produce a review candidate; it cannot establish a listed issuer's territorial economic rights. Require explicit subsidiary, acquisition, license or distribution evidence with an accession/document passage and dates. [SEC APIs](https://www.sec.gov/search-filings/edgar-application-programming-interfaces) provide issuer metadata and filings; company facts alone do not prove device-level rights or revenue.
 2. **Useful upcoming milestones:** qualify the actual parameter/response schema for [CMS national coverage APIs](https://api.coverage.cms.gov/docs/release_notes), then separate NCA process deadlines, proposed determinations, final coverage and effective dates. Do not guess Swagger parameters. Local coding-detail license tokens are outside this initial adapter.
 3. **Safety developments:** use [FDA device recalls and early-alert communications](https://www.fda.gov/medical-devices/medical-device-safety/medical-device-recalls-and-early-alerts) for actual public notices and revisions. Keep early alerts distinct from confirmed recalls. The [openFDA recall](https://open.fda.gov/apis/device/recall/) and [enforcement](https://open.fda.gov/apis/device/enforcement/) feeds explicitly warn against direct public-alert/lifecycle use; use them for identity/scope enrichment.
-4. **De Novo:** the [official database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm) exists. Its actual extraction contract still needs qualification. No undocumented openFDA De Novo endpoint is invented here.
+4. **De Novo:** observed `DEN` records returned by the existing 510(k) endpoint are now qualified and linked to the [official database](https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/denovo.cfm). Comprehensive standalone extraction and coverage remain unqualified; no undocumented openFDA De Novo endpoint is invented.
 5. **Delivery and saved briefs:** use existing account/outbox ownership when these consumers are implemented. A current event URL is not a preserved historical brief; the saved object must retain an accepted revision/generation or a frozen content projection.
 
 ## Deployment and scheduled refresh

@@ -38,6 +38,7 @@ jobs:
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -1880,6 +1881,7 @@ jobs:
     timeout-minutes: 10
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -2782,6 +2784,7 @@ jobs:
     timeout-minutes: 10
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -6558,6 +6561,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -8836,6 +8840,7 @@ jobs:
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -18942,6 +18947,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -19714,6 +19720,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -21714,6 +21721,7 @@ jobs:
     scope: exclusive
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -23378,6 +23386,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/institutional_census/__init__.py"
@@ -24167,6 +24176,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -29613,6 +29623,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -30109,6 +30120,7 @@ jobs:
     scope: exclusive
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
@@ -33090,6 +33102,7 @@ jobs:
     scope: exclusive
     paths:
       - "app/medtech.py"
+      - "engine/medtech/__init__.py"
       - "engine/medtech/events.py"
       - "engine/medtech/publication.py"
       - "engine/guidance_source_evidence.py"
