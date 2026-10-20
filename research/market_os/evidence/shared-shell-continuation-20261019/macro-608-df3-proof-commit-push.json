@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-10-20T19:30:29.894754+00:00",
+  "state": "ORIGINAL_BRANCH_COMMITTED_AND_PUSHED",
+  "head_before": "5f4bdfe152847f118b2930c98eb233a45abf292a",
+  "remote_before": "608dfad299e2e48ab7703bf0b180e0dca1318229",
+  "branch": "sol/market-os-shared-shell-design-20260924",
+  "index": "27dc3c05c04bed0172b1e1ba939179db69130db2",
+  "proof_import_receipt": {
+    "bytes": 8073,
+    "sha256": "aeb32a8550fdf99f94d79cd692b890539e84ed087cb1b7995c16dcc50d5c930b"
+  },
+  "manifest_sha256": "4e1ecc5c075c674714df2f8cb40f6910c483d7987e1ec05b3e38becc07d39bb2",
+  "indexed_files": 1137,
+  "documentation_only_paths": 128,
+  "candidate_paths_vs_incoming": 1433,
+  "pushed": true,
+  "commit_exit": 0,
+  "commit_log_sha256": "b6a51ec17c90d5b3f7a5ffda17d1add22ce6e44fcc636bd094561274254c1d14",
+  "commit_log_bytes": 16350,
+  "head_after": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "commit_finished_at": "2026-10-20T19:30:44.912461+00:00",
+  "push_intent_at": "2026-10-20T19:30:48.659474+00:00",
+  "push_command": [
+    "git",
+    "-C",
+    "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27",
+    "push",
+    "origin",
+    "HEAD:refs/heads/sol/market-os-shared-shell-design-20260924"
+  ],
+  "push_exit": 0,
+  "push_log_sha256": "87c76602fdda25ca2d027fe05f8066250892c3fe2396011cabe0ab75f71c23fc",
+  "push_log_bytes": 146,
+  "push_finished_at": "2026-10-20T19:31:30.138253+00:00",
+  "remote_after": "2ae6498d0b9f2a088af2e827abf6527799757f8c",
+  "clean": true,
+  "finished_at": "2026-10-20T19:31:33.101426+00:00"
+}

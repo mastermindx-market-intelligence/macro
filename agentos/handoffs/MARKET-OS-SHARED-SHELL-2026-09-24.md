@@ -5,9 +5,10 @@ model: sol
 ended_because: ci_handoff
 mission: Continue the original Shared Shell commission through protected Macro publication and isolated beta acceptance
   using the existing Terminal and Macro owners. Preserve six-view Sector Central while Paper remains REVISE.
-state_before: Original source/proof push608dfad is confirmed. Same original worktree integrates newer maindf3 through
-  an ordinary merge; six conflicts resolved by existing source/page owners and one measured free-content bound adjustment.
-  Source tests and retained-browser lineage must pass before this documentation import. MOG remains unarmed.
+state_before: Confirmed original branch push2ae6498 integrates df3 and its proof. A later affirmative GitHub dirty
+  conflict against main7a6 required this same original writer. The ordinary merge is now locally committed asd6db0a99
+  after five resolved conflicts and719 passing focused tests plus31 subtests. Hosted admission remains separate;
+  MOG unarmed.
 changed:
 - path: templates/shared_shell.css; site/shared_shell.css; tests/js/shared_shell_bridge.test.cjs
   what: Source commit cd00da8f433f512baf471dfef4517a838cbef145 removes two unused navigation-offset custom properties
@@ -99,6 +100,16 @@ changed:
 - path: research/market_os/evidence/shared-shell-continuation-20261019; existing handoff/workstream
   what: Append exact source, conflict, measured repair, tests, retained-browser lineage, prior608 push and current
     operation receipts; preserve all1013 prior originals and prose history.
+- path: Original branch ordinary7a6 integration
+  what: Preserve341 incoming CI jobs and both parents' dependency additions; combine Shell/MedTech updater triggers.
+    Keep the incoming canonical labor mapping once and both distinct regression functions, updating only two local
+    wording assertions.
+- path: site/macro_labor_markets.html
+  what: Regenerate through existing build_macro_suite_pages owner against18 stable data inputs, then canonical injector/optimizer
+    adoption; only labor adopted. Incoming other source and render outputs retained.
+- path: Same Shared Shell evidence pack and existing handoff/workstream
+  what: Preserve all1137 prior file originals and prose history. Add concrete merge/source/labor/test/lineage receipts
+    and preceding2ae commit/push evidence.
 verified:
 - claim: The original source correction passes the focused source gates.
   command: .venv-shared-shell/bin/python scripts/check_design_system.py --mode enforce-added --diff-file /tmp/shared-shell-unused-offsets-design-20261019.diff;
@@ -337,6 +348,25 @@ verified:
     same128cases/16screens history. About52 presentation inputs and recorded response bytes remain exact; unvisited
     macro.html changed, so old53-file manifest is historical rather than fully current. No new browser run or public
     acceptance.
+- claim: Original interrupted and subsequent receipt publications are confirmed.
+  command: b312,608 and2ae commit/push receipts and actual native/GitHub readbacks.
+  result: Remote2ae6498d0b9f2a088af2e827abf6527799757f8c was freshly fenced before local source commit. Same PR7949;
+    original branch; no force push or duplicate carrier.
+- claim: Five actual conflicts preserve composed source semantics.
+  command: macro-2ae-7a6-source-resolution.json; labor-owner-render.json; labor-adoption.json.
+  result: 341 jobs/incoming order/fields and attributed path multiplicity preserved; Shell and MedTech updater transforms
+    compose and bash syntax passes without execution. Single incoming mapping, both regression ASTs retained except
+    two wording constants; labor final255139B/SHAff89d085183a37a8d3176a20d9e2c8b9927b13dc0a40a030514f574498300862.
+- claim: Actual composed validation passes with unchanged packing bounds.
+  command: macro-2ae-7a6-composed-tests.json; six referenced raw logs.
+  result: 719 testsPASS:4 packing,531 affected-source including MedTech deployment,184 Shell JS;31 subtestsPASS.
+    P0B closure,136 template pairs and owned whitespace pass. Python3.14.7; exact source/index53a45de2ab2a9c26c8f5825fe98157375e7a5f97
+    frozen. Packing test bytes and bounds unchanged from2ae.
+- claim: Prior actual fixture evidence is reused only through unchanged input/output identities.
+  command: macro-2ae-7a6-retained-browser-lineage.json.
+  result: 67 P0B producer inputs,56 loaded bindings,20 accepted outputs and52 About presentation inputs retain exact
+    raw/stage identities. Original128cases/16screens/12history and8 About cells/18 ordered Tabs remain scoped retained
+    proof. The original53-file About manifest remains historical; no fresh browser/public/Terminal qualification.
 unverified:
 - claim: New Macro published-head hosted admission, generated-main and actual served publication.
   what_would_verify: Normal commit/push on original branch, exact-head concluded CI/review, then incumbent merge-on-green
@@ -351,20 +381,20 @@ unverified:
     REVISE. Historical CSS source/fixture scope, About light-only/mobile-English overflow and blocked-request/stream
     findings remain disclosed.
 unresolved:
-- Exact new-head hosted CI and incumbent MOG admission, protected landing, covering existing render and macro-update
-  served proof remain.
-- Latest beta availability recovery is sampled18:53 evidence. Original strict service proof remains false; recovered
-  acceptedA passes separately. No further service operation is indicated.
-- DNSPod/Tencent authenticated domain-owner access is required only for canonical beta DNS repair and ensuing TLS/auth/public
-  browser acceptance; independent Macro delivery continues.
-- Public acceptance and applicable rollback boundary remain open; previous_runtime=null cannot establish A-to-B-to-A.
+- Exact new-head hosted CI, incumbent MOG admission, protected source landing, covering existing render and stable
+  macro-update served proof remain.
+- Beta recovery remains separately sampled18:53 evidence. Original strict service proof remains false; accepted-A
+  normal-start recovery passed. No further installer or service operation is indicated.
+- Authenticated DNSPod/Tencent domain-owner access is required for actual beta DNS repair and consequent canonical
+  TLS/auth/public browser acceptance; it does not block independent Macro delivery.
+- Public acceptance and applicable rollback boundaries remain open. previous_runtime=null cannot establish A-to-B-to-A.
   Preserve Sector six views/basket behavior, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN.
 next_actions:
-- Commit the qualified df3 source integration and same-pack documentation extension, normal-push the original branch,
-  and attend exact-head hosted CI; fix actual failures through existing owners.
-- Use incumbent MOG after its actual arming/hold predicates, then bind landed source to covering existing render
-  input, pushed output and stable served-byte observations.
-- Complete canonical beta DNS/TLS/auth/public browser and remaining applicable acceptance when authenticated domain-owner
+- Commit this qualified same-pack documentation extension and normal-push the original branch; attend exact-head
+  hosted CI and fix actual failures through existing owners.
+- Use incumbent MOG after its concluded predicates/recorded-hold checks, then bind landed source to covering render
+  input, actual pushed output and stable served bytes.
+- Complete canonical beta DNS/TLS/auth/public browser and applicable remaining acceptance when authenticated domain-owner
   access is available.
 do_not_redo:
 - 'Terminal #859 at e45bde2cac07ac3b29285ff70c40d68900fad62c is merged and browser-qualified; do not rerun or reopen
@@ -396,6 +426,9 @@ do_not_redo:
 - Original Terminal859/R93 installer recovery and separately verified same-A service availability recovery remain
   COMPLETE. Do not repeat bootstrap, cleanup, app qualification, stop/start or force a false strict proof green.
   Preserve actual raw failures and qualified input-bound evidence. No duplicate PR/renderer/carrier/watcher.
+- Terminal859/R93 installer recovery and separately verified accepted-A availability recovery remain COMPLETE. Do
+  not repeat bootstrap, cleanup, app qualification or stop/start. Original strict service proof stays false. No
+  duplicate PR, renderer, source carrier or watcher.
 danger_areas:
 - Production identity and disk capacity changed externally between observations; historical PID or free-space values
   cannot serve as a fresh isolation baseline.
@@ -1451,3 +1484,36 @@ Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The previous
 Next: commit this same-pack documentation extension and normal-push the original branch; attend exact-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Merely newer data/site main commits do not require an unsolicited refresh under the incumbent owner's freshness rules; a real source conflict still belongs to this original writer.
 
 DNSPod/Tencent sign-in remains incomplete. Authenticated domain-owner access is required for actual beta DNS repair and consequent canonical TLS/auth/public-browser acceptance, not for independent Macro source/CI/publication work. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
+
+
+## Attended continuation — 2026-10-20: actual7a6 conflict composition and retained proof
+
+The same original branch contains local ordinary merge **d6db0a99b99e6b602cc8cd06e1e5948c37b4a5d2**, parents2ae6498d0b9f2a088af2e827abf6527799757f8c and7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1, source tree **53a45de2ab2a9c26c8f5825fe98157375e7a5f97**. This followed an affirmative GitHub dirty conflict, not an unsolicited refresh merely because data/main advanced. Bounded changed-blob preflight established actual incoming object availability; no broad history inventory or Git configuration change was needed.
+
+### Five concrete conflicts resolved
+
+The341-job CI declaration preserves incoming order and all unilateral/identical fields; concurrent dependency additions retain both parents with attributed multiplicity. The updater combines existing Shell and incoming MedTech trigger additions, with other incoming prerequisite work retained. Bash syntax passes; the updater was not executed.
+
+Both parents independently supplied the same concatenated labor lookup key. Retain the incoming bilingual mapping exactly once, avoiding a shadowed duplicate. Preserve both distinct regression functions; change only two wording-specific constants in the local test to match the canonical incoming pair. Source preservation, distinct original object, nonfallback, actual escaped copy guard, no overall reading/no neutral substitution and ordinary-text no-op remain covered.
+
+The existing build_macro_suite_pages.render owner produced15 scratch pages from18 stable data inputs. Only labor was adopted through the current canonical injectors/optimizer. Raw labor254832B/SHA26ce8a65db30ee686c5e1f7a383f8e0c0e35f7a35d391254df19e04dfb2b1f35; adopted255139B/SHAff89d085183a37a8d3176a20d9e2c8b9927b13dc0a40a030514f574498300862. Copy guards and idempotence pass. Incoming ETF/US generations and Sector six views/basket remain unchanged by this conflict resolution.
+
+### Actual checks and retained browser evidence
+
+**719 focused tests PASS**, with31 additional subtests:4 curated CI/packing checks,531 affected-source checks including MedTech deployment, and184 Shared Shell JavaScript tests. P0B receipt closure,136 template pairs and whitespace pass. The source and index remain frozen at53a45de2. The packing test source and135/5802,136/5829,130/5600 ceilings remain unchanged from2ae; no newly raised bound or selector change.
+
+Test receipt SHA **a915c0483df1eb069c2b5a17ba44c3a4c6d2d8dcc786e07b78a38079dd8e0251** records actual local Python3.14.7 execution. Recorded pytest cleanup warnings remain in their raw logs; all six commands exit0. These are local checks, not hosted Python3.12 admission.
+
+Retained lineage SHA **c0c6164d310dc1f99bf32a66cd384dc74ca0f3ed4bc8951455967ce1509d7c1c** binds67 P0B producer inputs,56 loaded bindings,20 accepted outputs and52 About presentation inputs to unchanged raw/stage identities. Prior actual128cases/16screens/12historical entries and eight About cells with18 ordered Tabtargets are retained. No producer/browser rerun or pass/hash rewrite occurred. The original53-file About manifest remains historical because its unvisited macro.html changed atdf3; the current macro observation is unchanged from2ae. This does not add route navigation, actual200% zoom, public beta or Terminal qualification.
+
+### Durable history and ownership
+
+The same proof pack preserves all1137 previous indexed originals and prior handoff body/workstream/README prefixes. It appends current conflict, owner render, adoption, tests, lineage and source-commit receipts, the exact prior19:32 checkpoint, and previous2ae final importer/commit/push receipts. The current final importer receipt remains external to avoid self-inclusion; the PR checkpoint binds its final hash/tree and ensuing push. Existing old bulk inventory metadata remains historical. Adviser applied receipt/source review is NONBLOCKING within its read-only scope and is not new execution or admission authority.
+
+### Remaining gates
+
+Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The original strict beta stop proof remains false; separately verified normal-start recovery restored the same acceptedA at18:53:31, PID3306695/start7622818757695/status200 with unchanged compared production. No new service, installer or production operation occurred. previous_runtime=null is not A-to-B-to-A, graceful shutdown or full hostname withdrawal.
+
+Next: normal-push this documentation extension on the same branch; attend actual-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Existing MOG can retain proof across recognized generated-only movement; an affirmative content conflict still belongs to this original writer.
+
+DNSPod/Tencent authentication remains incomplete. Domain-owner access is required for actual beta DNS repair and ensuing canonical TLS/auth/public-browser acceptance, not independent Macro delivery. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.

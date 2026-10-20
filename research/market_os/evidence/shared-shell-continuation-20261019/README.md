@@ -548,3 +548,36 @@ Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The previous
 Next: commit this same-pack documentation extension and normal-push the original branch; attend exact-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Merely newer data/site main commits do not require an unsolicited refresh under the incumbent owner's freshness rules; a real source conflict still belongs to this original writer.
 
 DNSPod/Tencent sign-in remains incomplete. Authenticated domain-owner access is required for actual beta DNS repair and consequent canonical TLS/auth/public-browser acceptance, not for independent Macro source/CI/publication work. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
+
+
+## Attended continuation — 2026-10-20: actual7a6 conflict composition and retained proof
+
+The same original branch contains local ordinary merge **d6db0a99b99e6b602cc8cd06e1e5948c37b4a5d2**, parents2ae6498d0b9f2a088af2e827abf6527799757f8c and7a6e21cb7d6a38855b7e06432c94f61acb0fe6f1, source tree **53a45de2ab2a9c26c8f5825fe98157375e7a5f97**. This followed an affirmative GitHub dirty conflict, not an unsolicited refresh merely because data/main advanced. Bounded changed-blob preflight established actual incoming object availability; no broad history inventory or Git configuration change was needed.
+
+### Five concrete conflicts resolved
+
+The341-job CI declaration preserves incoming order and all unilateral/identical fields; concurrent dependency additions retain both parents with attributed multiplicity. The updater combines existing Shell and incoming MedTech trigger additions, with other incoming prerequisite work retained. Bash syntax passes; the updater was not executed.
+
+Both parents independently supplied the same concatenated labor lookup key. Retain the incoming bilingual mapping exactly once, avoiding a shadowed duplicate. Preserve both distinct regression functions; change only two wording-specific constants in the local test to match the canonical incoming pair. Source preservation, distinct original object, nonfallback, actual escaped copy guard, no overall reading/no neutral substitution and ordinary-text no-op remain covered.
+
+The existing build_macro_suite_pages.render owner produced15 scratch pages from18 stable data inputs. Only labor was adopted through the current canonical injectors/optimizer. Raw labor254832B/SHA26ce8a65db30ee686c5e1f7a383f8e0c0e35f7a35d391254df19e04dfb2b1f35; adopted255139B/SHAff89d085183a37a8d3176a20d9e2c8b9927b13dc0a40a030514f574498300862. Copy guards and idempotence pass. Incoming ETF/US generations and Sector six views/basket remain unchanged by this conflict resolution.
+
+### Actual checks and retained browser evidence
+
+**719 focused tests PASS**, with31 additional subtests:4 curated CI/packing checks,531 affected-source checks including MedTech deployment, and184 Shared Shell JavaScript tests. P0B receipt closure,136 template pairs and whitespace pass. The source and index remain frozen at53a45de2. The packing test source and135/5802,136/5829,130/5600 ceilings remain unchanged from2ae; no newly raised bound or selector change.
+
+Test receipt SHA **a915c0483df1eb069c2b5a17ba44c3a4c6d2d8dcc786e07b78a38079dd8e0251** records actual local Python3.14.7 execution. Recorded pytest cleanup warnings remain in their raw logs; all six commands exit0. These are local checks, not hosted Python3.12 admission.
+
+Retained lineage SHA **c0c6164d310dc1f99bf32a66cd384dc74ca0f3ed4bc8951455967ce1509d7c1c** binds67 P0B producer inputs,56 loaded bindings,20 accepted outputs and52 About presentation inputs to unchanged raw/stage identities. Prior actual128cases/16screens/12historical entries and eight About cells with18 ordered Tabtargets are retained. No producer/browser rerun or pass/hash rewrite occurred. The original53-file About manifest remains historical because its unvisited macro.html changed atdf3; the current macro observation is unchanged from2ae. This does not add route navigation, actual200% zoom, public beta or Terminal qualification.
+
+### Durable history and ownership
+
+The same proof pack preserves all1137 previous indexed originals and prior handoff body/workstream/README prefixes. It appends current conflict, owner render, adoption, tests, lineage and source-commit receipts, the exact prior19:32 checkpoint, and previous2ae final importer/commit/push receipts. The current final importer receipt remains external to avoid self-inclusion; the PR checkpoint binds its final hash/tree and ensuing push. Existing old bulk inventory metadata remains historical. Adviser applied receipt/source review is NONBLOCKING within its read-only scope and is not new execution or admission authority.
+
+### Remaining gates
+
+Terminal859 and R93 installer recovery remain COMPLETE/DO_NOT_REDO. The original strict beta stop proof remains false; separately verified normal-start recovery restored the same acceptedA at18:53:31, PID3306695/start7622818757695/status200 with unchanged compared production. No new service, installer or production operation occurred. previous_runtime=null is not A-to-B-to-A, graceful shutdown or full hostname withdrawal.
+
+Next: normal-push this documentation extension on the same branch; attend actual-head hosted CI and incumbent MOG; bind protected source landing to a covering existing render input, actual pushed output and stable macro-update served bytes. Existing MOG can retain proof across recognized generated-only movement; an affirmative content conflict still belongs to this original writer.
+
+DNSPod/Tencent authentication remains incomplete. Domain-owner access is required for actual beta DNS repair and ensuing canonical TLS/auth/public-browser acceptance, not independent Macro delivery. No certificate bypass or alternate-origin public proof. Preserve Sector six views/sector-to-basket, Paper REVISE and C4 SPEC_ONLY/UNAPPLIED/UNRUN. No duplicate PR, renderer, source carrier or watcher.
