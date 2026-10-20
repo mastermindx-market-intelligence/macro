@@ -153,3 +153,138 @@ def test_current_client_must_advertise_targeted_execution(monkeypatch):
         "command_target": {"schema": "chart.command_target.v1",
                            "required_for": ["all_effectful_v2"]}}
     assert gw._chart_command_target_for_result("u", "bound-origin", 7, w) == target()
+
+
+def _observation(at, *acknowledgements):
+    return {**state(at), "acks": list(acknowledgements)}
+
+
+def _wait_through_observations(monkeypatch, wires, observations):
+    clock = [0.0]
+    pending = iter(observations)
+
+    def read_state(user_id, client, *, origin_id):
+        assert (user_id, client, origin_id) == ("u", "terminal", "bound-origin")
+        return next(pending, observations[-1])
+
+    monkeypatch.setattr(gw, "get_chart_state_record", read_state)
+    monkeypatch.setattr(gw, "_chart_ack_wait_budget", lambda _count: 0.2)
+    monkeypatch.setattr(gw, "_CHART_ACK_POLL_SECONDS", 0.1)
+    monkeypatch.setattr(gw.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(
+        gw.time, "sleep", lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+    return gw._wait_for_chart_command_acks("u", "bound-origin", 7, wires)
+
+
+def test_collective_wait_uses_latest_context_after_same_symbol_round_trip(monkeypatch):
+    first = command()
+    later = {**command(), "seq": 3, "id": "ai_later"}
+    refusal = {**ack(later), "ok": False,
+               "error": "command_target_revision_mismatch"}
+    latest = target(context_revision=9)
+    receipts = _wait_through_observations(monkeypatch, [first, later], [
+        _observation(target(), ack(first)),
+        _observation(target(symbol="AAPL", context_revision=8)),
+        _observation(latest, refusal),
+    ])
+
+    assert receipts[0]["command_status"] == "accepted"
+    assert receipts[0]["effect_state"] == "applied_not_render_verified"
+    assert receipts[0]["context_changed"] is True
+    assert receipts[0]["observed_context_revision"] == 9
+    assert receipts[0]["observed_state"] == {
+        "symbol": "NVDA", "tf": "D", "pane_id": 1}
+    assert receipts[1]["command_status"] == "rejected"
+    assert receipts[1]["reason"] == "command_target_revision_mismatch"
+    assert all("continuation_target" not in row for row in receipts)
+    assert all(row["automatic_retry_allowed"] is False for row in receipts)
+
+
+@pytest.mark.parametrize("op,args,successor", [
+    ("chart.set_indicators",
+     {"mode": "patch", "indicators": [{"name": "rsi", "params": {"length": 21}}]},
+     target(context_revision=8)),
+    ("chart.set_symbol", {"symbol": "AAPL"}, target(symbol="AAPL", context_revision=8)),
+    ("chart.set_tf", {"tf": "W"}, target(tf="W", context_revision=8)),
+])
+@pytest.mark.parametrize("later_ack_arrives", [True, False])
+def test_collective_wait_does_not_adopt_cached_setter_successor(
+    monkeypatch, op, args, successor, later_ack_arrives,
+):
+    first = command(op, args)
+    later = {**command(), "seq": 3, "id": "ai_later"}
+    refusal = {**ack(later), "ok": False,
+               "error": "command_target_revision_mismatch"}
+    latest = {**successor, "context_revision": 10}
+    receipts = _wait_through_observations(monkeypatch, [first, later], [
+        _observation(successor, ack(first, successor)),
+        _observation({**successor, "symbol": "MSFT", "context_revision": 9}),
+        _observation(latest, *([refusal] if later_ack_arrives else [])),
+    ])
+
+    assert receipts[0]["command_status"] == "accepted"
+    assert receipts[0]["effect_state"] == "applied_not_render_verified"
+    assert receipts[0]["observed_context_revision"] == 10
+    assert receipts[0]["context_changed"] is True
+    assert receipts[0]["observed_state"] == {
+        key: latest[key] for key in ("symbol", "tf", "pane_id")}
+    assert receipts[1]["command_status"] == (
+        "rejected" if later_ack_arrives else "unverified")
+    assert receipts[1]["reason"] == (
+        "command_target_revision_mismatch" if later_ack_arrives else "ack_timeout")
+    assert all("continuation_target" not in row for row in receipts)
+    assert all(row["automatic_retry_allowed"] is False for row in receipts)
+
+
+def test_collective_wait_unavailable_final_read_preserves_only_historical_ack(monkeypatch):
+    first = command("chart.set_tf", {"tf": "W"})
+    later = {**command(), "seq": 3, "id": "ai_later"}
+    successor = target(tf="W", context_revision=8)
+    receipts = _wait_through_observations(monkeypatch, [first, later], [
+        _observation(successor, ack(first, successor)),
+        None,
+    ])
+
+    assert receipts[0]["command_status"] == "accepted"
+    assert receipts[0]["command_outcome"] == "accepted"
+    assert receipts[0]["effect_state"] == "applied_not_render_verified"
+    assert receipts[0]["expected_context_revision"] == 7
+    assert receipts[1]["reason"] == "ack_timeout"
+    assert receipts[1]["effect_state"] == "unknown"
+    unavailable_fields = {
+        "observed_context_revision", "observed_state",
+        "context_changed", "continuation_target",
+    }
+    assert all(unavailable_fields.isdisjoint(row) for row in receipts)
+    assert all(row["automatic_retry_allowed"] is False for row in receipts)
+
+
+@pytest.mark.parametrize("op,args,successor", [
+    ("draw.hline", {"p": 100}, target()),
+    ("chart.set_indicators",
+     {"mode": "patch", "indicators": [{"name": "rsi", "params": {"length": 21}}]},
+     target(context_revision=8)),
+    ("chart.set_symbol", {"symbol": "AAPL"}, target(symbol="AAPL", context_revision=8)),
+    ("chart.set_tf", {"tf": "W"}, target(tf="W", context_revision=8)),
+])
+def test_collective_wait_preserves_still_current_successor(
+    monkeypatch, op, args, successor,
+):
+    first = command(op, args)
+    later = {**command(), "seq": 3, "id": "ai_later"}
+    later_ack = ack(later)
+    if successor != target():
+        later_ack.update(ok=False, error="command_target_revision_mismatch")
+    receipts = _wait_through_observations(monkeypatch, [first, later], [
+        _observation(successor, ack(first, successor)),
+        _observation(successor, ack(first, successor), later_ack),
+    ])
+
+    assert receipts[0]["command_status"] == "accepted"
+    assert receipts[0]["continuation_target"] == successor
+    assert receipts[0]["observed_context_revision"] == successor["context_revision"]
+    assert receipts[0]["automatic_retry_allowed"] is False
+    if op == "draw.hline":
+        assert all(row["command_status"] == "accepted" for row in receipts)
+        assert all(row["continuation_target"] == target() for row in receipts)
+        assert all(row["context_changed"] is False for row in receipts)

@@ -4058,7 +4058,7 @@ def _chart_command_continuation_target(
 def _verified_chart_command_receipt(
     wire: dict,
     ack: dict,
-    record: dict,
+    record: dict | None,
     *,
     expected_context_revision: int | None,
 ) -> dict:
@@ -4069,9 +4069,10 @@ def _verified_chart_command_receipt(
     """
     if str(wire.get("op", "")).startswith("draw.") and ack.get("id") != wire.get("id"):
         out = _unverified_chart_command_receipt(wire, "ack_drawing_id_mismatch")
-        out.update({"observed_context_revision": record.get("context_revision"),
-                    "observed_state": _compact_chart_state_for_receipt(record),
-                    "ack": {"ok": ack.get("ok") is True, "id": ack.get("id")}})
+        out["ack"] = {"ok": ack.get("ok") is True, "id": ack.get("id")}
+        if record is not None:
+            out.update({"observed_context_revision": record.get("context_revision"),
+                        "observed_state": _compact_chart_state_for_receipt(record)})
         return out
     ok = ack.get("ok") is True
     compact_ack: dict[str, Any] = {"ok": ok}
@@ -4111,12 +4112,20 @@ def _verified_chart_command_receipt(
             "fresh action; do not retry or substitute the mutation automatically."
         )
 
-    observed_revision = record.get("context_revision")
-    context_changed = (
-        isinstance(expected_context_revision, int) and not isinstance(expected_context_revision, bool)
-        and isinstance(observed_revision, int) and not isinstance(observed_revision, bool)
-        and observed_revision != expected_context_revision
-    )
+    observation: dict[str, Any] = {}
+    if record is not None:
+        observed_revision = record.get("context_revision")
+        observation = {
+            "observed_context_revision": observed_revision,
+            "context_changed": (
+                isinstance(expected_context_revision, int)
+                and not isinstance(expected_context_revision, bool)
+                and isinstance(observed_revision, int)
+                and not isinstance(observed_revision, bool)
+                and observed_revision != expected_context_revision
+            ),
+            "observed_state": _compact_chart_state_for_receipt(record),
+        }
     out: dict[str, Any] = {
         "command_status": status, "command_outcome": outcome, "effect_state": effect,
         "automatic_retry_allowed": False,
@@ -4124,17 +4133,18 @@ def _verified_chart_command_receipt(
         "op": wire.get("op"), "batch_id": wire.get("batch_id"), "seq": wire.get("seq"),
         "ack": compact_ack,
         "expected_context_revision": expected_context_revision,
-        "observed_context_revision": observed_revision,
-        "context_changed": context_changed,
-        "observed_state": _compact_chart_state_for_receipt(record),
+        **observation,
         "note": note,
     }
     if error:
         out["reason"] = "contradictory_ack" if ok else error
     if isinstance(wire.get("id"), str):
         out["id"] = wire["id"]
-    continuation = _chart_command_continuation_target(
-        wire, ack, record, expected_context_revision)
+    continuation = (
+        _chart_command_continuation_target(
+            wire, ack, record, expected_context_revision)
+        if record is not None else None
+    )
     if continuation is not None:
         out["continuation_target"] = continuation
     return out
@@ -4166,14 +4176,16 @@ def _wait_for_chart_command_acks(
         return [_unverified_chart_command_receipt(wire, "origin_not_bound") for wire in wires]
 
     keys = [(str(wire.get("batch_id") or ""), wire.get("seq")) for wire in wires]
-    found: dict[tuple[str, int], tuple[dict, dict]] = {}
+    found: dict[tuple[str, int], dict] = {}
     deadline = time.monotonic() + _chart_ack_wait_budget(len(wires))
-    last_record: dict | None = None
+    latest_record: dict | None = None
 
     while True:
         record = get_chart_state_record(user_id, "terminal", origin_id=origin)
+        # ACKs are historical evidence; currentness comes from the final poll,
+        # including an unavailable read, not the snapshot at the first ACK.
+        latest_record = record
         if record is not None:
-            last_record = record
             ack_map: dict[tuple[str, int], dict] = {}
             for raw in record.get("acks") or []:
                 ack = _sanitize_chart_ack(raw)
@@ -4184,7 +4196,7 @@ def _wait_for_chart_command_acks(
                     continue
                 key = (batch_id, seq)
                 if key in ack_map:
-                    found[key] = (ack_map[key], record)
+                    found[key] = ack_map[key]
 
         if len(found) == len(wires):
             break
@@ -4199,16 +4211,15 @@ def _wait_for_chart_command_acks(
         hit = found.get(key) if key is not None else None
         if hit is None:
             receipt = _unverified_chart_command_receipt(wire, "ack_timeout")
-            if last_record is not None:
-                receipt["observed_context_revision"] = last_record.get("context_revision")
-                receipt["observed_state"] = _compact_chart_state_for_receipt(last_record)
+            if latest_record is not None:
+                receipt["observed_context_revision"] = latest_record.get("context_revision")
+                receipt["observed_state"] = _compact_chart_state_for_receipt(latest_record)
             receipts.append(receipt)
             continue
-        ack, record = hit
         receipts.append(_verified_chart_command_receipt(
             wire,
-            ack,
-            record,
+            hit,
+            latest_record,
             expected_context_revision=expected_context_revision,
         ))
     return receipts
