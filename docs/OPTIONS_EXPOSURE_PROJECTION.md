@@ -544,3 +544,12 @@ remain unavailable. Q02's American reference remains `RESEARCH_ONLY`; physical
 delivery, reference-close marking, last trade, exercise election and model horizon
 must not be conflated. This adapter does not qualify instantaneous exposure or
 change any projection capabilities, poller schedule, store or publication right.
+
+Admission hardening preserves any explicit conflicting currency, multiplier or
+deliverable rather than overwriting it with an ordinary-ETF interpretation. Rule
+interpretation accepts only mapped exact HTTPS reference origin/path/hash; source
+origin and coordinate provenance still come from the checked reference chain, not
+from a URL string alone. QQQ's Oct20 lower bound is enforced both when resolving and
+when validating a receipt. OI is not Greek algorithm-versioned: an explicit unsupported
+version parameter withholds its acquisition evidence; no version1 is invented for OI.
+These guards preserve observed denominators and do not change v2 tuple fields.

@@ -63,7 +63,7 @@ def theta_acquisition(path, parameters, raw, *, origin, received_at=None):
     allowed = THETA_SNAPSHOT_PARAMETERS if snapshot else THETA_PARAMETERS
     if (path not in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values())
             or set(parameters) - allowed
-            or (path == THETA_SNAPSHOT_ENDPOINTS["oi"] and "version" in parameters)):
+            or (path in (THETA_ENDPOINTS["oi"], THETA_SNAPSHOT_ENDPOINTS["oi"]) and "version" in parameters)):
         raise ValueError("Unsupported native acquisition parameters")
     source = urlsplit(origin)
     if (source.scheme not in ("http", "https") or not source.hostname or source.username
@@ -183,7 +183,8 @@ def native_acquisitions(frame, root, session, kind, *, now=None):
                     or source.password or source.query or source.fragment or source.path not in ("", "/")):
                 return None
             params = rec.get("parameters")
-            if not isinstance(params, dict) or set(params) - THETA_PARAMETERS or params.get("symbol") != root:
+            if (not isinstance(params, dict) or set(params) - THETA_PARAMETERS or params.get("symbol") != root
+                    or (kind == "oi" and "version" in params)):
                 return None
             start = str(params["start_date"]).replace("-", "")
             end = str(params["end_date"]).replace("-", "")
@@ -369,14 +370,34 @@ def ordinary_etf_terms(term, *, root):
     Correction omission remains unknown. No expiry instant or Greek model is inferred.
     """
     out = deepcopy(term)
+    try:
+        reference = urlsplit(str(term.get("terms_ref", "")))
+    except ValueError:
+        return out
+    endpoint = "/v3/reference/options/contracts"
+    # The mapper builds this exact origin/path/hash from the observed chain.
+    # A prefix lookalike or conflicting explicit economics is not a rule-backed
+    # ordinary contract. Preserve the evidence and let qualification withhold it.
+    series = term.get("series_id")
+    paths = {endpoint}
+    if (isinstance(series, str) and re.fullmatch(r"O:(?:SPY|QQQ)\d{6}[CP]\d{8}", series)
+            and series.startswith("O:" + str(root))):
+        paths.add(endpoint + "/" + series)
+    reference_valid = (reference.scheme == "https"
+        and reference.netloc in {"api.polygon.io", "api.massive.com"}
+        and reference.path in paths
+        and not reference.query and re.fullmatch(r"sha256=[a-f0-9]{64}", reference.fragment))
+    standard = dict(currency="USD", multiplier=100, deliverable="100_underlying_shares")
     if (root not in {"SPY", "QQQ"} or term.get("root") != root
             or term.get("shares_per_contract") != 100
             or term.get("exercise_style") != "american"
             or ("additional_underlyings" in term and term["additional_underlyings"] != [])
-            or not term.get("terms_ref", "").startswith(("https://api.polygon.io/v3/reference/options/contracts", "https://api.massive.com/v3/reference/options/contracts"))):
+            or not reference_valid
+            or any(field in term and term[field] != value for field, value in standard.items())):
         return out
-    out.update(currency="USD", multiplier=100, deliverable="100_underlying_shares",
-        deliverable_ref=term["terms_ref"] + "|" + OCC_ETF_SPEC,
+    for field, value in standard.items():
+        out.setdefault(field, value)
+    out.update(deliverable_ref=term["terms_ref"] + "|" + OCC_ETF_SPEC,
         term_interpretation={"policy": {"SPY":"occ_standard_spy_etf/v1", "QQQ":"occ_standard_qqq_etf/v1"}[root],
             "additional_underlyings_field_present": "additional_underlyings" in term,
             "additional_deliverables": "none_reported",

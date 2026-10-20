@@ -280,3 +280,38 @@ def test_qqq_terms_policy_cannot_be_selected_by_an_absent_policy():
     out=compose_native_exposure_context(pd.DataFrame(),pd.DataFrame(),ASOF,'QQQ',context=ctx)
     assert out['contract_terms'][0]['multiplier']==100
     assert ordinary_etf_terms(out['contract_terms'][0],root='QQQ')['multiplier']==100
+
+
+@pytest.mark.parametrize("root",["SPY","QQQ"])
+@pytest.mark.parametrize("field,value",[("currency","EUR"),("multiplier",50),("deliverable","cash"),("currency",None)])
+def test_ordinary_terms_never_overwrite_contradicting_explicit_economics(root,field,value):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root=root,shares_per_contract=100,exercise_style="american",
+        terms_ref="https://api.massive.com/v3/reference/options/contracts#sha256="+"a"*64)
+    term[field]=value
+    assert ordinary_etf_terms(term,root=root)==term
+
+
+@pytest.mark.parametrize("ref",[
+    "https://api.massive.com/v3/reference/options/contracts-mirror.example/t#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts/other/O:QQQ261023C00100000#sha256="+"a"*64,
+    "https://api.massive.com:443/v3/reference/options/contracts#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts?unverified=true#sha256="+"a"*64,
+    "https://api.massive.com/v3/reference/options/contracts#sha256=invalid",
+    "https://[malformed",
+    "https://api.massive.com/v3/reference/options/contracts/#sha256="+"a"*64,
+])
+def test_ordinary_terms_require_exact_mapped_reference_endpoint(ref):
+    from lib.options_source_receipts import ordinary_etf_terms
+    term=dict(root="QQQ",shares_per_contract=100,exercise_style="american",terms_ref=ref)
+    assert ordinary_etf_terms(term,root="QQQ")==term
+
+
+def test_history_oi_rejects_a_greek_algorithm_version_in_actual_parameters():
+    params=dict(symbol="SPY",expiration="*",start_date=20261015,end_date=20261015,format="csv",version="2")
+    with pytest.raises(ValueError,match="parameters"):
+        theta_acquisition(THETA_ENDPOINTS["oi"],params,b"synthetic",origin="http://theta-test:25503",received_at=RECEIVED)
+    _,oi,_=book();oi=attach(oi,"oi")
+    rec=json.loads(oi[ACQUISITION_COLUMN].iloc[0]);rec["parameters"]["version"]="2"
+    oi[ACQUISITION_COLUMN]=json.dumps(rec)
+    assert native_acquisitions(oi,"SPY",ASOF,"oi",now=RECEIVED) is None
