@@ -379,27 +379,115 @@ def test_title_search_list_picks_first_present_title() -> None:
 
 # Canonical-JSON sha256 of reconstruct_statement output on the committed golden
 # AAPL 10-K fixture, measured at the S0 head (471703401f) BEFORE the S0-b edits.
+# These remain the digests under the committed metric registry 1.0.0 root.
 _AAPL_BASE_DIGESTS = {
     "income_statement": "f4b541e8d561e2758c1057de3246a6bdcee89f8f40852791cdb1b7831cb58e22",
     "balance_sheet": "42afb15512efb22d06eb2bea3b9fdb9f10378ef7aa39db2ee9724954bafb4119",
     "cash_flow": "8a38bedfdefc194a57d6bb8c593d791bf0b5d8f75909ccda08991ee58423fda4",
 }
+# Re-pinned 2026-10-19 by seat ruling R-9761-CLK (c): under the live 1.1.0
+# registry the LiabilitiesAndStockholdersEquity row aliases total_assets at
+# priority 20, below Assets at 10, so it stays unmapped with an alias_priority
+# receipt. That one receipt is the only byte change (asserted below).
+_AAPL_LIVE_DIGESTS = {
+    **_AAPL_BASE_DIGESTS,
+    "balance_sheet": "f50b2f3f95ae42207530ce3b2145bdab9b1b40e7fe9bed5b54759c749b55ea4d",
+}
+_REGISTRY_V1_0_0_ROOT = ROOT / "tests" / "fixtures" / "fundamental_forensics_registry_v1_0_0"
 
 
-def test_golden_aapl_reconstruction_is_byte_identical() -> None:
+def _golden_aapl_trees(registry_root: Path) -> dict[str, dict]:
     package = load_golden_aapl_package(ROOT)
-    registry = load_core_registry(ROOT)
+    registry = load_core_registry(registry_root)
     parsed = parse_sec_filing_document(
         package.members[package.manifest["primary_document"]],
         document_name=package.manifest["primary_document"],
     )
-    for kind, expected in _AAPL_BASE_DIGESTS.items():
-        tree = reconstruct_statement(
+    return {
+        kind: reconstruct_statement(
             statement_type=kind,
             package=package,
             parsed_instance=parsed,
             registry=registry,
         )
-        blob = json.dumps(tree, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-        digest = hashlib.sha256(blob.encode("utf-8")).hexdigest()
-        assert digest == expected, kind
+        for kind in _AAPL_BASE_DIGESTS
+    }
+
+
+def _tree_digest(tree: dict) -> str:
+    blob = json.dumps(tree, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def test_golden_aapl_reconstruction_is_byte_identical() -> None:
+    live = _golden_aapl_trees(ROOT)
+    for kind, expected in _AAPL_LIVE_DIGESTS.items():
+        assert _tree_digest(live[kind]) == expected, kind
+    v1_0_0 = _golden_aapl_trees(_REGISTRY_V1_0_0_ROOT)
+    for kind, expected in _AAPL_BASE_DIGESTS.items():
+        assert _tree_digest(v1_0_0[kind]) == expected, kind
+
+    live_rows = live["balance_sheet"]["rows"]
+    old_rows = v1_0_0["balance_sheet"]["rows"]
+    assert {k: v for k, v in live["balance_sheet"].items() if k != "rows"} == {
+        k: v for k, v in v1_0_0["balance_sheet"].items() if k != "rows"
+    }
+    assert len(live_rows) == len(old_rows)
+    differing = [index for index, (new, old) in enumerate(zip(live_rows, old_rows)) if new != old]
+    assert differing == [34]
+    new, old = live_rows[34], old_rows[34]
+    assert new["concept"] == old["concept"]
+    assert new["concept"].endswith("LiabilitiesAndStockholdersEquity")
+    assert {key for key in new if new[key] != old[key]} == {"mapping_receipt"}
+    assert (old["standardized_metric_id"], old["mapping_state"], old["mapping_receipt"]) == (
+        None,
+        "unmapped",
+        None,
+    )
+    assert (new["standardized_metric_id"], new["mapping_state"]) == (None, "unmapped")
+    assert new["mapping_receipt"] == {
+        "taxonomy": "us-gaap",
+        "concept": "LiabilitiesAndStockholdersEquity",
+        "reason": "alias_priority",
+        "metric_id": "total_assets",
+        "priority": 20,
+        "governing_concept": "Assets",
+        "governing_priority": 10,
+    }
+    # R-9761-CLK (e): exactly one standardized total_assets row (and cell per column).
+    total_assets_rows = [row for row in live_rows if row["standardized_metric_id"] == "total_assets"]
+    assert len(total_assets_rows) == 1
+    assert total_assets_rows[0]["concept"].endswith(":Assets")
+    mapped = [row["standardized_metric_id"] for row in live_rows if row["standardized_metric_id"]]
+    assert len(mapped) == len(set(mapped))
+
+
+def _mapped_row(concept: str, metric_id: str) -> dict:
+    taxonomy, local = concept.split(":", 1)
+    return {
+        "concept": concept,
+        "standardized_metric_id": metric_id,
+        "mapping_state": "mapped",
+        "mapping_receipt": {"taxonomy": taxonomy, "concept": local, "metric_id": metric_id},
+    }
+
+
+def test_alias_priority_keeps_the_lone_alias_and_demotes_a_lower_priority_twin() -> None:
+    registry = load_core_registry(ROOT)
+    alias_only = [_mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets")]
+    statement_graph._apply_alias_priority(alias_only, registry)
+    assert alias_only == [_mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets")]
+
+    both = [
+        _mapped_row("us-gaap:LiabilitiesAndStockholdersEquity", "total_assets"),
+        _mapped_row("us-gaap:Assets", "total_assets"),
+    ]
+    statement_graph._apply_alias_priority(both, registry)
+    assert both[1] == _mapped_row("us-gaap:Assets", "total_assets")
+    assert (both[0]["standardized_metric_id"], both[0]["mapping_state"]) == (None, "unmapped")
+    assert both[0]["mapping_receipt"]["reason"] == "alias_priority"
+    assert both[0]["mapping_receipt"]["governing_concept"] == "Assets"
+
+    tied = [_mapped_row("us-gaap:Assets", "total_assets"), _mapped_row("us-gaap:Assets", "total_assets")]
+    statement_graph._apply_alias_priority(tied, registry)
+    assert tied == [_mapped_row("us-gaap:Assets", "total_assets")] * 2
