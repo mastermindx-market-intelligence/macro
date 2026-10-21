@@ -101,3 +101,37 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
   Opus slot frees — ORCH-2/ORCH-3 hold both).
 - Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937 MERGED · main baselines 5d454fbe + 556d3333 at CI ·
   ORCH-2/ORCH-3 RUNNING. No design or Wave 1 PR remains open.
+
+## Checkpoint 2026-10-21 08:4xZ — Wave 3 engines LANDED (IM15 + IM16 MERGED), ORCH-4 commissioned, main-watcher trap closed
+
+- Records PR #9939 MERGED at exact head 05dfe8a4 → main 5f82b33a (06:13:59Z).
+- **ORCH-3 RETURNED** (Opus orchestrator, COMPLETED — never re-spawn): W3A/W3B lanes on fabric, each with an
+  independent review lane; W3A FAIL → fix → CONFIRM PASS at a7340535; W3B FAIL → fix → REREVIEW PASS at 37c10fc6.
+  Seat verification before any merge act: heads read from GitHub, file lists (frozen owners contagion_links /
+  contagion / risk_radar_intl / intl_global_universe / intl_global_observation untouched), the fix tests present
+  by name in both suites, local run on the sparse seat tree 90 passed / 2 failed — both failures are
+  `FileNotFoundError: data/fred/DTWEXBGS.parquet`, a sparse-checkout artefact (file tracked on main), not a defect.
+- **#9943 IM15 MERGED** at exact head a7340535 → main **63f3bc835ab23928899ff173994a1d1db48b161c** (08:31:59Z);
+  watcher rollup 27 checks, only the standing non-gating `ci-authority/codex/merge-queue-pilot=FAILURE`.
+- **#9944 IM16 MERGED** at exact head 37c10fc6 → main **2d50943eb154430efda02ffc117bb37b5addc242** (08:42:08Z; watcher bkk6ofyul rollup 27,
+  only the standing merge-queue-pilot X). ORCH-4 messaged "W3 ON MAIN 2d50943e".
+- IM16 gaps, by fact: cds_5y no_admitted_source ×63; DTWEXBGS / DFII10 / ICE-BofA series carry NO rights-matrix
+  row (the IM11 matrix lists every FRED family as `unresolved / decision_required`) → rights_unconfirmed;
+  dollar_funding_external and us_exposure_transmission unavailable ×63; local_rates_credit partial 5 / unavailable 58;
+  im16_complete=False. The rights question is a decision, not wiring: DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS
+  records the seat's PROPOSED ruling for Chairman confirmation; no row is added and no engine claims rights until then.
+- **Main-watcher trap closed**: `watch_main.sh <sha>` on 5d454fbe and 556d3333 looped for hours because a push to
+  main scheduled NO ci.yml run for those merge commits (`gh run list --commit` empty). Both watchers stopped.
+  Baseline proven by ancestry instead: green main run 39559296162 (head b6fd3e8d, 07:02Z) contains 5d454fbe and
+  556d3333; run 39564575097 (434e5e30, in progress at 08:0xZ) contains 5f82b33a. Rule: never watch a merge sha;
+  check `git merge-base --is-ancestor <merge sha> <head of newest green main run>`.
+- **ORCH-4 SPAWNED** (Opus orchestrator, Wave 4 IM17, fabric lanes) into the slot ORCH-3 freed (cap 2: ORCH-2 +
+  ORCH-4). W4A engine first from origin/main (≥5f82b33a); W4B UI only after the seat messages "W2 ON MAIN <sha>"
+  because its stylesheet home is created by the W2 foundation; a NEW exclusive CI job avoids the three in-flight
+  legacy-jobs.yml hunks.
+- **ORCH-2 RUNNING**: foundation PR **#9949** (lane/intl-gs-w2f-r2 @b2eae89c, draft) open with shell + states
+  evidence crops; its review lane is ORCH-2's — the seat verifies and merges on return, then messages ORCH-2 and
+  ORCH-4 "W2 ON MAIN <sha>".
+- Seat branch rotated to `claude/ssd-intl-gs-seat-r4-8e4e57e69f466313` from main 63f3bc83 (same SSD tree).
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943 MERGED · #9944 MERGED (2d50943e) ·
+  ORCH-2/ORCH-4 RUNNING · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
