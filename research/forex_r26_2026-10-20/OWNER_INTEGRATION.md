@@ -1,8 +1,20 @@
 # Forex R26 — current-owner integration
 
-MISSION_COMPLETE: false. Release and production acceptance remain held.
+MISSION_COMPLETE: false. The inactive-condition release is progressing through final integration gates; finalized-4H monitoring and delivery remain unaccepted.
 
-## Account persistence continuation — 2026-10-21 (current frontier)
+## Current release frontier — 2026-10-21 after 17:41 UTC
+
+Protected procedure: `Mastermind@43f83e068ad664a2bf75a21b6952368fa908c626`. This section supersedes older frontier statements below; their dated receipts remain historical.
+
+- Macro implementation `509583b08e689a159fb8079bb6f27e26a9d2d958` and evidence head `fd056a61ea4fc045043da81f6d1b7d015063c8a0` retain accepted independent review. Hosted CI [39613968093](https://github.com/mastermindx-market-intelligence/macro/actions/runs/39613968093) and active authority/fences completed successfully. The current delta adds documentation/provenance only and requires its own applicable final-head result.
+- Terminal's small repair at `813b36c869fa649c1b0e17693da73b0882181e8b` passed hosted CI [39637491057](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39637491057) at 17:31:34Z, all 16 jobs. Its source changes centralize unchanged deletion copy and use a retrying DOM attachment assertion after the CI trace proved the expected rows had appeared before a polling response missed its deadline.
+- Production migration **0038 is applied once and catalog-verified**. The existing authenticated SQL editor executed the byte-exact reviewed atomic statement between 17:39:00.792731Z and 17:40:22.148275Z. Five exact function bodies/privileges, the enabled trigger and unchanged existing alerts RLS/grants/owner policy passed all eight catalog checks. No migration-history schema was created. The complete receipt was posted and read back on [Terminal #1100](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1100) at 17:41:57Z before the ledger changed.
+- Terminal receipt/ledger head `838ef571eba5649aab5a0663877482b73942f10a` changes no application or SQL source; 102 ledger/namespace tests pass. Its exact-head CI [39647367103](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/39647367103) is the current Terminal carrier. Do not replay 0038 or present the resolved wrapper-context problem as a current blocker.
+- Public primary documentation now establishes `4hour` request syntax. It does not admit a final 4H feed. The provider packet asks the narrower remaining semantics questions and is still **UNSENT**. All 17,011 diagnostic candidates remain ineligible; USDBRL remains an explicit empty response for the exact requests.
+
+Next release work is current-base integration, consumption of the bounded repair/effect reviews, final-head CI, solo Terminal migration-PR landing with immediate actual-merge ledger follow-up, git-gated deployment and genuine signed-in save/reload/edit/delete acceptance. Deployment must precede that live acceptance; source checks do not substitute for it. No activation, finalized-source, evaluator or notification acceptance is claimed. The original workspaces and PRs remain the carriers; no new acquisition or failed Fabric effect was replayed.
+
+## Historical account persistence continuation — 2026-10-21
 
 Protected procedure remains Mastermind@a0faf7e44f76ac77c61e177738663544ddb6949d. This section supersedes older preparation-only wording below while preserving point-in-time evidence.
 
