@@ -5168,6 +5168,22 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-10-21 SIC-I06R registers tests/test_sector_prophet_context_dated.py
+    in tier-gate as its own step beside the receiver contracts: that run line
+    is byte-pinned by test_sector_receiver_contracts::
+    test_legacy_jobs_gate_line_lists_contract_suite, so the suite cannot join
+    the line itself. The local probe on the packet base f4a1747e5e09
+    (identical tree, registration reverted) measures all three probes at the
+    SIC-RCV ceilings (5,861 / 5,828 / 5,604). The own-step registration adds
+    exactly three estimator units to each (5,864 / 5,831 / 5,607; appending to
+    the pinned line instead would have added two, but that shape is barred),
+    no job-count or pack change, no new entrant — tier-gate is already
+    selected by all three probes. Fund only that measured excess on all three
+    weight ceilings; the packet named two tuples, but the plan_book probe
+    measures the same breach, and funding less would leave this assertion red
+    on the measured head. Job counts, selectors and the ten-pack bound remain
+    unchanged.
+
     2026-10-21 SIC-I05R registers tests/test_research_receiver_entry.py on
     the same tier-gate run line. The local probe on f4a1747e5e0 measures
     the two code probes at the SIC-RCV ceilings (5,861 / 5,828) and
