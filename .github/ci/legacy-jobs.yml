@@ -26263,6 +26263,9 @@ jobs:
       - "engine/intelligence_workspace/__init__.py"
       - "engine/intelligence_workspace/adapters/__init__.py"
       - "scripts/build_turn_watch.py"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/prophet_journey_lab_serve.py"
+      - "scripts/prophet_journey_latency_report.py"
       # Connected Research Factory import closure (PR9463).
       - engine/research_codegen/__init__.py
       - engine/research_codegen/accounting_contract.py
@@ -26341,6 +26344,7 @@ jobs:
       - "config/earnings_story_promotion.yml"
       - "config/flow_detector.yml"
       - "config/flow_score.yml"
+      - "config/prophet_journey_latency.yml"
       - "config/fundamental_forensics/metrics/v1/not_presented/core.yaml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/intl_library_catalogue.json"
@@ -27165,6 +27169,8 @@ jobs:
       - "tests/test_us_turn_watch.py"
       - "tests/test_vps_live_orchestration.py"
       - "tests/test_washout_turn.py"
+      - "tests/test_prophet_journey_lab_serve.py"
+      - "tests/test_prophet_journey_latency_report.py"
       # Defense consumer dependencies; append here to avoid shared prefix conflicts.
       - "engine/company_intelligence/defense_cash_profiles.py"
       - "engine/company_intelligence/defense_space_profiles.py"
@@ -27271,6 +27277,8 @@ jobs:
         run: python -m pytest tests/test_prophet_b4_same_read.py -q
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
+      - name: Prophet B23 journey latency acceptance (lab serve + latency report, hermetic; loads the scripts by path)
+        run: python -m pytest tests/test_prophet_journey_lab_serve.py tests/test_prophet_journey_latency_report.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
