@@ -4363,6 +4363,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
+    "options-nbbo-cohort",
     "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.
     "options-pilot-chronology-code",
     "stock-liquidity-profile",  # Native F08 import/read closure; no opaque fixture widening.
@@ -7793,3 +7795,22 @@ def test_ancestor_init_census_does_not_grow() -> None:
             substantive_rows,
         )
     )
+
+
+def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes():
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["options-nbbo-cohort"]
+    assert job.exclusive
+    for dependency in (
+        "scripts/evaluate_options_alpha_exact_option_outcome.py",  # ci-trigger-closure: data — selector input name, never opened
+        "engine/options_alpha_exact_option_outcome.py",  # ci-trigger-closure: data — selector input name, never opened
+        "tests/test_options_alpha_exact_option_outcome_cli.py",  # ci-trigger-closure: data — selector input name, never opened
+        "engine/__init__.py", "lib/__init__.py", "scripts/__init__.py",  # ci-trigger-closure: data — selector input name, never opened
+        "contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json",  # ci-trigger-closure: data — selector input name, never opened
+    ):
+        selected, _ = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], dependency
+    for probe in ("scripts/build_free_content.py", "templates/index.html",  # ci-trigger-closure: data — selector input name, never opened
+                  "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
+        selected, _ = PACK.select_jobs([job], [probe])
+        assert selected == [], probe

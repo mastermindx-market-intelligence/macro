@@ -33153,8 +33153,17 @@ jobs:
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
+    # Literal import/read closure of the four offline suites. Exclusive scope
+    # prevents the CLI's dynamic file-module tests from widening unrelated probes.
+    scope: exclusive
     paths:
       - config/dag.yml
+      - engine/__init__.py
+      - lib/__init__.py
+      - scripts/__init__.py
+      - contracts/options/options.alpha_exact_option_outcome_policy.v1.schema.json
+      - research/options_estate/OPTIONS_ALPHA_EXACT_OPTION_OUTCOME_PREREG_2026-09-19.md
+      - research/options_estate/options_alpha_exact_option_outcome_policy_v1.json
       - contracts/options/options.prospective_nbbo_cohort.v1.schema.json
       - docs/runbooks/OPTIONS_NBBO_COHORT.md
       - engine/options_nbbo_cohort.py
@@ -33167,6 +33176,9 @@ jobs:
       - tests/test_options_nbbo_cohort_deploy.py
       - tests/test_options_alpha_exact_option_outcome.py
       - engine/options_alpha_exact_option_outcome.py
+      - scripts/evaluate_options_alpha_exact_option_outcome.py
+      - tests/test_options_alpha_exact_option_outcome_cli.py
+      - docs/runbooks/OPTIONS_OA3_RETAINED_EVALUATION.md
       - engine/options_occ_contract_terms.py
       - tests/test_options_occ_contract_terms.py
       - tests/test_options_occ_contract_terms_native.py
@@ -33186,6 +33198,7 @@ jobs:
           tests/test_options_nbbo_cohort.py
           tests/test_options_nbbo_cohort_deploy.py
           tests/test_options_alpha_exact_option_outcome.py
+          tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
 
