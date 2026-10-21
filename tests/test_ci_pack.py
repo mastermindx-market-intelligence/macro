@@ -4999,6 +4999,8 @@ CURATED_EXCLUSIVE = {
     # Pin the full measured static closure (including the native ALFRED panel) plus ancestor inits and
     # pytest fixture owners. No suite/assertion/packing ceiling is removed.
     "local-projections",
+    # Options R1 W2A: exact import/read closure of the relative-trend suite, which reads and imports scripts/build_sector_central.py for the additive-hook proof.
+    "options-r1-rotation-relative-trend",
 }
 
 
