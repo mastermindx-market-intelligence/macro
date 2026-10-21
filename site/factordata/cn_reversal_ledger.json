@@ -13,7 +13,7 @@
   "horizon": 10,
   "n_matured": 266,
   "n_inflight": 7,
-  "n_skipped_no_price": 0,
+  "n_skipped_no_price": 1,
   "n_board_days": 37,
   "win_pct": 34.2,
   "expectancy_pct": -2.19,
@@ -20228,8 +20228,8 @@
     "mae_p10_pct": -11.21,
     "n_logged": 526,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 21,
+    "n_skipped_total": 21,
     "board_definition": "cn_prophet_v2_shadow"
    },
    "rows": [
@@ -31814,8 +31814,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 21,
+     "n_skipped_total": 21,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -34026,8 +34026,8 @@
     "mae_p10_pct": -13.05,
     "n_logged": 501,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 22,
+    "n_skipped_total": 22,
     "board_definition": "cn_prophet_v3_shadow"
    },
    "rows": [
@@ -45062,8 +45062,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 22,
+     "n_skipped_total": 22,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -45105,8 +45105,8 @@
     "mae_p10_pct": -13.05,
     "n_logged": 501,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 22,
+    "n_skipped_total": 22,
     "board_definition": "cn_prophet_v4"
    },
    "rows": [
@@ -56141,8 +56141,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_awaiting_t1": 22,
+     "n_skipped_total": 22,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
@@ -56162,7 +56162,7 @@
     "horizon": 10,
     "n_matured": 333,
     "n_inflight": 187,
-    "n_skipped_no_price": 0,
+    "n_skipped_no_price": 1,
     "n_board_days": 17,
     "win_pct": 48.0,
     "expectancy_pct": -0.31,
@@ -56184,8 +56184,8 @@
     "mae_p10_pct": -14.59,
     "n_logged": 520,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 0,
-    "n_skipped_total": 0,
+    "n_skipped_awaiting_t1": 38,
+    "n_skipped_total": 39,
     "board_definition": "cn_prophet_v4_more_actionable"
    },
    "rows": [
@@ -67637,9 +67637,9 @@
     "closed": false,
     "survivorship": {
      "n_locked_excluded": 0,
-     "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 0,
-     "n_skipped_total": 0,
+     "n_skipped_no_price": 1,
+     "n_skipped_awaiting_t1": 38,
+     "n_skipped_total": 39,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
