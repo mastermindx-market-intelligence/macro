@@ -1,0 +1,18 @@
+{
+  "passed": 13,
+  "checks": [
+    "entry-session intraday stop included; hand-calculated fill94",
+    "later gap through stop94 fills at open90",
+    "strict undercut is distinct from the separately named quarter-ATR tolerance",
+    "adjustment-factor return separated from price-only return",
+    "scheduled interval prevents capital reuse; signal at exit close may nominate next open",
+    "stopped sleeve remains cash; same frozen later entry roster",
+    "immature cutoff position remains marked with terminal liquidation fee",
+    "equal initial basket allocations produce the hand-calculated mean payoff",
+    "native indicator values and cross events invariant to future-price truncation at nine prefixes",
+    "flat RSI range does not manufacture stochastic crosses",
+    "no leverage from liquidation marking; both transaction costs visible at constant price",
+    "declared cash scenario compounds only cash across elapsed sessions",
+    "bootstrap suppresses one-block intervals and preserves joint contrast support"
+  ]
+}
