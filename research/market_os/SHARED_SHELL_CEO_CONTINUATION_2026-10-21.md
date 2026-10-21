@@ -108,8 +108,11 @@ window. Local rendering is not public acceptance.
   consumed; test-only interface drift was repaired against actual implementations,
   not treated as unchanged first-pass acceptance. The actual non-symlink served root,
   stable publication manifest and all 14 referenced bodies passed host qualification.
-  Mount, publication and runtime integration remain unaccepted. These APIs use a coherent successor Macro carrier,
-  not a late unready addition to the running #7949 candidate.
+  Actual mounted API/header checks pass (28 cases) at local integration `1daabc9b839015ed53c621c6571cd9e9815200d7`.
+  No successor remote branch, PR or release effect started. After the original CI
+  finished with real failures and the APIs qualified, root ruled to fold these
+  local changes into the next coherent #7949 push, preserving all gates and reviews.
+  Publication and runtime integration remain unaccepted.
 - W7 native source passed independent review at `3a594f4fb2ed02b6bebe6d23653a020eedbb87de`
   atop `9804673e4a708006600f3ed2adfa69efc2b53154`, adopted by product as `ea25c7d5a`.
   Both review findings (A-to-B-to-A lifetime reuse and catalog/search 401 recovery)
@@ -126,10 +129,19 @@ window. Local rendering is not public acceptance.
   redirect/private-header/lockdown repair `2b0596be99b6e3e629a2ed0253ca072c162bd0dd`
   passed the same independent review addendum and seven discriminating tests. Product
   will regenerate the registry from all three qualified immutable sources.
+- Shared-shell default entry now reaches Today at `4b1d76c5e8e7003105fecaefa4c440910c452367`.
+  Independent review and actual loopback redirects preserve explicit pinned contexts
+  and ordinary Terminal defaults. Portfolio hydration repair `07ffd34293eed210519a2e07890cb1d81210b17e`
+  is adopted as `ef45571fc`, with 26 affected passes including actual SSR-to-hydration.
+- W6 source qualification found actual non-2xx retained-owner reasons flattened to
+  generic HTTP failure. The original Company helper owner is making one shared,
+  failure-only repair; Monitor will use the helper directly. Its per-owned-symbol
+  evidence check opens the actual retained event with all four immutable pins and
+  source date. No unsupported new-since or watchlist/report relationship is claimed.
 - Macro #7949 is now pushed at `f30662bed212ff463ba8557ac54d970e0b2c6228`.
   Focused injection/regwall/Caddy, ten loopback cases, FIF census and packing/closure
-  repairs passed. Hosted CI run `39604775831` has a launched sole observer,
-  foreground exec handle `59404`, owned by compatibility. Consume that same handle;
+  repairs passed. Hosted CI run `39604775831` was observed through sole foreground
+  exec handle `59404`, owned by compatibility and now consumed;
   do not create another poller. Packs 5/8/9 found real generated-pair or publication
   fixture failures after the new capability assets, plus a mutable-ref assumption
   in the registry test. Compatibility owns the full same-run census and three original
@@ -137,6 +149,12 @@ window. Local rendering is not public acceptance.
   `ss-pack8-publication-fix-20261021-c245`, and `ss-pack9-publication-fix-20261021-c245`.
   Pack 11 additionally found one moved Caddy backend-map line pin, repaired by its
   existing local owner without changing the map or its accepted security boundary.
+  Observer 59404 has now been consumed to completion (exit 1): eight of twelve
+  packs passed, only 5/8/9/11 failed, and the final gate correctly failed. There is
+  no remaining running observer for this run. API closure also needs 223 exact
+  literal declarations across thirteen curated jobs; original artifact-only Fabric
+  `ss-api-closure-declarations-20261021-c245` owns that bounded addition. The four
+  proposal carriers retain their original identities and no replacement was launched.
   No guard weakening or blind rerun. Required checks and source landing remain owed.
 - The canonical registry has 346 classified rows (SHA256 `69e11f6ef13e56273eb4fb95cc9857b57b8a481ec9def5d87c523b4850c95b62`).
   Its qualified projection (SHA256 `1204bc0f9ce94c08b7262310bec9905abe441397d02fc15d681dcd59b09ab93d`)
@@ -216,7 +234,8 @@ accepted historical production matrices or authorize unrelated schema changes.
 
 1. Product completes actual route/redirect/header integration and Portfolio hydration;
    Monitor completes the missing qualified attention-to-exact-context journey.
-2. Compatibility consumes CI handle 59404 and advances required source landing,
+2. Compatibility consumes the original Fabric CI/API-closure proposals, folds the
+   qualified APIs into #7949, then advances required checks, source landing,
    covering publication and qualified beta release through the incumbent owners.
 3. Consume each original CI repair result through compatibility and push one coherent
    corrected candidate. Preserve same-carrier identity and accepted unchanged checks.
