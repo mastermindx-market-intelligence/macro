@@ -41,6 +41,9 @@ decisions:
   - DEC:SCOPED-REFLEX-CONSTRAINTS-NOT-FUSED-SHIELD
   - DEC:AUTO-EXIT-NOT-IN-GREY-DEER-V1
 artifacts:
+  - research/grey_deer/serving_freshness_20261021/QUALIFICATION.md
+  - research/grey_deer/serving_freshness_20261021/PUBLISHER_CONTRACT.md
+  - agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-21-SOL-SERVING.md
   - research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md
   - research/grey_deer/risk_radar_source_consumer_audit_20261017.md
   - research/grey_deer/risk_radar_architecture_contract_20261017.md
@@ -456,37 +459,37 @@ waves:
     # Subsequent helper qualification and proposed all-date baseline admission remain open; zero new fits/promotions.
     depends_on: [GD-PB-W7, GD-PB-W8]
 next_action: >
-  Complete the enclosing Macro 9595 evidence continuation through actual integrated CI, normal controller
-  landing and separate fetched-main owned-blob readback; all edits must precede arming. Recovery head5a228eb5
-  was already published. Old ac08 failure stays failed; three base RIG paths were fixed byte-preservingly by
-  7100, and inactive ci-authority/codex/merge-queue-pilot is non-binding for main. No guard waiver.
-  Mastermind 1610 source landed as a7553e0a with all five blobs separately verified; observer80374 is terminal.
-  Actual full eligible-archive startup/restore at a755 passed in the installed Linux Python/runtime using
-  isolated canonical book/cohort state. Initial audit-fixture failure is retained; corrected startup registered18
-  jobs with readable-history first-run guards and unchanged cohort. Real rsync restoration had zero differences.
-  The actual service data bind is /opt/mastermind-live-data, verified through /proc/1627652/root; host data is stale.
-  The 07:41 read showed88/86/87 NAV rows throughOctober19 and no pending/WAL/settlement receipts for3 active books.
-  Live release732cf7be and PID1627652 were unchanged. The 07:19 health timeout and later07:26 HTTP200 both remain.
-  Protected master8bce27bb731f475885352add0be7f885e0862714 is now qualified through unchanged critical implementation
-  bindings and its newly manifested102789120-byte/5152-member archive, SHA256
-  28e87cd1c942ed2c10c64cf39e0e26f21821ff60f18b7368cfbee10861140a92. Actual non-writing receiver comparison exit0.
-  Present the reserved exact full-archive VPS upgrade/restart decision after source evidence lands.
-  Before any approved execution recheck exact master, runtime/namespace, cohort/NAV/pending/WAL/receipts and custody.
-  Invoke the accepted wrapper with explicit8bce so further master movement refuses; no provider/Parall installer
-  execution is included. Production remains unapproved; source restore cannot undo runtime data effects.
-  Preserve all failed experiments, 113 unchanged passes plus the separately corrected source regression, and
-  original1586/642/124 ownership/HOLDs. Macro9515/9573 source acceptance remains.
-  Use the accepted October16 map only as dated exposure review; four proxies remainOctober14. No current quote,
-  flows/systemic-contagion claim or numerical allocation authority follows.
-  W5 first natural operational issuance is accepted: one30-rowSPY batch with lineage and warning checks,
-  all outcomes immature. No30-independent-events, Friday-close execution, manual nightly, backfill or early grade.
-  R1 remains proposed deterministic reporting; all532 B0/B1 fits NOT_ADMITTED/zero executed pending actual Yahoo
-  source-purpose and executable/runtime acceptance. Preserve FRED HOLD, T13h21 refusal, null independentN and failed studies.
-  Existing Copilot8014/9447 and Radar9548 actual writers retain intersections; source counterexamples remain.
-  Require served source and a useful authenticated answer after writer reconciliation; no provider replay is implied.
-  Preserve publisher8132/8721 HOLDs,9428 refusal and QLedger/nightly custody. Forecast qualifiers, Terminal proof,
-  full warning/recovery delivery and empirical promotion remain open. Envelope rank/gate/size/execute stay false.
-  Update MAS-258 from verified canonical evidence. Whole programme remains active; no autonomous wake is claimed.
+  Continue MAS-258 as the existing Census / Grey Deer / Risk Radar / Risk On-Risk Off programme.
+  Macro9595 is merged at444140f2446ef2025da07ce1b591e0c0ce4393d4; preserve its closed carrier.
+  The approved October20 standard release fe7afd0111141bae27927715e709d074fea729e2 was executed once.
+  October21 read-only inspection found the service active at that revision, PID2884430 and restart counter0,
+  while /api/market_view still served August7 evidence, builtAugust10, seq9, as validated and confirmed.
+  The service-visible publication hash is17e4621d51d0b517fa9143214936c89997784ad85fe5779740ebaba7134b5df5.
+  Complete Mastermind1660 at fd4a5dc553dabaebc67baeebf2a1cf57b4b6565d through exact-head review,
+  hosted CI39544738739 / CodeQL39544735505 and normal source admission. Local nine-file regression passed
+  263 with one skipped; bounded exact-source reviews accepted the b15b9bd serving primitive and the fd4a5dc
+  current-reader contract. Raw regime probability/trajectory/axis provenance is outside that reader acceptance.
+  The current-reader addition withdraws stale/unpaired typed inputs and carries source dates through
+  autonomous, strategist and MCP. It is current input qualification, not a display-only behavior claim.
+  Preserve history and existing protection: expiry cannot create positive consensus, recovery, zero dissent
+  or a new episode. Historical context formatting and the archived Flagship gate are unchanged.
+  Record source/release evidence in serving_freshness_20261021 and the October21 AgentOS handoff.
+  Restore natural perception publication through one existing owner only after the explicit publisher
+  contract is qualified: the sole installed writer belongs to archived Flagship and the active autonomous
+  schedule does not replace it. Inspect externally managed Macro refresh semantics, paired publication
+  identity/write receipts, same-day correction custody and book-specific distribution inputs. No manual
+  portfolio/nightly, revived archived book, duplicate schedule, event store or parallel producer.
+  Production deployment remains a reserved exact-release decision under current strategic state.
+  The browser reaches the real Market View Pro entitlement screen; authenticated visual acceptance is open.
+  The separate health timeout remains an unqualified observation; a subsequent Market View API200 is not
+  a health proof. No new deployment, restart, model fit or production publisher execution occurred.
+  Preserve the accepted36-ETF/8486-session/305496-row descriptive census and W5 one natural30-rowSPY batch.
+  W5 outcomes remain immature and are not30 independent events. No manual nightly, backfill or early grading.
+  All532 B0/B1 fits remain NOT_ADMITTED/zero executed; Yahoo source-purpose, FRED HOLD, T13h21 refusal,
+  null independentN and frozen failed studies stay binding. Existing warning8132/8721 HOLDs,9428 refusal,
+  Copilot8014/9447 and Radar9548 actual writer intersections, QLedger/nightly custody and Terminal proof remain.
+  Canonical envelope rank/gate/size/execute authority remains false. Update MAS-258 from verified evidence.
+  MISSION_COMPLETE remains false; do not claim an autonomous wake or a finished programme.
 
 ---
 
