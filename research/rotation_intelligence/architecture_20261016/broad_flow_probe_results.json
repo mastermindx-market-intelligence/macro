@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "case": "missing_nav",
+      "columns": [
+        "nav",
+        "aum_mn",
+        "so_mn"
+      ],
+      "mock_calls": 5,
+      "official_nav_supplied": false,
+      "provider_market_timestamp_utc": "2026-10-14T20:00:00+00:00",
+      "real_provider_calls": 0,
+      "retrieval_date": "2026-10-16",
+      "source_behavior_reproduced": true,
+      "stored_date": "2026-10-16",
+      "stored_nav": 103.0
+    },
+    {
+      "case": "stale_source_clock",
+      "columns": [
+        "nav",
+        "aum_mn",
+        "so_mn"
+      ],
+      "mock_calls": 5,
+      "official_nav_supplied": true,
+      "provider_market_timestamp_utc": "2026-10-14T20:00:00+00:00",
+      "real_provider_calls": 0,
+      "retrieval_date": "2026-10-16",
+      "source_behavior_reproduced": true,
+      "stored_date": "2026-10-16",
+      "stored_nav": 100.0
+    },
+    {
+      "case": "weekend",
+      "columns": [
+        "nav",
+        "aum_mn",
+        "so_mn"
+      ],
+      "mock_calls": 5,
+      "official_nav_supplied": true,
+      "provider_market_timestamp_utc": "2026-10-14T20:00:00+00:00",
+      "real_provider_calls": 0,
+      "retrieval_date": "2026-10-18",
+      "source_behavior_reproduced": true,
+      "stored_date": "2026-10-18",
+      "stored_nav": 100.0
+    }
+  ],
+  "class_lines": [
+    146,
+    197
+  ],
+  "desired_investment_input_contract_satisfied": false,
+  "market_outcomes_read": false,
+  "network_calls": 0,
+  "path": "collectors/sponsors.py",
+  "product_module_imports": 0,
+  "scope": "source_contract_failure_witnesses_not_fix_or_production_incidence",
+  "source_commit": "3ab3382af89242c7b7fe8c65360bd883a7dd3504",
+  "source_git_blob": "8832230059f46b3b7db04f0977d49e346f511711",
+  "source_sha256": "d0e2212018a20b345ffd6728a51abc39ef4633593cef28925df393fa9818c88d"
+}
