@@ -14,10 +14,14 @@ from pathlib import Path
 import posixpath
 import re
 import subprocess
+import sys
 import tempfile
 
-from engine.commodity_decision_workspace import PROJECTION_REVISION, SCHEMA
-from scripts.check_site_asset_refs import _iter_refs
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from engine.commodity_decision_workspace import PROJECTION_REVISION, SCHEMA  # noqa: E402
+from scripts.check_site_asset_refs import _iter_refs  # noqa: E402
 
 PAGE = "site/commodities.html"
 

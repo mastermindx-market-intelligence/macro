@@ -40,6 +40,9 @@ def commit(repo, message):
 @pytest.fixture
 def repo(tmp_path):
     git(tmp_path, "init", "-q", "-b", "main")
+    # Rebase creates commits too; identity belongs to this temporary repository.
+    git(tmp_path, "config", "user.name", "Publication test")
+    git(tmp_path, "config", "user.email", "publication@example.test")
     (tmp_path / "site").mkdir()
     destination = tmp_path / "site" / "commodities.html"
     destination.write_text(page())

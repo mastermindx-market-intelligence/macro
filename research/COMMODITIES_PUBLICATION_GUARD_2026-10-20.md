@@ -92,3 +92,30 @@ Prepared the history-preserving merge of main `a580ce7e780f46775fcacec282be590ed
 The real integrated page plus its 12 referenced/imported CSS/JS assets passed the guard and both publication normalizers in an isolated artifact fixture. Externalization changed zero files, optimization left the page unchanged, and a second pass was also stable. Every local CSS import existed. Log `/tmp/commodities-integrated-page-qualification-20261021-r2.log`, SHA256 `c1f7330aca21f7a2651783816f7e25ed5fbe5c5c20a4cb88654db48ff86734bb`, exit 0. This proves the local publication transformation, not deployment.
 
 The implementation whitespace check passed. The successor checkpoint retains its original 12,401-byte prefix exactly, including two intentional Markdown hard breaks; its appended text is whitespace-clean. The first broad whitespace probe stopped on those preserved hard breaks before running normalization, and was not reported as a pass. Exact committed-candidate verification, contract-delta results and hosted CI are to be attached to PR #9926 after the merge commit exists.
+
+
+## Hosted-CI causal repairs — 2026-10-21
+
+The first published head's hosted run 39541411759 (head `71555cbb094b2aeb6e677c7e3a10b704c65f04d7`, tested merge tree `ee47274d5d30bb140c78e54ed6a02859280ef592`, Python 3.12.13 on a GitHub-hosted Linux runner) completed with five affected legacy-job failures. These were not treated as inherited reds or waived:
+
+| Job ID / group | First relevant failure | Causal repair |
+| --- | --- | --- |
+| 119030108200 / unrun-import-hygiene | New check script has no strong repository-root pin; bare invocation may import a foreign tree | Pin this script's own root before repository imports, following the existing guard-family contract. |
+| 119030108220 / dag-conformance | Government Revenue lane test cannot find the old express pull/rebase literal | Locate the actual pinned rebase and assert fetch precedes accepted-ref pin, which precedes rebase; retain every downstream projection/normalization assertion. |
+| 119030108240 / commodities-research-workspace | Real rebase fixture exits 128 | Supply identity in the temporary repository, covering rebase as well as direct commits. |
+| 119030108324 / house-law-registry-code | New check is absent from the hard-law census | Register `ui.commodity_publication_integrity` as hard on normal, express and nightly publishers, with truthful fixture coverage and limits; regenerate registry docs. |
+| 119030108335 / workflow-yaml | Dead-asset contract cannot find the old express pull/rebase literal | Assert the same stronger fetch/pin/rebase sequence and preserve both committed-head asset fences. |
+
+The identity hypothesis was reproduced at head `ab1d4375b8235c183f8f0ad7b86ec10f3759c1de` before editing: suppressing host Git configuration and identity variables made the existing real-rebase fixture fail with `Committer identity unknown` and rc 128. The repaired full Commodities group then passed under that same isolated Git environment. No global Git identity was changed.
+
+| Affected qualification | Result | Log SHA256 |
+| --- | --- | --- |
+| Full Commodities projection / physical / publication group with host Git identity disabled | 78 passed, 35 subtests passed, exit 0 | `99dc4bd5430a04040aeacb122196ea6f4505b51ac3e134518dcaa79dd2518f94` |
+| Import-side-effect and repository-pinning group | 15 passed, exit 0 | `45f0e3c38f7bc599022ef47dc535e34f74ee931633c03b22d767f168b918d808` |
+| Complete existing DAG contract group | 236 passed, exit 0 | `49c21cae91c9259586fdd98f359033d0aa8876cb7fb3ba69474021fbee1694ba` |
+| Existing code-gated dead-asset command | 6 passed, 1 existing data-gate deselection, exit 0 | `8380e2d5f1262a593d533fd0cdff3fa2d632783420049fac2c024a06ce63101e` |
+| House-law selftest, live census/wiring and focused suite | selftest/live pass; 20 tests passed, exit 0 | `4d4815f04d5ef9b1324c6c617609be306e0d96221aed2134600b6684a6e9ff6a` |
+
+Logs are `/tmp/commodities-ci-repair-20261021-{publication-sterile,import-pinning,dag-contracts,dead-asset,house-law}.log`. The three existing registry ratchet warnings and host pytest temporary-directory cleanup warnings are not newly introduced failures. All production guard predicates, publisher behavior, retry budgets and test assertions remain enforced; only the executable import boundary, test environment, obsolete command recognition and required registry metadata changed. The principal performed these bounded causal repairs under `CRITICAL_PATH_SHORTCUT` / `LOWER_TOTAL_OVERHEAD`; no failed Fabric request was replayed and no new worker review is claimed.
+
+The preceding content-qualified tree (`29bdaf11b4e8316e311c453c878a61ddc760dcf0`) passed contract delta against pinned main with 0 introduced / 0 inherited (log SHA256 `a338bf032c66e60bf05df3c81808aa3dd1c33c1b154e15cd9690dfd2b02a3bb7`). The new causal repair requires its own committed-candidate and differential qualification; the final exact-head receipts belong in PR #9926. Page SHA256 remains `0679961ea7f55eda7d80372f051b65c6d3451260351b5f6ac5c9e851762510ec`, and the accepted R3 payload remains byte-identical.
