@@ -414,6 +414,7 @@ _KNOWN_REFUSED_STATUSES = frozenset({
 REFUSAL_ORDER = (
     "plan_not_built",   # cleared every gate; only the plan build itself failed
     "already_open",     # cleared every gate; the name already has a live plan
+    "validation_failed",  # cleared every gate; origination later failed its own data check
     "not_ready",        # the patience statuses that are ALMOST admitted
     "ran_too_far",      # the anti-chase refusal — must outrank the band it co-occurs with
     "stood_down",       # an explicit avoid/exit/blocked stance
@@ -456,6 +457,8 @@ REFUSAL_COPY = {
                        "各项检查都通过 — 但今晚没能形成完整计划"),
     "already_open":   ("Already has a plan running",
                        "已有在跑的计划"),
+    "validation_failed": ("Passed the board's checks — tonight's plan data didn't verify",
+                          "通过了榜单检查 — 但今晚的计划数据未能核验"),
     "not_ready":      ("Setting up, but the entry hasn't come",
                        "形态在走，入场点还没到"),
     "ran_too_far":    ("Ran too far — waiting for a pullback",
@@ -1501,6 +1504,8 @@ def refusal_receipts(
     open_keys: Iterable[str] | None = (),
     originated_tickers: Iterable[str] | None = None,
     reconstructed_plans: Iterable[Mapping[str, Any]] | None = None,
+    *,
+    validation_failures: Iterable[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Per-name "why not" receipts for every buy-lane row the intake did NOT plan.
 
@@ -1531,7 +1536,12 @@ def refusal_receipts(
     originated tonight" (build_site's case: it knows the gate, not the origination run),
     and then a row that cleared every gate and holds no open plan produces NO receipt at
     all rather than an invented one.  When a set IS passed (build_prophet's case), a
-    cleared row missing from it is disclosed as ``plan_not_built``.
+    cleared row missing from it is disclosed as ``validation_failed`` when
+    ``validation_failures`` (the intake's own lossless record, ``{"ticker","id","stage",
+    "errors"}``) names it, and otherwise as ``plan_not_built`` — the plan build said no
+    for a reason the intake recorded, or said nothing at all; the two are distinct
+    cohorts and both stay disclosed.  ``None``/absent ``validation_failures`` leaves the
+    split where it was: every non-originated cleared row reads ``plan_not_built``.
 
     ``reconstructed_plans`` — the OPEN plans a call site knows were rebuilt after the
     outage rather than originated live (build_site reads them out of the published index;
@@ -1557,6 +1567,15 @@ def refusal_receipts(
         None if originated_tickers is None
         else {str(t or "").strip().upper() for t in originated_tickers}
     )
+    # The intake's OWN record of origination attempts that failed their data checks
+    # (``intake_stats["validation_failures"]``).  Only build_prophet holds it, which is
+    # why it is keyword-only: build_site keeps the historical behaviour untouched.
+    failed_tickers: set[str] = set()
+    for failure in validation_failures or ():
+        if isinstance(failure, Mapping):
+            failed_ticker = str(failure.get("ticker") or "").strip().upper()
+            if failed_ticker:
+                failed_tickers.add(failed_ticker)
 
     rows: list[dict[str, Any]] = []
     for row in buys:
@@ -1565,12 +1584,16 @@ def refusal_receipts(
         ticker = str(row.get("ticker") or "").strip()
         codes = _refusal_codes(row)
         if not codes:
-            # Cleared every gate.  It is either already running, or it should have become
-            # a plan tonight and did not — and if this call site cannot tell the two
-            # apart it says nothing rather than guessing.
+            # Cleared every gate.  It is already running, or it should have become a plan
+            # tonight and the build left a recorded failure behind, or it simply did not
+            # come together — and if this call site cannot tell those apart it says
+            # nothing rather than guessing.
             key = ticker.upper()
             if key and key in open_tickers:
                 codes = ["already_open"]
+            elif (originated is not None and key and key not in originated
+                    and key in failed_tickers):
+                codes = ["validation_failed"]
             elif originated is not None and key and key not in originated:
                 codes = ["plan_not_built"]
             else:
