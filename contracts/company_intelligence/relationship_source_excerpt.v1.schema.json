@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/company_intelligence/relationship_source_excerpt.v1.schema.json",
+  "title": "Company intelligence relationship source excerpt (v1)",
+  "description": "A bounded, hash-pinned verbatim byte excerpt of one public SEC filing, plus the XBRL context byte spans it covers. Provenance record only: the full document is identified by doc_sha256 and re-verifiable by network replay. No relationship claim, score or sizing lives here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "accession",
+    "cik",
+    "form",
+    "url",
+    "primary_document",
+    "doc_sha256",
+    "doc_byte_length",
+    "accepted_at",
+    "filed_at",
+    "period_of_report",
+    "span",
+    "xbrl_contexts",
+    "excerpt_note"
+  ],
+  "$defs": {
+    "instant": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"},
+    "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "hex64": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "accession": {"type": "string", "pattern": "^\\d{10}-\\d{2}-\\d{6}$"},
+    "cik": {"type": "string", "pattern": "^\\d{10}$"},
+    "form": {"type": "string", "enum": ["10-K", "10-K/A", "20-F", "20-F/A", "40-F", "40-F/A"]},
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "byte_start",
+        "byte_end",
+        "raw",
+        "raw_sha256",
+        "normalized",
+        "normalized_sha256"
+      ],
+      "properties": {
+        "byte_start": {"type": "integer", "minimum": 0},
+        "byte_end": {"type": "integer", "minimum": 1},
+        "raw": {"type": "string", "maxLength": 2048},
+        "raw_sha256": {"$ref": "#/$defs/hex64"},
+        "normalized": {"type": "string"},
+        "normalized_sha256": {"$ref": "#/$defs/hex64"}
+      }
+    },
+    "xbrl_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "byte_start", "byte_end", "raw", "raw_sha256"],
+      "properties": {
+        "context_ref": {"type": "string"},
+        "byte_start": {"type": "integer", "minimum": 0},
+        "byte_end": {"type": "integer", "minimum": 1},
+        "raw": {"type": "string", "maxLength": 2048},
+        "raw_sha256": {"$ref": "#/$defs/hex64"}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "company_intelligence.relationship_source_excerpt/v1"},
+    "accession": {"$ref": "#/$defs/accession"},
+    "cik": {"$ref": "#/$defs/cik"},
+    "form": {"$ref": "#/$defs/form"},
+    "url": {"type": "string", "pattern": "^https://www\\.sec\\.gov/Archives/edgar/data/"},
+    "primary_document": {"type": "string"},
+    "doc_sha256": {"$ref": "#/$defs/hex64"},
+    "doc_byte_length": {"type": "integer", "minimum": 1},
+    "accepted_at": {"$ref": "#/$defs/instant"},
+    "filed_at": {"$ref": "#/$defs/date"},
+    "period_of_report": {"$ref": "#/$defs/date"},
+    "span": {"$ref": "#/$defs/span"},
+    "xbrl_contexts": {"type": "array", "items": {"$ref": "#/$defs/xbrl_context"}},
+    "excerpt_note": {"type": "string"}
+  }
+}
