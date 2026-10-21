@@ -17,7 +17,7 @@ Every input is injected by the server; nothing arrives from a browser:
 | Input | Meaning |
 | --- | --- |
 | `registry` | a loaded `lib.dataos.registry.Registry` |
-| `dataset_id` | the one Matrix source row this backend answers for |
+| `dataset_id` | the one produced source or L3 composite row this backend answers for |
 | `expected_evidence_sha256` | operator-pinned digest of the exact policy bytes |
 | `expected_registry_revision` | operator-pinned registry revision the policy was authored against |
 | `expected_source_family` | operator-pinned genuine source family; never inferred from the request owner |
@@ -75,11 +75,11 @@ decision, binding, context or policy is cached or persisted anywhere.
    `get()`): `context_dataset_mismatch` (context dataset is not this
    backend's dataset), `dataset_missing`, `dataset_ambiguous`,
    `source_not_produced` (status must be `PRODUCED`),
-   `source_layer_unsupported` (must be L0/L1), `dataset_vendor_mismatch`
+   `source_layer_unsupported` (must be L0/L1/L3), `dataset_vendor_mismatch`
    (row vendor must equal the request vendor AND the context vendor), or
-   `registry_contract_invalid` (the single row is re-run through
-   `validate_registry`; `from_mapping` coerces leniently, so validation runs
-   before anything is granted).
+   `registry_contract_invalid` (the complete reachable produced lineage is
+   re-run through `validate_registry`; `from_mapping` coerces leniently, so
+   validation runs before anything is granted).
 4. **Right join** — only the rights the trusted context names in
    `required_rights` are consulted, and each must independently be
    `granted` on the row (`right_not_granted`). No right is inferred from the
@@ -179,11 +179,16 @@ This initial adapter supports only a named authenticated principal acting as its
   equals the policy's set; it does not establish a legal minimum from an action
   verb. A misconfigured trusted resolver and matching policy can therefore
   agree on an insufficient set. Audit this mapping before positive production use.
-- The captured L0/L1 row is validated in isolation. Rows with cross-dataset
-  `inputs` currently refuse `registry_contract_invalid`, even when those inputs
-  exist elsewhere in the supplied registry. This version does not qualify such
-  derived lineage. Dataset ownership is not equated with the Matrix request
-  owner; the audited resolver must bind the actual dataset to the snapshot.
+- Contract validation uses the complete reachable native `inputs` DAG. Every
+  reachable row must exist unambiguously and be PRODUCED; missing inputs,
+  duplicate IDs, cycles and malformed rows refuse `registry_contract_invalid`.
+  Each L3 row must declare inputs. Unrelated rows do not enlarge the use scope.
+  An L3 result must be classified `derived`; it cannot be relabelled raw/source.
+  The composite needs its OWN explicit granted rights and pinned policy for the
+  actual use. Upstream grants are never inherited. Native registry validation
+  does not define a recursive legal minimum; this module invents none. The
+  separately audited determination must account for embedded vendor observations
+  and their restrictions. Dataset ownership is not equated with request ownership.
 - An evidence pointer's fragment does not select a sub-record. The digest pin
   and JSON evaluation cover the entire file. DEC/DSC shorthand is not resolved.
 - Registry and pin freshness is an integration responsibility: the adapter
@@ -195,3 +200,64 @@ No production dataset row, policy, pins or snapshot/handler resolver is enrolled
 by this change. The existing Theta purchase/display baseline is retained; it is
 not converted into a synthetic action grant. Save/IW2 and alert permissions are
 outside this callback.
+
+
+## Native full Matrix display resolver
+
+`engine/intelligence_workspace/options_matrix_context.py` provides the pure
+`MatrixDisplayContextResolver`, to be injected into the existing backend. This
+is local source composition; no route, enrollment or live policy is configured.
+
+The trusted server supplies the existing native selection resolver's result,
+exact `IdentityArtifactRead` and selection bytes, actual authenticated principal/
+issuer/auth epoch, bytes intended for release, and an independently captured
+`MatrixDatasetBinding`. The binding joins that exact SnapshotReference to a
+GENUINE native dataset ID, version, vendor and source family. The Matrix JSON
+itself does not contain these dataset identifiers. Missing binding refuses
+`context_unavailable`; no values are synthesized from the request owner, vendor
+name, storage key, policy or a similarly named registry row. Current row version
+must still match the captured version, and its layer must be L3 with validated
+native declared inputs. These are consistency checks; Python dataclasses do not
+authenticate capture, identity, provenance, or a grant.
+
+Actual delivery at `/api/flow?f=matrix:<ROOT>` releases the full Matrix document.
+The intended fields are ALL top-level keys in its captured JSON, in sorted order.
+Each object/array field denotes the ENTIRE subtree: `cells` includes every
+strike/expiry, call/put OI and volume, delta OI, GEX, unusual and VEX member in the
+release; `levels`, `heat_seeker`, reliability and `_build_meta` are included too.
+A new top-level member requires explicit policy/schema coverage. This is an
+explicit broad whole-document scope, never a projection to selection.view.metric.
+The accepted Lab table/inspector show volume, OI and delta OI together and the
+adapter also computes exposures; selection filters do not narrow bytes delivered.
+
+The composite is `derived` because `engine/options_matrix.py` combines current/
+prior OI, EOD volumes/history and Greeks into exposure, delta, unusual and level
+outputs. That classification does not erase embedded vendor observations or
+waive their restrictions. Channel is the actual Matrix display URL and recipient
+is the captured named authenticated principal as its own customer. This describes
+the proposed authenticated server integration; it does not claim the existing
+Matrix route already enforces that gate. No Matrix export handler is implemented;
+`export` refuses rather than borrowing Tape/Screener CSV semantics.
+
+The server must independently supply `required_rights_rationale` as a nonempty
+unique tuple of native-right/rationale pairs from its audited full-output use
+determination. A nonempty rationale documents a server input, not authenticated
+policy provenance or legal sufficiency. There is no built-in mapping from
+`display`, `derived`, channel or purchase to a right. The callback's rights keys
+must still exactly join the independently pinned composite policy and every one
+must be granted on the composite row. The existing three rights remain separate.
+
+`release_body` must equal the exact captured Matrix bytes. A stale/error-augmented
+response, reserialization or different body refuses; a handler emitting such a
+response needs a separately qualified exact-output binding. The resolver uses the native closed selection parser to join captured selection
+bytes to the supplied identity coordinates, comparisons, view and hidden flags.
+It checks every stable request field against the capture and handler; the fresh nonce comes
+from the composed consumer and is bound in the returned context on every call.
+
+`tests/test_options_matrix_context.py` exercises the actual native identity and
+selection readers with SYNTHETIC captures, rows and policies only: full output,
+nonce refresh, all stable request substitutions, exact release-body changes,
+absent/wrong snapshot-dataset/version/family/mapping inputs, unsupported export,
+source-layer relabel, complete/missing/ambiguous/cyclic/unproduced DAG, explicit
+composite policy success, no inherited grant, raw-L3 refusal and incomplete field
+scope. Positive synthetic tests establish engineering behavior only.

@@ -775,7 +775,7 @@ def test_dataset_row_mutations(tmp_path):
         (Registry([row(), row(version="2")]), None, "dataset_ambiguous"),
         (Registry([row(status="PROPOSED")]), None, "source_not_produced"),
         (Registry([row(status="RETIRED")]), None, "source_not_produced"),
-        (Registry([row(layer="L3")]), None, "source_layer_unsupported"),
+        (Registry([row(layer="L3")]), None, "registry_contract_invalid"),
         (Registry([row(vendor="othervendor")]), None, "dataset_vendor_mismatch"),
         (Registry([row(owner="")]), None, "registry_contract_invalid"),
         (Registry([row(rights={"internal_computation": "granted"})]), None,

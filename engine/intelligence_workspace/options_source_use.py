@@ -199,7 +199,7 @@ _MAX_EVIDENCE_BYTES = 256 * 1024
 _SHA256 = re.compile(r"\A[0-9a-f]{64}\Z")
 _NONCE = re.compile(r"\A[0-9a-f]{32}\Z")
 
-_LAYERS = (Layer.L0_SOURCE, Layer.L1_NORMALIZED)
+_LAYERS = (Layer.L0_SOURCE, Layer.L1_NORMALIZED, Layer.L3_DERIVED)
 
 
 class SourceUseRefused(ValueError):
@@ -385,7 +385,7 @@ class OptionsSourceUseBackend:
     """One trusted server binding of the injected inputs, callable as a callback.
 
     ``registry`` is the loaded :class:`Registry`; ``dataset_id`` names the one
-    Matrix source row this backend answers for; ``expected_evidence_sha256`` is
+    produced source/composite row this backend answers for; ``expected_evidence_sha256`` is
     the operator's trusted digest of the exact policy bytes (the pin that makes
     a re-written evidence file refuse); ``expected_registry_revision`` is the
     operator's trusted registry revision the policy must have been authored
@@ -702,7 +702,7 @@ def _validate_request(request: Any) -> OptionUseRequest:
 def _resolve_contract(
     registry: Registry, dataset_id: str, vendor: str
 ) -> Any:
-    """Resolve exactly one produced source row, never last-wins, never a default."""
+    """Resolve exactly one produced source/composite row, never last-wins, never a default."""
     if not isinstance(registry, Registry):
         raise SourceUseRefused("trust_invalid", "registry is not a Registry")
     rows = [c for c in registry.all() if c.dataset_id == dataset_id]
@@ -715,10 +715,31 @@ def _resolve_contract(
     if contract.status is not DatasetStatus.PRODUCED:
         raise SourceUseRefused("source_not_produced", "dataset row is not PRODUCED")
     if contract.layer not in _LAYERS:
-        raise SourceUseRefused("source_layer_unsupported", "dataset row is not a source layer")
+        raise SourceUseRefused("source_layer_unsupported", "dataset row is not an admitted source/composite layer")
     if not _is_valid_scalar(contract.vendor) or contract.vendor != vendor:
         raise SourceUseRefused("dataset_vendor_mismatch", "dataset row vendor does not match the request")
-    violations = validate_registry(Registry([contract]))
+    # Validate the actual reachable native DAG, without inheriting any grant.
+    # The composite's OWN scoped policy is still required below. Unrelated rows
+    # are outside this use; duplicates or absent inputs in its closure refuse.
+    captured = []
+    pending = [contract.dataset_id]
+    visited = set()
+    while pending:
+        current_id = pending.pop()
+        if current_id in visited:
+            continue
+        visited.add(current_id)
+        matches = [row for row in registry.all() if row.dataset_id == current_id]
+        if len(matches) != 1:
+            raise SourceUseRefused("registry_contract_invalid", "lineage input is absent or ambiguous")
+        row = matches[0]
+        if row.status is not DatasetStatus.PRODUCED:
+            raise SourceUseRefused("registry_contract_invalid", "lineage input is not produced")
+        if row.layer is Layer.L3_DERIVED and not row.inputs:
+            raise SourceUseRefused("registry_contract_invalid", "derived lineage has no declared inputs")
+        captured.append(row)
+        pending.extend(row.inputs)
+    violations = validate_registry(Registry(captured))
     if violations:
         # from_mapping coerces leniently by design; the row is validated for
         # real before anything is granted on it.
@@ -807,6 +828,8 @@ def _resolve_joined(
     if context.dataset_id != dataset_id:
         raise SourceUseRefused("context_dataset_mismatch", "context dataset is not this backend's dataset")
     contract = _resolve_contract(registry, dataset_id, request.vendor)
+    if contract.layer is Layer.L3_DERIVED and context.output != "derived":
+        raise SourceUseRefused("scope_mismatch", "derived dataset cannot be released as raw")
     if context.vendor != contract.vendor:
         raise SourceUseRefused("dataset_vendor_mismatch", "context vendor does not match the dataset row")
 
@@ -980,7 +1003,7 @@ def resolve_options_source_use_decision(
 
     Returns ``status: "allowed"`` only when the exact request, bound to a
     trusted :class:`ServerUseContext` from the injected resolver, joins a
-    produced, unambiguous source row whose required rights' shared evidence
+    produced, unambiguous source/composite row whose required rights' shared evidence
     bytes (digest-pinned by the operator) hold an active, current policy
     licensing exactly this action's intended output, channel, fields,
     recipients, customer, principal and rights.  An explicit ``allowed: false``
