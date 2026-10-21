@@ -21,10 +21,10 @@ lineage:
     - mastermind-xpv2-sector-r3b-2
 reference_files:            # frozen at the commit that lands the exports + specs (set at freeze; never pre-filled)
   - path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/
-    frozen_sha: 76d0fb0ea65c17e73a0ecb7aa7d63b814a8a139c
-    note: "Paper R3 page p-24-0 board exports (PNG 1x) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P"
+    frozen_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
+    note: "Paper R3 page p-24-0 board exports (PNG 1x, boards 0-22) + boards_manifest.yml; file 01M2WGNCX9475G79JRKJTCM08P; re-frozen 2026-10-21 after board 22 (6W1R-0) landed in 508539c0"
   - path: design_refs/sector-paper-20261021/
-    frozen_sha: 76d0fb0ea65c17e73a0ecb7aa7d63b814a8a139c
+    frozen_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
     note: "components.css/specimen.html/COMPONENTS.md, copy_deck, cycles_ia, state_matrix (sic-p refs)"
 files:
   baseline: baseline.yml

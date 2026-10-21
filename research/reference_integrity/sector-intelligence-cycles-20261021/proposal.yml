@@ -3,10 +3,11 @@
 # cite the D-wave lane head that changes them; U rows are never RETAIN. OPEN items are written into the row text so the
 # two independent reviewers (Reviewer A GLM Fabric lane, Reviewer B Opus READ_ONLY auditor) judge them, not the seat.
 # frozen_sha = the commit whose tree holds every path under proposed_artifact (r3b-2 two-step precedent).
+# Re-frozen 2026-10-21 at 508539c0 (board 22 / node 6W1R-0 added by seat export); the earlier freeze 76d0fb0e held boards 0-21 only.
 schema: mastermind.rig_proposal.v1
 reference_id: sector-intelligence-cycles-20261021
 proposed_artifact:
-  frozen_sha: 76d0fb0ea65c17e73a0ecb7aa7d63b814a8a139c
+  frozen_sha: 508539c0091ae8d77aea3f9ca009391cf4dbfa9f
   paths:
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/boards_manifest.yml
   - mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/00-components-desktop-both-en.png
@@ -748,7 +749,7 @@ authority_delta:
 - id: auth.validated-21d
   direction: weaker
   production_claim: '''validated'' wording on the 21d window (continuity R3C-VALIDATED-21D)'
-  proposal_claim: 'the banned word is absent from all 22 boards (ORCH-PAPER sweep: 0)'
+  proposal_claim: 'the banned word is absent from all 23 boards (ORCH-PAPER sweep over boards 0-21: 0; seat find_nodes text sweep *validated* scoped to board 22 node 6W1R-0: 0 nodes)'
   delta: wording only; the live surface still carries the condition until P19
 - id: auth.prophet-labels
   direction: equal
