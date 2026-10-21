@@ -28,18 +28,20 @@ waves:
     (DEC:INTL-GS-9596-RECONCILIATION-2026-10-21); 9596 and the 8754 egress hold untouched.
 - id: IM11
   title: Global coverage contract — versioned 63-jurisdiction universe, capability vector, source-rights matrix
-  status: in_progress
+  status: done
   depends_on:
   - IM-W0
-  next_action: Consume the Wave 1 orchestrator return (fabric lane INTL-GS-W1A) — review verdict naming the exact
-    head — then seat squash-merge and landing proof.
+  next_action: >
+    MERGED. PR 9924 (lane/intl-gs-w1a-r1 @d7b22af3, fabric review PASS r2) → main 5d454fbeb43e;
+    main-baseline watch is the combined-CI proof.
 - id: IM12
   title: Qualified global observation contract — four clocks, basis, return identity, abstain states, adapters
-  status: in_progress
+  status: done
   depends_on:
   - IM-W0
-  next_action: Consume fabric lane INTL-GS-W1B with its independent review, seat squash-merge, then integrate the
-    shared IDs with IM11 on main.
+  next_action: >
+    MERGED. PR 9923 (lane/intl-gs-w1b-r1 @ed363c27, fabric review PASS r2) → main 0062e28f3d00;
+    shared-ID reconciliation with IM11 rides the Wave 2 foundation lane.
 - id: IM13
   title: Global scanner
   status: todo
@@ -79,8 +81,9 @@ waves:
   depends_on:
   - IM17
   next_action: Commission after Wave 4.
-next_action: Consume the Wave 1 orchestrator return (W1A PR @686eb9a7, W1B PR @78711372 under review) and the R14 design
-  orchestrator return, freeze the design spec, then cut Wave 2 packets.
+next_action: >
+  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → main 556d3333). Consume ORCH-2 (Wave 2 IM13+IM14 UI) and
+  ORCH-3 (Wave 3 engine-side IM15+IM16) returns; seat verifies and merges; then Wave 4–5 and the §14 hard acceptance tests.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
 - research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md
@@ -109,5 +112,7 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 | --- | --- | --- | --- |
 | W0 asset access | PR 9920 @898edecc | ready, awaiting ci-pack-0 | independent review PASS (fabric lane intl-gs-w0a-review-r1); pre-merge baseline intl.html 200, nine assets 401 |
 | W0 #9596 diagnosis | read-only lane intl-gs-w0b-r1 | DIAGNOSED 5 | packs 2/3 base-stale, pack 9 PR_CAUSED (theme.css receipt), pack 0 unknown, gate downstream |
-| W1 IM11/IM12 | Opus orchestrator ORCH-1 → fabric lanes W1A/W1B | running | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
-| Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | running | design spec path above |
+| W1 IM11/IM12 | Opus orchestrator ORCH-1 → fabric lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
+| W2 IM13/IM14 UI | Opus orchestrator ORCH-2 → fabric lanes W2F/W2A/W2B | running (spawned 05:2xZ) | frozen spec R14; evidence under `mockups/evidence/<packet>/` |
+| W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B | running (spawned 05:2xZ) | engine/config/tests only; matrix counts-only |
+| Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (DEC:INTL-GS-R14-DESIGN-FREEZE, PR 9937) | design spec path above |

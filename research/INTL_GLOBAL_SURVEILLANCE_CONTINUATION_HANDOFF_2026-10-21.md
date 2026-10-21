@@ -30,6 +30,7 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - ORCH-D (Opus): Paper R14 masterpiece page + spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md`, PNGs in seat scratch `r14/`.
 - ORCH-1 (Opus): census + IM11/IM12 packets → lanes W1A/W1B → review lanes; records `$K/orch/fabric/reviews/INTL-GS-W1*.md`.
 - Seat SSD worktrees intl-gs-w0a-6c9c36115aa4036d / intl-gs-w0b-b67a2895768398e0 were minted but are UNUSED (lanes run remotely); reclaim later.
+<<<<<<< HEAD
 
 ## Checkpoint 2026-10-21 03:18Z — W0A PR OPEN, review lane running
 - W0A r2 DONE rc=0 → draft PR **#9920** (mastermindx-market-intelligence/macro) head 898edeccaf3219838fc1c9b0b3cac5f2d5af9753, branch `lane/intl-gs-w0a-r2`, 2 files, +16/−4. Seat verified the token-diff of all four Caddy matchers = exactly the nine intl paths added, nothing removed; yml `public:` block added with comment. Lane reported 94 passed on the five boundary suites (watchstore baseline red is inherited on origin/main), caddy hub boundary 22 passed, contract delta 0/0, 12 packs validate. Lane did NOT cat its record (summary only) — review lane re-runs everything.
@@ -57,3 +58,46 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - IM-W0 → `done` (PRODUCTION_PROOF). ACCEPTANCE of the served journeys (anonymous + entitled, masterplan §15 Wave 0) is recorded against §14 tests at the Wave 2 boundary; this checkpoint claims only the access repair.
 - Wave 1 under ORCH-1: lane W1A → PR open @686eb9a7, lane W1B → PR open @78711372; review lanes W1A-REVIEW/W1B-REVIEW launched 04:06Z on fabric (W1B-REVIEW r1 refused by economic policy, relaunched). Seat consumes ORCH-1's return, never the lanes directly.
 - Agent OS handoff record committed: `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md`.
+=======
+>>>>>>> 6e096d7b21719 (docs(intl-gs): International Markets Global Surveillance masterplan + continuation handoff (2026-10-21))
+
+## Checkpoint 2026-10-21 04:3xZ — R14 design FROZEN (DEC:INTL-GS-R14-DESIGN-FREEZE)
+- ORCH-D (Opus orchestrator abd45165af1bdea65) returned DONE: Paper page "Global Surveillance · R14 · Masterpiece" (14 boards; R13 untouched), spec `research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md` (789 lines, §0–§17, blob 5d9c51dc25005935a6be5846a01baa48246f9375), 14 PNGs. Seat inspected the scanner dark/EN/1440 and Brazil dossier boards directly and ACCEPTS; PNGs committed under `mockups/refs/intl-gs-r14/`.
+- Six rulings recorded in `agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md` (tokens scoped .intl-gs in a new surveillance stylesheet; §14 file plan ratified; IM16 matrix adopted; no further Paper pass; PNGs in repo; packets owe the 8 crops + focus captures, green gate ≠ acceptance).
+- Seat docs PR #9925 MERGED → main a580ce7e earlier; this checkpoint rides a NEW seat PR after rebase onto origin/main (bc9b3231).
+- NEXT: spawn ORCH-2 (Opus, Wave 2 IM13 scanner + IM14 dossier) now that an Opus slot is free; Wave 2 build lanes start from the surveillance stylesheet/view scaffold (no Wave 1 dependency) and wire data once ORCH-1's W1A/W1B land.
+
+## Checkpoint 2026-10-21 05:2xZ — Wave 1 LANDED (IM11 + IM12 MERGED); Wave 2/3 orchestrators commissioned
+- ORCH-1 (Opus orchestrator) returned PROVEN_OUTCOME: IM12 `#9923` (lane/intl-gs-w1b-r1, head ed363c27, fabric review PASS r2) and IM11 `#9924` (lane/intl-gs-w1a-r1, head d7b22af3, fabric review PASS r2). Seat verified bodies + spot-checked the modules (63 jurisdictions; coverage_summary counts-only; rights imported from `engine/theme_graph/rights.py`; IM12 four clocks, 1e-9 identity, nine abstain reasons, adapter reads `quality` from the incumbent receipt).
+- Seat MERGED both at exact heads (`--match-head-commit`): #9923 → main `0062e28f3d00`, #9924 → main `5d454fbeb43e`. Rung reached: MERGED; main baseline for 5d454fbe is the combined-CI proof (watcher armed); no production surface yet (contracts only).
+- Seat tree moved: the original session tree was quarantined mid-rebase (detached HEAD, squash-merged seat commits conflicted); fresh SSD tree `intl-gs-seat-r2-8e4e57e69f466313` on `claude/ssd-intl-gs-seat-r2-8e4e57e69f466313`, freeze commit cherry-picked and amended with the 14 PNGs → draft PR **#9937** (R14 freeze). The old tree still holds a half-applied rebase: leave it; `git rebase --abort` there is the cleanup, never a force-push.
+- Wave 1 modules on main: `config/intl_global_universe_v1.json`, `config/intl_source_rights_matrix_v1.json`, `engine/intl_global_universe.py`, `engine/intl_global_observation.py`, `lib/intl_global_observation_adapter.py`; CI job `international-global-universe` (pack 9) + two suites appended to `international-workspace-foundation` (pack 11).
+- NEXT: ORCH-2 (Wave 2 IM13 scanner + IM14 dossier, UI to the frozen R14 spec) and ORCH-3 (Wave 3 engine-side IM15 dislocation + IM16 EM credit/dollar + capability matrix, no UI) spawned as Opus orchestrators driving fabric lanes; seat merges their PRs after direct verification; #9937 merge after CI.
+
+## Checkpoint 2026-10-21 05:3xZ — handoff record rewritten at the Wave 1 → Wave 2 boundary
+
+- `agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md` rewritten in place (Agent OS = one
+  record per workstream per date): #9923/#9924 MERGED with GitHub mergeCommit reads, #9937 at CI,
+  ORCH-2/ORCH-3 RUNNING, verified[] claims carry runnable commands. Validate → 0 errors.
+- Seat branch head moved 7b75f4c6 → **9a2931a4** (push 05:31Z); PR #9937 CI restarts on that head.
+  One watcher armed on 9a2931a4; the 7b75f4c6 watcher stopped by the seat.
+- Main-baseline watcher for 5d454fbe (Wave 1 landing proof) still armed.
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924 MERGED · #9937 CI · ORCH-2/ORCH-3 RUNNING.
+- NEXT: on watcher return → `gh pr ready 9937` → `gh pr merge 9937 --squash --match-head-commit
+  9a2931a440f039451da85b246c64697090e559a5` → read mergeCommit → message ORCH-2/ORCH-3 "SPEC ON MAIN <sha>".
+
+## Checkpoint 2026-10-21 05:5xZ — R14 freeze MERGED (#9937 → main 556d3333)
+
+- Watcher returned 05:51:41Z: rollup on 1b45b1d0 complete, 20 checks, only the standing non-gating
+  `ci-authority/codex/merge-queue-pilot=FAILURE`. reviewDecision empty, no labels, no hold on this PR.
+- Seat act: `gh pr ready 9937` → `gh pr merge 9937 --squash --match-head-commit 1b45b1d0…` →
+  GitHub read: **MERGED 556d3333210b5b27eb1456c3e1a6d99a9bc034e4 at 05:52:24Z**. Rung = MERGED.
+- Main now carries: masterplan copy, R14 design spec, 14 reference boards + contrast table,
+  DEC:INTL-GS-R14-DESIGN-FREEZE, Agent OS handoff (Wave 1→2 boundary), Wave 1 IM11/IM12.
+- ORCH-2 and ORCH-3 messaged "SPEC ON MAIN 556d3333" (new fabric worktrees base on it; running lanes keep
+  their base). One main-baseline watcher armed for 556d3333 (`watch_main.sh`); the 5d454fbe watcher still armed.
+- Seat branch rotated: `claude/ssd-intl-gs-seat-r3-8e4e57e69f466313` from main 556d3333 (same SSD tree).
+- Wave 4 orchestrator commission drafted: scratchpad `orch4_commission_draft.txt` (spawn only when an
+  Opus slot frees — ORCH-2/ORCH-3 hold both).
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937 MERGED · main baselines 5d454fbe + 556d3333 at CI ·
+  ORCH-2/ORCH-3 RUNNING. No design or Wave 1 PR remains open.

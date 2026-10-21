@@ -24,8 +24,8 @@ exists only on those heads is unread.
 
 | Unit | Name | Verdict | Smallest next lane |
 |---|---|---|---|
-| B04 | Episode evidence dossier | F2 RULED (A0 now, A1 deferred). A0 BLOCKED-CUSTODY: its one CI-registry file `.github/ci/legacy-jobs.yml` is in #7426, #7264 and fenced #9821; B04-D BLOCKED-DATA | Not launched. Seat picks V1 (A0 without the CI line; seat adds it at landing) or V2 (defer A0) — §3 F2 |
-| B06 | Policy capture, decision-clean labels | BLOCKED-CUSTODY + BLOCKED-DATA | F4 RULED: source-blind numeric D06 proposal lane `pro-intel-d06num-20261021-r1` running; the seat rules on it and routes frozen numbers to the #8091/#8192 owner |
+| B04 | Episode evidence dossier | F2 RULED (A0 now, A1 deferred); V1 RULED: A0 builds without the CI registry line; B04-D BLOCKED-DATA | A0 DONE and consumed: `31baf83179d1` on ubuntu3 lane branch (BASE `4623f0f7`), 25 owned files, 390 tests pass; the seat lands it by fetch + cherry-pick and adds the `prophet-anticipation-intake` registration line (§3 F2) |
+| B06 | Policy capture, decision-clean labels | BLOCKED-CUSTODY + BLOCKED-DATA | F4 RULED: source-blind numeric D06 proposal DONE and consumed (`be899fa17f3a`, ubuntu1 lane branch; seat lands by fetch + cherry-pick); all numbers PROPOSED; the seat rules on them (one PASS-form/power inconsistency flagged, §3 F4) and routes frozen numbers to the #8091/#8192 owner |
 | B08 | Comparable event and expectation sources | F1 RULED: Sol's recorded Gate S acceptance ratified; records hygiene in lane `pro-intel-b08records-20261021-r1`; production admission BLOCKED-DATA; Gate E closed | Seat lands/reviews the records lane (manifest + append-only prereg note + companion record); D07 exemplar row DEFERRED |
 | B09 | Group history and peer evidence | BLOCKED-DATA + BLOCKED-CUSTODY; depends on B04 | None now. Dated theme history accrues forward-only |
 | B10 | Early Leadership research comparisons | PROSPECTIVE-ONLY (F5 RULED); BLOCKED-DATA (D07 S3); depends on B06/B09 | `recorded_at` episode writer ROUTED-TO-SOURCE (Source orchestrator Stage 3). No lane here |
@@ -386,6 +386,42 @@ ruling is binding.
       landing commit. The hunk is disjoint from every incumbent hunk, so the textual conflict is
       nil and the custody touch is one line the seat owns.
     - **V2:** defer A0 until #7426 and #7264 land or close.
+  - **V1 RULED by the seat (~04:1xZ).** Relaunched as `pro-intel-b04a0-20261021-r2` on BASE
+    `4623f0f74184ff41debdeb2ca86e225506a05911` (main after #9921 merged). `.github/` is out of
+    scope for the lane; a `test_ci_pack` failure naming only the unregistered new test is
+    expected and reported under GAPS. The A0 inputs (amendment, `engine/prophet_lab/`,
+    `app/prophet_lab.py`, the listed tests) are byte-unchanged between `c5ee0941` and `4623f0f7`.
+  - **A0 r2 consumed 04:4xZ (orchestrator).** DONE rc=0 04:40Z on ubuntu3; commit
+    `31baf83179d145de507467544c521fdb1e6dbeed` on `lane/pro-intel-b04a0-20261021-r2`, one commit
+    on BASE `4623f0f7`, 25 files (+3502), owned paths only: the reason map, `evidence_dossier.py`
+    (822 lines), 22 fixtures and `tests/test_prophet_lab_dossier_b04a.py` (57 tests). No change to
+    `.github/`, `app/prophet_lab.py` or `engine/prophet_lab/intelligence_vector.py`.
+  - **Orchestrator verification.** The reason map sha256 is
+    `8fe54266710a11390a9cd8a07ccf00c5173700dac93728d91e294e84c4079645`, equal to an independent
+    extraction of amendment lines 163-303 at `4623f0f7` (lines 162 and 304 are the fence markers).
+    Re-run with the lane venv: the four named suites give 390 passed (57 new + 333 existing).
+    The bare system python on ubuntu3 lacks `pyarrow`, so that run gives a collection error; this
+    is an environment fact, not a code defect. The new test's third-party import closure is
+    numpy, pandas, pyarrow, requests and yaml, all on the intake job's pip line. Spot-checked:
+    `view_decision_admissible` is a literal-false check, and `NOT_CAPTURED_AT_DECISION` is
+    returned only when `observed_at_attests_capture` is true (default false). The typed
+    `IdentityBindingConflict` was not added, as the packet froze it to A1.
+  - **The expected `test_ci_pack` red did not occur** (201 passed, 2 skipped). The manifest
+    allows dark suites, so the new suite is not executed in CI until registered. Seat landing
+    act, one line in `.github/ci/legacy-jobs.yml` at `4623f0f7` line 27234 (job
+    `prophet-anticipation-intake`, no `paths:` scope, executed by `scripts/run_ci_pack.py`):
+    `        run: python -m pytest tests/test_prophet_whynot_receipts.py tests/test_prophet_lab_dossier_b04a.py -q`
+  - **Two declared readings for the seat to note.** (1) The wrapper runs its own closed input
+    checks and the `_FORBIDDEN_KEYS` scan rather than `validate_intelligence_vector`, because
+    wrapper-level bases such as `conflicting_source_spans` are outside the vector vocabulary;
+    real builder vectors are exercised in tests. (2) In `resolve_display_code`, an explicit
+    coverage basis outranks an explicit lane when both could match. The amendment fixes only
+    lane specificity. All 33 committed map rows have `lane: null`, so the choice is unobservable
+    today; rule it before any lane-specific row is added (B04-B).
+  - **A0 scope bounds (lane GAPS, not defects):** `trajectory`/`correction` stay outside the A8
+    touch list until B04-B; `views.current` is ABSENT unless a caller supplies `current_vector`
+    (B04-C); `explanation_facts` are swept wholesale when any lane is gated (v1 families emit
+    none); the pre-inception distinction is caller-side.
   - A1 and the #8004 owner ask stay deferred until A0 merges.
 - **F3 — Cycle diagnostic. RULED: ACCEPTED (hold).** Never run v1 (#7847). The #7868 B1/B2
   repair is queued for Stage 4 and not launched. Packet `pro-intel-b16diag-20261021` stays withheld.
@@ -394,6 +430,41 @@ ruling is binding.
   Q05-H1-PEER-PARTICIPATION-ACCELERATION-V1, no outcome reads, report
   `intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md` (lane branch). Every number is PROPOSED until the
   seat rules. Definition is not admission.
+  - **Consumed 04:2xZ (orchestrator).** DONE rc=0 04:18Z; commit `be899fa17f3a` on ubuntu1
+    `~/lanes/wt/pro-intel-d06num-20261021-r1`, one file, +261. Status line reads "PROPOSED — NOT
+    RULED, NOT REGISTERED, NOT ADMITTED". Source-blind: the report states no `data/` or `site/`
+    path was opened; R20/R21 read at PR head `410965bd`, the #8192 script (code only) and S0
+    (keys only) at `07136c56`. R20:101 and R21:84 record zero prospective accrual.
+  - **Proposed fields (all PROPOSED).** F1 materiality 50 bps per decision date, net of the 50 bps
+    round-trip cost floor. F2 non-inferiority: one-sided 95% LCB of paired C2−C1 ≥ −25 bps. F3
+    ES10 guardrail, UNESTIMABLE below 100 matured dates. F4 HAC lag 9 (H−1) or block ≥ 10. F5
+    cohort starts at the first S0-verified session after registration. F6 one fixed look, floors
+    50 dates and N_eff ≥ 20, N OPEN. F7 futility at ceil(N/2) if UCB < 50. F8 Holm family of 6
+    (C1–C5 primary + H1), FWER 0.05 one-sided OPEN in {0.025, 0.05, 0.10}, planning α 0.008333.
+    F9 prior looks named, species-equivalence left to the seat. F10–F11 population freeze K=5,
+    refused rows at cash. F12 σ OPEN on the grid {50, 100, 200, 400}. F13 PASS = Holm rejection
+    AND point estimate ≥ 50 bps AND F2/F3 hold.
+  - **Citation spot-check at `c5ee0941` (orchestrator): all match.** PREREG.json:174-180
+    (`lower_bound_margin_bps: -25`, `cost_floor_bps_round_trip: 50` as a floor); R6-PREREG-01
+    ruling :41 (Holm across C1–C5; search family includes the EL H10 timing study) and :43 (the
+    50 bps floor; a lower floor invalidates the read); Cell G law :273-279 (ES10 `tail_n < 10` →
+    UNESTIMABLE) and :369 (HAC lag H−1 under the owning registration's convention); Decision
+    Register :151 (required evidence includes a user economic-loss budget, still absent).
+  - **Arithmetic check: consistent.** With z(1−0.008333) = 2.394 and z(0.80) = 0.842, the normal
+    N at σ/δ = 1, 2, 4, 8 is 10.5, 42, 168, 670. This matches the lane's 11/42/168/671 (normal)
+    and 14/45/171/673 (exact t). The block-10 ×10 column (about 140 to 6,730) is a crude
+    conservative bound and is labelled as an assumption, not an estimate.
+  - **Finding for the seat (rule before freezing).** The F13 PASS form and the power table are
+    inconsistent. Power is computed for rejecting μ ≤ 0 at a true μ of 50 bps. PASS also requires
+    a point estimate ≥ 50 bps, which at a true μ of 50 holds only about half the time. The
+    effective PASS power at the planning effect is therefore about 50%, not 80%. Two remedies,
+    the seat's call: (a) power the test against the PASS form, for example plan at δ above
+    50 bps or test H0: μ ≤ 50 directly, which raises N; or (b) drop or relax the point-estimate
+    leg and let the F1 materiality ride on the hypothesis being tested. Never resolve it by
+    lowering the 50 bps floor (D06; the ruling :43 floor binds).
+  - **OPEN, not resolvable by the lane:** FWER, σ, N, the PASS form, the unmeasured nightly
+    accrual rate, and the missing user economic-loss budget (DR:151). Definition is not
+    admission. The report stays on the lane branch; the seat lands it.
 - **F5 — Prospective-only Early Leadership capture. RULED: ACCEPTED.** B10/B12 are
   prospective-only; no retrospective study is admissible (D07). The B4 runtime caller (nightly
   caller of the merged #7581/#7738 library) and the write-time `recorded_at` episode writer are
@@ -444,11 +515,50 @@ ruling is binding.
 | pro-intel-b08gates-20261021-r1 | research | ubuntu3 | DONE rc=0, `42547cfd885a`, consumed; acceptance hash + verifier assert re-checked at BASE | intel/B08_Q06_GATE_S_ACCEPTANCE_READINESS_2026-10-21.md |
 
 | pro-intel-b08records-20261021-r1 | build | ubuntu1 | DONE rc=0 04:09Z, `524dcfdc3f1e`, consumed; contract sha + verifier + fixture sha re-checked on host | manifest + prereg status note + `wave3/Q06_GATE_S_ACCEPTANCE_RECORD_2026-10-21.md` (3 files, +69/−3) |
-| pro-intel-d06num-20261021-r1 | research | see worklog | LAUNCHED 2026-10-21 (F4), BASE `c5ee0941` | intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md |
+| pro-intel-d06num-20261021-r1 | research | ubuntu1 | DONE rc=0 04:18Z, `be899fa17f3a`, consumed (F4; citations spot-checked; PASS-form power finding), BASE `c5ee0941` | intel/D06_H1_NUMERIC_PROPOSAL_2026-10-21.md (lane branch; seat cherry-picks) |
+| pro-intel-b04a0-20261021-r2 | build | ubuntu3 | DONE rc=0 04:40Z, `31baf83179d1`, consumed (F2/V1; reason map sha verified; 390 tests re-run), BASE `4623f0f7` | `engine/prophet_lab/evidence_dossier.py`, reason map, fixtures, `tests/test_prophet_lab_dossier_b04a.py` |
 
 Written, not launched. The packets are in the orchestrator scratchpad `pk/` directory and are
 listed here by name:
 - `pro-intel-b16diag-20261021`: withheld (F3 RULED: hold).
-- `pro-intel-b04a0-20261021`: F2 RULED, then BLOCKED by the fresh collision check
-  (`.github/ci/legacy-jobs.yml`); awaits the seat's V1/V2 choice. The run id
-  `pro-intel-b04a0-20261021-r1` was never launched.
+- `pro-intel-b04a0-20261021-r1`: never launched (BLOCKED by the `.github/ci/legacy-jobs.yml`
+  collision); superseded by r2 under V1. The run id stays retired.
+
+## 6. Seat rulings on the consumed returns — 2026-10-21 ~05:0xZ (seat 69eb9a1c)
+
+The INTEL orchestrator returned `STATUS: DONE` at ~04:5xZ with both remaining lanes consumed
+(B04-A0 `31baf831`, d06num `be899fa1`). Landing is the seat's act; the rulings it asked for
+are made here so no later wave has to re-derive them.
+
+- **F13 — d06num PASS-form power (RULED).** The PASS test as drafted is underpowered: the
+  power table rejects μ ≤ 0 at a true gain of 50 bps, but PASS also demands a point estimate
+  ≥ 50 bps, which holds about half the time at that true gain, so real PASS power is ~50%.
+  Ruling: adopt the lane's option (a) in the form *test the cost floor as the null* —
+  H0: μ ≤ 50 bps (the PREREG cost floor, `PREREG.json:174-180`), one-sided, powered at 80%
+  against a planned true gain that revision r2 of the proposal must set and justify from the
+  nightly accrual budget. The separate point-estimate condition is dropped as redundant
+  (rejecting μ ≤ 50 implies the estimate exceeds 50). The 50 bps floor is never lowered.
+  N rises; r2 recomputes the table. Still OPEN and unchanged by this ruling: family-wise
+  error level, σ, N, the nightly accrual rate, and the user economic-loss budget DR:151
+  requires. The proposal lands as PROPOSED in the records PR; nothing in it is frozen.
+- **F14 — reason-map precedence (RULED).** When an explicit coverage basis and an explicit
+  lane could both match, the lane implemented basis-outranks-lane. All 33 committed rows
+  carry `lane: null`, so the precedence has no effect today. Ruling: specificity first — a
+  row matching both basis and lane outranks a row matching either alone; among single-key
+  rows basis outranks lane (the current implementation). B04-B must add the precedence test
+  before it adds the first lane-specific row; until then no lane-specific row is admitted.
+- **F15 — wrapper validation surface (ACCEPTED).** The wrapper runs its own closed input
+  checks plus the `_FORBIDDEN_KEYS` scan rather than `validate_intelligence_vector`, because
+  wrapper-level conditions such as `conflicting_source_spans` are outside the vector's
+  vocabulary. Accepted; B04-B/C must not duplicate vector validation inside the wrapper, and
+  wrapper-level vocabulary stays wrapper-owned. `IdentityBindingConflict` stays in A1.
+- **CI registration (seat landing act).** The lane could not touch `.github/`; the seat
+  registers `tests/test_prophet_lab_dossier_b04a.py` as its own step in job
+  `prophet-anticipation-intake` of `.github/ci/legacy-jobs.yml` on the ship branch
+  `claude/prophet-r7-b04a0-evidence-dossier` (placed after the leader-observation shelf step
+  so it merges cleanly beside the Asia carve-out's edit of the why-not line). An independent
+  fabric review lane (`pro-intel-b04a0-review-20261021-r1`, seven attack surfaces incl. the
+  `return {}` mutation experiment) runs against the pushed head before any merge.
+- **Landing route.** B04-A0 → its own PR (code; review + green → `--match-head-commit`
+  merge). d06num → the next records PR with this disposition, the INTEL worklog and the
+  regional review reports. Neither is merged at the time of writing.
