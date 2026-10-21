@@ -90,7 +90,11 @@ waves:
     title: "Stage 6 — independent adjudication (B25), cutover (B26), served/installed/
       rollback proof, evidence-bound completion statement (B28)."
     status: todo
-next_action: >
+next_action: >-
+  03:3xZ — Stage 1: review lane pro-receipt-truth-review-20261021-r1 (ubuntu0) polling against PR #9921 head 7e0cf6c6;
+  on PASS/PASS_WITH_NOTES + CI green (merge ref) re-read carrier #6817 then `gh pr merge 9921 --squash --match-head-commit 7e0cf6c6`;
+  then launch follow-on disclosure lane pro-receipt-newbase-20261021-r1 (packet ready) against post-merge main.
+  clock_provenance census ACCEPTED 38/38 LEGITIMATE (census §10; D-CLOCK-1 reserved). Four orchestrators running; consume by opening artifacts.
   2026-10-21 03:2xZ: consume the two Stage 1 fabric lanes (receipt truth on ubuntu0,
   clockprov census on ubuntu2) → independent review lane → push claude/* → PR →
   watcher → merge --match-head-commit; then consume the DESIGN, INTEL, REGIONAL and

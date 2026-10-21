@@ -23,3 +23,26 @@ Lane cap: 2 live lanes of this orchestrator. Run ids never reused.
 - SEC EDGAR rights: register (#7843) row "User-facing with citation and trademark limits" (`research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md:113-117,225`); D03 matrix row for EDGAR (`r6_program/wave2/D03_SOURCE_READINESS_MATRIX_2026-09-23.md:115`) predates it and says UNKNOWN — the register supersedes on rights only; failure coverage FAIL at all three membership cuts (`D03_SOURCE_READINESS_MATRIX:77`) stands.
 - Retained later sleeves: catalog V1 (`research/prophet_v4/PROPHET_STRATEGY_CATALOG_V1_2026-09-30.md:17-22,49-51,72`) and `engine/prophet_strategy_definition.py:264` `_RETAINED_LATER` (definition_status SPEC_ONLY_RETAINED_B27). #8303 (Sol hold, regime/ETF pilots) head 00d180f4632f; #8325 head 604273045df4.
 - Packets drafted in the scratchpad: `pro-intel-b27-20261021` (research, B27 disposition draft) and `pro-intel-b16diag-20261021` (build: frozen harness commit before any value read, then a one-shot run). Launch waits for census B (diagnostic-run custody check) and the two-live-lane cap.
+
+## 2026-10-21 03:3xZ — census consumed; Phase C lanes; diagnostic withheld
+- Census A consumed: `pro-intel-censusA-20261021-r1`, host ubuntu2, lane commit `1b5114fb32b`,
+  rc=0, report `research/prophet_v4/r7_program/intel/CENSUS_A_EARLY_LEADERSHIP_B4_2026-10-21.md`
+  (lane branch only). Census B consumed: `pro-intel-censusB-20261021-r1`, host ubuntu2, lane
+  commit `d166114c595`, rc=0, report `.../intel/CENSUS_B_EARNINGS_CYCLE_LATER_2026-10-21.md`
+  (lane branch only). Both: PR heads #9714 `ed974b3b09` / #9821 `cac29b2909` not available on host.
+- Launched `pro-intel-b27-20261021-r1` (research, B27 retained-sleeve disposition draft), host
+  ubuntu0, ~03:25Z. Launched `pro-intel-b08gates-20261021-r1` (research, Q06 Gate S v0.2
+  acceptance readiness + D07 class + stale-record list), host ubuntu3, ~03:31Z.
+- WITHHELD, not launched: `pro-intel-b16diag-20261021` (Cycle macro-only diagnostic run).
+  Reason: #7868 (prereg v3) carries an independent scientific REQUEST_CHANGES "before
+  diagnostic execution" (2026-09-27: B1 N_eff=N / exact binomial claim not established under
+  serial dependence; B2 per-hypothesis support/censoring inconsistent); #7871 (vintage
+  producer) REQUEST_CHANGES 2026-10-03; Q06 manifest `.held.cycle_pr_7868 = "REQUEST_CHANGES; no
+  run or workaround"`. Running prereg v1 (#7847) would be that workaround and would carry the
+  same B1 inference defect. Routed as a Decision for Fable.
+- Facts resolved directly (3 greps at BASE): #7581 (`engine/prophet_entry_availability_sources.py`)
+  and #7738 (`engine/prophet_entry_policy.py`) are merged library code with no caller in
+  `scripts/`, `.github/workflows/` or `app/` -> no live B4 runtime capture accrues; the
+  R6-PREREG-01 "No live B4 runtime" premise still holds in substance (its "Draft" wording is stale).
+  #7856 (D07 register) MERGED 2026-09-27, so the Q06 manifest basis "D07_OPEN_PR_7856_UNMERGED"
+  is stale. #8189 (earnings semantics code) MERGED 2026-10-05. #9821 OPEN (mastermindx-2).
