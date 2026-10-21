@@ -318,17 +318,61 @@ def test_the_wave_adds_no_sentinel_or_alerts_reference():
 
 
 def test_cloud_reads_of_the_shared_store_do_not_filter_by_section():
-    """Reported fact, pinned: the owner's shared symbolsFetch() selects
-    `symbol, position, created_at` and filters only by watchlist_id — section is
-    neither selected nor filtered. Investigation rows therefore live ONLY in the
-    dedicated list; this wave's own read (siRowsFetch) is the one that filters."""
+    """Reported fact, pinned: the owner's shared symbolsFetch() filters only by
+    watchlist_id — it is the list's WHOLE membership and the only delete
+    authority. RI07b finding 6 made it SELECT `section` (a fresh device has no
+    local item to inherit the stamp from), but it still never filters on it.
+    Investigation rows therefore live ONLY in the dedicated list; this wave's
+    own read (siRowsFetch) is the one that filters."""
     src = WATCHSTORE.read_text(encoding="utf-8")
     shared = re.search(
-        r"function symbolsFetch\(listId\) \{.*?\.eq\('watchlist_id', listId\)", src, re.S)
+        r"function symbolsFetch\(listId\) \{.*?\.order\('position'\);", src, re.S)
     assert shared, "symbolsFetch not found"
-    assert "section" not in shared.group(0)
+    assert ".select('symbol, section, position, created_at')" in shared.group(0)
+    assert ".eq('section'" not in shared.group(0)
+    assert shared.group(0).count(".eq(") == 1          # watchlist_id only
     si = re.search(r"function siRowsFetch\(listId\) \{.*?\.eq\('section', SI_SECTION\)", src, re.S)
     assert si, "siRowsFetch must filter its read by section"
+
+
+@needs_node
+def test_fresh_device_cloud_read_stamps_investigation_rows_in_the_cache():
+    """RI07b finding 6: the account saved XLK on device A; device B signs in
+    with an EMPTY local cache. The shared membership read must carry the server
+    row's section into the rebuilt cache item, or no row paints the dossier chip
+    until a local re-save or fold. A hand-added ordinary row inside the dedicated
+    list, and every row of the plain list, carry no section (the key is absent,
+    not null — byte-identical to the pre-fix shape)."""
+    out = _ws(
+        """
+        var db = makeDb({watchlists: [
+          {id: 'L-W', user_id: 'u1', name: 'Watchlist', position: 0},
+          {id: 'L-SI', user_id: 'u1', name: 'Sector Intelligence', position: 1}],
+          watchlist_symbols: [
+            {id: 's1', watchlist_id: 'L-SI', symbol: 'XLK', section: 'si',
+             position: 0, created_at: '2026-10-01T00:00:00.000Z'},
+            {id: 's2', watchlist_id: 'L-SI', symbol: 'MSFT',
+             position: 1, created_at: '2026-10-02T00:00:00.000Z'},
+            {id: 's3', watchlist_id: 'L-W', symbol: 'MSFT',
+             position: 0, created_at: '2026-10-03T00:00:00.000Z'}]});
+        WS._setTestSession(USER, db.client);
+        WS.lists.refresh().then(function () {
+          return WS.symbols.list('L-SI');
+        }).then(function () {
+          return WS.symbols.list('L-W');
+        }).then(function () {
+          var si = JSON.parse(localStorage.getItem(WS.cacheKey('L-SI')));
+          var wl = JSON.parse(localStorage.getItem(WS.cacheKey('L-W')));
+          OUT({si: si.items.map(function (it) {
+                 return {t: it.t, section: ('section' in it) ? it.section : 'ABSENT'}; }),
+               wl: wl.items.map(function (it) {
+                 return {t: it.t, section: ('section' in it) ? it.section : 'ABSENT'}; })});
+        });
+        """
+        , {"USER": USER},
+    )
+    assert out["si"] == [{"t": "XLK", "section": "si"}, {"t": "MSFT", "section": "ABSENT"}]
+    assert out["wl"] == [{"t": "MSFT", "section": "ABSENT"}]
 
 
 # ===========================================================================

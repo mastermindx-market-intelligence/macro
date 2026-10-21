@@ -238,7 +238,7 @@
   /* Write the server membership of one list into its cache, PRESERVING the local
      item metadata (`added`, `note`) and settings already there — notes are local by
      ruling (no note column exists), so a sync must never erase them. */
-  function cacheWrite(listId, symbols) {
+  function cacheWrite(listId, symbols, siStamps) {
     if (!listId) return false;
     var prev = cacheRead(listId);
     syncOutboxEnsure(prev);
@@ -252,8 +252,12 @@
         var e = byT[t];
         return { t: t, added: (e && e.added) || nowISO(), note: (e && e.note) || '',
                  // RI07 finding 5: an investigation item's section stamp survives
-                 // a membership refresh the same way its local note does
-                 section: (e && e.section) || undefined };
+                 // a membership refresh the same way its local note does.
+                 // RI07b finding 6: a fresh device has no local item to inherit the
+                 // stamp from — the server read passes the rows it saw in section
+                 // 'si' (`siStamps`), so the dossier chip paints without a re-save.
+                 // Ordinary rows stay byte-identical (an undefined section is dropped).
+                 section: (e && e.section) || (siStamps && siStamps[t] ? SI_SECTION : undefined) };
       }),
       order: order,
       settings: prev.settings,
@@ -733,21 +737,25 @@
     return _listsGuard().then(function () {
       if (!listId) throw new Error('no-list');
       return sb.from('watchlist_symbols')
-        .select('symbol, position, created_at')
+        // RI07b finding 6: `section` is SELECTED (so a fresh device learns which rows
+        // are saved investigations) but never FILTERED here — this read is the
+        // list's whole membership and the only delete authority (see `cloud`).
+        .select('symbol, section, position, created_at')
         .eq('watchlist_id', listId)
         .order('position');
     }).then(function (res) {
       if (res.error) throw res.error;
       var rows = (res.data || []).filter(function (r) { return r && r.symbol; });
-      var set = {}, order = [], mx = -1;
+      var set = {}, order = [], mx = -1, siByT = {};
       rows.forEach(function (r) {
+        if (r.section === SI_SECTION) siByT[r.symbol] = true;
         if (set[r.symbol]) return;
         set[r.symbol] = true;
         order.push(r.symbol);
         if ((r.position || 0) > mx) mx = r.position || 0;
       });
       cloud[listId] = { set: set, order: order, maxPos: mx };
-      cacheWrite(listId, order.slice());
+      cacheWrite(listId, order.slice(), siByT);
       return rows;
     });
   }
