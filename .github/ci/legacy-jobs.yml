@@ -8562,6 +8562,14 @@ jobs:
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
+      # B04-A0 evidence dossier (#9935): the dossier test, its fixtures, the
+      # committed reason map it pins by digest and the R6-B04-01a amendment it
+      # parses as a fence. Declared here so the coverage rule admits the run
+      # line below and an edit to any of them re-runs this job on the PR.
+      - "tests/test_prophet_lab_dossier_b04a.py"
+      - "tests/fixtures/prophet_lab_dossier/**"
+      - "config/prophet_dossier_reason_map.v1.json"
+      - "research/prophet_v4/r6_program/rulings/R6-B04-01a_DOSSIER_CONTRACT_AMENDMENT_DRAFT_2026-09-24.md"
       # test_caddy_hub_boundary.py's fastapi/starlette half imports
       # app.prophet_lab (its importorskip reasons literally read "prophet_lab
       # guard tests need fastapi") — it rides HERE so those tests execute
@@ -8625,6 +8633,16 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
+      # and admissibility literals for the Prophet Lab dossier reader. Hermetic
+      # (fixtures under tests/fixtures/prophet_lab_dossier/); imports
+      # engine.prophet_lab + lib.dataos.identity, both already exercised by the
+      # projection step above, so this job's deps cover it. Belongs HERE
+      # (gate: code) so it runs on every PR: prophet-anticipation-intake is
+      # gate: data and is packed only by data-health.yml after merge.
+      - name: Prophet Lab evidence dossier B04-A0 (closed reason map, forbidden-key refusal, admissibility literals)
+        run: python -m pytest tests/test_prophet_lab_dossier_b04a.py -q
 
       # B1's hermetic source, intake and generation contracts guard the reader
       # used by this projection. Keep their existing proof in the PR code gate;
