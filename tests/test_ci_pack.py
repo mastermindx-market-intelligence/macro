@@ -4729,6 +4729,8 @@ CURATED_EXCLUSIVE = {
     "international-workspace-pure-js",
     # Numerical records reuse the performance owner's measured import closure.
     "international-workspace-foundation",
+    # IM11 data-contract suite: hermetic universe/rights-matrix derivation tests.
+    "international-global-universe",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
