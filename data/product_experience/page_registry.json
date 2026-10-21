@@ -1,14 +1,14 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-10-21T13:00:00Z",
+  "generated_at": "2026-10-21T14:40:45Z",
   "sources": {
     "macro": {
       "available": true,
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/shared-shell-compatibility-c245-3a3aec382182fb78",
       "ref": "HEAD",
-      "sha": "511b7dbb567246d26529a17a1a9e06690ec05ddb",
+      "sha": "7a8cabcc66dd474ca1b2efcd285f8f9495bfdbfc",
       "page_inventory": "git ls-files site/*.html",
-      "tracked_html_pages": 13046,
+      "tracked_html_pages": 13048,
       "write_page_sites": 159,
       "write_page_unresolved": 40,
       "unresolved_write_sites": [
@@ -51,10 +51,10 @@
     },
     "terminal": {
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/5600d31ffa29643a/shared-shell-investigation-20261021-8901372ea7d07db1",
-      "ref": "e83c4e62bcfc3ba94c7078878bda259a2e9c7c8a",
+      "ref": "e0d4cabfccd3f1fd83b4362288124ba8078de731",
       "available": true,
-      "sha": "e83c4e62bcfc3ba94c7078878bda259a2e9c7c8a",
-      "page_modules": 24
+      "sha": "e0d4cabfccd3f1fd83b4362288124ba8078de731",
+      "page_modules": 27
     },
     "mastermind": {
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/44ff44e73b840f81/shared-shell-registry-mastermind-c245-c35a5115e973cfc5",
@@ -9962,7 +9962,7 @@
         "site/stocks/"
       ],
       "notes": [
-        "8591 committed pages under site/stocks/",
+        "8593 committed pages under site/stocks/",
         "no write_page() call site resolves to this directory; builder unknown"
       ]
     },
@@ -14414,6 +14414,47 @@
       ]
     },
     {
+      "page_id": "terminal:monitor",
+      "repo": "terminal",
+      "route": "/monitor",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/monitor/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "unclassified",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/monitor/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
       "page_id": "terminal:options",
       "repo": "terminal",
       "route": "/options",
@@ -14532,6 +14573,47 @@
         "terminal/app/(shell)/portfolio/page.tsx",
         "terminal/app/layout.tsx",
         "terminal/components/AppNav.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
+      "page_id": "terminal:research",
+      "repo": "terminal",
+      "route": "/research",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/research/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "unclassified",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/research/page.tsx",
+        "terminal/app/layout.tsx",
         "terminal/components/gates/SignupGate.tsx",
         "terminal/lib/i18n.tsx"
       ],
@@ -14663,6 +14745,47 @@
       "notes": [
         "Next.js App Router page module (the module IS the page)",
         "guest mode: an anonymous visitor gets the guestSymbols watchlist; tier-gated indicators sit behind free|essential|pro"
+      ]
+    },
+    {
+      "page_id": "terminal:today",
+      "repo": "terminal",
+      "route": "/today",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/today/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "unclassified",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/today/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
       ]
     },
     {
