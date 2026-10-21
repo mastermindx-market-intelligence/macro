@@ -19,7 +19,7 @@
         "name": "design",
         "returncode": 0,
         "log": "/tmp/forex-r26-resume-20261021/design.log",
-        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
+        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
       },
       {
         "name": "targeted",
@@ -85,7 +85,7 @@
     "all_within_frozen_allowances": true
   },
   "production_acceptance": false,
-  "release_independent_review": "pending",
+  "release_independent_review": "REQUEST_CHANGES on db1e; P1 repair delta review pending",
   "ci_pin_integration_repair": {
     "recorded_at": "2026-10-21T09:47:42.079028+00:00",
     "parent_head": "6c7afac115626a5cf1a5a870c6110d9d93059160",
@@ -158,5 +158,36 @@
       "tests/test_forex_r26_workspace.py": true
     },
     "hosted_ci_required": true
+  },
+  "independent_review_repair": {
+    "recorded_at": "2026-10-21T11:26:07.166266+00:00",
+    "review_operation": "forex-r26-native-review-db1e-20261021-001",
+    "parent_head": "db1e2b4b440e09d15fc8002b27029ff33c71daf1",
+    "finding": "P1 residual_shock assessed-currency display",
+    "source_sha256": {
+      "scripts/build_forex.py": "ec3618dbeaf006de803f784fdddbfad5ff102a1948da764003aee61c826cb4c5",
+      "tests/test_forex_r26_event_display.py": "e019da2da1b8599209daa7fd0f78e5a4abb5489cb47b9d99dacd91ee28170751",
+      "tests/test_forex_r26_workspace.py": "877a69630353bed001ea11293daff2135bde96c53c5c21dbb088eb27081a2062"
+    },
+    "before": {
+      "tests": 2,
+      "failed": 2,
+      "log": "/tmp/forex-r26-resume-20261021/p1-regression-before.log"
+    },
+    "after": {
+      "tests": 36,
+      "passed": 36,
+      "exit_code": 0,
+      "log": "/tmp/forex-r26-resume-20261021/p1-regression-after.log"
+    },
+    "preserved": [
+      "all producer fields",
+      "event IDs",
+      "ledger and residual calculations",
+      "accepted layout",
+      "inactive watch boundary"
+    ],
+    "delta_review": "pending",
+    "production_acceptance": false
   }
 }

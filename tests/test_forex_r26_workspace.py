@@ -52,7 +52,7 @@ class PandasProxy:
 
 
 def render_case(location, monkeypatch, *, missing_risk=False, market_date="2026-10-21",
-                risk_date=None, quote_changes=None):
+                risk_date=None, quote_changes=None, residual_shock=False):
     """Reusable browser fixture: actual main, snapshot assembly and real templates.
 
     The incumbent R12 fixture owns every market-state/ledger isolation seam.
@@ -92,6 +92,9 @@ def render_case(location, monkeypatch, *, missing_risk=False, market_date="2026-
                                  headline_zh=f"来源偏多 {meta['base']}")
         row["conviction"]["factors"][0]["value"] = 0.4
         pairs[pair] = row
+    if residual_shock:
+        frames["USDJPY"]["shock_state"] = ["normal"] * 299 + ["exogenous_bid"]
+        frames["USDJPY"]["shock_z"] = [0.0] * 299 + [3.2]
     events = forex_alerts._pair_events("USDJPY", frames["USDJPY"],
                                       {"label": "USD/JPY", **cfg["assets"]["USDJPY"]})
     previous = location / "data/forex/latest.json"
@@ -218,3 +221,21 @@ def test_history_rejects_unknown_convention_and_future_endpoint():
     for meta in ({"base": "EUR", "invert": False}, {"base": "JPY", "invert": False}):
         result = BF._r26_price_history({"EURUSD": frame}, {"assets": {"EURUSD": meta}}, date(2026, 10, 21))
         assert result["EURUSD"]["status"] == "unavailable"
+
+
+
+def test_actual_builder_qualifies_residual_shock_in_today_and_pair_history(tmp_path, monkeypatch):
+    snapshot, path, _ = render_case(tmp_path, monkeypatch, residual_shock=True)
+    soup = BeautifulSoup(path.read_text(), "html.parser")
+    source = next(event for event in snapshot["decision_context"]["changes"]
+                  if event["type"] == "residual_shock")
+    assert source["headline"].startswith("USD/JPY:")
+    for selector in ("#fxr-today", "[data-fxr-pair=\'USDJPY\'] [data-fxr-panel=\'history\']"):
+        events = soup.select_one(selector).select(".fxr-event")
+        event = next(node for node in events if source["id"] in node.get_text())
+        headline = event.select_one("strong").get_text()
+        assert "JPY: Unusual move" in headline and "JPY：出现" in headline
+        assert "USD/JPY:" not in headline and "USD/JPY：" not in headline
+        assert "(up)" in headline and "异常上行" in headline
+        assert "Assessed JPY residual technical series" in event.get_text()
+        assert "受评估货币 JPY 的残差技术序列" in event.get_text()

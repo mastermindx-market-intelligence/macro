@@ -866,7 +866,7 @@ def _project_event_display(events: list[dict], results: dict, cfg: dict) -> list
         pair = item.get("asset")
         meta = (cfg.get("assets") or {}).get(pair) or {}
         assessed = meta.get("base")
-        if item.get("type") in {"momentum", "structure", "trend_flip"} and assessed:
+        if item.get("type") in {"momentum", "structure", "trend_flip", "residual_shock"} and assessed:
             method = None
             frame = results.get(pair)
             try:

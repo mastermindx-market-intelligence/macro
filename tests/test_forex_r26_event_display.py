@@ -20,6 +20,8 @@ def test_actual_event_producer_keeps_identity_and_qualifies_assessed_series(pair
         "momentum_state": ["bear", "bull", "bull"],
         "structure_state": ["broken", "constructive", "constructive"],
         "ts_trend": ["short", "long", "long"],
+        "shock_state": ["normal", "exogenous_bid", "exogenous_bid"],
+        "shock_z": [0.0, 3.2, 3.2],
         "residual_method": [method] * 3,
     }, index=index)
     meta = {"label": pair[:3] + "/" + pair[3:], "base": assessed, "invert": inverted}
@@ -27,7 +29,7 @@ def test_actual_event_producer_keeps_identity_and_qualifies_assessed_series(pair
     before = deepcopy(original)
     before_frame = frame.copy(deep=True)
     projected = builder._project_event_display(original, {pair: frame}, {"assets": {pair: meta}})
-    assert {event["type"] for event in projected} == {"momentum", "structure", "trend_flip"}
+    assert {event["type"] for event in projected} == {"momentum", "structure", "trend_flip", "residual_shock"}
     assert original == before
     pd.testing.assert_frame_equal(frame, before_frame)
     for source, display in zip(original, projected):
@@ -85,3 +87,24 @@ def test_unknown_event_day_method_is_disclosed(method):
                                          {"assets": {"USDJPY": {"base": "JPY"}}})[0]
     assert out["display_residual_method"] is None
     assert "not supplied" in out["display_basis_en"]
+
+
+
+def test_residual_shock_direction_is_not_presented_as_the_opposite_literal_quote_move():
+    frame = pd.DataFrame({
+        "close": [1 / 150, 1 / 149],
+        "shock_state": ["normal", "exogenous_bid"],
+        "shock_z": [0.0, 3.2],
+        "residual_method": ["adjusted", "adjusted"],
+    }, index=pd.to_datetime(["2026-10-15", "2026-10-16"]))
+    meta = {"label": "USD/JPY", "base": "JPY", "invert": True}
+    source = forex_alerts._pair_events("USDJPY", frame, meta)[0]
+    shown = builder._project_event_display([source], {"USDJPY": frame},
+                                           {"assets": {"USDJPY": meta}})[0]
+    assert source["type"] == "residual_shock"
+    assert source["headline"].startswith("USD/JPY:") and "(up)" in source["headline"]
+    assert "USD/JPY 149.0000" in source["detail"]
+    assert shown["display_headline_en"].startswith("JPY:") and "(up)" in shown["display_headline_en"]
+    assert shown["display_headline_zh"].startswith("JPY：") and "异常上行" in shown["display_headline_zh"]
+    assert "Assessed JPY residual technical series" in shown["display_basis_en"]
+    assert {key: shown[key] for key in source} == source

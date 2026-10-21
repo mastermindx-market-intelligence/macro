@@ -103,3 +103,12 @@ Paid review `forex-r26-consumer-integration-review-20261020-001`, root `forex-r2
 Leaf `forex-r26-consumer-repair-20261020-001` may modify only the original consumer and tests in its own admitted workspace and return a patch; no push/PR/deploy permission. It must load actual protected core and worker role first. Preserve original run/root and reconcile its return; controller creation is not START proof or permission to duplicate.
 
 Next: consume that return, integrate with this owner record, independently validate, mount/prove the real rendered consumer, and advance the single integration candidate through actual CI/review/release controls. Resolve remaining source-date/display gaps, including the old independently compressed hero sparkline window, before live acceptance. No #8315/#8729 hold release is implied. No production, final-4H feed, calibrated forecast, live watch, delivered notification or trade authority is claimed.
+
+
+## Native independent review and residual-shock repair — 2026-10-21T11:26:07.166266+00:00
+
+The user explicitly authorized native ChatGPT independent review. Operation `forex-r26-native-review-db1e-20261021-001` reviewed immutable `db1e2b4b440e09d15fc8002b27029ff33c71daf1` against `da968a5bdb4b8021711e50bcfb859517129c6ed8` and returned **REQUEST_CHANGES**, one P1: residual-shock captions incorrectly retained the pair name for assessed-currency direction in both Today and pair History. The independent return and limitations are preserved in `native_review_db1e.json`. The earlier failed Fabric review remains failed and untouched.
+
+The parent extended only display qualification to `residual_shock`. Original event fields, IDs, direction mathematics and ledgers remain unchanged. New producer/literal-quote and actual-builder/Jinja regressions both failed on the original source; the repaired event-display and workspace suites pass **36 tests**. This is a bounded correction requiring fresh delta review; it is not release acceptance. Earlier receipts remain point-in-time evidence for their recorded source hashes.
+
+A separate account-owner implementation now advances inactive revisioned conditions in the existing Terminal alert owner; no live account mutation, feed admission or delivery proof has been performed by this repair.
