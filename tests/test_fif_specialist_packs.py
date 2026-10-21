@@ -4290,6 +4290,74 @@ def test_pk10_two_surviving_frequencies_is_not_disclosed() -> None:
     assert contract.validate_pack_result(result) == []
 
 
+def test_pk10_bare_duration_after_review_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x1): "covering three years" states the
+    # duration of the peer-group review, not the vote's cadence — the
+    # non-vote-noun discard only looks after the phrase, so a preceding
+    # "review" never saves the bare duration. With the bare form gone from
+    # the phrase table the anchored sentence keeps no frequency.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote follows a peer-group review covering three"
+        " years.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    # The valued absence is asserted over the whole document, exactly as the
+    # no-anchor absence and the two-frequency tie-break.
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote follows a peer-group review covering three"
+        " years." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_deadline_within_three_years_is_not_a_cadence() -> None:
+    # Fourth repair, review F1 (x2): "within three years of the prior vote"
+    # is a deadline, not a cadence — no discard window can rescue a bare
+    # duration, so the phrase table must not offer it.
+    row, package, result = _pk10_frequency_row(
+        "<div>The say-on-pay vote must be held within three years of the"
+        " prior vote.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "not_disclosed"
+    span = row["source_span"]
+    assert isinstance(span, dict)
+    raw = package.members["doc.htm"]
+    assert span["start_offset"] == 0
+    assert span["end_offset"] > span["start_offset"]
+    covered = raw[span["start_offset"] : span["end_offset"]].decode("utf-8")
+    assert (
+        "The say-on-pay vote must be held within three years of the prior"
+        " vote." in covered
+    )
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk10_tenure_duration_does_not_mask_annual() -> None:
+    # Fourth repair, review F2 (x3): the director-tenure duration shares the
+    # ";"-joined sentence with the anchor; read as a second frequency it
+    # tripped the two-distinct-frequencies tie-break into a false absence.
+    # Bare durations are no longer frequencies, so the stated annual cadence
+    # resolves and the span never reaches the tenure clause.
+    row, package, result = _pk10_frequency_row(
+        "<div>Directors are elected for three years; the say-on-pay vote is"
+        " held annually.</div>"
+    )
+    assert row["quality_state"] == "valued"
+    assert row["text_value"] == "annual"
+    matched = _pk10_matched_span(package, row)
+    assert "say-on-pay vote is held annually" in matched
+    assert "elected for three years" not in matched
+    assert contract.validate_pack_result(result) == []
+
+
 @pytest.mark.parametrize("pack_id", sorted(BASE_AAPL_ENVELOPE_SHA256))
 def test_base_pack_envelopes_unchanged_by_pk10_edits(pack_id: str) -> None:
     # §TESTS 4: every pack registered at BASE keeps its AAPL envelope

@@ -69,14 +69,16 @@ RELATED_PARTY = r"related[- ]party transaction"
 #
 # * Same sentence only, either side of the anchor. The anchor and every
 #   candidate frequency phrase must sit inside one ``. ``-delimited sentence
-#   (the anchor's own ``[^.]`` gap already refuses to cross a period); phrases
+#   (only the advisory-vote anchor arm carries a ``[^.]`` gap; the sentence
+#   boundary itself comes from ``narrative.sentence_span``); phrases
 #   are collected on both sides of the anchor, and the leftmost anchored
 #   sentence that keeps a surviving frequency governs.
 # * Frequency phrases, hyphenated variants (``every-three-years``,
 #   ``every-two-years``) accepted wherever the spaced form is: annual
 #   ``annual|annually|every year|each year|once a year|one year``, biennial
-#   ``biennial|biennially|every two years|every other year|two years``,
-#   triennial ``triennial|triennially|every three years|three years``.
+#   ``biennial|biennially|every two years|every other year``,
+#   triennial ``triennial|triennially|every three years``. A bare duration
+#   ("three years", "two years") is never a frequency.
 # * Discards — a phrase is not evidence when it is the object of a
 #   rejection/contrast in the same sentence, i.e. ``rejecting|rejected|rather
 #   than|instead of|as opposed to|not|against|alternative`` precedes it within
@@ -106,19 +108,17 @@ _ANNUAL_COMPOUND_HEAD = (
     r"(?:meeting|report|incentive|bonus|cash|equity|compensation|proxy"
     r"|statement|shareholder meeting)"
 )
-# Longest alternative first, so "every three years" wins over "three years"
-# at the same position; the word boundaries keep "annual" out of
+# Longest alternative first; the word boundaries keep "annual" out of
 # "semiannually" and the like.
 _FREQUENCY_PHRASES = (
     (
         "triennial",
-        r"every three years|every-three-years|triennially|triennial"
-        r"|three years",
+        r"every three years|every-three-years|triennially|triennial",
     ),
     (
         "biennial",
         r"every two years|every-two-years|every other year|biennially"
-        r"|biennial|two years",
+        r"|biennial",
     ),
     (
         "annual",
