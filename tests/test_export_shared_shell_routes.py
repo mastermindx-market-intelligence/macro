@@ -1,5 +1,6 @@
 """Finite route projection: prove access/coverage boundaries, not implementation spelling."""
 import copy
+from pathlib import Path
 
 import pytest
 
@@ -138,3 +139,16 @@ def test_fragment_payloads_are_accounted_for_without_becoming_page_routes():
     assert is_html_document(b"<!-- comment --><html lang='en'>")
     assert not is_html_document(b"<script>const sample='<html><head>';</script><section>credit</section>")
     assert not is_html_document(b"<!-- <html> --> <div>payload</div>")
+
+
+def test_canonical_internal_research_tools_never_enter_the_public_directory():
+    from scripts import build_product_page_registry as registry_owner
+
+    policy = registry_owner._load_site_access(Path(__file__).resolve().parents[1] / "config/site_access.yml")
+    paths = ["/committee.html", "/measurement.html", "/crossasset.html",
+             "/signal_lab.html", "/tech_lab.html", "/macro_signals.html", "/factors.html"]
+    assert set(paths) <= policy["deny"]["exact"]
+    result = project(catalog(*(row(path) for path in paths)), paths, policy["deny"])
+    assert result["legacyPaths"] == []
+    assert result["directory"] == []
+    assert {item["reason"] for item in result["coverage"]["excluded"]} == {"serving_policy_denied"}

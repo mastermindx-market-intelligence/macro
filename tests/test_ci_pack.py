@@ -5166,8 +5166,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # each number is the docstring of the test below. scripts/check_contract_delta.py
 # reads both names with ast.literal_eval, so keep them plain module-level literals.
 PACKING_PROBES = (
-    ("templates/index.html", 136, 5_825),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 135, 5_798),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 136, 5_832),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 135, 5_805),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 130, 5_600),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5176,6 +5176,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-10-21 Shared Shell integration with protected 53eefbe142c8c:
+    the canonical planner on f75612e0 measures index 135 jobs / 5,832 weight,
+    free-content 135 / 5,805 and plan-book 128 / 5,581, all at ten packs.
+    The retained Shared Shell steps add exactly seven estimator units:
+    data-base-shim 7 -> 12 and unrun-nav-chrome 30 -> 32. Compose this +7
+    with main's already accepted Prophet Lab coverage rather than dropping
+    either contribution. Fund only index 5,825 -> 5,832 and free-content
+    5,798 -> 5,805; retain every job-count bound, the plan-book weight bound,
+    ten-pack limit, suite, selector and exclusive-scope contract unchanged.
+    Planning weights are not measured execution times.
 
     2026-10-21 Prophet Lab evidence dossier B04-A0 (PR #9935) adds one pytest
     step, tests/test_prophet_lab_dossier_b04a.py (closed reason map,

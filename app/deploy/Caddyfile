@@ -779,8 +779,9 @@ app.mastermind-x.com {
 }
 
 # Shared Shell beta uses its own native service and build on port 3001.
-# DNSPod: direct A record beta -> 146.190.142.17. Caddy obtains public TLS for
-# this direct hostname; do not use the CDN-only internal certificate here.
+# EdgeOne terminates public TLS on the existing beta CNAME and follows HTTPS
+# to this origin with Host beta.mastermind-x.com. Match the incumbent app origin
+# TLS profile; browser TLS stays with EdgeOne. Do not change origin verification.
 # Legacy documents remain at www with their existing access/data owners.
 beta.mastermind-x.com {
 	encode zstd gzip
@@ -791,7 +792,9 @@ beta.mastermind-x.com {
 		Strict-Transport-Security "max-age=31536000"
 		-Server
 	}
+	tls internal
 }
+
 http://beta.mastermind-x.com {
 	redir https://beta.mastermind-x.com{uri} permanent
 }
