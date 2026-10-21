@@ -768,4 +768,703 @@ information_economics:
   - every number, state, clock, session, universe and route stays the producer's
   - no colored container edge or accent stripe on any board
   - canonical nav family only
-revision_mandate: []
+# ── Revision wave (2026-10-21, after verdict REVISE at 508539c0) ──────────────
+chrome:
+  status: non_normative
+  declaration: Every header drawn on boards 0-27 is non-normative. Boards 01/02/16 draw a local bar, boards 12/14/22 a modified
+    site nav, boards 23-27 the static capture copy nav_static.html. None is a source.
+  normative_source:
+  - templates/_site_nav.html.j2
+  - templates/_navlinks.html.j2
+  - templates/navigation-refresh.css
+  - templates/nav_market.js
+  - templates/theme.js
+  rule: The build carries the canonical authenticated header family unchanged (CLAUDE.md navigation source-of-truth). No third
+    header family, no local resize, no per-card language switch (VTC-010).
+  specimen_copy: design_refs/sector-paper-20261021/brief_repair/nav_static.html is a static copy for headless capture only;
+    it is regenerated from the templates, never edited by hand, and is not a reference.
+  closes:
+  - VTC-002
+  - PRC-008
+coverage_matrix:
+  legend:
+    drawn: board numbers from boards_manifest.yml (0-27)
+    PAPER_CAPACITY_LIMITED: 'undrawn: the Paper file is at its size limit; the cell is proven on the rendered product in the
+      named journey cell, recorded under evidence/ before #9917 leaves draft (verdict C03/C10)'
+  families:
+  - family: Brief
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 22
+        - 24
+      desktop/light/en:
+        drawn:
+        - 12
+        - 23
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · mobile · dark · en
+      mobile/dark/zh:
+        drawn:
+        - 13
+        - 25
+      mobile/light/en:
+        drawn:
+        - 26
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Brief · mobile · light · zh
+  - family: Explore · Rotation
+    cells:
+      desktop/light/en:
+        drawn:
+        - 14
+      mobile/dark/zh:
+        drawn:
+        - 15
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Rotation · mobile · light · zh
+  - family: Explore · Lenses (table, chart, breadth & money, confluence, forming narratives, history)
+    cells:
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · dark · zh
+      desktop/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · en
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · en
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Lenses · mobile · light · zh
+  - family: Dossier
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 16
+      mobile/light/zh:
+        drawn:
+        - 17
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · dark · zh
+      desktop/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · light · en
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · en
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Dossier · mobile · light · en
+  - family: Cycles
+    cells:
+      desktop/dark/en:
+        drawn:
+        - 1
+        - 6
+      desktop/light/zh:
+        drawn:
+        - 2
+      desktop/light/en:
+        drawn:
+        - 8
+      mobile/dark/en:
+        drawn:
+        - 3
+        - 5
+      mobile/light/zh:
+        drawn:
+        - 4
+        - 7
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · desktop · dark · zh
+      mobile/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · mobile · dark · zh
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Cycles · mobile · light · en
+  - family: Research
+    cells:
+      desktop/light/en:
+        drawn:
+        - 18
+      mobile/dark/zh:
+        drawn:
+        - 19
+      desktop/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · dark · en
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P10-P13 investigation journey · Research · mobile · light · zh
+  - family: Watches
+    cells:
+      desktop/light/en:
+        drawn:
+        - 9
+      desktop/dark/en:
+        drawn:
+        - 11
+      mobile/dark/zh:
+        drawn:
+        - 10
+      desktop/dark/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · dark · zh
+      desktop/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · desktop · light · zh
+      mobile/dark/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · dark · en
+      mobile/light/en:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · en
+      mobile/light/zh:
+        drawn: []
+        status: PAPER_CAPACITY_LIMITED
+        proof_cell: P14-P18 lenses/history/Cycles-depth/watches journeys · Watches · mobile · light · zh
+  - family: Components
+    cells:
+      desktop/dark+light/en:
+        drawn:
+        - 0
+      zh:
+        drawn: []
+        status: specimen
+        proof_cell: design_refs/sector-paper-20261021/components/specimen.html renders both locales
+  - family: State matrix
+    cells:
+      desktop/light/en:
+        drawn:
+        - 20
+        superseded_by: 'board 27 + design_refs/sector-paper-20261021/state_matrix.csv (VTC-008: board 20 marks Brief dark
+          as a gap that board 22 draws)'
+  - family: Authority and contents
+    cells:
+      desktop/light/en:
+        drawn:
+        - 21
+        superseded_by: 'boards_manifest.yml, 28 rows (VTC-008: board 21 counts 22 boards)'
+  closes:
+  - VTC-003
+  - VTC-008
+routing_contract:
+  source: 'templates/si_workspace.js (VIEWS = overview, map, moving, money, explore, confluence; LEGACY_ANCHORS; resolveThemeHash;
+    #read-<id>; unknown hash -> overview; scrollIntoView block start). Pinned by tests/test_si_workspace_shell.py. China twin:
+    templates/si_workspace_china.js.'
+  rule: 'The production hash vocabulary is preserved verbatim. R3 tabs bind to the existing view hashes (Brief = #overview;
+    Explore · Rotation = #map / #moving; Explore · Lenses = #money / #explore / #confluence; Research = #tm-mount; Watches
+    = #accumulation-section). Any new tab hash (Dossier, Cycles) is minted in the build wave under the shell resolver and
+    pinned by the shell test; the reference mints none.'
+  legacy_anchors:
+  - anchor: actnow-section
+    production_view: overview
+    r3_home: Brief · lanes (brf-lanes)
+  - anchor: regime
+    production_view: overview
+    r3_home: Brief · hero verdict + stance
+  - anchor: grader
+    production_view: overview
+    r3_home: Brief · track record (brf-track)
+  - anchor: si-map
+    production_view: map
+    r3_home: Explore · Rotation · whole-market map (R3A-45)
+  - anchor: rotmap-section
+    production_view: map
+    r3_home: Explore · Rotation · map
+  - anchor: sc-cyclemap
+    production_view: map
+    r3_home: Explore · Rotation · cycle map
+  - anchor: board
+    production_view: map
+    r3_home: Explore · Rotation · sector boards (R3A-40 gated read)
+  - anchor: si-movement
+    production_view: moving
+    r3_home: Explore · Rotation · moving strip under the map (R3A-43, pulse_rank_delta_5d)
+  - anchor: rc-events-mount
+    production_view: moving
+    r3_home: Explore · Rotation · rotation events (R3A-44)
+  - anchor: rotation-app
+    production_view: moving
+    r3_home: Explore · Lenses · subsector rotation
+  - anchor: si-money
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money (R3A-48)
+  - anchor: internals-section
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money
+  - anchor: scc-leadership
+    production_view: money
+    r3_home: Explore · Lenses · breadth & money · verdict card (R3A-49)
+  - anchor: explore-section
+    production_view: explore
+    r3_home: Explore · Lenses
+  - anchor: table-section
+    production_view: explore
+    r3_home: Explore · Lenses · table (R3A-54..57)
+  - anchor: chart-section
+    production_view: explore
+    r3_home: Explore · Lenses · rebased chart
+  - anchor: forming-narratives
+    production_view: explore
+    r3_home: Explore · Lenses · forming narratives (R3A-59..61, ai_watch provenance kept)
+  - anchor: tm-mount
+    production_view: explore
+    r3_home: Explore · Lenses · history / Time Machine (R3A-58); production Research workflow link
+  - anchor: si-heat-section
+    production_view: explore
+    r3_home: Explore · Lenses · theme heat (resolves to theme-heat-section)
+  - anchor: confluence
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: sc-app
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: sc-top
+    production_view: confluence
+    r3_home: Explore · Lenses · confluence
+  - anchor: accumulation-section
+    production_view: watches (production workflow link)
+    r3_home: 'Watches tab (add.watches: durable saved investigations via the existing owner)'
+  theme_hash:
+    pattern: '#theme-<id>'
+    owner: resolveThemeHash() (R3A-82 boot redirect)
+    r3_home: Dossier with origin context + clear (board 16), falling back to Brief when the theme is unknown
+  read_hash:
+    pattern: '#read-<id>'
+    owner: gate 4 trace-open (R3A-83)
+    r3_home: Brief · the lane row's trace expand (brf-lane row), scrolled to centre
+  unknown_hash:
+    behaviour: Brief, with history.replaceState('#overview') when the hash is empty (R3A-84); never a blank view
+  deep_link_scroll: scrollIntoView({block:'start'}) on the anchored section after the view activates (R3A-85)
+  destination_inventory: per-view destination inventory (R3A-86) is carried by the shell; the Brief 'three next moves' link
+    to Rotation, Dossier and Cycles through these hashes only
+  closes:
+  - PRC-017
+revision_mandate:
+- id: VTC-001
+  severity: blocker
+  condition: C01/C04/C05
+  disposition: resolved_by_change
+  cure: 'Brief redrawn as the HTML specimen (boards 23-26): hero verdict + stance + weekly handoff + What changed, five producer-named
+    lanes with per-row score and 20d vs market, bottoming watch, track record, tier gate — a glance surface, not a report.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-002
+  severity: blocker
+  condition: C02
+  disposition: resolved_by_declaration
+  cure: 'chrome block above: all drawn headers non-normative; templates/_site_nav.html.j2 + _navlinks.html.j2 normative.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey shows the canonical header on the rendered Brief
+- id: VTC-003
+  severity: blocker
+  condition: C03
+  disposition: resolved_by_declaration
+  cure: 'coverage_matrix block above: every family × viewport × theme × locale cell is drawn (board numbers) or PAPER_CAPACITY_LIMITED
+    with the journey cell that must show it.'
+  proof: 'evidence/ cells recorded for each PAPER_CAPACITY_LIMITED entry before #9917 leaves draft (C10)'
+- id: VTC-004
+  severity: major
+  condition: C04
+  disposition: cure_in_repair_commit
+  cure: 'copy_deck.json Tier-1 lint: no internal vocabulary (''21-session relative wealth'', ''Source rank'', ''Illustrative
+    native binding'' are Paper pixels, absent from the deck and the specimen), h1 within the 4-word budget (specimen h1 ''Sector
+    Intelligence''), subtitle within 14 words, glyph lint (C09).'
+  proof: lint receipt in the repair commit; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: VTC-005
+  severity: major
+  condition: C04
+  disposition: partially_resolved
+  cure: Regime headline keyword (verdict word) and the weekly handoff pair are restored on specimen boards 23-26 (R3A-24,
+    si_handoff.json); 'Group strength. A separate stock decision.' is not in the deck.
+  note: 'DEFER to build: the production #theme-context-hero tinted material (tc-rotating/strain/steady tokens) is carried
+    by the integration lane; the specimen hero is neutral.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey rendered Brief shows the production hero tint
+- id: VTC-006
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'Dark Brief (specimen board 24) draws panel surfaces from the production tokens: brief.css binds --bg/--panel/--panel2/--line
+    from templates/theme.css (dark: #0f1115 / #181b21 / #1e222a / #3a4150, theme.css:63-69), so the surface hierarchy is the
+    product''s, not one graphite plane; Reviewer B re-judges the rendered board.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-007
+  severity: minor
+  condition: C05
+  disposition: resolved_by_change
+  cure: 'Specimen boards 23-27 and the Cycles corrections specimen render from one example dataset (brief_repair/example_dataset.json:
+    one as-of, one phase and age per sector). Contradicting Paper pixels on boards 01/08/12/14 are PAPER_CAPACITY_LIMITED.'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-008
+  severity: minor
+  condition: C05
+  disposition: superseded
+  cure: Board 20 (state matrix) and board 21 (authority index, '22 boards') are superseded by board 27 + state_matrix.csv
+    and by boards_manifest.yml (28 rows).
+  proof: boards_manifest.yml notes on boards 20/21; Reviewer B re-run
+- id: VTC-009
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'COMPONENTS.md model-prior-badge rule: tag text never below 11px on mobile; the Cycles corrections specimen draws
+    the MODEL/PRIOR tags at that size.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: VTC-010
+  severity: minor
+  condition: C05
+  disposition: resolved_by_rule
+  cure: 'No per-card language switch: the Engine read card follows html[data-lang] like every other panel; the Cycles corrections
+    specimen omits the switch (chrome block).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: VTC-011
+  severity: minor
+  condition: C05
+  disposition: withdrawn_from_reference
+  cure: 'The single-series chart legend is a board-12 Paper pixel ("leadership behind the read"); neither the Brief specimen
+    (boards 23-27) nor the production Brief (#overview) carries that chart, and the Paper file accepts no writes
+    (PAPER_CAPACITY_LIMITED). The chart is not adopted by this reference; a future Brief chart must name every series in
+    its legend (components/COMPONENTS.md chart law) before it enters a reference.'
+  proof: boards_manifest.yml board 12 note; P10 Brief journey proof records no chart on the production Brief; Reviewer B re-run
+- id: VTC-012
+  severity: minor
+  condition: C05
+  disposition: cure_in_repair_commit
+  cure: 'COMPONENTS.md rules: horizontal rails carry an overflow cue; the range track uses the line token in light theme;
+    the retry button uses the button tokens, never black. Mobile Paper boards 15/17 are PAPER_CAPACITY_LIMITED; specimen mobile
+    boards 25/26 follow the rules.'
+  proof: P10-P13 investigation journey mobile cells; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-001
+  severity: blocker
+  condition: C11
+  disposition: resolved_by_change
+  cure: 'Act-Now board restored on specimen boards 23-26: the producer''s five lanes with the producer''s labels and counts,
+    per-row score and 20d vs market, bottoming watch (SC-008/SC-038).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-002
+  severity: blocker
+  condition: C11
+  disposition: resolved_by_change
+  cure: 'Track record panel (brf-track) with the self-grader caption and the link to #grader; denominator stated as resolved
+    calls, Neutral included (brief gap: grader denominator).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-003
+  severity: blocker
+  condition: C12
+  disposition: cure_in_repair_commit
+  cure: 'copy_deck cycles.hazard_label / hazard_footnote carry the parity caveat: the producer records live_hazard_parity
+    PARITY_FAILS (15 failing features: age_b1..b5, log_age_ratio, amp_proxy, pos_osc_s, osc_slope_s, trend_pass, mom_score,
+    rs_63d, vol_pctile, direction, basis_epoch; measured_on a038b3f3) and 4 sectors ship model_cell_current_claim parity_failed;
+    cells show the historical W4.2 qualification only, display-only, never a signal. ''Cycle crosses zero'' has no producer
+    and is removed from the reference.'
+  proof: deck diff + Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-004
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: 'Grader rows labelled as the conviction-call grader; ''calls logged'' bound to the producer denominator (production:
+    113 calls, 31 hits, 27.4% conviction-call hit rate — not a win rate); copy_deck track/grader strings and the specimen
+    track panel updated.'
+  proof: deck diff; P10-P13 investigation journey rendered Brief shows the producer count
+- id: PRC-005
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: copy_deck cycles.stance_act ('Act', source NEW) retired; lane titles bind to the producer's lane labels; stance chips
+    use the two production stance strings only. 'Tighten risk rather than add.' is a Paper pixel (board 01), absent from the
+    deck and the specimens, PAPER_CAPACITY_LIMITED and not adopted.
+  proof: deck diff; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale
+    quarantine on the first pass)
+  note: 'lane titles now bind to the producer''s own lane labels (example_dataset.json name_en/name_zh, captured from the
+    rendered product) and render them verbatim, including the production em-dash in "In favour — don''t chase"; linting a
+    production label is a product change (templates/builder), not a reference change.'
+- id: PRC-006
+  severity: blocker
+  condition: C13
+  disposition: cure_in_repair_commit
+  cure: 'cycles_ia.md rows 155 and 228-230 corrected: the producer ships phase_v2_age {sessions, status, method, run_start,
+    observed_from, basis, history_rows} from engine/cycle_phase_age.py with status measured | lower_bound | insufficient_history
+    | source_unavailable (e.g. XLK: 4 sessions, lower_bound); the age qualifier is rendered with the value; a placeholder
+    0 is never shown as ''0 days old''; unknown is shown as unknown.'
+  proof: cycles_ia.md diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run
+    against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-007
+  severity: major
+  condition: C12
+  disposition: cure_in_repair_commit
+  cure: 'Rhythm is descriptive (producer estimate_kinds.rhythm = descriptive_rhythm, rhythm_version 1): no MODEL badge on
+    periodicity; ''Cycle peak window opens in about 6 weeks'' replaced by the descriptive overdue-vs-own-rhythm wording in
+    the Cycles corrections specimen and on the deck.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: PRC-008
+  severity: blocker
+  condition: C02
+  disposition: resolved_by_declaration
+  cure: 'Third header family: see the chrome block (same cure as VTC-002).'
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey canonical header
+- id: PRC-009
+  severity: major
+  condition: C14
+  disposition: cure_in_repair_commit
+  cure: 'Methods row on the Cycles states/edge boards (corrections specimen): sizing multiplier inert at 1.0 (engine/sector_central.py:404)
+    and lead-lag STOP (W5.1) stated as methods, never as a size or a signal; cycles_ia.md rows 36/157 name the STOP beside
+    the inert sizing.'
+  proof: cycles_ia.md diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run
+    against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-010
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Time Machine (SC-058, R3A-58) keeps its production markup.
+  home: 'Explore · Lenses · history (anchor tm-mount); undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · history cell on the rendered product
+- id: PRC-011
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Forming Narratives incl. ai_watch LLM verbatim (SC-059/060/061, R3A-59..61) keep their production markup and the ai_watch
+    provenance label.
+  home: 'Explore · Lenses · forming narratives (anchor forming-narratives); undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-012
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Desk watch (SC-046, display-only) stays display-only and distinct from the Watches tab (durable saved investigations,
+    add.watches).
+  home: 'Explore · Rotation · desk strip under the sector boards; undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P10-P13 investigation journey · Rotation cell
+- id: PRC-013
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Moving strip (SC-044, R3A-43, pulse_rank_delta_5d) and rotation events (R3A-44) sit under the rotation map; money
+    strip + verdict card (SC-045, R3A-48/49) form the breadth & money lens.
+  home: Explore · Rotation (si-movement, rc-events-mount) and Explore · Lenses · breadth & money (si-money, internals-section,
+    scc-leadership)
+  proof: P10-P13 investigation journey · Rotation cell; P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-014
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Explore table + rebased chart (SC-054..057) and Confluence (confluence, sc-app, sc-top) are lenses; deck explore_lenses
+    tagline already names them.
+  home: 'Explore · Lenses · table and Explore · Lenses · confluence; undrawn: PAPER_CAPACITY_LIMITED'
+  proof: P14-P18 lenses/history/Cycles-depth/watches journeys · lenses cell
+- id: PRC-015
+  severity: major
+  condition: C15
+  disposition: resolved_by_change
+  cure: Hero handoff pair + What changed chips (SC-024/SC-048, R3A-24 si_handoff.json) restored on specimen boards 23-26.
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass)
+- id: PRC-016
+  severity: major
+  condition: C15
+  disposition: relocate
+  cure: Reco tags (SC-008, R3A-38) are the lane-row chips; the gated conviction board (SC-038, R3A-40, one gated read per
+    sector board) is the Brief lanes with the tier gate (specimen board 26 locked state).
+  home: Brief · lanes (brf-lane rows, brf-chip, brf-gate)
+  proof: re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine
+    on the first pass); P10-P13 investigation journey signed-out and signed-in Brief
+- id: PRC-017
+  severity: minor
+  condition: C16
+  disposition: resolved_by_declaration
+  cure: 'routing_contract block above maps every legacy anchor, #theme-*, #read-*, the unknown-hash fallback and deep-link
+    scroll to its R3 home.'
+  proof: tests/test_si_workspace_shell.py pin stays green in the build wave; Reviewer A re-run
+- id: PRC-018
+  severity: major
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'Deck ⇄ boards parity: (1) board strings absent from the deck (''Three places to investigate'', ''Source rank'', ''Entry
+    posture'', ''Check entry signals'', ''Go deeper'') are Paper pixels, PAPER_CAPACITY_LIMITED, not adopted — the specimen
+    renders deck strings only (gate: ''Check entry signals'' count 0 in brief.html); (2) h1 within budget on the specimen;
+    (3) board 01 phase chips (Early up / Late up / Early down / Late down) are pixels; the deck phase vocabulary binds and
+    the Cycles corrections specimen uses it; (4) quadrant_body ''gaining speed this week'' is the producer axis (pulse_rank_delta_5d,
+    templates/sector_central.html.j2:2860); board 14''s 21-session axis is the error and is PAPER_CAPACITY_LIMITED.'
+  proof: deck lint receipt; P10-P13 investigation journey · Rotation shows the producer axis; re-freeze at the repair commit;
+    Reviewer B and Reviewer A re-run against the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-019
+  severity: minor
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: '''Engine read'' is relabelled as a narrative with its provenance (producer narratives.json), never as a measurement;
+    deck key added, Cycles corrections specimen uses it.'
+  proof: deck diff; Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against
+    the re-frozen sha (rationale quarantine on the first pass)
+- id: PRC-020
+  severity: major
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'boards_manifest.yml capability claims corrected: board 12 drops R3A-19/R3A-27/R3A-92 (carried by specimen board 26);
+    board 16 drops C10/C11/C12 (turn markers, leg timeline, narrative are undrawn).'
+  proof: boards_manifest.yml diff; Reviewer A re-run
+- id: PRC-021
+  severity: minor
+  condition: C16
+  disposition: cure_in_repair_commit
+  cure: 'state_matrix.csv rows 4/15/23/32 corrected: brief + explore incompatible_generation and invalid_payload rows cite
+    R3A-16 (payload schema) + R3A-31 (malformed collapse) + U05 (typed states), the Brief receipt row also C24 (typed coverage),
+    instead of R3A-19 (auth hydration); explore/corrected cites R3A-92 (correction representation) + U05 instead of R3A-30.'
+  proof: state_matrix.csv diff; Reviewer A re-run
+- id: PRC-022
+  severity: minor
+  condition: C16
+  disposition: withdrawn_from_reference
+  cure: 'One PRIOR value: at the render identity the producer ships no PRIOR cell (12 hazard cells, all source MODEL / cell_verdict
+    PASS; 4 sectors model_cell_current_claim parity_failed; the remaining cells unavailable, e.g. non_monotone_cdf, or missing_estimate).
+    No producer field counts ''comparable legs'', so ''38% of 41 comparable legs'' and board 01''s 33% are both unsupported
+    and withdrawn. The Cycles corrections specimen renders cells from the producer (p, source, cell_verdict) and shows a PRIOR
+    badge only when the producer emits source PRIOR.'
+  proof: Cycles corrections specimen; re-freeze at the repair commit; Reviewer B and Reviewer A re-run against the re-frozen
+    sha (rationale quarantine on the first pass)
+- id: PRC-023
+  severity: minor
+  condition: C16
+  disposition: withdrawn
+  cure: Withdrawn by Reviewer A on the second pass.
+  proof: reviews/product_regression.yml second_pass
+- id: R3C-HEATMAP-LEGIBILITY
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (heat-map legibility on the rendered product); no drawn board,
+    specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-AUTH-PREMIUM
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (signed-in premium hydration and the single premium wall (R3A-19,
+    R3A-87)); no drawn board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-TIME-MACHINE
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (Time Machine served in its relocated lens home); no drawn
+    board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-VALIDATED-21D
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (the 21-day validated series on the served product); no drawn
+    board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml
+- id: R3C-NO-UNSUPPORTED-INVENTION
+  severity: blocker
+  condition: continuity.yml (CARRIED_BLOCK from mastermind-xpv2-sector-r3b-2)
+  disposition: carried_block
+  cure: Discharged only by the live proof continuity.yml names (no invented number, signal, sizing or state on the served
+    product); no drawn board, specimen or disposition in this file closes it.
+  proof: P19-P21 production / natural-update proof recorded in continuity.yml

@@ -35,6 +35,13 @@ shown in the static specimen are placeholder copy, not recorded output.
   caps, ≤3 strokes, no fill except a deliberate dot).
 - State vocabulary (closed set): `fresh`, `stale`, `incompatible_generation`,
   `partial`, `corrected`, `abstained`, `error`, `empty`, `loading`, `locked`.
+- **Horizontal rails show that they scroll** (VTC-012): a fade mask at the open edge
+  plus a partially visible last item, keyboard-scrollable (arrow keys on the focused
+  rail); never a hard clip that reads as the end of the list.
+- **Range and slider tracks use `--line`** for the track in both themes, with the
+  filled portion in `--text`; never a near-black track on the dark theme (VTC-012).
+- **Retry and other secondary buttons use the button tokens** (`--panel2` fill,
+  1px `--line` border, `--text` label); never a black fill in either theme (VTC-012).
 
 ## DESIGN-SYSTEM-GAP register
 
@@ -189,6 +196,11 @@ Tokens `templates/theme.css` lacks; listed here, never defined locally:
   up/3m and up/6m cells are PRIOR** until re-qualified; four of six cells are
   qualified.
 - **Tokens:** `--panel2`, `--line`, `--text`, `--muted`, `--fs-micro`.
+- **Minimum size (VTC-009):** the tag label is never below 11px (`--fs-label`) on
+  any viewport; the tag reduces by dropping padding, never by shrinking the type.
+- **Producer-bound:** the PRIOR tag appears only when the producer emits
+  `source: PRIOR`; the current `data/sector_cycles` producer emits MODEL×12 and no
+  PRIOR value, so no PRIOR tag is rendered until it does.
 - **States:** fresh, stale (rides the parent).
 - **ZH notes:** 模型 / 历史基准 (plain words, not 先验); no hue flip — provenance is
   not direction or health.

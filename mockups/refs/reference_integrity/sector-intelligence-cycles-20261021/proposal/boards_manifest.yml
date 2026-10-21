@@ -371,11 +371,9 @@ boards:
   - Watch/Watching toggle
   - partial breadth 9 of 11
   capabilities_covered:
-  - R3A-19
   - R3A-24
-  - R3A-27
   - R3A-28
-  - R3A-92
+  note: "capabilities trimmed per PRC-020: R3A-19 (auth hydration), R3A-27 and R3A-92 (correction representation) are not drawn on this board; the chart's single-series legend is not adopted (VTC-011 withdrawn from reference)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/12-brief-desktop-light-en.png
   capture: export
   png_px:
@@ -467,9 +465,7 @@ boards:
   - fast/slow MODEL disagreement
   capabilities_covered:
   - masterplan 8.1
-  - C10
-  - C11
-  - C12
+  note: "capabilities trimmed per PRC-020: C10/C11/C12 are Cycles capabilities and are not drawn on the Dossier board"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/16-dossier-desktop-dark-en.png
   capture: export
   png_px:
@@ -560,6 +556,7 @@ boards:
   - theme x device axes table
   capabilities_covered:
   - masterplan 7.2 state examples (reviewer index)
+  note: "superseded by board 27 (coverage matrix) + design_refs/sector-paper-20261021/state_matrix.csv; retained as a reviewer index only (VTC-008/PRC-021)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/20-state-matrix-desktop-light-en.png
   capture: export
   png_px:
@@ -577,6 +574,7 @@ boards:
   capabilities_covered:
   - masterplan 7.2 navigation and selection model with return behavior
   - board index and R2 supersession
+  note: "superseded by boards_manifest.yml (this file) + proposal.yml routing_contract; retained as a reviewer index only (VTC-008/PRC-017)"
   png_path: mockups/refs/reference_integrity/sector-intelligence-cycles-20261021/proposal/21-authority-desktop-light-en.png
   capture: export
   png_px:
@@ -708,7 +706,7 @@ boards:
   source_html: design_refs/sector-paper-20261021/brief_repair/brief.html
   png_px:
   - 390
-  - 4336
+  - 4347
 - board_no: 27
   title: R3 · Brief · Coverage matrix · viewport × theme × locale (HTML specimen)
   node_id: null

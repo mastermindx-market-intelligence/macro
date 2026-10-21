@@ -1,7 +1,7 @@
 board,state,applies,trigger_code,tier1_render,still_works,user_action,live_region,matrix_rows,status
 brief,fresh,yes,templates/_sector_central_coverage.js.j2:53,"Receipt reads 'N of 11 sectors have qualified measurements' with evidence date; hero, chart, calls drawn.",hero; leadership chart; native calls; bottoming watch,none,none,R3A-24;R3A-08,PRODUCED
 brief,stale,yes,templates/_sector_central_coverage.js.j2:87,"Receipt kept; 'Older than source page <date>' appended; numbers and hero stay.",hero; native calls; bottoming watch,none,polite,R3A-27,PRODUCED
-brief,incompatible_generation,yes,templates/_sector_central_coverage.js.j2:52,"Receipt withheld: 'measurement date later than source page — review dates'; no coverage asserted; hero stays.",hero; native calls; watch,none,polite,R3A-19,PRODUCED
+brief,incompatible_generation,yes,templates/_sector_central_coverage.js.j2:52,"Receipt withheld: 'measurement date later than source page — review dates'; no coverage asserted; hero stays.",hero; native calls; watch,none,polite,R3A-16;R3A-31;U05;C24,PRODUCED
 brief,partial,yes,templates/_sector_central_coverage.js.j2:85,"Receipt 'N of 11 measured'; unmeasured sectors stay named in full evidence; leader kept.",hero; native calls; measured leader,none,polite,R3A-28,PRODUCED
 brief,corrected,yes,NOT YET PRODUCED,"Original kept; 'revised <date>: summary' note beside value; restatement dated; no silent rewrite.",all modules,none,polite,R3A-92,NOT YET PRODUCED
 brief,abstained,no,,"Cannot occur — six fixed call lanes; engine Neutral conviction is not a Brief lane.",n/a,none,none,none,NOT YET PRODUCED
@@ -12,7 +12,7 @@ brief,loading,yes,templates/_sector_central_brief.html.j2:15,"Placeholder line '
 brief,offline,yes,templates/sector_central.html.j2:4156,"Offline equals locked shell: baked preview and disclosure lines stay; nothing flashes or errors.",baked preview; hero; watch,retry,polite,R3A-32,PRODUCED
 brief,unauthorized,yes,templates/sector_central.html.j2:2030,"401/403 hydration no-op: server-baked preview plus sign-in disclosure line stay; no protected flash.",baked preview; hero; watch,sign in,none,R3A-32;R3A-18,PRODUCED
 brief,locked,yes,templates/_us_act_now_board.html.j2:31,"Violet lock treatment only; preview rows plus 'N more here — sign in' per lane.",preview rows; hero; watch,upgrade,none,R3A-14;R3A-15;R3A-16,PRODUCED
-brief,invalid_payload,yes,templates/_sector_central_coverage.js.j2:31,"Receipt: 'source coverage could not be checked — open the full evidence'; schema typed invalid.",hero; calls; watch,open source,polite,R3A-19;R3A-16,PRODUCED
+brief,invalid_payload,yes,templates/_sector_central_coverage.js.j2:31,"Receipt: 'source coverage could not be checked — open the full evidence'; schema typed invalid.",hero; calls; watch,open source,polite,R3A-16;R3A-31;U05,PRODUCED
 brief,zero,yes,templates/_sector_central_coverage.js.j2:78,"Receipt may read '0 of 11 sectors have qualified measurements'; zero shown, never blank or neutral.",hero; calls; watch,none,polite,R3A-28,PRODUCED
 brief,empty_search,no,,"Cannot occur — Brief has no search input; discovery lives on Explore.",n/a,none,none,none,NOT YET PRODUCED
 brief,uncertain_command,no,,"Cannot occur — Brief issues links and anchors only, no mutating commands.",n/a,none,none,none,NOT YET PRODUCED
@@ -20,7 +20,7 @@ explore,fresh,yes,templates/subsectors.js:508,"'as of <date>' stamp per universe
 explore,stale,yes,templates/sector_central.html.j2:1655,"Tape token demoted 'LAST SESSION · SETTLED'; never labelled live; numbers stay.",maps; boards; breadth,none,polite,R3A-27,PRODUCED
 explore,incompatible_generation,yes,templates/sector_central.html.j2:3816,"'History is from a different day — history X, current read Y. Not drawn, never mixed.'",current read; maps; money,none,polite,R3A-44;R3A-47,PRODUCED
 explore,partial,yes,templates/sector_central.html.j2:3621,"'Partial — N of 11 measured' chip; unmeasured listed separately; map plots measured only.",measured map; money; confluence,none,polite,R3A-65;R3A-67,PRODUCED
-explore,corrected,yes,templates/sector_central.html.j2:1973,"Interval note 'Comparison reset after a source change'; corrected baseline never compared.",boards; breadth; flows,none,polite,R3A-30,PRODUCED
+explore,corrected,yes,templates/sector_central.html.j2:1973,"Interval note 'Comparison reset after a source change'; corrected baseline never compared.",boards; breadth; flows,none,polite,R3A-92;U05,PRODUCED
 explore,abstained,yes,templates/sector_central.html.j2:3895,"'Forecast: none — no forecasting model has been approved'; research estimate separately labelled display-only.",maps; events; confluence,none,polite,U14,PRODUCED
 explore,error,yes,templates/sector_central.html.j2:3746,"'History unavailable right now' plus 'the current read above is unaffected'; retry stays available.",current read; maps; boards,retry,assertive,R3A-30;R3A-31,PRODUCED
 explore,empty,yes,templates/subsectors.js:506,"'No data yet — run the nightly build.' replaces board; navigation shell stays usable.",navigation; other universes,none,polite,R3A-29,PRODUCED
@@ -29,7 +29,7 @@ explore,loading,yes,templates/sector_central.html.j2:3741,"Line and row skeleton
 explore,offline,yes,templates/sector_central.html.j2:2032,"Network loss types 'could not be loaded', distinct from denied and invalid; retry offered.",static boards; maps,retry,polite,R3A-31,PRODUCED
 explore,unauthorized,yes,templates/sector_central.html.j2:2030,"'denied' renders 'Sign in with access to view these observations.'; sibling modules keep working.",maps; rotation; confluence,sign in,polite,R3A-32;R3A-88,PRODUCED
 explore,locked,no,,"Cannot occur — premium wall gates only the Overview Act-Now board, not Explore payloads.",n/a,none,none,none,NOT YET PRODUCED
-explore,invalid_payload,yes,templates/sector_central.html.j2:2040,"'Interval observations could not be verified.'; schema mismatch typed invalid, distinct from unavailable.",boards; maps; breadth,none,polite,R3A-19,PRODUCED
+explore,invalid_payload,yes,templates/sector_central.html.j2:2040,"'Interval observations could not be verified.'; schema mismatch typed invalid, distinct from unavailable.",boards; maps; breadth,none,polite,R3A-16;R3A-31;U05,PRODUCED
 explore,zero,yes,templates/subsectors.js:309,"'Nothing extended or in a downtrend right now'; explicit measured zero, not missing.",boards; maps; leadership,none,polite,R3A-67;R3A-28,PRODUCED
 explore,empty_search,yes,templates/subsectors.js:496,"Counter reads '0 / N'; no no-results copy yet; clear-search control is the remedy.",table; sort; tabs,clear search,polite,R3A-79,PRODUCED
 explore,uncertain_command,no,,"Cannot occur — filters, sorts and refresh are local; failures are typed terminal states.",n/a,none,none,none,NOT YET PRODUCED

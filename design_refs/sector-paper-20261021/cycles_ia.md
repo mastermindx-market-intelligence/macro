@@ -36,6 +36,11 @@ Carrier facts that bound this file (do not reinterpret):
 - Sizing multipliers are inert: `engine/sector_central.py:404` `size_mult = 1.0`, and
   :398-411 document that every cell ships 1.0 (a SIZE lever only; never a size shown
   as output).
+- Lead-lag is a recorded STOP, not a pending feature: W5.1 closed with no admitted
+  lead-lag relation (`research/sector_completion_20261021/MASTERPLAN_2026-10-21.md:169`,
+  `README.md:23`). No Cycles surface shows, implies or sorts by a sector-to-sector
+  lead or lag; the inert multiplier and the lead-lag STOP are recorded together on
+  the methods row.
 
 ZH labels below are the strings the current template/renderer actually carries
 (`L(en, zh)` calls in `templates/sector_cycles.js` and `.l-en/.l-zh` spans in
@@ -152,8 +157,13 @@ PASS/PRIOR badge (`hazardLineHTML:1087-1088`); PRIOR cells render muted
 schema/epoch guard gets no `now.hazard` (stamp is warn-and-skip,
 `engine/sector_cycles.py:1093-1098`) and the line is omitted (`hazardLineHTML:1082`)
 — that is the current error treatment, not a typed state. C16's
-`phase_v2_age_bars` ships as 0 (placeholder, `engine/sector_cycles.py:811-813`); a
-future timing view must not display it as "0 days old". C17's conviction risk
+measured phase age is produced by `engine/cycle_phase_age.py` (`forward_log_replay.v2`):
+`phase_v2_age {sessions, status, observed_from, history_rows}` with status one of
+measured / lower_bound / insufficient_history / source_unavailable / unknown_phase /
+not_logged; the shipped read is `lower_bound` (4 sessions, observed from 2026-10-14,
+56 history rows) because the forward log began on 2026-10-14. `phase_v2_age_bars`
+(0) is the retired placeholder and is never rendered; the UI renders the deck's
+`phase_age_*` string for the status, never a bare number. C17's conviction risk
 multiplier is inert at 1.0 (`engine/sector_central.py:404`) — record it as inert,
 never as a size.
 
@@ -225,9 +235,12 @@ pattern the matrix's U-row wants upgraded to typed states.
 No C01–C28 row is wholly `NOT YET PRODUCED` — every capability has at least an
 observed producer. The honestly-missing pieces, all narrower than a full row:
 
-1. **Measured phase age** (C16 acceptance): `phase_v2_age_bars` ships as a
-   placeholder 0 (`engine/sector_cycles.py:811-813`); no bar-replay/backfill
-   producer of true phase age exists yet.
+1. **Measured phase age: the UI home** (C16 acceptance): the producer exists
+   (`engine/cycle_phase_age.py`, `phase_v2_age` with a typed status; shipped read
+   `lower_bound`, 4 sessions from 2026-10-14). What is missing is the Cycles home
+   that renders `phase_age_measured` / `phase_age_lower_bound` /
+   `phase_age_unknown` by status, and the nightly accrual that turns the lower
+   bound into a measurement; the placeholder `phase_v2_age_bars` is retired.
 2. **Typed optional-payload states** (C20/C21/C28): the renderer collapses
    404/malformed/network/absent into quiet chip-absence
    (`templates/sector_cycles.js:2051-2053`); no 401/403/incompatible-generation

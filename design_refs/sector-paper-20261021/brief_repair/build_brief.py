@@ -92,7 +92,7 @@ def lane(l):
     stance, skey = LANE_STANCE[l["fold_id"]]
     body = "".join(row(r, stance) for r in l["rows"])
     return (f'<section class="brf-lane" data-stance="{stance}" aria-labelledby="lane-{l["fold_id"]}">'
-            f'{lane_head(l["fold_id"], D("components", skey), l["count"], l["sub_en"], l["sub_zh"])}'
+            f'{lane_head(l["fold_id"], bi(l["name_en"], l["name_zh"]), l["count"], l["sub_en"], l["sub_zh"])}'
             f'<div class="brf-rows">{body}</div></section>')
 
 
@@ -103,7 +103,7 @@ def stand_aside(l):
     full = "".join(row(r, stance) for r in allrows[:FULL_VISIBLE])
     locked = "".join(row(r, stance) for r in allrows[:LOCKED_VISIBLE])
     return (f'<section class="brf-lane" data-stance="{stance}" aria-labelledby="lane-{l["fold_id"]}">'
-            f'{lane_head(l["fold_id"], D("components", skey), l["count"], l["sub_en"], l["sub_zh"])}'
+            f'{lane_head(l["fold_id"], bi(l["name_en"], l["name_zh"]), l["count"], l["sub_en"], l["sub_zh"])}'
             f'<div class="brf-rows brf-full">{full}'
             f'<button type="button" class="brf-more" aria-expanded="false">{D("components", "see_all_link", n=len(allrows))}</button></div>'
             f'<div class="brf-rows brf-locked">{locked}'
