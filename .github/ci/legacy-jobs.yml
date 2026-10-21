@@ -29775,6 +29775,11 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
+      # SIC-MAP (macro #7646): the capability-map census — every producer/route
+      # citation recorded in the sector-completion CSV must resolve in the tree.
+      # Read-only: parses the CSV + greps sources; no site/ or data/ fixtures needed.
+      - name: sector completion capability map — cited producers, routes and anchors exist
+        run: python -m pytest tests/test_sector_completion_capability_map.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
