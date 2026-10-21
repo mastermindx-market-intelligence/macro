@@ -37987,6 +37987,9 @@ jobs:
     # Retain the complete named import/read closure and ancestor initializers.
     # This scope adds no packing exception or global-selection threshold.
     paths:
+      - ".github/workflows/engine-render.yml"
+      - ".github/workflows/render.yml"
+      - "scripts/ci/daily_engine_commit_outputs.sh"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/commodity_carry.py"
@@ -38081,15 +38084,32 @@ jobs:
       - "lib/us_cash_calendar.py"
       - "scripts/__init__.py"
       - "scripts/build_commodities.py"
+      - "scripts/check_commodity_publication.py"
+      - "scripts/check_site_asset_refs.py"
       - "scripts/render_commodity_workspace_review.py"
       - "site/basketdata/critical_minerals_supply.json"
+      - "site/commodities.html"
       - "templates/_commodity_decision_workspace.html.j2"
       - "templates/commodities.html.j2"
       - "templates/commodity-workspace.css"
       - "templates/commodity-workspace.js"
+      - "config/sparse_worktree.json"
+      - "lib/site_assets.py"
+      - "scripts/check_template_site_sync.py"
+      - "scripts/worktree_sparse.py"
+      - "scripts/externalize_css.py"
+      - "scripts/optimize_assets.py"
+      - "templates/_interfonts.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_state_inks.html.j2"
+      - "templates/_vector_polish.html.j2"
+      - "templates/navigation-refresh.css"
+      - "templates/product-nav-icons.css"
+      - "templates/theme.css"
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_commodity_decision_workspace.py"
+      - "tests/test_commodity_publication.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
     timeout-minutes: 7
@@ -38105,6 +38125,6 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
       - name: commodity research projection and physical-balance contracts
-        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_commodity_supply_context.py tests/test_commodity_decision_workspace.py tests/test_commodity_publication.py -q -p no:cacheprovider
       - name: workspace state, import and company-return contracts
         run: node tests/test_commodity_workspace_contracts.js
