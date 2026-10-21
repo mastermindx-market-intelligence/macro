@@ -1947,7 +1947,7 @@
       // sb.auth.signOut() fires SIGNED_OUT via onAuthStateChange -> _onAuth, which
       // owns the UI reset. Only fall back to a manual emit if that path errors,
       // so a normal sign-out updates each subscriber exactly once.
-      return getSupabaseClient().then(function (sb) { return sb.auth.signOut(); })
+      return getSupabaseClient().then(function (sb) { return sb.auth.signOut({ scope: 'local' }); })
         .catch(function () { _curUser = null; _emitAuth({ user: null, event: 'SIGNED_OUT' }); _renderAcct(); });
     },
     onChange: function (cb) {
