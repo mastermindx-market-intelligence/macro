@@ -29775,7 +29775,7 @@ jobs:
       - name: etf partial-NAV sleeve — declared bounds and sweep/swap guards
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction (+ SIC-D-B02 generation-guard suite)
-        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py -q
+        run: python -m pytest tests/test_sector_central.py tests/test_sector_generation_guard.py tests/test_sector_membership_coverage.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
