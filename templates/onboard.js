@@ -522,9 +522,15 @@
       s.src = "theme.js"; s.defer = true;
       s.onload = function () {
         restoreLightOnlyHostTheme();
-        resolve(window.MDXAuth || null);
+        var broker = window.MDXAuth || null;
+        if (!broker) _themeLoad = null; // A missing broker must be retryable.
+        resolve(broker);
       };
-      s.onerror = function () { resolve(null); };
+      s.onerror = function () {
+        _themeLoad = null; // A transient SDK failure must not poison future login.
+        if (s.parentNode) s.parentNode.removeChild(s);
+        resolve(null);
+      };
       (document.head || document.documentElement).appendChild(s);
     });
     return _themeLoad;
@@ -3014,8 +3020,9 @@
     var em = _byId("gp-email"); if (em) em.textContent = email || "";
   }
 
-  // Undo the signed-in chrome → guest state. Called only when /api/me returns a hard 401
-  // (cookie present but the session is dead/revoked): sign out locally so the stale cookie
+  // Undo signed-in chrome only when a fresh Supabase Auth check confirms
+  // revocation/invalid credentials; a /api/me 401 alone is not proof.
+  // Local sign-out ensures a confirmed-dead session cannot masquerade as login.
   // stops masquerading as a live login, and restore the signed-out header from the snapshot.
   function revertAuthChrome() {
     clearMeHint(); clearMeCache();
@@ -3032,6 +3039,34 @@
     if (out) { out.hidden = false; out.style.display = ""; }
     if (inn) { inn.hidden = true; inn.style.display = "none"; }
     ensureAuthBroker().then(function (auth) { if (auth && auth.signOut) { try { auth.signOut(); } catch (e) {} } });
+  }
+
+  // A /api/me 401 may race a rotated JWT. Never destroy a renewable Supabase
+  // session based on this unrelated endpoint's answer alone. Verify through the
+  // existing Auth client; only a definitive revoked/invalid session may sign out.
+  function verifyRejectedNavigationSession() {
+    return sbClient().then(function (sb) {
+      if (!sb) return; // Auth SDK unavailable is not an invalid session.
+      return sb.auth.getUser().then(function (first) {
+        // Concurrent subdomain/tab refresh may yield one stale null-session read
+        // although another client has already saved the winning session. Re-read
+        // the SAME Auth client once; never infer login from the cookie alone.
+        var e = first && first.error;
+        if (first && first.data && first.data.user && !e) return first;
+        if (!e || e.name === "AuthSessionMissingError" ||
+            e.name === "AuthRefreshDiscardedError") return sb.auth.getUser();
+        return first;
+      }).then(function (result) {
+        if (result && result.data && result.data.user && !result.error) return;
+        var e = result && result.error;
+        if (!e) return; // Ambiguous results also preserve the session.
+        var status = Number(e.status);
+        if (e.name === "AuthSessionMissingError" ||
+            (status >= 400 && status < 500 && status !== 408 && status !== 429)) {
+          revertAuthChrome();
+        }
+      });
+    }).catch(function () { /* Offline/Auth outage is never an instruction to sign out. */ });
   }
 
   // Entry: sniff the cookie; if signed-in, paint the signed-in chrome IMMEDIATELY (never
@@ -3056,7 +3091,7 @@
         fetch(apiBase() + "/api/me", { headers: { Authorization: "Bearer " + token }, cache: "no-store" })
           .then(function (r) {
             if (r && r.ok) return r.json().then(function (me) { if (me) { writeMeCache(me); applyAuthChrome(me); } }).catch(function () {});
-            if (r && r.status === 401) revertAuthChrome();   // session truly dead → signed-out
+            if (r && r.status === 401) return verifyRejectedNavigationSession(); // verify with Auth before any logout
             // 429 / 5xx / offline → keep the optimistic signed-in chrome (transient)
           })
           .catch(function () {/* network/offline → keep the optimistic signed-in chrome */});

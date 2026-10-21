@@ -447,6 +447,79 @@ def test_revert_restores_the_signed_out_pricing_ctas(rel: str) -> None:
     assert "if (!pc.__upgradePlan) return;" in bind
 
 
+@needs_node
+@pytest.mark.parametrize("rel", REL_ONBOARD)
+def test_hard_401_checks_supabase_before_revoking_local_session(rel: str) -> None:
+    """A downstream 401 must never destroy a renewable Auth session.
+
+    Execute the shipping Auth-recheck helper, not a fake copy. True invalidity
+    can still sign out; 408/429/5xx, Auth transport errors and ambiguous replies
+    preserve the session while the next authenticated view remains server-gated.
+    """
+    source = (ROOT / rel).read_text(encoding="utf-8")
+    init = _extract_fn(source, "initAuthChrome")
+    assert "if (r && r.status === 401) return verifyRejectedNavigationSession();" in init
+    assert "revertAuthChrome();" not in init
+    helper = _extract_fn(source, "verifyRejectedNavigationSession")
+    script = """
+let REVERTED = 0;
+let VERIFIED = 0;
+let CURRENT = null;
+function revertAuthChrome() { REVERTED++; }
+function sbClient() {
+  if (CURRENT.sdk === 'absent') return Promise.resolve(null);
+  if (CURRENT.sdk === 'offline') return Promise.reject(new Error('SDK unavailable'));
+  return Promise.resolve({auth:{getUser:() => {
+    VERIFIED++;
+    if (CURRENT.sdk === 'transport') return Promise.reject(new Error('offline'));
+    return Promise.resolve(CURRENT.steps ? CURRENT.steps[Math.min(VERIFIED - 1, CURRENT.steps.length - 1)] : CURRENT.result);
+  }}});
+}
+__REAL_HELPER__
+async function run() {
+  const inputs = [
+    ['verified-valid', {data:{user:{id:'verified'}},error:null}, false],
+    ['auth-401', {data:{user:null},error:{status:401}}, true],
+    ['auth-403', {data:{user:null},error:{status:403}}, true],
+    ['auth-missing', {data:{user:null},error:{name:'AuthSessionMissingError'}}, true],
+    ['auth-408', {data:{user:null},error:{status:408}}, false],
+    ['auth-429', {data:{user:null},error:{status:429}}, false],
+    ['auth-503', {data:{user:null},error:{status:503}}, false],
+    ['ambiguous', {data:{user:null},error:null}, false],
+  ];
+  const out=[];
+  for (const [name,result,shouldRevoke] of inputs) {
+    CURRENT={result}; REVERTED=0; VERIFIED=0;
+    await verifyRejectedNavigationSession();
+    out.push({name,reverted:REVERTED,verified:VERIFIED,shouldRevoke,expectedCalls: (name==='auth-missing' || name==='ambiguous') ? 2 : 1});
+  }
+  for (const [name,first] of [
+    ['race-missing', {data:{user:null},error:{name:'AuthSessionMissingError'}}],
+    ['race-discarded', {data:{user:null},error:{name:'AuthRefreshDiscardedError'}}],
+    ['race-empty', {data:{user:null},error:null}],
+  ]) {
+    CURRENT={steps:[first,{data:{user:{id:'winning-session'}},error:null}]}; REVERTED=0; VERIFIED=0;
+    await verifyRejectedNavigationSession();
+    out.push({name,reverted:REVERTED,verified:VERIFIED,shouldRevoke:false,expectedCalls:2});
+  }
+  for (const mode of ['absent','offline','transport']) {
+    CURRENT={sdk:mode,result:null}; REVERTED=0; VERIFIED=0;
+    await verifyRejectedNavigationSession();
+    out.push({name:mode,reverted:REVERTED,verified:VERIFIED,shouldRevoke:false,expectedCalls: mode==='absent' || mode==='offline' ? 0 : 1});
+  }
+  process.stdout.write(JSON.stringify(out));
+}
+run().catch((err)=>{console.error(err);process.exitCode=1;});
+""".replace("__REAL_HELPER__", helper)
+    res = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=30)
+    assert res.returncode == 0, res.stderr
+    rows = json.loads(res.stdout)
+    assert len(rows) == 14
+    for row in rows:
+        assert row["reverted"] == int(row["shouldRevoke"]), row
+        assert row["verified"] == row["expectedCalls"], row
+
+
 @pytest.mark.parametrize("rel", REL_ONBOARD)
 def test_lifetime_predicate_matches_theme_js(rel: str) -> None:
     """The canonical lifetime test lives in templates/theme.js `_sdPlanChip`;
