@@ -1044,22 +1044,17 @@ def _apply_leadership(rec: dict, lead: dict) -> None:
         rec["proj"]["tilt"] = tilt
 
 
-def _stamp_hazard(rec: dict, family: str = "sector") -> None:
-    """W4.3 — stamp rec['now']['hazard'] with P(turn ≤ 1m/3m/6m) from hazard_score.
+def _live_hazard_inputs(rec: dict, family: str = "sector") -> tuple[dict, str, object, object]:
+    """B12 — pure extraction of the exact inputs `_stamp_hazard` hands to
+    `hazard_score.score`: (hazard_features, direction, quad, liq_expanding).
 
-    Works ADDITIVELY on the assembled record after _apply_leadership/_set_engine_read
-    so it never touches record_series byte-identity.  Derives a hazard_features dict
-    from the record's own turns/proj/now fields and calls hazard_score.score().
-
-    Stamped into now['hazard'] (a sub-dict), not now['hazard_features'] — the test
-    at test_cycle_proxies.py:236 checks 'hazard_features' is absent for sector; the
-    new 'hazard' key is separate.  Never raises — any failure is a warning + no stamp.
+    Lifted VERBATIM out of `_stamp_hazard`'s inline assembly (SIC-D-B12) so the
+    parity harness (engine/hazard_parity.py) can read the live inputs without
+    re-implementing them; `_stamp_hazard` now calls this helper.  Behavior is
+    byte-identical — same hf keys in the same order, same direction rule
+    (phase/phase_v2 in hazard_score._UP_PHASES), same quad/liq_expanding reads.
     """
-    try:
-        from engine.hazard_score import score as _hz_score, _UP_PHASES
-    except Exception as exc:  # noqa: BLE001
-        log.debug("hazard_score unavailable: %s", exc)
-        return
+    from engine.hazard_score import _UP_PHASES
 
     nw = rec.get("now") or {}
     turns = rec.get("turns") or []
@@ -1115,6 +1110,31 @@ def _stamp_hazard(rec: dict, family: str = "sector") -> None:
     direction = "up" if phase in _UP_PHASES else "down"
     quad = nw.get("quad")
     liq_expanding = nw.get("liq_expanding")
+    return hf, direction, quad, liq_expanding
+
+
+def _stamp_hazard(rec: dict, family: str = "sector") -> None:
+    """W4.3 — stamp rec['now']['hazard'] with P(turn ≤ 1m/3m/6m) from hazard_score.
+
+    Works ADDITIVELY on the assembled record after _apply_leadership/_set_engine_read
+    so it never touches record_series byte-identity.  Derives a hazard_features dict
+    from the record's own turns/proj/now fields and calls hazard_score.score().
+
+    Stamped into now['hazard'] (a sub-dict), not now['hazard_features'] — the test
+    at test_cycle_proxies.py:236 checks 'hazard_features' is absent for sector; the
+    new 'hazard' key is separate.  Never raises — any failure is a warning + no stamp.
+
+    B12: the feature/direction/quad/liq assembly lives in `_live_hazard_inputs`
+    (pure, shared with the parity harness); this stamp is unchanged behavior.
+    """
+    try:
+        from engine.hazard_score import score as _hz_score
+    except Exception as exc:  # noqa: BLE001
+        log.debug("hazard_score unavailable: %s", exc)
+        return
+
+    nw = rec.get("now") or {}
+    hf, direction, quad, liq_expanding = _live_hazard_inputs(rec, family)
 
     try:
         hz = _hz_score(hf, direction, family, quad, liq_expanding)
