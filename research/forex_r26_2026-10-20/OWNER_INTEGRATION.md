@@ -36,6 +36,10 @@ After publication, the existing static-set test failed solely because `forex-r26
 
 Hosted `contract-delta` and active `ci-authority/main` passed on `6c7afac...`. The inactive merge-queue-pilot authority context reports `inactive_base_context` and is not the active main authority. Remaining hosted packs were still running at this record; the successor commit requires its own hosted result. A broader local closure audit timed out at 240 seconds and supplied no verdict; it is not counted as a pass or failure.
 
+### Current-main merge after CI pin publication
+
+The pin correction was published at `71726ec86ff25f9925468306f3f52bc1a5844c68`. A slow publisher readback initially reported EFFECT_UNKNOWN; a read of the exact branch from the original workspace and GitHub both proved that same head had arrived, so no push was replayed. Current main had advanced to `da968a5bdb4b8021711e50bcfb859517129c6ed8` and added `options-nbbo-cohort` at the same static-set location. The ordinary merge retains both independent additions. The focused declared-set test passed on the merged index, and all seven recorded Forex source hashes remained unchanged. New-head hosted CI and qualified independent review remain required.
+
 ### Worker provenance and held boundaries
 
 Original root `forex-r26-native-completion-20261020-sol-001`, parent `forex-r26-recovery-20261020-sol` remain unchanged.

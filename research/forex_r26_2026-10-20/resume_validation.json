@@ -137,5 +137,26 @@
     },
     "successor_hosted_ci_required": true,
     "independent_release_review_required": true
+  },
+  "current_main_integration": {
+    "recorded_at": "2026-10-21T09:58:51.985781+00:00",
+    "candidate_parent": "71726ec86ff25f9925468306f3f52bc1a5844c68",
+    "main_parent": "da968a5bdb4b8021711e50bcfb859517129c6ed8",
+    "conflict_path": "tests/test_ci_pack.py",
+    "resolution": "Retained both independent Forex R26 and Options NBBO exclusive-job additions; no guard or ceiling change.",
+    "focused_test": {
+      "exit_code": 0,
+      "output": ".                                                                        [100%]\n1 passed in 3.69s"
+    },
+    "product_source_hashes_unchanged": {
+      "scripts/build_forex.py": true,
+      "lib/forex_r26_consumer.py": true,
+      "templates/forex.html.j2": true,
+      "templates/forex_r26_workspace.html.j2": true,
+      "templates/forex_r26.css": true,
+      "templates/forex_r26.js": true,
+      "tests/test_forex_r26_workspace.py": true
+    },
+    "hosted_ci_required": true
   }
 }
