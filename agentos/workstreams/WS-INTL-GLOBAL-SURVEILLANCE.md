@@ -82,7 +82,7 @@ waves:
   - IM17
   next_action: Commission after Wave 4.
 next_action: >
-  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN (#9937 pending CI). Consume ORCH-2 (Wave 2 IM13+IM14 UI) and
+  Wave 1 MERGED (#9923 → 0062e28f, #9924 → 5d454fbe); R14 FROZEN and MERGED (#9937 → main 556d3333). Consume ORCH-2 (Wave 2 IM13+IM14 UI) and
   ORCH-3 (Wave 3 engine-side IM15+IM16) returns; seat verifies and merges; then Wave 4–5 and the §14 hard acceptance tests.
 artifacts:
 - research/INTL_GLOBAL_SURVEILLANCE_MASTERPLAN_2026-10-21.md
@@ -115,4 +115,4 @@ return identity `1+r_USD = (1+r_local)(1+r_FX)`. Roadmap and 21 hard acceptance 
 | W1 IM11/IM12 | Opus orchestrator ORCH-1 → fabric lanes W1A/W1B | MERGED (#9923 → 0062e28f, #9924 → 5d454fbe) | records under the seat kit `orch/fabric/reviews/INTL-GS-W1*.md` |
 | W2 IM13/IM14 UI | Opus orchestrator ORCH-2 → fabric lanes W2F/W2A/W2B | running (spawned 05:2xZ) | frozen spec R14; evidence under `mockups/evidence/<packet>/` |
 | W3 IM15/IM16 engine | Opus orchestrator ORCH-3 → fabric lanes W3A/W3B | running (spawned 05:2xZ) | engine/config/tests only; matrix counts-only |
-| Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN (DEC:INTL-GS-R14-DESIGN-FREEZE, PR 9937) | design spec path above |
+| Design R14 | Opus orchestrator ORCH-D → Paper file 01M3P1TW5Y3XWQC37ADDS8K5AG | FROZEN + MERGED #9937 → 556d3333 (DEC:INTL-GS-R14-DESIGN-FREEZE, PR 9937) | design spec path above |

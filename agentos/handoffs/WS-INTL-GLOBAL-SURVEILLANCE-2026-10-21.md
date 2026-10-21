@@ -40,11 +40,12 @@ changed:
     config/intl_global_universe_v1.json, config/intl_source_rights_matrix_v1.json, engine/intl_global_universe.py,
     tests (14), CI job international-global-universe (pack 9). MERGED by seat at exact head → main 5d454fbeb43e
     (GitHub mergeCommit read).
-- path: 'PR #9937 (seat branch claude/ssd-intl-gs-seat-r2-8e4e57e69f466313 @7b75f4c6, draft)'
+- path: 'PR #9937 (seat branch claude/ssd-intl-gs-seat-r2-8e4e57e69f466313, head 1b45b1d0)'
   what: >
     R14 design freeze: research/INTL_GLOBAL_SURVEILLANCE_DESIGN_SPEC_R14_2026-10-21.md (789 lines),
     mockups/refs/intl-gs-r14/ (14 PNG boards + CONTRAST_TABLE.md), agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md,
-    this handoff + workstream updates. Rung CI; merge is seat-only after the rollup completes.
+    this handoff + workstream updates. MERGED by seat at exact head 1b45b1d0 → main
+    556d3333210b5b27eb1456c3e1a6d99a9bc034e4 (GitHub mergeCommit read, 05:52:24Z); ORCH-2/ORCH-3 told SPEC ON MAIN.
 verified:
 - claim: Baseline 401 on all nine assets, 200 on intl.html (curl, 2026-10-21 ~02:5xZ).
   command: 'for p in /intl.html /intl_workspace.css /intl_workspace_entry.js; do curl -s -o /dev/null
@@ -62,13 +63,13 @@ verified:
   command: 'python3 -m pytest tests/test_intl_global_universe.py tests/test_intl_global_observation.py tests/test_intl_global_observation_adapter.py -q -p no:cacheprovider  # 38 passed'
 - claim: Fabric lane verdicts for Wave 1 consumed by the seat (W1A review PASS; W1B review FAIL -> FIX -> REREVIEW PASS).
   command: 'grep -E ''^INTL-GS-W1'' "$K/orch/fabric/out/INTL-GS-W1A-REVIEW.out" "$K/orch/fabric/out/INTL-GS-W1B-REREVIEW.out"; cat "$K/orch/fabric/reviews/INTL-GS-W1A.md" "$K/orch/fabric/reviews/INTL-GS-W1B.md"'
+- claim: R14 freeze PR merged at its exact reviewed head after a complete rollup (only standing non-gating merge-queue-pilot X).
+  command: 'gh pr view 9937 --json state,mergeCommit,mergedAt --jq ".state+\" \"+.mergeCommit.oid+\" \"+.mergedAt"  # MERGED 556d3333… 2026-10-21T05:52:24Z'
 - claim: R14 freeze record validates under Agent OS; frozen rulings carry confidence/reversibility/review_by.
   command: 'python3 scripts/agentos.py validate --paths agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md  # 0 errors'
 unverified:
-- 'PR #9937 CI rollup on head 7b75f4c6 (watcher scratchpad/watch_pr.sh 9937 7b75f4c6; standing non-gating X = ci-authority/codex/merge-queue-pilot).
-
-  '
-- 'Main baseline ci.yml for 5d454fbe (combined Wave 1 landing proof; watcher scratchpad/watch_main.sh 5d454fbe…).
+- 'Main baseline ci.yml for 5d454fbe (Wave 1 landing) and for 556d3333 (R14 freeze landing); one watcher each
+  (scratchpad/watch_main.sh <sha>), observation only.
 
   '
 - 'Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
@@ -89,8 +90,8 @@ unresolved:
 
   '
 next_actions:
-- 'When watch_pr.sh reports #9937 complete: gh pr ready 9937; gh pr merge 9937 --squash --match-head-commit <full head>;
-  read mergeCommit; SendMessage ORCH-2 and ORCH-3 "SPEC ON MAIN <sha>".
+- 'Consume the two main-baseline watchers (5d454fbe, 556d3333); a red baseline is diagnosed and fixed forward
+  on a seat branch, never by re-running the merge.
 
   '
 - 'Consume ORCH-2 FOUNDATION_READY → seat verifies the foundation PR (open the evidence crops under
@@ -141,5 +142,6 @@ danger_areas:
 Program state lives in research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md;
 read its newest checkpoint first. This record is the Agent OS pointer, not a second ledger.
 
-Proven rungs at this write: #9920 PRODUCTION_PROOF; #9923 and #9924 MERGED (GitHub mergeCommit reads),
-their combined main baseline at CI; #9937 (R14 freeze) at CI; ORCH-2 and ORCH-3 RUNNING on fabric.
+Proven rungs at this write (05:5xZ): #9920 PRODUCTION_PROOF; #9923, #9924 and #9937 MERGED (GitHub mergeCommit
+reads: 0062e28f, 5d454fbe, 556d3333), their main baselines at CI; ORCH-2 and ORCH-3 RUNNING on fabric. Seat branch
+rotated to claude/ssd-intl-gs-seat-r3-8e4e57e69f466313 from main 556d3333 in the same SSD tree.
