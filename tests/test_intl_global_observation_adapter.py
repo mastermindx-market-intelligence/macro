@@ -215,6 +215,38 @@ def test_missing_collector_receipt_clock_abstains_everywhere(tmp_path):
             assert "clock_missing" in observation["abstain_reasons"]
 
 
+def test_downgraded_incumbent_receipt_withholds_exactly_that_observation(tmp_path):
+    chain = _chain(tmp_path)
+    qualification = deepcopy(chain["qualifications"]["usd_unhedged"])
+    target = next(receipt for receipt in qualification["qualifications"]
+                  if receipt["binding"]["market_id"] == "JP"
+                  and receipt["binding"]["horizon"] == "1m"
+                  and receipt["binding"]["leg"] == "usd")
+    assert target["binding"]["currency_basis"] == "usd_unhedged"
+    assert target["quality"] == "qualified"
+    target["quality"] = "stale"
+    target["reason"] = "source_session_missed"
+    observations = observations_from_qualification(
+        chain["records"], qualification, closes=chain["selected"],
+        source_evidence=chain["inputs"]["source_evidence"],
+        run_status_source=chain["run_status_source"], evaluated_at=EVALUATED,
+        rights=GRANT, currency_basis="usd_unhedged")
+    assert len(observations) == 7 * 5
+    japan_1m = [obs for obs in observations
+                if obs["identity"]["market_id"] == "JP"
+                and obs["identity"]["horizon"] == "1m"]
+    assert len(japan_1m) == 1
+    downgraded = japan_1m[0]
+    assert downgraded["state"] == "abstain"
+    assert "incumbent_qualification_withheld" in downgraded["abstain_reasons"]
+    assert downgraded["value"] is None
+    assert downgraded["incumbent"]["quality"] == "stale"
+    assert downgraded["incumbent"]["reason"] == "source_session_missed"
+    others = [obs for obs in observations if obs is not downgraded]
+    assert all(obs["state"] == "qualified" for obs in others)
+    assert len(others) == 7 * 5 - 1
+
+
 def test_receipt_bound_to_a_foreign_fx_id_abstains_identity_mismatch(tmp_path):
     chain = _chain(tmp_path)
     qualification = deepcopy(chain["qualifications"]["usd_unhedged"])

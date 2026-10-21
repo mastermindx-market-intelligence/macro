@@ -14,6 +14,7 @@ from engine.intl_global_observation import (
     ObservationError,
     assert_single_basis,
     build_observation,
+    check_clocks,
     decompose,
     fx_return_from_closes,
     observation_id,
@@ -123,6 +124,17 @@ def test_clock_ordering_violation_and_session_date_equality():
     same_day = {name: dict(clock) for name, clock in CLOCKED.items()}
     same_day["observation"]["at"] = "2026-10-09T00:00:00"
     assert _build(clocks=same_day)["state"] == "qualified"
+    # session_date compares calendar dates ONLY: an observation stamped later
+    # the same day than every downstream instant still orders by date.
+    later_same_date = {
+        "observation": {"at": "2026-10-09T23:30:00", "precision": "session_date"},
+        "source_publication": {"at": "2026-10-09T15:00:00+00:00",
+                               "precision": "upper_bound"},
+        "ingestion": {"at": "2026-10-09T15:00:00+00:00", "precision": "exact"},
+        "computation": {"at": "2026-10-09T16:00:00+00:00", "precision": "exact"},
+    }
+    assert check_clocks(later_same_date) is None
+    assert _build(clocks=later_same_date)["state"] == "qualified"
 
 
 def test_observation_id_binds_identity_only_and_is_deterministic():
