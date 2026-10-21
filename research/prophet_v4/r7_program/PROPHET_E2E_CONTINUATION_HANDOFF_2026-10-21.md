@@ -291,3 +291,68 @@ lane `pro-source-b4nightly-20261021-r1` (class build, host auto, BASE = origin/m
   PASS/PASS_WITH_NOTES → reviewDecision → fence → `--match-head-commit e0acbb96…`; never armed.
 - #7581 closure post: intent unrecoverable after compaction — NO post made (never improvise an
   outward post whose intent is unrecoverable).
+
+### Seat ruling F24 — B00, D05, D08, D11 and the B21 unit ladder (SOURCE §2/§4 consumed) (08:5xZ)
+**B00 (D10) — DISPOSITIONED on the next records commit.** The R7 masterplan is not in tree at BASE
+(SOURCE B00; the B23 lane hit the same gap). The seat commits the Chairman's masterplan verbatim as
+`research/prophet_v4/r7_program/PROPHET_END_TO_END_MASTERPLAN_FABLE_2026-10-20.md` (sha256 recorded
+beside it) in records r5, so lanes cite it by path@sha. Independent scope review is satisfied by the
+four orchestrator dispositions (DESIGN/INTEL/REGIONAL/SOURCE), each bound to the masterplan
+independently, plus the seat rulings F1–F23; the #6817 ack 6306863736 is DO_NOT_REDO.
+**D05 — DISPOSITIONED: adopt the B21 contract (SOURCE rec. 3).** Subscription (a): one
+`ALERT_CATEGORIES` member (merged only after #9774, custody) plus the designated named watchlist (fif
+precedent); no new store. Eligible change = the closed B1/B3 lifecycle set (`episode_terminal`,
+`emergence_triggered`, `corrected_material`, `retracted`, `superseded`; `episode_opened` optional,
+recency-gated); NEVER a quote refresh, freshness flip, UNAVAILABLE/UNESTIMABLE side or B4 transition
+(ENTRY_OPEN alert = price alert in disguise; D11 rule 3). Corrections are NEW outbox rows carrying
+`corrects_fire_event_id`; a sent original is never edited. Sub-rulings: (i) the BUILD_PROGRAM
+dependency on B07/B20 is WAIVED for the mechanism units U1–U7 only — U10 (journey completeness)
+stays gated on B07/B20; (ii) U4 (producer PATCH of its own UNSENT rows to `suppressed`) and (iii) U5
+(drain `not_after` → `mandatory_fact_stale`) are approved as mechanism, built together in one lane
+AFTER U2 lands, with ONE independent review (delivery infrastructure); (iv) a correction whose
+original is effect-unknown gets NO row — typed count `correction_original_effect_unknown` only, no
+user copy exists because nothing is sent; a correction whose original is quarantined/unsent is
+written `suppressed` with reason `original_unsent` and never delivered.
+**D08 — DISPOSITIONED (SOURCE rec. 4; conditional on the incumbent).** `_QUOTE_KEYS` is NOT extended
+until #7734 is accepted (early-close regression fixed, `tests/test_live_quotes.py` in CI) and NBBO
+rights sit in the D03 matrix; until then fillability stays UNKNOWN and B05 `classify_nbbo` is
+evidence only; B4's floor is preserved until measured-range adjudication (masterplan A3 :913). The
+commission's "latency acceptance method" sense of D08 is D11's.
+**D11 — DISPOSITIONED (SOURCE rec. 5 + 6, tightened by F22).** Release proof = the B23 harness: lab
+p75 over N=25 cold loads per cell (4 widths × EN/ZH × light/dark), labelled `lab_p75_*`, never
+reported as field; field p75 ONLY via a `web_vitals` field on the EXISTING beacon (BU3) — ACCEPTED as
+a post-Wave-A unit, labelled `field_p75_*`, no new endpoint, no identifier beyond what the beacon
+already carries. Rollback proof = the incumbent publish path's prior-artifact re-publish (no new
+mechanism), evidenced at Stage 6. ENTRY_OPEN: the §3 R1 "conflict" is dissolved, not excepted — the
+capture ledger (F22) persists decision-time facts + the policy pin and NO state token; the verdict
+is re-derivable, so D11 rule 3 binds EVERY surface including research capture.
+**B21 units.** Contract DONE (6eed43cb, sha256 3f75cf6b3403…). U2 (pure producer core, new
+`engine/prophet_journey_notifications.py`) → READY → fabric build lane
+`pro-source-b21u2-20261021-r1` now (no custody collision). U6 rides inside U2 with the tier literal
+behind one constant (B07 entitlement decision pending). U1 → after #9774 merges (custody). U3
+(`config/dag.yml` row) = seat placement act after U1+U2. U4+U5 → one lane + one review after U2. U7
+deferrable (honest-absence ruling). U8 = EXACT_HUMAN_GATE named ONCE: host `ALERT_DRAIN_ENABLE`, an
+authorized recipient + entitlement + inbox, copy ratification — not re-asked. U9 out of scope by
+law (B21 release limit). U10 gated on B07/B20 (Wave A/B product units).
+
+### Seat ruling F25 — B01 review consumed (PASS_WITH_NOTES); F1 fixed by the seat; F2 dismissed; #9947 MERGED (09:0xZ)
+- Review lane `pro-source-b1rec-review-20261021-r1` (ubuntu0, READ_ONLY, report @`0cc26ef8` on its lane
+  branch, copied to `reviews/B01_RECORDED_AT_REVIEW_2026-10-21.md`) returned **PASS_WITH_NOTES** on #9951
+  @`e0acbb96`: spec points 2–6 PASS; point 1 PARTIAL — the refusal exits non-zero with no receipt but surfaces
+  as an uncaught-exception traceback (`__main__` is `raise SystemExit(main())`, :676-677). Evidence: 144 passed
+  (5 episode suites), 7 passed (new file), closure 1 passed, yaml ok. No BLOCKING finding.
+- **F1 SHOULD_FIX → FIXED BY THE SEAT** (direct-labor exception under the standing execution policy: a
+  four-line `__main__` handler plus one subprocess test; framing, running and consuming a `-r2` lane costs more
+  than the change). Handler: `except ReconcileRefused as exc: sys.stderr.write(f"reconcile refused: {exc}\n");
+  raise SystemExit(2)` — it also covers the pre-existing `nightly_advance_enabled()` refusal at :628. Self-checked
+  (named as such, never relabelled independent); CI on the new head is the gate; no re-review commissioned
+  (guard, engine and dag.yml unchanged).
+- **F2 NOTE DISMISSED**: `if: ${{ false }}` is the declared form of EVERY `legacy-jobs.yml` job (343 at BASE;
+  `fif-saved-research-notifications` carries the comment "executed inside ci-pack — NOT a disabled gate");
+  `run_ci_pack.py --gate code` packs `prophet-lab` regardless. The registration stands. Common build rules
+  unchanged (they already forbid `gate: data` placement — SOURCE rec. 7 was applied before the b4nightly launch).
+- **#9947 (B23 journey-latency harness) MERGED** → `77710532` at 09:01:12Z (26 check rows, only
+  `ci-authority/codex/merge-queue-pilot` FAILURE; review PASS_WITH_NOTES; fence `6306863736` intact; merged
+  `--match-head-commit cfb8b81f`). The D11 lab-p75 method (F24) is now in tree.
+- **B00 (D10) done in this commit**: `PROPHET_END_TO_END_MASTERPLAN_FABLE_2026-10-20.md` (1190 lines, sha256
+  `1608eac9…49b69` in the `.sha256` sidecar) committed verbatim under `research/prophet_v4/r7_program/`.
