@@ -7,6 +7,13 @@ one per-sector conviction read with a reasoning trace. This script emits the dat
 ones), and renders the page. It links + embeds the four sub-dashboards it sits above (Sector
 Cycles overlay + Sector Heatmap scorecard embedded; Thematic Baskets + Narrative Rotation linked).
 
+B10: the free data JS + JSON carry a `publication` record (schema
+sector_central.publication.v1) — one typed status per secondary source
+(absent / malformed / read_error / ok, never collapsed into "empty"), the premium
+payload twin facts, the history mode and the correction contract — stamped after
+the secondary reads and the tier split so it describes what this build actually
+consumed.
+
 Additive — any failure logs and returns 0 so it never breaks the rest of the build.
 Run: python -m scripts.build_sector_central
 """
@@ -16,6 +23,7 @@ import hashlib
 import json
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
@@ -87,6 +95,54 @@ def _gate_cfg() -> dict:
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: gate config unreadable (%s) — board ungated", e)
         return {"gated": False, "preview_rows": 3}
+
+
+def _read_secondary(path: Path) -> tuple[dict | None, dict]:
+    """Read one secondary JSON source and return (doc, status_record).
+
+    B10: the publication record needs the failure MODE, not just "empty" —
+    absent (no bytes), malformed (bytes that are not a JSON object),
+    read_error (OS-level failure) and ok never collapse into one another.
+    `doc` is None on every non-ok status so the caller's fallback renders
+    exactly as before; only the record gains the distinction.
+    """
+    info: dict = {"status": "ok", "path": None, "sha256": None,
+                  "as_of": None, "error": None}
+    try:
+        site_root = (config.ROOT / config.load()["storage"]["site_dir"]).resolve()
+        info["path"] = str(path.resolve().relative_to(site_root))
+    except Exception:  # noqa: BLE001 — display-only relativization
+        info["path"] = str(path)
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        info["status"] = "absent"
+        return None, info
+    except OSError as e:
+        info["status"] = "read_error"
+        info["error"] = type(e).__name__
+        return None, info
+    info["sha256"] = hashlib.sha256(raw).hexdigest()
+    try:
+        doc = json.loads(raw)
+    except Exception as e:  # noqa: BLE001 — json raises several exception types
+        info["status"] = "malformed"
+        info["error"] = type(e).__name__
+        return None, info
+    if not isinstance(doc, dict):
+        info["status"] = "malformed"
+        info["error"] = type(doc).__name__
+        return None, info
+    info["as_of"] = doc.get("as_of") or doc.get("generated_utc")
+    return doc, info
+
+
+def _inline_source_status(status: str, error: Exception | None = None) -> dict:
+    """Status record for an in-process secondary (flows board, grader): the
+    `_read_secondary` shape minus the file fields, which do not exist here.
+    Statuses are "ok" | "error" from each consumer's existing try/except."""
+    return {"status": status, "path": None, "sha256": None, "as_of": None,
+            "error": type(error).__name__ if error is not None else None}
 
 
 def _fmt_money_mn(v) -> str:
@@ -436,17 +492,12 @@ def main(*, strict: bool = False) -> int:
         from engine import sector_central_grader as cg
         n_logged = cg.append_central_log(data)
         data["grader"] = cg.grade()
+        _grader_status = _inline_source_status("ok")
     except Exception as e:  # noqa: BLE001
         n_logged = 0
         log.warning("sector_central: grader failed: %s", e)
         data["grader"] = {"available": False, "note": "grader error"}
-
-    payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
-    (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
-    fdir = site / "sectordata"
-    fdir.mkdir(parents=True, exist_ok=True)
-    (fdir / "sector_central.json").write_text(
-        json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+        _grader_status = _inline_source_status("error", e)
 
     # autoescape=True: the merged Sector Intelligence template descends from the baskets
     # rvx template (written for an autoescaping env); flows_html is |safe-marked in-template.
@@ -458,34 +509,32 @@ def main(*, strict: bool = False) -> int:
         env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
     try:
         flows_html = _flows_section_html()
+        _flows_status = _inline_source_status("ok")
     except Exception as e:  # noqa: BLE001 — additive embed, never fatal
         log.warning("sector_central: flow board failed (%s)", e)
         flows_html = None
+        _flows_status = _inline_source_status("error", e)
     # Sector-intelligence handoff from build_baskets (hero verdict / factor-season chip /
     # money-flow verdict / member-symbol registry). Fail-soft: absent file → fallback hero.
-    ctx: dict = {}
+    # B10: read through _read_secondary so the publication record carries the failure
+    # MODE (absent / malformed / read_error / ok) instead of collapsing all to "empty".
     try:
-        ctx_p = site / "basketdata" / "si_handoff.json"
-        if ctx_p.exists():
-            ctx = json.loads(ctx_p.read_text(encoding="utf-8")) or {}
+        ctx, _si_status = _read_secondary(site / "basketdata" / "si_handoff.json")
+        ctx = ctx or {}
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: theme_context handoff read failed (%s)", e)
+        ctx = {}
+        _si_status = _inline_source_status("error", e)
     # Act-Now board (reader pattern) — build_site persists the SAME 5-lane board it renders
     # on us_stocks.html to site/basketdata/action_board.json (build_site runs earlier in the
     # engine job); read it fail-soft so an absent/corrupt file just renders the refreshing
     # fallback. The US board pre-merges every per-row field, so no separate lookup is needed.
     _action_board = None
-    _action_doc: dict = {}
-    _action_sha256 = ""
-    try:
-        _ab_p = site / "basketdata" / "action_board.json"
-        if _ab_p.exists():
-            _action_raw = _ab_p.read_bytes()
-            _action_doc = json.loads(_action_raw) or {}
-            _action_board = _action_doc.get("action_board")
-            _action_sha256 = hashlib.sha256(_action_raw).hexdigest()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.warning("sector_central: action_board read failed (%s)", e)
+    _action_doc, _ab_status = _read_secondary(site / "basketdata" / "action_board.json")
+    # non-ok statuses return doc=None; the downstream reads want the pre-gate {} shape
+    _action_doc = _action_doc or {}
+    _action_sha256 = _ab_status["sha256"] or ""
+    _action_board = _action_doc.get("action_board")
     # W-A bottoming watch (reader pattern, same shape as the board above). The lane's
     # payload rides theme_intel.act_now in basketdata/baskets.json — written by
     # build_baskets, which runs earlier in the engine job. Read fail-soft: an absent or
@@ -493,14 +542,11 @@ def main(*, strict: bool = False) -> int:
     # the display half that #4642 dropped when it transplanted the us_stocks board over
     # sector_central's own five lanes; the engine and builder halves never stopped.
     _bottoming = None
-    _basket_doc: dict = {}
-    _basket_sha256 = ""
+    _basket_doc, _bk_status = _read_secondary(site / "basketdata" / "baskets.json")
+    _basket_doc = _basket_doc or {}
+    _basket_sha256 = _bk_status["sha256"] or ""
     try:
-        _bk_p = site / "basketdata" / "baskets.json"
-        if _bk_p.exists():
-            _basket_raw = _bk_p.read_bytes()
-            _basket_doc = json.loads(_basket_raw) or {}
-            _basket_sha256 = hashlib.sha256(_basket_raw).hexdigest()
+        if _bk_status["status"] == "ok":
             _bottoming = build_bottoming_context(
                 ((_basket_doc.get("theme_intel") or {}).get("act_now")), _action_board
             )
@@ -536,6 +582,7 @@ def main(*, strict: bool = False) -> int:
         or data.get("as_of")
         or ""
     )
+    _payload_written = True
     try:
         write_payload(
             env, site, _sc_pgate, _sc_locked, _action_board,
@@ -549,9 +596,48 @@ def main(*, strict: bool = False) -> int:
         # promises it: fall back to the ungated board rather than publish a page
         # whose withheld rows are unreachable for everyone, paying or not.
         log.error("sector_central: payload write failed (%s) — board ungated", e)
+        _payload_written = False
         if strict:
             return 1
         _sc_pgate = None
+
+    # ── PUBLICATION RECORD (B10, masterplan §6.1) ────────────────────────────
+    # The free artifacts are written HERE — after the secondary reads and the tier
+    # split, before the render — so they can carry a typed record of what this
+    # build actually consumed: one status per secondary source with the failure
+    # MODE preserved, the generation it was built from, and the correction
+    # contract. Values the builder used are unchanged; only the record is new.
+    data["publication"] = {
+        "schema": "sector_central.publication.v1",
+        "as_of": data.get("as_of"),
+        "built_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "secondary_sources": {
+            "flows_html": _flows_status,
+            "si_handoff": _si_status,
+            "action_board": _ab_status,
+            "baskets": _bk_status,
+            "grader": _grader_status,
+        },
+        "premium_payload": {
+            "path": _SC_PAYLOAD_URL,
+            "written": _payload_written,
+            # row count, not lane-group count: _sc_locked is one entry per lane with
+            # withheld rows, and write_payload's own log line counts the rows
+            "withheld_rows": sum(len(_L["rows"]) for _L in _sc_locked),
+        },
+        "history_mode": "observed_at_build",
+        "correction_contract": {
+            "status": "none_native",
+            "basis": "no native correction or revision field in Central inputs "
+                     "(capability row R3A-92)",
+        },
+    }
+    payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
+    (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
+    fdir = site / "sectordata"
+    fdir.mkdir(parents=True, exist_ok=True)
+    (fdir / "sector_central.json").write_text(
+        json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
     _acc_rows, _acc_uni = _accumulation_rows()
     try:
         html = env.get_template("sector_central.html.j2").render(
