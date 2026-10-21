@@ -281,6 +281,7 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
         ],
     )
     calls: list[tuple[list[str], Path]] = []
+    readiness = iter([False, True])
 
     def run(command: list[str], *, cwd: Path, **_kwargs: object) -> object:
         calls.append((list(command), cwd))
@@ -291,7 +292,7 @@ def test_fetch_depth_zero_action_is_materialized_for_the_exact_tree(
     monkeypatch.setattr(
         PACK,
         "_tested_tree_ancestry_ready",
-        lambda *_args, **_kwargs: True,
+        lambda *_args, **_kwargs: next(readiness),
     )
     PACK._prepare_provided_actions(job, root=tmp_path, tested_tree_sha=SHA_TREE)
     assert calls == [

@@ -1,6 +1,6 @@
 {
  "schema": "capital_structure.rule_applicability_pack.v1",
- "version": "capital-structure-rule-applicability/1.1.0",
+ "version": "capital-structure-rule-applicability/1.2.0",
  "task": "L0",
  "qualified_on": "2026-10-14",
  "masterplan": {
@@ -16,7 +16,7 @@
  "reference_pack": {
   "path": "config/capital_structure_reference_pack.v1.json",
   "schema": "capital_structure.reference_pack.v1",
-  "sha256_at_qualification": "acd768daedd889af5d808d817e97324a0285c7fe61390ea786ef723428dcc28b",
+  "sha256_at_qualification": "a02b548d617563df42b04cdd5b83876fcd7ef048ffe44bb22561f50f6199cc8e",
   "pinned_spans": {
    "cdi_securities_act_forms_q116_21": "55ca5395f131bd98c293a3938c825750f9c113e1ecc90a5d6f5bceef51661f32",
    "cdi_securities_act_forms_q116_22": "c7653f8b341cd9f8fd900d96a7a16d5382514055dc836bf904a1b560969434df",
@@ -24,6 +24,8 @@
    "cdi_securities_act_forms_q116_24": "42213961420c57114e2f98352c26504b8c4aba089a6756ec1813d346cdc62459",
    "cdi_securities_act_forms_q116_25": "2185bff93df9ed684c813a8079334c9e6b4fe1af41f27a805b4dfab6f0db4640",
    "cdi_securities_act_forms_q116_26": "a23453c25ae126e66386940d80a83c653b467da94034b04656f057d411415c4d",
+   "nasdaq_5615_a_3_A_fpi_home_country_practice": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+   "nasdaq_5615_a_3_B_i_annual_report_disclosure": "87f96f8b7b3ecd7051bcfa2604049db4d2d6fd9cdab4bc2c95f1b6e8c3862240",
    "nasdaq_5635_d_1_A_minimum_price": "d18548bee6f2d619032012515ab8760f87c679c8c755bb359085a2fb8fe22681",
    "nasdaq_5635_d_1_B_twenty_percent_issuance": "4371cf6fcf244e6a5ea8c2f0cdc4f9db7e0271011bb782e83a0e791bf7c75fd4",
    "nasdaq_5635_d_2_approval_trigger": "f315c177eebb92bc8df69b01af8af17b01435a75ce63134feba369932eff91ee",
@@ -2116,6 +2118,33 @@
    "required_issuer_facts": [],
    "interpretation_date": "2026-03-19",
    "note": null
+  },
+  {
+   "rule_id": "nasdaq.5615.a.3",
+   "binding_class": "binding_rule",
+   "enforceable": true,
+   "citation": "Nasdaq Rule 5615(a)(3)",
+   "form": null,
+   "instruction": null,
+   "span_ids": [],
+   "reference_span_labels": [
+    "nasdaq_5615_a_3_A_fpi_home_country_practice",
+    "nasdaq_5615_a_3_B_i_annual_report_disclosure"
+   ],
+   "windows": [
+    {
+     "kind": "amendment_trail",
+     "start": "2025-11-24",
+     "end": "2026-10-19",
+     "sha256": "c037f7c516a11ff8b263226c1dfe823f632d7ebce47e3bf286a2c4d4de150be6",
+     "reference_span_label": "nasdaq_5615_a_3_A_fpi_home_country_practice"
+    }
+   ],
+   "before_first_window": "withheld",
+   "not_in_force_before": null,
+   "required_issuer_facts": [],
+   "interpretation_date": null,
+   "note": "Exchange listing rule: a Foreign Private Issuer may follow home country practice in lieu of the Rule 5600 Series (which contains Rule 5635), and must disclose each requirement it does not follow in its annual report. Excerpt-limited source qualified in E0; rendered in a browser on 2026-10-19T08:20:51Z because a non-browser GET returns 403. The rulebook prints two amendment trails near 5615(a)(3): the IM-5615-3 trail (amended Jan. 21, 2025 (SR-NASDAQ-2025-007), operative Feb. 4, 2025) and the trail closing Rule 5615 (amended November 24, 2025 (SR-NASDAQ-2025-037), trail text sha256 64321afcf86dd0de7fe6926ea80aaf48092a2187aad332b34b7c294f2b540e64). The page does not say which trail binds the (a)(3) text, so the window starts at the later date. Full 5615(a)(3) span text sha256 c74cf26cabdd92772464dc06149f01f342c2f1e6519ad309bbb152e455653fcc; IM-5615-3 span text sha256 91d39fb831b3c1b5d794438177a53dbf387ad9bdcd0c12d6850d4b52dc7f39f0."
   },
   {
    "rule_id": "nasdaq.5635.d.1.A",

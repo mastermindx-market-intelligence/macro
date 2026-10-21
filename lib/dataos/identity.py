@@ -71,7 +71,7 @@ from zoneinfo import ZoneInfo
 
 __all__ = [
     "IdentityError",
-    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "TXSE", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "ListingKey",
@@ -122,6 +122,7 @@ XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
 ARCX = "ARCX"   # ISO 10383 NYSE Arca segment; reference-probe admission only
+TXSE = "TXSE"   # Texas Stock Exchange (ISO 10383 operating MIC; dark segment TXSD not admitted)
 XSHG = "XSHG"   # Shanghai Stock Exchange
 XSHE = "XSHE"   # Shenzhen Stock Exchange
 XBSE = "XBSE"   # Beijing Stock Exchange
@@ -130,20 +131,23 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 #: D00.A1.1 — CLOSED venue-clock map (same human-once-in-a-diff law as KNOWN_MICS).
 VENUE_TZ: Mapping[str, str] = MappingProxyType({
     BATS: "America/New_York", XNYS: "America/New_York", XNAS: "America/New_York",
     XASE: "America/New_York", ARCX: "America/New_York",
+    # TXSE is a Dallas venue but trades the national-market Eastern session, the same
+    # reason BATS (Lenexa, KS) reads the New York clock: the trade date is the tape's.
+    TXSE: "America/New_York",
     XTSE: "America/Toronto", XTSX: "America/Toronto",
     XHKG: "Asia/Hong_Kong",
     XSHG: "Asia/Shanghai", XSHE: "Asia/Shanghai", XBSE: "Asia/Shanghai",
 })
 #: D00.A1.2 — CLOSED listing-currency map; no FX is ever applied anywhere.
 VENUE_CURRENCY: Mapping[str, str] = MappingProxyType({
-    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD",
+    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD", TXSE: "USD",
     XTSE: "CAD", XTSX: "CAD",
     XHKG: "HKD",
     XSHG: "CNY", XSHE: "CNY", XBSE: "CNY",
@@ -699,6 +703,8 @@ def _as_date(value: date | str | None) -> date | None:
 # receipt. Candidate input consumers must additionally bind their actual snapshot
 # read by the decision cutoff in the existing input bundle.
 NATIVE_REFERENCE_VENDOR = "polygon"
+SEC_FILING_CUSIP_VENDOR = "sec_filing_cusip"
+_SEALED_REFERENCE_VENDORS = frozenset({NATIVE_REFERENCE_VENDOR, SEC_FILING_CUSIP_VENDOR})
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -856,32 +862,45 @@ class AliasRow:
             if self.binding_sha256 != expected:
                 raise IdentityError("option root binding seal mismatch")
             return
-        if self.vendor != NATIVE_REFERENCE_VENDOR:
+        if self.vendor not in _SEALED_REFERENCE_VENDORS:
             return
+        if self.vendor == SEC_FILING_CUSIP_VENDOR:
+            if (not isinstance(self.vendor_symbol, str)
+                    or not re.fullmatch(r"[0-9A-Z]{9}", self.vendor_symbol)
+                    or not isinstance(self.security_id, str)
+                    or not self.security_id.startswith("SEC:")):
+                raise IdentityError("SEC filing requires an exact CUSIP and canonical security")
+            parse_id(self.security_id)
+            if (type(self.valid_from) is not date or type(self.valid_to) is not date
+                    or self.valid_to != self.valid_from + timedelta(days=1)):
+                raise IdentityError("SEC filing binding is restricted to its evidenced observation day")
+        reference_label = "SEC filing" if self.vendor == SEC_FILING_CUSIP_VENDOR else "polygon"
         clock = _aware_utc(self.known_at, "known_at")
         object.__setattr__(self, "known_at", clock)
         if self.valid_from is None or isinstance(self.valid_from, datetime):
-            raise IdentityError("polygon reference requires a dated valid_from")
+            raise IdentityError(f"{reference_label} reference requires a dated valid_from")
         if clock.date() < self.valid_from:
-            raise IdentityError("polygon evidence precedes its reference date")
+            raise IdentityError(f"{reference_label} evidence precedes its reference date")
         if self.valid_to is not None and self.valid_to <= self.valid_from:
-            raise IdentityError("polygon invalid event-date bounds")
+            raise IdentityError(f"{reference_label} invalid event-date bounds")
         if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
-            raise IdentityError("polygon missing evidence digest")
+            raise IdentityError(f"{reference_label} missing evidence digest")
         expected = alias_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
                                         self.valid_from, self.valid_to, clock,
                                         self.evidence_sha256)
         if self.binding_sha256 != expected:
-            raise IdentityError("polygon alias binding seal mismatch")
+            raise IdentityError(f"{reference_label} alias binding seal mismatch")
 
     @property
     def underlying_kind(self) -> str | None:
         return option_underlying_kind(self.security_id) if self.alias_kind == OPTION_ROOT_KIND else None
 
     def covers(self, on: date, *, decision_at: datetime | str | None = None) -> bool:
+        if self.vendor == SEC_FILING_CUSIP_VENDOR and type(on) is not date:
+            raise IdentityError("SEC filing requires an exact event date")
         if self.alias_kind == OPTION_ROOT_KIND:
             _option_root_query(self.vendor, self.vendor_symbol, on)
-        if self.alias_kind == OPTION_ROOT_KIND or self.vendor == NATIVE_REFERENCE_VENDOR:
+        if self.alias_kind == OPTION_ROOT_KIND or self.vendor in _SEALED_REFERENCE_VENDORS:
             cutoff = _aware_utc(decision_at, "decision_at")
             if cutoff < self.known_at or on > cutoff.date():
                 return False
@@ -1054,7 +1073,7 @@ class VendorAliasTable:
 
 
 # ── Pure observation history (publication/adapter activation is separate) ──────
-_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing"})
+_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing", SEC_FILING_CUSIP_VENDOR})
 _OBSERVATION_SCHEMA = "mastermind.identity_observations.v1"
 _ARTIFACT_NAMES = (
     "security_master.parquet", "vendor_aliases.parquet", "issuer_master.parquet",
