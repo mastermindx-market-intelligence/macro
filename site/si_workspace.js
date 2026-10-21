@@ -294,8 +294,16 @@ function openTrace(id){
 /* ── activation ──────────────────────────────────────────────────────────────── */
 var BASE_TITLE=(document.title||'').split(' · ')[0];
 var current=null;
+/* J-restore scroll memory (masterplan §8/§10 — restored origin). Per-view window.scrollY
+   captured at the instant a view is left, replayed when a hashchange (Back/Forward
+   between views) re-enters that view with no explicit scroll target. A first visit has
+   no entry and keeps native behaviour; history.scrollRestoration is never touched —
+   this is additive memory on top of the browser's, not a replacement for it. */
+var SCROLL_MEM={};
 function activate(view,target){
   if(VIEWS.indexOf(view)<0) view='overview';
+  /* capture BEFORE the .on swap: the section about to be hidden still owns the viewport */
+  if(current) SCROLL_MEM[current]=window.scrollY;
   var i, secs=document.querySelectorAll('.si-view'), btns=document.querySelectorAll('.si-view-btn');
   for(i=0;i<secs.length;i++) secs[i].classList.toggle('on',secs[i].getAttribute('data-view')===view);
   for(i=0;i<btns.length;i++){
@@ -343,6 +351,11 @@ function activate(view,target){
     var el=document.getElementById(target);
     if(el){ try{ el.scrollIntoView({block:'start'}); }catch(e){ el.scrollIntoView(); } }
     else if(history.replaceState) history.replaceState(null,'','#'+view);
+  }else if(typeof SCROLL_MEM[view]==='number'){
+    /* hashchange path with no explicit target (Back/Forward between views): replay where
+       this view was last left, one frame after the section swap so the layout has settled.
+       First visit (no entry) never reaches here and native behaviour stands. */
+    requestAnimationFrame(function(){ window.scrollTo(0,SCROLL_MEM[view]||0); });
   }
 }
 function route(){

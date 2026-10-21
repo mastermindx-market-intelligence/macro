@@ -321,11 +321,16 @@ def test_mounting_does_not_wait_for_a_frame() -> None:
     A forced reflow gives the same 'view is laid out first' guarantee unconditionally.
     """
     code = _code(_router())
-    act = code.split("function activate(", 1)[1].split("\nfunction ", 1)[0]
-    assert "requestAnimationFrame" not in act, \
-        "view activation must not depend on a frame callback — hidden tabs never get one"
-    assert "requestAnimationFrame" not in code, \
-        "no part of the router may gate work behind rAF"
+    mount = code.split("if(!mounted[view]){", 1)[1].split("loadAssets(view);", 1)[0]
+    assert "requestAnimationFrame" not in mount, \
+        "organ mounting must not depend on a frame callback — hidden tabs never get one"
+    # SIC-I09A (2026-10-21): the J-restore scroll replay is the router's ONE permitted
+    # frame callback — it gates nothing but the scrollTo itself (idempotent, eventual on
+    # hidden tabs, no mounted-style flag to strand), and its exact shape + no-target
+    # branch are pinned by tests/test_sector_central_history.py. The mount path above —
+    # the original blank-panel defect — keeps its absolute prohibition.
+    assert code.count("requestAnimationFrame") == 1, \
+        "the SIC-I09A scroll replay is the router's only frame callback"
 
 
 def test_map_read_uses_the_hoisted_quadrant_source() -> None:
