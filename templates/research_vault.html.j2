@@ -714,14 +714,22 @@ html[data-theme="light"] .btn.upgrade{ color:#fff; }
     <p class="rv-searching" id="si-research-status" role="status" aria-live="polite"></p>
   </section>
 
+<!-- RI05 MAJOR-1: the island's Save resolves window.FifSavedBriefcase, so the
+     store ships on this page too — the exact Forensics tag and stamp
+     (templates/fundamental_forensics.html.j2:592). defer plus the island's
+     click-time resolution mean the writer is ready long before any Save; if
+     the store is still absent, the handler says so in the status line. -->
+<script src="fif_saved_briefcase.js?v=20261012-x2s1" defer></script>
 <script>
 /* SIC-I05R · Research receiver entry island (masterplan §8.2). Six optional
-   link fields arrive by query string and are painted back verbatim; the
+   link fields arrive by query string and are painted back verbatim — a field
+   clipped on arrival carries a visible "(shortened)" mark (RI05); the
    composer never auto-saves — the device briefcase is written ONLY inside
    the Save click handler, through the existing stored-view writer
    (templates/fif_saved_briefcase.js: instance save at :614, factory at
-   :432, exported as FifSavedBriefcase.create at :1186). The one new global
-   is window.SI_RESEARCH_ENTRY, a read-only snapshot of the parsed fields. */
+   :432, exported as FifSavedBriefcase.create at :1186), loaded by the tag
+   above (RI05 MAJOR-1). The one new global is window.SI_RESEARCH_ENTRY,
+   a read-only snapshot of the parsed fields. */
 (function () {
   'use strict';
 

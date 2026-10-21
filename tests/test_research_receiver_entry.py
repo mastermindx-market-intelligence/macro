@@ -137,7 +137,7 @@ def test_no_storage_touch_outside_the_click_handler():
     assert saves[0] > click, "the writer call must live inside the click handler"
     resolves = [m.start() for m in re.finditer(r"window\.FifSavedBriefcase", script)]
     assert resolves and min(resolves) > click, (
-        "the writer must be resolved inside the click handler (deferred store script)"
+        "the writer must be resolved inside the click handler, never at load"
     )
 
 
@@ -148,6 +148,26 @@ def test_save_policy_rides_si_snap_verbatim_and_records_now():
     assert "new Date().toISOString()" in script
     # the writer is the existing store — no store is added here
     assert "FifSavedBriefcase" in script and "typeof api.create" in script
+
+
+# ── the store ships on the vault page (RI05 MAJOR-1) ────────────────────────
+
+def test_vault_page_loads_the_briefcase_store():
+    """RI05 MAJOR-1: the island's Save resolves window.FifSavedBriefcase, so the
+    vault page must load the store — the exact Forensics tag and stamp
+    (templates/fundamental_forensics.html.j2:592), ahead of the island's script."""
+    html = _html()
+    tag = '<script src="fif_saved_briefcase.js?v=20261012-x2s1" defer></script>'
+    assert tag in html, (
+        "the vault page must load fif_saved_briefcase.js with the Forensics stamp"
+    )
+    assert html.index(tag) < html.index("/* SIC-I05R"), (
+        "the store tag must precede the island's script in the document"
+    )
+    # and when the store is still absent, Save says so in the island's own
+    # EN/ZH status line — never a silent return
+    script = _island_script(html)
+    assert "noStore" in script
 
 
 # ── unsaved text survives the in-page language switch ───────────────────────
