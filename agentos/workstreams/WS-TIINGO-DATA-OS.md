@@ -34,24 +34,22 @@ waves:
     status: in_progress
     pr: [8698, 945, 955, 1093, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Resolve the retained automatic approval review rejection of persistent Tiingo
-  publication and scheduling through the original carrier. Terminal PR 1093 is
-  already merged and deployed as ea7b20286ffeda9194597245b147719d6ed515fd; all sixteen
-  original CI jobs passed, installed identity and source hashes match, and signed-in
-  24H API/chart checks passed. Cold and expired daytime-cache reads each transitioned
-  from pending to a successful cache; precise post-HTTP callback timing remains
-  unproved by those browser observations. Producer release
-  21ff4afc1e87de2e6832e2ad1d84548aebdcb2e3 is sealed but all three prepared launchd
-  labels remain unloaded. The independently owned current-history canary delivered
-  eight snapshots and settled at its 600-second cap; AMD/SPY source bars still end
-  at 03:46 UTC despite later retrieval. Reconcile the original public-relay refusal
-  against the actual later finite-capture receipts before any newly admitted
-  publication. Qualify a bounded real-trade canary, then activate the existing
-  schedules only after the persistent action is cleared. Do not replay settled
-  start receipts, change carriers or disturb foreign writers. Follow
-  docs/tiingo-evidence/20261021-terminal-24h/activation.md and retain the accepted
-  history census and provider, quality, identity, fundamentals and PIT boundaries
-  in the 2026-10-13 handoff and its evidence.
+  Execute the Chairman-approved bounded quote canary and conditional three-job
+  activation in docs/tiingo-evidence/20261021-terminal-24h/activation.md. The direct
+  2026-10-21 approval is current; do not ask again for the same action. Distinguish
+  actual originating tool/provider denials from historical handoff claims, and
+  reconcile current publication access before a live run. Install the accepted
+  CLI repair in a new sealed release; the existing runner now accepts an explicit
+  sixty-second total budget while retaining its kernel lock, permanent start/final
+  receipts, calendar guards and eight-hour default. Offline runner verification
+  passed 46 tests and four invalid-budget subtests. At 09:41 UTC the old release
+  21ff4afc1e87de2e6832e2ad1d84548aebdcb2e3 was intact and all three labels were
+  unloaded. The next real BOATS opening is 2026-10-22T00:00Z. A canary consumes that
+  session's start receipt; full recurring quotes can start only on a later unused
+  eligible session. Preserve Terminal PR 1093's accepted CI, deployed ea7b2028 and
+  live API/chart evidence, the settled 600-second private-history canary, and the
+  2026-10-13 history/identity/PIT boundaries. Never replay settled or frozen
+  operations, route around an actual denial, or displace a live writer.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
