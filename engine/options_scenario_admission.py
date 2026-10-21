@@ -72,7 +72,8 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
     tenor_policy. IV must be decimal annualized on an economic-expiry/no-floor
     basis. Reported Gamma/Vanna/Charm are not required: this calculation derives
     them from the admitted IV using the incumbent kernel, not from feed Greeks.
-    Rates and continuous dividend yield are explicit *scenario assumptions*.
+    Rates and continuous dividend yield are explicit *scenario assumptions*;
+    the admitted American-call equivalence requires r >= 0 and q == 0.
     Missing source/terms/availability or a refused capability never becomes zero.
     A structurally valid caller receipt does not authenticate it or grant rights.
     """
@@ -106,6 +107,11 @@ def build_admitted_scenario_surface(greeks_df, oi_df, asof, root, *, request, so
     # The legacy kernel uses pm for Vanna too, but labels it per one vol point.
     if numbers["pm"] != .01:
         return refuse("unsupported_pct_move")
+    # For the standard American-call domain below, no discrete dividend is
+    # insufficient on its own: positive yield or negative rates can introduce
+    # exercise value absent from the incumbent European kernel.
+    if numbers["q"] != 0 or numbers["r"] < 0:
+        return refuse("unsupported_american_call_carry")
     if (request.get("iv_source", "provided_iv") != "provided_iv"
             or request.get("vol_map", "sticky_strike") != "sticky_strike"
             or request.get("model", KERNEL_CONVENTIONS["model"]) != KERNEL_CONVENTIONS["model"]):

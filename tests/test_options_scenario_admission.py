@@ -23,7 +23,7 @@ def strict_book():
         greek_provenance={'iv':dict(source_ref='synthetic:source',model_ref='synthetic:IV-method',
             method='provider_observed',unit='decimal_annualized',tenor_policy='economic_expiry_no_floor')})
     ctx['input_sha256'] = exposure_input_digest(g,oi,asof,'SPY')
-    req=dict(price_grid=[100.,101.],horizons_minutes=[0,30],r=.02,q=.01,mult=100.,pm=.01)
+    req=dict(price_grid=[100.,101.],horizons_minutes=[0,30],r=.02,q=0.,mult=100.,pm=.01)
     return g,oi,asof,req,ctx
 
 
@@ -37,7 +37,7 @@ def test_principal_strict_positive_call_and_explicit_carry():
     out=strict_call(g,oi,asof,req,ctx)
     assert out['status']=='complete_for_supplied_universe', out
     assert out['surface']['conventions']['r']==.02
-    assert out['surface']['conventions']['q']==.01
+    assert out['surface']['conventions']['q']==0.
     assert out['surface']['conventions']['contract_multiplier']==100
     assert out['surface']['conventions']['pct_move']==.01
 
@@ -316,3 +316,16 @@ def test_conflicting_native_deliverables_cannot_hide_behind_standard_label():
         out = strict_call(g, oi, asof, req, ctx)
         assert out['surface'] is None
         assert out['unavailable_reasons'] == ['exact_series_terms_unqualified']
+
+
+def test_american_call_carry_cannot_claim_european_equivalence():
+    from engine.intraday_greeks import bs_price
+    for r, q in [(0.02, 0.05), (-0.05, 0.0)]:
+        # An American holder may exercise now; this European model can fall
+        # below that attainable value under either carry convention.
+        assert float(bs_price(100., 50., 1., .05, True, r=r, q=q)) < 50.
+        g, oi, asof, req, ctx = strict_book()
+        req.update(r=r, q=q)
+        out = strict_call(g, oi, asof, req, ctx)
+        assert out['surface'] is None
+        assert out['unavailable_reasons'] == ['unsupported_american_call_carry']
