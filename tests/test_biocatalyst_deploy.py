@@ -81,8 +81,7 @@ def test_record_history_collector_tests_are_owned_by_the_biocatalyst_ci_lane():
     )
 
 
-def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
-    legacy_jobs = _text(LEGACY_JOBS_PATH)
+def _assert_biocatalyst_ci_ownership(legacy_jobs: str) -> None:
     # The former aggregate suite exceeded its 20-minute process cap.  The pack
     # runner gives each logical job its own cap, so make ownership and both
     # lower/upper timeout bounds explicit.  A new test_biocatalyst_*.py must
@@ -95,6 +94,7 @@ def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
         "biocatalyst-contracts": 10,
         "biocatalyst-deploy-integration": 12,
         "biocatalyst-regulatory": 12,
+        "biocatalyst-decision-desk": 4,
     }
     assert "\n  biocatalyst:\n" not in legacy_jobs
     seen_paths: set[str] = set()
@@ -103,11 +103,24 @@ def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
         timeout = re.search(r"^    timeout-minutes: (\d+)$", body, re.MULTILINE)
         assert timeout is not None
         assert int(timeout.group(1)) == expected_timeout
-        # All subjobs remain intentionally bounded; an arbitrary timeout hike
-        # would conceal a regression instead of identifying its contract lane.
-        assert 5 <= int(timeout.group(1)) <= 12
-
-        paths = _lane_test_paths(body)
+        # The frontend has its own already-declared, smaller Node-backed job.
+        # Preserve every legacy backend limit rather than moving/duplicating
+        # the frontend tests or raising a backend process budget.
+        if job_id == "biocatalyst-decision-desk":
+            assert int(timeout.group(1)) == 4
+            assert re.search(r"^      - uses: actions/setup-node@v4$", body, re.MULTILINE)
+            assert re.search(r'^          node-version: "20"$', body, re.MULTILINE)
+            assert re.search(r'^          python-version: "3\.12"$', body, re.MULTILINE)
+            command = re.search(
+                r"^        run: python -m pytest "
+                r"(?P<path>tests/test_biocatalyst_decision_desk\.py) -q$",
+                body, re.MULTILINE,
+            )
+            assert command is not None, "Decision Desk must execute its actual pytest wrapper"
+            paths = {command.group("path")}
+        else:
+            assert 5 <= int(timeout.group(1)) <= 12
+            paths = _lane_test_paths(body)
         assert paths, f"{job_id} must run an explicit BioCatalyst test set"
         assert not (seen_paths & paths), (
             f"duplicate BioCatalyst CI ownership: {seen_paths & paths}"
@@ -128,6 +141,52 @@ def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
         "tests/test_deploy_update_self_heal.py",
     }
     assert seen_paths == expected_paths
+
+
+def test_biocatalyst_ci_uses_bounded_complete_lanes_with_no_unowned_test_file():
+    _assert_biocatalyst_ci_ownership(_text(LEGACY_JOBS_PATH))
+
+
+@pytest.mark.parametrize("mutation", [
+    "omit_frontend_job", "omit_frontend_command", "omit_node_setup",
+    "wrong_node_version", "wrong_python_version", "change_frontend_timeout",
+    "duplicate_frontend_in_backend", "omit_legacy_page_tests",
+])
+def test_biocatalyst_ci_ownership_rejects_missing_duplicate_or_unrunnable_lane(mutation):
+    original = _text(LEGACY_JOBS_PATH)
+    # Establish a passing real manifest before corruption: a guard that always
+    # rejects the new lane cannot pass these anti-vacuity witnesses.
+    _assert_biocatalyst_ci_ownership(original)
+    frontend = _legacy_job_body(original, "biocatalyst-decision-desk")
+    backend = _legacy_job_body(original, "biocatalyst-serving")
+    if mutation == "omit_frontend_job":
+        mutated = original.replace("  biocatalyst-decision-desk:\n" + frontend, "", 1)
+    elif mutation == "duplicate_frontend_in_backend":
+        changed = backend.replace(
+            "          tests/test_biocatalyst_page.py\n",
+            "          tests/test_biocatalyst_page.py\n"
+            "          tests/test_biocatalyst_decision_desk.py\n", 1,
+        )
+        mutated = original.replace(backend, changed, 1)
+    elif mutation == "omit_legacy_page_tests":
+        mutated = original.replace(backend, backend.replace(
+            "          tests/test_biocatalyst_page.py\n", "", 1), 1)
+    else:
+        replacements = {
+            "omit_frontend_command": (
+                "        run: python -m pytest tests/test_biocatalyst_decision_desk.py -q",
+                "        run: echo tests are not being executed",
+            ),
+            "omit_node_setup": ("      - uses: actions/setup-node@v4", "      - name: no-node"),
+            "wrong_node_version": ('node-version: "20"', 'node-version: "18"'),
+            "wrong_python_version": ('python-version: "3.12"', 'python-version: "3.11"'),
+            "change_frontend_timeout": ("timeout-minutes: 4", "timeout-minutes: 12"),
+        }
+        before, after = replacements[mutation]
+        mutated = original.replace(frontend, frontend.replace(before, after, 1), 1)
+    assert mutated != original, "the witness must actually corrupt the manifest"
+    with pytest.raises(AssertionError):
+        _assert_biocatalyst_ci_ownership(mutated)
 
 
 def test_service_is_a_bounded_hardened_oneshot_with_worker_owned_locking():

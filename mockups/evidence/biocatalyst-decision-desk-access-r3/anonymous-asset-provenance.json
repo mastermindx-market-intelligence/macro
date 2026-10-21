@@ -1,0 +1,210 @@
+{
+  "source_parent": "de824d8360b91ff44aca2930ac045d1bc6b14bfb",
+  "scope": "anonymous data-free current-page assets, no source data or authentication",
+  "assets": [
+    {
+      "path": "biocatalyst.html",
+      "source": "site/biocatalyst.html",
+      "sha256": "fb9a1a2f61bd40f4ebed97510dad74ef82e86853a26d5eed00fdabb40e7dab72",
+      "bytes": 74169
+    },
+    {
+      "path": "theme.js",
+      "source": "lib.site_assets.emit_theme_js",
+      "sha256": "831dd24140f792c41a159b72ff8b92bba9f20085cb11c4434408f53c887a832f",
+      "bytes": 265200
+    },
+    {
+      "path": "live_config.js",
+      "source": "HEAD:site/live_config.js",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "bytes": 367
+    },
+    {
+      "path": "mm_brain.js",
+      "source": "templates/mm_brain.js",
+      "sha256": "13e51da67a46d89d4a8ecde43e9ee51af57e9259e6afc8b4f39e66a780640004",
+      "bytes": 279810
+    },
+    {
+      "path": "terminal_overlay.js",
+      "source": "templates/terminal_overlay.js",
+      "sha256": "569f74c47a6b3c4564019a2a52e14fc27432f5f2df3929cb73e5db70125ce289",
+      "bytes": 33169
+    },
+    {
+      "path": "onboard.js",
+      "source": "templates/onboard.js",
+      "sha256": "e9bbc4fbc58af7b77c54eedc1739e902ff3059dbc324d3cdbe15a3a4e5074128",
+      "bytes": 183220
+    },
+    {
+      "path": "onboard.css",
+      "source": "templates/onboard.css",
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "bytes": 64745
+    },
+    {
+      "path": "favicon.svg",
+      "source": "templates/favicon.svg",
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "bytes": 2043
+    },
+    {
+      "path": "favicon.ico",
+      "source": "HEAD:site/favicon.ico",
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24",
+      "bytes": 6597
+    },
+    {
+      "path": "apple-touch-icon.png",
+      "source": "HEAD:site/apple-touch-icon.png",
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6",
+      "bytes": 23722
+    },
+    {
+      "path": "theme.css",
+      "source": "templates/theme.css",
+      "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+      "bytes": 221941
+    },
+    {
+      "path": "biocatalyst.css",
+      "source": "site/biocatalyst.css",
+      "sha256": "2a26adf4cf624df8e7befe8006ab47e2353c128e039889a0ee7067f05293d22c",
+      "bytes": 58287
+    },
+    {
+      "path": "biocatalyst_decision_desk.css",
+      "source": "site/biocatalyst_decision_desk.css",
+      "sha256": "5d69fcef78a99727a0902905f16a782b8ddc3d6af97f177e6d610bd52565c03b",
+      "bytes": 8282
+    },
+    {
+      "path": "navigation-refresh.css",
+      "source": "templates/navigation-refresh.css",
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "bytes": 93481
+    },
+    {
+      "path": "logo_config.js",
+      "source": "templates/logo_config.js",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "bytes": 202
+    },
+    {
+      "path": "stock-logos.js",
+      "source": "templates/stock-logos.js",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "bytes": 16539
+    },
+    {
+      "path": "live.js",
+      "source": "templates/live.js",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+      "bytes": 50731
+    },
+    {
+      "path": "biocatalyst_decision_desk.js",
+      "source": "site/biocatalyst_decision_desk.js",
+      "sha256": "10cf51a0f909c13a2afcbdd8e630f9fdfab79d2a696a24080b2228365f6dbe7b",
+      "bytes": 44865
+    },
+    {
+      "path": "biocatalyst_decision_desk_host.js",
+      "source": "site/biocatalyst_decision_desk_host.js",
+      "sha256": "9c7f20d2cc911ebc9802e139e2a32e59082cc6b4e60b4603069dd9097b8c63ae",
+      "bytes": 8874
+    },
+    {
+      "path": "biocatalyst.js",
+      "source": "site/biocatalyst.js",
+      "sha256": "32a1d5d0825da45b9e83500935e63b7bb96c888d387a049f02e120a047201ebc",
+      "bytes": 220902
+    },
+    {
+      "path": "product-nav-icons.css",
+      "source": "templates/product-nav-icons.css",
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "bytes": 40320
+    },
+    {
+      "path": "fonts/Inter-400.woff2",
+      "source": "templates/fonts/Inter-400.woff2",
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "bytes": 23664
+    },
+    {
+      "path": "fonts/Inter-500.woff2",
+      "source": "templates/fonts/Inter-500.woff2",
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "bytes": 24272
+    },
+    {
+      "path": "fonts/Inter-600.woff2",
+      "source": "templates/fonts/Inter-600.woff2",
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "bytes": 24452
+    },
+    {
+      "path": "fonts/Inter-700.woff2",
+      "source": "templates/fonts/Inter-700.woff2",
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "bytes": 24356
+    },
+    {
+      "path": "fonts/Inter-800.woff2",
+      "source": "templates/fonts/Inter-800.woff2",
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "bytes": 24400
+    },
+    {
+      "path": "fonts/Inter-900.woff2",
+      "source": "templates/fonts/Inter-900.woff2",
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "bytes": 23900
+    },
+    {
+      "path": "account.js",
+      "source": "templates/account.js",
+      "sha256": "94a05a679fc9f62bc8c21f762501af80f156d78b8b479848639f3d724f85a852",
+      "bytes": 73621
+    },
+    {
+      "path": "macro_suite.css",
+      "source": "templates/macro_suite.css",
+      "sha256": "8d30ac57b09d21d4ae2b6ed0f42ad5b7f2a287996fd2633582133994d03ff7b3",
+      "bytes": 40091
+    },
+    {
+      "path": "mtf.js",
+      "source": "templates/mtf.js",
+      "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
+      "bytes": 6549
+    },
+    {
+      "path": "tablesort.js",
+      "source": "templates/tablesort.js",
+      "sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
+      "bytes": 15556
+    },
+    {
+      "path": "landing.css",
+      "source": "templates/landing.css",
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "bytes": 120213
+    },
+    {
+      "path": "supabase.js",
+      "source": "templates/supabase.js",
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+      "bytes": 110797
+    },
+    {
+      "path": "nav_market.js",
+      "source": "templates/nav_market.js",
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "bytes": 75071
+    }
+  ]
+}

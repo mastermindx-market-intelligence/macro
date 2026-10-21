@@ -1,0 +1,14 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/biocatalyst.html.j2
+- templates/biocatalyst.js
+- templates/biocatalyst.css
+- templates/biocatalyst_decision_desk.css
+- templates/biocatalyst_decision_desk_host.js
+- site/biocatalyst.html
+- site/biocatalyst.js
+- site/biocatalyst.css
+- site/biocatalyst_decision_desk.css
+- site/biocatalyst_decision_desk.js
+- site/biocatalyst_decision_desk_host.js
+manifest: mockups/evidence/biocatalyst-decision-desk-host-r2/manifest.json

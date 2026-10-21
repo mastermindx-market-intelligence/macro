@@ -1,0 +1,11 @@
+# Decision Desk access R3 — evidence scope
+
+The unchanged repository capture tool produced `manifest.json` at **2026-10-20T15:30:37Z**: 24/24 anonymous desktop/mobile × EN/ZH × dark/light × rest/actual hover/actual focus states. All referenced image hashes and sizes were checked; there are no console errors or failed responses. `EVIDENCE.yml` binds the changed product paths to this existing canonical schema. `source-hashes.json` identifies the captured source bytes on parent `de824d8360b91ff44aca2930ac045d1bc6b14bfb`; the containing commit is the candidate identity.
+
+This is the actual data-free Bio page, not a source-data or paid-account capture. The manifest's authenticated and unavailable-data gaps remain intact. Exact public asset provenance is retained separately. No token, cookie, live source payload or login credential is included.
+
+The separate `synthetic-host/verification.json` is an actual-browser behavior witness with controlled MDXAuth and exact retained R2 owner/API response fixtures. It passed 15 behaviors, 16 layout combinations and eight Chinese-font inspections, with no page errors. It demonstrates delegation to the existing sign-in owner and zero research requests from the access action; it does not establish a real login, native admission or actual entitlement. It also retains the earlier account/route/correction lifecycle tests.
+
+Root inspected the dark English desktop `ab67b6b04ea80e48.png` and the focused light Chinese mobile `13c6d1a19bbb56e1--access-focus.png`. The access action is visible, keyboard-focusable and fits its mobile width. It reuses the existing neutral button in the established dark/light treatments. This is principal inspection, not independent source or visual acceptance.
+
+`ci-regression.json` names the prior exact hosted failure: the existing aggregate coverage assertion omitted the already-declared Decision Desk job. `verification.json` records the executed complete logical-job repair and its diagnostics. All original lane budgets, source guards, server entitlement and Draft/HOLD boundaries remain. The implementation rationale and next native gates are in `research/catalyst_intelligence/decision_desk_r1/access_and_ci_r3.md`.

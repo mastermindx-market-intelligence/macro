@@ -1,0 +1,605 @@
+---
+workstream: WS:BIOCATALYST-CORE-PRODUCT
+session: sol/web-biocatalyst-decision-desk-r1-20261018
+model: sol
+ended_because: ci_handoff
+mission: >
+  Continue the Chairman-assigned Catalyst Intelligence program and deliver its
+  decision-first BioCatalyst host without competing with the separate native
+  R10 and Codex writers. This is a continuing source checkpoint, not product completion.
+state_before: >
+  Original PR 9611 was Draft/HOLD at 84bd28b6ae2badd444075e83e42b1390362cb068.
+  Its reviewed component existed, but the actual host seam was local/unpublished.
+  A Studio 502 left canonical capture effects uncertain under checkpoint 6291000963.
+changed:
+  - path: templates/biocatalyst_decision_desk_host.js
+    what: >
+      Compose the existing component, MDXAuth events, fixed WMN endpoints and
+      existing authenticated loader; bind URL, account and page lifecycle without
+      a new authentication, source, persistence or publication owner.
+  - path: templates/biocatalyst.html.j2
+    what: >
+      Make Decision Desk primary; retain trial tools under a secondary disclosure,
+      with explicit old trial/filter URLs preserved.
+  - path: scripts/build_biocatalyst.py
+    what: Emit the paired static Decision Desk assets; public allowlist changes add no API.
+  - path: templates/biocatalyst_decision_desk.css
+    what: >
+      Compose the secondary evidence disclosure with existing tokens. A browser
+      regression exposed an undefined focus token; use the existing link token
+      instead of an invisible keyboard outline.
+  - path: mockups/evidence/biocatalyst-decision-desk-host-r2/manifest.json
+    what: >
+      Retain canonical anonymous actual-page evidence, separate synthetic host
+      verification, exact source hashes and honest admission/entitlement gaps.
+verified:
+  - claim: The interrupted capture's exact target effects were absent and no live capture remained.
+    command: >
+      Studio start_process PID 48253: exact staging/inventory/log/manifest existence
+      checks and bounded matching-process read; original HEAD and modified source inventory.
+    result: >
+      Target effects NOT_APPLIED; historical dispatch not asserted. Same carrier
+      continued the original targets. Completed captures have explicit exit receipts.
+  - claim: The new host integrates with existing source/auth/URL lifecycles.
+    command: >
+      python3.12 -m pytest -q --tb=short --basetemp=.pytest_cache/host_r2_final_suite_03
+      tests/test_biocatalyst_decision_desk.py tests/test_biocatalyst_page.py
+      tests/test_biocatalyst_hydration.py tests/test_biocatalyst_d0a_design_contract.py
+      tests/test_biocatalyst_d0b_ui.py tests/test_chat_launcher_stub.py
+    result: >
+      108 passed, one inherited shared-theme relative-asset test failure, 9.61s.
+      Wrappers include 89 component and 20 host JS checks; counts overlap.
+      Exact failures and later focus/browser refresh are recorded in the evidence.
+  - claim: Real page composition works with controlled, explicitly synthetic auth/API seams.
+    command: python3.12 tests/verify_biocatalyst_decision_desk_host.py
+    result: >
+      Before the focus-only repair: 13 behaviors, 16 layout combinations,
+      eight CJK-font inspections and zero page errors passed. Final refreshed
+      scope and source hashes are in the retained synthetic-host verification.
+  - claim: Canonical anonymous capture retains truthful source and state evidence.
+    command: >
+      python3.12 scripts/capture_page_evidence.py --site-dir .pytest_cache/host_canonical_site
+      --routes /biocatalyst.html --viewports desktop,mobile --locales en,zh
+      --themes dark,light --max-pages 1 --settle-ms 1400
+    result: >
+      Same unchanged canonical tool; actual rest/hover/focus captures and PNG
+      hashes are in the manifest. Authenticated-access and data-state gaps
+      remain explicit. Earlier missing QA account/navigation assets were repaired,
+      with superseded receipts preserved rather than relabeled.
+unverified:
+  - claim: Independent acceptance of this new host delta and exact-head hosted CI.
+    what_would_verify: >
+      A separately authored source/visual review at the exact published candidate,
+      current hosted checks including Node 20, and explicit integration adjudication.
+  - claim: Native admitted Company/DataOS and actual entitled deployed source-to-user proof.
+    what_would_verify: >
+      Existing native owners resolve source and release gates, compose the actual
+      qualified inputs, and prove a real correction through shared publisher/server
+      state and the authenticated Decision Desk after release authorization.
+unresolved:
+  - >
+    All Draft/HOLD boundaries remain; publishing a review candidate does not
+    authorize Ready, automatic merge, merge-to-main, deployment or activation.
+  - >
+    The inherited test_no_dynamic_child_asset_is_document_relative flags stock.html#
+    in unchanged shared theme source. Keep its attribution and current CI verdict.
+  - >
+    Executive session-target lookup returned backend_unavailable. No independent
+    reviewer was launched or fabricated; the old R1 review does not cover host R2.
+next_actions:
+  - >
+    Reconcile exact original candidate/source custody and consume the final
+    canonical/controlled browser evidence; publish through the original typed
+    operation, never a replacement branch or copied workspace.
+  - >
+    Obtain exact-head independent source/visual review and hosted CI; repair
+    introduced findings on this carrier while preserving native writer boundaries.
+  - >
+    Consume the separately reviewed native adoption and qualified DataOS result,
+    then prove actual entitled source-change/correction behavior and obtain
+    explicit release acceptance before activation.
+do_not_redo:
+  - Do not rebuild accepted R9/R10 or substitute a new publisher, identity allocator, auth client or store.
+  - Do not touch the R10 chat's 9662/6712 writer or Codex native-adoption workspace.
+  - Do not convert fixture-backed browser checks, local tests or this handoff into native admission.
+  - Preserve the existing component and exact fixture bytes except for an evidenced material invalidator.
+danger_areas:
+  - Original source operation is biocatalyst-decision-desk-r1-20261018; recover its registered SSD worktree.
+  - >
+    Sparse materialization can prune exact manually restored data fixtures;
+    preserve source hashes and restore original Git bytes, never manufacture data.
+  - >
+    Codex receiver 01a158fd-eaba-7342-8b59-081a483f2fc2 records the remaining native
+    DataOS dependency via 9617 and actual production-host/staging denials. Neither
+    this file nor fixture consistency overrides those constraints.
+prs: [9611, 9662, 6712, 9617]
+---
+
+The containing source commit and `mockups/evidence/biocatalyst-decision-desk-host-r2/source-hashes.json`
+identify this increment. The original parent is `84bd28b6ae2badd444075e83e42b1390362cb068`.
+This checkpoint preserves ongoing project responsibility; `ci_handoff` names the
+source review boundary, not an assertion that the overall program ended.
+
+Native coordination was posted on original PR #9662 comment `6291265578`. That
+carrier was observed at `902465f702a30abb943b08e792d670827a68650b`, now targeting
+main, with independent CI and admission work. No native source was modified here.
+
+
+## 2026-10-20 Extra High recovery: current-main integration and exact continuation
+
+The Chairman requested an exact recovery after an interrupted Pro turn and a
+return to Pro after this stabilized turn. The previous Studio screenshot capture
+was already fully reconciled and published under original #9611 at
+`fc38baaad091fc6af8410c8be43d23e261f435d7`. The retained original
+24/24-state manifest, zero failed requests, synthetic 14-behavior user-path
+proof, source hashes and no-live-admission limitations remain valid for that
+reviewed source. DO_NOT_REDO the resolved capture or create a new publisher.
+
+The original #9611 registered SSD worktree retained a pending non-force merge
+with Macro main `d59b99b9afbe99ef528ce80db0ff66f0d9846abc`.
+Its single generated HTML conflict had been resolved and staged, with no
+active matching capture/worker process or dirty unstaged files. The typed
+publisher committed the staged tree as local `bb81391d10152ea2bb54519ac19b3fc692cd9e89`,
+but left `MERGE_HEAD` and did not record main as a second parent. On the SAME
+original worktree/carrier, ordinary `GIT_EDITOR=true git merge --continue`
+then completed a proper two-parent merge
+`f2af107ec55a06e70660e12610b159341c2138a9` (parents bb81391d and
+d59b99b9). No ref was reset, rewritten, rehomed or force-pushed. The caller
+must not represent bb81391d alone as latest-base admission.
+
+A fresh remote main read found `3b49d6a5c8a6330652a926a8e5061e0dbb3d0387`
+after a preceding `444140f2446ef2025da07ce1b591e0c0ce4393d4`
+observation. Latest incremental main changed one commit/four files and did not
+overlap owned Bio pages. After a conflict-free merge-tree preflight, a second
+normal parent-preserving `git merge --no-ff --no-edit` produced local
+`c6f69b520fdfeb89fa1f23b9b6b9fadccb2126b9` (parents f2af107e,
+3b49d6a5). This was deliberately a merge rather than a destructive rebase of
+the already-pushed original carrier; it is not a claim that moving main cannot
+advance again.
+
+Fresh integrated-source proof: the broader six-file UI/contract suite produced
+**108 passed, one inherited shared-theme failure**, exit 1, PID 96325. The
+single failure remains
+`tests/test_chat_launcher_stub.py::test_no_dynamic_child_asset_is_document_relative`
+flagging `stock.html#` in the shared theme client; that file/test are not this
+increment's authored source. Twelve missing D0a test results on the first
+post-merge run were strictly absent sparse-checkout fixtures; all three frozen
+JSON files were restored byte-identically from current HEAD and the same suite
+then reduced to this one known test failure. No guard was softened.
+
+The integrated exact-source browser harness passed **14 behaviors, 16
+EN/ZH × dark/light × viewport combinations and eight real CJK font checks**,
+zero page errors (PID 93153, Chromium 129.0.6668.29), with strictly synthetic
+auth/API seams. Its actual generated HTML digest was
+`77ddc0babc3dafb79ae6b8c80b81eb1859b687e45541e9595b8242e4846427a2`
+and canonical emitted theme digest
+`831dd24140f792c41a159b72ff8b92bba9f20085cb11c4434408f53c887a832f`.
+Two existing curated CI import/packing scopes passed (2/2, 146.40s,
+PID 91446). The runtime-style guard passed (240 JS files, 44 injection
+owners/88 retained hits); source-claims scope passed. This is *local* proof
+and does not make the former immutable anonymous manifest a new current-head
+entitlement or production source witness.
+
+**Original scope and current authority remain unchanged.** PR #9611 is
+Draft/HOLD; R10/#9662/#6712 is owned by the separate BioCatalyst Correction
+Admission chat; Codex native-adoption receiver is
+`01a158fd-eaba-7342-8b59-081a483f2fc2`; DataOS qualification remains
+separate through #9617. No native writer, release hold, provider job or
+production source was modified by this frontend integration. The earlier
+read-only independent-review attempt returned `backend_unavailable`; the
+existing GitHub reviewer request is not a completed independent review.
+The old explicit platform denial on updating the legacy
+`verification-summary.json` and `IMPLEMENTATION.md` must not be retried
+or reframed; these existing published handoff/evidence paths carry the
+continuation instead.
+
+**The containing commit of this new addendum is the canonical current
+frontend checkpoint**, and the updated original PR #9611 conversation comment
+6291000963 is its GitHub readback. The source integration commits are exact
+immutable references. No merge into default main, deployment, actual
+authenticated session or product acceptance is claimed.
+
+Next three actions for the authorized Pro successor:
+
+1. Read #9611's current exact HEAD and hosted CI/check/review state. Reconcile
+   that HEAD with the existing Agent OS handoff and source manifest; repair
+   genuine introduced CI defects only on the original carrier. Keep the
+   inherited shared-theme failure with its responsible owner if still relevant.
+2. Obtain an independent source/visual review of the integrated Decision Desk
+   host. The previous R1 component review did not cover host R2; neither a
+   GitHub reviewer request nor synthetic browser screenshots count as acceptance.
+3. Consume the separately admitted native Company/DataOS input and publication
+   proof through #9662/#6712/#9617 and existing Codex carrier, then test an
+   actual entitled source-change/correction user journey and request lawful
+   Draft/HOLD release. No fabricated data, parallel identity plane or trade
+   authority.
+
+
+## R3 continuation — access action and the introduced CI ownership regression
+
+This milestone continues the original #9611 carrier; it does not complete or
+release the Catalyst Intelligence program. Source parent is
+`de824d8360b91ff44aca2930ac045d1bc6b14bfb`; the containing commit and
+`mockups/evidence/biocatalyst-decision-desk-access-r3/source-hashes.json` identify
+the exact new candidate. There is no native R10/Codex workspace modification.
+
+**What changed:** the Decision Desk access-required state now offers an actual
+bilingual Check access action. It delegates anonymous sign-in to the existing
+MDXAuth owner, or sends signed-in access-limited users to same-origin plans.
+It does not fetch WMN, grant rights or transport private case context. The
+existing component has an optional host callback, not a second auth client.
+
+The former code CI run **39441884896** on de824d83 completed with **11/12 packs
+passed**, only pack3 failed. Its sole failed logical job was BioCatalyst serving:
+278 passed / 1 failed on the candidate, against 277 passed on the automatic
+base replay. The ownership assertion counted only seven older Bio jobs and
+missed the already-declared Decision Desk wrapper. The repaired assertion now
+counts that dedicated four-minute Python3.12/Node20 job exactly once. It still
+requires every Bio test to have one owner and retains all seven backend limits.
+Eight manifest corruption witnesses reject missing, duplicated, wrong-runtime
+and wrong-timeout cases. No workflow, entitlement or runtime guard was weakened.
+The red merge-queue-pilot authority context explicitly says inactive_base_context;
+this PR targets main, whose authority passed. It is not a #9611 rule to bypass.
+
+**Verification:** the complete real `biocatalyst-serving` test command passed
+**287 tests with 14 inherited warnings**, exit0 in 227.35s (PID37586), after
+repairing only the local test environment. Fourteen excluded ClinicalTrials
+fixtures and the basket membership reference were restored byte-for-byte from
+HEAD. Secure-path tests ran beneath an already safe user-cache ancestor rather
+than altering SSD permissions or the verifier. The earlier unqualified run and
+its sponsor-map diagnostic are retained in the R3 verification record. No data
+source, admission or production permission was fabricated or modified.
+
+The CI ownership proof has nine passes (real manifest plus eight corruptions).
+The existing two curated CI scope/import tests passed, 145.69s (PID51959).
+Focused page/component/hydration has 39 passes, with overlapping 89 component
+and 23 host JavaScript checks. The controlled actual-page browser passed
+15 behaviors, 16 EN/ZH/dark/light/viewport layouts and eight actual CJK font
+checks, zero errors. This still uses synthetic authentication and API inputs.
+The unchanged canonical tool captured **24/24 actual anonymous rest/hover/focus
+states** at 2026-10-20T15:30:37Z, zero console errors or failed responses.
+All PNG hashes and sizes were read back. Visual evidence, design-token,
+runtime-style, source-claims and diff guards passed. Independent review remains
+outstanding; principal screenshot inspection is not that review.
+
+Evidence lives in `mockups/evidence/biocatalyst-decision-desk-access-r3/`:
+`verification.json`, `ci-regression.json`, `source-hashes.json`, `manifest.json`,
+`EVIDENCE.yml`, `anonymous-asset-provenance.json` and the separate synthetic-host
+receipt/screenshots. Rationale and honest test boundaries are in
+`research/catalyst_intelligence/decision_desk_r1/access_and_ci_r3.md`.
+Do not rerun or repackage the previously denied writes to the legacy
+verification-summary.json or IMPLEMENTATION.md.
+
+A read-only Paper census confirms the same ten Decision Desk boards on p-20-0
+in file 01M2WGNCX9475G79JRKJTCM08P (776 nodes), including source-conflict and
+advanced-research boards. Nothing in Paper was edited or refocused. Existing
+saved-condition/alert ideas remain secondary to analytical interpretation.
+
+**Exact remaining boundaries:** independent host source/visual review has no
+submitted result. Existing Session Bridge and Executive reader report
+backend_unavailable; no reviewer was started. The connected Browser tab read
+returns ERR_PROXY_AUTH; restore that connection to an authenticated Mastermind
+tab for actual user-path proof. The native R10/#9662/#6712, Codex receiver
+01a158fd-eaba-7342-8b59-081a483f2fc2 and DataOS/#9617 owners retain all existing
+source/rights/production-staging gates. No competing writer or shadow input was
+introduced while those dependencies were unavailable.
+
+Next three steps: (1) consume the containing candidate's fresh hosted CI and
+independent review, repairing introduced defects on this original carrier;
+(2) consume qualified native Company/DataOS records through those exact owners
+and verify the current public wire against the frontend; (3) prove a real
+entitled current-case/later-correction journey and obtain explicit release
+acceptance before Ready, merge, deployment or activation. All Draft/HOLD and
+no-trade-authority boundaries remain. This is a continuing milestone, not a
+claim of running background work or program completion.
+
+
+## R4 continuation — current owner/consumer compatibility, not native admission
+
+Current source parent: `32fdf32aeca4607c5fee1b51e26ef42d8c633ce4`.
+Original #9611 branch/worktree/operation and all Draft/HOLD boundaries remain.
+The containing commit identifies this test/evidence increment; no production
+frontend, server, native publication, identity, entitlement or CI configuration
+is modified by it.
+
+The current #9662 source at `902465f702a30abb943b08e792d670827a68650b`
+was read through its existing synthetic Company fixture and TestClient harness.
+Nine exact current-owner HTTP bodies were retained separately under
+`research/catalyst_intelligence/decision_desk_r1/fixtures/company_evidence_r10/`.
+All eight list/query bodies and the selected detail pass the actual frontend
+consumer. The current input cut includes the third DataOS vendor-alias member;
+the nine raw hashes differ from the old R2 capture, which remains unchanged.
+The native checkout's HEAD and clean tracked/untracked state were checked
+before and after; Python bytecode writes were disabled. No native source,
+input, account or publication was modified.
+
+The generator now has exact-source and fresh-output fencing. Eleven new
+boundary/cleanup cases cover the immutable clean pin, moving/wrong refs, dirty
+and untracked source, owner-contained or symlinked output, historical/existing
+targets, the legacy-default owner boundary, and Python-context cleanup after
+failed fixture import. Initial missing-behavior and default-path defects were
+observed red before repair. Existing JavaScript consumer checks increased to
+93, with 23 retained host checks; the final focused pytest selection has
+50 passes. Counts overlap through wrappers and are not additive.
+
+The actual browser harness now selects only the retained pinned R2/R10 corpus,
+validates response hashes/headers and false admission claims before launch,
+and records the exact owner and capture-receipt hash. Both corpora passed
+15 behaviors, 16 layouts and eight actual CJK font checks, zero page errors.
+An invalid corpus name refuses before creating output. Root inspected the
+current-source dark English desktop and light Chinese mobile screenshots;
+that inspection is not independent visual acceptance.
+
+**Critical boundary:** the existing owner TestClient overrides authentication,
+read_bundle and the final current-publication recheck for this pure handler
+exercise. Thus disk admission, live DataOS identity, the real correction fence,
+production publication and actual paid entitlement remain UNPROVEN here.
+The capture and browser receipts explicitly say so. All source/identity inputs
+are synthetic; no real filing, quote or trade decision was originated.
+
+Rationale and the consumer acceptance matrix:
+`research/catalyst_intelligence/decision_desk_r1/current_owner_compatibility_r4.md`.
+Exact completed broad tests, hashes and separate current/historical browser
+receipts: `research/catalyst_intelligence/decision_desk_r1/current_owner_r4/`.
+These are the continuation evidence paths; do not repurpose the previously
+denied legacy verification-summary.json or IMPLEMENTATION.md writes.
+
+The original exact-head CI39496562287 was allowed to continue while this work
+was tested; at21:46UTC it had11/12packs passed and onlypack0 still executing,
+no failure. Read the original PR checkpoint for its subsequently consumed final
+verdict and the containing candidate's new CI identity. Independent R2/R3/R4
+source/visual review remains unreturned (GitHub request to mastermindxryan has
+zero submitted reviews). Session Bridge reply/targets and Executive Fabric
+read reported unavailable; no worker was fabricated or launched by shell.
+Browser was checked in this turn and requires the originating connected
+extension context; use an authenticated Mastermind tab after that connection
+is restored, not a substituted credential or a synthetic paid-session claim.
+
+Next three actions: consume exact-head CI and independent source/visual review;
+obtain independently admitted native Company/DataOS and correction evidence
+through the existing #9662/#6712/Codex/#9617 owners; prove a real entitled
+source-change/correction journey and obtain explicit release acceptance.
+R10 and Codex keep their exact operations and prior denials. This continuation
+is not a competing native writer, deployment, live qualification or an active
+daemon. The overall Catalyst Intelligence mission remains incomplete.
+
+
+## R5 continuation — exact CI selection repair
+
+The current Chairman assignment resumes original #9611 from checkpoint
+comment6291000963. Source parent is
+`78669041847758d3dc601ded781e585d2e1c8611`; the containing commit identifies
+this repair. Preserve the same registered SSD workspace, branch and operation
+`biocatalyst-decision-desk-r1-20261018`. The predecessor chat's repeated
+Thinking-failed condition was resolved by this fresh attended continuation;
+no source/runtime owner was replaced. Protected Mastermind procedure pin:
+`d3537d6dd1cf63178a1493eb70fa2eccc6c01fe0`, Skillpack1.0.1/bootstrap1.
+
+### Diagnosis and bounded change
+
+Hosted code run39504748868 failed in ci-pack-1 / ci-control-plane-contracts
+and contract-delta because Decision Desk's R4 fixture helper reached broad
+opaque fallback scopes. Its Python3.12/Node20/four-minute job was selected
+for unrelated ordinary code. The unchanged local packing assertion reproduced
+all three overages before repair: index weight5826>5822, free-content136>135
+jobs and5799>5795 weight; 1 failed in125.27s.
+
+Only `biocatalyst-decision-desk` in `.github/ci/legacy-jobs.yml` now declares
+`scope: exclusive`: all831 canonical literal import/read dependencies,
+22 explicit Node/fixture/page/build/paired-asset entries, and16 additional
+tracked ancestor initializers,869 total. The bounded existing fixture corpus
+uses `research/catalyst_intelligence/decision_desk_r1/fixtures/**` to cover
+receipt-selected filenames. No repository-root wildcard is added. None of
+all three packing probes belongs to the literal closure; only the103 opaque
+fallback patterns cease selecting this job. The large literal closure is
+intentional: the accepted R4 helper's static import reaches app.biocatalyst,
+app.main and their transitive dependencies. No import is reasoned away.
+
+`tests/test_ci_pack.py` registers the job in the existing equality-pinned
+CURATED_EXCLUSIVE set and adds one positive/negative selection regression.
+Non-reading selector path labels carry the existing ci-trigger-closure data
+annotation. The actual Node modules, both Node suites, all retained fixture
+families, capture helper and paired host assets remain selecting dependencies.
+The generic closure audit remains active for later Python dependency changes.
+
+Structural comparison against parent7866904 proved that every other manifest
+job, this job's execution definition, every previous test function and all
+other module-level constants remain identical. Python3.12, Node20, code gate,
+four-minute timeout and the same pytest invocation are retained. PACKING_PROBES,
+PACKING_PROBE_MAX_PACKS and the ancestor-init ratchet are unchanged. No check,
+suite, assertion or runtime guard is removed or weakened.
+
+### Completed local proof
+
+- `python3.12 -B -m pytest` on test_the_curated_exclusive_set_is_actually_declared,
+  test_curated_exclusive_scopes_cover_their_own_import_closure,
+  test_curated_exclusivity_drops_only_the_opaque_fallback_tier,
+  test_exclusive_curation_narrows_ordinary_code_prs,
+  test_ancestor_init_census_does_not_grow and the new
+  test_decision_desk_exclusive_scope_keeps_real_inputs_and_drops_unrelated_probes
+  in tests/test_ci_pack.py, plus tests/test_biocatalyst_decision_desk.py,
+  with --basetemp=.pytest_cache/ci_scope_r5_green: **19 passed in250.83s**, exit0.
+  The Decision Desk wrappers execute the real existing Node checks; counts
+  overlap and are not added to historical R4 totals.
+- `python3.12 -B scripts/check_contract_delta.py --base
+  747a4b1a3315f9a860cbd224b18af3ff17910c7a`: **0 introduced,0 inherited**, exit0,
+  429.31s. This is the exact failed hosted run's base. Retained log:
+  .pytest_cache/decision_desk_ci_scope_r5_contract_delta.log; SHA256
+  `0697d4adcfc5c079561dc9d1f6f798f89b0a449e7c4e519be7f7b028a5f3f8ca`.
+- Head and base both measure index135jobs/5822weight/10packs,
+  free-content135jobs/5795weight/10packs, and Prophet128jobs/5571weight/10packs.
+  Unchanged ceilings respectively136/5822/10,135/5795/10 and130/5600/10.
+  These weights are planner estimates, not measured runtime seconds.
+- `git diff --check` passed. `python3.12 -B scripts/agentos.py validate`
+  checked1911records with0errors and155warnings, exit0. The retained log SHA256
+  is `3721354cae2d0556206e17e7a04a20736b985a611b9bf40f35e5947e55310da4`.
+  Local Node is26.5.0; hosted Node20 acceptance remains the exact-head CI gate.
+  Publication/hosted-CI receipts belong to the current canonical PR checkpoint.
+
+The latest observed PR base9b716c624d66d5af812c2a2f29caf0ffbefe7c1c is already
+an ancestor of the parent; no main merge is needed to obtain that source.
+No Bio native/consumer boundary changed in the relevant base movement.
+Local proof is not the new candidate's hosted Node20/CI verdict.
+
+### Continuing integration and unchanged holds
+
+R4 source, retained bodies, capture guards and browser evidence are unchanged;
+no capture/browser run, native admission or deployment was repeated. The
+previous R4 evidence remains reusable only within its stated synthetic scope.
+A bounded native reasoning consultation reviewed the CI approach, but that is
+not independent R2/R3/R4 product/source/visual release acceptance. The installed
+Session Bridge again returned backend_unavailable. No paid worker, replacement
+release reviewer or background wake was created. Direct bounded execution was
+retained because original source custody and permitted tools remained available.
+
+Fresh GitHub reads retain #9662 at902465f7, #6712 at9239d53f and #9617 at674d8067,
+all OPEN/DRAFT. R10 Correction Admission, Codex receiver
+01a158fd-eaba-7342-8b59-081a483f2fc2 and DataOS remain separate. Native admission,
+identity observations, shared publication/lock/pointer state, reader-before-writer
+rollout and real entitled later-correction proof remain unreturned through
+existing #9662 comment6291265578. All previous production/staging/reviewer and
+legacy verification-summary.json/IMPLEMENTATION.md refusals remain preserved.
+GitHub independent review submissions remain zero; the existing reviewer request
+is unchanged. The real browser path still needs the originating connected
+extension context after native admission; synthetic auth cannot replace it.
+
+Next action: publish this verified repair once through the original typed
+operation and consume that exact head's hosted CI. Repair introduced findings
+on the same branch if any. Then obtain existing independent current-head
+source/visual review and the admitted native return, prove the real entitled
+case and later correction, and obtain explicit release-hold clearance.
+Keep DRAFT/HOLD, no Ready, auto-merge, merge-to-main, deployment or activation.
+Catalyst Intelligence remains BUILT_NOT_PROVEN and MISSION_COMPLETE=false.
+The current cumulative publication/CI frontier remains #9611 comment6291000963.
+
+
+## R6 — existing company-research output made readable (2026-10-21)
+
+### Bounded outcome and custody
+
+Continue original #9611, branch sol/web-biocatalyst-decision-desk-r1-20261018,
+operation biocatalyst-decision-desk-r1-20261018, from published R5 parent
+549aaee4f586d15a60fca697a61e6f52d8294698. The user requested continued buildout.
+Protected procedure pin d010b161386853586198a43f9ea9f535bbebb377,
+Skillpack1.0.1/bootstrap1. Draft/HOLD-FOR-SOL, no auto-merge and the separate
+R10/Company, Codex-native and DataOS owners remain binding.
+
+A pure renderer for catalyst.stock_research_assessment.v3 now presents company
+news changes and missing history, descriptive peer movement and coverage, the
+existing entry owner's research state, explicit unavailable advanced estimates,
+and separate identity/source/information/composition details. EN/ZH and
+dark/light use existing Decision Desk components. The build emits the paired
+data-free asset without loading it in the production Bio host.
+
+The owner contract is #9616 at13b528d07e52680570a837f27571b64eb8176ca8.
+Two historical synthetic CLI bodies and their original capture receipt were
+copied byte-for-byte to fixtures/stock_assessment_r8/. These are neither new
+native captures nor current market facts. SHA256s: delayed
+c4799c41792553d19234b9bdd978b27170f11b9e804c1927a36e4f041de651fb;
+missing history39defcc38d635182c05c1bac28a05ffc357f0f70614fb370aa124572fc7b52b2;
+receipt7c059aec43adf4514659d8571dcb43ba9e407441a093188c4c2c5c0d275f70e8.
+The builder refuses altered captures and replacement of different retained HTML.
+The browser verifier requires a fresh directory under the new R6 directory.
+Accepted R4 evidence and denied legacy documentation remain untouched.
+
+### Meaning and owner boundary
+
+NewsImpact-generated wording is labeled as an owner summary, not as original
+primary-source quotation. Missing history never becomes no change. An owner
+source-correction indicator never becomes a numeric magnitude reduction; the
+older retained R8 weakening-condition issue is not projected. Peer returns are
+observations from the supplied cohort, not factor residuals, causal spillover
+or predictive leadership. Entry states remain control/shadow research even
+when the supplied state is ENTRY_OPEN. Unqualified estimates remain null.
+
+The component acquires nothing and has no fetch, storage, authentication,
+navigation, order, publication or activation path. Evidence enters text nodes.
+Invalid replacement clears old evidence synchronously; snapshots protect locale
+updates from later caller mutation, and teardown prevents resurrection.
+
+No current WMN join is made. v3 lacks a WMN generation/event-revision binding,
+and the existing WMN identity does not bind the assessment identity epoch.
+Matching security/company alone cannot establish coherence or admitted rights.
+The native/serving owners still owe the admitted identity/source/entitlement
+mapping and correction-safe publication fence before live attachment. Digest
+shape checks are not authenticity, rights, source admission or decision-time
+availability proof.
+
+### Review and reconciled delegation
+
+One bounded native architecture advisory review identified the unsafe cross-
+contract join and recommended the separate pure renderer. The dedicated Fabric
+adapter was available, independently of Session Bridge's backend_unavailable.
+Root/parent biocatalyst-decision-desk-r1-20261018, child
+biocatalyst-dd-r6-research-renderer-20261021, controllerPID13681, terminated
+provider_error rc1 with VERIFIED_TERMINAL lineage and retry_allowed=false.
+Complete result SHA2563254af3cca60badf6bd0347a5601524c4c3aea5eafc33faa1ab929de4e048102.
+It returned no implementation; none was accepted or replayed. Its packet
+forbade original-worktree mutation. Parent retained unique source custody and
+continued bounded implementation directly; no replacement native owner ran.
+
+Independent read-only contract review found and the parent repaired:
+1. Valid legacy peer ISO timestamp forms were falsely rejected by v3's strict
+   parser. Peer-only normalization now preserves the owner language and
+   microsecond truncation; top/envelope/entry clocks remain strict.
+2. Derived owner summaries were mislabeled as original source text.
+3. Blocked-open entry and retrospectively formed cohorts could pass structural
+   checks. Open entry now requires no blockers; formation precedes the return
+   window; cohort purpose and positive age bound remain owner-qualified.
+
+A first closure-review turn hit model capacity before inspection. One bounded
+retry completed, followed by review of the repairs: PASS_WITH_LIMITS with no
+concrete remaining finding. This is advisory source concurrence, not a
+submitted GitHub review or release approval.
+
+### Completed source-dependent verification
+
+- Final Python3.12 focused run:19passed in3.86s, StudioPID90304, exit0.
+  Includes26actual Node contract cases through an explicit TAP wrapper and the
+  real shell/asset emission test. Counts overlap. Initial wrapper failure
+  exposed Node26's default reporter difference; explicit TAP repaired it.
+- Six CI declaration/closure/fallback/packing/ancestor/selection regressions:
+  6passed in255.43s, StudioPID77471; retained log
+  .pytest_cache/research_r6_ci_scope.log. Existing packing limits unchanged.
+- Structural YAML/AST comparison:869->876declared paths, exactly7additions;
+  every other job and this job's execution definition unchanged. The original
+  live host and R4 paths have no diff. No ceiling, check or assertion weakened.
+- Browser:9behaviors,16layouts,8Chinese-font checks,zero network/browser errors,
+  Python3.14/Playwright, Chromium151.0.7922.34, StudioPID90304 exit0.
+  Python3.12's missing Playwright import created no output before using the
+  installed browser environment. Current receipt:
+  research_presentation_r6/evidence_review_repaired/verification.json,
+  SHA2562be24676a02a625f9a587dfa7fed20c07a391803659fa4db1140247094010671.
+  Older evidence/ retains the first implementation; current claims use the
+  repaired source receipt. Parent inspected dark/English desktop and
+  light/Chinese mobile retained PNGs.
+- Design-system enforce-added:0blocking,25374pre-existing nonblocking findings.
+  Runtime-style injection guard passed245JSfiles,44existing injecting files,
+ 88existing allowed hits. Source affirmative-claim guard passed.
+  UI material-style detector found no new governed style surface.
+- git diff --check passed. Local contract-delta and AgentOS results are appended
+  after completion; hosted publication/CI receipts remain in the canonical
+  checkpoint6291000963. Local Node26 does not substitute for hosted Node20.
+
+MISSION_COMPLETE=false. The next safe source step is final local gates,
+same-carrier commit/push and current-head hosted CI, then reconciliation of
+existing native-owner returns. No source-branch merge, deployment, hold release,
+native activation or takeover is authorized by this presentation proof.
+
+### Final R6 local gates
+
+Contract-delta against parent549aaee4 completed with0introduced/0inherited,
+StudioPID93061 exit0,509.31s. Log .pytest_cache/research_r6_contract_delta.log
+SHA256ed6ab79b19435e6063e35334b6f59c4d432638fef48d9fbd6da2d7d196d90d49.
+Head/base both retain index135jobs/5822weight/10packs,
+free-content135jobs/5795weight/10packs and Prophet128jobs/5571weight/10packs;
+ceilings remain136/5822/10,135/5795/10 and130/5600/10 respectively.
+Weights are planner estimates, not measured runtime seconds.
+
+AgentOS completed1911records,0errors,156warnings, StudioPID99713 exit0;
+log SHA256594f6914a3011faca5a7143ae332c894ad7c20feb6a8a596079ea2ffd087ebb2.
+The existing six-check scope log SHA256 is
+f71e035ce21eb107f2e5b200b8581441ed3042156d24240c414897e5a3747324.
+All code and browser sources were frozen for these final local gates.
+The source commit and hosted verdict are recorded in checkpoint6291000963;
+Draft/HOLD and native integration requirements remain unchanged.

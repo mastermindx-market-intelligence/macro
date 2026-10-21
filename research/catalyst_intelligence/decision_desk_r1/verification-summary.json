@@ -1,0 +1,382 @@
+{
+  "generated_at": "2026-10-19T10:59:53.593Z",
+  "browser": "155.0.8059.84",
+  "scope": "Component replay only; no source admission, authentication or live integration proof",
+  "checks": [
+    "Unaltered API fixture gives a plain research task, visible uncertainty and no machine codes at rest",
+    "Setup retains the exact issuer-bound company research destination",
+    "Missing forecasts stay in the Scenarios task without fabricated estimates",
+    "Sources preserves wording while explicitly exposing the producer evidence-link gap",
+    "Host-owned URL state restores the exact company case and Sources task",
+    "Keyboard tabs and Escape preserve selection semantics and return focus to the case",
+    "Captured API responses drive horizon changes, honest empty views and null-horizon review/history queries",
+    "Conflict replaces the forward-looking card, headline and company action across every detail task",
+    "Withdrawal and unavailable API clear the earlier case, count and open detail together",
+    "Host authorization-context change immediately removes the previous account\u2019s data",
+    "Historical revisions remain distinct from withdrawn events in the card and Research task",
+    "Supplied source wording is rendered as text",
+    "Actual R2 API source context provides the supplied SEC destination and keeps claim support unresolved",
+    "Source-context case and Sources task restore against the same captured owner response",
+    "A source revision beyond the selected input cutoff removes the old page and citation in the browser",
+    "Chinese titles use a resolved CJK font in every Chinese layout; missing-glyph geometry cannot count as visual proof",
+    "Sixteen language/theme/viewport combinations preserve readable risk, action and detail without horizontal overflow",
+    "No browser runtime errors in the reviewed paths"
+  ],
+  "layouts": [
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 320,
+      "cardHeight": 409.53125,
+      "actionBottomWithinComponent": 812
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 390,
+      "cardHeight": 387.84375,
+      "actionBottomWithinComponent": 771
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "dark",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 320,
+      "cardHeight": 409.53125,
+      "actionBottomWithinComponent": 812
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 390,
+      "cardHeight": 387.84375,
+      "actionBottomWithinComponent": 771
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "en",
+      "theme": "light",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 320,
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "cardHeight": 317.171875,
+      "actionBottomWithinComponent": 681
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 320,
+      "cardHeight": 366.15625,
+      "actionBottomWithinComponent": 750
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "cardHeight": 317.171875,
+      "actionBottomWithinComponent": 681
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 768,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "cardHeight": 349.03125,
+      "actionBottomWithinComponent": 648
+    }
+  ],
+  "fontProof": [
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 320,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 390,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 768,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "dark",
+      "width": 1440,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 320,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 390,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 768,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    },
+    {
+      "lang": "zh",
+      "theme": "light",
+      "width": 1440,
+      "heading": "\u6838\u67e5\u4e0b\u4e00\u6b21\u5df2\u62ab\u9732\u7684\u4e34\u5e8a\u8fdb\u5c55\u3002",
+      "fonts": [
+        {
+          "familyName": "Noto Sans CJK SC",
+          "postScriptName": "NotoSansCJKsc-Regular",
+          "isCustomFont": false,
+          "glyphCount": 14
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "source_base": "b912fd97827cca925a7123aa2012e9765077f3f7",
+  "legacy_api_candidate": "ec5c2e2544576f20348c6eadf834fe3cefae8039",
+  "company_evidence_api_candidate": "430234957531693b6b13f026a161e28542086a82",
+  "direct_node_checks": {
+    "passed": 89,
+    "failed": 0,
+    "runtime": "Node 20.20.2",
+    "process_receipt_pid": 36483
+  },
+  "current_pytest_wrapper": {
+    "passed": 1,
+    "duration_seconds": 3.36,
+    "runtime": "Python 3.12 with Node 20.20.2",
+    "scope": "Final pinned fixtures; wrapper runs all 89 JavaScript checks",
+    "process_receipt_pid": 90683
+  },
+  "retained_python_import_proof": {
+    "combined_passed": 16,
+    "scope": "Earlier adapter revision: component wrapper plus 15 first-party import contracts; subsequent changes preserve Python imports, and the final component wrapper was rerun",
+    "duration_seconds": 137.78,
+    "process_receipt_pid": 50491,
+    "warnings": "Two existing pytest temporary-directory cleanup warnings"
+  },
+  "principal_review": {
+    "verdict": "ACCEPT_SOURCE_CONTEXT_COMPONENT_SCOPE",
+    "reviewer": "integration_architecture_review",
+    "reviewed_js_sha256": "c3c36099e4ca202dcd3d053ee0040ac2ee05215ddee14790de3a904f249d07b3",
+    "scope": "Actual final adapter, public evidence schema, relevant owner validator, and EN/ZH rendering source inspected; no blocking defect",
+    "limits": "No independent test/screenshot attestation; source bytes, admission, semantic support and production publication remain owner responsibilities",
+    "release_hold": true
+  },
+  "qa_font": {
+    "family": "Noto Sans CJK SC",
+    "source": "https://github.com/notofonts/noto-cjk/blob/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+    "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+    "distribution": "QA runtime only; not embedded in product or replay"
+  },
+  "visual_review": {
+    "verdict": "accepted for component replay",
+    "inspected": [
+      "desk-en-dark-1440.png",
+      "detail-zh-light-390.png"
+    ],
+    "findings": [
+      "Main research task, source-support uncertainty and review action are visible",
+      "Chinese text and complete source-context detail are readable on mobile",
+      "Supplied fictional SEC destination remains source context"
+    ],
+    "scope": "Root inspected actual final replay screenshots; not authenticated workbench or production admission"
+  },
+  "source_sha256": {
+    "templates/biocatalyst_decision_desk.css": "f6cfa6356dc18710a16b0ead1ef821f9cdfbe145c1d9628fb697b1311ec36176",
+    "templates/biocatalyst_decision_desk.js": "c3c36099e4ca202dcd3d053ee0040ac2ee05215ddee14790de3a904f249d07b3",
+    "research/catalyst_intelligence/decision_desk_r1/preview_shell.html": "efd7d7ffce306464812000ce0bf10ac1cd98a190d61579c203ba68e2e48c2b18",
+    "research/catalyst_intelligence/decision_desk_r1/Decision_Desk_Contract_Replay.html": "15979f0a5d859787b2585cb0008fc4bd1422350b3e260f4af28151c978e26214",
+    "tests/test_biocatalyst_decision_desk.cjs": "40e78a7e8cce6ce9efcdc238d107271662f69051bc928898f90898795ba8d39d",
+    "tests/test_biocatalyst_decision_desk.py": "6472c451690433c3cb0ed8e86c924e02ee8b176efae720891fc460718f0e222f",
+    "tests/verify_biocatalyst_decision_desk.cjs": "8eb74db6785b61933c9fb5cd8bde4490f00d54f75a02f5cdf733c6ffe92e6a98",
+    "research/catalyst_intelligence/decision_desk_r1/IMPLEMENTATION.md": "dab17a749f54a1677172eec4a4ba3e9505c2c25f2944b42ec7726836634393ef",
+    "research/catalyst_intelligence/decision_desk_r1/generate_company_evidence_fixtures.py": "8868edd3724403ff8e5c874249b49983480a1fbf660108bc6b98e7f75e5b32a3",
+    "research/catalyst_intelligence/decision_desk_r1/build_preview.py": "513d0f0babf6e5def65f6b48368fdec21a3c12b2d4c2050806038bccadfffde0"
+  },
+  "hosted_ci": {
+    "prior_published_head": "6f730bac9d628c354c1dada54f9f95536301c291",
+    "run_id": 39208360287,
+    "conclusion": "failure",
+    "sole_failed_legacy_job": "reference-integrity",
+    "failed_pack": 4,
+    "scope": "All other code packs passed at the prior published head; three inherited Sector Central migration packets lack approved reference receipts. New source has no current-head hosted verdict yet."
+  },
+  "authority": {
+    "source_admission": false,
+    "entitled_runtime_verified": false,
+    "production_publication_verified": false,
+    "activation": false,
+    "trade_authority": false
+  },
+  "canonical_visual_evidence": {
+    "manifest": "mockups/evidence/biocatalyst-decision-desk-r1/manifest.json",
+    "manifest_sha256": "5afdda53b40dd2b16816f903a3fcd8f00c0e6736bb42fa699855cead3584ea32",
+    "receipt": "mockups/evidence/biocatalyst-decision-desk-r1/EVIDENCE.yml",
+    "generated_at": "2026-10-19T10:59:49Z",
+    "states_attempted": 24,
+    "states_captured": 24,
+    "process_receipt_pid": 90683,
+    "exit_code": 0,
+    "scope": "Anonymous local synthetic replay; actual rest/hover/focus; no native/production admission",
+    "generated_replay_sha256": "15979f0a5d859787b2585cb0008fc4bd1422350b3e260f4af28151c978e26214",
+    "capture_tool_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "visual_evidence_guard_exit_code": 0,
+    "root_visual_review": [
+      "desktop/en/dark rest",
+      "mobile/zh/light rest",
+      "desktop/en/light button_focus"
+    ],
+    "combined_build_wrapper_capture_duration_seconds": 49.09,
+    "root_reviewed_screenshots_byte_identical": true
+  },
+  "ci_repair_checks": {
+    "source_claims": {
+      "exit_code": 0,
+      "process_receipt_pid": 60500
+    },
+    "design_token_ratchet": {
+      "blocking": 0,
+      "exit_code": 0,
+      "process_receipt_pid": 60583
+    },
+    "canonical_visual_evidence_guard": {
+      "exit_code": 0,
+      "process_receipt_pid": 4306,
+      "scope": "Final deterministic replay and canonical manifest"
+    },
+    "git_diff_check": {
+      "exit_code": 0,
+      "process_receipt_pid": 4306
+    },
+    "release_holds_preserved": true
+  },
+  "final_source_recapture": {
+    "candidate_head": "430234957531693b6b13f026a161e28542086a82",
+    "responses": 9,
+    "all_json_values_unchanged": true,
+    "raw_serialization_order_changed": true,
+    "raw_response_bytes_preserved_with_hashes": true,
+    "replay_embedding": "JSON object keys sorted for deterministic embedding; actual response files remain untouched",
+    "scope": "Actual API capture at clean immutable owner source, fenced before and after; synthetic source and auth harness"
+  }
+}

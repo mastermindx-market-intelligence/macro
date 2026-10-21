@@ -14,6 +14,7 @@
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="biocatalyst.css">
+<link rel="stylesheet" href="biocatalyst_decision_desk.css">
 </head>
 <body class="bci-page">
 {% set nav_search_placeholder_en = "Search any stock — US, China, HK, Canada & more…" %}
@@ -21,6 +22,12 @@
 {% include "_site_nav.html.j2" %}
 
 <main class="bci-workspace" id="bci-workspace" data-state="loading">
+  <section id="bci-decision-root" aria-label="Catalyst decision desk">
+    <p>{{ t('Checking available research…', '正在检查可用研究…') }}</p>
+  </section>
+  <p class="bci-host-route-status" id="bci-decision-route-status" role="status" hidden></p>
+  <details class="bci-source-research" id="bci-source-research">
+    <summary><span class="l-en">Trial evidence</span><span class="l-zh">试验证据</span></summary>
   <header class="bci-hero">
     <div class="bci-hero-copy">
       <p class="bci-eyebrow"><span class="bci-pulse" aria-hidden="true"></span>{{ t('BioCatalyst Intelligence', 'BioCatalyst Intelligence') }}</p>
@@ -246,10 +253,13 @@
       </div>
     </aside>
   </section>
+  </details>
 </main>
 
 <div class="bci-scrim" id="bci-scrim" hidden></div>
 <script src="theme.js" defer></script>
+<script src="biocatalyst_decision_desk.js" defer></script>
+<script src="biocatalyst_decision_desk_host.js" defer></script>
 <script src="biocatalyst.js" defer></script>
 </body>
 </html>

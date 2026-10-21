@@ -242,6 +242,7 @@ def test_biocatalyst_assets_have_responsive_motion_and_focus_guards():
         ".bci-evidence-strip",
         ".bci-date-type.is-actual",
         "body.bci-page #mmb-launch { display: none !important; }",
+        "body.bci-page #mmb-boot { display: none !important; }",
         ".bci-brain-launch { display: inline-flex;",
         "backdrop-filter: none",
         "min-height: 0; height: 100%; overflow: hidden",
@@ -743,3 +744,47 @@ def test_biocatalyst_runtime_is_valid_javascript():
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_decision_desk_is_primary_and_builder_emits_its_real_host_assets(tmp_path):
+    from html.parser import HTMLParser
+    from scripts.build_biocatalyst import render_shell
+
+    root = Path(__file__).resolve().parents[1]
+    (tmp_path / "templates").symlink_to(root / "templates", target_is_directory=True)
+    rendered = render_shell(tmp_path).read_text(encoding="utf-8")
+    nodes = []
+
+    class Shell(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            nodes.append((tag, dict(attrs)))
+
+    Shell().feed(rendered)
+    primary = next((i for i, (_, attrs) in enumerate(nodes) if attrs.get("id") == "bci-decision-root"), None)
+    research = next((i for i, (_, attrs) in enumerate(nodes) if attrs.get("id") == "bci-source-research"), None)
+    assert primary is not None, "the actual host template must mount the Decision Desk"
+    assert research is not None and primary < research
+    assert nodes[research][0] == "details" and "open" not in nodes[research][1]
+    assets = ("biocatalyst_decision_desk.js", "biocatalyst_decision_desk_host.js", "biocatalyst_decision_desk.css")
+    for asset in assets:
+        assert (tmp_path / "site" / asset).read_bytes() == (root / "templates" / asset).read_bytes()
+        assert asset in rendered
+    scripts = [attrs["src"] for tag, attrs in nodes if tag == "script" and "src" in attrs]
+    assert scripts.index("theme.js") < scripts.index("biocatalyst_decision_desk.js")
+    assert scripts.index("biocatalyst_decision_desk.js") < scripts.index("biocatalyst_decision_desk_host.js") < scripts.index("biocatalyst.js")
+    assert "company-page.json" not in rendered and "reviewHarness" not in rendered
+    research_asset = "catalyst_research_assessment.js"
+    assert (tmp_path / "site" / research_asset).read_bytes() == (root / "templates" / research_asset).read_bytes()
+    assert research_asset not in rendered, "the research-only renderer must not attach to the live host"
+
+
+
+def test_decision_desk_static_assets_are_public_but_no_api_route_is_added():
+    import yaml
+
+    root = Path(__file__).resolve().parents[1]
+    policy = yaml.safe_load((root / "config/site_access.yml").read_text())
+    exact = policy["public"]["exact"]
+    for asset in ("biocatalyst_decision_desk.js", "biocatalyst_decision_desk_host.js", "biocatalyst_decision_desk.css"):
+        assert "/" + asset in exact, "the data-free host assets must load before paid API access"
+    assert not any(item.startswith("/api/biocatalyst") for item in exact)

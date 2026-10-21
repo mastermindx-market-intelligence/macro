@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Catalyst Intelligence · Research preview</title>
+  <style>/* Preview-only excerpt of canonical theme.css at b912fd97827cca925a7123aa2012e9765077f3f7. */
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+    Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  --fs-display: 46px;
+  --fs-num-xl: 38px;
+  --fs-h1: 28px;
+  --fs-num-lg: 22px;
+  --fs-h2: 17px;
+  --fs-md: 15px;
+  --fs-body: 14px;
+  --fs-h3: 14px;
+  --fs-sm: 12.5px;
+  --fs-label: 11px;
+  --fs-micro: 10px;
+  --bg: #0f1115;
+  --panel: #181b21;
+  --panel2: #1e222a;
+  --text: #d7dce3;
+  --muted: #8b93a1;
+  --line: #3a4150;
+  --link: #7aa7e0;
+  --card-shadow: 0 1px 0 rgba(255,255,255,.02);
+}
+html[data-theme="light"] {
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --panel2: #eef1f6;
+  --text: #1c2430;
+  --muted: #5d6b7e;
+  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --link: #285fff;
+  --card-shadow: 0 1px 3px rgba(20,30,50,.07);
+}
+</style>
+  <style>/* Scoped consumer of the existing theme.css tokens; no global navigation. */
+.bci-decision-desk { color: var(--text); font: 400 var(--fs-body)/1.55 var(--font-ui); min-width: 0; }
+.bci-decision-desk *, .bci-decision-desk *::before, .bci-decision-desk *::after { box-sizing: border-box; }
+.bci-decision-desk h2, .bci-decision-desk h3, .bci-decision-desk h4, .bci-decision-desk p { margin: 0; }
+.bci-dd-shell { max-width: 1280px; margin: 0 auto; padding: 36px; }
+.bci-dd-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.bci-dd-eyebrow { font-size: var(--fs-label); font-weight: 650; letter-spacing: .14em; color: var(--muted); }
+.bci-dd-header h2 { margin-top: 10px; font-size: var(--fs-h1); line-height: 1.2; letter-spacing: -.035em; font-weight: 650; }
+.bci-dd-intro { margin-top: 12px !important; color: var(--muted); max-width: 640px; }
+.bci-dd-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 28px 0; }
+.bci-dd-views { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-btn,10px); }
+.bci-decision-desk button, .bci-decision-desk select { font: inherit; color: var(--text); cursor: pointer; }
+.bci-dd-button, .bci-dd-view, .bci-dd-tab, .bci-dd-horizon select { min-height: 44px; border: 1px solid var(--line); border-radius: var(--r-ctl,8px); background: var(--panel); padding: 10px 16px; }
+.bci-dd-button:hover, .bci-dd-horizon select:hover { background: var(--panel2); }
+.bci-dd-view { background: transparent; border-color: transparent; padding: 7px 14px; font-size: var(--fs-sm) !important; }
+.bci-dd-view[aria-pressed="true"] { background: var(--panel2); font-weight: 650; }
+.bci-dd-horizon { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-horizon select { font-size: var(--fs-sm); padding: 9px 12px; }
+.bci-dd-body { min-height: 180px; }
+.bci-dd-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.bci-dd-summary h3 { font-size: var(--fs-h2); font-weight: 600; }
+.bci-dd-status, .bci-dd-muted { color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-status { padding: 6px 0; }
+.bci-dd-body > .bci-dd-status { color: var(--text); padding: 24px 0 8px; font-size: var(--fs-h2); }
+.bci-dd-text-button { background: transparent; color: var(--muted) !important; border: 0; padding: 8px 0; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; font-size: var(--fs-sm) !important; }
+.bci-dd-cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 16px 0 22px; }
+.bci-dd-card { min-width: 0; border: 1px solid var(--line); border-radius: var(--r-card,12px); padding: 24px; background: var(--panel); display: flex; flex-direction: column; align-items: flex-start; }
+.bci-dd-card:only-child { max-width: 760px; grid-column: 1 / -1; width: 100%; }
+.bci-dd-card-top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; }
+.bci-dd-symbol { font: 650 var(--fs-h2)/1.3 var(--font-ui); overflow-wrap: anywhere; }
+.bci-dd-lane { color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-case-title { font-size: var(--fs-num-lg); font-weight: 600; line-height: 1.3; letter-spacing: -.025em; margin: 17px 0 10px !important; }
+.bci-dd-wording { color: var(--muted); font-size: var(--fs-md); margin: 0 0 10px !important; overflow-wrap: anywhere; }
+.bci-dd-field { margin: 13px 0; width: 100%; }
+.bci-dd-field h4 { color: var(--muted); font-size: var(--fs-sm); font-weight: 500; margin-bottom: 4px; }
+.bci-dd-field p { max-width: 74ch; overflow-wrap: anywhere; }
+.bci-dd-primary { margin-top: auto; padding-top: 11px; padding-bottom: 11px; background: var(--panel2); font-weight: 600 !important; }
+.bci-dd-scope { border: 1px solid var(--line); border-radius: var(--r-btn,10px); background: var(--bg); padding: 13px 16px; color: var(--muted); font-size: var(--fs-sm); }
+.bci-dd-scope summary { cursor: pointer; min-height: 26px; }
+.bci-dd-scope p { margin-top: 10px; }
+.bci-dd-detail { background: var(--panel2); border: 1px solid var(--line); border-radius: var(--r-card,12px); padding: 24px; margin-top: 26px; scroll-margin-top: 20px; }
+.bci-dd-detail-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.bci-dd-detail-top h3 { font-size: var(--fs-num-lg); overflow-wrap: anywhere; }
+.bci-dd-detail-title { margin-top: 16px !important; font-size: var(--fs-h2); }
+.bci-dd-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin: 22px 0 18px; }
+.bci-dd-tab { background: transparent; border-color: transparent; min-width: 90px; }
+.bci-dd-tab[aria-selected="true"] { background: var(--panel); border-color: var(--line); font-weight: 650; }
+.bci-dd-tab-panel { min-height: 150px; }
+.bci-dd-link { color: var(--link); display: inline-flex; padding: 10px 0; margin-right: 20px; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.bci-decision-desk :focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.bci-decision-desk button:disabled { opacity: .65; cursor: wait; }
+html[data-theme="light"] .bci-dd-card, html[data-theme="light"] .bci-dd-detail { background: var(--panel); box-shadow: var(--card-shadow); }
+html[data-theme="light"] .bci-dd-views { background: var(--bg); }
+html[data-theme="light"] .bci-dd-view[aria-pressed="true"] { background: var(--panel); box-shadow: var(--card-shadow); }
+@media (min-width: 1120px) {
+  .bci-dd-shell:has(.bci-dd-detail) { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 26px; }
+  .bci-dd-shell:has(.bci-dd-detail) > .bci-dd-header, .bci-dd-shell:has(.bci-dd-detail) > .bci-dd-toolbar { grid-column: 1 / -1; }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-cases { grid-template-columns: minmax(0, 1fr); }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-detail { margin-top: 0; align-self: start; }
+  .bci-dd-shell:has(.bci-dd-detail) .bci-dd-summary { display: block; }
+}
+@media (max-width: 700px) {
+  .bci-dd-shell { padding: 22px 16px; }
+  .bci-dd-header { gap: 10px; }
+  .bci-dd-header h2 { font-size: 25px; }
+  .bci-dd-header > .bci-dd-button { padding: 8px 10px; font-size: var(--fs-sm); }
+  .bci-dd-eyebrow { letter-spacing: .08em; font-size: var(--fs-micro); }
+  .bci-dd-intro { font-size: var(--fs-sm); margin-top: 10px !important; }
+  .bci-dd-toolbar { display: block; margin: 20px 0 15px; }
+  .bci-dd-views { width: 100%; flex-wrap: nowrap; }
+  .bci-dd-view { flex: 1; min-width: 0; white-space: nowrap; padding: 7px 6px; font-size: 11.5px !important; }
+  .bci-dd-horizon { margin-top: 10px; justify-content: space-between; }
+  .bci-dd-summary { display: block; }
+  .bci-dd-status { font-size: 11.5px; }
+  .bci-dd-cases { grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 10px; }
+  .bci-dd-card { padding: 17px; }
+  .bci-dd-case-title { font-size: 21px; margin-top: 14px !important; }
+  .bci-dd-wording { font-size: var(--fs-body); }
+  .bci-dd-field { margin: 8px 0; }
+  .bci-dd-card .bci-dd-primary { margin-top: 8px; }
+  .bci-dd-detail { padding: 18px; }
+  .bci-dd-tab { min-width: 0; flex: 1; padding: 9px 7px; font-size: var(--fs-sm); }
+}
+@media (prefers-reduced-motion: reduce) { .bci-decision-desk { scroll-behavior: auto; } }
+
+/* The existing trial workbench remains a secondary evidence drill-down. */
+.bci-source-research { max-width: 1280px; margin: 0 auto; padding: var(--sp-6,24px); border: 1px solid var(--line); border-radius: var(--r-card,12px); background: var(--panel); }
+.bci-source-research > summary { cursor: pointer; font: 600 var(--fs-h2)/1.4 var(--font-ui); color: var(--text); padding: var(--sp-3,12px); }
+.bci-source-research > summary:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
+.bci-host-route-status { max-width: 1280px; margin: 0 auto var(--sp-4,16px); padding: var(--sp-4,16px); color: var(--text); font: 400 var(--fs-body)/1.5 var(--font-ui); border: 1px solid var(--line); border-radius: var(--r-ctl,8px); }
+:root[data-theme="light"] .bci-source-research { background: var(--panel); box-shadow: var(--shadow-card,none); }
+@media (max-width: 760px) {
+  .bci-source-research { padding: var(--sp-3,12px); }
+}
+</style>
+  <style>
+    body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
+    .research-preview-controls { max-width:1280px; margin:0 auto; padding:var(--sp-4,16px) var(--sp-6,24px); border-bottom:1px solid var(--line); }
+    .research-preview-controls .bci-dd-toolbar { margin:0; flex-wrap:wrap; }
+    .research-preview-controls label { display:flex; align-items:center; gap:var(--sp-2,8px); }
+    .research-preview-controls select { min-height:44px; max-width:100%; padding:var(--sp-2,8px); background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:var(--r-ctl,8px); font:inherit; }
+    @media(max-width:700px) { .research-preview-controls .bci-dd-toolbar { display:flex; flex-direction:column; align-items:stretch; gap:var(--sp-3,12px); } .research-preview-controls label { justify-content:space-between; } }
+  </style>
+</head>
+<body>
+  <aside class="research-preview-controls bci-decision-desk" aria-label="Research preview controls">
+    <div class="bci-dd-toolbar">
+      <label><span data-copy="theme">Theme</span><select id="previewTheme" aria-label="Theme"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+      <label><span data-copy="language">Language</span><select id="previewLanguage" aria-label="Language"><option value="en">English</option><option value="zh">中文</option></select></label>
+      <label><span data-copy="case">Example</span><select id="previewCase" aria-label="Example"><option value="delayed_reconstruction">Source correction</option><option value="history_missing">Prior evidence missing</option></select></label>
+    </div>
+  </aside>
+  <main id="research"></main>
+  <script>/* Pure v3 research presentation. No acquisition, WMN join or action authority. */
+(function (global, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else global.CatalystResearchAssessment = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+  const QUAL = 'SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED';
+  const AUTH = ['may_admit_membership', 'may_change_entry', 'may_claim_causality',
+    'may_execute', 'may_gate', 'may_publish', 'may_rank', 'may_size'];
+  const ADVANCED = {
+    best_entry_policy: 'NOT_QUALIFIED', fundamental_value_priced_in: 'NOT_ESTIMABLE',
+    causal_theme_spillover: 'NOT_ESTIMABLE', predictive_lead_lag: 'NOT_QUALIFIED',
+    clinical_outcome_probability: 'NOT_QUALIFIED'
+  };
+  const ENTRY_STATES = ['NOT_READY', 'APPROACHING_ENTRY', 'ENTRY_OPEN', 'WAIT_PULLBACK',
+    'RAN_DONT_CHASE', 'INVALIDATED', 'UNAVAILABLE_DATA'];
+  const LIMITS = ['RELATIVE_RETURN_IS_NOT_FACTOR_RESIDUAL', 'PARTICIPATION_IS_NOT_CAUSAL_SPILLOVER',
+    'NO_INTRADAY_LEAD_LAG_FROM_WINDOW_RETURNS', 'COHORT_IS_NOT_ALL_SUBTHEME_SECURITIES',
+    'NO_SOURCE_OR_DISPLAY_ADMISSION'];
+  const OWN = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+  function need(value) { if (!value) throw new Error('RESEARCH_PACKET_UNAVAILABLE'); }
+  function record(value) {
+    need(value !== null && typeof value === 'object' && !Array.isArray(value));
+    const proto = Object.getPrototypeOf(value);
+    need(proto === Object.prototype || proto === null);
+    return value;
+  }
+  function text(value) { need(typeof value === 'string' && value.trim().length > 0); return value; }
+  function array(value) { need(Array.isArray(value)); return value; }
+  function strings(value) { array(value).forEach(text); return value; }
+  function number(value) { need(typeof value === 'number' && Number.isFinite(value)); return value; }
+  function nullableNumber(value) { if (value !== null) number(value); }
+  function count(value) { need(Number.isSafeInteger(value) && value >= 0); return value; }
+  function digest(value) { need(typeof value === 'string' && /^sha256:[a-f0-9]{64}$/.test(value)); }
+  function falseFlags(value, keys) {
+    record(value);
+    need(Object.keys(value).length === keys.length);
+    keys.forEach(key => need(OWN(value, key) && value[key] === false));
+  }
+  function jsonValue(value, seen, depth) {
+    need(depth <= 32);
+    if (value === null || typeof value === 'boolean' || typeof value === 'string') return;
+    if (typeof value === 'number') { number(value); return; }
+    need(value !== undefined && typeof value === 'object' && !seen.has(value));
+    seen.add(value);
+    if (Array.isArray(value)) { need(value.length <= 2000); value.forEach(v => jsonValue(v, seen, depth + 1)); }
+    else { record(value); Object.values(value).forEach(v => jsonValue(v, seen, depth + 1)); }
+    seen.delete(value);
+  }
+  // Keep all six supported fractional digits; Date.parse would discard microseconds.
+  function instant(value) {
+    const match = typeof value === 'string' &&
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?Z$/.exec(value);
+    need(match);
+    const [year, month, day, hour, minute, second] = match.slice(1, 7).map(Number);
+    need(year >= 1 && month >= 1 && month <= 12 && day >= 1 && day <= 31 &&
+      hour < 24 && minute < 60 && second < 60);
+    const date = new Date(0);
+    date.setUTCFullYear(year, month - 1, day);
+    date.setUTCHours(hour, minute, second, 0);
+    need(date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day);
+    return BigInt(date.getTime()) * 1000n + BigInt((match[7] || '').padEnd(6, '0'));
+  }
+  // peer_context.clock preserves Python ISO forms, unlike the strict v3
+  // envelope clocks. Normalize only that legacy peer grammar at this boundary.
+  function peerInstant(value) {
+    need(typeof value === 'string' && value.length <= 512);
+    const match = /^(\d{4}-\d{2}-\d{2}|\d{8}|\d{4}-W\d{2}(?:-\d)?|\d{4}W\d{2}\d?)T(\d{2}(?::\d{2}(?::\d{2})?|\d{2}(?:\d{2})?)?)(?:[.,](\d+))?Z$/.exec(value);
+    need(match);
+    let date = match[1];
+    if (date.includes('W')) {
+      const weekParts = /^(\d{4})-?W(\d{2})(?:-?(\d))?$/.exec(date);
+      const year = Number(weekParts[1]), week = Number(weekParts[2]), weekday = Number(weekParts[3] || 1);
+      need(year >= 1 && week >= 1 && week <= 53 && weekday >= 1 && weekday <= 7);
+      const start = new Date(0);
+      start.setUTCFullYear(year, 0, 4); start.setUTCHours(0, 0, 0, 0);
+      start.setUTCDate(start.getUTCDate() - (start.getUTCDay() + 6) % 7 + (week - 1) * 7);
+      const thursday = new Date(start.getTime());
+      thursday.setUTCDate(thursday.getUTCDate() + 3);
+      need(thursday.getUTCFullYear() === year); // Refuse a nonexistent ISO week 53.
+      start.setUTCDate(start.getUTCDate() + weekday - 1);
+      date = start.toISOString().slice(0, 10);
+    } else if (!date.includes('-')) date = date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
+    const parts = match[2].includes(':') ? match[2].split(':') : match[2].match(/\d{2}/g);
+    const normalized = date + 'T' + parts[0] + ':' + (parts[1] || '00') + ':' + (parts[2] || '00') +
+      (match[3] ? '.' + match[3].slice(0, 6) : '') + 'Z';
+    return instant(normalized);
+  }
+  function identity(value) {
+    record(value);
+    ['company_id', 'security_id', 'identity_epoch', 'identity_source_ref'].forEach(k => text(value[k]));
+  }
+  function sameIdentity(a, b) {
+    identity(a);
+    ['company_id', 'security_id', 'identity_epoch', 'identity_source_ref'].forEach(k => need(a[k] === b[k]));
+  }
+  function envelope(value, owner, cut, composed) {
+    record(value);
+    need(value.schema === 'catalyst.supplied_owner_time_envelope.v1' && value.owner === owner);
+    const at = instant(value.information_cutoff_at), made = instant(value.materialized_at),
+      received = instant(value.received_at);
+    need(at === cut && at <= made && made <= received && received <= composed);
+    text(value.source_ref); text(value.source_revision); digest(value.payload_digest);
+  }
+  function sameEnvelope(a, b) {
+    if (a === null || b === null) { need(a === b); return; }
+    record(a); record(b);
+    ['schema', 'owner', 'information_cutoff_at', 'materialized_at', 'received_at',
+      'source_ref', 'source_revision', 'payload_digest'].forEach(k => need(a[k] === b[k]));
+  }
+  function observation(value, windowEnd, cut) {
+    record(value); text(value.company_id); text(value.security_id); text(value.source_ref);
+    number(value.return_pct);
+    const known = peerInstant(value.known_at);
+    need(windowEnd <= known && known <= cut);
+  }
+  function peers(value, focal, cut) {
+    record(value);
+    if (value.state === 'UNAVAILABLE') {
+      need(value.context === null && value.reason_code === 'PEER_INPUT_NOT_SUPPLIED'); return;
+    }
+    need(value.state === 'PROJECTED' && value.reason_code === null);
+    const p = record(value.context), coverage = record(p.coverage), stats = record(p.statistics);
+    need(p.schema === 'catalyst.peer_research_context.v1' &&
+      p.qualification === 'SUPPLIED_RESEARCH_COHORT_ONLY' && p.source_admission_established === false);
+    falseFlags(p.authority, AUTH); digest(p.input_digest); digest(p.context_id); sameIdentity(p.focal, focal);
+    need(instant(p.decision_at) === cut);
+    const window = record(p.window), start = peerInstant(window.start_at), end = peerInstant(window.end_at);
+    need(start < end && end <= cut); text(window.currency); text(window.return_basis);
+    need(number(window.max_age_seconds) > 0);
+    const cohort = record(p.cohort);
+    ['definition_ref', 'membership_ref', 'purpose', 'rights_ref', 'subtheme_id', 'universe_description']
+      .forEach(k => text(cohort[k]));
+    need(cohort.purpose === 'supplied_research_cohort' && peerInstant(cohort.formed_at) <= start);
+    const total = count(coverage.eligible_peer_issuers), n = count(coverage.observed_peer_issuers);
+    need(n <= total && count(coverage.ambiguous_peer_issuers) <= total);
+    if (total === 0) need(coverage.fraction === null);
+    else need(Math.abs(number(coverage.fraction) - n / total) < 1e-12);
+    const observed = array(p.observed_peers), companies = new Set(), securities = new Set();
+    need(observed.length === n && count(stats.effective_observed_issuer_count) === n);
+    observed.forEach(row => {
+      observation(row, end, cut);
+      need(row.company_id !== focal.company_id && row.security_id !== focal.security_id &&
+        !companies.has(row.company_id) && !securities.has(row.security_id));
+      companies.add(row.company_id); securities.add(row.security_id);
+    });
+    const own = p.focal_observation;
+    if (own !== null) {
+      observation(own, end, cut);
+      need(own.company_id === focal.company_id && own.security_id === focal.security_id);
+    }
+    const states = ['FOCAL_MEMBERSHIP_UNAVAILABLE', 'FOCAL_PRICE_UNAVAILABLE', 'NO_ELIGIBLE_PEERS',
+      'NO_OBSERVED_PEERS', 'COMPLETE', 'PARTIAL'];
+    need(states.includes(p.state));
+    if (p.state === 'COMPLETE') need(own !== null && total > 0 && n === total);
+    if (p.state === 'PARTIAL') need(own !== null && n > 0 && n < total);
+    if (p.state === 'NO_ELIGIBLE_PEERS') need(own !== null && total === 0);
+    if (p.state === 'NO_OBSERVED_PEERS') need(own !== null && total > 0 && n === 0);
+    if (p.state === 'FOCAL_PRICE_UNAVAILABLE') need(own === null);
+    if (p.state === 'FOCAL_MEMBERSHIP_UNAVAILABLE') need(own === null && n === 0);
+    ['observed_subset_equal_weight_return_pct', 'complete_cohort_equal_weight_return_pct',
+      'focal_minus_observed_peers_pp', 'observed_subset_median_return_pct', 'observed_subset_dispersion_pp']
+      .forEach(k => nullableNumber(stats[k]));
+    need((stats.observed_subset_equal_weight_return_pct === null) === (n === 0));
+    need((stats.observed_subset_median_return_pct === null) === (n === 0));
+    need((stats.observed_subset_dispersion_pp === null) === (n === 0));
+    if (stats.observed_subset_dispersion_pp !== null) need(stats.observed_subset_dispersion_pp >= 0);
+    need((stats.focal_minus_observed_peers_pp === null) === (own === null || n === 0));
+    if (p.state === 'COMPLETE') need(stats.complete_cohort_equal_weight_return_pct === stats.observed_subset_equal_weight_return_pct);
+    else need(stats.complete_cohort_equal_weight_return_pct === null);
+    need(count(stats.advancing) + count(stats.declining) + count(stats.unchanged) === n);
+    array(p.excluded).forEach(row => { record(row); text(row.security_id); text(row.reason); });
+    strings(p.interpretation_limits);
+    LIMITS.forEach(limit => need(p.interpretation_limits.includes(limit)));
+  }
+  function entry(value, focal, cut, composed) {
+    record(value);
+    need(value.owner_state_qualification === QUAL && value.decision_availability_established === false);
+    if (value.state === 'OWNER_INPUT_UNAVAILABLE') {
+      need(value.owner_projection === null && value.source_envelope === null); return;
+    }
+    envelope(value.source_envelope, 'prophet_b4', cut, composed);
+    if (value.state === 'DIFFERENT_INFORMATION_CUT') { need(value.owner_projection === null); return; }
+    need(value.state === 'OWNER_RESEARCH_CONTEXT_ATTACHED' &&
+      value.interpretation === 'RECONSTRUCTED_CONTEXT_IS_NOT_CURRENT_ENTRY_AVAILABILITY' &&
+      value.scope === 'EXISTING_STRATEGY_AND_HORIZON_ONLY' &&
+      value.strategy_authority_tier === 'SHADOW_ONLY' && value.strategy_scientific_status === 'CONTROL_ONLY');
+    const p = record(value.owner_projection);
+    need(p.schema === 'prophet.entry_availability/v1' && p.security_id === focal.security_id &&
+      p.identity_epoch === focal.identity_epoch && ENTRY_STATES.includes(p.state));
+    need(instant(p.evaluated_at) === cut && instant(p.quote_asof) <= cut);
+    need(typeof p.entry_open === 'boolean' && p.entry_open === (p.state === 'ENTRY_OPEN'));
+    ['strategy_id', 'strategy_version', 'horizon', 'horizon_role', 'entry_policy_version'].forEach(k => text(p[k]));
+    strings(p.blockers); need(p.state !== 'ENTRY_OPEN' || p.blockers.length === 0);
+    nullableNumber(p.current_price);
+    ['distance_to_zone_pct', 'extension_atr', 'move_since_anchor_pct', 'move_since_first_trigger_pct',
+      'risk_to_invalidation_pct'].forEach(k => nullableNumber(p[k]));
+  }
+  function newsViews(value, company, cut) {
+    const index = new Map();
+    array(value).forEach(view => {
+      record(view);
+      need(view.schema === 'thesis_view.v1' && view.authority === 'context_only' && view.company_id === company);
+      falseFlags(view.prophet_flags, ['may_gate', 'may_rank', 'may_size', 'prophet_authority']);
+      const key = text(view.original_proposition_fact_id);
+      need(!index.has(key)); index.set(key, view);
+      need(instant(view.decision_cut) === cut && instant(view.as_of_utc) === cut);
+      const display = record(view.display);
+      text(display.plain_status); text(display.what_we_are_watching);
+    });
+    return index;
+  }
+  function news(value, company, cut, composed) {
+    record(value);
+    need(value.owner_state_qualification === QUAL &&
+      value.semantics === 'UNCHANGED_NEWS_IMPACT_THESIS_AND_MATERIAL_DELTA_TRIGGERS' &&
+      value.interpretation === 'EMPTY_TRIGGERS_ARE_NOT_PROOF_OF_NO_ECONOMIC_CHANGE');
+    const current = record(value.current), comparison = record(value.comparison);
+    need(instant(current.information_cutoff_at) === cut);
+    let currentIndex = new Map();
+    if (current.state === 'UNAVAILABLE') {
+      need(current.views === null && current.source_envelope === null);
+      need(['NEWS_INPUT_NOT_SUPPLIED', 'CURRENT_OWNER_INPUT_NOT_SUPPLIED'].includes(current.reason_code));
+    } else {
+      need(current.state === 'PROJECTED_RESEARCH' && current.reason_code === null);
+      envelope(current.source_envelope, 'news_impact', cut, composed);
+      currentIndex = newsViews(current.views, company, cut);
+    }
+    const sources = record(comparison.source_envelopes);
+    sameEnvelope(sources.current, current.source_envelope);
+    if (comparison.state === 'NOT_REQUESTED') {
+      need(comparison.reason_code === 'COMPARISON_NOT_REQUESTED' &&
+        comparison.information_cutoff_at === null && comparison.prior_views === null &&
+        comparison.pairs === null && sources.prior === null); return;
+    }
+    const priorCut = instant(comparison.information_cutoff_at);
+    need(priorCut < cut);
+    if (sources.prior !== null) envelope(sources.prior, 'news_impact', priorCut, composed);
+    if (comparison.state === 'UNAVAILABLE') {
+      need(comparison.prior_views === null && comparison.pairs === null);
+      if (current.state === 'UNAVAILABLE') need(comparison.reason_code === 'CURRENT_OWNER_INPUT_NOT_SUPPLIED');
+      else need(comparison.reason_code === 'PRIOR_OWNER_INPUT_NOT_SUPPLIED' && sources.prior === null);
+      return;
+    }
+    need(comparison.state === 'PROJECTED_RESEARCH' && comparison.reason_code === null &&
+      current.state === 'PROJECTED_RESEARCH' && sources.prior !== null);
+    const priorIndex = newsViews(comparison.prior_views, company, priorCut);
+    const expected = new Set([...currentIndex.keys(), ...priorIndex.keys()]), seen = new Set();
+    array(comparison.pairs).forEach(pair => {
+      record(pair); record(pair.view_key);
+      const key = text(pair.view_key.original_proposition_fact_id);
+      need(pair.view_key.company_id === company && expected.has(key) && !seen.has(key)); seen.add(key);
+      const currentPresent = currentIndex.has(key), priorPresent = priorIndex.has(key);
+      need(pair.presence === (currentPresent && priorPresent ? 'BOTH_CUTS' : currentPresent ? 'CURRENT_ONLY' : 'PRIOR_ONLY'));
+      if (currentPresent) strings(pair.material_delta_triggers);
+      else need(pair.material_delta_triggers === null);
+    });
+    need(seen.size === expected.size);
+  }
+  function validateAssessment(packet) {
+    jsonValue(packet, new Set(), 0); record(packet);
+    need(packet.schema === 'catalyst.stock_research_assessment.v3' &&
+      packet.qualification === 'NONACTIVATED_RESEARCH_CONSUMER' &&
+      packet.source_admission_established === false && packet.decision_availability_established === false &&
+      packet.owner_state_qualification === QUAL &&
+      packet.timing_semantics === 'SUPPLIED_RECONSTRUCTION_NOT_PROOF_OF_ACTUAL_DECISION_AVAILABILITY' &&
+      packet.composition_rule === 'SEPARATE_OWNER_FACETS_NO_FUSION_SCORE_OR_GATE_OVERRIDE');
+    falseFlags(packet.authority, AUTH); identity(packet.focal); digest(packet.assessment_id); digest(packet.input_digest);
+    const cut = instant(packet.information_cutoff_at), composed = instant(packet.composed_at);
+    need(cut <= composed);
+    peers(packet.peer_context, packet.focal, cut);
+    entry(packet.entry_context, packet.focal, cut, composed);
+    news(packet.news_context, packet.focal.company_id, cut, composed);
+    const advanced = record(packet.advanced_estimates);
+    need(Object.keys(advanced).length === Object.keys(ADVANCED).length);
+    Object.entries(ADVANCED).forEach(([key, state]) => {
+      const estimate = record(advanced[key]); need(estimate.state === state && estimate.value === null);
+    });
+    return packet;
+  }
+  function presentation(packet, locale) {
+    validateAssessment(packet);
+    const zh = locale === 'zh', choose = (en, cn) => zh ? cn : en;
+    const absent = choose('Unavailable', '暂无数据');
+    const num = value => value === null ? absent : new Intl.NumberFormat(zh ? 'zh-CN' : 'en-US', {maximumFractionDigits: 2}).format(value);
+    const pct = value => value === null ? absent : (value > 0 ? '+' : '') + num(value) + '%';
+    const pp = value => value === null ? absent : (value > 0 ? '+' : '') + num(value) + choose(' percentage points', ' 个百分点');
+    const clock = value => value === null ? absent : value.replace('T', ' ').replace('Z', ' UTC');
+    const row = (en, cn, value) => ({label: choose(en, cn), text: value});
+    const sections = [], sourceRows = [
+      row('Assessment', '研究版本', packet.assessment_id),
+      row('Company', '公司标识', packet.focal.company_id),
+      row('Security', '证券标识', packet.focal.security_id),
+      row('Identity epoch', '身份版本', packet.focal.identity_epoch),
+      row('Identity source', '身份来源', packet.focal.identity_source_ref),
+      row('Information cutoff', '信息截止时间', clock(packet.information_cutoff_at)),
+      row('Composed later', '研究汇总时间', clock(packet.composed_at))
+    ];
+    function sourceEnvelope(label, value) {
+      if (!value) return;
+      sourceRows.push({label, text: value.source_ref + ' · ' + value.source_revision},
+        row('Information / created / received', '信息截止／生成／接收',
+          [value.information_cutoff_at, value.materialized_at, value.received_at].map(clock).join(' · ')),
+        row('Payload reference', '内容摘要标识', value.payload_digest));
+    }
+    const nc = packet.news_context, current = nc.current, comparison = nc.comparison, newsRows = [];
+    if (current.state === 'UNAVAILABLE') newsRows.push(row('Current evidence', '当前证据', choose('Current owner evidence was not supplied.', '尚未提供当前来源证据。')));
+    else if (!current.views.length) newsRows.push(row('Current evidence', '当前证据', choose('This supplied cut contains no company items.', '所提供的信息切片中没有该公司的条目。')));
+    else current.views.forEach(view => {
+      newsRows.push(row('NewsImpact summary · current', 'NewsImpact 摘要 · 当前', view.display.plain_status),
+        row('NewsImpact summary · watch next', 'NewsImpact 摘要 · 后续关注', view.display.what_we_are_watching));
+      sourceRows.push(row('News proposition', '新闻命题标识', view.original_proposition_fact_id));
+    });
+    const compText = comparison.state === 'NOT_REQUESTED' ? choose('Comparison was not requested.', '未请求历史比较。') :
+      comparison.state === 'UNAVAILABLE' ? choose('Comparison is unavailable; missing evidence does not mean no change.', '比较证据不足；这不代表没有变化。') :
+      choose('Current and prior supplied cuts are compared. Empty indicators do not prove no economic change.', '已比较所提供的当前与先前信息；没有变化标记并不代表经济影响未变。');
+    newsRows.push(row('Change comparison', '变化比较', compText));
+    if (comparison.state === 'PROJECTED_RESEARCH') {
+      comparison.pairs.forEach(pair => {
+        const triggers = pair.material_delta_triggers;
+        const description = pair.presence === 'PRIOR_ONLY' ? choose('Only present in the prior cut.', '仅出现在先前信息切片中。') :
+          pair.presence === 'CURRENT_ONLY' ? choose('Only present in the current cut.', '仅出现在当前信息切片中。') :
+          choose('Present in both supplied cuts.', '在两个信息切片中均有记录。');
+        newsRows.push(row('Evidence continuity', '证据延续', description));
+        if (triggers && triggers.includes('source_correction')) newsRows.push(row('Owner change indicator', '来源变化标记', choose('Source correction recorded.', '已记录来源更正。')));
+        else if (triggers && triggers.length) newsRows.push(row('Owner change indicator', '来源变化标记', choose('The owner reports an update; inspect its evidence.', '来源报告了更新，请核查证据。')));
+        sourceRows.push(row('Comparison proposition', '比较命题标识', pair.view_key.original_proposition_fact_id),
+          row('Owner change codes', '来源变化代码', triggers === null ? absent : triggers.join(', ') || choose('No indicators supplied', '未提供变化标记')));
+      });
+      sourceRows.push(row('Prior information cutoff', '先前信息截止时间', clock(comparison.information_cutoff_at)));
+    }
+    sections.push({title: choose('Company change', '公司变化'), rows: newsRows});
+    sourceEnvelope(choose('Current news source', '当前新闻来源'), current.source_envelope);
+    sourceEnvelope(choose('Prior news source', '先前新闻来源'), comparison.source_envelopes.prior);
+    const peerRows = [], pc = packet.peer_context.context;
+    if (!pc) peerRows.push(row('Peer evidence', '同组证据', choose('A peer cohort was not supplied.', '尚未提供同组研究数据。')));
+    else {
+      peerRows.push(row('Comparison scope', '比较范围', choose('Supplied research cohort; coverage is not the whole subtheme.', '仅为所提供的研究组，不代表整个细分主题。')),
+        row('Company return', '公司区间回报', pc.focal_observation ? pct(pc.focal_observation.return_pct) : absent),
+        row('Observed peer average', '已观察同组均值', pct(pc.statistics.observed_subset_equal_weight_return_pct)),
+        row('Company minus peers', '公司与同组之差', pp(pc.statistics.focal_minus_observed_peers_pp)),
+        row('Coverage', '覆盖情况', choose(pc.coverage.observed_peer_issuers + ' of ' + pc.coverage.eligible_peer_issuers + ' eligible issuers observed.',
+          '已观察 ' + pc.coverage.observed_peer_issuers + '／' + pc.coverage.eligible_peer_issuers + ' 家符合条件的公司。')),
+        row('Participation', '涨跌分布', choose(pc.statistics.advancing + ' advancing · ' + pc.statistics.declining + ' declining · ' + pc.statistics.unchanged + ' unchanged',
+          pc.statistics.advancing + ' 家上涨 · ' + pc.statistics.declining + ' 家下跌 · ' + pc.statistics.unchanged + ' 家持平')));
+      sourceRows.push(row('Price window', '价格观察区间', clock(pc.window.start_at) + ' → ' + clock(pc.window.end_at)),
+        row('Return basis / currency', '回报口径／币种', pc.window.return_basis + ' · ' + pc.window.currency),
+        row('Cohort source / rights', '研究组来源／使用权', pc.cohort.membership_ref + ' · ' + pc.cohort.rights_ref),
+        row('Cohort description · source text', '研究组说明 · 来源原文', pc.cohort.universe_description));
+      pc.observed_peers.forEach(item => sourceRows.push(row('Observed peer', '已观察同组证券', item.security_id + ' · ' + pct(item.return_pct) + ' · ' + item.source_ref)));
+      pc.excluded.forEach(item => sourceRows.push(row('Excluded · source code', '已排除 · 来源代码', item.security_id + ' · ' + item.reason)));
+    }
+    sections.push({title: choose('Peer movement', '同组表现'), rows: peerRows});
+    const ec = packet.entry_context, entryRows = [];
+    if (ec.state !== 'OWNER_RESEARCH_CONTEXT_ATTACHED') entryRows.push(row('Entry evidence', '入场研究证据',
+      ec.state === 'DIFFERENT_INFORMATION_CUT' ? choose('The supplied entry state uses another information cutoff.', '所提供的入场状态对应另一信息截止时间。') :
+        choose('Entry-owner evidence was not supplied.', '尚未提供入场模块的来源证据。')));
+    else {
+      const ep = ec.owner_projection;
+      const names = {
+        NOT_READY: ['Conditions are not ready', '条件尚未就绪'], APPROACHING_ENTRY: ['Conditions are approaching', '条件正在接近'],
+        ENTRY_OPEN: ['The supplied example has an open state', '所提供的示例状态为开放'],
+        WAIT_PULLBACK: ['The owner is waiting for a pullback', '来源模块正在等待回调'],
+        RAN_DONT_CHASE: ['The move exceeded the chase boundary', '价格走势已超出追价边界'],
+        INVALIDATED: ['The supplied setup was invalidated', '所提供的形态已失效'],
+        UNAVAILABLE_DATA: ['Required entry data is unavailable', '所需的入场数据不可用']
+      };
+      entryRows.push(row('Supplied research state', '所提供的研究状态', choose(...names[ep.state])),
+        row('Use limitation', '使用限制', choose('Research control and shadow only; this is not current entry availability.', '仅用于研究对照与影子观察，不代表当前可入场。')),
+        row('Strategy / horizon', '策略／周期', ep.strategy_id === 'EARLY_LEADERSHIP_SECTOR_ROTATION' ?
+          choose('Early leadership sector rotation · ' + (ep.horizon === '2_15_SESSIONS' ? '2–15 sessions' : 'see source horizon'),
+            '早期领涨板块轮动 · ' + (ep.horizon === '2_15_SESSIONS' ? '2–15 个交易时段' : '请查看来源周期')) :
+          choose('See the supplied owner strategy and horizon.', '请查看来源所提供的策略与周期。')),
+        row('Price in example', '示例中的价格', num(ep.current_price)),
+        row('Owner blockers', '来源限制', choose(ep.blockers.length + ' reported; inspect source detail.', '已报告 ' + ep.blockers.length + ' 项，请核查来源详情。')));
+      sourceRows.push(row('Entry state / strategy / horizon', '入场状态／策略／周期', ep.state + ' · ' + ep.strategy_id + ' · ' + ep.horizon),
+        row('Entry research restrictions', '入场研究限制', ec.strategy_scientific_status + ' · ' + ec.strategy_authority_tier),
+        row('Entry blocker codes', '入场限制代码', ep.blockers.join(', ') || choose('None supplied', '未提供')),
+        row('Quote / evaluation', '报价／评估时间', clock(ep.quote_asof) + ' · ' + clock(ep.evaluated_at)));
+      [['distance_to_zone_pct', 'Distance to zone (%)', '与区间距离（%）'],
+        ['extension_atr', 'Extension in ATR units', '以 ATR 衡量的延伸'],
+        ['move_since_anchor_pct', 'Move since anchor (%)', '锚点以来变化（%）'],
+        ['move_since_first_trigger_pct', 'Move since trigger (%)', '触发以来变化（%）'],
+        ['risk_to_invalidation_pct', 'Distance to invalidation (%)', '与失效位距离（%）']]
+        .forEach(([key, en, cn]) => sourceRows.push(row(en, cn, num(ep[key]))));
+    }
+    sections.push({title: choose('Entry context', '入场背景'), rows: entryRows});
+    sourceEnvelope(choose('Entry source', '入场研究来源'), ec.source_envelope);
+    const advancedNames = {
+      best_entry_policy: ['Best entry policy', '最佳入场策略'], fundamental_value_priced_in: ['Value priced in', '价值计价程度'],
+      causal_theme_spillover: ['Causal spillover', '因果外溢'], predictive_lead_lag: ['Predictive leadership', '预测性领涨'],
+      clinical_outcome_probability: ['Clinical outcome probability', '临床结果概率']
+    };
+    sections.push({title: choose('Estimates still missing', '尚缺的估计'), rows: Object.keys(ADVANCED).map(key =>
+      row(...advancedNames[key], packet.advanced_estimates[key].state === 'NOT_QUALIFIED' ?
+        choose('Not yet qualified', '尚未通过验证') : choose('Cannot be estimated from these inputs', '无法由这些输入估计')))});
+    return {
+      eyebrow: choose('SYNTHETIC RESEARCH PREVIEW', '合成研究预览'), title: choose('Company research', '公司研究'),
+      intro: choose('Review the evidence. Live source and decision availability remain unproven.', '核查研究证据；实时来源与决策时可用性尚未证实。'),
+      sections, sourceRows, sourcesTitle: choose('Sources and timing', '来源与时间'),
+      sourcesNote: choose('Supplied references do not establish source rights, native admission or current publication. Returns do not establish causality or a predictive edge.',
+        '所提供的引用不能证明来源使用权、原生准入或当前发布状态。回报不代表因果关系或预测优势。')
+    };
+  }
+  function mount(root, options) {
+    need(root && root.ownerDocument && typeof root.replaceChildren === 'function');
+    options = options || {};
+    const doc = root.ownerDocument, hadClass = root.classList.contains('bci-decision-desk');
+    let locale = options.locale === 'zh' ? 'zh' : 'en', snapshot = null, destroyed = false;
+    root.classList.add('bci-decision-desk');
+    function el(tag, className, value) {
+      const node = doc.createElement(tag);
+      if (className) node.className = className;
+      if (value !== undefined) node.textContent = value;
+      return node;
+    }
+    function field(row) {
+      const node = el('div', 'bci-dd-field');
+      node.append(el('h4', '', row.label), el('p', '', row.text)); return node;
+    }
+    function draw(view) {
+      const shell = el('div', 'bci-dd-shell'), header = el('header', 'bci-dd-header'), heading = el('div');
+      heading.append(el('p', 'bci-dd-eyebrow', view.eyebrow), el('h2', '', view.title), el('p', 'bci-dd-intro', view.intro));
+      header.append(heading); shell.append(header);
+      const body = el('div', 'bci-dd-body'), grid = el('div', 'bci-dd-cases');
+      view.sections.forEach(section => {
+        const card = el('section', 'bci-dd-card');
+        card.append(el('h3', '', section.title)); section.rows.forEach(row => card.append(field(row))); grid.append(card);
+      });
+      const sources = el('details', 'bci-dd-scope');
+      sources.append(el('summary', '', view.sourcesTitle), el('p', '', view.sourcesNote));
+      view.sourceRows.forEach(row => sources.append(field(row)));
+      body.append(grid, sources); shell.append(body);
+      root.replaceChildren(shell);
+    }
+    function unavailable() {
+      snapshot = null;
+      root.replaceChildren();
+      const shell = el('div', 'bci-dd-shell');
+      shell.append(el('h2', '', locale === 'zh' ? '研究暂不可用' : 'Research unavailable'),
+        el('p', 'bci-dd-intro', locale === 'zh' ? '无法显示此数据包，请加载受支持的研究示例。' : 'This packet cannot be shown. Load a supported research example.'));
+      root.append(shell);
+    }
+    function setAssessment(packet) {
+      if (destroyed) return false;
+      try {
+        validateAssessment(packet);
+        const next = JSON.parse(JSON.stringify(packet)), view = presentation(next, locale);
+        draw(view); snapshot = next; return true;
+      } catch (_) { unavailable(); return false; }
+    }
+    function setLocale(value) {
+      if (destroyed) return false;
+      locale = value === 'zh' ? 'zh' : 'en';
+      if (snapshot) draw(presentation(snapshot, locale)); else unavailable();
+      return true;
+    }
+    function destroy() {
+      if (destroyed) return;
+      destroyed = true; snapshot = null; root.replaceChildren();
+      if (!hadClass) root.classList.remove('bci-decision-desk');
+    }
+    setAssessment(options.assessment);
+    return Object.freeze({setAssessment, setLocale, destroy});
+  }
+  return Object.freeze({validateAssessment, presentation, mount});
+});
+</script>
+  <script type="application/json" id="researchCaptures">{"delayed_reconstruction": {"advanced_estimates": {"best_entry_policy": {"state": "NOT_QUALIFIED", "value": null}, "causal_theme_spillover": {"state": "NOT_ESTIMABLE", "value": null}, "clinical_outcome_probability": {"state": "NOT_QUALIFIED", "value": null}, "fundamental_value_priced_in": {"state": "NOT_ESTIMABLE", "value": null}, "predictive_lead_lag": {"state": "NOT_QUALIFIED", "value": null}}, "assessment_id": "sha256:b9ad14ba845df958c19a26138b35df97c8f8b8ed20a75cb14288707ae253e12e", "authority": {"may_admit_membership": false, "may_change_entry": false, "may_claim_causality": false, "may_execute": false, "may_gate": false, "may_publish": false, "may_rank": false, "may_size": false}, "composed_at": "2026-09-28T20:00:16Z", "composition_rule": "SEPARATE_OWNER_FACETS_NO_FUSION_SCORE_OR_GATE_OVERRIDE", "decision_availability_established": false, "entry_context": {"decision_availability_established": false, "interpretation": "RECONSTRUCTED_CONTEXT_IS_NOT_CURRENT_ENTRY_AVAILABILITY", "owner_projection": {"availability_id": "pea:b7f23916e545e21c9559ed1839863328e3574163b7b0961f0d0ec7c7dd037257", "blockers": ["PAST_OWNER_CHASE_BOUNDARY"], "candidate_generation_id": "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "candidate_state_projection_id": "pcs:f33fa40aef936091f54fdd5e547e5a5b6791bd43cbbc8b5b4b460b6ac705cae8", "chase_state": "past_boundary", "current_price": 44.0, "current_price_basis": "adjusted:v7", "definition": "availability-v1-2026-08-17", "distance_to_zone_pct": 1.734104, "entry_open": false, "entry_policy_version": "early-leadership-sector-rotation-entry-v1", "episode_id": "pe:SEC:US-XNAS-NVDA:epoch_0:sa:310000000000000000000000:1", "evaluated_at": "2026-09-28T20:00:08Z", "extension_atr": 0.652174, "horizon": "2_15_SESSIONS", "horizon_role": "new_entry", "identity_epoch": "epoch_0", "invalidation": {"basis": "adjusted:v7", "kind": "structural", "price": 40.95}, "market_session": "2026-09-28", "move_since_anchor_pct": 4.513064, "move_since_first_trigger_pct": 5.465005, "owner_status": "buy_now", "quote_age_seconds": 8, "quote_asof": "2026-09-28T20:00:00Z", "reasons": [], "risk_to_invalidation_pct": 6.931818, "schema": "prophet.entry_availability/v1", "security_id": "SEC:US-XNAS-NVDA", "source_receipts": ["b3:source-owner-v1", "sha256:1111111111111111111111111111111111111111111111111111111111111111", "sha256:2222222222222222222222222222222222222222222222222222222222222222"], "state": "RAN_DONT_CHASE", "strategy_definition_id": "psd:b89769f1cd7b264f8899c6559f3ccb5f87dc267349c54a9116f5db563ad338ec", "strategy_id": "EARLY_LEADERSHIP_SECTOR_ROTATION", "strategy_version": "1", "zone": {"basis": "adjusted:v7", "high": 43.25, "low": 41.8}}, "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "scope": "EXISTING_STRATEGY_AND_HORIZON_ONLY", "source_envelope": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "prophet_b4", "payload_digest": "sha256:fda26f9e94698bbdc83b9af1481961daf649f01936e8211bd21208376f07c9db", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:b4-owner-contract", "source_revision": "fixture:r8:fixture:b4-owner-contract"}, "state": "OWNER_RESEARCH_CONTEXT_ATTACHED", "strategy_authority_tier": "SHADOW_ONLY", "strategy_scientific_status": "CONTROL_ONLY"}, "focal": {"company_id": "cik:0001045810", "identity_epoch": "epoch_0", "identity_source_ref": "fixture:identity-cut-1", "security_id": "SEC:US-XNAS-NVDA"}, "information_cutoff_at": "2026-09-28T20:00:08Z", "input_digest": "sha256:6deb4e76cffe6af75bb50f591fb020431ff460e1742d7f688c0db2466e3ee266", "news_context": {"comparison": {"information_cutoff_at": "2026-09-28T14:10:00Z", "pairs": [{"material_delta_triggers": ["source_correction"], "presence": "BOTH_CUTS", "view_key": {"company_id": "cik:0001045810", "original_proposition_fact_id": "fact_a11c0e000000000000000001"}}], "prior_views": [{"as_of_utc": "2026-09-28T14:10:00Z", "authority": "context_only", "cluster_ids": ["ev2_a11c0e0000000001"], "company_id": "cik:0001045810", "contrary_claim_ids": [], "current_milestone_evidence": [{"fact_id": "fact_a11c0e000000000000000001", "milestone_name": "announcement", "observed_at": "2026-09-28T14:05:00Z", "provenance_group_id": "doc_nvda_pr_20260928"}], "deadline": "2028-01-30T00:00:00Z", "decision_cut": "2026-09-28T14:10:00Z", "display": {"plain_status": "the source states an authorization. completed purchases are not yet in this store. operating revenue impact is not established. surprise is unmeasured without a baseline.", "what_we_are_watching": "actual repurchases and net dilution through the fiscal 2028 window, not further reprints of the authorization", "windows": [{"end": "2028-01-30T00:00:00Z", "label": "stated execution horizon through fiscal 2028", "start": "2026-09-28T14:00:00Z"}]}, "exposure_paths": {"authority": "context_only", "detail": "no relationship_candidate row and PR 6514 remains blocked", "missing_fields": ["exposure_paths"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "exposure_paths"}, "live_fact_ids": ["fact_a11c0e000000000000000001"], "log_sha256": "18d09c283d709e42e2e17bc86c7b38c1289a28a87556883fb27b1286bbcece70", "material_delta_triggers": [], "next_expected_observation": {"milestone_name": "executed_repurchase", "window_end": "2028-01-30T00:00:00Z", "window_start": "2026-09-28T14:00:00Z"}, "original_proposition": {"channel_hint": "capital_allocation", "commitment_status": "authorized", "negated": false, "payload_schema": "capital_allocation_event.v1", "plain_statement": "Issuer authorized a capital allocation action. Authorization is not execution."}, "original_proposition_fact_id": "fact_a11c0e000000000000000001", "owners_sha256": "4ad0911ced05e18ee10e84b8b7634baf05448efcb2a7cbc4cebd8e7a9da590c9", "prophet_flags": {"may_gate": false, "may_rank": false, "may_size": false, "prophet_authority": false}, "provenance_group_ids": ["doc_nvda_pr_20260928"], "required_assumptions": [{"authority": "context_only", "detail": "authorization packet does not state completed purchases", "missing_fields": ["executed_amount"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "executed_amount"}], "root_source_families": [{"member_count": 1, "origin_document_id": "doc_nvda_pr_20260928", "root_family_id": "root_nvda_auth_20260928", "source_family": "issuer_primary"}], "schema": "thesis_view.v1", "supporting_claim_ids": ["claim_nvda_auth_150b", "fact_a11c0e000000000000000001"], "unsolicited_instruction_detected": false, "weakening_conditions": [{"armed": false, "code": "missed_stated_deadline", "evidence_fact_ids": []}, {"armed": false, "code": "expected_observation_absent", "evidence_fact_ids": []}]}], "reason_code": null, "source_envelopes": {"current": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "news_impact", "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:news-current", "source_revision": "fixture:r8:fixture:news-current"}, "prior": {"information_cutoff_at": "2026-09-28T14:10:00Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "news_impact", "payload_digest": "sha256:4ad0911ced05e18ee10e84b8b7634baf05448efcb2a7cbc4cebd8e7a9da590c9", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:news-prior", "source_revision": "fixture:r8:fixture:news-prior"}}, "state": "PROJECTED_RESEARCH"}, "current": {"information_cutoff_at": "2026-09-28T20:00:08Z", "reason_code": null, "source_envelope": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "news_impact", "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:news-current", "source_revision": "fixture:r8:fixture:news-current"}, "state": "PROJECTED_RESEARCH", "views": [{"as_of_utc": "2026-09-28T20:00:08Z", "authority": "context_only", "cluster_ids": ["ev2_a11c0e0000000001"], "company_id": "cik:0001045810", "contrary_claim_ids": [], "current_milestone_evidence": [{"fact_id": "fact_a11c0e000000000000000001", "milestone_name": "announcement", "observed_at": "2026-09-28T14:05:00Z", "provenance_group_id": "doc_nvda_pr_20260928"}], "deadline": "2028-01-30T00:00:00Z", "decision_cut": "2026-09-28T20:00:08Z", "display": {"plain_status": "the issuer restated remaining authorization; the 28 September figure remains in the log", "what_we_are_watching": "the issuer restated remaining authorization; the 28 September figure remains in the log", "windows": [{"end": "2028-01-30T00:00:00Z", "label": "stated execution horizon through fiscal 2028", "start": "2026-09-28T14:00:00Z"}]}, "exposure_paths": {"authority": "context_only", "detail": "no relationship_candidate row and PR 6514 remains blocked", "missing_fields": ["exposure_paths"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "exposure_paths"}, "live_fact_ids": ["fact_cccccccccccccccccccccccc"], "log_sha256": "18d09c283d709e42e2e17bc86c7b38c1289a28a87556883fb27b1286bbcece70", "material_delta_triggers": [], "next_expected_observation": {"milestone_name": "executed_repurchase", "window_end": "2028-01-30T00:00:00Z", "window_start": "2026-09-28T14:00:00Z"}, "original_proposition": {"channel_hint": "capital_allocation", "commitment_status": "authorized", "negated": false, "payload_schema": "capital_allocation_event.v1", "plain_statement": "Issuer authorized a capital allocation action. Authorization is not execution."}, "original_proposition_fact_id": "fact_a11c0e000000000000000001", "owners_sha256": "0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "prophet_flags": {"may_gate": false, "may_rank": false, "may_size": false, "prophet_authority": false}, "provenance_group_ids": ["doc_nvda_pr_20260928", "doc_synthetic_correction"], "required_assumptions": [{"authority": "context_only", "detail": "authorization packet does not state completed purchases", "missing_fields": ["executed_amount"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "executed_amount"}], "root_source_families": [{"member_count": 4, "origin_document_id": "doc_nvda_pr_20260928", "root_family_id": "root_nvda_auth_20260928", "source_family": "issuer_primary"}, {"member_count": 1, "origin_document_id": "doc_synthetic_correction", "root_family_id": "root_synthetic_correction", "source_family": "regulator_filing"}], "schema": "thesis_view.v1", "supporting_claim_ids": ["claim_synthetic_correction", "fact_cccccccccccccccccccccccc"], "unsolicited_instruction_detected": false, "weakening_conditions": [{"armed": false, "code": "missed_stated_deadline", "evidence_fact_ids": []}, {"armed": false, "code": "expected_observation_absent", "evidence_fact_ids": []}, {"armed": true, "code": "source_correction_reduces_magnitude", "evidence_fact_ids": ["fact_cccccccccccccccccccccccc"]}]}]}, "interpretation": "EMPTY_TRIGGERS_ARE_NOT_PROOF_OF_NO_ECONOMIC_CHANGE", "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "semantics": "UNCHANGED_NEWS_IMPACT_THESIS_AND_MATERIAL_DELTA_TRIGGERS"}, "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "peer_context": {"context": {"authority": {"may_admit_membership": false, "may_change_entry": false, "may_claim_causality": false, "may_execute": false, "may_gate": false, "may_publish": false, "may_rank": false, "may_size": false}, "catalyst_context": {"comparison_basis": "EXPLICIT_OWNER_COMPARISON_KEYS", "focal_event_ids": [], "late_observation_count": 0, "peers": [{"company_id": "ISSUER-1", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P1"}, {"company_id": "ISSUER-2", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P2"}, {"company_id": "ISSUER-3", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P3"}], "superseded_revision_count": 0, "withdrawn_or_cancelled_count": 0}, "cohort": {"definition_ref": "fixture:definition-1", "formed_at": "2026-09-28T13:00:00Z", "membership_ref": "fixture:membership-cut", "purpose": "supplied_research_cohort", "rights_ref": "fixture:synthetic-no-vendor-data", "subtheme_id": "fixture:subtheme-1", "universe_description": "Synthetic contract fixture: invented peer cohort and prices, with NewsImpact and Prophet owner test contracts; no live market interpretation"}, "context_id": "sha256:c397bbd6436b6f53b53dac4ae1ce0bbc3794a9350d892ed07d2577a3d4cfe9d6", "coverage": {"ambiguous_peer_issuers": 0, "eligible_peer_issuers": 3, "fraction": 1.0, "observed_peer_issuers": 3}, "decision_at": "2026-09-28T20:00:08Z", "excluded": [{"reason": "FOCAL_ISSUER_EXCLUDED", "security_id": "SEC:US-XNAS-NVDA"}], "focal": {"company_id": "cik:0001045810", "identity_epoch": "epoch_0", "identity_source_ref": "fixture:identity-cut-1", "security_id": "SEC:US-XNAS-NVDA"}, "focal_observation": {"company_id": "cik:0001045810", "known_at": "2026-09-28T20:00:08Z", "return_pct": 12.00000000000001, "security_id": "SEC:US-XNAS-NVDA", "source_ref": "fixture:price:FOCAL"}, "input_digest": "sha256:658db8d23fde695a43f28c4aed13bdeabe4abc72de9602767c4e2f0099616568", "interpretation_limits": ["RELATIVE_RETURN_IS_NOT_FACTOR_RESIDUAL", "PARTICIPATION_IS_NOT_CAUSAL_SPILLOVER", "NO_INTRADAY_LEAD_LAG_FROM_WINDOW_RETURNS", "COHORT_IS_NOT_ALL_SUBTHEME_SECURITIES", "NO_SOURCE_OR_DISPLAY_ADMISSION"], "observed_peers": [{"company_id": "ISSUER-1", "known_at": "2026-09-28T20:00:08Z", "return_pct": 4.0000000000000036, "security_id": "P1", "source_ref": "fixture:price:P1"}, {"company_id": "ISSUER-2", "known_at": "2026-09-28T20:00:08Z", "return_pct": 2.0000000000000018, "security_id": "P2", "source_ref": "fixture:price:P2"}, {"company_id": "ISSUER-3", "known_at": "2026-09-28T20:00:08Z", "return_pct": -3.0000000000000027, "security_id": "P3", "source_ref": "fixture:price:P3"}], "qualification": "SUPPLIED_RESEARCH_COHORT_ONLY", "schema": "catalyst.peer_research_context.v1", "source_admission_established": false, "state": "COMPLETE", "statistics": {"advancing": 2, "complete_cohort_equal_weight_return_pct": 1.0000000000000009, "declining": 1, "effective_observed_issuer_count": 3, "focal_minus_observed_peers_pp": 11.00000000000001, "observed_subset_dispersion_pp": 2.9439202887759515, "observed_subset_equal_weight_return_pct": 1.0000000000000009, "observed_subset_median_return_pct": 2.0000000000000018, "unchanged": 0}, "window": {"currency": "USD", "end_at": "2026-09-28T20:00:00Z", "max_age_seconds": 60, "return_basis": "total_return_index_v1", "start_at": "2026-09-28T13:30:00Z"}}, "reason_code": null, "state": "PROJECTED"}, "qualification": "NONACTIVATED_RESEARCH_CONSUMER", "schema": "catalyst.stock_research_assessment.v3", "source_admission_established": false, "timing_semantics": "SUPPLIED_RECONSTRUCTION_NOT_PROOF_OF_ACTUAL_DECISION_AVAILABILITY"}, "history_missing": {"advanced_estimates": {"best_entry_policy": {"state": "NOT_QUALIFIED", "value": null}, "causal_theme_spillover": {"state": "NOT_ESTIMABLE", "value": null}, "clinical_outcome_probability": {"state": "NOT_QUALIFIED", "value": null}, "fundamental_value_priced_in": {"state": "NOT_ESTIMABLE", "value": null}, "predictive_lead_lag": {"state": "NOT_QUALIFIED", "value": null}}, "assessment_id": "sha256:de884c25dabcb6f7a34d66d86d8aa4645c12a43cc55334d0859f2d4c388e9bb0", "authority": {"may_admit_membership": false, "may_change_entry": false, "may_claim_causality": false, "may_execute": false, "may_gate": false, "may_publish": false, "may_rank": false, "may_size": false}, "composed_at": "2026-09-28T20:00:16Z", "composition_rule": "SEPARATE_OWNER_FACETS_NO_FUSION_SCORE_OR_GATE_OVERRIDE", "decision_availability_established": false, "entry_context": {"decision_availability_established": false, "interpretation": "RECONSTRUCTED_CONTEXT_IS_NOT_CURRENT_ENTRY_AVAILABILITY", "owner_projection": {"availability_id": "pea:b7f23916e545e21c9559ed1839863328e3574163b7b0961f0d0ec7c7dd037257", "blockers": ["PAST_OWNER_CHASE_BOUNDARY"], "candidate_generation_id": "peg:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "candidate_state_projection_id": "pcs:f33fa40aef936091f54fdd5e547e5a5b6791bd43cbbc8b5b4b460b6ac705cae8", "chase_state": "past_boundary", "current_price": 44.0, "current_price_basis": "adjusted:v7", "definition": "availability-v1-2026-08-17", "distance_to_zone_pct": 1.734104, "entry_open": false, "entry_policy_version": "early-leadership-sector-rotation-entry-v1", "episode_id": "pe:SEC:US-XNAS-NVDA:epoch_0:sa:310000000000000000000000:1", "evaluated_at": "2026-09-28T20:00:08Z", "extension_atr": 0.652174, "horizon": "2_15_SESSIONS", "horizon_role": "new_entry", "identity_epoch": "epoch_0", "invalidation": {"basis": "adjusted:v7", "kind": "structural", "price": 40.95}, "market_session": "2026-09-28", "move_since_anchor_pct": 4.513064, "move_since_first_trigger_pct": 5.465005, "owner_status": "buy_now", "quote_age_seconds": 8, "quote_asof": "2026-09-28T20:00:00Z", "reasons": [], "risk_to_invalidation_pct": 6.931818, "schema": "prophet.entry_availability/v1", "security_id": "SEC:US-XNAS-NVDA", "source_receipts": ["b3:source-owner-v1", "sha256:1111111111111111111111111111111111111111111111111111111111111111", "sha256:2222222222222222222222222222222222222222222222222222222222222222"], "state": "RAN_DONT_CHASE", "strategy_definition_id": "psd:b89769f1cd7b264f8899c6559f3ccb5f87dc267349c54a9116f5db563ad338ec", "strategy_id": "EARLY_LEADERSHIP_SECTOR_ROTATION", "strategy_version": "1", "zone": {"basis": "adjusted:v7", "high": 43.25, "low": 41.8}}, "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "scope": "EXISTING_STRATEGY_AND_HORIZON_ONLY", "source_envelope": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "prophet_b4", "payload_digest": "sha256:fda26f9e94698bbdc83b9af1481961daf649f01936e8211bd21208376f07c9db", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:b4-owner-contract", "source_revision": "fixture:r8:fixture:b4-owner-contract"}, "state": "OWNER_RESEARCH_CONTEXT_ATTACHED", "strategy_authority_tier": "SHADOW_ONLY", "strategy_scientific_status": "CONTROL_ONLY"}, "focal": {"company_id": "cik:0001045810", "identity_epoch": "epoch_0", "identity_source_ref": "fixture:identity-cut-1", "security_id": "SEC:US-XNAS-NVDA"}, "information_cutoff_at": "2026-09-28T20:00:08Z", "input_digest": "sha256:fba908c29353bdcfa4bc062c367f7a995e124eebaba7caa91c6f1d3adda366ac", "news_context": {"comparison": {"information_cutoff_at": "2026-09-28T14:10:00Z", "pairs": null, "prior_views": null, "reason_code": "PRIOR_OWNER_INPUT_NOT_SUPPLIED", "source_envelopes": {"current": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "news_impact", "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:news-current", "source_revision": "fixture:r8:fixture:news-current"}, "prior": null}, "state": "UNAVAILABLE"}, "current": {"information_cutoff_at": "2026-09-28T20:00:08Z", "reason_code": null, "source_envelope": {"information_cutoff_at": "2026-09-28T20:00:08Z", "materialized_at": "2026-09-28T20:00:13Z", "owner": "news_impact", "payload_digest": "sha256:0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "received_at": "2026-09-28T20:00:15Z", "schema": "catalyst.supplied_owner_time_envelope.v1", "source_ref": "fixture:news-current", "source_revision": "fixture:r8:fixture:news-current"}, "state": "PROJECTED_RESEARCH", "views": [{"as_of_utc": "2026-09-28T20:00:08Z", "authority": "context_only", "cluster_ids": ["ev2_a11c0e0000000001"], "company_id": "cik:0001045810", "contrary_claim_ids": [], "current_milestone_evidence": [{"fact_id": "fact_a11c0e000000000000000001", "milestone_name": "announcement", "observed_at": "2026-09-28T14:05:00Z", "provenance_group_id": "doc_nvda_pr_20260928"}], "deadline": "2028-01-30T00:00:00Z", "decision_cut": "2026-09-28T20:00:08Z", "display": {"plain_status": "the issuer restated remaining authorization; the 28 September figure remains in the log", "what_we_are_watching": "the issuer restated remaining authorization; the 28 September figure remains in the log", "windows": [{"end": "2028-01-30T00:00:00Z", "label": "stated execution horizon through fiscal 2028", "start": "2026-09-28T14:00:00Z"}]}, "exposure_paths": {"authority": "context_only", "detail": "no relationship_candidate row and PR 6514 remains blocked", "missing_fields": ["exposure_paths"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "exposure_paths"}, "live_fact_ids": ["fact_cccccccccccccccccccccccc"], "log_sha256": "18d09c283d709e42e2e17bc86c7b38c1289a28a87556883fb27b1286bbcece70", "material_delta_triggers": [], "next_expected_observation": {"milestone_name": "executed_repurchase", "window_end": "2028-01-30T00:00:00Z", "window_start": "2026-09-28T14:00:00Z"}, "original_proposition": {"channel_hint": "capital_allocation", "commitment_status": "authorized", "negated": false, "payload_schema": "capital_allocation_event.v1", "plain_statement": "Issuer authorized a capital allocation action. Authorization is not execution."}, "original_proposition_fact_id": "fact_a11c0e000000000000000001", "owners_sha256": "0f70316144642feb50dd5dc6fc06d7d345f53d521eb7ed7e63ff78d5d55b166e", "prophet_flags": {"may_gate": false, "may_rank": false, "may_size": false, "prophet_authority": false}, "provenance_group_ids": ["doc_nvda_pr_20260928", "doc_synthetic_correction"], "required_assumptions": [{"authority": "context_only", "detail": "authorization packet does not state completed purchases", "missing_fields": ["executed_amount"], "reason": "not_stated", "schema": "field_absence.v1", "subject": "executed_amount"}], "root_source_families": [{"member_count": 4, "origin_document_id": "doc_nvda_pr_20260928", "root_family_id": "root_nvda_auth_20260928", "source_family": "issuer_primary"}, {"member_count": 1, "origin_document_id": "doc_synthetic_correction", "root_family_id": "root_synthetic_correction", "source_family": "regulator_filing"}], "schema": "thesis_view.v1", "supporting_claim_ids": ["claim_synthetic_correction", "fact_cccccccccccccccccccccccc"], "unsolicited_instruction_detected": false, "weakening_conditions": [{"armed": false, "code": "missed_stated_deadline", "evidence_fact_ids": []}, {"armed": false, "code": "expected_observation_absent", "evidence_fact_ids": []}, {"armed": true, "code": "source_correction_reduces_magnitude", "evidence_fact_ids": ["fact_cccccccccccccccccccccccc"]}]}]}, "interpretation": "EMPTY_TRIGGERS_ARE_NOT_PROOF_OF_NO_ECONOMIC_CHANGE", "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "semantics": "UNCHANGED_NEWS_IMPACT_THESIS_AND_MATERIAL_DELTA_TRIGGERS"}, "owner_state_qualification": "SUPPLIED_OWNER_STATE_NOT_INDEPENDENTLY_ADMITTED", "peer_context": {"context": {"authority": {"may_admit_membership": false, "may_change_entry": false, "may_claim_causality": false, "may_execute": false, "may_gate": false, "may_publish": false, "may_rank": false, "may_size": false}, "catalyst_context": {"comparison_basis": "EXPLICIT_OWNER_COMPARISON_KEYS", "focal_event_ids": [], "late_observation_count": 0, "peers": [{"company_id": "ISSUER-1", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P1"}, {"company_id": "ISSUER-2", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P2"}, {"company_id": "ISSUER-3", "coverage_state": "COVERAGE_UNKNOWN", "distinct_comparable_event_ids": [], "evidence_refs": [], "no_event_observed_in_covered_sources": false, "observed_event_revisions": [], "other_observed_event_ids": [], "same_underlying_event_ids": [], "security_id": "P3"}], "superseded_revision_count": 0, "withdrawn_or_cancelled_count": 0}, "cohort": {"definition_ref": "fixture:definition-1", "formed_at": "2026-09-28T13:00:00Z", "membership_ref": "fixture:membership-cut", "purpose": "supplied_research_cohort", "rights_ref": "fixture:synthetic-no-vendor-data", "subtheme_id": "fixture:subtheme-1", "universe_description": "Synthetic contract fixture: invented peer cohort and prices, with NewsImpact and Prophet owner test contracts; no live market interpretation"}, "context_id": "sha256:c397bbd6436b6f53b53dac4ae1ce0bbc3794a9350d892ed07d2577a3d4cfe9d6", "coverage": {"ambiguous_peer_issuers": 0, "eligible_peer_issuers": 3, "fraction": 1.0, "observed_peer_issuers": 3}, "decision_at": "2026-09-28T20:00:08Z", "excluded": [{"reason": "FOCAL_ISSUER_EXCLUDED", "security_id": "SEC:US-XNAS-NVDA"}], "focal": {"company_id": "cik:0001045810", "identity_epoch": "epoch_0", "identity_source_ref": "fixture:identity-cut-1", "security_id": "SEC:US-XNAS-NVDA"}, "focal_observation": {"company_id": "cik:0001045810", "known_at": "2026-09-28T20:00:08Z", "return_pct": 12.00000000000001, "security_id": "SEC:US-XNAS-NVDA", "source_ref": "fixture:price:FOCAL"}, "input_digest": "sha256:658db8d23fde695a43f28c4aed13bdeabe4abc72de9602767c4e2f0099616568", "interpretation_limits": ["RELATIVE_RETURN_IS_NOT_FACTOR_RESIDUAL", "PARTICIPATION_IS_NOT_CAUSAL_SPILLOVER", "NO_INTRADAY_LEAD_LAG_FROM_WINDOW_RETURNS", "COHORT_IS_NOT_ALL_SUBTHEME_SECURITIES", "NO_SOURCE_OR_DISPLAY_ADMISSION"], "observed_peers": [{"company_id": "ISSUER-1", "known_at": "2026-09-28T20:00:08Z", "return_pct": 4.0000000000000036, "security_id": "P1", "source_ref": "fixture:price:P1"}, {"company_id": "ISSUER-2", "known_at": "2026-09-28T20:00:08Z", "return_pct": 2.0000000000000018, "security_id": "P2", "source_ref": "fixture:price:P2"}, {"company_id": "ISSUER-3", "known_at": "2026-09-28T20:00:08Z", "return_pct": -3.0000000000000027, "security_id": "P3", "source_ref": "fixture:price:P3"}], "qualification": "SUPPLIED_RESEARCH_COHORT_ONLY", "schema": "catalyst.peer_research_context.v1", "source_admission_established": false, "state": "COMPLETE", "statistics": {"advancing": 2, "complete_cohort_equal_weight_return_pct": 1.0000000000000009, "declining": 1, "effective_observed_issuer_count": 3, "focal_minus_observed_peers_pp": 11.00000000000001, "observed_subset_dispersion_pp": 2.9439202887759515, "observed_subset_equal_weight_return_pct": 1.0000000000000009, "observed_subset_median_return_pct": 2.0000000000000018, "unchanged": 0}, "window": {"currency": "USD", "end_at": "2026-09-28T20:00:00Z", "max_age_seconds": 60, "return_basis": "total_return_index_v1", "start_at": "2026-09-28T13:30:00Z"}}, "reason_code": null, "state": "PROJECTED"}, "qualification": "NONACTIVATED_RESEARCH_CONSUMER", "schema": "catalyst.stock_research_assessment.v3", "source_admission_established": false, "timing_semantics": "SUPPLIED_RECONSTRUCTION_NOT_PROOF_OF_ACTUAL_DECISION_AVAILABILITY"}}</script>
+  <script>
+  'use strict';
+  const captures=JSON.parse(document.getElementById('researchCaptures').textContent);
+  const params=new URLSearchParams(location.search);
+  let locale=params.get('lang')==='zh'?'zh':'en';
+  const initialCase=params.get('case')==='history_missing'?'history_missing':'delayed_reconstruction';
+  const theme=document.getElementById('previewTheme');
+  const language=document.getElementById('previewLanguage');
+  const example=document.getElementById('previewCase');
+  theme.value=params.get('theme')==='light'?'light':'dark';
+  language.value=locale; example.value=initialCase;
+  document.documentElement.dataset.theme=theme.value;
+  const component=CatalystResearchAssessment.mount(document.getElementById('research'),{assessment:captures[initialCase],locale});
+  function labels(){
+    document.documentElement.lang=locale==='zh'?'zh-CN':'en';
+    document.documentElement.dataset.lang=locale;
+    const copy=locale==='zh'?{theme:'主题',language:'语言',case:'示例',dark:'深色',light:'浅色',correction:'来源更正',missing:'缺少先前证据',title:'催化剂情报 · 研究预览'}:{theme:'Theme',language:'Language',case:'Example',dark:'Dark',light:'Light',correction:'Source correction',missing:'Prior evidence missing',title:'Catalyst Intelligence · Research preview'};
+    document.querySelectorAll('[data-copy]').forEach(node=>{node.textContent=copy[node.dataset.copy];});
+    theme.setAttribute('aria-label',copy.theme); language.setAttribute('aria-label',copy.language); example.setAttribute('aria-label',copy.case);
+    theme.options[0].textContent=copy.dark;theme.options[1].textContent=copy.light;
+    example.options[0].textContent=copy.correction;example.options[1].textContent=copy.missing;
+    document.title=copy.title;
+  }
+  labels();
+  theme.addEventListener('change',()=>{document.documentElement.dataset.theme=theme.value;});
+  language.addEventListener('change',()=>{locale=language.value;labels();component.setLocale(locale);});
+  example.addEventListener('change',()=>{component.setAssessment(captures[example.value]);});
+  // QA-only handle in a standalone artifact; no production host loads this page.
+  window.researchPreview={component,captures};
+  </script>
+</body>
+</html>

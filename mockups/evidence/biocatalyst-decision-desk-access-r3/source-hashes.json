@@ -1,0 +1,40 @@
+{
+  "source_parent": "de824d8360b91ff44aca2930ac045d1bc6b14bfb",
+  "source_files": [
+    {
+      "path": "templates/biocatalyst_decision_desk.js",
+      "sha256": "10cf51a0f909c13a2afcbdd8e630f9fdfab79d2a696a24080b2228365f6dbe7b"
+    },
+    {
+      "path": "templates/biocatalyst_decision_desk_host.js",
+      "sha256": "9c7f20d2cc911ebc9802e139e2a32e59082cc6b4e60b4603069dd9097b8c63ae"
+    },
+    {
+      "path": "site/biocatalyst.html",
+      "sha256": "fb9a1a2f61bd40f4ebed97510dad74ef82e86853a26d5eed00fdabb40e7dab72"
+    },
+    {
+      "path": "site/biocatalyst_decision_desk.js",
+      "sha256": "10cf51a0f909c13a2afcbdd8e630f9fdfab79d2a696a24080b2228365f6dbe7b"
+    },
+    {
+      "path": "site/biocatalyst_decision_desk_host.js",
+      "sha256": "9c7f20d2cc911ebc9802e139e2a32e59082cc6b4e60b4603069dd9097b8c63ae"
+    },
+    {
+      "path": "tests/test_biocatalyst_decision_desk_host.cjs",
+      "sha256": "4b0c0c96cfe4e7518d07949a88a97f90528b007c2582cca4c7e55c29ca0a44ce"
+    },
+    {
+      "path": "tests/verify_biocatalyst_decision_desk_host.py",
+      "sha256": "0e22ffc9f70e8fbd8bc9bb04773ca54d4c874c2186df44a46b9f95afb1594c07"
+    },
+    {
+      "path": "tests/test_biocatalyst_deploy.py",
+      "sha256": "d909be1058da0670d7b10e5834af7f602cde493efca473fe335768a4e974e64a"
+    }
+  ],
+  "capture_tool_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+  "canonical_manifest_sha256": "801ff6bf0a3eccea54bb8c3ae2577446526b754608e9bff9cb685f2cc5596fea",
+  "synthetic_host_manifest_sha256": "43830a8737fc36455ae8df00aae5090d5ec81df4d71755d534ff8710ccd9db6a"
+}

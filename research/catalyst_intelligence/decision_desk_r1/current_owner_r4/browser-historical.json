@@ -1,0 +1,554 @@
+{
+  "status": "PASS",
+  "browser_version": "129.0.6668.29",
+  "checks": [
+    "Access-required screen invokes the existing sign-in owner without exposing or requesting research",
+    "Mobile suppresses the duplicate lazy Brain trigger; desktop preserves the existing launcher",
+    "Actual data-free page mounts primary Decision Desk before any source request",
+    "Trial evidence keyboard focus has an actually painted outline in both themes",
+    "Actual host fetchJson attaches synthetic test session; collapsed trial tools do not fetch",
+    "Case opens real detail handler consumer and source-context link; URL records selected task",
+    "Browser Back restores Setup without a history echo",
+    "Direct case link restores only an admitted loaded row and preserves unrelated URL state",
+    "Actual integrated page fits 16 theme/language/viewport combinations with eight CJK font inspections",
+    "Idle logout synchronously clears case/detail without an anonymous source fetch",
+    "Unavailable corrected composition clears old case and permits later fresh recovery",
+    "Simulated BFCache lifecycle event clears and revalidates; not a real cache-admission claim",
+    "Secondary legacy controls remain reachable and preserve paid/source refusal independently",
+    "Unknown direct case is explained without inventing or fetching another universe",
+    "Ambiguous direct case route makes zero source requests"
+  ],
+  "layouts": [
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 320,
+      "geometry": {
+        "left": 12,
+        "right": 308,
+        "width": 320,
+        "scroll": 320
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 768,
+      "geometry": {
+        "left": 18,
+        "right": 750,
+        "width": 768,
+        "scroll": 768
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "geometry": {
+        "left": 18,
+        "right": 1422,
+        "width": 1440,
+        "scroll": 1440
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 320,
+      "geometry": {
+        "left": 12,
+        "right": 308,
+        "width": 320,
+        "scroll": 320
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 768,
+      "geometry": {
+        "left": 18,
+        "right": 750,
+        "width": 768,
+        "scroll": 768
+      }
+    },
+    {
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "geometry": {
+        "left": 18,
+        "right": 1422,
+        "width": 1440,
+        "scroll": 1440
+      }
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 320,
+      "geometry": {
+        "left": 12,
+        "right": 308,
+        "width": 320,
+        "scroll": 320
+      }
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 768,
+      "geometry": {
+        "left": 18,
+        "right": 750,
+        "width": 768,
+        "scroll": 768
+      }
+    },
+    {
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "geometry": {
+        "left": 18,
+        "right": 1422,
+        "width": 1440,
+        "scroll": 1440
+      }
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 320,
+      "geometry": {
+        "left": 12,
+        "right": 308,
+        "width": 320,
+        "scroll": 320
+      }
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "geometry": {
+        "left": 12,
+        "right": 378,
+        "width": 390,
+        "scroll": 390
+      }
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 768,
+      "geometry": {
+        "left": 18,
+        "right": 750,
+        "width": 768,
+        "scroll": 768
+      }
+    },
+    {
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "geometry": {
+        "left": 18,
+        "right": 1422,
+        "width": 1440,
+        "scroll": 1440
+      }
+    }
+  ],
+  "cjk_fonts": [
+    {
+      "width": 320,
+      "theme": "dark",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "fonts": [
+        {
+          "familyName": "PingFang SC",
+          "postScriptName": "PingFangSC-Semibold",
+          "isCustomFont": false,
+          "glyphCount": 13
+        }
+      ]
+    }
+  ],
+  "page_errors": [],
+  "source_requests": [
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next/detail",
+      "query": "event_fact_ref=evt_source_4a080d7265a3baa19bc1b1e80c019d0192c8756d7a8f019255c9f77ccd5919ed&issuer_id=ISS%3AUS-XNAS-SYNB&generation_id=ctgov_run_abcdef1234567890",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/catalyst-radar",
+      "query": "limit=50&horizon=next_365d&milestone_kind=all",
+      "synthetic_auth_present": true
+    },
+    {
+      "path": "/api/biocatalyst/v1/what-matters-next",
+      "query": "view=upcoming&horizon_days=90&limit=50",
+      "synthetic_auth_present": true
+    }
+  ],
+  "optional_assets_unavailable": [],
+  "auth": "synthetic MDXAuth session, not a production entitled account",
+  "api": "exact retained synthetic owner/API fixture bytes; no native admission or live data",
+  "fixture_corpus": "company_evidence_r2",
+  "fixture_owner_head": "430234957531693b6b13f026a161e28542086a82",
+  "fixture_receipt_sha256": "157e926af7312216245f4058ce3a0321b17ad908ef795085d2617d20747680d7",
+  "final_disk_publication_recheck_verified": false,
+  "html_sha256": "f545d7c63c7d2ffb221199a42f56192131ea39bd266d70da35ff2caebfd27750",
+  "theme_sha256": "1c9d7ad51904b385a7e7a698bc6926a8b04bf3b8d656bcb88c3371248f397491"
+}
