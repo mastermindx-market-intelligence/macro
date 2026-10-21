@@ -655,31 +655,18 @@ def _rotation_rank_bucket(rank: int, n_total: int) -> int:
 def _load_rotation_artifact() -> dict:
     """Load data/us_sector_rotation/latest.json.
 
-    Returns an empty dict on any error (fail-open: callers degrade gracefully).
+    Returns the raw dict, or an empty dict on any error (fail-open: callers
+    degrade gracefully).  Freshness is NOT decided here — compute() gates the
+    artifact through engine.sector_generation_guard.session_alignment() on the
+    settled daily session; the old 48 h wall-clock rule (and its
+    accept-on-unparseable-ts path) is gone.
     """
-    import datetime as _dt
     try:
         p = config.data_dir() / "us_sector_rotation" / "latest.json"
         if not p.exists():
             log.debug("sector_central: rotation artifact absent — conviction sort retained")
             return {}
-        raw = json.loads(p.read_text(encoding="utf-8"))
-        # Freshness guard: if artifact is >48h old, skip re-ordering
-        ts_str = raw.get("ts") or raw.get("asof")
-        if ts_str:
-            try:
-                from datetime import timezone as _tz
-                ts_dt = _dt.datetime.fromisoformat(str(ts_str))
-                # Treat naive datetimes as UTC
-                if ts_dt.tzinfo is None:
-                    ts_dt = ts_dt.replace(tzinfo=_tz.utc)
-                age_h = (_dt.datetime.now(_tz.utc) - ts_dt).total_seconds() / 3600
-                if age_h > 48:
-                    log.warning("sector_central: rotation artifact stale (%.1fh) — conviction sort retained", age_h)
-                    return {}
-            except Exception:
-                pass  # unparseable ts — accept the artifact anyway
-        return raw
+        return json.loads(p.read_text(encoding="utf-8"))
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: rotation artifact load failed (%s) — conviction sort retained", e)
         return {}
@@ -913,7 +900,25 @@ def compute() -> dict | None:
     # XSR-R2/R9: load rotation artifact and re-sort by fast-rotation rank.
     # Fail-open: if artifact missing/stale/unparseable, conviction sort is kept and
     # rotation fields are null on all records.
+    # SIC-D-B02: freshness is a settled-session generation guard, not wall-clock
+    # age — the raw artifact is only attached when both sides carry the same
+    # daily session; every other pairing keeps conviction order and is stamped
+    # in meta.rotation_alignment with a typed reason.
+    import datetime as _dt
+    from engine import sector_generation_guard as _sgg
     rotation_raw = _load_rotation_artifact()
+    rotation_alignment = _sgg.session_alignment(
+        rotation_raw.get("session") or rotation_raw.get("asof"),
+        cyc["meta"]["asOf"],
+        today=_dt.datetime.now(_dt.timezone.utc).date(),
+    )
+    if rotation_alignment["status"] == "aligned" and rotation_raw.get("ts"):
+        rotation_alignment["artifact_generated_at"] = rotation_raw["ts"]
+    if rotation_alignment["status"] != "aligned":
+        if rotation_raw:
+            log.warning("sector_central: rotation artifact generation %s (%s) — conviction sort retained",
+                        rotation_alignment["status"], rotation_alignment["reason"])
+        rotation_raw = {}
     sectors = _attach_rotation(sectors, rotation_raw, kind="sector")
     baskets = _attach_rotation(baskets, rotation_raw, kind="basket")
 
@@ -930,7 +935,9 @@ def compute() -> dict | None:
                  "region": "us", "experimental": True,
                  "method": "gated-confluence (trend gate validated_risk_control, "
                            "data/strategies/thematic_rotation_phase0.json)",
-                 "board_order": "fast-lens (XSR-R2)" if rotation_armed else "conviction"},
+                 "board_order": "fast-lens (XSR-R2)" if rotation_armed else "conviction",
+                 "rotation_alignment": rotation_alignment,
+                 "rotation_alignment_version": 1},
         "market": mkt,
         "sectors": sectors,
         "baskets": baskets,
