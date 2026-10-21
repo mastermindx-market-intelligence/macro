@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sector Intelligence — shared component specimen (SIC-P-COMP)</title>
+<link rel="stylesheet" href="components.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   TOKENS — verbatim copies of the needed custom-property blocks from
+   templates/theme.css. Each block names its source line range. The dark
+   declarations are re-homed from `:root` onto the specimen theme sections
+   (theme.css expresses the switch as `:root` dark default + an
+   `html[data-theme="light"]` override; a static page renders both at once by
+   scoping the same declarations per section). Values are byte-identical.
+   ══════════════════════════════════════════════════════════════════════════ */
+body,
+section[data-theme="dark"],
+section[data-theme="light"] {
+  /* verbatim templates/theme.css:30–34 — font stacks */
+  --font-ui: -apple-system, BlinkMacSystemFont, Inter, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+    Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  /* verbatim templates/theme.css:52–62 — type ramp (subset used) */
+  --fs-h2:17px; --fs-md:15px; --fs-body:14px; --fs-h3:14px; --fs-sm:12.5px;
+  --fs-label:11px; --fs-micro:10px;
+  /* verbatim templates/theme.css:63–64,69,71,76–78 — dark base palette */
+  --bg: #0f1115; --panel: #181b21; --panel2: #1e222a; --text: #d7dce3;
+  --muted: #8b93a1;
+  --line: #3a4150;
+  --warn: #e0a030; --act: #e05555; --ok: #3da564;
+  --fresh-ok: var(--ok);
+  --up: #45b873; --down: #e06464; --orange: #e08b45;
+  --info: #5b9bf0; --link: #7aa7e0;
+  /* verbatim templates/theme.css:120–121,124 — dialog backdrop + popover shadow */
+  --pv-dialog-backdrop: rgba(0,0,0,.5333333);
+  --popover-shadow: 0 6px 18px rgba(0,0,0,.5);
+  /* verbatim templates/theme.css:157–158 — retained-evidence surfaces */
+  --surface-warn-subtle: color-mix(in srgb, var(--warn) 6%, var(--panel));
+  --surface-skeleton-deep: color-mix(in srgb, var(--panel2) 86%, var(--line));
+  /* verbatim templates/theme.css:364–365 — text-grade ink mixes (dark = 100%) */
+  --ink-mix-up: 100%; --ink-mix-down: 100%; --ink-mix-warn: 100%; --ink-mix-ok: 100%;
+  --ink-mix-act: 100%; --ink-mix-orange: 100%; --ink-mix-link: 100%; --ink-mix-info: 100%;
+  /* verbatim templates/theme.css:376–383,388–389 — text-grade inks + washes */
+  --ink-up:     color-mix(in srgb, var(--up)     var(--ink-mix-up),     var(--text));
+  --ink-down:   color-mix(in srgb, var(--down)   var(--ink-mix-down),   var(--text));
+  --ink-warn:   color-mix(in srgb, var(--warn)   var(--ink-mix-warn),   var(--text));
+  --ink-ok:     color-mix(in srgb, var(--ok)     var(--ink-mix-ok),     var(--text));
+  --ink-act:    color-mix(in srgb, var(--act)    var(--ink-mix-act),    var(--text));
+  --ink-orange: color-mix(in srgb, var(--orange) var(--ink-mix-orange), var(--text));
+  --ink-link:   color-mix(in srgb, var(--link)   var(--ink-mix-link),   var(--text));
+  --ink-info:   color-mix(in srgb, var(--info)   var(--ink-mix-info),   var(--text));
+  --wash-ok:    color-mix(in srgb, var(--ok) 16%, transparent);
+  --ring-ok:    color-mix(in srgb, var(--ok) 26%, transparent);
+}
+section[data-theme="light"] {
+  /* verbatim templates/theme.css:216–217,224,226–229 — light palette override */
+  --bg: #f7f8fa; --panel: #ffffff; --panel2: #eef1f6; --text: #1c2430;
+  --muted: #5d6b7e;
+  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
+  --fresh-ok: var(--ok);
+  --up: #1f9a55; --down: #cf4040; --orange: #c4781f;
+  --info: #285fff; --link: #285fff;
+  /* verbatim templates/theme.css:245 — light popover shadow */
+  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
+  /* verbatim templates/theme.css:368–369 — light ink mixes */
+  --ink-mix-up: 62%; --ink-mix-down: 84%; --ink-mix-warn: 62%; --ink-mix-ok: 70%;
+  --ink-mix-act: 88%; --ink-mix-orange: 58%; --ink-mix-link: 88%; --ink-mix-info: 88%;
+}
+[lang="zh-Hans"] {
+  /* verbatim templates/theme.css:278 — zh dark direction swap (红涨绿跌),
+     re-homed from html[data-lang="zh"] to this zh-Hans specimen section.
+     Flips direction-delta ONLY: every other component inks from the status
+     plane, which theme.css deliberately never swaps. */
+  --up: #e06464; --down: #45b873;        /* swapped: red now = up */
+}
+
+/* ── page chrome (specimen scaffolding only — tokens only, no literals) ──── */
+body { margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font-ui); font-size: var(--fs-body); line-height: 1.5; }
+.spc-doc { max-width: 1020px; margin: 0 auto; padding: 30px 20px 64px; }
+.spc-doc-head { padding: 0 2px 18px; border-bottom: 1px solid var(--line);
+  margin-bottom: 6px; }
+.spc-doc-head h1 { margin: 0 0 6px; font-size: 22px; font-weight: 800;
+  letter-spacing: -.02em; color: var(--text); }
+.spc-doc-head p { margin: 2px 0; color: var(--muted); font-size: var(--fs-sm); }
+.spc-doc-warn { font-weight: 700; color: var(--ink-warn); }
+.spc-theme { margin: 26px 0 0; padding: 16px; border: 1px solid var(--line);
+  border-radius: 14px; background: var(--bg); }
+.spc-theme > h2 { margin: 0 0 4px; font-size: var(--fs-h2); font-weight: 800;
+  color: var(--text); }
+.spc-theme > p.spc-theme-sub { margin: 0 0 14px; color: var(--muted);
+  font-size: var(--fs-label); }
+.spc-cases { display: grid; grid-template-columns: repeat(auto-fill,
+  minmax(330px, 1fr)); gap: 12px; }
+.spc-case { background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column;
+  gap: 10px; min-width: 0; }
+.spc-case-k { margin: 0; font: 700 var(--fs-micro)/1.4 var(--font-ui);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+[lang="zh-Hans"] .spc-case-k { letter-spacing: 0; text-transform: none; }
+.spc-case > *:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+<!-- monoline icon set — geometry from templates/_icons.html.j2 (24 grid,
+     stroke=currentColor) + one padlock drawn in the same idiom; deliberate
+     dots carry fill="currentColor" -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><polyline points="12,7 12,12 15.4,14"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 4.2 2.4 18a2 2 0 0 0 1.72 3h15.76a2 2 0 0 0 1.72-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><line x1="12" y1="9.4" x2="12" y2="13.4"/><circle cx="12" cy="16.7" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-loading" viewBox="0 0 24 24"><path d="M20.2 12a8.2 8.2 0 1 0-2.4 5.8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="12" y1="19.5" x2="12" y2="5"/><polyline points="6,11 12,5 18,11"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9" rx="2.4"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2 20 6.1v6.1c0 4.4-3.2 7.3-8 8.6-4.8-1.3-8-4.2-8-8.6V6.1Z"/><polyline points="8.6,12.1 11.1,14.6 15.6,10.1"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><line x1="9.4" y1="6.6" x2="20.4" y2="6.6"/><line x1="9.4" y1="12" x2="20.4" y2="12"/><line x1="9.4" y1="17.4" x2="20.4" y2="17.4"/><circle cx="4.6" cy="6.6" r="1.15"/><circle cx="4.6" cy="12" r="1.15"/><circle cx="4.6" cy="17.4" r="1.15"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><polyline points="9,6 15,12 9,18"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.4 14.09 9.13 20.18 9.34 15.38 13.1 17.06 18.96 12 15.55 6.94 18.96 8.62 13.1 3.82 9.34 9.91 9.13Z"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><line x1="3.6" y1="20" x2="20.4" y2="20"/><line x1="7.5" y1="20" x2="7.5" y2="12.4"/><line x1="12" y1="20" x2="12" y2="6.4"/><line x1="16.5" y1="20" x2="16.5" y2="15"/></symbol>
+</svg>
+
+<main class="spc spc-doc">
+<header class="spc-doc-head">
+  <h1>Sector Intelligence — shared component specimen</h1>
+  <p>SIC-P-COMP · every component rendered in dark, light and one zh-Hans row.
+     Tokens: templates/theme.css (verbatim copies above, source lines named).
+     Components: components.css · contract: COMPONENTS.md.</p>
+  <p class="spc-doc-warn">Design specimen only — every value below is placeholder
+     copy, not recorded output.</p>
+</header>
+
+<!-- ════════════════════════ DARK ════════════════════════ -->
+<section data-theme="dark" class="spc-theme">
+<h2>Dark</h2>
+<p class="spc-theme-sub">:root default plane (theme.css:63–79)</p>
+<div class="spc-cases">
+
+  <div class="spc-case">
+    <p class="spc-case-k">asof-stamp · fresh / stale</p>
+    <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-asof-time">As of 2026-10-21 02:00 UTC</span>
+      <span>· Sector ETFs, daily close</span>
+      <span class="spc-asof-state" data-state="fresh">Fresh</span>
+    </p>
+    <p class="spc-asof-stamp" data-component="asof-stamp" data-state="stale">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-asof-time">As of 2026-10-18 02:00 UTC</span>
+      <span>· Sector ETFs, daily close</span>
+      <span class="spc-asof-state" data-state="stale">Stale</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">panel-footnote · plain / corrected</p>
+    <div class="spc-panel-footnote" data-component="panel-footnote">
+      <span>Hazard cells are the chance of a turn within h months; PRIOR cells
+        carry the historical base rate, not a model call.</span>
+      <a class="spc-fn-q" href="#" aria-label="How hazard is measured">?</a>
+    </div>
+    <div class="spc-panel-footnote" data-component="panel-footnote" data-state="corrected">
+      <span class="spc-fn-fix">Corrected 2026-10-20:</span>
+      <span>a date-window bug had shifted the 3m cells; values recomputed.</span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">state-banner · stale / incompatible_generation / corrected / error / loading</p>
+    <div class="spc-state-banner" data-component="state-banner" data-state="stale" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-sb-word">Stale</span>
+      <span class="spc-sb-msg">Last night's run missed; read with last good as-of.</span>
+      <a class="spc-sb-act" href="#">What changed</a>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="incompatible_generation" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <span class="spc-sb-word">Rebuilt</span>
+      <span class="spc-sb-msg">Data regenerated under a new engine build — not comparable with the previous board.</span>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="corrected" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-shield"/></svg>
+      <span class="spc-sb-word">Corrected</span>
+      <span class="spc-sb-msg">A correction was applied after publication — see the footnote.</span>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="error" role="alert">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <span class="spc-sb-word">Failed</span>
+      <span class="spc-sb-msg">The hazard grid could not be computed tonight.</span>
+      <a class="spc-sb-act" href="#">Retry</a>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="loading" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-loading"/></svg>
+      <span class="spc-sb-word">Loading</span>
+      <span class="spc-sb-msg">Computing tonight's board…</span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">stance-chip · the six values</p>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="act">Act</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="get-ready">Get ready</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="watch">Watch — don't chase</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="protect">Protect gains</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="stand-aside">Stand aside</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="ignore">Ignore</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">direction-delta · up / down / flat / unavailable</p>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="up" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+      <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="down" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>−6.8%
+      <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="flat" data-state="fresh">
+      ±0.0% <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="flat" data-state="error">
+      — <span class="spc-delta-basis">unavailable</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">health-badge · good / degraded / down</p>
+    <span class="spc-health-badge" data-component="health-badge" data-level="good">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Good</span>
+      <span class="spc-hb-basis">engine run 2026-10-21</span>
+    </span>
+    <span class="spc-health-badge" data-component="health-badge" data-level="degraded">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Degraded</span>
+      <span class="spc-hb-basis">partial feed, engine run 2026-10-21</span>
+    </span>
+    <span class="spc-health-badge" data-component="health-badge" data-level="down">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Down</span>
+      <span class="spc-hb-basis">feed failed 2026-10-21</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">lock-chip · locked (neutral until the --lock violet token lands)</p>
+    <span class="spc-lock-chip" data-component="lock-chip">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+      <span>Locked</span>
+      <span class="spc-lock-why">depth tier</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">model-prior-badge · Model / Prior (text labels, neutral fill)</p>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="model">Model</span>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="prior">Prior</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">grader-caption · fixed sentence</p>
+    <p class="spc-grader-caption" data-component="grader-caption" data-state="fresh">
+      Conditional hit rate, not a win rate
+      <span class="spc-gc-basis">· ≈ <span class="spc-gc-val">0.274</span> conditional on entry · n and window bound from data</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">source-rank-row · fresh / partial / corrected</p>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="fresh">
+      <span class="spc-rr-rank">1</span>
+      <span class="spc-rr-name">Semiconductors</span>
+      <span class="spc-rr-val">72 <span class="spc-rr-unit">/ 100 · strongly leading</span></span>
+      <span class="spc-rr-meta"><span class="spc-model-prior-badge" data-source="model">Model</span></span>
+    </div>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="partial">
+      <span class="spc-rr-rank">2</span>
+      <span class="spc-rr-name">Software</span>
+      <span class="spc-rr-val"><span class="spc-rr-unavailable">— unavailable</span></span>
+      <span class="spc-rr-meta"><span class="spc-rr-tag" data-kind="stale">Stale</span></span>
+    </div>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="corrected">
+      <span class="spc-rr-rank">3</span>
+      <span class="spc-rr-name">Industrials</span>
+      <span class="spc-rr-val">61 <span class="spc-rr-unit">/ 100 · leading</span></span>
+      <span class="spc-rr-meta"><span class="spc-rr-tag" data-kind="corrected">Corrected</span></span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">section-header</p>
+    <div class="spc-section-header" data-component="section-header">
+      <span class="spc-sh-eyebrow">Cycle board</span>
+      <h4 class="spc-sh-title">Turn hazard</h4>
+      <span class="spc-sh-count">12 names</span>
+      <a class="spc-sh-q" href="#" aria-label="How hazard is measured">?</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">see-all-link · after ≤ 8 rows</p>
+    <a class="spc-see-all-link" data-component="see-all-link" href="#">See all 12
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-chev"/></svg></a>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">skeleton-block · stamp / chip / line / row / cell (true geometry)</p>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="stamp"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="chip"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="line" style="width: 72%"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="row"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="cell"></div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">empty-state</p>
+    <div class="spc-empty-state" data-component="empty-state">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>
+      <p class="spc-es-label">No turn signals today</p>
+      <p class="spc-es-guide">Nothing qualified in tonight's run. The board
+        updates after each close.</p>
+      <a class="spc-es-act" href="#">See what changed</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">error-state</p>
+    <div class="spc-error-state" data-component="error-state">
+      <span class="spc-es-head">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+        Couldn't load the hazard grid</span>
+      <p class="spc-es-msg">Last good render: 2026-10-20 02:00 UTC.</p>
+      <p class="spc-es-why">Engine returned a schema mismatch (class in the tip).</p>
+      <button class="spc-es-retry" type="button">Retry</button>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">series-picker · radiogroup</p>
+    <div role="radiogroup" aria-label="Horizon" class="spc-series-picker" data-component="series-picker" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-sp-opt">1m</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">3m</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">6m</button>
+    </div>
+    <span class="spc-sp-basis">changes the whole panel's basis</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">phase-chip · the five phases (Recovery neutral — no teal token)</p>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="trough">Bottoming</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="recovery">Prime entry</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="expansion">Trending</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="peak">Topping</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="downturn">Rolling over</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">leg-timeline-item · closed major / open (partial)</p>
+    <div class="spc-leg-item" data-component="leg-timeline-item" data-state="fresh" role="button" tabindex="0" aria-expanded="false">
+      <span class="spc-leg-verb">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>Rally</span>
+      <span class="spc-leg-t">Semiconductors
+        <span class="spc-leg-dt">2026-04-02 → 2026-09-18</span></span>
+      <span class="spc-leg-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+38.4%</span>
+        <span class="spc-leg-tag">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-star"/></svg>Major</span>
+      </span>
+    </div>
+    <div class="spc-leg-item" data-component="leg-timeline-item" data-state="partial" role="button" tabindex="0" aria-expanded="false">
+      <span class="spc-leg-verb">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>Selloff</span>
+      <span class="spc-leg-t">Utilities
+        <span class="spc-leg-dt">since 2026-10-02 · running</span></span>
+      <span class="spc-leg-m">
+        <span class="spc-direction-delta" data-dir="down">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>−9.1%</span>
+        <span class="spc-leg-tag">Open</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">hazard-ladder · six cells, up/3m + up/6m are PRIOR</p>
+    <div class="spc-hazard-ladder" data-component="hazard-ladder" data-state="fresh">
+      <span class="spc-hz-head">P(turn)</span>
+      <span class="spc-hz-head">1m</span>
+      <span class="spc-hz-head">3m</span>
+      <span class="spc-hz-head">6m</span>
+      <span class="spc-hz-rowlab">Down legs</span>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">26%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">22%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">19%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <span class="spc-hz-rowlab">Up legs</span>
+      <div class="spc-hz-cell" data-source="model" data-active="true">
+        <span class="spc-hz-val">34%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">38%</span>
+        <span class="spc-model-prior-badge" data-source="prior">Prior</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">41%</span>
+        <span class="spc-model-prior-badge" data-source="prior">Prior</span>
+      </div>
+      <p class="spc-hz-note">Model price_c4414dcb · four of six cells qualified —
+        up/3m and up/6m remain PRIOR (KM base rate). Values are placeholders.</p>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">timing-ladder-row · fresh / abstained / locked</p>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="fresh">
+      <span class="spc-tr-name">Semiconductors
+        <span class="spc-tr-basis">since 2026-04-02</span></span>
+      <span class="spc-chip spc-stance-chip" data-stance="act">Act</span>
+      <span class="spc-tr-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+          <span class="spc-delta-basis">3m</span></span>
+      </span>
+    </div>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="abstained">
+      <span class="spc-tr-name">Utilities
+        <span class="spc-tr-basis">since 2026-10-02</span></span>
+      <span class="spc-tr-abstained">Abstained this cycle</span>
+      <span class="spc-tr-m"></span>
+    </div>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="locked">
+      <span class="spc-tr-name">Deep value detail
+        <span class="spc-tr-basis">since 2026-01-15</span></span>
+      <span class="spc-lock-chip">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+        <span>Locked</span>
+        <span class="spc-lock-why">depth tier</span>
+      </span>
+      <span class="spc-tr-m"></span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">mobile-sheet · surface (in-flow demo)</p>
+    <div class="spc-mobile-sheet" data-component="mobile-sheet" role="dialog" aria-label="Sector detail">
+      <span class="spc-sheet-handle" aria-hidden="true"></span>
+      <div class="spc-sheet-head">
+        <h4 class="spc-sheet-title">Semiconductors</h4>
+        <button class="spc-sheet-close" type="button" aria-label="Close">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="spc-sheet-body">
+        <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span class="spc-asof-time">As of 2026-10-21 02:00 UTC</span>
+        </p>
+        <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="get-ready">Get ready</span>
+        <p class="spc-grader-caption" data-component="grader-caption" data-state="fresh">
+          Conditional hit rate, not a win rate</p>
+      </div>
+      <div class="spc-sheet-foot">
+        <button class="spc-es-retry" type="button">Open full detail</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">table-alternative-toggle · fresh / locked</p>
+    <div role="radiogroup" aria-label="View" class="spc-view-toggle" data-component="table-alternative-toggle" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>Table</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-bars"/></svg>Ladder</button>
+    </div>
+    <div role="radiogroup" aria-label="View, locked" class="spc-view-toggle" data-component="table-alternative-toggle" data-state="locked" aria-disabled="true">
+      <button type="button" role="radio" aria-checked="true" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>Table</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-vt-opt" aria-disabled="true">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-bars"/></svg>Ladder
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg></button>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ════════════════════════ LIGHT ════════════════════════ -->
+<section data-theme="light" class="spc-theme">
+<h2>Light</h2>
+<p class="spc-theme-sub">html[data-theme="light"] override plane (theme.css:211–253)</p>
+<div class="spc-cases">
+
+  <div class="spc-case">
+    <p class="spc-case-k">asof-stamp · fresh / stale</p>
+    <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-asof-time">As of 2026-10-21 02:00 UTC</span>
+      <span>· Sector ETFs, daily close</span>
+      <span class="spc-asof-state" data-state="fresh">Fresh</span>
+    </p>
+    <p class="spc-asof-stamp" data-component="asof-stamp" data-state="stale">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-asof-time">As of 2026-10-18 02:00 UTC</span>
+      <span>· Sector ETFs, daily close</span>
+      <span class="spc-asof-state" data-state="stale">Stale</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">panel-footnote · plain / corrected</p>
+    <div class="spc-panel-footnote" data-component="panel-footnote">
+      <span>Hazard cells are the chance of a turn within h months; PRIOR cells
+        carry the historical base rate, not a model call.</span>
+      <a class="spc-fn-q" href="#" aria-label="How hazard is measured">?</a>
+    </div>
+    <div class="spc-panel-footnote" data-component="panel-footnote" data-state="corrected">
+      <span class="spc-fn-fix">Corrected 2026-10-20:</span>
+      <span>a date-window bug had shifted the 3m cells; values recomputed.</span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">state-banner · stale / incompatible_generation / corrected / error / loading</p>
+    <div class="spc-state-banner" data-component="state-banner" data-state="stale" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-sb-word">Stale</span>
+      <span class="spc-sb-msg">Last night's run missed; read with last good as-of.</span>
+      <a class="spc-sb-act" href="#">What changed</a>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="incompatible_generation" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <span class="spc-sb-word">Rebuilt</span>
+      <span class="spc-sb-msg">Data regenerated under a new engine build — not comparable with the previous board.</span>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="corrected" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-shield"/></svg>
+      <span class="spc-sb-word">Corrected</span>
+      <span class="spc-sb-msg">A correction was applied after publication — see the footnote.</span>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="error" role="alert">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <span class="spc-sb-word">Failed</span>
+      <span class="spc-sb-msg">The hazard grid could not be computed tonight.</span>
+      <a class="spc-sb-act" href="#">Retry</a>
+    </div>
+    <div class="spc-state-banner" data-component="state-banner" data-state="loading" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-loading"/></svg>
+      <span class="spc-sb-word">Loading</span>
+      <span class="spc-sb-msg">Computing tonight's board…</span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">stance-chip · the six values</p>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="act">Act</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="get-ready">Get ready</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="watch">Watch — don't chase</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="protect">Protect gains</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="stand-aside">Stand aside</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="ignore">Ignore</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">direction-delta · up / down / flat / unavailable</p>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="up" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+      <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="down" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>−6.8%
+      <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="flat" data-state="fresh">
+      ±0.0% <span class="spc-delta-basis">3m</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="flat" data-state="error">
+      — <span class="spc-delta-basis">unavailable</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">health-badge · good / degraded / down</p>
+    <span class="spc-health-badge" data-component="health-badge" data-level="good">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Good</span>
+      <span class="spc-hb-basis">engine run 2026-10-21</span>
+    </span>
+    <span class="spc-health-badge" data-component="health-badge" data-level="degraded">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Degraded</span>
+      <span class="spc-hb-basis">partial feed, engine run 2026-10-21</span>
+    </span>
+    <span class="spc-health-badge" data-component="health-badge" data-level="down">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">Down</span>
+      <span class="spc-hb-basis">feed failed 2026-10-21</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">lock-chip · locked (neutral until the --lock violet token lands)</p>
+    <span class="spc-lock-chip" data-component="lock-chip">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+      <span>Locked</span>
+      <span class="spc-lock-why">depth tier</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">model-prior-badge · Model / Prior (text labels, neutral fill)</p>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="model">Model</span>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="prior">Prior</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">grader-caption · fixed sentence</p>
+    <p class="spc-grader-caption" data-component="grader-caption" data-state="fresh">
+      Conditional hit rate, not a win rate
+      <span class="spc-gc-basis">· ≈ <span class="spc-gc-val">0.274</span> conditional on entry · n and window bound from data</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">source-rank-row · fresh / partial / corrected</p>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="fresh">
+      <span class="spc-rr-rank">1</span>
+      <span class="spc-rr-name">Semiconductors</span>
+      <span class="spc-rr-val">72 <span class="spc-rr-unit">/ 100 · strongly leading</span></span>
+      <span class="spc-rr-meta"><span class="spc-model-prior-badge" data-source="model">Model</span></span>
+    </div>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="partial">
+      <span class="spc-rr-rank">2</span>
+      <span class="spc-rr-name">Software</span>
+      <span class="spc-rr-val"><span class="spc-rr-unavailable">— unavailable</span></span>
+      <span class="spc-rr-meta"><span class="spc-rr-tag" data-kind="stale">Stale</span></span>
+    </div>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="corrected">
+      <span class="spc-rr-rank">3</span>
+      <span class="spc-rr-name">Industrials</span>
+      <span class="spc-rr-val">61 <span class="spc-rr-unit">/ 100 · leading</span></span>
+      <span class="spc-rr-meta"><span class="spc-rr-tag" data-kind="corrected">Corrected</span></span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">section-header</p>
+    <div class="spc-section-header" data-component="section-header">
+      <span class="spc-sh-eyebrow">Cycle board</span>
+      <h4 class="spc-sh-title">Turn hazard</h4>
+      <span class="spc-sh-count">12 names</span>
+      <a class="spc-sh-q" href="#" aria-label="How hazard is measured">?</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">see-all-link · after ≤ 8 rows</p>
+    <a class="spc-see-all-link" data-component="see-all-link" href="#">See all 12
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-chev"/></svg></a>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">skeleton-block · stamp / chip / line / row / cell (true geometry)</p>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="stamp"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="chip"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="line" style="width: 72%"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="row"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="cell"></div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">empty-state</p>
+    <div class="spc-empty-state" data-component="empty-state">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>
+      <p class="spc-es-label">No turn signals today</p>
+      <p class="spc-es-guide">Nothing qualified in tonight's run. The board
+        updates after each close.</p>
+      <a class="spc-es-act" href="#">See what changed</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">error-state</p>
+    <div class="spc-error-state" data-component="error-state">
+      <span class="spc-es-head">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+        Couldn't load the hazard grid</span>
+      <p class="spc-es-msg">Last good render: 2026-10-20 02:00 UTC.</p>
+      <p class="spc-es-why">Engine returned a schema mismatch (class in the tip).</p>
+      <button class="spc-es-retry" type="button">Retry</button>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">series-picker · radiogroup</p>
+    <div role="radiogroup" aria-label="Horizon" class="spc-series-picker" data-component="series-picker" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-sp-opt">1m</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">3m</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">6m</button>
+    </div>
+    <span class="spc-sp-basis">changes the whole panel's basis</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">phase-chip · the five phases (Recovery neutral — no teal token)</p>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="trough">Bottoming</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="recovery">Prime entry</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="expansion">Trending</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="peak">Topping</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="downturn">Rolling over</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">leg-timeline-item · closed major / open (partial)</p>
+    <div class="spc-leg-item" data-component="leg-timeline-item" data-state="fresh" role="button" tabindex="0" aria-expanded="false">
+      <span class="spc-leg-verb">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>Rally</span>
+      <span class="spc-leg-t">Semiconductors
+        <span class="spc-leg-dt">2026-04-02 → 2026-09-18</span></span>
+      <span class="spc-leg-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+38.4%</span>
+        <span class="spc-leg-tag">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-star"/></svg>Major</span>
+      </span>
+    </div>
+    <div class="spc-leg-item" data-component="leg-timeline-item" data-state="partial" role="button" tabindex="0" aria-expanded="false">
+      <span class="spc-leg-verb">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>Selloff</span>
+      <span class="spc-leg-t">Utilities
+        <span class="spc-leg-dt">since 2026-10-02 · running</span></span>
+      <span class="spc-leg-m">
+        <span class="spc-direction-delta" data-dir="down">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>−9.1%</span>
+        <span class="spc-leg-tag">Open</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">hazard-ladder · six cells, up/3m + up/6m are PRIOR</p>
+    <div class="spc-hazard-ladder" data-component="hazard-ladder" data-state="fresh">
+      <span class="spc-hz-head">P(turn)</span>
+      <span class="spc-hz-head">1m</span>
+      <span class="spc-hz-head">3m</span>
+      <span class="spc-hz-head">6m</span>
+      <span class="spc-hz-rowlab">Down legs</span>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">26%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">22%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">19%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <span class="spc-hz-rowlab">Up legs</span>
+      <div class="spc-hz-cell" data-source="model" data-active="true">
+        <span class="spc-hz-val">34%</span>
+        <span class="spc-model-prior-badge" data-source="model">Model</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">38%</span>
+        <span class="spc-model-prior-badge" data-source="prior">Prior</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">41%</span>
+        <span class="spc-model-prior-badge" data-source="prior">Prior</span>
+      </div>
+      <p class="spc-hz-note">Model price_c4414dcb · four of six cells qualified —
+        up/3m and up/6m remain PRIOR (KM base rate). Values are placeholders.</p>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">timing-ladder-row · fresh / abstained / locked</p>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="fresh">
+      <span class="spc-tr-name">Semiconductors
+        <span class="spc-tr-basis">since 2026-04-02</span></span>
+      <span class="spc-chip spc-stance-chip" data-stance="act">Act</span>
+      <span class="spc-tr-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+          <span class="spc-delta-basis">3m</span></span>
+      </span>
+    </div>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="abstained">
+      <span class="spc-tr-name">Utilities
+        <span class="spc-tr-basis">since 2026-10-02</span></span>
+      <span class="spc-tr-abstained">Abstained this cycle</span>
+      <span class="spc-tr-m"></span>
+    </div>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="locked">
+      <span class="spc-tr-name">Deep value detail
+        <span class="spc-tr-basis">since 2026-01-15</span></span>
+      <span class="spc-lock-chip">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+        <span>Locked</span>
+        <span class="spc-lock-why">depth tier</span>
+      </span>
+      <span class="spc-tr-m"></span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">mobile-sheet · surface (in-flow demo)</p>
+    <div class="spc-mobile-sheet" data-component="mobile-sheet" role="dialog" aria-label="Sector detail">
+      <span class="spc-sheet-handle" aria-hidden="true"></span>
+      <div class="spc-sheet-head">
+        <h4 class="spc-sheet-title">Semiconductors</h4>
+        <button class="spc-sheet-close" type="button" aria-label="Close">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="spc-sheet-body">
+        <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span class="spc-asof-time">As of 2026-10-21 02:00 UTC</span>
+        </p>
+        <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="get-ready">Get ready</span>
+        <p class="spc-grader-caption" data-component="grader-caption" data-state="fresh">
+          Conditional hit rate, not a win rate</p>
+      </div>
+      <div class="spc-sheet-foot">
+        <button class="spc-es-retry" type="button">Open full detail</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">table-alternative-toggle · fresh / locked</p>
+    <div role="radiogroup" aria-label="View" class="spc-view-toggle" data-component="table-alternative-toggle" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>Table</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-bars"/></svg>Ladder</button>
+    </div>
+    <div role="radiogroup" aria-label="View, locked" class="spc-view-toggle" data-component="table-alternative-toggle" data-state="locked" aria-disabled="true">
+      <button type="button" role="radio" aria-checked="true" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>Table</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-vt-opt" aria-disabled="true">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-bars"/></svg>Ladder
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg></button>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ════════════════════════ 中文 zh-Hans ════════════════════════ -->
+<section data-theme="dark" lang="zh-Hans" class="spc-theme">
+<h2>中文（zh-Hans）</h2>
+<p class="spc-theme-sub">红涨绿跌只翻转 direction-delta（上行=红，下行=绿）；健康、立场、危险度一律不翻转。</p>
+<div class="spc-cases">
+
+  <div class="spc-case">
+    <p class="spc-case-k">asof-stamp</p>
+    <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-asof-time">截至 2026-10-21 02:00 UTC</span>
+      <span>· 美股行业ETF（日收盘）</span>
+      <span class="spc-asof-state" data-state="fresh">最新</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">panel-footnote</p>
+    <div class="spc-panel-footnote" data-component="panel-footnote">
+      <span>危险度格子为未来 h 个月内出现拐点的条件概率；「历史基准」格子不是模型输出。</span>
+      <a class="spc-fn-q" href="#" aria-label="测算方法">?</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">state-banner</p>
+    <div class="spc-state-banner" data-component="state-banner" data-state="stale" role="status">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+      <span class="spc-sb-word">已过期</span>
+      <span class="spc-sb-msg">昨夜运行缺失；请按上次正常时间戳阅读。</span>
+      <a class="spc-sb-act" href="#">查看变化</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">stance-chip</p>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="act">行动</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="get-ready">准备就绪</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="watch">观望——勿追高</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="protect">保护收益</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="stand-aside">暂时回避</span>
+    <span class="spc-chip spc-stance-chip" data-component="stance-chip" data-stance="ignore">忽略</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">direction-delta · 红涨绿跌</p>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="up" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+      <span class="spc-delta-basis">3个月</span>
+    </span>
+    <span class="spc-direction-delta" data-component="direction-delta" data-dir="down" data-state="fresh">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>−6.8%
+      <span class="spc-delta-basis">3个月</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">health-badge</p>
+    <span class="spc-health-badge" data-component="health-badge" data-level="good">
+      <span class="spc-hb-dot"></span><span class="spc-hb-word">良好</span>
+      <span class="spc-hb-basis">引擎运行 2026-10-21</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">lock-chip</p>
+    <span class="spc-lock-chip" data-component="lock-chip">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-lock"/></svg>
+      <span>已锁定</span>
+      <span class="spc-lock-why">深度层级</span>
+    </span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">model-prior-badge</p>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="model">模型</span>
+    <span class="spc-model-prior-badge" data-component="model-prior-badge" data-source="prior">历史基准</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">grader-caption</p>
+    <p class="spc-grader-caption" data-component="grader-caption" data-state="fresh">
+      条件命中率，非胜率
+      <span class="spc-gc-basis">· ≈ <span class="spc-gc-val">0.274</span> · 样本量与窗口随数据绑定</span>
+    </p>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">source-rank-row</p>
+    <div class="spc-source-rank-row" data-component="source-rank-row" data-state="fresh">
+      <span class="spc-rr-rank">1</span>
+      <span class="spc-rr-name">半导体</span>
+      <span class="spc-rr-val">72 <span class="spc-rr-unit">/ 100 · 强势领先</span></span>
+      <span class="spc-rr-meta"><span class="spc-model-prior-badge" data-source="model">模型</span></span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">section-header</p>
+    <div class="spc-section-header" data-component="section-header">
+      <span class="spc-sh-eyebrow">周期看板</span>
+      <h4 class="spc-sh-title">拐点危险度</h4>
+      <span class="spc-sh-count">12 个行业</span>
+      <a class="spc-sh-q" href="#" aria-label="测算方法">?</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">see-all-link</p>
+    <a class="spc-see-all-link" data-component="see-all-link" href="#">查看全部 12
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-chev"/></svg></a>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">skeleton-block</p>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="chip"></div>
+    <div class="spc-skeleton-block" data-component="skeleton-block" data-variant="row"></div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">empty-state</p>
+    <div class="spc-empty-state" data-component="empty-state">
+      <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>
+      <p class="spc-es-label">今日无拐点信号</p>
+      <p class="spc-es-guide">今晚运行中没有合格条目。每日收盘后更新。</p>
+      <a class="spc-es-act" href="#">查看变化</a>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">error-state</p>
+    <div class="spc-error-state" data-component="error-state">
+      <span class="spc-es-head">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-alert"/></svg>
+        加载失败</span>
+      <p class="spc-es-msg">上次正常渲染：2026-10-20 02:00 UTC。</p>
+      <button class="spc-es-retry" type="button">重试</button>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">series-picker</p>
+    <div role="radiogroup" aria-label="时间范围" class="spc-series-picker" data-component="series-picker" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-sp-opt">1个月</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">3个月</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-sp-opt">6个月</button>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">phase-chip</p>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="trough">筑底</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="recovery">复苏</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="expansion">扩张</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="peak">顶部</span>
+    <span class="spc-chip spc-phase-chip" data-component="phase-chip" data-phase="downturn">下行</span>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">leg-timeline-item</p>
+    <div class="spc-leg-item" data-component="leg-timeline-item" data-state="fresh" role="button" tabindex="0" aria-expanded="false">
+      <span class="spc-leg-verb">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>上行</span>
+      <span class="spc-leg-t">半导体
+        <span class="spc-leg-dt">2026-04-02 → 2026-09-18</span></span>
+      <span class="spc-leg-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+38.4%</span>
+        <span class="spc-leg-tag">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-star"/></svg>主要</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">hazard-ladder</p>
+    <div class="spc-hazard-ladder" data-component="hazard-ladder" data-state="fresh">
+      <span class="spc-hz-head">拐点概率</span>
+      <span class="spc-hz-head">1个月</span>
+      <span class="spc-hz-head">3个月</span>
+      <span class="spc-hz-head">6个月</span>
+      <span class="spc-hz-rowlab">下行段</span>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">26%</span>
+        <span class="spc-model-prior-badge" data-source="model">模型</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">22%</span>
+        <span class="spc-model-prior-badge" data-source="model">模型</span>
+      </div>
+      <div class="spc-hz-cell" data-source="model">
+        <span class="spc-hz-val">19%</span>
+        <span class="spc-model-prior-badge" data-source="model">模型</span>
+      </div>
+      <span class="spc-hz-rowlab">上行段</span>
+      <div class="spc-hz-cell" data-source="model" data-active="true">
+        <span class="spc-hz-val">34%</span>
+        <span class="spc-model-prior-badge" data-source="model">模型</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">38%</span>
+        <span class="spc-model-prior-badge" data-source="prior">历史基准</span>
+      </div>
+      <div class="spc-hz-cell" data-source="prior" data-active="true">
+        <span class="spc-hz-val">41%</span>
+        <span class="spc-model-prior-badge" data-source="prior">历史基准</span>
+      </div>
+      <p class="spc-hz-note">模型 price_c4414dcb · 六格中四格合格——上行3个月与6个月仍为「历史基准」。数值为占位示例。</p>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">timing-ladder-row</p>
+    <div class="spc-timing-row" data-component="timing-ladder-row" data-state="fresh">
+      <span class="spc-tr-name">半导体
+        <span class="spc-tr-basis">自 2026-04-02 起</span></span>
+      <span class="spc-chip spc-stance-chip" data-stance="act">行动</span>
+      <span class="spc-tr-m">
+        <span class="spc-direction-delta" data-dir="up">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-arrow"/></svg>+4.2%
+          <span class="spc-delta-basis">3个月</span></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">mobile-sheet</p>
+    <div class="spc-mobile-sheet" data-component="mobile-sheet" role="dialog" aria-label="行业详情">
+      <span class="spc-sheet-handle" aria-hidden="true"></span>
+      <div class="spc-sheet-head">
+        <h4 class="spc-sheet-title">半导体</h4>
+        <button class="spc-sheet-close" type="button" aria-label="关闭">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="spc-sheet-body">
+        <p class="spc-asof-stamp" data-component="asof-stamp" data-state="fresh">
+          <svg class="spc-icon" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span class="spc-asof-time">截至 2026-10-21 02:00 UTC</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spc-case">
+    <p class="spc-case-k">table-alternative-toggle</p>
+    <div role="radiogroup" aria-label="视图" class="spc-view-toggle" data-component="table-alternative-toggle" data-state="fresh">
+      <button type="button" role="radio" aria-checked="true" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-list"/></svg>表格</button>
+      <button type="button" role="radio" aria-checked="false" class="spc-vt-opt">
+        <svg class="spc-icon" aria-hidden="true"><use href="#i-bars"/></svg>阶梯图</button>
+    </div>
+  </div>
+
+</div>
+</section>
+</main>
+</body>
+</html>
