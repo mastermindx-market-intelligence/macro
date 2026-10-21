@@ -8915,7 +8915,6 @@ jobs:
           tests/test_prophet_live_journal_recovery.py
           tests/test_cn_live_clock.py
           tests/test_cn_live_pack.py
-          tests/test_cn_live_pack_archive.py
           tests/test_cn_live_evaluator.py
           tests/test_cn_live_vps_lane.py
           tests/test_cn_live_pack_frozen.py
@@ -26673,6 +26672,11 @@ jobs:
       - "engine/prophet_live/interval.py"
       - "engine/prophet_live/live_states.py"
       - "engine/prophet_live/r2io.py"
+      # China P1 archive-first publish (cnp1arch): the CN live-pack writer and its
+      # archive test run in THIS gate: code job so a PR edit to either re-runs it;
+      # express-render-guards is gate: data (nightly only) and never runs on a PR.
+      - "scripts/build_cn_live_pack.py"
+      - "tests/test_cn_live_pack_archive.py"
       - "engine/prophet_management.py"
       - "engine/prophet_stage_inputs.py"
       - "engine/prophet_strategy_definition.py"
@@ -27185,6 +27189,8 @@ jobs:
         run: python -m pytest tests/test_prophet_plan_clock.py tests/test_prophet_bridge.py -q -k 'PlanNativeSourceRead or PlanSourceOrigin or source_origin_extension or (test_validate_trade_plan and not (engines_required or schema_mismatch or invalid_direction or every_referenced))'
       - name: Prophet B4 producer basis and disclosed freshness guards
         run: python -m pytest tests/test_prophet_live_evaluator.py -q -k 'dark_artifact_discloses or malformed_threshold or row_exception_material or zero_or_negative or cfg_stamps or meta_discloses or stripping_only or basis_material or the_disclosure'
+      - name: CN live pack archive-first publish (China P1 - content-addressed archive before the current-key roll)
+        run: python -m pytest tests/test_cn_live_pack_archive.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
