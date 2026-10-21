@@ -10,8 +10,8 @@ The current user directed this session to resume timed-out conversation `6ad8269
 
 - Macro operation `forex-r26-owner-adoption-20261020-sol-001`; branch `sol/web-forex-r26-owner-adoption-20261020-sol-001`; existing PR **#9866**, DRAFT/HOLD.
 - Original workspace: `/Volumes/Mastermind 2/agent-workspaces/macro/web/forex-r26-owner-adoption-20261020-sol-001`.
-- Recovered local HEAD `388d27784cbbe0fbd1df3dc16228dbb96d6c9fcd` is a rebased owner-integration commit over `e5dd30c6344e4`; published head is `5798c8de9127f9a7c2c2efa02226a0281103f9d3`. They are not an ancestor chain. Preserve both histories with an ordinary merge before the same-branch push; never force-push or replace the PR.
-- Freshly fetched main `b9b0759af6b8f347a7d729e3b13b8925857c5f8f` includes unrelated CI job additions and generated data. No new Forex source/template/engine overlap was observed; its CI additions must be preserved by ordinary integration.
+- Recovered local HEAD `388d27784cbbe0fbd1df3dc16228dbb96d6c9fcd` rebased the original owner integration onto `e5dd30c6344e4`. Recovery commit `41fcefeac827dfc3302ca62e6579b7d5f4b1fcf5` was reconciled with original published `5798c8de9127f9a7c2c2efa02226a0281103f9d3` by ordinary merge `6c7afac115626a5cf1a5a870c6110d9d93059160`, then pushed on this same branch. The old/rebased owner patches were range-diff equivalent. The tested implementation and merge trees are identical: `c856f60607ce95fe52f570c9380ae74c40be42cd`. No force-push or carrier replacement occurred.
+- Canonical main was verified at `562fc7dd02a95792c1a3f59dee2e147f5ffddf20` by remote Git and two GitHub reads. Refreshing the PR base metadata to its existing `main` ref corrected the stale PR inventory to four commits / 105 project paths. A dry merge-tree check against that main completed cleanly; no unnecessary source or history change was made.
 - No active merge/rebase was present at recovery. The original dirty source and completed worker artifacts were preserved. No primary checkout, account, lease or shared source was reset.
 
 The recovered successor now mounts the R26 consumer in the actual builder/Jinja route: Today, Explore, My watches, pair detail tabs, comparison, bilingual source/freshness disclosures, light/dark themes, keyboard controls and responsive layouts. The existing full study is retained behind disclosure. Pair quote direction and assessed-currency/residual-model direction remain distinct. Historical timeline labels are a builder display projection; producer event IDs and historical fields are not rewritten.
@@ -30,6 +30,12 @@ Receipts: `successor_evidence/browser.json`, `resume_validation.json`, and `mock
 - Earlier hosted failure reproductions: exclusive CI-curation test **1 passed**; donut/missing-shares browser test **2 passed**. Dedicated `forex-r26-consumer` CI ownership replaces the broad shim additions without weakening ceilings.
 - Old hosted run `39414239073` failed on published `5798c8d...`; local passes are not a green hosted result. New-head CI and independent review remain required.
 
+### CI pin integration correction
+
+After publication, the existing static-set test failed solely because `forex-r26-consumer` was missing from `CURATED_EXCLUSIVE`. The one-line correction adds that already-declared manifest job to the pinned set. The exact test then passed (1 passed, 10.42s). A bounded invocation of the existing scope inference checked the Forex job alone: 57 literal closure paths, zero uncovered paths. All seven recorded product source hashes remain identical. Parent execution reason: **LOWER_TOTAL_OVERHEAD**, a one-line integration repair with a reproduced failure; this is not a replacement for the blocked Fabric census or independent release review.
+
+Hosted `contract-delta` and active `ci-authority/main` passed on `6c7afac...`. The inactive merge-queue-pilot authority context reports `inactive_base_context` and is not the active main authority. Remaining hosted packs were still running at this record; the successor commit requires its own hosted result. A broader local closure audit timed out at 240 seconds and supplied no verdict; it is not counted as a pass or failure.
+
 ### Worker provenance and held boundaries
 
 Original root `forex-r26-native-completion-20261020-sol-001`, parent `forex-r26-recovery-20261020-sol` remain unchanged.
@@ -41,7 +47,7 @@ Original root `forex-r26-native-completion-20261020-sol-001`, parent `forex-r26-
 
 ### Remaining acceptance
 
-Publish this exact successor on #9866 after scoped commit and history-preserving reconciliation; inspect its actual CI and qualified independent review. Keep DRAFT/HOLD, no merge-on-green label and no native auto-merge until the accountable release ruling. Then complete the incumbent account/watch/source/notification integration and actual deployed user-path proof. An inert prepared condition is not a saved/active watch, and green source checks are not production acceptance. #8315 and #8729 remain separately held. The accepted Paper designs must not be recreated.
+The recovered successor is published on #9866 with its original history preserved. Publish the narrow CI pin correction on the same branch and inspect the resulting head's actual hosted CI and qualified independent review. Keep DRAFT/HOLD, no merge-on-green label and no native auto-merge until the accountable release ruling. Then complete the incumbent account/watch/source/notification integration and actual deployed user-path proof. An inert prepared condition is not a saved/active watch, and green source checks are not production acceptance. #8315 and #8729 remain separately held. The accepted Paper designs must not be recreated.
 
 ## Historical owner checkpoint — 2026-10-20
 

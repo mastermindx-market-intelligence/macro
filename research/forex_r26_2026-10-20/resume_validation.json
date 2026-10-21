@@ -19,7 +19,7 @@
         "name": "design",
         "returncode": 0,
         "log": "/tmp/forex-r26-resume-20261021/design.log",
-        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
+        "tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25369 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25369)\n"
       },
       {
         "name": "targeted",
@@ -85,5 +85,57 @@
     "all_within_frozen_allowances": true
   },
   "production_acceptance": false,
-  "release_independent_review": "pending"
+  "release_independent_review": "pending",
+  "ci_pin_integration_repair": {
+    "recorded_at": "2026-10-21T09:47:42.079028+00:00",
+    "parent_head": "6c7afac115626a5cf1a5a870c6110d9d93059160",
+    "path": "tests/test_ci_pack.py",
+    "test": "test_the_curated_exclusive_set_is_actually_declared",
+    "before": {
+      "exit_code": 1,
+      "mismatch": [
+        "forex-r26-consumer"
+      ]
+    },
+    "after": {
+      "exit_code": 0,
+      "passed": 1,
+      "elapsed_seconds": 10.42
+    },
+    "closure": {
+      "job": "forex-r26-consumer",
+      "exclusive": true,
+      "closure_files": 57,
+      "uncovered": [],
+      "elapsed_seconds": 38.76
+    },
+    "product_source_hashes_unchanged": {
+      "scripts/build_forex.py": true,
+      "lib/forex_r26_consumer.py": true,
+      "templates/forex.html.j2": true,
+      "templates/forex_r26_workspace.html.j2": true,
+      "templates/forex_r26.css": true,
+      "templates/forex_r26.js": true,
+      "tests/test_forex_r26_workspace.py": true
+    },
+    "routing_reason": "LOWER_TOTAL_OVERHEAD: one-line integration pin repair in the existing parent-owned candidate, with an exact failing assertion and focused verification; no delegated worker replacement or release-review claim.",
+    "broader_local_closure_audit": {
+      "outcome": "TIMEOUT_NO_VERDICT",
+      "timeout_seconds": 240
+    },
+    "hosted_contract_delta": {
+      "head": "6c7afac115626a5cf1a5a870c6110d9d93059160",
+      "run_id": 39577411008,
+      "job_id": 119146284404,
+      "conclusion": "success"
+    },
+    "active_main_authority": {
+      "head": "6c7afac115626a5cf1a5a870c6110d9d93059160",
+      "check_id": 119151301289,
+      "conclusion": "success",
+      "changed_files": 105
+    },
+    "successor_hosted_ci_required": true,
+    "independent_release_review_required": true
+  }
 }
