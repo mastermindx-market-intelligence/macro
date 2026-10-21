@@ -97,17 +97,18 @@
       "stamps": 0,
       "written": 0
     },
-    "n_coverage_rows": 8,
-    "n_family_rows": 8,
+    "n_coverage_rows": 0,
+    "n_family_rows": 0,
     "n_paired_rows": 1931,
     "paired": {
-      "identical": 1696,
-      "matured": 192,
+      "identical": 1888,
+      "matured": 0,
       "revisions_refused": 0,
-      "stamps": 3,
-      "written": 192
+      "stamps": 0,
+      "written": 0
     },
     "reconstruction_refused": [
+      "2026-10-19",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
@@ -132,7 +133,7 @@
       "identical": 30,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
