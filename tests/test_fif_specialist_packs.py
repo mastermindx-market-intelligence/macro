@@ -2978,6 +2978,77 @@ def test_pk09_disclosure_controls_not_effective_anchored() -> None:
     assert contract.validate_pack_result(unrelated) == []
 
 
+# Review F1-1/F1-2 (B.3 pattern revision v4): the material-weakness
+# negation look-back is clause-bounded and an affirmative existence is a
+# presence. The reviewer's sentences are carried byte-for-byte.
+
+
+def test_pk09_negated_relative_clause_then_identified_is_true() -> None:
+    # F1-1 (1): the negator sits in a relative clause that closes before
+    # the subject restart; the sentence-wide look-back of v3 read it as
+    # negating the affirmative identification.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Based on our evaluation, which did not identify any "
+        "deficiencies in entity-level controls, management identified a "
+        "material weakness in revenue recognition as of June 30, 2026."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_negated_clause_before_semicolon_then_identified_is_true() -> None:
+    # F1-1 (2): the negator sits in the clause before the semicolon; the
+    # identification after it is its own clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management's evaluation did not include controls of the "
+        "acquired business; management identified a material weakness in "
+        "revenue recognition as of June 30, 2026.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_existential_weakness_not_remediated_is_true() -> None:
+    # F1-2 (3): an affirmative existence is a presence; the relative
+    # clause's "not been remediated" is outside the existential's clause,
+    # and the v3 arm's noun-then-"exists" shape never matched this
+    # sentence at all.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>There was a material weakness, which has not been remediated."
+        "</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "true"
+    assert contract.validate_pack_result(result) == []
+
+
+def test_pk09_same_clause_negation_still_false() -> None:
+    # The comma before "and" is not a subject restart, so the clause rule
+    # did not over-widen: the negation stays in the identifying clause.
+    body = (
+        "<div>Item 9A. Controls and Procedures</div>"
+        "<div>Management did not identify any material weakness, and our "
+        "controls were effective.</div>"
+    )
+    result = _pk09_synthetic("10-K", body)
+    weakness = _row(result, "material_weakness_present")
+    assert weakness["quality_state"] == "valued"
+    assert weakness["text_value"] == "false"
+    assert contract.validate_pack_result(result) == []
+
+
 # 32. PK09 invariance and CLI -------------------------------------------------
 
 
@@ -3925,7 +3996,7 @@ BASE_AAPL_ENVELOPE_SHA256 = {
     "PK02": "9f621f9e750b1c9df6731eae1f9e0c8c2094006214d37b29066c08ea7e51d981",
     "PK11": "f425680270c2a267d8dca5f44e6a1e3c2ac708b124e2d2a7723c0674056d9b2f",
     "PK12": "da96915b1d81f0f4417e6cb4d5acbc551f5fbfcc5975dc37091adfec9be5cceb",
-    "PK09": "cc74da2c315eb27f740718d01086ea74d13c4bd1ac0c9c64ef0f5449f9efba76",
+    "PK09": "6937ebad4f59442d79279be71a9ee865f10611e8d8f40d4ce3f4faf1ea87c2eb",
 }
 _BASE_PACK_METRICS = {
     "PK06": "leases",
@@ -4274,7 +4345,7 @@ BASE_PACK_ENVELOPE_SHA256 = {
         "b26d48b769b9be642b5deaeafbe2f853b5d6155eb2f079f4953642c417062629"
     ),
     "PK09": (
-        "88c2956ae74a4fa3a7ac3233e1c7188adb7577ddbe74601c5ae7a234556b1610"
+        "8b13990f014fd2fdcbc394c1be4b09ffbd46d788af6270bdefef2db28610feb2"
     ),
     "PK11": (
         "9660c82e6d14e70e9302b2dc2cdf2468da416886422892d5201cea0ff88a744d"
@@ -5221,7 +5292,7 @@ PK05_BASE_PACK_ENVELOPE_SHA256 = {
     "PK03": "17a26aa6d276414927f9c68ddbd37595e79bc6120a289abcb254f83f4095057d",
     "PK04": "e4746fbf9126b233d759caeb235dfec72d1895b20b6a6b13a20dd6d16802d5dd",
     "PK06": "2126d42b4a608ad2a9f8e9a48b8692fe8c11c8ed187d5beb33e27df68182df17",
-    "PK09": "fb02e9f1c13f65c49c503d73293e5b9dcff4caa62b376ecd6e8f62bb9ef84bf2",
+    "PK09": "96c3dd0e914948d65f64be18705a413f7d873129ec748ec2eee0823d48f8a0cb",
     "PK10": "217702f0bb51ac1686a796422e72118655584064fd8b6585eb8f5aa640c230e1",
     "PK11": "1e8d160a7fb3402fd82c698333cd2d87ad3622fca5d70437800c692c3fb63620",
     "PK12": "d6bfa668b1a77819f0a2e8ff1d77fd75e8cacce96dbeba49b430d861fca9591d",
@@ -6868,7 +6939,7 @@ PK07_BASE_PACK_ENVELOPE_SHA256 = {
     "PK04": "281d84d196751caca6ac23a217004766fb1483e2d5fc729309eb1bc30f64dc8f",
     "PK05": "3628a5ddde284650978617bcd7ae7ff922dd32ac0bbb8ab6e8f35ad2545967ac",
     "PK06": "84f9aad2836afa5b397253ff27807345d6245edf8f765b60b6e21d68449890f5",
-    "PK09": "f15a5b8cb1e08f43cd903c127a37afd07b7a2ea5243e3390e3314023a489c4fb",
+    "PK09": "29214a3ca2a5b54297f1908ac98dd8f1bde2d13d62b7980d886a53d7837f50eb",
     "PK10": "2ef05add8be8db7f9cb32a6fd55b47eab26fafdc2e603a2b7cbae9e074b234d0",
     "PK11": "140b630622b5e1ab49dd1743ad8eafb91be8872e7a20e9cfc72d2d59ffddaefc",
     "PK12": "4915af8ff2a916dd788d219de2329c6fc7703df5dfc3ac7a4e8dc7265f4ab48b",
@@ -7524,7 +7595,7 @@ PK08_BASE_PACK_ENVELOPE_SHA256 = {
     "PK05": "ac0cf6c6d5fb655b622d57317c376602ac357a7e3c075b60c8ef4fa7e6679740",
     "PK06": "1f78880eba88a185421ccc943e8e227bf7d264e5fea6ac8af1c96d75a793e229",
     "PK07": "0ff8a0e0ed118c716d3417e3765a131e94054fa57ab8eb9a2b0ade02fb89a153",
-    "PK09": "d4306f3d95cd865d7028897c0f823ce20fee9f43bc8d3d0a430565207a3633f8",
+    "PK09": "722bf351989c361bf168ec072fac109727e932e8e2a1d21d53bbf31a88d85195",
     "PK10": "655d3ff540c539e2f2b2a20104f286d68baaa6a18990e1ec46d52cc7cd6f32ba",
     "PK11": "58e1c524a82210daffc392c855309c73b5d4ca55732c100c3a3a6babe7d41ba4",
     "PK12": "e3578db64f6e41c5ec5633b5b529fc87ca742a2857639bbaf2ba28ec4480f830",

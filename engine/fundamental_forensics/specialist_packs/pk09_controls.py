@@ -101,6 +101,21 @@ DISCLOSURE_CONTROLS = (
 # only "not"/"not yet", so "We never identified a material weakness"
 # resolved true); _material_weakness_value extends the guard to a negator
 # anywhere earlier in the same "."-bounded sentence.
+# B.3 pattern revision v4 (review F1-2, 2026-10-20): the sentence-bounded
+# look-back above over-negated — any earlier negator in the sentence, even
+# one in a relative clause that had already closed, flipped an affirmative
+# identification to a confident false. The look-back is now clause-bounded
+# (see _material_weakness_value), and the existence arms accept the
+# affirmative existential forms "there was/were/is/are (a|an|one|one or
+# more) material weakness(es)" and "material weakness(es) exists/existed";
+# their forward guard reads only the predicate of the SAME clause, so a
+# relative "which has not been remediated" no longer refuses the mention.
+_MW_EXISTENCE_GUARD = (
+    r"(?!(?:(?![,;]|\bwhich\b|\bthat\b)[^.]){0,60}?"
+    r"\b(?:does not exist|did not exist|has been remediated|"
+    r"was remediated|were remediated|were not|was not|is not|"
+    r"no|not|never|without)\b)"
+)
 MATERIAL_WEAKNESS_IDENTIFIED = (
     r"(?<!not )(?<!not yet )(?<!never )(?<!no )(?<!did not )"
     r"(?<!have not )(?<!has not )(?<!without )"
@@ -108,6 +123,9 @@ MATERIAL_WEAKNESS_IDENTIFIED = (
     r"[^.]{0,40}?material weakness"
     r"|(?<![Nn]o )material weakness(?:es)?(?![^.]{0,80}?(?:no|not|without)\b)"
     r"[^.]{0,80}?exists?"
+    r"|[Tt]here (?:was|were|is|are)(?: a| an| one| one or more)?"
+    r" material weakness(?:es)?" + _MW_EXISTENCE_GUARD +
+    r"|material weakness(?:es)? (?:exists?|existed)" + _MW_EXISTENCE_GUARD
 )
 ICFR_CHANGE = (
     r"(?:no changes|changes) in (?:the Company.s |our )?"
@@ -260,9 +278,19 @@ _ICFR_STATED_CONCLUSION = re.compile(
 )
 # B.3 v3 (review F1-b): the identifying verb whose lead the presence
 # resolver scans for a negation token.
-_MW_IDENTIFYING_VERB = re.compile(r"identif(?:y|ied)|exists?|existed")
+# B.3 v4 (review F1-1): the verb set gains "identifies", and the negation
+# scan below starts at the clause boundary, not the sentence boundary.
+_MW_IDENTIFYING_VERB = re.compile(r"identif(?:y|ied|ies)|exists?|existed")
 _MW_NEGATION_BEFORE = re.compile(
-    r"\b(?:never|no|not|did not|have not|has not|without)\b"
+    r"\b(?:never|no|not|without|absence of|free of|did not|have not|"
+    r"has not)\b"
+)
+# B.3 v4 (review F1-1): a clause boundary inside a "."-bounded sentence —
+# a semicolon, a colon, an em/en dash, or a comma followed (within 3
+# tokens) by a subject restart.
+_MW_CLAUSE_BOUNDARY = re.compile(
+    r"[;:—–]|,\s*(?:\S+\s+){0,2}?(?:management|we|the company|"
+    r"our management|the audit committee|it)\b"
 )
 
 
@@ -300,23 +328,60 @@ def _icfr_conclusion_value(
     return "material_weakness", (match.start(), match.end())
 
 
+def _mw_clause_start(text: str, sentence_lo: int, verb_start: int) -> int:
+    """Scan start for the negation look-back: the nearest clause boundary.
+
+    B.3 v4 (review F1-1): candidates are the sentence start and every
+    semicolon, colon, em/en dash, or comma followed (within 3 tokens) by a
+    subject restart (``management|we|the company|our management|the audit
+    committee|it``) that lies before the verb; the latest one wins. A
+    negator before that boundary belongs to a clause that already closed
+    and never reaches the verb.
+    """
+    start = sentence_lo
+    for boundary in _MW_CLAUSE_BOUNDARY.finditer(text, sentence_lo, verb_start):
+        start = boundary.end()
+    return start
+
+
 def _material_weakness_value(
     nt: Any, section_span: tuple[int, int], match: Any
 ) -> tuple[str, tuple[int, int]]:
-    """B.3 v3 sentence-bounded resolution (review F1-b).
+    """B.3 v4 clause-bounded resolution (reviews F1-b then F1-1/F1-2).
 
-    Rule: the boolean is true only for an affirmative identification or
-    existence. The mapping pattern already refuses a negator immediately
-    before the identifying verb; this resolver extends the guard to the
-    whole sentence, so "never", "no", "not", "did not", "have not",
-    "has not" or "without" anywhere before the verb turns the mention into
-    a valued absence ("false") evidenced by the negated span itself.
+    Clause-boundary rule: the boolean is true only for an affirmative
+    identification or existence, and a negation token ("no", "not",
+    "never", "without", "absence of", "free of", "did not", "have not",
+    "has not") negates the identification only when it lies in the SAME
+    CLAUSE as the anchor verb ("identify", "identified", "identifies",
+    "exist", "exists", "existed"). The look-back starts at the nearest
+    clause boundary before the verb — the sentence start, a ";", a ":",
+    an em/en dash, or a comma followed (within 3 tokens) by a subject
+    restart (management, we, the company, our management, the audit
+    committee, it) — and never earlier; the mapping pattern's own 40-char
+    verb-to-noun window stays as an additional cap on the identification.
+    A negator inside a relative or participial clause that ends before the
+    subject restart, or one before a ";", therefore does not reach the
+    verb, while "We never identified a material weakness" and "Management
+    did not identify any material weakness" stay false.
+
+    Existential rule: an affirmative existence is a presence. The mapping
+    pattern's existence arms accept "there was/were/is/are (a|an|one|one
+    or more) material weakness(es)" and "material weakness(es)
+    exists/existed"; their forward negation/remediation guard reads only
+    the predicate of the SAME clause — the scan stops at a ",", a ";", or
+    a relative-pronoun "which"/"that" — so "There was a material weakness,
+    which has not been remediated" resolves true, while "There was no
+    material weakness", "a material weakness does not exist" and a
+    prior-year remediated mention carry no affirmative existential match
+    and stay false.
     """
     text = nt.text
     verb = _MW_IDENTIFYING_VERB.search(text, match.start(), match.end())
     if verb is not None:
         lo, _ = _sentence_bounds(text, match.start(), match.end())
-        if _MW_NEGATION_BEFORE.search(text, lo, verb.start()):
+        clause_start = _mw_clause_start(text, lo, verb.start())
+        if _MW_NEGATION_BEFORE.search(text, clause_start, verb.start()):
             return "false", (match.start(), match.end())
     return "true", (match.start(), match.end())
 
