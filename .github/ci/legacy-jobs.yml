@@ -19977,7 +19977,7 @@ jobs:
         # requests closes app.main's eager app.market_memory import.
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
       - name: research vault serving-API security tests
-        run: python -m pytest tests/test_research_api.py -q
+        run: python -m pytest tests/test_research_api.py tests/test_research_revision_read.py -q
       - name: source-bound report evidence — corpus selector
         run: python -m pytest tests/test_research_evidence_passages.py -q
 

@@ -217,6 +217,7 @@ on:
       - "app/research.py"
       - "app/main.py"
       - "tests/test_research_api.py"
+      - "tests/test_research_revision_read.py"
       # Research Vault (RV W3) page + viewer: page test + template.
       - "tests/test_research_vault_page.py"
       - "templates/research_vault.html.j2"
