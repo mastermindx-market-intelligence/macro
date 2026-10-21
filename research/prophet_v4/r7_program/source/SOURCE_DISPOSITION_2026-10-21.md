@@ -281,3 +281,4 @@ A unit can carry two verdicts when it has separable halves; each half names its 
 | pro-source-b23bu1-20261021 | build C1 | DONE r1 ubuntu2 155769840281 (2 files, 85 passed); ACCEPTED source-level | seat claude/* PR (no independent review owed) |
 | pro-source-b23bu45-20261021 | build C1 | RUNNING r1 ubuntu2 (BASE = BU1 lane commit 15576984, launched 04:38Z) | BU4 lab-serve journal + BU5 report generator; design facts inlined |
 | pro-source-b07journey / b20workspace / b22record / b23ui | build | unlaunched | design spec acceptance |
+| pro-source-b07journey / b20workspace / b22record / b23ui | build | unlaunched | design spec acceptance |

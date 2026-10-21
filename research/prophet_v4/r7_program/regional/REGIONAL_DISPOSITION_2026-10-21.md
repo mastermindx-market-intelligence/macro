@@ -180,3 +180,11 @@ The brief's other expected candidates got no separate lane because a census lane
 - the HK #7385 projection gap analysis is `HK_INTEGRATION_CENSUS`.
 
 Packet written and gated by sequence (not launchable at BASE): `pro-regional-cnp1arch-20261021.md`. It edits the same `main()` publish branch as `cnp1trad` and reads the `cnp1proj` receipt, so it launches on the main revision that contains both, with that revision as BASE and after F7 is ratified.
+| pro-regional-cnp4margin-20261021-r1 | build | mmx-ubuntu3 | DONE (rc=0 04:13Z; consumed 04:15Z) | commit 58ad49f01f3d: `collectors/china_margin_detail.py` +21/-5, with the prior drawn only from the ci-22/ci-21/ci-20 window, no `or dates[:1]` fallback, a strictly-earlier guard and a nullable prior. Window choices for target ≥ 0 are byte-identical to BASE. `tests/test_china_alpha_w3c_infra.py` +167 (M1–M7; 21 passed; already in `unrun-intl-collectors`, `legacy-jobs.yml:29049`, so no CI edit). The M8 BASE proof reproduced the defect: at idx 18 BASE takes the current date as its own prior, M4b takes a prior *newer* than current, and at idx 19 M5 falls back 19 positions |
+
+The brief's other expected candidates got no separate lane because a census lane already answered each one (DO_NOT_REDO):
+- the China P0 original-truth immutability audit is `CN_CORRECTNESS_CENSUS` Q1–Q4 (immutability PARTIAL, quarantine ABSENT, OHLC PRESENT, accounting separation PARTIAL);
+- the China P3 publication-correctness matrix is the same census's Q9–Q10 (runtime sub-gaps and SSR fallback age). Its build waits on F2 and #8444;
+- the HK #7385 projection gap analysis is `HK_INTEGRATION_CENSUS`.
+
+Packet written and gated by sequence (not launchable at BASE): `pro-regional-cnp1arch-20261021.md`. It edits the same `main()` publish branch as `cnp1trad` and reads the `cnp1proj` receipt, so it launches on the main revision that contains both, with that revision as BASE and after F7 is ratified.
