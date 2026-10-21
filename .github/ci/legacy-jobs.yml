@@ -29808,6 +29808,12 @@ jobs:
       # grader and Jinja env; needs only this venv's existing deps.
       - name: sector_central publication record — B10 secondary-source statuses, no locked rows in free artifacts
         run: python -m pytest tests/test_sector_central_publication.py -q
+      # SIC-D-B09: every published group row carries a source-bound
+      # research_handoff (subject/kind, per-row snapshot digest, source/
+      # generation/clock, evidence mode, return context, explicit
+      # not_supplied relationships) — receivers bind without guessing.
+      - name: sector_central research handoff — B09 subject/snapshot/return-context per row
+        run: python -m pytest tests/test_sector_research_handoff.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
