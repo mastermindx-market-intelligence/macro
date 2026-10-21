@@ -5168,6 +5168,18 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    2026-10-21 SIC-I07R registers
+    tests/test_watchstore_sector_investigations_js.py as its own step in the
+    tier-gate job — its own step, not an append to the sector_central line,
+    because test_sector_receiver_contracts.py pins that line as an exact
+    substring. The local probe on f4a1747e5e measures all three probes AT
+    their ceilings (5,861 / 5,828 / 5,604); the new step adds exactly three
+    estimator units to each (5,864 / 5,831 / 5,607) — the packet anticipated
+    the two code probes only, but the tier-gate job is selected by all three,
+    so the plan_book probe moves by the same measured three. No job-count or
+    pack change, no new entrant. Fund only that measured excess. Job counts,
+    selectors and the ten-pack bound remain unchanged.
+
     2026-10-21 SIC-I06R registers tests/test_sector_prophet_context_dated.py
     in tier-gate as its own step beside the receiver contracts: that run line
     is byte-pinned by test_sector_receiver_contracts::

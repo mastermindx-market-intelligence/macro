@@ -35,6 +35,17 @@
   // their own context: undefined would emit a bare `=` and take every global in
   // this block down with one SyntaxError.
   window.WL_SECTOR_ZH  = {{ sector_zh_json | default('{}', true) | safe }};
+  // SIC-I07R — readback copy for the dedicated 'Sector Intelligence' list
+  // (WatchStore.saveSectorInvestigation / the row chip watchlist.js paints). A
+  // literal, not a render arg, so the crop/preview shooters' own contexts bake
+  // the same strings; watchlist.js degrades to the English half if the global
+  // is absent. Strings only — the chip reuses the page's existing .ws-chip
+  // grammar and adds no CSS.
+  window.WL_SI_COPY = {
+    chip:   { en: 'Sector investigation', zh: '板块情报' },
+    device: { en: 'Notes are saved on this device — they don’t sync',
+              zh: '备注只保存在本设备，不会同步' }
+  };
 </script>
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
@@ -1147,7 +1158,7 @@
 <script src="market_books.js?v=3"></script>
 <script src="portfolio_state.js?v=1"></script>
 <script src="stockdata.js?v=4"></script>
-<script src="watchlist.js?v=15"></script>
+<script src="watchlist.js?v=16"></script>
 <script src="factor_exposure.js?v=6"></script>
 <!-- pure book-structure math + the risk publisher. risk_core.js must precede
      watchlist_risk.js; both need SD + FX. Signed-in only — the anonymous shell
@@ -1155,7 +1166,7 @@
 <script src="risk_core.js?v=2"></script>
 <script src="watchlist_risk.js?v=7"></script>
 <script src="portfolio_import.js?v=1"></script>
-<script src="watchstore.js?v=11"></script>
+<script src="watchstore.js?v=12"></script>
 <script src="portfolio.js?v=11"></script>
 <script src="portfolio_import_ui.js?v=2"></script>
 <script src="mtf.js"></script>

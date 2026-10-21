@@ -6295,6 +6295,14 @@ jobs:
       # job's venv line (the suite's own test_import_stays_light pins that).
       - name: tier-preview split contract (sector_central act-now board)
         run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q
+      # SIC-I07R: saved sector investigations through the existing watch/save
+      # owner (templates/watchstore.js designated list, section 'si'). Runs as
+      # its own step because test_sector_receiver_contracts.py pins the step
+      # above as an exact substring. node-shelled like the hydration harness —
+      # node is preinstalled on ubuntu-latest and the suite skips cleanly if it
+      # ever is not; it needs nothing beyond the job's pytest install.
+      - name: tier-preview split contract (saved sector investigations)
+        run: python -m pytest tests/test_watchstore_sector_investigations_js.py -q
       # SIC-I06R (2026-10-21): the Prophet destination's dated-context
       # contracts (si_asof/si_gen/si_origin, honest loaded count, allowlisted
       # origin return) — their own step so the pinned receiver-contracts run
