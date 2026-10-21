@@ -99,6 +99,17 @@ def test_shared_cache_headers_match_only_reviewed_public_paths():
     assert re.search(r"(?m)^[ \t]*@reg_json[ \t]*\{", text) is None
 
 
+def test_shared_shell_presentation_assets_are_exact_public_paths_in_all_edge_matchers():
+    paths = {"/shared_shell_bridge.js", "/shared_shell.css"}
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert paths <= set(policy["public"]["exact"])
+    text = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static", "@public_versioned"):
+        assert paths <= _path_tokens(_extract_block(text, matcher))
+    assert "not query v=*" in _extract_block(text, "@public_static")
+    assert "query v=*" in _extract_block(text, "@public_versioned")
+
+
 def test_public_pages_fetch_nothing_under_paid_prefixes():
     files = [
         REPO_ROOT / "templates" / "index.html",

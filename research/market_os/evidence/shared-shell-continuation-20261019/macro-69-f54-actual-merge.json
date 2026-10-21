@@ -1,0 +1,42 @@
+{
+  "started_at": "2026-10-20T04:17:37.237830+00:00",
+  "head": "69e8566dc85e701c70ace72320a16d4ba6c95847",
+  "incoming": "f54eeb09f3473e091ea55416a8dcad9196603e60",
+  "base": "d52827f26b062f67d594350a65becf406710d4d1",
+  "command": [
+    "git",
+    "merge",
+    "--no-ff",
+    "--no-commit",
+    "f54eeb09f3473e091ea55416a8dcad9196603e60"
+  ],
+  "source": "original shared-shell-r27",
+  "candidate_receipt_sha256": "a13a38f2ea06a1d3ba64a0dff9b75303d983ccd08dcda43c9de2aafd8f30f8af",
+  "finished_at": "2026-10-20T04:18:31.509967+00:00",
+  "merge_exit": 1,
+  "merge_log_sha256": "967c87f87c71599bce4a366b85caa8ab46e31d1448c8d0258e6499e6353fbc0a",
+  "unmerged_before_resolution": {
+    ".github/ci/legacy-jobs.yml": {
+      "1": "3c0bea4b5cb14cdec3d17864f836562602fd076c",
+      "2": "ac017c679b8c3699d8d641ab06ce4c3d530c6faa",
+      "3": "14156cca4c347342b918e9693c1d42ff11bfaf98"
+    },
+    "app/deploy/Caddyfile": {
+      "1": "4a4dc3902fb44ceceecc6df5e54f6d30d4bab89d",
+      "2": "9d7185a65e0f89a02662ba6d0024cacf8c3071b6",
+      "3": "923bce007b403b80aa8d5538b3964fea90de0569"
+    },
+    "tests/test_ci_pack.py": {
+      "1": "f9b403c51c650ab0e5ab1a774a0e10dfbdb10d94",
+      "2": "65501e5d6b7b7c83775dbeac73c0096fc4956582",
+      "3": "2bdbfa6a9aed0789fc478cfae0ee56c0a339cc42"
+    }
+  },
+  "unmerged_after_resolution": [],
+  "index": "4bac8f078fc9d922be955e1b02b4f0bfa603e77d",
+  "only_three_conflicts_differ_from_preview": true,
+  "candidate_hashes_match": true,
+  "owned_whitespace_exit": 0,
+  "commit_created": false,
+  "push_started": false
+}

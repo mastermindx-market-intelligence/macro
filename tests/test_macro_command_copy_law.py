@@ -500,6 +500,35 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
+    from html import escape
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+
+    source = {
+        "en": (
+            "US labor-market state cannot be classified: axis coverage is below "
+            "the disclosed floor. No quadrant is asserted rather than defaulting "
+            "to a neutral state."
+        ),
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    unchanged = dict(source)
+    reading, original = apply_plain_producer(source)
+
+    assert source == unchanged
+    assert original == unchanged
+    assert original is not source
+    assert reading is not None and reading != PLAIN_FALLBACK
+    assert "not treated as a neutral reading" in reading["en"]
+    assert "缺失数据不会被当作中性读数" in reading["zh"]
+    customer = (
+        '<main class="mc-shell"><p><span class="l-en">'
+        + escape(reading["en"]) + '</span><span class="l-zh">'
+        + escape(reading["zh"]) + "</span></p></main>"
+    )
+    assert guard.find_violations(customer) == []
+
+
 def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
     from lib.macro_suite_labels import apply_plain_producer
 
