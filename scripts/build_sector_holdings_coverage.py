@@ -39,8 +39,9 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Unconditional repo-root pin (tests/test_check_script_import_pinning.py): a guarded insert is
+# not a pin, because a foreign package ahead of an already-present root still wins.
+sys.path.insert(0, str(ROOT))
 
 from lib import config, nyse_calendar, store  # noqa: E402
 
