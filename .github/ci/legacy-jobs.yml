@@ -7786,6 +7786,18 @@ jobs:
       - "config/theme_crosswalk.yml"
       - "config/theme_sources.yml"
       - "config.yml"
+      - "engine/intl_global_dollar_credit.py"
+      - "engine/intl_global_acceptance_matrix.py"
+      - "tests/test_intl_global_dollar_credit.py"
+      - "tests/test_intl_global_acceptance_matrix.py"
+      - "engine/global_liquidity_transmission.py"
+      - "config/global_liquidity_transmission_v1.yml"
+      - "engine/intl_global_observation.py"
+      - "lib/store.py"
+      - "lib/config.py"
+      - "engine/canon.py"
+      - "lib/__init__.py"
+      - "research/GLOBAL_LIQUIDITY_TRANSMISSION_STATE_METHODOLOGY_2026-08-22.md"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -7794,9 +7806,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install contract test dependencies
-        run: pip install pytest pyyaml
+        run: pip install pytest pyyaml pandas numpy pyarrow
       - name: International global universe contract
         run: python -m pytest tests/test_intl_global_universe.py -q
+      - name: International dollar credit transmission and IM16 acceptance matrix
+        run: python -m pytest tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q
 
   international-workspace-foundation:
     # Supplied-frame numerical records use the existing performance owner.
