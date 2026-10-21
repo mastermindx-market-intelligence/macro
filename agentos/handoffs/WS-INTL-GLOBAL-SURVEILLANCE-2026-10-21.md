@@ -1,6 +1,6 @@
 ---
 workstream: WS:INTL-GLOBAL-SURVEILLANCE
-session: claude/ssd-intl-gs-seat-r4-8e4e57e69f466313 (Fable Meta-CEO seat d7c4f490, SSD worktree
+session: claude/ssd-intl-gs-seat-r5-8e4e57e69f466313 (Fable Meta-CEO seat d7c4f490, SSD worktree
   intl-gs-seat-r2; earlier tree intl-markets-surveillance-masterplan-a50d55 left mid-rebase, cleanup = git rebase --abort there)
 model: fable
 ended_because: ci_handoff
@@ -56,6 +56,14 @@ changed:
     IM16 engine side: engine/intl_global_dollar_credit.py, engine/intl_global_acceptance_matrix.py (counts-only), two suites,
     CI job international-global-universe extended (pandas/numpy/pyarrow in its single install step). MERGED by seat at exact
     head 37c10fc6 → main 2d50943eb154430efda02ffc117bb37b5addc242 (GitHub mergeCommit read, 08:42:08Z). Gaps by fact: cds_5y ×63 no source; FRED/ICE series no rights row; im16_complete=False.
+- path: 'PR #9960 (IM17 typed transmission evidence engine, fabric lane INTL-GS-W4A + independent review r4 PASS)'
+  what: >
+    engine/intl_transmission_evidence.py (1544) + config/intl_transmission_channels_v1.json (366) +
+    tests/test_intl_transmission_evidence.py (1034, 21 tests) + NEW exclusive CI job international-transmission-evidence
+    (one legacy-jobs.yml hunk, paths cover all 16 first-party imports) + its curated pin. MERGED by seat at exact head
+    8aa58025 → main 5c6fdb2ed1f013ffc008fde904e3be72b4524873 (GitHub mergeCommit read, 11:26:07Z). Frozen contagion_links / contagion untouched;
+    six builder mutants each killed by a named test; reviewer killed two more. Documented-exposure values all null by
+    rights fact (withheld, never 0); only the two frozen house models display. W4B UI not produced yet (gated on W2).
 - path: agentos/decisions/DEC-INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS.md
   what: >
     PROPOSED (not decided) rights rows for FRED-hosted US-government series DTWEXBGS/DFII10; ICE BofA series stay without a
@@ -85,17 +93,19 @@ verified:
   command: 'git merge-base --is-ancestor 5d454fbe… b6fd3e8d && git merge-base --is-ancestor 556d3333… b6fd3e8d  # both yes; run 39559296162 on b6fd3e8d SUCCESS 07:02Z'
 - claim: Wave 3 suites on the seat tree — 90 passed, 2 failed, both FileNotFoundError data/fred/DTWEXBGS.parquet (sparse checkout; file tracked on main).
   command: 'python3 -m pytest tests/test_intl_global_dislocation.py tests/test_intl_global_dollar_credit.py tests/test_intl_global_acceptance_matrix.py -q -p no:cacheprovider  # on overlaid lane files, then removed'
+- claim: IM17 engine merged at its exact reviewed head after a complete rollup (26 checks, only the standing merge-queue-pilot X); clean merge-tree against main 1c99ae69.
+  command: 'gh pr view 9960 --json state,mergeCommit,mergedAt --jq ".state+\" \"+.mergeCommit.oid+\" \"+.mergedAt"  # MERGED 5c6fdb2e… 2026-10-21T11:26:07Z'
 - claim: R14 freeze record validates under Agent OS; frozen rulings carry confidence/reversibility/review_by.
   command: 'python3 scripts/agentos.py validate --paths agentos/decisions/DEC-INTL-GS-R14-DESIGN-FREEZE.md agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md agentos/handoffs/WS-INTL-GLOBAL-SURVEILLANCE-2026-10-21.md  # 0 errors'
 unverified:
-- 'Main baselines for 63f3bc83 (IM15) and 2d50943e (IM16): prove by ancestry of the newest green main run, never by a per-sha watcher.
+- 'Main baselines for 63f3bc83 (IM15), 2d50943e (IM16), 6a2a9244 (records) and 5c6fdb2e (IM17 engine): prove by ancestry of the newest green main run, never by a per-sha watcher.
 
   '
 - 'Served-journey ACCEPTANCE against masterplan §14 (anonymous + entitled) — recorded at the Wave 2 boundary.
 
   '
-- 'ORCH-2 (Wave 2: foundation PR #9949 @b2eae89c open, then IM13/IM14) and ORCH-4 (Wave 4 IM17: W4A engine now, W4B UI
-  after the seat says "W2 ON MAIN <sha>") RUNNING as Opus orchestrators; neither has returned a PR to the seat yet.
+- 'ORCH-2 (Wave 2: foundation PR #9949 @b2eae89c open, review r4 running on ubuntu3 as of 11:0xZ, then IM13/IM14) RUNNING;
+  ORCH-4 returned W4A (merged) and holds W4B NOT STARTED until the seat says "W2 ON MAIN <sha>" (sha must contain #9949 and 5c6fdb2e).
 
   '
 unresolved:
@@ -109,8 +119,8 @@ unresolved:
 
   '
 next_actions:
-- 'ORCH-4 messaged "W3 ON MAIN 2d50943e" (08:4xZ); prove the 63f3bc83/2d50943e main baselines by ancestry of the newest
-  green main run at the next boundary.
+- 'ORCH-4 messaged "W4A ON MAIN 5c6fdb2e" (11:2xZ); prove the 63f3bc83/2d50943e/6a2a9244/5c6fdb2e main baselines by
+  ancestry of the newest green main run at the next boundary.
 
   '
 - 'Consume ORCH-2 FOUNDATION_READY → seat verifies the foundation PR (open the evidence crops under
@@ -118,7 +128,7 @@ next_actions:
   served-journey proof on mastermind-x.com/intl.html.
 
   '
-- 'Consume ORCH-4 return → verify W4A (frozen-model invariance test, six mutants) and W4B (8 crops) → merge → WS IM17 done.
+- 'After "W2 ON MAIN": consume ORCH-4 W4B return → verify 8 crops under mockups/evidence/intl-gs-w4b/ → merge → WS IM17 done.
 
   '
 - 'Wave 3 UI (boards 11/12 on the W2 foundation) and Wave 5 IM18 (scratchpad orch5_commission_draft.txt) when an Opus
@@ -131,6 +141,9 @@ next_actions:
   '
 do_not_redo:
 - 'Wave 0 asset extraction and its review (PR #9920) — accepted; do not re-extract from #9596.
+
+  '
+- 'W4A IM17 engine (#9960 → 5c6fdb2e) — merged and seat-verified; NIT-3/NIT-4 are optional later tightening, not a revision lane.
 
   '
 - 'Wave 1 IM11 (#9924 → 5d454fbe) and IM12 (#9923 → 0062e28f) — merged and seat-verified.
@@ -171,7 +184,7 @@ danger_areas:
 Program state lives in research/INTL_GLOBAL_SURVEILLANCE_CONTINUATION_HANDOFF_2026-10-21.md;
 read its newest checkpoint first. This record is the Agent OS pointer, not a second ledger.
 
-Proven rungs at this write (08:3xZ): #9920 PRODUCTION_PROOF; #9923, #9924, #9937, #9939 and #9943 MERGED (GitHub
-mergeCommit reads: 0062e28f, 5d454fbe, 556d3333, 5f82b33a, 63f3bc83); #9944 MERGED → 2d50943e;
-Wave 1 + R14 main baselines green by ancestry (run 39559296162); ORCH-2 and ORCH-4 RUNNING on fabric, ORCH-3 COMPLETED.
-Seat branch rotated to claude/ssd-intl-gs-seat-r4-8e4e57e69f466313 from main 63f3bc83 in the same SSD tree.
+Proven rungs at this write (11:3xZ): #9920 PRODUCTION_PROOF; #9923, #9924, #9937, #9939, #9943, #9944, #9952 and #9960
+MERGED (GitHub mergeCommit reads: 0062e28f, 5d454fbe, 556d3333, 5f82b33a, 63f3bc83, 2d50943e, 6a2a9244, 5c6fdb2e);
+Wave 1 + R14 main baselines green by ancestry (run 39559296162); ORCH-2 RUNNING, ORCH-4 holding W4B, ORCH-3 COMPLETED.
+Seat branch rotated to claude/ssd-intl-gs-seat-r5-8e4e57e69f466313 from main 1c99ae69 in the same SSD tree.

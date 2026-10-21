@@ -135,3 +135,32 @@ award-winning quality in Paper BEFORE implementation of the UI waves.
 - Seat branch rotated to `claude/ssd-intl-gs-seat-r4-8e4e57e69f466313` from main 63f3bc83 (same SSD tree).
 - Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943 MERGED · #9944 MERGED (2d50943e) ·
   ORCH-2/ORCH-4 RUNNING · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
+
+## Checkpoint 2026-10-21 11:3xZ — W4A IM17 engine LANDED (#9960 MERGED), W4B held on the W2 gate
+
+- Seat records PR #9952 MERGED at exact head c2f88e5a → main 6a2a9244 (09:02:42Z).
+- **ORCH-4 RETURNED W4A** (PROVEN_OUTCOME): build lane intl-gs-w4a-r1 (ubuntu0, glm-5.3, rc=0; RED 1 collection error
+  → GREEN 21 passed; affected suite 558 passed ×2; 12 CI packs validate, new job in pack 8). Review took four
+  launches — r1/r2/r3 refused pre-lease (`host_temperature_at_or_above_limit` on ubuntu1 while the other hosts sat
+  under their free-disk gates), r4 admitted on ubuntu3 once it cleared the disk gate: PASS at the exact head, 0
+  blocking, 5 NITs (NIT-3 house-model ids under extra pathway/model-status pairs; NIT-4 a statistical_association
+  edge may carry direction_support "documented" — neither can emit documented_exposure). No run id reused.
+- Seat verification: GitHub head 8aa58025 = reviewed head; five owned files only (`tests/test_ci_pack.py` +4 is the
+  curated pin every new exclusive job needs, confirmed single hunk); frozen `engine/contagion_links.py` /
+  `engine/contagion.py` empty diff; `git merge-tree` clean against main 1c99ae69; one watcher (b1pa0ovkg) → rollup
+  26 checks, only the standing merge-queue-pilot X; reviewDecision empty.
+- **#9960 W4A MERGED** at exact head 8aa58025 → main **5c6fdb2ed1f013ffc008fde904e3be72b4524873** (11:26:07Z). ORCH-4 messaged
+  "W4A ON MAIN 5c6fdb2e"; it acknowledged, launches nothing and polls nothing until "W2 ON MAIN <sha>".
+- IM17 gaps, by fact: every documented-exposure value null (withheld, never 0) — bis.statistics / imf.data /
+  ishares_ucits_holdings / licensed_global_feed rights unresolved, us_treasury_tic / us_census_trade / usda_fas have
+  no rights row, broad_usd (DTWEXBGS) and us_rates (DFII10) ride IM16 keys with null rights_ref (same
+  DEC:INTL-GS-FRED-GOVERNMENT-SERIES-RIGHTS question), global_risk / global_commodity no source, leverage_liquidity
+  abstains. Only the two frozen house models (11-market links graph, 14-ETF VAR) can display; no rank-strip row ranks.
+- **ORCH-2** still on its interim hold (11:05Z): foundation review r4 running on ubuntu3 with its own monitors;
+  FX packet, PR-body builder and W2A/W2B addendum ready. No seat act until its real return.
+- Gate order from here: ORCH-2 returns #9949 → seat verifies crops/tests → merge → "W2 ON MAIN <sha>" to ORCH-2 and
+  ORCH-4 (sha containing #9949 and 5c6fdb2e) → W4B UI lane + Wave 3 UI commission (board 9, draft parked) → IM13/IM14
+  → Wave 5 IM18 → §14 acceptance on mastermind-x.com/intl.html.
+- Seat branch rotated to `claude/ssd-intl-gs-seat-r5-8e4e57e69f466313` from main 1c99ae69 (same SSD tree).
+- Proven rungs: #9920 PRODUCTION_PROOF · #9923/#9924/#9937/#9939/#9943/#9944/#9952 MERGED · **#9960 MERGED (5c6fdb2e)** ·
+  ORCH-2 RUNNING · ORCH-4 holding W4B · ORCH-1/ORCH-D/ORCH-3 COMPLETED.
